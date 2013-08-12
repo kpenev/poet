@@ -1,0 +1,46 @@
+#include "Common.h"
+#include "SimAssumptions.hpp"
+#include "Star.h"
+#include "Planet.h"
+#include "StellarSystem.h"
+#include "OrbitSolver.h"
+#include "YRECIO.h"
+#include <vector>
+#include <iostream>
+#include <sstream>
+#include <omp.h>
+
+void simulateOnce(double Q, RotationScenario rot, double star_mass,
+		double planet_mass, double P0)
+{
+	using namespace AstroConst;
+	YRECEvolution evol;
+	evol.load_state("interp_state_data");
+	double semi = G*star_mass*solar_mass*std::pow(P0*day, 2)/4/M_PI/M_PI;
+	semi = std::pow(semi, 1.0/3.0)/AU;
+	Star star(star_mass, Q, rot.K, WIND_SAT_FREQ, rot.Tc,
+			Q_TRANS_WIDTH, rot.initSpin, rot.Tdisk,
+			evol, 4, 0, 0);
+	Planet planet(&star, planet_mass, 0.714, semi);
+	StellarSystem system(&star, &planet);
+	double end_age = std::min((const double)MAX_END_AGE,
+			star.get_lifetime());
+	OrbitSolver solver(MIN_AGE, end_age, 1e-5,
+			SPIN_THRES, MAIN_SEQ_START);
+	solver(system, Inf, PLANET_FORM_AGE, semi);
+	std::cout << "Finished!" << std::endl;
+}
+
+
+int main(int argc, char** argv) {
+	using namespace AstroConst;
+	std::vector<RotationScenario> all_rots;
+	all_rots.push_back(RotationScenario(2*M_PI/1.4,0.155,0.012, 0.0025));
+	all_rots.push_back(RotationScenario(2*M_PI/7,0.17,0.028, 0.005));
+	all_rots.push_back(RotationScenario(2*M_PI/10,0.17,0.030, 0.005));
+
+	double smass=0.7, pmass=25, Q=1e6, P0=5.724242424242424242;
+
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+	return 0;
+}
