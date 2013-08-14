@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <omp.h>
+#include <time.h>
 
 void simulateOnce(double Q, RotationScenario rot, double star_mass,
 		double planet_mass, double P0)
@@ -27,7 +28,12 @@ void simulateOnce(double Q, RotationScenario rot, double star_mass,
 			star.get_lifetime());
 	OrbitSolver solver(MIN_AGE, end_age, 1e-5,
 			SPIN_THRES, MAIN_SEQ_START);
+	time_t start_time, end_time;
+	time(&start_time);
 	solver(system, Inf, PLANET_FORM_AGE, semi);
+	time(&end_time);
+	std::cout << "Solver took " << difftime(end_time, start_time)
+		<< " seconds to finish." << std::endl;
 	std::cout << "Finished!" << std::endl;
 }
 
@@ -39,7 +45,7 @@ int main(int argc, char** argv) {
 	all_rots.push_back(RotationScenario(2*M_PI/7,0.17,0.028, 0.005));
 	all_rots.push_back(RotationScenario(2*M_PI/10,0.17,0.030, 0.005));
 
-	double smass=0.7, pmass=25, Q=1e6, P0=5.724242424242424242;
+	double smass=0.5, pmass=25, Q=1e6, P0=5.84141414;
 
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 	return 0;
