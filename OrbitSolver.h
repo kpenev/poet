@@ -14,6 +14,7 @@
 #include <gsl/gsl_poly.h>
 #include <sstream>
 #include <iostream>
+#include <limits>
 
 ///A class that solves the system of ODEs describing the orbital evolution of
 ///a single planet around a single star.
@@ -237,14 +238,16 @@ private:
 	double __stop_age, __stop_condition_precision;
 	StoppingConditionType __stop_reason;
 	bool __is_crossing;
+	size_t __stop_condition_index;
 public:
 	StopInformation(double stop_age=Inf, double stop_precision=NaN,
 			StoppingConditionType stop_reason=NO_STOP,
-			bool is_crossing=false) :
+			bool is_crossing=false, size_t stop_condition_index=0) :
 		__stop_age(stop_age),
 		__stop_condition_precision(stop_precision),
 		__stop_reason(stop_reason),
-		__is_crossing(is_crossing) {}
+		__is_crossing(is_crossing),
+		__stop_condition_index(stop_condition_index) {}
 
 	double stop_age() const {return __stop_age;}
 	double &stop_age() {return __stop_age;}
@@ -260,7 +263,12 @@ public:
 
 	bool is_crossing() const {return __is_crossing;}
 	bool &is_crossing() {return __is_crossing;}
+
+	size_t stop_condition_index() const {return __stop_condition_index;}
+	size_t &stop_condition_index() {return __stop_condition_index;}
 };
+
+std::ostream &operator<<(std::ostream &os, const StopInformation &stop);
 
 class ExtremumInformation {
 private:
@@ -274,6 +282,216 @@ public:
 	double y() const {return __y;}
 	double &y() {return __y;}
 };
+
+class StopHistoryInterval {
+private:
+	size_t __num_points,///< Number of points in the interval
+		   __point_i;///< The index of the current point
+
+	///The first age in the interval
+	std::list<double>::const_iterator __first_age,
+
+		///The last age in the interval.
+		__last_age,
+
+		///The one past last element of the history of stoppnig condition
+		///ages.
+		__history_age_end,
+
+		///The first age in the discarded stopping conditions.
+		__discarded_age_begin,
+		
+		///The age of the current point.
+		__age_i;
+
+	///The first stopping condition value in the interval
+	std::list< std::valarray<double> >::const_iterator __first_stop_cond,
+
+		///The last stopping condition value in the interval
+		__last_stop_cond,
+
+		///The one past last element of the history of stoppnig conditions
+		__stop_cond_history_end,
+
+		///The first of the discarded stopping condition values.
+		__stop_cond_discarded_begin,
+		
+		///The current stopping condition value.
+		__stop_cond_i,
+
+		///The first stopping condition derivative in the interval
+		__first_stop_deriv,
+
+		///The last stopping condition derivative in the interval
+		__last_stop_deriv,
+		
+		///The one past last element of the history of stoppnig conditions
+		__stop_deriv_history_end,
+
+		///The first of the discarded stopping condition values.
+		__stop_deriv_discarded_begin,
+			
+		///The current stop condition derivative
+		__stop_deriv_i;
+
+	///Increments all the iterators passed arguments, taking care of the
+	///switch from history to discarded if necessary.
+	void advance_iterator_set(std::list<double>::const_iterator &age_i,
+			std::list< std::valarray<double> >::const_iterator &cond_i,
+			std::list< std::valarray<double> >::const_iterator &deriv_i);
+
+	///Decrements all the iterators passed arguments, taking care of the
+	///switch from discarded to history if necessary.
+	void retreat_iterator_set(std::list<double>::const_iterator &age_i,
+			std::list< std::valarray<double> >::const_iterator &cond_i,
+			std::list< std::valarray<double> >::const_iterator &deriv_i);
+
+public:
+	StopHistoryInterval(
+			///The number of points in the interval.
+			size_t num_points=0,
+
+			///An iterator pointing to the first age in the interval.
+			std::list<double>::const_iterator
+			first_age=std::list<double>::const_iterator(),
+
+			///An iterator pointing to one past the last age in the history.
+			std::list<double>::const_iterator
+			history_age_end=std::list<double>::const_iterator(),
+
+			///An iterator pointing to the first age in the discarded list.
+			std::list<double>::const_iterator
+			discarded_age_begin=std::list<double>::const_iterator(),	
+
+			///An iterator pointing to the first stopping condition in the
+			///interval.
+			std::list< std::valarray<double> >::const_iterator
+			first_stop_cond=std::list< std::valarray<double> >::const_iterator(),
+
+			///An iterator pointing to one past the last stopping condition
+			///in the history.
+			std::list< std::valarray<double> >::const_iterator
+			stop_cond_history_end=
+			std::list< std::valarray<double> >::const_iterator(),
+
+			///An iterator pointing to the first stopping condition in the
+			///discarded list.
+			std::list< std::valarray<double> >::const_iterator
+			stop_cond_discarded_begin=
+			std::list< std::valarray<double> >::const_iterator(),
+
+			///An iterator pointing to the first stopping derivative in the
+			///interval.
+			std::list< std::valarray<double> >::const_iterator
+			first_stop_deriv=
+			std::list< std::valarray<double> >::const_iterator(),
+
+			///An iterator pointing to one past the last stopping derivative
+			///in the history.
+			std::list< std::valarray<double> >::const_iterator
+			stop_deriv_history_end=
+			std::list< std::valarray<double> >::const_iterator(),
+
+			///An iterator pointing to the first stopping derivative in the
+			///discarded list.
+			std::list< std::valarray<double> >::const_iterator
+			stop_deriv_discarded_begin=
+			std::list< std::valarray<double> >::const_iterator());
+
+	StopHistoryInterval(const StopHistoryInterval &orig);
+
+	///Makes the current point the first point in the interval
+	void reset();
+
+	///Advances to the next point in the interval.
+	StopHistoryInterval &operator++();
+
+	///Advances to the next point in the interval.
+	StopHistoryInterval operator++(int);
+
+	///Advances to the next point in the interval.
+	StopHistoryInterval &operator--();
+
+	///Advances to the next point in the interval.
+	StopHistoryInterval operator--(int);
+
+	///Moves the entire interval, along with the current point left n points,
+	///gaining n new points at the front and losing n at the back. If there
+	///are not enough points in the history undefined behavior results.
+	StopHistoryInterval &operator<<(size_t n);
+
+	///Moves the entire interval, along with the current point right n
+	///points, gaining n new points at the back and losing n at the front. If
+	///there are not enough points in the discarded list undefined behavior
+	///results.
+	StopHistoryInterval &operator>>(size_t n);
+
+	///Copies rhs to this.
+	StopHistoryInterval &operator=(const StopHistoryInterval &rhs);
+
+	///Checks if the RHS is the same interval and is at the same point in it.
+	bool operator==(const StopHistoryInterval &rhs);
+
+	///Adds the n points before the first point to the interval.
+	void grow_left(size_t n=1);
+
+	///Adds the n points before the first point to the interval.
+	void grow_right(size_t n=1);
+
+	///Returns the number of points in the interval.
+	size_t num_points() {return __num_points;}
+
+	///Returns the index of the current point within the interval.
+	size_t current_point_index() {return __point_i;}
+
+	///Returns the number of conditions at the first point.
+	size_t number_conditions() {return __first_stop_cond->size();}
+
+	///Returns true iff this is the invalid point marking the end of the
+	///interval.
+	bool end() {return __point_i==__num_points;}
+
+	///Returns the age of the first point in the interval.
+	double first_age() const {return *__first_age;}
+
+	///Returns the age of the last point in the interval.
+	double last_age() const {return *__last_age;}
+
+	///Returns the age of the current point.
+	double age() const {return *__age_i;}
+
+	///Returns the value of the stop condition with the given index for the
+	///first point in the interval.
+	double first_stop_condition_value(size_t condition_index) const
+	{return (*__first_stop_cond)[condition_index];}
+
+	///Returns the value of the stop condition with the given index for the
+	///last point in the interval.
+	double last_stop_condition_value(size_t condition_index) const
+	{return (*__last_stop_cond)[condition_index];}
+
+	///Returns the value of the stop condition with the given index for the
+	///current point.
+	double stop_condition_value(size_t condition_index) const
+	{return (*__stop_cond_i)[condition_index];}
+
+	///Returns the derivative of the stop condition with the given index for
+	///the first point in the interval.
+	double first_stop_condition_deriv(size_t condition_index) const
+	{return (*__first_stop_deriv)[condition_index];}
+
+	///Returns the derivative of the stop condition with the given index for
+	///the last point in the interval.
+	double last_stop_condition_deriv(size_t condition_index) const
+	{return (*__last_stop_deriv)[condition_index];}
+
+	///Returns the derivative of the stop condition with the given index for
+	///the current point.
+	double stop_condition_deriv(size_t condition_index) const
+	{return (*__stop_deriv_i)[condition_index];}
+};
+
+std::ostream &operator<<(std::ostream &os, StopHistoryInterval interval);
 
 class OrbitSolver {
 private:
@@ -301,12 +519,44 @@ private:
 	///The derivatives of the orbital ODE variables
 	tabulated_deriv;
 
+	///How many points after the start of the history have to be skipped when
+	///lookng for a zero crossing for each condition
+	std::valarray<size_t> skip_history_zerocrossing;
+
+	///The age after which to look for extrema for each condition
+	std::valarray<double> skip_history_extremum;
+
+
 	///The ages at which the stop condition history is kept
-	std::list<double> stop_history_ages;
+	std::list<double> stop_history_ages,
+		discarded_stop_ages;
 
 	std::list< std::valarray<double> >
+		orbit_history,///< Past orbits
+		orbit_deriv_history, ///< Past orbital derivatives
 		stop_cond_history,///< Past values of the stop conditions
-		stop_deriv_history;///< Past values of the stop condition derivatives
+		stop_deriv_history,///< Past values of the stop condition derivatives
+
+		///Discarded values of the stop conditions (useful for
+		///interpolating to zeroes and extrema).
+		stop_cond_discarded,
+
+		///Discarded derivatives of the stop conditions (useful for
+		///interpolating to zeroes and extrema).
+		stop_deriv_discarded;
+
+	///Generates a nicely formatted table of the contents of the discarded
+	///and history stopping condition information.
+	void output_history_and_discarded(std::ostream &os);
+
+	///Removes all stored discarded stop condition information.
+	void clear_discarded();
+
+	///Inserts a new entry in the discarded ages, stop conditions and
+	///derivatives, making sure the ages remain ordered.
+	void insert_discarded(double age,
+			const std::valarray<double> &current_stop_cond,
+			const std::valarray<double> &current_stop_deriv);
 
 	///Appends the given orbit and derivatives to tabulated_orbit and
 	///tabulated_deriv respectively assuming the orbit contains the
@@ -318,37 +568,64 @@ private:
 			double planet_formation_semimajor=NaN);
 
 	///Clears the current stopping condition history.
-	void clear_stop_history();
+	void clear_history();
+
+	///Rewinds the evlution to the last step before the given age, setting 
+	///the orbit and derivatives to what they were at that step and removing
+	///any items from the histories and tabulations that are later than 
+	///max_age. Returns the age of the last non-erased step.
+	double go_back(double max_age, std::valarray<double> &orbit,
+			std::valarray<double> &derivatives);
 
 	///Returns the dimension of the ODEs governing the evolution of the
 	///given type.
 	size_t ode_dimension(EvolModeType evolution_mode);
 
-	///Estimates the value and age of an extremum if it potentially can cross
-	///a zero by using the last and past tabulated points. If no extremum is
-	///indicated by the points, or if it is in the wrong direction, returns
-	///the result of the default constructor of ExtremumInformation.
-	ExtremumInformation extremum_from_history(double age,
-			double stop_condition_value, size_t condition_index)
-		const;
+	///Finds the smallest possible interval that contains a zero crossing/or
+	///an extremum straddling the history and discarded stop conditions, 
+	///containing at most the specified number of points (could be less if 
+	///there are not enough points). The interval is also guaranteed to
+	///contain at least one point in the history and one point in the
+	///discarded list.
+	StopHistoryInterval select_stop_condition_interval(bool crossing, 
+			size_t cond_ind, size_t max_points) const;
 
 	///Estimates the value and age of an extremum if it potentially can cross
 	///a zero by using the last and past tabulated points. If no extremum is
 	///indicated by the points, or if it is in the wrong direction, returns
 	///the result of the default constructor of ExtremumInformation.
-	ExtremumInformation extremum_from_history(double age,
-			double stop_condition_value, double stop_condition_derivative,
+	ExtremumInformation extremum_from_history_no_deriv(
 			size_t condition_index) const;
+
+	///Estimates the value and age of an extremum if it potentially can cross
+	///a zero by using the last and past tabulated points. If no extremum is
+	///indicated by the points, or if it is in the wrong direction, returns
+	///the result of the default constructor of ExtremumInformation.
+	ExtremumInformation extremum_from_history(size_t condition_index) const;
 
 	///Estimates the age at which the stopping condition with the given index
 	///crossed zero. If no zero-crossing is indicated, Inf is returned.
-	double crossing_from_history(double age, double stop_condition_value,
-			size_t condition_index) const;
+	double crossing_from_history_no_deriv(size_t condition_index) const;
 
 	///Estimates the age at which the stopping condition with the given index
 	///crossed zero. If no zero-crossing is indicated, Inf is returned.
-	double crossing_from_history(double age, double stop_condition_value,
-			double stop_condition_derivative, size_t condition_index) const;
+	double crossing_from_history(size_t condition_index) const;
+
+	///Initializes the skip_history_zerocrossing and skip_history_extremum
+	///arrays appropriately after a mode change.
+	void initialize_skip_history(const StoppingCondition &stop_cond,
+			StoppingConditionType stopp_reason);
+
+	///Updates the skip_history_zerocrossing and skip_history_extremum
+	///arrays appropriately after an acceptable step.
+	void update_skip_history(
+			const std::valarray<double> &current_stop_cond,
+			const StoppingCondition &stop_cond,
+			const StopInformation &stop_info);
+
+	///Return true iff the step with the corresponding stop information is
+	///acceptable.
+	bool acceptable_step(double age, const StopInformation &stop_info);
 
 	///This function is called after every GSL step. It updates the
 	///stop_cond_history and stop_deriv_history variables appropriately.
@@ -359,7 +636,7 @@ private:
 			const std::valarray<double> &derivatives,
 			const StellarSystem &system, EvolModeType evolution_mode,
 			const StoppingCondition &stop_cond,
-			StoppingConditionType stopped_before=NO_STOP);
+			StoppingConditionType stop_reason=NO_STOP);
 
 	///Calculates the evolution of a planetary system starting at an initial
 	///age of start_age, with orbital parameters start_orbit, where the star
@@ -393,14 +670,16 @@ private:
 	///was stopped, and orbit is overwritten with the orbital state at which
 	///the evolution stopped.
 	///
-	///The stopped before argument on input should be true if the previous 
-	///evolve_until stopped before the stopping condition changed sign, and
-	///on exit it is overwritten with the value appropriate for the next run
-	void evolve_until(StellarSystem *system, double start_age,
+	///The stop_reason argument on input should be the reason why the 
+	///last evolution stopped. It should be NO_STOP if this is the first
+	///piece of evolution being calculated. On exit it is overwritten
+	///with the value appropriate for the next run.
+	///The return value is true if the last step finished after the stopping
+	///condition crossed zero and false if it ended before that.
+	bool evolve_until(StellarSystem *system, double start_age,
 			double &max_age, std::valarray<double> &orbit,
-			StoppingConditionType &stop_reason, double &stop_condition_value,
-			StoppingConditionType &stopped_before, double max_step=Inf,
-			EvolModeType evolution_mode=FAST_PLANET,
+			double &stop_condition_value, StoppingConditionType &stop_reason,
+			double max_step=Inf, EvolModeType evolution_mode=FAST_PLANET,
 			WindSaturationState wind_state=UNKNOWN,
 			const StoppingCondition &stop_cond=NoStopCondition(),
 			double planet_formation_semimajor=NaN);
@@ -494,7 +773,11 @@ public:
 			///The initial state to start the system in. The contents
 			///depends on initial_evol_mode.
 			const std::valarray<double>
-				&start_orbit=std::valarray<double>(0.0, 1));
+				&start_orbit=std::valarray<double>(0.0, 1),
+			
+			///If given, the evolution mode is kept constant regardless
+			///of what actually occurs with the evolution
+			bool no_evol_mode_change=false);
 
 
 	/* Evolves the given system from start to end, with its initial orbit

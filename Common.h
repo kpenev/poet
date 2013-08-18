@@ -43,13 +43,15 @@ double estimate_zerocrossing(double x0, double y0, double x1, double y1,
 ///quantity will cross zero given values of the quantity at three locations.
 ///Two of the function values must have opposite sign.
 double quadratic_zerocrossing(double x0, double y0, double x1, double y1,
-		double x2, double y2);
+		double x2, double y2, double require_range_low=NaN,
+		double require_range_high=NaN);
 
 ///Finds the best estimate of the abscissa at which a smoothly varying
 ///quantity will cross zero given values of the quantity at four locations.
 ///Two of the function values must have opposite sign.
 double cubic_zerocrossing(double x0, double y0, double x1, double y1,
-		double x2, double y2, double x3, double y3);
+		double x2, double y2, double x3, double y3,
+		double require_range_low=NaN, double require_range_high=NaN);
 
 ///Finds the best estimate of the abscissa at which a smoothly varying
 ///quantity will have an extremum given values and derivatives of the 
@@ -76,7 +78,8 @@ double quadratic_extremum(double x0, double y0, double x1,
 ///(x0,x2), the one with the smaller absicissa is returned.
 double cubic_extremum(double x0, double y0, double x1,
 		double y1, double x2,double y2, double x3,	double y3,
-		double *extremum_y=NULL);
+		double *extremum_y=NULL, double require_range_low=NaN,
+		double require_range_high=NaN);
 
 ///Returns the polynomial coefficients of the cubic going through the given
 ///points as a GSL vector where C_i is the coefficient in front of x^i. The

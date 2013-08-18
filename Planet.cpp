@@ -15,7 +15,9 @@ Planet::Planet(Star* star,
 	mstar=star->get_mass()*AstroConst::solar_mass;
 	rplanet=radius*AstroConst::jupiter_radius;
 	mplanet=mass*AstroConst::jupiter_mass;
-	rroche=(mplanet>0 ? 2.44*rplanet*std::pow(mstar/mplanet, 1.0/3.0) : Inf);
+	if(rplanet==0) rroche=0;
+	else rroche=(mplanet>0 ? 2.44*rplanet*std::pow(mstar/mplanet, 1.0/3.0) :
+				 Inf);
 }
 
 void Planet::transform_into_earth() {
