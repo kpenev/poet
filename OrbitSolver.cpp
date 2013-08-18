@@ -677,7 +677,7 @@ StopHistoryInterval OrbitSolver::select_stop_condition_interval(
 			stop_cond_discarded.begin(), first_stop_deriv,
 			stop_deriv_history.end(), stop_deriv_discarded.begin()),
 						result=interval;
-	int max_left_shift=discarded_stop_ages.size()-1;
+	int max_left_shift=std::min(discarded_stop_ages.size()-1, num_points-2);
 	int history_limit=0;
 	if(crossing)
 		history_limit=stop_history_ages.size()-1-
