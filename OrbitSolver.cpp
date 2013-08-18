@@ -1531,6 +1531,16 @@ void OrbitSolver::operator()(
 	if(std::isnan(start_age))
 		start_age=system.get_star().core_formation_age();
 	double wconv;
+	if(initial_evol_mode==FAST_PLANET || initial_evol_mode==SLOW_PLANET
+			|| initial_evol_mode==LOCKED_TO_PLANET) 
+		assert(start_orbit[0]>
+				system.get_planet().minimum_semimajor(start_age)/Rsun_AU);
+	else if(std::isfinite(planet_formation_age)) 
+		assert(planet_formation_semimajor/Rsun_AU>
+				system.get_planet().minimum_semimajor(
+					std::max(planet_formation_age,
+						system.get_star().get_disk_dissipation_age()))/
+				Rsun_AU);
 	switch(initial_evol_mode) {
 		case FAST_PLANET : case SLOW_PLANET :
 			assert(start_orbit.size()==3); 

@@ -3,6 +3,8 @@
 const double tstart=2.0*min_age;
 PolynomialEvolutionTrack nan_func(std::valarray<double>(NaN, 2), tstart,1.0);
 PolynomialEvolutionTrack one_func(std::valarray<double>(1.0, 1), tstart,1.0);
+PolynomialEvolutionTrack two_func(std::valarray<double>(2.0, 1), tstart,1.0);
+PolynomialEvolutionTrack two_hundred_func(std::valarray<double>(200.0, 1), tstart,1.0);
 PolynomialEvolutionTrack zero_func(std::valarray<double>(), tstart, 1.0);
 const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 
@@ -401,18 +403,17 @@ void test_OrbitSolver::test_no_planet_evolution()
 		slow_planet_mode.add_break(tstart, SLOW_PLANET);
 		fast_planet_mode.add_break(tstart, FAST_PLANET);
 		const double rt2=std::sqrt(2.0);
-		MockStellarEvolution evol1(-1,
-				std::valarray< std::valarray<double> >(
-					std::valarray<double>(1.0, 1), 1),
-				std::valarray< std::valarray<double> >(
-					std::valarray<double>(1.0, 1), 1),
-				std::valarray< std::valarray<double> >(
-					std::valarray<double>(1.0, 1), 1),
-				std::valarray< std::valarray<double> >(
-					std::valarray<double>(1.0, 1), 1),
-				std::valarray< std::valarray<double> >(
-					std::valarray<double>(1.0, 1), 1)),
-							 evol2(-1, std::valarray< std::valarray<double> >(
+		MockStellarEvolution evol1(-1,std::valarray< std::valarray<double> >(
+										std::valarray<double>(1.0, 1), 1),
+									std::valarray< std::valarray<double> >(
+										std::valarray<double>(1.0, 1), 1),
+									std::valarray< std::valarray<double> >(
+										std::valarray<double>(1.0, 1), 1),
+									std::valarray< std::valarray<double> >(
+										std::valarray<double>(1.0, 1), 1),
+									std::valarray< std::valarray<double> >(
+										std::valarray<double>(1.0, 1), 1)),
+							 evol2(-1,std::valarray< std::valarray<double> >(
 										 std::valarray<double>(1.0, 1), 1),
 									 std::valarray< std::valarray<double> >(
 										 std::valarray<double>(1.0, 1), 2),
@@ -422,54 +423,57 @@ void test_OrbitSolver::test_no_planet_evolution()
 										 std::valarray<double>(1.0, 1), 1),
 									 std::valarray< std::valarray<double> >(
 										 std::valarray<double>(1.0, 1), 1));
-		Star star_no_wind_no_coupling(1.0, 1.0, 0.0, 1.0, Inf, 0.0, 0.0,
+		Star star_no_wind_no_coupling(1.0, 1.0, 0.0, 2.0, Inf, 0.0, 0.0,
 				0.0, evol1, 1.0, 1.0, 1.0);
-		Planet planet0(&star_no_wind_no_coupling, 0.0, 1.0, 1.0);
+		Planet planet0(&star_no_wind_no_coupling, 0.0, 0.0, 1.0);
 		Planet planet1(&star_no_wind_no_coupling, 1.0, 1.0, 1.0);
 		StellarSystem system0(&star_no_wind_no_coupling, &planet0);
 		StellarSystem system1(&star_no_wind_no_coupling, &planet1);
 		OrbitSolver solver(tstart, 1.0, 5e-7);
 
-/*		solver(system1, Inf, Inf, 1.0, tstart, NO_PLANET,
+
+		std::valarray<double> initial_orbit(0.0, 3);
+		solver(system1, Inf, Inf, 2.0, tstart, NO_PLANET,
 				std::valarray<double>(0.0, 2));
 		test_solution(solver, nan_func, zero_func, zero_func, tstart, 1.0,
-				no_planet_mode, true);*/
-		std::valarray<double> initial_orbit(0.0, 3); initial_orbit[0]=1.0;
-		solver(system0, Inf, Inf, 1.0, tstart, FAST_PLANET, initial_orbit);
-		test_solution(solver, one_func, zero_func, zero_func, tstart, 1.0,
-				fast_planet_mode, true);
-/*		solver(system0, Inf, Inf, 1.0, tstart, SLOW_PLANET, initial_orbit);
-		test_solution(solver, one_func, zero_func, zero_func, tstart, 1.0,
-				slow_planet_mode, true);
+				no_planet_mode);
+		initial_orbit[0]=std::pow(2.0, 6.5);
+		solver(system0, Inf, 0.0, 2.0, tstart, FAST_PLANET, initial_orbit);
+		test_solution(solver, two_func, zero_func, zero_func, tstart, 1.0,
+				fast_planet_mode);
 
-		solver(system1, Inf, Inf, 1.0, tstart, NO_PLANET,
+		solver(system1, Inf, Inf, 2.0, tstart, NO_PLANET,
 				std::valarray<double>(1.0, 2));
 		test_solution(solver, nan_func, one_func, one_func, tstart, 1.0,
-				no_planet_mode, true);
-		solver(system0, Inf, Inf, 1.0, tstart, FAST_PLANET,
-				std::valarray<double>(1.0, 3));
-		test_solution(solver, one_func, one_func, one_func, tstart, 1.0,
-				fast_planet_mode, true);
-		solver(system0, Inf, Inf, 1.0, tstart, SLOW_PLANET,
-				std::valarray<double>(1.0, 3));
-		test_solution(solver, one_func, one_func, one_func, tstart, 1.0,
-				slow_planet_mode, true);*/
+				no_planet_mode);
+		initial_orbit.resize(3, 1.0); initial_orbit[0]=std::pow(2.0, 6.5);
+		solver(system0, Inf, 0.0, 2.0, tstart, FAST_PLANET, initial_orbit);
+		test_solution(solver, two_func, one_func, one_func, tstart, 1.0,
+				fast_planet_mode);
+		initial_orbit[0]=std::pow(200.0, 6.5);
+		solver(system0, Inf, 0.0, 200.0, tstart, SLOW_PLANET, initial_orbit);
+		test_solution(solver, two_hundred_func, one_func, one_func, tstart, 1.0,
+				slow_planet_mode);
 
-		initial_orbit.resize(2, 0.0); initial_orbit[0]=1.0;
-/*		solver(system1, Inf, Inf, 1.0, tstart, NO_PLANET,
+		initial_orbit.resize(2, 0.0); initial_orbit[0]=1;
+		solver(system1, Inf, Inf, 2.0, tstart, NO_PLANET,
 				initial_orbit);
 		test_solution(solver, nan_func, one_func, zero_func, tstart, 1.0,
-				no_planet_mode, true);*/
-		initial_orbit.resize(3, 1.0); initial_orbit[2]=0.0;
-/*		solver(system0, Inf, Inf, 1.0, tstart, FAST_PLANET,
+				no_planet_mode);
+		initial_orbit.resize(3, 1.0);
+		initial_orbit[0]=std::pow(2.0, 6.5);
+		initial_orbit[2]=0.0;
+		solver(system0, Inf, 0.0, 2.0, tstart, FAST_PLANET,
 				initial_orbit);
-		test_solution(solver, one_func, one_func, zero_func, tstart, 1.0,
-				fast_planet_mode, true);*/
-		initial_orbit.resize(3, 1.0); initial_orbit[2]=0.0;
-/*		solver(system0, Inf, Inf, 1.0, tstart, SLOW_PLANET,
+		test_solution(solver, two_func, one_func, zero_func, tstart, 1.0,
+				fast_planet_mode);
+		initial_orbit.resize(3, 1.0);
+		initial_orbit[0]=std::pow(200.0, 6.5);
+		initial_orbit[2]=0.0;
+		solver(system0, Inf, 0.0, 200.0, tstart, SLOW_PLANET,
 				initial_orbit);
-		test_solution(solver, one_func, one_func, zero_func, tstart, 1.0,
-				slow_planet_mode, true);*/
+		test_solution(solver, two_hundred_func, one_func, zero_func, tstart,
+				1.0, slow_planet_mode);
 
 		Star star_no_wind(1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0,
 				0.0, evol1, 1.0, 1.0, 1.0);
@@ -480,25 +484,26 @@ void test_OrbitSolver::test_no_planet_evolution()
 		StellarSystem system2_0(&star_no_wind, &planet0);
 		PolynomialEvolutionTrack half_func(std::valarray<double>(0.5, 1),
 				tstart, 1.0);
-/*		solver(system2, Inf, Inf, 1.0, tstart, NO_PLANET, initial_orbit);
+		solver(system2, Inf, Inf, 2.0, tstart, NO_PLANET, initial_orbit);
 		test_solution(solver, nan_func,
 				ExponentialPlusFunc(&half_func, 0.5, -1.0),
 				ExponentialPlusFunc(&half_func, -0.5, -1.0), tstart, 1.0,
-				no_planet_mode, true);*/
+				no_planet_mode);
 		initial_orbit.resize(3);
-		initial_orbit[0]=1.0;
+		initial_orbit[0]=std::pow(2.0, 6.5);
 		initial_orbit[1]=0.5*(1.0+std::exp(-tstart));
 		initial_orbit[2]=0.5*(1.0-std::exp(-tstart));
-/*		solver(system2_0, Inf, Inf, 1.0, tstart, FAST_PLANET, initial_orbit);
-		test_solution(solver, one_func,
+		solver(system2_0, Inf, 0.0, 2.0, tstart, FAST_PLANET, initial_orbit);
+		test_solution(solver, two_func,
 				ExponentialPlusFunc(&half_func, 0.5, -1.0),
 				ExponentialPlusFunc(&half_func, -0.5, -1.0), tstart, 1.0,
-				fast_planet_mode, true);
-		solver(system2_0, Inf, Inf, 1.0, tstart, SLOW_PLANET, initial_orbit);
-		test_solution(solver, one_func,
+				fast_planet_mode);
+		initial_orbit[0]=std::pow(200.0, 6.5);
+		solver(system2_0, Inf, 0.0, 200.0, tstart, SLOW_PLANET, initial_orbit);
+		test_solution(solver, two_hundred_func,
 				ExponentialPlusFunc(&half_func, 0.5, -1.0),
 				ExponentialPlusFunc(&half_func, -0.5, -1.0), tstart, 1.0,
-				slow_planet_mode, true);*/
+				slow_planet_mode);
 
 		Star star_no_coupling(1.0, 1.0, 2.0, std::sqrt(0.5), Inf, 0.0, 1.0,
 				0.0, evol2, 1.0, 1.0, 1.0);
@@ -521,19 +526,21 @@ void test_OrbitSolver::test_no_planet_evolution()
 		PiecewiseFunction full_solution;
 		full_solution.add_piece(&early_solution);
 		full_solution.add_piece(&late_solution);
-/*		solver(system3, Inf, Inf, 1.0, tstart, NO_PLANET,
-				initial_orbit);
+		solver(system3, Inf, Inf, 2.0, tstart, NO_PLANET, initial_orbit);
 		test_solution(solver, nan_func, full_solution, one_func,
-				tstart, 1.0, no_planet_mode, true);*/
-		initial_orbit.resize(3, 1.0); initial_orbit[1]=1.0/(1.0+tstart);
-/*		solver(system3_0, Inf, Inf, 1.0, tstart, FAST_PLANET,
+				tstart, 1.0, no_planet_mode);
+		initial_orbit.resize(3, 1.0);
+		initial_orbit[0]=std::pow(2.0, 6.5);
+		initial_orbit[1]=1.0/(1.0+tstart);
+		solver(system3_0, Inf, 0.0, 2.0, tstart, FAST_PLANET,
 				initial_orbit);
-		test_solution(solver, one_func, full_solution, one_func,
-				tstart, 1.0, fast_planet_mode, true);
-		solver(system3_0, Inf, Inf, 1.0, tstart, SLOW_PLANET,
+		test_solution(solver, two_func, full_solution, one_func,
+				tstart, 1.0, fast_planet_mode);
+		initial_orbit[0]=std::pow(200.0, 6.5);
+		solver(system3_0, Inf, 0.0, 200.0, tstart, SLOW_PLANET,
 				initial_orbit);
-		test_solution(solver, one_func, full_solution, one_func,
-				tstart, 1.0, slow_planet_mode, true);*/
+		test_solution(solver, two_hundred_func, full_solution, one_func,
+				tstart, 1.0, slow_planet_mode);
 
 		Star star(1.0, 1.0, 100.0, 0.1, 1.0, 0.0, 0.0, 0.0, evol1, 1.0, 1.0,
 				1.0);
@@ -553,24 +560,25 @@ void test_OrbitSolver::test_no_planet_evolution()
 			Lr1(&zero_func, 0.5/rt2, -1.0/(2.0+rt2)),
 			Lr2(&zero_func, -0.5/rt2, -1.0/(2.0-rt2));
 
-/*		solver(system4, Inf, Inf, 1.0, tstart, NO_PLANET,
+		solver(system4, Inf, Inf, 2.0, tstart, NO_PLANET,
 				initial_orbit);
 		test_solution(solver, nan_func, FuncPlusFunc(&Lc1, &Lc2),
-				FuncPlusFunc(&Lr1, &Lr2), tstart, 1.0, no_planet_mode, true);*/
+				FuncPlusFunc(&Lr1, &Lr2), tstart, 1.0, no_planet_mode);
 		initial_orbit.resize(3);
-		initial_orbit[0]=1;
+		initial_orbit[0]=std::pow(2.0, 6.5);
 		initial_orbit[1]=b1*std::exp(-tstart/(2.0+rt2)) +
 			b2*std::exp(-tstart/(2.0-rt2));
 		initial_orbit[2]=0.5/rt2*std::exp(-1.0/(2.0+rt2)*(tstart))-
 				0.5/rt2*std::exp(-1.0/(2.0-rt2)*(tstart));
-/*		solver(system4_0, Inf, Inf, 1.0, tstart, FAST_PLANET,
+		solver(system4_0, Inf, 0.0, 2.0, tstart, FAST_PLANET,
 				initial_orbit);
-		test_solution(solver, one_func, FuncPlusFunc(&Lc1, &Lc2),
-				FuncPlusFunc(&Lr1, &Lr2), tstart, 1.0, fast_planet_mode, true);
-		solver(system4_0, Inf, Inf, 1.0, tstart, SLOW_PLANET,
+		test_solution(solver, two_func, FuncPlusFunc(&Lc1, &Lc2),
+				FuncPlusFunc(&Lr1, &Lr2), tstart, 1.0, fast_planet_mode);
+		initial_orbit[0]=std::pow(200.0, 6.5);
+		solver(system4_0, Inf, 0.0, 200.0, tstart, SLOW_PLANET,
 				initial_orbit);
-		test_solution(solver, one_func, FuncPlusFunc(&Lc1, &Lc2),
-				FuncPlusFunc(&Lr1, &Lr2), tstart, 1.0, slow_planet_mode, true);*/
+		test_solution(solver, two_hundred_func, FuncPlusFunc(&Lc1, &Lc2),
+				FuncPlusFunc(&Lr1, &Lr2), tstart, 1.0, slow_planet_mode);
 	} catch (Error::General &ex) {
 		TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
 				ex.what()+": "+ex.get_message()).c_str());
@@ -590,9 +598,20 @@ void test_OrbitSolver::test_unlocked_evolution()
 							  fast_planet_mode;
 		slow_planet_mode.add_break(tstart, SLOW_PLANET);
 		fast_planet_mode.add_break(tstart, FAST_PLANET);
-		MockStellarEvolution no_evol(-1,
+		MockStellarEvolution no_evol_highI(-1,
 				std::valarray< std::valarray<double> >(
 					std::valarray<double>(1.0, 1), 1),
+				std::valarray< std::valarray<double> >(
+					std::valarray<double>(1.0, 1), 1),
+				std::valarray< std::valarray<double> >(
+					std::valarray<double>(1.0, 1), 1),
+				std::valarray< std::valarray<double> >(
+					std::valarray<double>(1.0, 1), 1),
+				std::valarray< std::valarray<double> >(
+					std::valarray<double>(1.0, 1), 1)),
+							 no_evol_lowI(-1,
+				std::valarray< std::valarray<double> >(
+					std::valarray<double>(1.0e-9, 1), 1),
 				std::valarray< std::valarray<double> >(
 					std::valarray<double>(1.0, 1), 1),
 				std::valarray< std::valarray<double> >(
@@ -601,21 +620,31 @@ void test_OrbitSolver::test_unlocked_evolution()
 					std::valarray<double>(1.0, 1), 1),
 				std::valarray< std::valarray<double> >(
 					std::valarray<double>(1.0, 1), 1));
-		double Q=1e8, alpha=-4.5*std::sqrt(AstroConst::G/
+		const double mplanet=100;
+		double Q=1e8*mplanet, alpha=-4.5*std::sqrt(AstroConst::G/
 				(AstroConst::solar_radius*AstroConst::solar_mass))*
-			AstroConst::jupiter_mass/Q*AstroConst::Gyr/
+			mplanet*AstroConst::jupiter_mass/Q*AstroConst::Gyr/
 			AstroConst::solar_radius,
 			a6p5_offset=std::pow(2.0, 6.5)-6.5*alpha,
 			a0=std::pow(a6p5_offset, 1.0/6.5),
-			Lscale=-AstroConst::jupiter_mass/
+			Lscale=-AstroConst::jupiter_mass*mplanet/
 				std::pow(AstroConst::solar_radius, 1.5)*
 				std::sqrt(AstroConst::G/
-						(AstroConst::jupiter_mass+AstroConst::solar_mass))*
+						(mplanet*AstroConst::jupiter_mass+
+						 AstroConst::solar_mass))*
 				AstroConst::day;
-		Star star_no_wind_no_coupling(1.0, Q, 0.0, 1.0, Inf, 0.0, 0.0,
-				0.0, no_evol, 1.0, 1.0, 1.0);
-		Planet planet1(&star_no_wind_no_coupling, 1.0, 0.0001, 1.0);
-		StellarSystem system1(&star_no_wind_no_coupling, &planet1);
+		Star star_highI_no_wind_no_coupling(1.0, Q, 0.0, 1.0, Inf, 0.0, 0.0,
+				0.0, no_evol_highI, 1.0, 1.0, 1.0);
+		Star star_lowI_no_wind_no_coupling(1.0, Q, 0.0, 1.0, Inf, 0.0, 0.0,
+				0.0, no_evol_lowI, 1.0, 1.0, 1.0);
+		Planet planet_highI(&star_highI_no_wind_no_coupling, mplanet,
+				0.0001, 1.0),
+			   planet_lowI(&star_lowI_no_wind_no_coupling, mplanet,
+					   0.0001, 1.0);
+		StellarSystem system_highI(&star_highI_no_wind_no_coupling,
+								&planet_highI),
+					  system_lowI(&star_lowI_no_wind_no_coupling,
+							  &planet_lowI);
 		OrbitSolver solver(tstart, 1.0, 1e-7);
 		std::valarray<double> initial_orbit(3);
 		initial_orbit[0]=a6p5_offset+6.5*tstart*alpha;
@@ -628,13 +657,13 @@ void test_OrbitSolver::test_unlocked_evolution()
 		FunctionToPower a_evol(&a6p5_evol, 1.0/6.5),
 						sqrta_evol(&a6p5_evol, 1.0/13.0);
 		ExponentialPlusFunc Lconv_unscaled(&sqrta_evol, -std::sqrt(a0), 0);
-		solver(system1, Inf, tstart, a0, tstart, FAST_PLANET, initial_orbit);
+		solver(system_highI, Inf, tstart, a0, tstart, FAST_PLANET, initial_orbit);
 		test_solution(solver, a_evol,
 				ScaledFunction(&Lconv_unscaled, Lscale), zero_func,
 				tstart, 1.0, fast_planet_mode);
 
 		a0=2.6;
-		a6p5_offset=std::pow(2.6, 6.5);
+		a6p5_offset=std::pow(a0, 6.5);
 		initial_orbit[0]=a6p5_offset-6.5*tstart*alpha;
 		initial_orbit[1]=Lscale*(std::pow(initial_orbit[0], 1.0/13.0) -
 				std::sqrt(a0));
@@ -645,7 +674,8 @@ void test_OrbitSolver::test_unlocked_evolution()
 						sqrta_evol_slow(&a6p5_evol_slow, 1.0/13.0);
 		ExponentialPlusFunc Lconv_unscaled_slow(&sqrta_evol_slow,
 				-std::sqrt(a0), 0);
-		solver(system1, Inf, tstart, a0, tstart, SLOW_PLANET, initial_orbit);
+		solver(system_highI, Inf, tstart, a0, tstart, SLOW_PLANET,
+				initial_orbit, true);
 		test_solution(solver, a_evol_slow,
 				ScaledFunction(&Lconv_unscaled_slow, Lscale), zero_func,
 				tstart, 1.0, slow_planet_mode);
@@ -827,12 +857,14 @@ void test_OrbitSolver::test_locked_evolution()
 
 		initial_orbit[0]=astart;
 		initial_orbit[1]=0.0;
+		std::cout.precision(16);
+		std::cout.setf(std::ios_base::scientific);
 		Star star_not_saturated_wind_no_coupling(1.0, 0.0, Kwind, wsat, Inf,
 				0.0, 0.0, 0.0, no_evol);
 		Planet planet1(&star_not_saturated_wind_no_coupling, 1.0, 1.0, 1.0);
 		StellarSystem system1(&star_not_saturated_wind_no_coupling, &planet1);
-		OrbitSolver solver(tstart, 1.0, 1e-8);
-		solver(system1, Inf, 0.0, a0, tstart, LOCKED_TO_PLANET, initial_orbit);
+		OrbitSolver solver(tstart, 1.0, 1e-9);
+		solver(system1, Inf, 0.0, a0, tstart, LOCKED_TO_PLANET, initial_orbit, true);
 		TransformedSolution to_check(a_transform, L_transform, identity, -Inf);
 		to_check(solver);
 		test_solution(to_check, transformed_a_evol, transformed_a_evol,
@@ -845,7 +877,7 @@ void test_OrbitSolver::test_locked_evolution()
 		Planet planet2(&star_saturated_wind_no_coupling, 1.0, 1.0, 1.0);
 		StellarSystem system2(&star_saturated_wind_no_coupling, &planet2);
 		solver(system2, Inf, 0.0, a0_s, tstart, LOCKED_TO_PLANET,
-				initial_orbit);
+				initial_orbit, true);
 		TransformedSolution to_check_s(a_transform_s, L_transform_s,
 				identity, -Inf);
 		to_check_s(solver);
@@ -1296,20 +1328,22 @@ void test_OrbitSolver::test_disklocked_to_locked_to_fast()
 
 test_OrbitSolver::test_OrbitSolver()
 {
-/*	TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
-	TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);*/
+	TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+	TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
 	TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
-/*	TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
+	TEST_ADD(test_OrbitSolver::test_unlocked_evolution); 
 	TEST_ADD(test_OrbitSolver::test_locked_evolution);
 	TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
 	TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
-	TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
-	TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);*/
+	TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked); 
+	TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
 }
 
 #ifdef STANDALONE
 int main()
 {
+	std::cout.setf(std::ios_base::scientific);
+	std::cout.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
 	test_OrbitSolver tests;
 	return (tests.run(output) ? EXIT_SUCCESS : EXIT_FAILURE);

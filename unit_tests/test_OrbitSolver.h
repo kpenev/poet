@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "../OrbitSolver.h"
+#include "DebugFunctions.h"
 #include <iostream>
 #include <vector>
 

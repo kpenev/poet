@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 	all_rots.push_back(RotationScenario(2*M_PI/7,0.17,0.028, 0.005));
 	all_rots.push_back(RotationScenario(2*M_PI/10,0.17,0.030, 0.005));
 
-	double smass=0.5, pmass=25, Q=1e6, P0=5.84141414;
+	double smass=1.0333333, pmass=0.631816, Q=1e6, P0=0.2;
 
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 	return 0;
