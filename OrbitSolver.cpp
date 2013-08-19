@@ -173,7 +173,6 @@ double convective_frequency(double age, const StellarSystem &system,
 			return system.get_star().spin_frequency(age, convective,
 					orbit[0]);
 		case LOCKED_TO_DISK:
-			std::cout << "BAD FUNCTION ARG17S" << std::endl;
 			throw Error::BadFunctionArguments("The convective spin frequency"
 					" is not defined for disk locked evolution mode.");
 		default:
@@ -680,7 +679,7 @@ StopHistoryInterval OrbitSolver::select_stop_condition_interval(
 	int max_left_shift=std::min(discarded_stop_ages.size()-1, num_points-2);
 	int history_limit=0;
 	if(crossing)
-		history_limit=stop_history_ages.size()-1-
+		history_limit=stop_history_ages.size()-go_back+failed_back-
 			   skip_history_zerocrossing[cond_ind];
 	else while(first_age!=stop_history_ages.begin() &&
 			*(--first_age)>skip_history_extremum[cond_ind])
@@ -1069,22 +1068,18 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		double stop_cond_value=current_stop_cond[cond_ind],
 			   crossing_age=crossing_from_history(cond_ind);
 		ExtremumInformation extremum=extremum_from_history(cond_ind);
-		if(std::min(crossing_age, extremum.x())<result.stop_age()) {
-			result.stop_age()=std::min(crossing_age, extremum.x());
-			result.stop_reason()=stop_cond_type; 
-			result.stop_condition_index()=cond_ind;
-			if(crossing_age<=extremum.x()) {
-				result.is_crossing()=true;
-				result.stop_condition_precision()=stop_cond_value;
-			} else {
-				result.is_crossing()=false;
-				result.stop_condition_precision()=std::min(
-						std::abs(extremum.y()-stop_cond_value),
-						std::abs(extremum.y()-
-							stop_cond_history.back()[cond_ind]))/
-					std::abs(extremum.y());
-			}
-		}
+		double extremum_precision=std::min(
+				std::abs(extremum.y()-stop_cond_value),
+				std::abs(extremum.y()-
+					stop_cond_history.back()[cond_ind]))/
+			std::abs(extremum.y());
+		bool is_crossing=crossing_age<=extremum.x();
+		StopInformation stop_info(std::min(crossing_age, extremum.x()),
+				(is_crossing ? stop_cond_value : extremum_precision),
+				stop_cond_type, is_crossing, cond_ind);
+
+		if((!acceptable_step(age, stop_info) || is_crossing) &&
+				stop_info.stop_age()<result.stop_age()) result=stop_info;
 	}
 	if(acceptable_step(age, result)) {
 		update_skip_history(current_stop_cond, stop_cond, result);
@@ -1532,15 +1527,22 @@ void OrbitSolver::operator()(
 		start_age=system.get_star().core_formation_age();
 	double wconv;
 	if(initial_evol_mode==FAST_PLANET || initial_evol_mode==SLOW_PLANET
-			|| initial_evol_mode==LOCKED_TO_PLANET) 
-		assert(start_orbit[0]>
-				system.get_planet().minimum_semimajor(start_age)/Rsun_AU);
-	else if(std::isfinite(planet_formation_age)) 
-		assert(planet_formation_semimajor/Rsun_AU>
+			|| initial_evol_mode==LOCKED_TO_PLANET) {
+		if(start_orbit[0]<=
+				system.get_planet().minimum_semimajor(start_age)/Rsun_AU)
+			throw Error::BadFunctionArguments("Attempting to calculate the "
+					"evolution of a system where the planet starts "
+					"inside the Roche radius or its parent star!");
+	} else if(std::isfinite(planet_formation_age)) {
+		if(planet_formation_semimajor/Rsun_AU<=
 				system.get_planet().minimum_semimajor(
 					std::max(planet_formation_age,
 						system.get_star().get_disk_dissipation_age()))/
-				Rsun_AU);
+				Rsun_AU)
+			throw Error::BadFunctionArguments("Attempting to calculate the "
+					"evolution of a system where the planet will be formed "
+					"inside the Roche radius or its parent star!");
+	}
 	switch(initial_evol_mode) {
 		case FAST_PLANET : case SLOW_PLANET :
 			assert(start_orbit.size()==3); 

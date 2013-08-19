@@ -16,7 +16,7 @@ void simulateOnce(double Q, RotationScenario rot, double star_mass,
 {
 	using namespace AstroConst;
 	YRECEvolution evol;
-	evol.load_state("interp_state_data");
+	evol.load_state("interp_state_data_phs4");
 	double semi = G*star_mass*solar_mass*std::pow(P0*day, 2)/4/M_PI/M_PI;
 	semi = std::pow(semi, 1.0/3.0)/AU;
 	Star star(star_mass, Q, rot.K, WIND_SAT_FREQ, rot.Tc,
@@ -46,12 +46,20 @@ int main(int argc, char** argv) {
 	all_rots.push_back(RotationScenario(2*M_PI/10,0.17,0.030, 0.005));
 
 	//extremely slow evol
-//	double smass=0.5, pmass=25, Q=1e6, P0=5.84141414;
-	//planet starts inside Roche radius
-//	double smass=1.0333333, pmass=0.631816, Q=1e6, P0=0.2;
-	//bad stop hostory interval
-	double smass=1.0333333, pmass=0.631816, Q=1e6, P0=0.890909;
-
+	double smass=0.5, pmass=25, Q=1e6, P0=5.84141414;
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	//bad stop hostory interval
+	smass=1.0333333, pmass=0.631816, Q=1e6, P0=0.890909;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	//Misses planet death
+	smass=0.5, pmass=0.3804226, Q=1e6, P0=0.94848;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	//planet starts inside Roche radius - should fail!
+	smass=1.0333333, pmass=0.631816, Q=1e6, P0=0.2;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
 	return 0;
 }

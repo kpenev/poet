@@ -87,7 +87,7 @@ void calculate_test()
 void calculate_full()
 {
 	YRECEvolution stellar_evolution;
-	stellar_evolution.load_state("../interp_state_data");
+	stellar_evolution.load_state("../interp_state_data_phs4");
 	const double Mstar=1, Q=3e6, Kwind=0.17, wsat=2.2,
 		  coupling_timescale=0.03, wdisk=0.9, tdisk=5e-3, Mplanet=10,
 		  Rplanet=1, a_formation=10.0, tstart=1e-3, tend=10.0;

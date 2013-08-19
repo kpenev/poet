@@ -249,6 +249,13 @@ public:
 		__is_crossing(is_crossing),
 		__stop_condition_index(stop_condition_index) {}
 
+	StopInformation(const StopInformation &orig) :
+		__stop_age(orig.__stop_age),
+		__stop_condition_precision(orig.__stop_condition_precision),
+		__stop_reason(orig.__stop_reason),
+		__is_crossing(orig.__is_crossing),
+		__stop_condition_index(orig.__stop_condition_index) {}
+
 	double stop_age() const {return __stop_age;}
 	double &stop_age() {return __stop_age;}
 
@@ -266,6 +273,16 @@ public:
 
 	size_t stop_condition_index() const {return __stop_condition_index;}
 	size_t &stop_condition_index() {return __stop_condition_index;}
+
+	StopInformation &operator=(const StopInformation &rhs)
+	{
+		__stop_age=rhs.__stop_age;
+		__stop_condition_precision=rhs.__stop_condition_precision;
+		__stop_reason=rhs.__stop_reason;
+		__is_crossing=rhs.__is_crossing;
+		__stop_condition_index=rhs.__stop_condition_index;
+		return *this;
+	}
 };
 
 std::ostream &operator<<(std::ostream &os, const StopInformation &stop);
