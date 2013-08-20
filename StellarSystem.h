@@ -18,6 +18,7 @@ class StellarSystem {
 private:
 	//age at which orbit solver starts
 	const static double MIN_AGE = 0.005;
+
 	//precision to which orbit should be solved
 	const static double PRECISION=1e-3;
 
