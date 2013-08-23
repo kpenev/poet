@@ -212,16 +212,16 @@ double cubic_extremum(double x0, double y0, double x1,
 	gsl_vector *cubic_coef=cubic_coefficients(x0,y0, x1,y1, x2,y2, x3,y3);
 	double a=3.0*gsl_vector_get(cubic_coef, 3),
 		   b=2.0*gsl_vector_get(cubic_coef, 2),
-		   c=gsl_vector_get(cubic_coef, 1), D=b*b-4.0*a*c;
+		   c=gsl_vector_get(cubic_coef, 1), sqrtD=std::sqrt(b*b-4.0*a*c);
 	if(a<0) {a*=-1; b*=-1; c*=-1;}
 	if(std::isnan(require_range_low)) {
 		assert(std::isnan(require_range_high));
 		require_range_low=x0;
 		require_range_high=x3;
 	}
-	double extremum_x=(-b-std::sqrt(D))/(2.0*a);
+	double extremum_x=(-b-sqrtD)/(2.0*a);
 	if(extremum_x<require_range_low || extremum_x>require_range_high)
-		extremum_x=(-b+std::sqrt(D))/(2.0*a);
+		extremum_x=(-b+sqrtD)/(2.0*a);
 	if(extremum_x<require_range_low || extremum_x>require_range_high) {
 		if((y1-y0)*(y2-y1)<=0)
 			extremum_x=quadratic_extremum(x0, y0, x1, y1, x2, y2,

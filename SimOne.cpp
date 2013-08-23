@@ -15,26 +15,31 @@ void simulateOnce(double Q, RotationScenario rot, double star_mass,
 		double planet_mass, double P0)
 {
 	using namespace AstroConst;
-	YRECEvolution evol;
-	evol.load_state("interp_state_data_phs4");
-	double semi = G*star_mass*solar_mass*std::pow(P0*day, 2)/4/M_PI/M_PI;
-	semi = std::pow(semi, 1.0/3.0)/AU;
-	Star star(star_mass, Q, rot.K, WIND_SAT_FREQ, rot.Tc,
-			Q_TRANS_WIDTH, rot.initSpin, rot.Tdisk,
-			evol, 4, 0, 0);
-	Planet planet(&star, planet_mass, 0.714, semi);
-	StellarSystem system(&star, &planet);
-	double end_age = std::min((const double)MAX_END_AGE,
-			star.get_lifetime());
-	OrbitSolver solver(MIN_AGE, end_age, 1e-5,
-			SPIN_THRES, MAIN_SEQ_START);
-	time_t start_time, end_time;
-	time(&start_time);
-	solver(system, Inf, PLANET_FORM_AGE, semi);
-	time(&end_time);
-	std::cout << "Solver took " << difftime(end_time, start_time)
-		<< " seconds to finish." << std::endl;
-	std::cout << "Finished!" << std::endl;
+//	try {
+		YRECEvolution evol;
+		evol.load_state("interp_state_data_phs4");
+		double semi = G*star_mass*solar_mass*std::pow(P0*day, 2)/4/M_PI/M_PI;
+		semi = std::pow(semi, 1.0/3.0)/AU;
+		Star star(star_mass, Q, rot.K, WIND_SAT_FREQ, rot.Tc,
+				Q_TRANS_WIDTH, rot.initSpin, rot.Tdisk,
+				evol, 4, 0, 0);
+		Planet planet(&star, planet_mass, 0.714, semi);
+		StellarSystem system(&star, &planet);
+		double end_age = std::min((const double)MAX_END_AGE,
+				star.get_lifetime());
+		OrbitSolver solver(MIN_AGE, end_age, 1e-5,
+				SPIN_THRES, MAIN_SEQ_START);
+		time_t start_time, end_time;
+		time(&start_time);
+		solver(system, Inf, PLANET_FORM_AGE, semi);
+		time(&end_time);
+		std::cout << "Solver took " << difftime(end_time, start_time)
+			<< " seconds to finish." << std::endl;
+		std::cout << "Finished!" << std::endl;
+/*	} catch (Error::General err) {
+		std::cout << err.what() << ": " << err.get_message() << std::endl;
+		throw;
+	}*/
 }
 
 

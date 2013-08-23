@@ -11,6 +11,7 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_linalg.h>
+#include <gsl/gsl_blas.h>
 
 struct RotationScenario {
 	double initSpin;
@@ -104,12 +105,17 @@ gsl_vector *polynomial_coefficients(ITERATOR x_i, ITERATOR y_i,
 		}
 		x_i++; y_i++;
 	}
+	gsl_matrix *xpowers_LU=gsl_matrix_alloc(num_points, num_points);
+	gsl_matrix_memcpy(xpowers_LU, xpowers);
 
 	gsl_permutation *permutation=gsl_permutation_alloc(num_points);
 	gsl_vector *coefficients=gsl_vector_alloc(num_points);
 	int permutation_sign;
-	gsl_linalg_LU_decomp(xpowers, permutation, &permutation_sign);
-	gsl_linalg_LU_solve(xpowers, permutation, y_vec, coefficients);
+	gsl_linalg_LU_decomp(xpowers_LU, permutation, &permutation_sign);
+	gsl_linalg_LU_solve(xpowers_LU, permutation, y_vec, coefficients);
+	gsl_vector *residuals=gsl_vector_alloc(num_points);
+	gsl_linalg_LU_refine(xpowers, xpowers_LU, permutation, y_vec,
+			coefficients, residuals);
 	gsl_permutation_free(permutation);
 	return coefficients;
 }
