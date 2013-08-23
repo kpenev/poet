@@ -47,52 +47,55 @@ int main(int argc, char** argv) {
 
 	//extremely slow evol
 	double smass=0.5, pmass=25, Q=1e6, P0=5.84141414;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	//bad stop hostory interval
 	smass=1.0333333; pmass=0.631816; Q=1e6; P0=0.890909;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	//Misses planet death
 	smass=0.5; pmass=0.3804226; Q=1e6; P0=0.94848;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	//The following were reported by Michael to throw BadFunctionArguments
 	//but they appear to work
 	smass=0.5; pmass=17.0882; Q=1e6; P0=4.78687;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.5; pmass=22.0221; Q=1e6; P0=4.84545;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.566667; pmass=25; Q=1e6; P0=2.03333;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.566667; pmass=25; Q=1e6; P0=3.20505;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.566667; pmass=25; Q=1e6; P0=3.26364;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.633333; pmass=15.0528; Q=1e6; P0=5.37273;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.633333; pmass=19.3989; Q=1e6; P0=3.96667;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.633333; pmass=19.3989; Q=1e6; P0=4.08384;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.633333; pmass=19.3989; Q=1e6; P0=4.37677;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.633333; pmass=25; Q=1e6; P0=2.97071;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 	//End of BadFunctionArgument throwers
+	
+	smass=0.5; pmass=17.088224742562282; Q=1e6; P0=4.7868686868686874;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	//planet starts inside Roche radius - should fail!
 	smass=1.0333333; pmass=0.631816; Q=1e6; P0=0.2;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	return 0;
 }
