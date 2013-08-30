@@ -1,8 +1,14 @@
+/**\file
+ *
+ * \brief The implementation of some of the utility functions.
+ * 
+ * \ingroup Utilities_group
+ */
+
 #include "Common.h"
 #include "gsl/gsl_poly.h"
 #include <assert.h>
 
-///Creates a valarray containing the values in the given list.
 std::valarray<double> list_to_valarray(const std::list<double> &inlist)
 {
 	std::valarray<double> result(inlist.size());
@@ -15,11 +21,8 @@ std::valarray<double> list_to_valarray(const std::list<double> &inlist)
 	return result;
 }
 
-///solves a cubic polynomial where c0 is the coefficient of x^0, c1 the
-///coefficient of x^1, etc.
 std::valarray<double> solve_cubic(double c0, double c1,
 		double c2, double c3) {
-	/*c0 is the coefficient of x^0, c1 the coefficient of x^1, etc.*/
 	double x[3];
 	int n = 0;
 	if (c3 == 0)
@@ -30,10 +33,6 @@ std::valarray<double> solve_cubic(double c0, double c1,
 	return result;
 }
 
-///Finds the best estimate of the abscissa at which a smoothly varying
-///quantity will cross zero given values (and optionally derivatives)
-///of the quantity at two locations. The two function values (y0 and y1)
-///must have opposite sign.
 double estimate_zerocrossing(double x0, double y0, double x1,
 		double y1, double dy0,	double dy1)
 {
@@ -68,9 +67,6 @@ double estimate_zerocrossing(double x0, double y0, double x1,
 	}
 }
 
-///Finds the best estimate of the abscissa at which a smoothly varying
-///quantity will cross zero given values of the quantity at three locations.
-///Two of the function values must have opposite sign.
 double quadratic_zerocrossing(double x0, double y0, double x1, double y1,
 		double x2, double y2, double require_range_low,
 		double require_range_high)
@@ -102,9 +98,6 @@ double quadratic_zerocrossing(double x0, double y0, double x1, double y1,
 	return estimate_zerocrossing(xpre, ypre, xpost, ypost);
 }
 
-///Finds the best estimate of the abscissa at which a smoothly varying
-///quantity will cross zero given values of the quantity at four locations.
-///Two of the function values must have opposite sign.
 double cubic_zerocrossing(double x0, double y0, double x1, double y1,
 		double x2, double y2, double x3, double y3,
 		double require_range_low, double require_range_high)
@@ -141,12 +134,6 @@ double cubic_zerocrossing(double x0, double y0, double x1, double y1,
 	return estimate_zerocrossing(xpre, ypre, xpost, ypost);
 }
 
-///Finds the best estimate of the abscissa at which a smoothly varying
-///quantity will have an extremum given values and derivatives of the 
-///quantity at two locations. The two derivative values (dy0 and dy1)
-///must have opposite sign. Additionally, if extremum_y is not NULL it
-///gets filled with the best estimate of the value of the function at
-///the extremum
 double estimate_extremum(double x0, double y0, double x1,
 		double y1, double dy0,	double dy1, double *extremum_y)
 {
@@ -180,11 +167,6 @@ double estimate_extremum(double x0, double y0, double x1,
 	return linear_extremum_x;
 }
 
-///Finds the best estimate of the abscissa at which a smoothly varying
-///quantity will have an extremum given values of the quantity at three
-///locations. The input y values must not be monotonic. Additionally, if
-///extremum_y is not NULL it gets filled with the best estimate of the value
-///of the function at the extremum
 double quadratic_extremum(double x0, double y0, double x1,
 		double y1, double x2, double y2, double *extremum_y)
 {
@@ -197,12 +179,6 @@ double quadratic_extremum(double x0, double y0, double x1,
 	return extremum_x;
 }
 
-///Finds the best estimate of the abscissa at which a smoothly varying
-///quantity will have an extremum given values of the quantity at four
-///locations. The input y values must not be monotonic. Additionally, if
-///extremum_y is not NULL it gets filled with the best estimate of the value
-///of the function at the extremum. If two extrema exist in the range
-///(x0,x2), the one with the smaller absicissa is returned.
 double cubic_extremum(double x0, double y0, double x1,
 		double y1, double x2,double y2, double x3,	double y3,
 		double *extremum_y, double require_range_low,
@@ -252,9 +228,6 @@ double cubic_extremum(double x0, double y0, double x1,
 	return extremum_x;
 }
 
-///Returns the polynomial coefficients of the cubic going through the given
-///points as a GSL vector where C_i is the coefficient in front of x^i. The
-///vector must be freed when no longer needed.
 gsl_vector *cubic_coefficients(double x0, double y0, double x1, double y1,
 		double x2, double y2, double x3, double y3)
 {

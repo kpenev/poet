@@ -1,6 +1,17 @@
+/**\file
+ * 
+ * \brief Defines various astronomical constants
+ *
+ * \ingroup Utilities_group
+ */
+
 #ifndef __ASTRONOMICAL_CONSTANTS_H
 #define __ASTRONOMICAL_CONSTANTS_H
 
+/**\brief Namespace to isolate physical constants in.
+ *
+ * \ingroup Utilities_group
+ */
 namespace AstroConst {
 	const double 
 		AU=149597870700.0, ///< Astronomical unit [m]
