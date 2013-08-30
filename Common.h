@@ -40,7 +40,7 @@ const double Inf=std::numeric_limits<double>::infinity();
 ///Creates a valarray containing the values in the given list.
 std::valarray<double> list_to_valarray(const std::list<double> &inlist);
 
-///Solves the cubic equation \f$ \Sum_{i=0}^3 c_i x^i=0 \f$
+///Solves the cubic equation \f$ \sum_{i=0}^3 c_i x^i=0 \f$
 std::valarray<double> solve_cubic(double c0, double c1,
 		double c2, double c3);
 
