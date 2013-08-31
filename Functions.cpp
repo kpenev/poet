@@ -1,3 +1,11 @@
+/**\file
+ * 
+ * \brief The definition of some of the methods of the various function
+ * classes.
+ *
+ * \ingroup Utilities_group
+ */
+
 #include "Functions.h"
 #include "Common.h"
 #include <iostream>
@@ -6,11 +14,10 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(InterpolatingFunctionALGLIB)
 #endif
 
+///\brief When smoothing splines are used limit the degrees of freedom to
+///this value.
 const int max_default_degrees_of_freedom=1000;
 
-///Adds the solutions at the present node (or the closest node after
-///it if there are none) to the end of solutions, incrementing the 
-///node to one past the node from which solutions were added.
 void InterpSolutionIterator::get_solutions()
 {
 	bool found=false;
@@ -35,7 +42,6 @@ void InterpSolutionIterator::get_solutions()
 	is_out_of_range=!found;
 }
 
-///Copy constructor
 InterpSolutionIterator::InterpSolutionIterator(
 		const InterpSolutionIterator &rhs)
 	: spline(rhs.spline), node_index(rhs.node_index), y(rhs.y),
@@ -43,7 +49,6 @@ InterpSolutionIterator::InterpSolutionIterator(
 	is_out_of_range(false)
 {}
 
-///Start iterating over the solution of the given spline.
 InterpSolutionIterator::InterpSolutionIterator(
 		const alglib::spline1dinterpolant &spline_var, double offset,
 		double min_sol_distance)
@@ -54,7 +59,6 @@ InterpSolutionIterator::InterpSolutionIterator(
 	solution_iter=solutions.begin();
 }
 
-///Go to the next solution.
 InterpSolutionIterator &InterpSolutionIterator::operator++() 
 {
 	solution_iter++;
@@ -67,7 +71,6 @@ InterpSolutionIterator &InterpSolutionIterator::operator++()
 	return *this;
 }
 
-///Go to the next solution.
 InterpSolutionIterator InterpSolutionIterator::operator++(int) 
 {
 	InterpSolutionIterator result(*this);
@@ -75,7 +78,6 @@ InterpSolutionIterator InterpSolutionIterator::operator++(int)
 	return result;
 }
 
-///Go to the previous solution.
 InterpSolutionIterator &InterpSolutionIterator::operator--()
 {
 	if(solution_iter!=solutions.begin()) solution_iter--;
@@ -83,7 +85,6 @@ InterpSolutionIterator &InterpSolutionIterator::operator--()
 	return *this;
 }
 
-///Go to the previous solution.
 InterpSolutionIterator InterpSolutionIterator::operator--(int)
 {
 	InterpSolutionIterator result(*this);
@@ -91,14 +92,11 @@ InterpSolutionIterator InterpSolutionIterator::operator--(int)
 	return result;
 }
 
-///Returns the current solution
 const double &InterpSolutionIterator::operator*() const
 {
 	return *solution_iter;
 }
 
-///Checks if this iterator is at the same solution of the same
-///spline.
 bool InterpSolutionIterator::operator==(const InterpSolutionIterator &rhs) 
 	const
 {
@@ -106,23 +104,17 @@ bool InterpSolutionIterator::operator==(const InterpSolutionIterator &rhs)
 			solution_iter==rhs.solution_iter);
 }
 
-///The opposite of operator==.
 bool InterpSolutionIterator::operator!=(const InterpSolutionIterator &rhs) 
 	const
 {
 	return !operator==(rhs);
 }
 
-///Whether the currenty iterator is either before the first 
-///solution or past the last one.
 bool InterpSolutionIterator::out_of_range() const
 {
 	return is_out_of_range;
 }
 
-///Creates the derivative variable with the values of the function 
-///and first and second derivatives as specified. All higher order 
-///derivatives are zero.
 CubicSplineDerivatives::CubicSplineDerivatives(double func_value, 
 		double first_deriv, double second_deriv) :
 	zeroth(func_value), first(first_deriv), second(second_deriv)
@@ -137,22 +129,11 @@ double CubicSplineDerivatives::order(unsigned deriv_order) const
 	else return 0.0;
 }
 
-///Constuct an interpolating function based on the ALGLIB (smoothing)
-///cubic spline interpolation.
 InterpolatingFunctionALGLIB::InterpolatingFunctionALGLIB(
-		///The abscissas of tabulated points from the curve to fit.
 		const std::valarray<double> &x,
-		///The ordinates of tabulated points from the curve to fit.
 		const std::valarray<double> &y, 
-		///The values of the derivatives to impose on the nodes.
 		const std::valarray<double> &yprime,
-		///How much smoothing to apply (omit for no smoothnig, i.e.
-		///interpolating curve passes through all the points).
-		double smoothing,
-		///How many degrees of freedom to use, ignored for non-smoothing
-		///interpolation, if omitted it is set to 3 times the number of
-		///points being fitted.
-		int degrees_of_freedom)
+		double smoothing, int degrees_of_freedom)
 {
 	if(degrees_of_freedom<0) degrees_of_freedom=std::min(
 			max_default_degrees_of_freedom, static_cast<int>(3*x.size()));
@@ -186,8 +167,6 @@ InterpolatingFunctionALGLIB::InterpolatingFunctionALGLIB(
 	}
 }
 
-///Returns an iterator over the abscissas where the function takes 
-///the given y value.
 InterpSolutionIterator InterpolatingFunctionALGLIB::crossings(double y) 
 	const
 {
