@@ -1,11 +1,16 @@
+/**\file
+ *
+ * \brief The definition of some of the methods of the Planet class.
+ *
+ * \ingroup StellarSystem_group
+ */
+
 #include "Planet.h"
 #include "AstronomicalConstants.h"
 #include <cmath>
 #include <limits>
 #include <assert.h>
 
-///Create a planet with the given mass and radius and place it at the
-///given separation from its parent star.
 Planet::Planet(Star* star,
 		double observed_mass, double observed_radius,
 		double observed_semimajor)
@@ -27,9 +32,6 @@ void Planet::transform_into_earth() {
 	current_semimajor = 1;
 }
 
-///Returns the age derivative of the semimajor axis of the planet's 
-///orbit at the given age. The orbital evolution must already be 
-///specified by calling the set_semimajor_evolution method.
 double Planet::get_semimajor_derivative(double age) const
 {
 	const CubicSplineDerivatives *deriv=semimajor_axis->deriv(age);
@@ -38,8 +40,6 @@ double Planet::get_semimajor_derivative(double age) const
 	return result;
 }
 
-///Returns the orbital angular velocity (in radians/day) that the 
-///planet would have, if it was placed at the given semimajor axis. 
 double Planet::orbital_angular_velocity_semimajor(double semimajor) const
 {
 	return std::sqrt(AstroConst::G*(mstar+mplanet)/
@@ -47,18 +47,12 @@ double Planet::orbital_angular_velocity_semimajor(double semimajor) const
 			AstroConst::day;
 }
 
-///Returns the derivative of the orbital angular velocity with 
-///respect to the semimajor axis (in radians/day/AU) that the 
-///planet would have, if it was placed at the given semimajor axis. 
 double Planet::orbital_angular_velocity_semimajor_deriv(double semimajor)
 	const
 {
 	return -1.5*orbital_angular_velocity_semimajor(semimajor)/semimajor;
 }
 
-///Specifies an evolution for the semimajor axis of the planet, and
-///its derivative at a set of ages. The semimajor axis values should
-///be negative after the planet has inspiralled into the star.
 void Planet::set_semimajor_evolution(const std::valarray<double> &ages,
 		const std::valarray<double> &semimajor_values,
 		const std::valarray<double> &semimajor_derivatives)
@@ -71,9 +65,6 @@ void Planet::set_semimajor_evolution(const std::valarray<double> &ages,
 	else lifetime=star->get_lifetime();
 }
 
-///Returns the semimajor axis below which the planet is considered
-///destroyed (either the surface of the star or the roche radius,
-///whichever is larger).
 double Planet::minimum_semimajor(double age) const
 {
 	return std::max(
@@ -81,12 +72,6 @@ double Planet::minimum_semimajor(double age) const
 		rroche)/AstroConst::AU;
 }
 
-///Returns the rate at which the semimajor axis would be shrinking 
-///due to the dissipation of tidal energy in the system's central 
-///star in AU/Gyr if the orbit had the specified semimajor axis (in
-///AU) and the star was spinning at the given frequency 
-///(in radians/day). If use_a6p5, returns the time derivative of
-///a^6.5 in units of AU^6.5 instead (a better quantity to solve ODE for).
 double Planet::tidal_decay(double age, double semimajor, 
 		double stellar_spin_frequency, bool use_a6p5) const
 {
@@ -109,9 +94,6 @@ double Planet::tidal_decay(double age, double semimajor,
 	}
 }
 
-///Returns the derivative of the orbital decay with respect to the 
-///semimajor axis.  If use_a6p5, returns the partial derivative with respect
-///to a^6.5, of d(a^6.5)/dt.
 double Planet::tidal_decay_semimajor_deriv(double age, double semimajor,
 	double stellar_spin_frequency, bool use_a6p5) const
 {
@@ -125,8 +107,6 @@ double Planet::tidal_decay_semimajor_deriv(double age, double semimajor,
 	else return -(5.5/semimajor+dQ_da/Q)*da_dt;
 }
 
-///Returns the derivative of the orbital decay with respect to the 
-///stellar spin frequency.
 double Planet::tidal_decay_star_spin_deriv(double age, double semimajor,
 					   double stellar_spin_frequency, bool use_a6p5) const
 {
@@ -139,8 +119,6 @@ double Planet::tidal_decay_star_spin_deriv(double age, double semimajor,
 	return -dQ_dw/Q*da_dt;
 }
 
-///Returns the derivative of the tidal torque with respect to the
-///stellar spin frequency.
 double Planet::tidal_torque_star_spin_deriv(double age, double semimajor,
 		double semi_deriv, double stellar_spin_frequency) const
 {
@@ -152,7 +130,6 @@ double Planet::tidal_torque_star_spin_deriv(double age, double semimajor,
 	return dQ_dw/Q*dLc_dt;
 }
 
-///Returns the age derivative of the orbital decay rate.
 double Planet::tidal_decay_age_deriv(double age, double semimajor, 
 				     double stellar_spin_frequency,
 				     bool use_a6p5) const
@@ -168,8 +145,6 @@ double Planet::tidal_decay_age_deriv(double age, double semimajor,
 	return da_dt*(5.0*star->get_logradius_deriv(age) - Q_deriv/Q);
 }
 
-///Returns the angular momentum of the orbit if it has the given
-///semimajor axis.
 double Planet::orbital_angular_momentum(double semimajor) const
 {
 	using namespace std;
@@ -179,9 +154,6 @@ double Planet::orbital_angular_momentum(double semimajor) const
 		(solar_mass*std::pow(solar_radius,2)/day);
 }
 
-///Returns the rate at which the angular momentum of the orbit
-///changes if the semimajor axis has the given value and rate of
-///change. Units are Msun*Rsun^2/day/Gyr.
 double Planet::orbital_angmom_deriv(double semimajor, 
 		double semimajor_deriv) const
 {
@@ -192,9 +164,6 @@ double Planet::orbital_angmom_deriv(double semimajor,
 		(AstroConst::solar_mass*std::pow(AstroConst::solar_radius,2));
 }
 
-///Returns the partial derivative with respect to the age
-///of the rate at which the angular momentum of the orbit changes if
-///the semimajor axis has the given value and rate of change.
 double Planet::orbit_angmom_deriv_age_deriv(double age, double semimajor,
 		double semimajor_deriv, double stellar_spin_frequency) const
 {
@@ -207,9 +176,6 @@ double Planet::orbit_angmom_deriv_age_deriv(double age, double semimajor,
 	return dLc_dt_tide*(5*star->get_logradius_deriv(age) - Q_deriv/Q);
 }
 
-///Returns the partial derivative with respect to the current semimajor 
-///axis of the rate at which the angular momentum of the orbit changes if
-///the semimajor axis has the given value and rate of change.
 double Planet::orbital_angmom_deriv_semimajor_deriv(double semimajor, 
 		double semimajor_deriv, double stellar_spin_frequency) const
 {
@@ -222,10 +188,6 @@ double Planet::orbital_angmom_deriv_semimajor_deriv(double semimajor,
 			(-6/semimajor - dQ_da/Q);
 }
 
-///Returns the rate at which the angular momentum of the orbit is
-///changing for the given system age. The semimajor axis evolution 
-///must already be specified by calling the set_semimajor_evolution
-///method. Units are Msun*Rsun^2/day/Gyr.
 double Planet::orbital_angmom_deriv(double age) const
 {
 	return orbital_angmom_deriv((*semimajor_axis)(age), 
@@ -243,4 +205,3 @@ double Planet::get_tidal_Q_age_deriv(double age, double semi, double Lc) const
 			(-wc_deriv);
 	return deriv;
 }
-
