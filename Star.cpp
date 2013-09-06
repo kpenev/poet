@@ -1,9 +1,15 @@
+/**\file
+ *
+ * \brief The definition of some of the methods of the Star class.
+ *
+ * \ingroup StellarSystem_group
+ */
+
 #include "Star.h"
 #include "Error.h"
 #include <iostream>
 #include <assert.h>
 
-///Create a star with the given properties.
 Star::Star(double current_mass, double tidal_quality, 
 		double wind_strength, double wind_saturation,
 		double coupling_timescale, double dissipation_transition_width,
@@ -73,20 +79,16 @@ double Star::current_age() const
 	return age;
 }
 
-///Returns the mass of the star in solar masses.
 double Star::get_mass() const
 {
 	return mass;
 }
 
-///Returns the radius of the star (in solar radii) for the given age
-///(in Gyrs).
 double Star::get_radius(double age) const
 {
 	return (*radius)(age);
 }
 
-///Returns the luminosity of the star in solar luminosities.
 double Star::get_luminosity(double age) const
 {
 	if(luminosity==NULL) throw Error::Runtime("Asking for the luminosity of "
@@ -94,48 +96,37 @@ double Star::get_luminosity(double age) const
 	return (*luminosity)(age);
 }
 
-///Returns the transition width of the tidal quality factor (specified at
-///construction).
 double Star::get_trans_width() const
 {
 	return Q_transition_width;
 }
 
-///The age at which the radiative core first forms
 double Star::core_formation_age() const
 {
 	return core_formation;
 }
 
-///Retursn the frequency to which the stellar convective zone is locked
-///by the disk (in day^-1)
 double Star::get_disk_lock_frequency() const
 {
 	return disk_lock_frequency;
 }
 
-///Sets the frequency to which the stellar convective zone is locked
-///by the disk (in day^-1)
 void Star::set_disk_lock_frequency(double value)
 {
 	disk_lock_frequency=value;
 }
 
-///Returns the age at which the circumstellar disk dissipates, releasing
-///the convective zone rotation.
 double Star::get_disk_dissipation_age() const
 {
 	return disk_dissipation_age;
 }
 
-///Returns the radius of the radiative zone
 double Star::get_rad_radius(double age) const
 {
 	if(age<core_formation) return 0;
 	return (*rad_radius)(age);
 }
 
-///Returns the first derivative of the radiative zone radius
 double Star::get_rad_radius_deriv(double age, unsigned order) const
 {
 	if(age<core_formation) return 0;
@@ -146,14 +137,12 @@ double Star::get_rad_radius_deriv(double age, unsigned order) const
 	return rad_radius_deriv;
 }
 
-///Returns the mass of the radiative core
 double Star::get_rad_mass(double age) const
 {
 	if(age<core_formation) return 0;
 	return (*rad_mass)(age);
 }
 
-///Returns the derivative of the radiative core mass
 double Star::get_rad_mass_deriv(double age) const
 {
 	if(age<core_formation) return 0;
@@ -164,8 +153,6 @@ double Star::get_rad_mass_deriv(double age) const
 	return rad_mass_deriv;
 }
 
-///Returns age derivative of the natural logarithm of star's radius
-//(in solar radii/Gyr) for the given age (in Gyrs).
 double Star::get_logradius_deriv(double age) const
 {
 	const FunctionDerivatives *deriv=radius->deriv(age);
@@ -180,9 +167,6 @@ double Star::get_logradius_deriv(double age) const
 	return (*radius)(curr_age);
 }*/
 
-///Returns the moment of inertia (in units of
-///Msun*Rsun^2) of a particular zone of the star or the entire star 
-///depending on the zone argument at the given age (in Gyrs).
 double Star::moment_of_inertia(double age, StellarZone zone) const
 {
 	switch(zone) {
@@ -198,9 +182,6 @@ double Star::moment_of_inertia(double age, StellarZone zone) const
 	}
 }
 
-///Returns the age derivative of the moment of inertia (in units of
-///Msun*Rsun^2/Gyr) of a particular zone of the star or the entire star 
-///depending on the zone argument at the given age (in Gyrs).
 double Star::moment_of_inertia_deriv(double age, StellarZone zone,
 		int order) const
 {
@@ -226,10 +207,6 @@ double Star::moment_of_inertia_deriv(double age, StellarZone zone,
 	return result;
 }
 
-///Returns the angular momentum (in units of
-///Msun*Rsun^2*radians/day) of a particular zone of the star or the 
-///entire star depending on the zone argument at the given age 
-///(in Gyrs).
 double Star::get_angular_momentum(double age, StellarZone zone) const
 {
 	switch(zone) {
@@ -244,7 +221,6 @@ double Star::get_angular_momentum(double age, StellarZone zone) const
 	}
 }
 
-///Returns the derivative of the angular momentum of the specified zone.
 double Star::angular_momentum_deriv(double age, StellarZone zone, int order) {
 	if(zone==radiative && age<core_formation) return 0;
 	const FunctionDerivatives* deriv;
@@ -261,8 +237,6 @@ double Star::angular_momentum_deriv(double age, StellarZone zone, int order) {
 	return result;
 }
 
-///Returns the spin frequency of the specified zone of the star in
-///radians per day for the given age.
 double Star::spin_frequency(double age, StellarZone zone) const
 {
 	switch(zone) {
@@ -277,20 +251,12 @@ double Star::spin_frequency(double age, StellarZone zone) const
 	}
 }
 
-///Returns the spin frequency of the specified zone of the star in
-///radians per day for the given age if the angular momentum of the
-///desired zone has the prescribed value. The angular momentum should 
-///be in units of Msun Rsun^2/day
 double Star::spin_frequency(double age, StellarZone zone,
 		double angular_momentum) const
 {
 	return angular_momentum/moment_of_inertia(age, zone);
 }
 
-///Returns the spin frequency age derivative of the specified zone 
-///of the star in radians per day for the given age if the angular 
-///momentum of the desired zone has the prescribed value. The angular
-///momentum should be in units of Msun Rsun^2/day
 double Star::spin_frequency_age_deriv(double age, StellarZone zone,
 		double angular_momentum) const
 {
@@ -316,26 +282,17 @@ double Star::spin_frequency_age_deriv(double age, StellarZone zone,
 	return -(angular_momentum/std::pow(I,2)*I_deriv);
 }
 
-///Returns the spin frequency derivative with respect to the angular
-///momentum of the specified zone of the star in radians per day for
-///the given age if the angular momentum of the desired zone has the
-///prescribed value. The angular momentum should be in units of 
-///Msun Rsun^2/day
 double Star::spin_frequency_angmom_deriv(double age, StellarZone zone,
 		double angular_momentum) const
 {
 	return 1.0/moment_of_inertia(age, zone);
 }
 
-///Returns the spin period of the specified zone of the star in days
-///at the given age.
 double Star::spin_period(double age, StellarZone zone) const
 {
 	return 2.0*M_PI/spin_frequency(age, zone);
 }
 
-///Prescribes an angular momentum evolution for the specified zone of
-//the star as a set of values at specified ages.
 void Star::set_angular_momentum_evolution(
 		const std::valarray<double> &ages, 
 		const std::valarray<double> &L_values,
@@ -350,8 +307,6 @@ void Star::set_angular_momentum_evolution(
 			"momentum of the star.");
 }
 
-///Returns the mass of the specified zone (in solar masses) at the
-///specified age.
 double Star::get_zone_mass(double age, StellarZone zone) const
 {
 	switch(zone) {
@@ -364,10 +319,6 @@ double Star::get_zone_mass(double age, StellarZone zone) const
 	}
 }
 
-///Returns the torque on the stellar envelope due to the stellar 
-///magnetic wind, if the convective zone is spinning at the given
-///frequency (in radians/day). The units of the torque are
-///Msun*Rsun^2*radians/(day*Gyr)
 double Star::wind_torque(double age, double conv_frequency,
 		WindSaturationState assume_wind_saturation) const
 {
@@ -382,11 +333,6 @@ double Star::wind_torque(double age, double conv_frequency,
 	}
 }
 
-///Returns the derivative of the torque on the stellar envelope due 
-///to the stellar magnetic wind with respect to the convective spin 
-///frequency, if the convective zone is spinning at the given
-///frequency (in radians/day). The units of the torque are
-///Msun*Rsun^2*radians/(day*Gyr)
 double Star::wind_torque_freq_deriv(double age, double conv_frequency,
 		WindSaturationState assume_wind_saturation) const
 {
@@ -398,12 +344,6 @@ double Star::wind_torque_freq_deriv(double age, double conv_frequency,
 	else return coef*std::pow(magnetic_wind_saturation_freq, 2);
 }
 
-///Returns the derivative of the torque on the stellar envelope due
-///to the stellar magnetic wind with respect to stellar age, if the
-///convective zone has the given angular momentum (in Msun*Rsun^2*rad/day)
-///The units of the torque are Msun*Rsun^2*radians/(day*Gyr). If 
-///const_angular_momentum is false, takes the age derivative assuming a
-///constant frequency.
 double Star::wind_torque_age_deriv(double age, double angular_momentum,
 		bool const_angular_momentum,
 		WindSaturationState assume_wind_saturation) const
@@ -432,20 +372,11 @@ double Star::wind_torque_age_deriv(double age, double angular_momentum,
 
 }
 
-///Returns the torque on the stellar envelope due to the stellar 
-///magnetic wind at the given age (the angular momentum evolution
-///for the convective zone should already be specified by calling the
-//set_angular_momentum_evolutio method with zone=convective). The 
-///units of the torque are Msun*Rsun^2*radians/(day*Gyr)
 double Star::wind_torque(double age) const
 {
 	return wind_torque(age, spin_frequency(age, envelope));
 }
 
-///Returns the torque on the stellar envelope due to the
-///core-envelope coupling if the angular momenta of the core and the
-///envelope are as specified. The units of the torque are 
-///Msun*Rsun^2*radians/(day*Gyr)
 double Star::differential_rotation_torque_angmom(double age, 
 		double Lconv,
 		double Lrad) const
@@ -455,12 +386,6 @@ double Star::differential_rotation_torque_angmom(double age,
 		spin_frequency(age, convective, Lconv));
 }
 
-///Returns the derivative (with respect to the angular momentum of 
-///the zone specified by the with_respect to parameter or time if 
-///that parameter is omitted) of the torque on the stellar envelope 
-///due to the core-envelope coupling if the angular momenta of the 
-///core and the envelope are as specified. The units of the torque 
-///are Msun*Rsun^2*radians/(day*Gyr)
 double Star::differential_rotation_torque_deriv(double age, double Lconv,
 		double Lrad, StellarZone with_respect_to) const
 {
@@ -481,9 +406,6 @@ double Star::differential_rotation_torque_deriv(double age, double Lconv,
 			with_respect_to_age);
 }
 
-///Returns the torque on the stellar envelope due to the
-///core-envelope coupling for the given amount of differential
-///rotation. The units of the torque are Msun*Rsun^2*radians/(day*Gyr)
 double Star::differential_rotation_torque(double age, 
 		double differential_rotation_amount,
 		double conv_frequency) const
@@ -492,10 +414,6 @@ double Star::differential_rotation_torque(double age,
 		core_inertia_gain(age)*conv_frequency;
 }
 
-///Returns the derivative of torque on the stellar envelope due to the
-///core-envelope coupling with respect to whatever the derivatives of the 
-///differential rotation and convective frequency are. The units of the 
-///torque are Msun*Rsun^2*radians/(day*Gyr)
 double Star::differential_rotation_torque_deriv(double age, 
 		double differential_rotation_amount, 
 		double differential_rotation_deriv,
@@ -508,10 +426,6 @@ double Star::differential_rotation_torque_deriv(double age,
 		 0.0) - core_inertia_gain(age)*conv_frequency_deriv;
 }
 
-///Returns the torque on the stellar envelope due to the
-///core-envelope coupling at the given age. Both the core and
-///envelope angular momenta evolutions must be already specified. 
-///The units of the torque are Msun*Rsun^2*radians/(day*Gyr)
 double Star::differential_rotation_torque(double age) const
 {
 	double diff_rot = differential_rotation(age);
@@ -520,9 +434,6 @@ double Star::differential_rotation_torque(double age) const
 
 }
 
-///Returns the amount of differential rotation between the convective
-///envelope and the radiative core at the given age that corresponds
-///to the specified angular momenta of the two zones.
 double Star::differential_rotation(double age, double Lconv, double Lrad) 
 	const
 {
@@ -531,12 +442,6 @@ double Star::differential_rotation(double age, double Lconv, double Lrad)
 	return (Iconv*Lrad-Irad*Lconv)/(Iconv+Irad);
 }
 
-///Returns the derivative of the amount of differential rotation 
-///between the convective envelope and the radiative core (with 
-///respect to the angular momentum of the zone specified by the 
-///with_respect_to parameter or age if that parameter is omitted) at
-///the given age that corresponds to the specified angular momenta 
-///of the two zones.
 double Star::differential_rotation_deriv(double age, double Lconv, 
 	double Lrad, StellarZone with_respect_to) const
 {
@@ -564,19 +469,12 @@ double Star::differential_rotation_deriv(double age, double Lconv,
 	}
 }
 
-///Returns the amount of differential rotation between the convective
-///envelope and the radiative core at the given age. The angular
-///momenta evolution of the two stellar zones must already be
-//specified.
 double Star::differential_rotation(double age) const
 {
 	return differential_rotation(age, (*conv_angular_momentum)(age), 
 			(*rad_angular_momentum)(age));
 }
 
-///Return the rate at which moment of inertia is transferred from the
-///envolope to the core due to the convective-radiative boundary 
-///evolving with time
 double Star::core_inertia_gain(double age) const
 {
 	if(age<core_formation) return 0.0;
@@ -587,17 +485,6 @@ double Star::core_inertia_gain(double age) const
 	return 2.0/3.0*std::pow((*rad_radius)(age), 2)*rad_mass_deriv;
 }
 
-double Star::get_test_val(double age) {
-	const FunctionDerivatives *Mrad_deriv=rad_mass->deriv(age);
-	double mrad_deriv = Mrad_deriv->order(1);
-	//delete Rrad_deriv;
-	delete Mrad_deriv;
-	return mrad_deriv*std::pow((*rad_radius)(age), 2);
-}
-
-///Return the age derivative of the rate at which moment of inertia 
-///is transferred from the envelope to the core due to the
-///convective-radiative boundary evolving with time
 double Star::core_inertia_gain_deriv(double age) const
 {
 	if(age<core_formation) return 0;
@@ -613,8 +500,6 @@ double Star::core_inertia_gain_deriv(double age) const
 			r_rad*r_rad*m_rad_deriv2);
 }
 
-///Returns the tidal quality factor of the star for tides having the
-///specified frequency (in radians/day).
 double Star::get_tidal_Q(double tidal_frequency) const
 {
 	if(tidal_frequency==Inf) 
@@ -626,8 +511,6 @@ double Star::get_tidal_Q(double tidal_frequency) const
 		(tidal_frequency>0 ? tidal_Q : -tidal_Q));
 }
 
-///Returns the frequency derivative of tidal quality factor of the star 
-///for tides having the specified frequency (in radians/day).
 double Star::get_tidal_Q_deriv(double tidal_frequency) const
 {
 	if(std::abs(tidal_frequency)<Q_transition_width) {
@@ -638,15 +521,11 @@ double Star::get_tidal_Q_deriv(double tidal_frequency) const
 }
 
 
-///Returns the age at which the star leaves the main sequence in
-///Gyrs.
 double Star::get_lifetime() const
 {
 	return lifetime;
 }
 
-///Returns the angular momentum of the core at the time of
-///observation
 double Star::get_current_angular_momentum(StellarZone zone) const
 {
 	if(zone==convective) return current_conv_angular_momentum;

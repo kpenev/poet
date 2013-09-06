@@ -10,7 +10,7 @@
 
 /**\file
  *
- * \brief Defines the Planet class.
+ * \brief Defines the Star class.
  * 
  * \ingroup StellarSystem_group
  */
@@ -66,8 +66,8 @@ private:
 	///units of \f$M_\odot \cdot R_\odot^2\f$ as a function of age in Gyrs.
 	*conv_moment_of_inertia,
 
-	///\brief The moment of inertia of the entire star in units of
-	///\f$M_\odot \cdot R_\odot^2\f$ as a function of age in Gyrs.
+	///\brief The moment of inertia of the radiative core in units of
+	/// \f$M_\odot \cdot R_\odot^2\f$ as a function of age in Gyrs.
 	*rad_moment_of_inertia,
 
 	///The mass in the radiative core as a function of age in \f$M_\odot\f$
@@ -80,7 +80,7 @@ private:
 	InterpolatingFunctionALGLIB
 	///\brief The angular momentum of the convective envelope of the star in
 	///units units of
-	///\f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$ as a
+	/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$ as a
 	///function of age in Gyrs.
 	*conv_angular_momentum,
 
@@ -95,53 +95,56 @@ private:
 	///The age at which the star leaves the main sequence in Gyrs.
 	lifetime,
 
-	///The normalization constant (K) in the magnetic wind equation.
+	///The normalization constant (K) in the magnetic wind equation in
+	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
+	/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
 	magnetic_wind_strength, 
 	
-	///The saturation frequency (radians/day) in the magnetic wind equation.
+	///The saturation frequency (rad/day) in the magnetic wind equation.
 	magnetic_wind_saturation_freq,
 	
 	///\brief The timescale on which the rotation of the core and the
-	///envelope are coupled.
+	///envelope are coupled in Gyr.
 	core_env_coupling_timescale,
 
-	///The age at which the core first forms
+	///The age at which the core first forms in Gyr.
 	core_formation,
 	
-	///The current convective zone angular momentum
+	///The current convective zone angular momentum in
+	/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 	current_conv_angular_momentum,
 
-	///The current radiative core angular momentum
+	///The current radiative core angular momentum in 
+	/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 	current_rad_angular_momentum;
 public:
 	///Create a star with the given properties.
-	
-	///current_conv_spin, current_rad_spin in units of radians/day
-	///coupling_timescale in Gyr
 	Star(
 			///Mass of the star
 			double current_mass,
-			
+
 			///Tidal quality factor
 			double tidal_quality, 
 
-			///The normalization constant (K) in the magnetic wind equation.
+			///The normalization constant (K) in the magnetic wind equation
+			//in \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
+			/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
 			double wind_strength,
-			
-			///The saturation frequency (radians/day) in the magnetic wind
+
+			///The saturation frequency (rad/day) in the magnetic wind
 			///equation.
 			double wind_saturation,
 
 			///The timescale on which the rotation of the core and the
-			///envelope are coupled.
+			///envelope are coupled in Gyr.
 			double coupling_timescale,
 			
-		   ///The frequency range (in rad/day) over which 1/Q decays to zero.
-		   ///
-		   ///\deprecated This parameter was initially used to avoid a
-		   ///discontinuity in the equations when the orbit and the stallar
-		   ///spin went through synchroneity. It can now be safely set to
-		   ///zero.
+			///The frequency range (in rad/day) over which 1/Q decays to zero.
+			///
+			///\deprecated This parameter was initially used to avoid a
+			///discontinuity in the equations when the orbit and the stallar
+			///spin went through synchroneity. It can now be safely set to
+			///zero.
 			double dissipation_transition_width,
 
 			///\brief The frequency of the stellar convective zone while the
@@ -159,10 +162,12 @@ public:
 			///The present age of the star in Gyr (optional).
 			double current_age=NaN,
 			
-			///The present surface rotation rate of the star (optional).
+			///The present surface rotation rate of the star in rad/day
+			///(optional).
 			double current_conv_spin=NaN,
 
-			///The present core rotation rate of the star (optional).
+			///The present core rotation rate of the star in rad/day
+			///optional).
 			double current_rad_spin=NaN);
 	
 	///The current age of the star in Gyrs.
@@ -178,7 +183,7 @@ public:
 	double get_luminosity(double age) const;
 
 	///\brief The age derivative of the log(radius) of the star (in
-	//\f$\mathrm{Gyr}^{-1}\f$) for the given age (in Gyr).
+	/// \f$\mathrm{Gyr}^{-1}\f$) for the given age (in Gyr).
 	double get_logradius_deriv(double age) const;
 
 	//The present radius of the star (in \f$R_\odot\f$).
@@ -187,7 +192,7 @@ public:
 	///\brief The transition width of the tidal quality factor.
 	double get_trans_width() const;
 
-	///The age at which the radiative core first forms.
+	///The age at which the radiative core first forms in Gyr.
 	double core_formation_age() const;
 
 	///\brief The frequency to which the stellar convective zone is locked by
@@ -256,13 +261,13 @@ public:
 			StellarZone zone,
 			
 			///The angular momentum of the zone in
-			/// \f$M_\odot \cdot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double angular_momentum) const;
 
 	///\brief The partial age derivative of the spin frequency of a stellar
 	///zone for a specified angular momentum.
 	///
-	///Units: \f$\frac{\mathrm{rad}}{\mathrm{day}\cdot\matrm{Gyr}}\f$
+	///Units: \f$\frac{\mathrm{rad}}{\mathrm{day}\cdot\mathrm{Gyr}}\f$
 	double spin_frequency_age_deriv(
 			///The age at which the spin frequency derivative is required in
 			///Gyr.
@@ -272,7 +277,7 @@ public:
 			StellarZone zone,
 
 			///The angular momentum of the zone in
-			/// \f$M_\odot \cdot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double angular_momentum) const;
 
 
@@ -289,7 +294,7 @@ public:
 			StellarZone zone,
 
 			///The angular momentum of the zone in
-			/// \f$M_\odot \cdot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double angular_momentum) const;
 
 	///\brief The spin period of the specified zone of the star at the given
@@ -310,12 +315,12 @@ public:
 			const std::valarray<double> &ages, 
 
 			///The angular momentum values at each of the ages in 
-			/// \f$M_\odot \cdot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			const std::valarray<double> &L_values,
 
 			///The full age derivatives of the angular momentum at each of
-			///the ages in \f$\frac{M_\odot \cdot R_\odot^2 \mathrm{rad}}
-			/// {\mathrm{day}\cdot \mathrm{Gyr}}\f$
+			///the ages in \f$\frac{M_\odot \cdot R_\odot^2 \cdot
+			/// \mathrm{rad}}{\mathrm{day}\cdot \mathrm{Gyr}}\f$
 			const std::valarray<double> &L_derivatives,
 
 			///The stellar zone whose angular momentum evolution is being
@@ -433,11 +438,11 @@ public:
 			double age,
 			
 			///Angular momentum of the convective envelope in units of:
-			/// \f$M_\odot \cdot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double Lconv, 
 
 			///Angular momentum of the radiative core in units of:
-			/// \f$M_\odot \cdot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double Lrad) const;
 
 	///Returns the derivative (with respect to the angular momentum of 
@@ -450,7 +455,7 @@ public:
 	///\brief The partial derivative of the differential rotation torque.
 	///
 	///Units: \f$Gyr^{-1}\f$ or 
-	///\f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
+	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
 	/// {\mathrm{day} \cdot \mathrm{Gyr}^2}\f$
 	///
 	///Depending on the with_respect_to argument, the derivative is with
@@ -488,68 +493,126 @@ public:
 			///The spin frequency of the convective zone in rad/day.
 			double conv_frequency) const;
 
-	///The derivative of torque on the stellar envelope due to 
-	///the core-envelope coupling with respect to whatever the 
-	///derivatives of the differential rotation and convective frequency
-	///are. The units of the  torque are Msun*Rsun^2*radians/(day*Gyr)
-	double differential_rotation_torque_deriv(double age, 
+	///\brief The partial derivative of the differential rotation torque on
+	///the stellar envelope with respect to whatever the derivatives of the
+	///differential rotation and convective frequency are.
+	///
+	///The units of the torque are \f$\frac{M_\odot \cdot R_\odot^2 \cdot
+	/// \mathrm{rad}}{\mathrm{day} \cdot \mathrm{Gyr}}\f$
+	double differential_rotation_torque_deriv(
+			///The stellar ge in Gyr.
+			double age, 
+
+			///The amount of differential rotation in
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double differential_rotation_amount, 
+
+			///The derivative of the differential rotation with respect to
+			///whatever we want the torque differentiated against.
 			double differential_rotation_deriv,
+
+			///The spin frequency of the convective envelope in rad/day.
 			double conv_frequency,
+
+			///The derivative of the spin frequency of the convective
+			///envelope with respect to whatever we want the torque 
+			///differentiated against.
 			double conv_frequency_deriv, bool with_respect_to_age=false)
 		const;
 
-	///Returns the torque on the stellar envelope due to the
-	///core-envelope coupling at the given age. Both the core and
-	///envelope angular momenta evolutions must be already specified. 
-	///The units of the torque are Msun*Rsun^2*radians/(day*Gyr)
+	///\brief The torque on the stellar envelope due to the core-envelope
+	///coupling.
+	///
+	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
+	/// {\mathrm{day} \cdot \mathrm{Gyr}}\f$
+	///
+	///Both the core and envelope angular momenta evolutions must be already
+	///specified.
 	double differential_rotation_torque(double age) const;
 
-	///Returns the amount of differential rotation between the convective
-	///envelope and the radiative core at the given age that corresponds
+	///\brief The amount of differential rotation between the convective
+	///envelope and the radiative core.
+	///
+	///Units: \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
+	//
+	//at the given age that corresponds
 	///to the specified angular momenta of the two zones.
-	double differential_rotation(double age, double Lconv, double Lrad) 
+	double differential_rotation(
+			///Stellar age in Gyr.
+			double age,
+			
+			///Convective envelope angular momentum in 
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
+			double Lconv,
+
+			///Radiative core angular momentum in 
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$		
+			double Lrad) 
 		const;
 
-	///Returns the derivative of the amount of differential rotation 
-	///between the convective envelope and the radiative core (with 
-	///respect to the angular momentum of the zone specified by the 
-	///with_respect_to parameter or age if that parameter is omitted) at
-	///the given age that corresponds to the specified angular momenta 
-	///of the two zones.
-	double differential_rotation_deriv(double age, double Lconv, 
-		double Lrad, StellarZone with_respect_to=total) const;
+	///\brief The partial derivative of the differential rotation between
+	///the convective envelope and the radiative core.
+	///
+	///Units: dimensionless or \f$\frac{M_\odot \cdot R_\odot^2 \cdot
+	/// \mathrm{rad}}{\mathrm{day}\cdot \mathrm{Gyr}}\f$
+	///
+	///Depending on the with_respect_to argument, the derivative is with
+	///respect to one of the angular momenta or age, with the other two
+	///variables held constant.
+	double differential_rotation_deriv(
+			///Stellar age in Gyr.
+			double age,
+			
+			///Convective zone angular momentum in
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
+			double Lconv, 
 
-	///Returns the amount of differential rotation between the convective
-	///envelope and the radiative core at the given age. The angular
-	///momenta evolution of the two stellar zones must already be
-	//specified.
-	double differential_rotation(double age) const;
+			///Radiative zone angular momentum in
+			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
+			double Lrad,
+			
+			///Identifies either the zone whose angular momentum we are
+			///taking the pratial derivaite with respect to, if it is
+			//(convective or radiative) or that it should be taken with
+			///respect to the stellar age if with_respect_to is total.
+			StellarZone with_respect_to=total) const;
 
-	///Return the rate at which moment of inertia is transferred from the
-	///envolope to the core due to the convective-radiative boundary 
-	///evolving with time
+	///\brief The amount of differential rotation between the convective
+	///envelope and the radiative core.
+	///
+	///The angular momenta evolution of the two stellar zones must already be
+	///specified.
+	double differential_rotation(
+			///Stellar age in Gyr.
+			double age) const;
+
+	///\brief The rate of moment of inertia transfer from the envolope to the
+	///core due to the convective-radiative boundary evolving with time.
+	///
+	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
+	/// {\mathrm{day} \cdot \mathrm{Gyr}}\f$
 	double core_inertia_gain(double age) const;
 
-	///Return the age derivative of the rate at which moment of inertia 
-	///is transferred from the envolope to the core due to the 
-	///convective-radiative boundary evolving with time
+	///\brief The age derivative of the rate of moment of inertia transfer
+	///from the envolope to the core due to the convective-radiative boundary
+	///evolving with time.
+	///
+	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
+	/// {\mathrm{day} \cdot \mathrm{Gyr}^2}\f$
 	double core_inertia_gain_deriv(double age) const;
 
-	///Returns the tidal quality factor of the star for tides having the
-	///specified frequency (in radians/day).
+	///\brief The tidal quality factor of the star for tides having the
+	///specified frequency (in rad/day).
 	double get_tidal_Q(double tidal_frequency) const;
 
-	///Returns the frequency derivative of tidal quality factor of the star 
-	///for tides having the specified frequency (in radians/day).
+	///\brief The frequency derivative of tidal quality factor of the star
+	///for tides having the specified frequency (in rad/day).
 	double get_tidal_Q_deriv(double tidal_frequency) const;
 
-	///Returns the age at which the star leaves the main sequence in
-	///Gyrs.
+	///The age at which the star leaves the main sequence in Gyr.
 	double get_lifetime() const;
 
-	///Returns the angular momentum of the core at the time of
-	///observation
+	///The angular momentum of a stellar zone at the present time.
 	double get_current_angular_momentum(StellarZone zone) const;
 };
 
