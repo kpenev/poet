@@ -1,3 +1,10 @@
+/**\file
+ *
+ * \brief The definition of some of the methods of the StellarSystem class.
+ *
+ * \ingroup StellarSystem_group
+ */
+
 #include "StellarSystem.h"
 #include "Error.h"
 #include "OrbitSolver.h"
@@ -6,6 +13,7 @@
 
 #include <gsl/gsl_matrix.h>
 
+///\f$R_\odot/\mathrm{AU}\f$.
 const double Rsun_AU=AstroConst::solar_radius/AstroConst::AU;
 
 double energy(void* xp) {
@@ -122,8 +130,6 @@ StellarSystem::StellarSystem(
 	}
 }*/
 
-///The energy definition for the simulated annealing initial condition
-///solver
 double StellarSystem::annealing_energy() {
 	double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 	OrbitSolver solver(MIN_AGE, age, PRECISION);
@@ -135,8 +141,6 @@ double StellarSystem::annealing_energy() {
 	return std::log10(frac_error);
 }
 
-///Performs a single step of the simulated annealing initial condition
-///solver
 void StellarSystem::annealing_step(const gsl_rng *r, double step_size) {
 	double mid_a0 = (min_a0 + max_a0)/2;
 	double mid_w0 = (min_w0 + max_w0)/2;
@@ -157,8 +161,6 @@ void StellarSystem::annealing_step(const gsl_rng *r, double step_size) {
 	w0 = new_w0;
 }
 
-///A definition of the distance between the initial conditions between
-///this system and that.
 double StellarSystem::annealing_metric(StellarSystem* that) {
 	double mid_a0 = (min_a0 + max_a0)/2;
 	double mid_w0 = (min_w0 + max_w0)/2;
@@ -167,16 +169,12 @@ double StellarSystem::annealing_metric(StellarSystem* that) {
 	return std::sqrt(dist);
 }
 
-///Print the current guess for the initial semimajor axis and rotation
-///frequency.
 void StellarSystem::annealing_print() {
 	std::cout<<" a0 w0 "<<a0<<" "<<w0<<" ";
 }
 
-///Solve for the initial conditions that reproduce the present conditions
-///using simulated annealing.
-bool StellarSystem::anneal_solve_IC(bool verbose, double min_a0, double max_a0,
-		double min_w0, double max_w0, double max_err) {
+bool StellarSystem::anneal_solve_IC(bool verbose, double min_a0,
+		double max_a0, double min_w0, double max_w0, double max_err) {
 	this->min_a0 = min_a0;
 	this->max_a0 = max_a0;
 
@@ -208,13 +206,6 @@ bool StellarSystem::anneal_solve_IC(bool verbose, double min_a0, double max_a0,
 	return true;
 }
 
-///The differential equation governing the orbital evolution: takes
-///age and dependent variables on input and returns the derivatives
-///of the dependent variables on output.
-///The orbital parameters should be:
-/// * a^6.5 (in units of Rsun^6.5),
-/// * Lconv (in units of Msun*Rsun^2/day,
-/// * Lrad  (same units as Lconv)
 int StellarSystem::orbit_differential_equation(
 		double age,
 		const double* orbital_parameters,
@@ -242,11 +233,6 @@ int StellarSystem::orbit_differential_equation(
 	return GSL_SUCCESS;
 }
 
-///The differential equation governing the evolution of the stellar
-///rotation if no planet or disk is present. The orbital parameters
-///should be:
-/// 0. Lconv (in units of Msun*Rsun^2/day)
-/// 1. Lrad (same units as Lconv)
 int StellarSystem::no_planet_differential_equation(double age,
 		const double *orbital_parameters, double *orbital_derivatives,
 		WindSaturationState assume_wind_saturation) const
@@ -260,11 +246,6 @@ int StellarSystem::no_planet_differential_equation(double age,
 	return GSL_SUCCESS;
 }
 
-///The jacobian of the differential equation governing the evolution of
-///the stellar rotation if no planet or disk is present. The orbital
-///parameters should be:
-/// 0. Lconv (in units of Msun*Rsun^2/day)
-/// 1. Lrad (same units as Lconv)
 int StellarSystem::no_planet_jacobian(double age,
 		const double *orbital_parameters, double *param_derivs,
 		double *age_derivs,
@@ -327,15 +308,6 @@ int StellarSystem::locked_conv_jacobian(double age, const double* orbital_parame
 	return GSL_SUCCESS;
 }
 
-
-
-///The jacobian of the differential equation governing the orbital
-///evolution: takes age and dependent variables on input and returns
-///the derivatives of the dependent variables on output.
-///The orbital parameters should be:
-/// * a^6.5 (in units of Rsun^6.5),
-/// * Lconv (in units of Msun*Rsun^2/day,
-/// * Lrad  (same units as Lconv)
 int StellarSystem::orbit_jacobian(double age,
 		const double* orbital_parameters, double* param_derivs, 
 		double* age_derivs, int assume_sign,
@@ -389,13 +361,6 @@ int StellarSystem::orbit_jacobian(double age,
 	return GSL_SUCCESS;
 }
 
-///The differential equation governing the orbital evolution: takes
-///age and dependent variables on input and returns the derivatives
-///of the dependent variables on output.
-///The orbital parameters should be:
-/// * a^6.5 (in units of Rsun^6.5),
-/// * Lconv (in units of Msun*Rsun^2/day,
-/// * Lrad  (same units as Lconv)
 /*
 int StellarSystem::orbit_diffeq_prescribed_rot(
 		double age,
@@ -448,13 +413,6 @@ int StellarSystem::orbit_jacobian_prescribed_rot(
 	return GSL_SUCCESS;
 }*/
 
-///The differential equation governing the orbital evolution in the case
-///of the star's rotation locked to the orbit: takes age and dependent
-///variables on input and returns the derivatives of the dependent
-///variables on output.
-///The orbital parameters should be: 
-/// 0. a (in units of Rsun), 
-/// 1. Lrad  (same units as Lconv) 
 int StellarSystem::locked_orbit_differential_equation(double age,
 		const double* orbital_parameters, double* orbital_derivatives,
 		WindSaturationState assume_wind_saturation) const
@@ -483,14 +441,6 @@ int StellarSystem::locked_orbit_differential_equation(double age,
 	return GSL_SUCCESS;
 }
 
-///The jacobian of the differential equation governing the orbital
-///evolution in the case of the star's rotation locked to the orbit:
-///takes age and dependent variables on input and returns the jacobian
-///and partial time derivatives of the evolution equations. 
-///The orbital parameters should be: 
-/// 0. a^6.5 (in units of Rsun^6.5), 
-/// 1. Lconv (in units of Msun*Rsun^2/day, 
-/// 2. Lrad  (same units as Lconv) 
 int StellarSystem::locked_orbit_jacobian(double age,
 		const double* orbital_parameters, double* param_derivs,
 		double* age_derivs,
@@ -635,8 +585,6 @@ void StellarSystem::solve_init(double start_age, double curr_age,
 	}
 }*/
 
-///Writes the evolution of the system (orbital and stellar) to a file
-///with the given name.
 void StellarSystem::output_evolution(std::string &filename) const
 {
 	throw Error::Runtime("Method output_evolution of StellarSystem is not implemented yet.");

@@ -33,10 +33,11 @@ private:
 		   ///The present age of the star in Gyr.
 		   age,
 
+		   ///\deprecated
 		   ///\brief The frequency range (in rad/day) over which 1/Q decays
 		   ///to zero.
 		   ///
-		   ///\deprecated This parameter was initially used to avoid a
+		   ///This parameter was initially used to avoid a
 		   ///discontinuity in the equations when the orbit and the stallar
 		   ///spin went through synchroneity. It can now be safely set to
 		   ///zero.
@@ -140,8 +141,7 @@ public:
 			double coupling_timescale,
 			
 			///The frequency range (in rad/day) over which 1/Q decays to zero.
-			///
-			///\deprecated This parameter was initially used to avoid a
+			///Deprecated: This parameter was initially used to avoid a
 			///discontinuity in the equations when the orbit and the stallar
 			///spin went through synchroneity. It can now be safely set to
 			///zero.
