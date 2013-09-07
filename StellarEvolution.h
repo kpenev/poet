@@ -1,3 +1,10 @@
+/**\file
+ *
+ * Defines classes needed for interpolating among stellar evolution tracks.
+ * 
+ * \ingroup StellarSystem_group
+ */
+
 #ifndef __STELLAR_EVOLUTION_H
 #define __STELLAR_EVOLUTION_H
 
@@ -14,10 +21,10 @@
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/valarray.hpp>
 
-
-
-///A class for calculating derivatives with respect to an argument based on
+///\brief A class that calculates derivatives with respect to an argument for
 ///functions of the log(argument).
+///
+///\ingroup StellarSystem_group
 class LogArgDerivatives : public FunctionDerivatives {
 private:
 	///The value of the argument at which derivatives are calculated.
@@ -26,28 +33,36 @@ private:
 	///The value (zeroth derivative).
 	mutable double value;
 
-	///Whether the interpolation was done against the logarithm of the
+	///\brief Was the interpolation done against the logarithm of the
 	///argument and hence the derivative needs to be corrcted.
 	bool correct_log_arg;
 
-	///The currently computed derivatives with respect to log(arg) if
-	///correct_log_arg is true, or with respect to arg if not.
+	///\brief The currently computed derivatives.
+	///
+	///With respect to log(arg) if correct_log_arg is true, or with respect
+	///to arg if not.
 	mutable std::vector<double> underlying_deriv_values,
 
-			///Previously calculated values of the derivatives (reused if
-			///requested multiple times).
+			///Previously calculated values of the derivatives.
+			///
+			///These are reused if requested multiple times.
 			deriv_values;
 
-	///From the pre-computed array of the derivatives up to the given order
-	///in underlying_deriv_values with respect to  ln(x) and returns the
+	///\brief Actually corrects for differentiating w.r.t. log(arg) instead
+	///of arg.
+	///
+	///Uses the pre-computed array of the derivatives up to the given order
+	///in underlying_deriv_values with respect to ln(x) to return the
 	///order-th derivative with respect to x.
 	double transform_log_arg_deriv(unsigned order) const;
 protected:
-	///Returns the deriv_order-th derivative of the quantity with respect to
-	///either log(arg) or arg as specified on construction.
+	///\brief Should be overwritten to calculate the derivatives with respect
+	///to either arg or log(arg) as specified on construction.
 	virtual double calc_deriv(unsigned deriv_order) const =0;
 public:
-	///Create a derivative that corrects for the fact that the underlying
+	///\brief Create a derivative for functions of possibly log(arg).
+	///
+	///The created object corrects for the fact that the underlying
 	///derivative (defined by the calc_deriv method) is with respect to the
 	///logarithm of the argument if arg_val is not NaN. No correction if it
 	///is Nan.
@@ -58,8 +73,10 @@ public:
 	double order(unsigned deriv_order=1) const;
 };
 
-///A derivative class for stellar quantities which are interpolated both in 
-///age and mass.
+///\brief Derivative class for stellar quantities which are interpolated
+///both in age and mass.
+///
+///\ingroup StellarSystem_group
 class InterpolatedDerivatives : public LogArgDerivatives {
 private:
 	///The mass of the star.
@@ -77,10 +94,12 @@ protected:
 	///Returns the deriv_order-th derivative of the quantity
 	double calc_deriv(unsigned deriv_order) const;
 public:
-	///Create a derivatives class that interpolates the given derivatives
-	///between the given masses. If age is specified the input derivatives
-	///are assumed to be with respect to ln(age), while derivatives always
-	///with respect to age are output.
+	///\brief Create an object that interpolates derivatives between the
+	///masses of evolution tracks.
+	///
+	///If age is specified the input derivatives are assumed to be with
+	///respect to ln(age), while derivatives always with respect to age are
+	///output.
 	InterpolatedDerivatives(double mass,
 			std::valarray<const FunctionDerivatives*> *derivatives,
 			std::valarray<double> *masses, double age=NaN,
@@ -101,8 +120,10 @@ public:
 	}
 };
 
-///A derivative class for stellar quantities which are just age scaled
-///versions of quantities for a tabulated mass.
+///\brief Derivative class for stellar quantities which age scaled
+///quantities for a tabulated mass.
+///
+///\ingroup StellarSystem_group
 class ScaledDerivatives : public LogArgDerivatives {
 private:
 	///The derivative of the underlying quantity
@@ -111,22 +132,25 @@ private:
 	///The scaling applied to the age of the underlying quantity
 	double scaling;
 
-	///Whether to delete the input derivative when the object is
-	///destroyed
+	///Whether to delete the input derivative when the object is destroyed.
 	bool delete_underlying,
 		 
-		 ///Whether the interpolation was done against the logarithm of the
-		 ///argument and hence the derivative needs to be corrcted.
+		 ///\brief Was the interpolation was done against log(argument) and
+		 ///hence the derivative needs to be corrcted.
 		 correct_log_arg;
 protected:
-	///Returns the deriv_order-th derivative of the quantity with respect to
-	///either log(arg) or arg as specified on construction.
+	///\brief Returns the deriv_order-th derivative of the quantity.
+	///
+	///It should return the derivative with respect to either log(arg) or arg
+	///as specified on construction.
 	double calc_deriv(unsigned deriv_order) const;
 public:
-	///Construct a scaled derivative from the derivative of a function whose
-	///argument is scaled by the giver factor. If age is given and not NaN,
+	///\brief Construct a derivative from the derivative of a function whose
+	///argument is scaled by the given factor.
+	///
+	///If age is given and not NaN,
 	///the underlying derivatives are assumed to be with respect to ln(age)
-	///and correction is made to return derivatives with respect to age.
+	///and a correction is made to return derivatives with respect to age.
 	ScaledDerivatives(const FunctionDerivatives *deriv, double factor,
 			double age=NaN, bool delete_deriv=false) :
 		LogArgDerivatives(age), underlying_deriv(deriv), scaling(factor),
@@ -139,17 +163,31 @@ public:
 
 };
 
-///The derivative class for a quantity that is the sum of two other
+///\brief Derivative class for a quantity that is the sum of two other
 ///quantities.
+///
+///\ingroup StellarSystem_group
 class SumDerivatives : public FunctionDerivatives {
 private:
-	const FunctionDerivatives *q1_deriv, *q2_deriv;
+	///The derivatives of the first quantity in the sum.
+	const FunctionDerivatives *q1_deriv,
+
+		  ///The derivatives of the first quantity in the sum.  
+		  *q2_deriv;
+
+	///Whether to delete the input derivative when the object is destroyed.
 	bool destroy_derivs;
 public:
-	///If the underlying quantity is q1+q2, the input parameters should be
-	///q1.deriv(age) and q2.deriv(age).
-	SumDerivatives(const FunctionDerivatives *derivative1,
-			const FunctionDerivatives *derivative2, bool delete_inputs=true)
+	///Create a derivative object for a sum of two quantities: q1+q2.
+	SumDerivatives(
+			///Pointer to the derivative of the first quantity (q1).
+			const FunctionDerivatives *derivative1,
+
+			///Pointer to the derivative of the second quantity (q2).
+			const FunctionDerivatives *derivative2,
+			
+			///Delete the input derivatives on destruction?
+			bool delete_inputs=true)
 		: q1_deriv(derivative1), q2_deriv(derivative2),
 		destroy_derivs(delete_inputs) {}
 	
@@ -157,34 +195,41 @@ public:
 	double order(unsigned deriv_order=1) const
 	{return q1_deriv->order(deriv_order)+q2_deriv->order(deriv_order);}
 
+	///Clean up.
 	~SumDerivatives()
 	{if(destroy_derivs) {delete q1_deriv; delete q2_deriv;}}
 };
 
-///The derivatives of an identically zero quantity.
+///\brief The derivatives of an identically zero quantity.
+///
+///\ingroup StellarSystem_group
 class ZeroDerivatives : public FunctionDerivatives {
 public:
+	///Create a derivative of an identically zero quantity.
 	ZeroDerivatives() {}
 
 	///The deriv_order-th derivative.
 	double order(unsigned deriv_order=1) const {return 0;}
 };
 
-///A class for stellar properties that depend on age.
+///\brief A class for stellar properties that depend on age.
+///
+///\ingroup StellarSystem_group
 class EvolvingStellarQuantity : public OneArgumentDiffFunction {
 private:
-	double min_age, ///< The minimum age for which this quantity is defined
-		   max_age; ///< The maximum age for which this quantity is defined
+	///The minimum age for which this quantity is defined in Gyr.
+	double min_age, 
+
+		   ///The maximum age for which this quantity is defined in Gyr.
+		   max_age; 
 
 	///Whether the tracks have log(age) instead of age as their argument.
 	bool use_log_age,
 		 
-		 ///Whether the quantity should be assumed zero below the minimum
-		 ///track age
+		 ///Should the quantity be assumed zero below the minimum track age.
 		 initially_zero;
 
-	///The masses below the high low mass split for which evolution 
-	///tracks are available
+	///The masses of the evolution tracks below the high low mass split 
 	std::list<double> low_masses;
 
 	///The tracks for the model masses below the high--low mass cut
@@ -196,25 +241,27 @@ private:
 	///The mass to which to interpolate
 	double stellar_mass,
 
-		   ///The high mass closest to the stellar mass for which an
-		   ///evolution track is available
+		   ///The mass of the high mass track closest to the stellar mass
 	       closest_high_mass,
 
-		   ///When interpolating the age of each low mass model is scaled by
-		   ///the mass to negative this power in order to make mass
-		   ///dependence smoother.
+		   ///\brief Age of low mass tracks is scaled by this power in order
+		   ///to make mass dependence smoother.
 		   age_scaling_low_mass,
 
-		   ///When interpolating the age of each high mass model is scaled 
-		   ///by the mass to negative this power in order to make mass
-		   ///dependence smoother.
+
+		   ///\brief Age of high mass tracks is scaled by this power in order
+		   ///to make mass dependence smoother.
 		   age_scaling_high_mass,
 
+		   ///\brief How far to extrapolate low mass models.
+		   ///
 		   ///Low mass models are included in the mass interpolation only if
 		   ///the required age is no larger than the maximum tabulated age 
 		   ///times this factor.
 		   extrapolate_low_mass,
 
+		   ///\brief How far to extrapolate low mass models.
+		   ///
 		   ///High mass models are included in the mass interpolation only
 		   ///if the required age is no larger than the maximum tabulated 
 		   ///age times this factor.
@@ -224,8 +271,7 @@ private:
 	///Whether the star is low mass (as opposed to high mass)
 	bool is_low_mass;
 
-	///Prepares the class to interpolate to a mass above the high--low
-	///cutoff
+	///Prepares the class to interpolate to a mass above the high--low cutoff
 	void init_high_mass(
 			///The masses for which evolution tracks are given
 			const std::valarray<double> &masses_of_tracks,
@@ -233,27 +279,29 @@ private:
 			const std::list<const OneArgumentDiffFunction *> 
 			&evolution_tracks);
 
-	///Prepares the class to interpolate to a mass below the high--low
-	///cutoff
+	///Prepares the class to interpolate to a mass below the high--low cutoff
 	void init_low_mass(
-			///The masses for which evolution tracks are given
+			///The masses for which evolution tracks are given.
 			const std::valarray<double> &masses_of_tracks,
-			////The evolution tracks of the relevant quantity
+			////The evolution tracks of the relevant quantity.
 			const std::list<const OneArgumentDiffFunction *> 
 			&evolution_tracks,
-			///The mass above which the stars are considered 
-			///high mass
+			///The mass above which the stars are considered high mass.
 			double max_low_mass);
 
-	///Interpolate the quantity to the desired age assuming we are in the
-	///high mass regime. If derivatives is not NULL initializes that to a
-	///pointer to a derivatives at the current age structure.
+	///\brief Interpolate the quantity to the desired age assuming we are in
+	///the high mass regime.
+	///
+	///If derivatives is not NULL initializes that to a pointer to a
+	///derivatives at the current age structure.
 	double high_mass_interp(double age, 
 			const ScaledDerivatives **derivatives=NULL) const;
 
-	///Interpolate the quantity to the desired age assuming we are in the
-	///low mass regime. If derivatives is not NULL initializes that to a
-	///pointer to a derivatives at the current age structure.
+	///\brief Interpolate the quantity to the desired age assuming we are in
+	///the low mass regime.
+	///
+	///If derivatives is not NULL initializes that to a pointer to a
+	///derivatives at the current age structure.
 	double low_mass_interp(double age, 
 			const InterpolatedDerivatives **derivatives=NULL) const;
 
@@ -263,9 +311,11 @@ private:
 	///Calculates the derivatives of the quantity for a low mass star.
 	const InterpolatedDerivatives *low_mass_deriv(double age) const;
 public:
+	///\brief Construct an object that can be set to interpolate between
+	///tabulated evolution tracks.
 	EvolvingStellarQuantity() {};
-	///Create an evolving quantity out of the given evolution tracks 
-	///that interpolates to the given mass
+
+	///Create an evolving quantity that interpolates to the given mass.
 	EvolvingStellarQuantity(
 			double mass, ///< The stellar mass to interpolate to
 
@@ -283,18 +333,22 @@ public:
 			///The mass above which the stars are considered 
 			///high mass
 			double max_low_mass=1.075,
+
 			///When interpolating the age of each low mass model is scaled by
 			///the mass to negative this power in order to make mass
 			///dependence smoother.
 			double low_mass_age_scaling=2.5,
+
 			///When interpolating the age of each high mass model is scaled 
 			///by the mass to negative this power in order to make mass
 			///dependence smoother.
 			double high_mass_age_scaling=3.0,
+
 			///Low mass models are included in the mass interpolation only if
 			///the required age is no larger than the maximum tabulated age 
 			///times this factor.
 			double low_mass_extrapolate=1.01,
+
 			///High mass models are included in the mass interpolation only
 			///if the required age is no larger than the maximum tabulated 
 			///age times this factor.
@@ -317,14 +371,15 @@ public:
 	///The smallest age for which the quantity can be interpolated.
 	virtual double range_low() const {return min_age;}
 
-	///Returns an iterator over the ages where the quantity takes 
-	///the given y value.
+	///An iterator over the ages where the quantity takes the given y value.
 	InterpSolutionIterator crossings(double y=0) const
 	{throw Error::Runtime("Called EvolvingStellarQuantity::crossings, "
 			"which are ill defined.");}
 };
 
 ///A clas for stellar quantities that are the sum of two other quantities.
+///
+///\ingroup StellarSystem_group
 class SumQuantity : public EvolvingStellarQuantity {
 private:
 	///This quantity will be q1+q2
@@ -355,12 +410,12 @@ public:
 	double range_low() const
 	{return std::max(q1->range_low(), q2->range_low());}
 
-	///Returns an iterator over the ages where the quantity takes 
-	///the given y value.
+	///An iterator over the ages where the quantity takes the given y value.
 	InterpSolutionIterator crossings(double y=0) const
 	{throw Error::Runtime("Called EvolvingStellarQuantity::crossings, "
 			"which are ill defined.");}
 
+	///Clean up.
 	~SumQuantity()
 	{if(destroy_qs) {delete q1; delete q2;}}
 };
