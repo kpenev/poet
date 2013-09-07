@@ -1,6 +1,7 @@
 /**\file
  *
- * Defines classes needed for interpolating among stellar evolution tracks.
+ * \brief Defines classes needed for interpolating among stellar evolution
+ * tracks.
  * 
  * \ingroup StellarSystem_group
  */
@@ -79,13 +80,13 @@ public:
 ///\ingroup StellarSystem_group
 class InterpolatedDerivatives : public LogArgDerivatives {
 private:
-	///The mass of the star.
+	///The mass of the star in \f$M_\odot\f$.
 	double stellar_mass;
 
 	///The age derivatives for each stellar model.
 	std::valarray<const FunctionDerivatives *> *interp_deriv;
 
-	///The masses of the stelar models
+	///The masses of the stelar models in \f$M_\odot\f$
 	std::valarray<double> *interp_masses;
 
 	///Whether to delete the derivatives and masses it was created with
@@ -94,8 +95,8 @@ protected:
 	///Returns the deriv_order-th derivative of the quantity
 	double calc_deriv(unsigned deriv_order) const;
 public:
-	///\brief Create an object that interpolates derivatives between the
-	///masses of evolution tracks.
+	///\brief Create an object that interpolates derivatives from evolution
+	///tracks.
 	///
 	///If age is specified the input derivatives are assumed to be with
 	///respect to ln(age), while derivatives always with respect to age are
@@ -135,8 +136,8 @@ private:
 	///Whether to delete the input derivative when the object is destroyed.
 	bool delete_underlying,
 		 
-		 ///\brief Was the interpolation was done against log(argument) and
-		 ///hence the derivative needs to be corrcted.
+		 ///\brief Was the interpolation done against log(argument) and hence
+		 ///the derivative needs to be corrcted.
 		 correct_log_arg;
 protected:
 	///\brief Returns the deriv_order-th derivative of the quantity.
@@ -172,7 +173,7 @@ private:
 	///The derivatives of the first quantity in the sum.
 	const FunctionDerivatives *q1_deriv,
 
-		  ///The derivatives of the first quantity in the sum.  
+		  ///The derivatives of the second quantity in the sum.  
 		  *q2_deriv;
 
 	///Whether to delete the input derivative when the object is destroyed.
@@ -238,10 +239,11 @@ private:
 	///The evolution track for the high mass model with the closest mass.
 	const OneArgumentDiffFunction *closest_high_mass_track;
 
-	///The mass to which to interpolate
+	///The mass to which to interpolate in \f$M_\odot\f$.
 	double stellar_mass,
 
-		   ///The mass of the high mass track closest to the stellar mass
+		   ///The mass of the high mass track closest to the stellar mass in
+		   /// \f$M_\odot\f$
 	       closest_high_mass,
 
 		   ///\brief Age of low mass tracks is scaled by this power in order
@@ -275,7 +277,8 @@ private:
 	void init_high_mass(
 			///The masses for which evolution tracks are given
 			const std::valarray<double> &masses_of_tracks,
-			////The evolution tracks of the relevant quantity
+
+			///The evolution tracks of the relevant quantity
 			const std::list<const OneArgumentDiffFunction *> 
 			&evolution_tracks);
 
@@ -312,14 +315,16 @@ private:
 	const InterpolatedDerivatives *low_mass_deriv(double age) const;
 public:
 	///\brief Construct an object that can be set to interpolate between
-	///tabulated evolution tracks.
+	///tabulated evolution tracks of a quantity.
 	EvolvingStellarQuantity() {};
 
 	///Create an evolving quantity that interpolates to the given mass.
 	EvolvingStellarQuantity(
-			double mass, ///< The stellar mass to interpolate to
+			///The stellar mass to interpolate to in \f$M_\odot\f$
+			double mass, 
 
-			///The masses for which evolution tracks are given
+			///The masses for which evolution tracks are given in
+			/// \f$M_\odot\f$
 			const std::valarray<double> &masses_of_tracks,
 
 			///The evolution tracks of the relevant quantity
@@ -330,8 +335,8 @@ public:
 			///instead of age.
 			bool log_age=true,
 
-			///The mass above which the stars are considered 
-			///high mass
+			///The mass above which the stars are considered high mass in
+			/// \f$M_\odot\f$.
 			double max_low_mass=1.075,
 
 			///When interpolating the age of each low mass model is scaled by
@@ -359,25 +364,27 @@ public:
 			bool starts_zero=false);
 
 
-	///Return the value the quantity takes at the given age.
+	///Return the value the quantity takes at the given age in Gyr.
 	virtual double operator()(double age) const;
 
-	///Return the age derivative of the quantity at the given age.
+	///Return the age derivative of the quantity at the given age in Gyr.
 	virtual const FunctionDerivatives *deriv(double age) const;
 
-	///The largest age for which the quantity can be interpolated
+	///The largest age for which the quantity can be interpolated in Gyr.
 	virtual double range_high() const {return max_age;}
 
-	///The smallest age for which the quantity can be interpolated.
+	///The smallest age for which the quantity can be interpolated in Gyr.
 	virtual double range_low() const {return min_age;}
 
-	///An iterator over the ages where the quantity takes the given y value.
+	///An iterator over the ages (in Gyr) where the quantity takes the given
+	///y value.
 	InterpSolutionIterator crossings(double y=0) const
 	{throw Error::Runtime("Called EvolvingStellarQuantity::crossings, "
 			"which are ill defined.");}
 };
 
-///A clas for stellar quantities that are the sum of two other quantities.
+///\brief A clas for stellar quantities that are the sum of two other
+///quantities.
 ///
 ///\ingroup StellarSystem_group
 class SumQuantity : public EvolvingStellarQuantity {
@@ -420,10 +427,16 @@ public:
 	{if(destroy_qs) {delete q1; delete q2;}}
 };
 
-///A class that uses a  set of pre-computed evolution tracks to generate an
-///inrpolating function that represents reasonably well the evolution of
+///\brief A class that interpolates among stellar evolution tracks.
+///
+///Uses a  set of pre-computed evolution tracks to generate 
+///inrpolating functions that represents reasonably well the evolution of
 ///various properties of an arbitrary mass star as a function of age.
+///
+///\ingroup StellarSystem_group
 class StellarEvolution {
+
+	///Serialize the found interpolation.
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
@@ -435,19 +448,40 @@ class StellarEvolution {
 			extrapolate_low & extrapolate_high & core_formation;
 	}
 private:
-	///The stellar masses for which evolution tracks are available
+	///The stellar masses for which evolution tracks are available in
+	/// \f$M_\odot\f$
 	const std::valarray<double> *track_masses;
 
 	///Functions which interpolate the evulotion tracks for the radius of the
 	///star, the convective and whole star moments of inertia and the mass in
 	///the radiative zone.
+
+	///\brief Interpolates the evulotion of the radius of the star for each
+	///track in \f$R_\odot\f$.
 	std::list<const OneArgumentDiffFunction*> interpolated_radius,
-		interpolated_conv_inertia, interpolated_rad_inertia, 
-		interpolated_rad_mass, interpolated_core_env_boundary,
+
+		///\brief Interpolates the evulotion of the convective zone moment of
+		///inertia for each track in \f$M_\odot \cdot R_\odot^2\f$.
+		interpolated_conv_inertia,
+		
+		///\brief Interpolates the evulotion of the radiative zone moment of
+		///inertia for each track\f$M_\odot \cdot R_\odot^2\f$.
+		interpolated_rad_inertia, 
+
+		///\brief Interpolates the evulotion of the radiative zone mass for
+		///each track in \f$M_\odot\f$.
+		interpolated_rad_mass,
+		
+		///\brief Interpolates the evulotion of the convective-radiative
+		///boundary for each track in \f$R_\odot\f$.
+		interpolated_core_env_boundary,
+
+		///\brief Interpolates the evulotion of the luminosity for each
+		///track in \f$L_\odot\f$.
 		interpolated_luminosity;
 
 	double
-		///The break between high and low mass models in solar masses.
+		///The break between high and low mass models in \f$M_\odot\f$.
 		mass_break,
 
 		///The age of a low mass model is scaled by mass to this power
@@ -456,47 +490,52 @@ private:
 		///The age of a low mass model is scaled by mass to this power
 		high_age_scaling,
 
+		///\brief How far to extrapolate low mass models.
+		///
 		///Exrapolating a low mass model by this fractional amount of the
 		///final age is allowed.
 		extrapolate_low,
 
+		///\brief How far to extrapolate low mass models.
+		///
 		///Exrapolating a high mass model by this fractional amount of the
 		///final age is allowed.
 		extrapolate_high,
 		
-		///The age at which the core starts forming
+		///The age at which the core starts forming in Gyr.
 		core_formation;
 
 public:
+	///\brief Construct an object that can be set to interpolate between
+	///tabulated evolution tracks.
 	StellarEvolution() : track_masses(NULL) {}
 
-	///Creates a stellar evolution variable from the given evolution tracks,
-	///which applies the specified smoothing for the various quantities which
-	/// need smoothing.
+	///\brief Creates a fully functional stellar evolution interpolator.
 	StellarEvolution(
-		///The stellar masses (in solar masses) for which evolution tracks
+		///The stellar masses (in \f$M_\odot\f$) for which evolution tracks
 		///are tabulated.
 		const std::valarray<double> &tabulated_masses,
 		
-		///A set of ages for each track.
+		///A set of ages for each track in Gyr.
 		const std::list< std::valarray<double> > &tabulated_ages,
 
-		///A set of stellar radii for each age of each track.
+		///A set of stellar radii for each age of each track in
+		/// \f$R_\odot\f$.
 		const std::list< std::valarray<double> > &tabulated_radii,
 
 		///A set of moments of inertia of the stellar convective zone for 
-		///each age of each track.
+		///each age of each track in \f$ M_\odot \cdot R_\odot^2\f$.
 		const std::list< std::valarray<double> > &tabulated_conv_inertia,
 
 		///A set of moments of inertia of the radiative zone for each age
-		///of each track.
+		///of each track in \f$ M_\odot \cdot R_\odot^2\f$.
 		const std::list< std::valarray<double> > &tabulated_rad_inertia,
 
 		///A set of masses of the stellar radiative zone for each age of
-		///each track 
+		///each track in \f$M_\odot\f$. 
 		const std::list< std::valarray<double> > &tabulated_rad_mass,
 
-		///A set of radii (in solar radii) for the convective-envelope 
+		///A set of radii (in \f$R_\odot\f$) for the convective-envelope 
 		///boundary for each age of each track.
 		const std::list< std::valarray<double> > 
 			&tabulated_core_env_boundary,
@@ -513,14 +552,14 @@ public:
 		///fitting.
 		double smooth_rad_mass, 
 
-		///A set of lg(luminosities) (in solar luminosities) for each age of
+		///A set of lg(luminosities) (in \f$L_\odot\f$) for each age of
 		///each track. Can be omitted if lominosity interpolation is not
 		///necessary.
 		const std::list< std::valarray<double> > &tabulated_luminosities=
 			std::list< std::valarray<double> >(),
 
 		///The mass above which the stars are considered 
-		///high mass
+		///high mass in \f$M_\odot\f$.
 		double max_low_mass=1.075,
 
 		///When interpolating the age of each low mass model is scaled by
@@ -556,32 +595,32 @@ public:
 					high_mass_age_scaling, low_mass_extrapolate,
 					high_mass_extrapolate);}
 
-	///Initialize the stellar evolution variable with evolution tracks and 
-	///desired smoothing for the various quantities which need smoothing.
+	///Fully setup an object created by the default constructor.
 	void interpolate_from(
-		///The stellar masses (in solar masses) for which evolution tracks
+		///The stellar masses (in \f$M_\odot\f$) for which evolution tracks
 		///are tabulated.
 		const std::valarray<double> &tabulated_masses,
 		
-		///A set of ages for each track.
+		///A set of ages for each track in Gyr.
 		const std::list< std::valarray<double> > &tabulated_ages,
 
-		///A set of stellar radii for each age of each track.
+		///A set of stellar radii for each age of each track in
+		/// \f$R_\odot\f$.
 		const std::list< std::valarray<double> > &tabulated_radii,
 
 		///A set of moments of inertia of the stellar convective zone for 
-		///each age of each track.
+		///each age of each track in \f$M_\odot\cdot R_\odot^2\f$.
 		const std::list< std::valarray<double> > &tabulated_conv_inertia,
 
 		///A set of moments of inertia of the radiative zone for each age
-		///of each track.
+		///of each track in \f$M_\odot\cdot R_\odot^2\f$.
 		const std::list< std::valarray<double> > &tabulated_rad_inertia,
 
 		///A set of masses of the stellar radiative zone for each age of
-		///each track 
+		///each track in \f$M_\odot\f$
 		const std::list< std::valarray<double> > &tabulated_rad_mass,
 
-		///A set of radii (in solar radii) for the convective-envelope 
+		///A set of radii (in \f$R_\odot\f$) for the convective-envelope 
 		///boundary for each age of each track.
 		const std::list< std::valarray<double> > 
 			&tabulated_core_env_boundary,
@@ -597,14 +636,14 @@ public:
 		///How much to smooth the mass in the radiative zone when fitting.
 		double smooth_rad_mass,
 
-		///A set of lg(luminosities) (in solar luminosities) for each age of
+		///A set of lg(luminosities) (in \f$L_\odot\f$) for each age of
 		///each track. Can be omitted if lominosity interpolation is not
 		///necessary.
 		const std::list< std::valarray<double> > &tabulated_luminosities=
 			std::list< std::valarray<double> >(),
 			
 		///The mass above which the stars are considered 
-		///high mass
+		///high mass in \f$M_\odot\f$
 		double max_low_mass=1.075,
 
 		///When interpolating the age of each low mass model is scaled by
@@ -627,49 +666,63 @@ public:
 		///age times this factor.
 		double high_mass_extrapolate=1.01);
 
+	///\brief The moment of inertia of a stellar zone in
+	/// \f$M_\odot\cdot R_\odot^2\f$.
+	///
 	///Returns a single argument function which gives the moment of
 	///inertia of the specified zone of a star of the specified mass as a
-	///function of age. The result must be destroyed when it becomes
-	///obsolete. If the present age and radius are specified, the result is
-	///scaled by (present_radius/r(present_age))^2.
+	///function of age.
+	///
+	///The result must be destroyed when it becomes obsolete.
 	virtual const EvolvingStellarQuantity *interpolate_moment_of_inertia(
 			double stellar_mass,
 			StellarZone zone,
 			double present_age=-1) const;
 
+	///\brief The stellar radius in \f$R_\odot\f$.
+	///
 	///Returns a single argument function which gives the radius of a 
-	///star of the specified mass as a function of age. The result must
-	///be destroyed when it becomes obsolete. If the present age and radius
-	///are specified, the result is scaled by
-	///(present_radius/r(present_age)).
+	///star of the specified mass as a function of age.
+	///
+	///The result must be destroyed when it becomes obsolete.
 	virtual const EvolvingStellarQuantity *interpolate_radius(
 			double stellar_mass,
 			double present_age=-1) const;
 
+	///\brief The stellar luminosity in \f$L_\odot\f$.
+	//
 	///Returns a single argument function which gives the luminosity of a 
-	///star of the specified mass as a function of age. The result must
+	///star of the specified mass as a function of age.
+	///
+	///The result must
 	///be destroyed when it becomes obsolete.
 	virtual const EvolvingStellarQuantity *interpolate_luminosity(
 			double stellar_mass,
 			double present_age=-1) const;
 
+	///\brief The mass of a stellar zone in \f$M_\odot\f$
+	///
 	///Returns a single argument function which gives the mass of
 	///of the specified zone of a star of the specified mass as a
-	///function of age. The result must be destroyed when it becomes
-	///obsolete.
+	///function of age.
+	///
+	///The result must be destroyed when it becomes obsolete.
 	virtual const EvolvingStellarQuantity *interpolate_zone_mass(
 			double stellar_mass,
 			StellarZone zone) const;
 
+	///\brief The core-envelope boundary in \f$R_\odot\f$.
+	///
 	///Returns a single argument function which gives the radius of the 
 	///convective-radiative boundary for a star of the specified mass as
-	///a function of age. The result must be destroyed when it becomes 
-	///obsolete. If the present age and radius are specified, the result is
-	///scaled by (present_radius/r(present_age)).
+	///a function of age.
+	///
+	///The result must be destroyed when it becomes obsolete. 
 	virtual const EvolvingStellarQuantity *interpolate_core_boundary(
 			double stellar_mass,
 			double present_age=-1) const;
 
+	///The age at which the core begins to form in Gyr.
 	virtual double core_formation_age() const {return core_formation;}
 };
 

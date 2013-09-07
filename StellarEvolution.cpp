@@ -1,11 +1,17 @@
+/**\file
+ *
+ * \brief Defines some of the methods of the classes for interpolating among
+ * stellar evolution tracks.
+ * 
+ * \ingroup StellarSystem_group
+ */
+
 #include "StellarEvolution.h"
 #include "Error.h"
 #include <math.h>
 #include <memory>
 #include <sstream>
-///From the pre-computed array of the derivatives up to the given order
-///in underlying_deriv_values with respect to  ln(x) and returns the
-///order-th derivative with respect to x.
+
 double LogArgDerivatives::transform_log_arg_deriv(unsigned order) const
 {
 	if(order==1) return underlying_deriv_values[0]/x;
@@ -16,7 +22,6 @@ double LogArgDerivatives::transform_log_arg_deriv(unsigned order) const
 			"implemented.");
 }
 
-///Returns the deriv_order-th derivative of the quantity
 double LogArgDerivatives::order(unsigned deriv_order) const
 {
 	if(deriv_order==0) {
@@ -32,7 +37,6 @@ double LogArgDerivatives::order(unsigned deriv_order) const
 	return deriv_values[deriv_order-1];
 }
 
-///Returns the deriv_order-th derivative of the quantity
 double InterpolatedDerivatives::calc_deriv(unsigned deriv_order) const
 {
 	if(deriv_order>2) return 0.0;
@@ -43,7 +47,6 @@ double InterpolatedDerivatives::calc_deriv(unsigned deriv_order) const
 			interp_values)(stellar_mass);
 }
 
-///Returns the deriv_order-th derivative of the quantity
 double ScaledDerivatives::calc_deriv(unsigned deriv_order=1) const
 {
 	return (correct_log_arg ? 1.0 : 
@@ -51,12 +54,8 @@ double ScaledDerivatives::calc_deriv(unsigned deriv_order=1) const
 		underlying_deriv->order(deriv_order);
 }
 
-///Prepares the class to interpolate to a mass above the high--low
-///cutoff
 void EvolvingStellarQuantity::init_high_mass(
-		///The masses for which evolution tracks are given
 		const std::valarray<double> &masses_of_tracks,
-		////The evolution tracks of the relevant quantity
 		const std::list<const OneArgumentDiffFunction *> 
 		&evolution_tracks)
 {
@@ -91,15 +90,10 @@ void EvolvingStellarQuantity::init_high_mass(
 	max_age*=age_scaling;
 }
 
-///Prepares the class to interpolate to a mass below the high--low
-///cutoff
 void EvolvingStellarQuantity::init_low_mass(
-		///The masses for which evolution tracks are given
 		const std::valarray<double> &masses_of_tracks,
-		////The evolution tracks of the relevant quantity
 		const std::list<const OneArgumentDiffFunction *> 
 		&evolution_tracks,
-		///The mass above which the stars are considered high mass
 		double max_low_mass)
 {
 	std::list<const OneArgumentDiffFunction *>::const_iterator 
@@ -153,9 +147,6 @@ void EvolvingStellarQuantity::init_low_mass(
 			age_scaling_above*max_age_above);
 }
 
-///Interpolate the quantity to the desired age assuming we are in the
-///high mass regime. If derivatives is not NULL it is initialized that to a
-///pointer to a derivatives at the current age structure.
 double EvolvingStellarQuantity::high_mass_interp(double age,
 		const ScaledDerivatives **derivatives) const
 {
@@ -185,9 +176,6 @@ double EvolvingStellarQuantity::high_mass_interp(double age,
 	} else return (*closest_high_mass_track)(model_age);
 }
 
-///Interpolate the quantity to the desired age assuming we are in the
-///low mass regime. If derivatives is not NULL initializes that to a
-///pointer to a derivatives at the current age structure.
 double EvolvingStellarQuantity::low_mass_interp(double age,
 		const InterpolatedDerivatives **derivatives) const
 {
@@ -246,43 +234,12 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 	return result;
 }
 
-///Create an evolving quantity out of the given evolution tracks 
-///that interpolates to the given mass
 EvolvingStellarQuantity::EvolvingStellarQuantity(
-		double mass, ///< The stellar mass to interpolate to
-		///The masses for which evolution tracks are given
-		const std::valarray<double> &masses_of_tracks,
-		////The evolution tracks of the relevant quantity
-		const std::list<const OneArgumentDiffFunction *>
-		&evolution_tracks,
-
-		///Whether the track uses log(age) as the independent argument
-		///instead of age.
-		bool log_age,
-
-		///The mass above which the stars are considered 
-		///high mass
-		double max_low_mass,
-		///When interpolating the age of each low mass model is scaled by
-		///the mass to negative this power in order to make mass
-		///dependence smoother.
-		double low_mass_age_scaling,
-		///When interpolating the age of each high mass model is scaled 
-		///by the mass to negative this power in order to make mass
-		///dependence smoother.
-		double high_mass_age_scaling,
-		///Low mass models are included in the mass interpolation only if
-		///the required age is no larger than the maximum tabulated age 
-		///times this factor.
-		double low_mass_extrapolate,
-		///High mass models are included in the mass interpolation only
-		///if the required age is no larger than the maximum tabulated 
-		///age times this factor.
-		double high_mass_extrapolate,
-		
-		///Whether this is a quantity that is identically zero below some
-		///age and turns on afterwards
-		bool starts_zero) :
+		double mass, const std::valarray<double> &masses_of_tracks,
+		const std::list<const OneArgumentDiffFunction *> &evolution_tracks,
+		bool log_age, double max_low_mass, double low_mass_age_scaling,
+		double high_mass_age_scaling, double low_mass_extrapolate,
+		double high_mass_extrapolate, bool starts_zero) :
 	use_log_age(log_age), initially_zero(starts_zero), stellar_mass(mass), 
 	age_scaling_low_mass(low_mass_age_scaling),
 	age_scaling_high_mass(high_mass_age_scaling),
@@ -299,14 +256,12 @@ EvolvingStellarQuantity::EvolvingStellarQuantity(
 	}
 }
 
-///Return the value the quantity takes at the given age.
 double EvolvingStellarQuantity::operator()(double age) const
 {
 	if(is_low_mass) return low_mass_interp(age);
 	else return high_mass_interp(age);
 }
 
-///Return the age derivative of the quantity at the given age.
 const FunctionDerivatives *EvolvingStellarQuantity::deriv(double age) const
 {
 	if(is_low_mass) {
@@ -321,72 +276,19 @@ const FunctionDerivatives *EvolvingStellarQuantity::deriv(double age) const
 	}
 }
 
-///Initialize the stellar evolution variable with evolution tracks and 
-///desired smoothing for the various quantities which need smoothing.
 void StellarEvolution::interpolate_from(
-	///The stellar masses (in solar masses) for which evolution tracks
-	///are tabulated.
 	const std::valarray<double> &tabulated_masses,
-	
-	///A set of ages for each track.
 	const std::list< std::valarray<double> > &tabulated_ages,
-
-	///A set of stellar radii for each age of each track.
 	const std::list< std::valarray<double> > &tabulated_radii,
-
-	///A set of moments of inertia of the stellar convective zone for 
-	///each age of each track.
 	const std::list< std::valarray<double> > &tabulated_conv_inertia,
-
-	///A set of moments of inertia of the radiative zone for each age
-	///of each track.
 	const std::list< std::valarray<double> > &tabulated_rad_inertia,
-
-	///A set of masses of the stellar radiative zone for each age of
-	///each track 
 	const std::list< std::valarray<double> > &tabulated_rad_mass,
-
-	///A set of radii (in solar radii) for the convective-envelope 
-	///boundary for each age of each track.
 	const std::list< std::valarray<double> > &tabulated_core_env_boundary,
-
-	///How much to smooth the moment of inertia of the convective zone
-	///when fitting.
-	double smooth_conv_inertia,
-
-	///How much to smooth the moment of inertia of the entire star
-	///when fitting.
-	double smooth_rad_inertia,
-
-	///How much to smooth the mass in the radiative zone when fitting.
+	double smooth_conv_inertia, double smooth_rad_inertia,
 	double smooth_rad_mass,
-	
-	///A set of luminosities (in solar luminosities) for each age of each
-	///track. Can be omitted if lominosity interpolation is not necessary.
 	const std::list< std::valarray<double> > &tabulated_luminosities,
-
-	///The mass above which the stars are considered 
-	///high mass
-	double max_low_mass,
-
-	///When interpolating the age of each low mass model is scaled by
-	///the mass to negative this power in order to make mass
-	///dependence smoother.
-	double low_mass_age_scaling,
-
-	///When interpolating the age of each high mass model is scaled 
-	///by the mass to negative this power in order to make mass
-	///dependence smoother.
-	double high_mass_age_scaling,
-
-	///Low mass models are included in the mass interpolation only if
-	///the required age is no larger than the maximum tabulated age 
-	///times this factor.
-	double low_mass_extrapolate,
-
-	///High mass models are included in the mass interpolation only
-	///if the required age is no larger than the maximum tabulated 
-	///age times this factor.
+	double max_low_mass, double low_mass_age_scaling,
+	double high_mass_age_scaling, double low_mass_extrapolate,
 	double high_mass_extrapolate)
 {
 	mass_break=max_low_mass;
@@ -512,18 +414,9 @@ void StellarEvolution::interpolate_from(
 			"of masses in StellarEvolution::interpolate_from.");
 }
 
-///Returns a single argument function which gives the moment of
-///inertia of the specified zone of a star of the specified mass as a
-///function of age. The result must be destroyed when it becomes
-///obsolete.
 const EvolvingStellarQuantity 
 	*StellarEvolution::interpolate_moment_of_inertia(
-		///The mass to interpolate to in solar masses.
-		double stellar_mass,
-		///The part of the star for which the moment of inertia is desired.
-		StellarZone zone,
-		///The present age of the star, use only if fudging is desired.
-		double present_age) const
+			double stellar_mass, StellarZone zone, double present_age) const
 {
 	switch (zone) {
 		case radiative : return new EvolvingStellarQuantity(stellar_mass,
@@ -558,11 +451,8 @@ const EvolvingStellarQuantity
 	}
 }
 
-///Returns a single argument function which gives the radius of a 
-///star of the specified mass as a function of age. The result must
-///be destroyed when it becomes obsolete.
 const EvolvingStellarQuantity *StellarEvolution::interpolate_radius(
-		double stellar_mass, ///<See interpolate_moment_of_inertia
+		double stellar_mass,
 		double present_age) const
 {
 	return new EvolvingStellarQuantity(stellar_mass, *track_masses, 
@@ -570,9 +460,6 @@ const EvolvingStellarQuantity *StellarEvolution::interpolate_radius(
 			high_age_scaling, extrapolate_low, extrapolate_high);
 }
 
-///Returns a single argument function which gives the luminosity of a 
-///star of the specified mass as a function of age. The result must
-///be destroyed when it becomes obsolete.
 const EvolvingStellarQuantity *StellarEvolution::interpolate_luminosity(
 		double stellar_mass, double present_age) const
 {
@@ -582,10 +469,6 @@ const EvolvingStellarQuantity *StellarEvolution::interpolate_luminosity(
 			high_age_scaling, extrapolate_low, extrapolate_high);
 }
 
-///Returns a single argument function which gives the mass of
-///of the specified zone of a star of the specified mass as a
-///function of age. The result must be destroyed when it becomes
-///obsolete.
 const EvolvingStellarQuantity *StellarEvolution::interpolate_zone_mass(
 		double stellar_mass, StellarZone zone) const
 {
@@ -596,11 +479,6 @@ const EvolvingStellarQuantity *StellarEvolution::interpolate_zone_mass(
 			interpolated_rad_mass, true, mass_break, low_age_scaling,
 			high_age_scaling, extrapolate_low, extrapolate_high, true);
 }
-
-///Returns a single argument function which gives the radius of the 
-///convective-radiative boundary for a star of the specified mass as
-///a function of age. The result must be destroyed when it becomes 
-///obsolete.
 
 const EvolvingStellarQuantity *StellarEvolution::interpolate_core_boundary(
 		double stellar_mass,

@@ -147,7 +147,7 @@ public:
 			///zero.
 			double dissipation_transition_width,
 
-			///\brief The frequency of the stellar convective zone while the
+			///The frequency of the stellar convective zone while the
 			///disk is present in rad/day.
 			double disk_lock_ang_vel,
 			
@@ -228,7 +228,12 @@ public:
 	///at the given age (in Gyr).
 	///
 	///Units: \f$M_\odot \cdot R_\odot^2/\mathrm{Gyr}^\mathrm{order}\f$
-	double moment_of_inertia_deriv(double age, StellarZone zone,
+	double moment_of_inertia_deriv(
+			///Stellar age in Gyr.
+			double age,
+			
+			///The zone for which we need the moment of inertia derivative.
+			StellarZone zone,
 
 			///The order of the derivative desired (if >2 result is zero).
 			int order=1) const;
@@ -517,7 +522,11 @@ public:
 			///The derivative of the spin frequency of the convective
 			///envelope with respect to whatever we want the torque 
 			///differentiated against.
-			double conv_frequency_deriv, bool with_respect_to_age=false)
+			double conv_frequency_deriv,
+			
+			///Set to true if the derivatives of the differential rotation
+			///and the convective zone frequency are with respect to age.
+			bool with_respect_to_age=false)
 		const;
 
 	///\brief The torque on the stellar envelope due to the core-envelope
