@@ -1,10 +1,18 @@
+/**\file
+ *
+ * \brief Implements some of the members of the OrbitSolver class, the
+ * various stopping conditions and a number of other classes used while
+ * calculating the orbital evolution.
+ * 
+ * \ingroup OrbitSolver_group
+ */
+
 #include "OrbitSolver.h"
 #include <iostream>
 #include <iomanip>
 
 const double Rsun_AU=AstroConst::solar_radius/AstroConst::AU;
 
-///More civilized output for EvolModeType variables.
 std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode)
 {
 	switch(evol_mode) {
@@ -18,7 +26,6 @@ std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode)
 	return os;
 }
 
-///More civilized output for StoppingConditionType variables.
 std::ostream &operator<<(std::ostream &os,
 		const StoppingConditionType &stop_cond_type)
 {
@@ -33,7 +40,6 @@ std::ostream &operator<<(std::ostream &os,
 	return os;
 }
 
-///More civilized output for EvolVarType variables.
 std::ostream &operator<<(std::ostream &os, const EvolVarType &evol_var)
 {
 	switch(evol_var) {
@@ -60,8 +66,6 @@ std::ostream &operator<<(std::ostream &os, const StopInformation &stop)
 	return os;
 }
 
-///Returns the difference between the orbital and stellar spin angular
-///velocities divided by the orbital angular velocity.
 std::valarray<double> SynchronizedCondition::operator()(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
@@ -112,10 +116,6 @@ double no_planet_dwconv_dt(double age, const std::valarray<double> &orbit,
 	return (no_planet_diff_eq[0] - dIconv_dt*worb)/Iconv;
 }
 
-///Returns the difference between the maximum tidal evolution of the
-///semimajor axis and the evolution required to keep the star spinning
-///synchronously with the orbit divided by the evolution required to keep
-///the lock.
 std::valarray<double> BreakLockCondition::operator()(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
@@ -135,8 +135,6 @@ std::valarray<double> BreakLockCondition::operator()(double age,
 			(max_semi_evol - da_dt)/da_dt, 1);
 }
 
-///Returns the difference between the semimajor axis and the larger of
-///the roche radius and the stellar radius divided by the latter.
 std::valarray<double> PlanetDeathCondition::operator()(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
@@ -181,9 +179,6 @@ double convective_frequency(double age, const StellarSystem &system,
 	}
 }
 
-///Returns the difference between the convective angular velocity and the
-///wind saturation angular velocity divided by the wind saturation
-///angular velocity.
 std::valarray<double> WindSaturationCondition::operator()(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
@@ -199,8 +194,6 @@ std::valarray<double> WindSaturationCondition::operator()(double age,
 	return std::valarray<double>((wconv-wsat)/wsat, 1);
 }
 
-///Returns the difference between the convective angular velocity and the
-//threshold velocity
 std::valarray<double> RotFastCondition::operator()(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
@@ -214,7 +207,6 @@ std::valarray<double> RotFastCondition::operator()(double age,
 	return std::valarray<double>((wconv-spin_thres)/spin_thres, 1);
 }
 
-///Adds the conditions in RHS to the conditions of *this.
 CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		const CombinedStoppingCondition &rhs)
 {
@@ -224,7 +216,6 @@ CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 	return *this;
 }
 
-///Adds RHS to the conditions of *this.
 CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		const StoppingCondition *rhs)
 {
@@ -232,8 +223,6 @@ CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 	return *this;
 }
 
-///Deletes all subconditions, unless no_delete_subcond has been
-///previously called.
 CombinedStoppingCondition::~CombinedStoppingCondition()
 {
 	for(std::vector<const StoppingCondition *>::const_iterator
@@ -241,7 +230,6 @@ CombinedStoppingCondition::~CombinedStoppingCondition()
 		delete *i;
 }
 
-///Returns the values of all stopping sub_conditions
 std::valarray<double> CombinedStoppingCondition::operator()(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
@@ -264,8 +252,6 @@ std::valarray<double> CombinedStoppingCondition::operator()(double age,
 	return result;
 }
 
-///A wrapper that allows the stellar system differential equation to be passed
-///to the GSL ODE solver.
 int stellar_system_diff_eq(double age, const double *orbital_parameters,
 		double *orbital_derivatives, void *system_mode_windstate)
 {
@@ -301,8 +287,6 @@ int stellar_system_diff_eq(double age, const double *orbital_parameters,
 	return result;
 }
 
-///A wrapper tha allows the stellar system jacobian to be passed
-///to the GSL ODE solver.
 int stellar_system_jacobian(double age, const double *orbital_parameters,
 		double *param_derivs, double *age_derivs,void *system_mode_windstate)
 {
@@ -337,8 +321,6 @@ int stellar_system_jacobian(double age, const double *orbital_parameters,
 	return result;
 }
 
-///Increments all the iterators passed arguments, taking care of the
-///switch from history to discarded if necessary.
 void StopHistoryInterval::advance_iterator_set(
 		std::list<double>::const_iterator &age_i,
 		std::list< std::valarray<double> >::const_iterator &cond_i,
@@ -354,8 +336,6 @@ void StopHistoryInterval::advance_iterator_set(
 	}
 }
 
-///Decrements all the iterators passed arguments, taking care of the
-///switch from discarded to history if necessary.
 void StopHistoryInterval::retreat_iterator_set(
 		std::list<double>::const_iterator &age_i,
 		std::list< std::valarray<double> >::const_iterator &cond_i,
@@ -371,46 +351,18 @@ void StopHistoryInterval::retreat_iterator_set(
 	--age_i; --cond_i; --deriv_i;
 }
 
-StopHistoryInterval::StopHistoryInterval(
-		///The number of points in the interval.
-		size_t num_points,
-
-		///An iterator pointing to the first age in the interval.
+StopHistoryInterval::StopHistoryInterval(size_t num_points,
 		std::list<double>::const_iterator first_age,
-
-		///An iterator pointing to one past the last age in the history.
 		std::list<double>::const_iterator history_age_end,
-
-		///An iterator pointing to the first age in the discarded list.
 		std::list<double>::const_iterator discarded_age_begin,		
-
-		///An iterator pointing to the first stopping condition in the
-		///interval.
+		std::list< std::valarray<double> >::const_iterator first_stop_cond,
 		std::list< std::valarray<double> >::const_iterator
-		first_stop_cond,
-
-		///An iterator pointing to one past the last stopping condition
-		///in the history.
+			stop_cond_history_end,
 		std::list< std::valarray<double> >::const_iterator
-		stop_cond_history_end,
-
-		///An iterator pointing to the first stopping condition in the
-		///discarded list.
+			stop_cond_discarded_begin,
+		std::list< std::valarray<double> >::const_iterator first_stop_deriv,
 		std::list< std::valarray<double> >::const_iterator
-		stop_cond_discarded_begin,
-
-		///An iterator pointing to the first stopping derivative in the
-		///interval.
-		std::list< std::valarray<double> >::const_iterator
-		first_stop_deriv,
-
-		///An iterator pointing to one past the last stopping derivative
-		///in the history.
-		std::list< std::valarray<double> >::const_iterator
-		stop_deriv_history_end,
-
-		///An iterator pointing to the first stopping derivative in the
-		///discarded list.
+			stop_deriv_history_end,
 		std::list< std::valarray<double> >::const_iterator
 		stop_deriv_discarded_begin) :
 			__num_points(num_points), __point_i(0), __first_age(first_age),
@@ -450,7 +402,6 @@ StopHistoryInterval::StopHistoryInterval(const StopHistoryInterval &orig) :
 	__stop_deriv_i(orig.__stop_deriv_i)
 {}
 
-///Makes the current point the first point in the interval
 void StopHistoryInterval::reset()
 {
 	__point_i=0;
@@ -459,7 +410,6 @@ void StopHistoryInterval::reset()
 	__stop_deriv_i=__first_stop_deriv;
 }
 
-///Advances to the next point in the interval.
 StopHistoryInterval &StopHistoryInterval::operator++()
 {
 	++__point_i;
@@ -470,7 +420,6 @@ StopHistoryInterval &StopHistoryInterval::operator++()
 	return *this;
 }
 
-///Advances to the next point in the interval.
 StopHistoryInterval StopHistoryInterval::operator++(int)
 {
 	StopHistoryInterval result(*this);
@@ -478,7 +427,6 @@ StopHistoryInterval StopHistoryInterval::operator++(int)
 	return result;
 }
 
-///Advances to the next point in the interval.
 StopHistoryInterval &StopHistoryInterval::operator--()
 {
 	if(__point_i==0) throw Error::Runtime("Attempting to go before the "
@@ -488,7 +436,6 @@ StopHistoryInterval &StopHistoryInterval::operator--()
 	return *this;
 }
 
-///Advances to the next point in the interval.
 StopHistoryInterval StopHistoryInterval::operator--(int)
 {
 	StopHistoryInterval result(*this);
@@ -496,9 +443,6 @@ StopHistoryInterval StopHistoryInterval::operator--(int)
 	return result;
 }
 
-///Moves the entire interval, along with the current point left n points,
-///gaining n new points at the front and losing n at the back. If there
-///are not enough points in the history undefined behavior results.
 StopHistoryInterval &StopHistoryInterval::operator<<(size_t n)
 {
 	for(size_t i=0; i<n; i++) {
@@ -510,8 +454,6 @@ StopHistoryInterval &StopHistoryInterval::operator<<(size_t n)
 	return *this;
 }
 
-///Moves the entire interval, along with the current point right n points,
-///gaining n new points at the back and losing n at the front.
 StopHistoryInterval &StopHistoryInterval::operator>>(size_t n)
 {
 	for(size_t i=0; i<n; i++) {
@@ -522,7 +464,6 @@ StopHistoryInterval &StopHistoryInterval::operator>>(size_t n)
 	return *this;
 }
 
-///Copies rhs to this.
 StopHistoryInterval &StopHistoryInterval::operator=(
 		const StopHistoryInterval &rhs)
 {
@@ -546,7 +487,6 @@ StopHistoryInterval &StopHistoryInterval::operator=(
 	return *this;
 }
 
-///Checks if the RHS is the same interval and is at the same point in it.
 bool StopHistoryInterval::operator==(const StopHistoryInterval &rhs)
 {
 	return __num_points==rhs.__num_points &&
@@ -568,7 +508,6 @@ bool StopHistoryInterval::operator==(const StopHistoryInterval &rhs)
 		__stop_deriv_i==rhs.__stop_deriv_i;
 }
 
-///Adds the n points before the first point to the interval.
 void StopHistoryInterval::grow_left(size_t n)
 {
 	__num_points+=n;
@@ -579,7 +518,6 @@ void StopHistoryInterval::grow_left(size_t n)
 	}
 }
 
-///Adds the n points before the first point to the interval.
 void StopHistoryInterval::grow_right(size_t n)
 {
 	__num_points+=n;
@@ -634,12 +572,6 @@ std::ostream &operator<<(std::ostream &os, StopHistoryInterval interval)
 	return os;
 }
 
-///Finds the smallest possible interval that contains a zero crossing/or
-///an extremum straddling the history and discarded stop conditions, 
-///containing at most the specified number of points (could be less if 
-///there are not enough points). The interval is also guaranteed to
-///contain at least one point in the history and one point in the
-///discarded list.
 StopHistoryInterval OrbitSolver::select_stop_condition_interval(
 		bool crossing, size_t cond_ind, size_t max_points) const
 {
@@ -694,8 +626,6 @@ StopHistoryInterval OrbitSolver::select_stop_condition_interval(
 	return result;
 }
 
-///Generates a nicely formatted table of the contents of the discarded
-///and history stopping condition information.
 void OrbitSolver::output_history_and_discarded(std::ostream &os)
 {
 	std::streamsize orig_precision=os.precision();
@@ -762,7 +692,6 @@ void OrbitSolver::output_history_and_discarded(std::ostream &os)
 	os.flags(orig_flags);
 }
 
-///Removes all stored discarded stop condition information.
 void OrbitSolver::clear_discarded()
 {
 	discarded_stop_ages.clear();
@@ -770,8 +699,6 @@ void OrbitSolver::clear_discarded()
 	stop_deriv_discarded.clear();
 }
 
-///Inserts a new entry in the discarded ages, stop conditions and
-///derivatives, making sure the ages remain ordered.
 void OrbitSolver::insert_discarded(double age,
 		const std::valarray<double> &current_stop_cond,
 		const std::valarray<double> &current_stop_deriv)
@@ -788,9 +715,6 @@ void OrbitSolver::insert_discarded(double age,
 	stop_deriv_discarded.insert(deriv_i, current_stop_deriv);
 }
 
-///Appends the given orbit and derivatives to tabulated_orbit and
-///tabulated_deriv respectively assuming the orbit contains the
-///quantities evolved for the given evolution mode.
 void OrbitSolver::append_to_orbit(const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
 		EvolModeType evolution_mode, double age, const StellarSystem &system,
@@ -810,7 +734,6 @@ void OrbitSolver::append_to_orbit(const std::valarray<double> &orbit,
 	tabulated_evolution_mode.push_back(evolution_mode);
 }
 
-///Clears the current stopping condition history.
 void OrbitSolver::clear_history()
 {
 	orbit_history.clear();
@@ -821,10 +744,6 @@ void OrbitSolver::clear_history()
 	clear_discarded();
 }
 
-///Rewinds the evlution to the last step before the given age, setting 
-///the orbit and derivatives to what they were at that step and removing
-///any items from the histories and tabulations that are later than 
-///max_age. Returns the age of the last non-erased step.
 double OrbitSolver::go_back(double max_age, std::valarray<double> &orbit,
 		std::valarray<double> &derivatives)
 {
@@ -855,8 +774,6 @@ double OrbitSolver::go_back(double max_age, std::valarray<double> &orbit,
 	return stop_history_ages.back();
 }
 
-///Returns the dimension of the ODEs governing the evolution of the
-///given type.
 size_t OrbitSolver::ode_dimension(EvolModeType evolution_mode)
 {
 	switch(evolution_mode) {
@@ -869,10 +786,6 @@ size_t OrbitSolver::ode_dimension(EvolModeType evolution_mode)
 	}
 }
 
-///Estimates the value and age of an extremum if it potentially can cross
-///a zero by using the last and past tabulated points. If no extremum is
-///indicated by the points, or if it is in the wrong direction, returns
-///the result of the default constructor of ExtremumInformation.
 ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
 		size_t condition_index) const
 {
@@ -919,10 +832,6 @@ ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
 	return result;
 }
 
-///Estimates the value and age of an extremum if it potentially can cross
-///a zero by using the last and past tabulated points. If no extremum is
-///indicated by the points, or if it is in the wrong direction, returns
-///the result of the default constructor of ExtremumInformation.
 ExtremumInformation OrbitSolver::extremum_from_history(
 		size_t condition_index) const
 {
@@ -946,8 +855,6 @@ ExtremumInformation OrbitSolver::extremum_from_history(
 	return result;
 }
 
-///Estimates the age at which the stopping condition with the given index
-///crossed zero. If no zero-crossing is indicated, Inf is returned.
 double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 	const
 {
@@ -975,8 +882,6 @@ double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 			range_low, range_high);
 }
 
-///Estimates the age at which the stopping condition with the given index
-///crossed zero. If no zero-crossing is indicated, Inf is returned.
 double OrbitSolver::crossing_from_history(size_t condition_index) const
 {
 	if(stop_history_ages.size()==0 || 
@@ -995,8 +900,6 @@ double OrbitSolver::crossing_from_history(size_t condition_index) const
 			next_stop_cond, prev_stop_deriv, next_stop_deriv);
 }
 
-///Initialized the skip_history_zerocrossing and skip_history_extremum
-///arrays appropriately after a mode change.
 void OrbitSolver::initialize_skip_history(const StoppingCondition &stop_cond,
 			StoppingConditionType stop_reason)
 {
@@ -1015,8 +918,6 @@ void OrbitSolver::initialize_skip_history(const StoppingCondition &stop_cond,
 	}
 }
 
-///Updates the skip_history_zerocrossing and skip_history_extremum
-///arrays appropriately after an acceptable step.
 void OrbitSolver::update_skip_history(
 		const std::valarray<double> &current_stop_cond,
 		const StoppingCondition &stop_cond,
@@ -1034,8 +935,6 @@ void OrbitSolver::update_skip_history(
 	}
 }
 
-///Return true iff the step with the corresponding stop information is
-///acceptable.
 bool OrbitSolver::acceptable_step(double age,
 		const StopInformation &stop_info)
 {
@@ -1043,10 +942,6 @@ bool OrbitSolver::acceptable_step(double age,
 			std::abs(stop_info.stop_condition_precision())<=precision;
 }
 
-///This function is called after every GSL step. It updates the
-///stop_cond_history and stop_deriv_history variables appropriately.
-///Returns the full information about the closest estimated age where a
-///condition is zero or an extremum exists which might have crossed zero.
 StopInformation OrbitSolver::update_stop_condition_history(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
@@ -1178,7 +1073,6 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 	return result;
 }
 
-///Returns the stopping condition which ends the given evolution mode.
 CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
 		EvolModeType evolution_mode, double initial_semimajor,
 		const Planet *planet) const
@@ -1202,11 +1096,6 @@ CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
 	return result;
 }
 
-///Returns the evolution mode that the system is entering, assuming that
-///some critical age is reached (e.g. the disk dissipated). The last 
-///orbital state should be orbit (in the old evolution mode), the 
-///semimajor at which the planet starts after the disk dissipates is
-///initial_semimajor (in AU) and the previous mode was evolution_mode.
 EvolModeType OrbitSolver::critical_age_evol_mode(double age, 
 		const std::valarray<double> &orbit,
 		double initial_semimajor, const StellarSystem &system, 
@@ -1243,10 +1132,6 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 	return (in_sync>0 ? FAST_PLANET : SLOW_PLANET);
 }
 
-///Returns the evolution mode that the system is entering, assuming that
-///the last orbital state is orbit (in the old evolution mode), the
-///semimajor at which the planet starts after the disk dissipates is
-///initial_semimajor (in AU) and the previous mode was evolution_mode.
 EvolModeType OrbitSolver::next_evol_mode(double age,
 		const std::valarray<double> &orbit,
 		double initial_semimajor, const StellarSystem &system,
@@ -1288,8 +1173,6 @@ EvolModeType OrbitSolver::next_evol_mode(double age,
 	}
 }
 
-///Returns what age the evolution with the given mode should stop if
-///no other stopping condition occurs.
 double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
 		const StellarSystem &system, double planet_formation_age)
 {
@@ -1318,8 +1201,6 @@ double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
 	return result;
 }
 
-///Transforms orbital parameters from one evolution mode (from_mode) to
-///another (to_mode).
 std::valarray<double> OrbitSolver::transform_orbit(EvolModeType from_mode,
 		EvolModeType to_mode, double age,
 		const std::valarray<double> &from_orbit, 
@@ -1386,8 +1267,6 @@ std::valarray<double> OrbitSolver::transform_orbit(EvolModeType from_mode,
 	return to_orbit;
 }
 
-///Transforms the deriatives of the orbital parameters from one evolution
-///mode (from_mode) to another (to_mode).
 std::valarray<double> OrbitSolver::transform_derivatives(
 		EvolModeType from_mode, EvolModeType to_mode, double age,
 		const std::valarray<double> &from_orbit, 
@@ -1463,7 +1342,6 @@ std::valarray<double> OrbitSolver::transform_derivatives(
 	return to_deriv;
 }
 
-///Clears any previously calculated evolution.
 void OrbitSolver::reset()
 {
 	tabulated_ages.clear();
@@ -1481,48 +1359,13 @@ OrbitSolver::OrbitSolver(
 	spin_thres(spin_thres), main_seq_start(main_seq_start),
 	tabulated_orbit(3), tabulated_deriv(3)
 {
-	/* Prepare to solve for the orbital evolution over the given range
-	and to the required precision. */
 	if (max_age > MAX_END_AGE) end_age = MAX_END_AGE;
 }
 
-///Actually solves the given differential equation with the given
-///boundary conditions.
-void OrbitSolver::operator()(
-		///The stellar system to calculate the evolution for
-		StellarSystem &system,
-
-		///The maximum size of the time steps allowed (useful if finer
-		///sampling of the output than default is necessary).
-		double max_step,
-
-		///The age at which a planet magically appears in a perfectly
-		///circularized orbit and starts affecting the system. By
-		///default, the planet is assumed to always be there and
-		///planet_formation_semimajor has no effect.
-		double planet_formation_age,
-
-		///The semimajor axis at which the planet first appears. This
-		///argument is ignore if planet_formation_age<=start_age.
-		double planet_formation_semimajor,
-
-		///The age at which to start the evolution. Use NaN (default) to
-		///start when the radiative core first starts to appear, in
-		///which case, start_orbit and initial_evol_mode should be left
-		///at their default values as well, but planet_formation_age and
-		///planet_formation_semimajor must be specified.
-		double start_age,
-
-		///The initial evolution mode of the system
-		EvolModeType initial_evol_mode,
-
-		///The initial state to start the system in. The contents
-		///depends on initial_evol_mode.
-		const std::valarray<double> &start_orbit,
-		
-		///If given, the evolution mode is kept constant regardless
-		///of what actually occurs with the evolution
-		bool no_evol_mode_change)
+void OrbitSolver::operator()(StellarSystem &system, double max_step,
+		double planet_formation_age, double planet_formation_semimajor,
+		double start_age, EvolModeType initial_evol_mode,
+		const std::valarray<double> &start_orbit, bool no_evol_mode_change)
 {
 	if(std::isnan(start_age))
 		start_age=system.get_star().core_formation_age();
@@ -1652,7 +1495,7 @@ double OrbitSolver::fast_time(StellarSystem &system,
 
 }
 
-///Returns the values of the variables at the tabulated ages.
+
 const std::list<double>
 *OrbitSolver::get_tabulated_var(EvolVarType var_type) const
 {
@@ -1660,8 +1503,6 @@ const std::list<double>
 	return &(tabulated_orbit[var_type]);
 }
 
-///Returns the derivative of the independent variable at the points
-//specified by get_tabulated_indep_var.
 const std::list<double> *OrbitSolver::get_tabulated_var_deriv(
 		EvolVarType var_type) const
 {
