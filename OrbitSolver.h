@@ -275,7 +275,7 @@ public:
 	{return WIND_SATURATION;}
 };
 
-///Satisfied when the star is rotating faster than a threshold.
+///\brief Satisfied when the star is rotating faster than a threshold.
 ///
 ///\ingroup OrbitSolver_group
 class RotFastCondition : public StoppingCondition {
