@@ -1,3 +1,11 @@
+/**\file
+ *
+ * \brief Defines some of the methods of the classes for generating stellar
+ * evolution interpolators from the YREC tracks. 
+ * 
+ * \ingroup StellarSystem_group
+ */
+
 #include "YRECIO.h"
 #include <string>
 #include <sstream>
@@ -44,7 +52,6 @@ bool EvolutionIterator::operator==(const EvolutionIterator &rhs)
 	return mass_iter==rhs.mass_iter;
 }
 
-///Parse the header information from the given track stream.
 YRECHeader::YRECHeader(std::ifstream &track, const std::string &filename)
 {
 	const std::string mass_word="Mtot/Msun", age_word="Age(Gyr)", 
@@ -91,7 +98,6 @@ YRECHeader::YRECHeader(std::ifstream &track, const std::string &filename)
 	track.unget();
 }
 
-///Reads a single evolution track file
 void YRECEvolution::read_model_file(const std::string &filename)
 {
 	std::cerr << "Reading: " << filename << std::endl;
@@ -155,8 +161,6 @@ void YRECEvolution::read_model_file(const std::string &filename)
 	conv_inertias.push_back(list_to_valarray(track_conv_inertias));
 }
 
-///Returns an EvolutionIterator pointing to the beginning of all
-///quantities.
 EvolutionIterator YRECEvolution::begin()
 {
 	EvolutionIterator result;
@@ -171,8 +175,6 @@ EvolutionIterator YRECEvolution::begin()
 	return result;
 }
 
-///Returns an EvolutionIterator pointing to the end of all
-///quantities.
 EvolutionIterator YRECEvolution::end()
 {
 	EvolutionIterator result;
@@ -187,7 +189,6 @@ EvolutionIterator YRECEvolution::end()
 	return result;
 }
 
-///Moves source to right before destination
 void YRECEvolution::move(EvolutionIterator &dest, EvolutionIterator &source)
 {
 	mass_list.splice(dest.mass_iter, mass_list, source.mass_iter);
@@ -204,7 +205,6 @@ void YRECEvolution::move(EvolutionIterator &dest, EvolutionIterator &source)
 			source.rad_inertia_iter);
 }
 
-///Sorts the data by mass.
 void YRECEvolution::sort_masses()
 {
 	EvolutionIterator iter=begin(), stop_iter=end();
@@ -222,20 +222,8 @@ void YRECEvolution::sort_masses()
 	}
 }
 
-///Creates a stellar evolution variable based on evolution tracks coputed
-///with YREC.
-YRECEvolution::YRECEvolution(
-	///The directory containing the YREC evolution tracks
-	const std::string &model_directory,
-	///How much to smooth the moment of inertia of the convective zone
-	///when fitting.
-	double smooth_conv_inertia,
-
-	///How much to smooth the moment of inertia of the radiative zone of the
-	///star when fitting.
-	double smooth_rad_inertia,
-
-	///How much to smooth the mass in the radiative zone when fitting.
+YRECEvolution::YRECEvolution(const std::string &model_directory,
+	double smooth_conv_inertia, double smooth_rad_inertia,
 	double smooth_rad_mass)
 {
 	DIR *dirstream=opendir(model_directory.c_str());
@@ -263,8 +251,6 @@ YRECEvolution::YRECEvolution(
 #ifndef NO_SERIALIZE
 void YRECEvolution::load_state(std::string filename)
 {
-	/*Loads data from serialization. Only call this on objects initialized
-	 * with the default constructor. */
     std::ifstream ifs(filename.c_str());
     boost::archive::text_iarchive ia(ifs);
     ia >> (*this);
@@ -273,14 +259,6 @@ void YRECEvolution::load_state(std::string filename)
 
 void YRECEvolution::save_state(std::string filename) const
 {
-	/*Only call this on objects NOT initialized using the default constructor
-	 * (otherwise it has no data to save). Serializes state to file.
-	 * Recursively saves data of YRECEvolution and every class it depends on:
-	 * StellarEvolution, InterpolatingFunctionALGLIB, OneArgumentDiffFunction,
-	 * OneArgumentFunction, spline1dinterpolant, and
-	 * _spline1dinterpolant_owner. In _spline1dinterpolant_owner, serialize()
-	 * serializes everything EXCEPT p_struct->x.data and p_struct->y.data,
-	 * because I have no idea what they are. .*/
 	std::ofstream ofs(filename.c_str());
 	boost::archive::text_oarchive oa(ofs);
 	oa << (*this);

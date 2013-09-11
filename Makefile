@@ -35,6 +35,11 @@ all: $(ALL_DEP)
 	make -C alglib
 	$(CPP) $(CPPFLAGS) -o main $(ALL_COMPILED) $(LIB)
 
+doc:
+	doxygen documentation/DoxygenConfig
+	chmod a+x documentation/doxygen/html/*.js
+	rsync -azr documentation/doxygen/html/* kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
+
 clean:
 	rm -f $(ALL_OBJ) main
 	make -C alglib clean

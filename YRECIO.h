@@ -1,3 +1,11 @@
+/**\file
+ *
+ * \brief Defines the classes for generating stellar evolution interpolators
+ * from the YREC tracks. 
+ * 
+ * \ingroup StellarSystem_group
+ */
+
 #ifndef __YRECIO_H
 #define __YRECIO_H
 
@@ -13,67 +21,125 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/base_object.hpp>
 
+///\brief A class which parses the header of a YREC evolution track.
+///
+///\ingroup StellarSystem_group
 class YRECHeader {
 private:
-	///The masss for which the tracks provided on construction refers to.
+	///The masss of the tracks provided on construction in \f$M_\odot\f$.
 	double track_mass;
 
-	///The various columns necessary to calculate the orbital evolution.
-	int age_col, radius_col, envelope_mass_col, rad_conv_boundary_col, 
-	    rad_inertia_col, conv_inertia_col, log_luminosity_col;
+	int age_col, ///< The index of the age column in the track.
+		radius_col, ///< The index of the radius column in the track.
+
+		///\brief The index of the mass in the convective envelope column
+		///in the track.
+		envelope_mass_col,
+
+		///The index of the core-envelope boundary column in the track.
+		rad_conv_boundary_col, 
+
+		///The index of the radiative core inertia column in the track.
+	    rad_inertia_col,
+
+		///The index of the convective envelope inertia column in the track.
+		conv_inertia_col,
+
+		///The index of the lg(luminosity) column in the track.
+		log_luminosity_col;
 public:
 	///Parse the header information from the given track stream.
 	YRECHeader(std::ifstream &track, const std::string &filename);
 
-	///Return the stellar mass (in solar masses) for which this tracks 
-	///applies
+	///The stellar mass (in \f$M_\odot\f$) of the track.
 	double get_mass() const {return track_mass;}
 
-	///Return the column index within the track stream that contains the
-	///track ages.
+	///The column index within the track that contains the track ages.
 	int get_age_col() const {return age_col;}
 
-	///Return the column index within the track stream that contains the
-	///track stellar radii.
+	///The column index within the track that contains the stellar radii.
 	int get_radius_col() const {return radius_col;}
 
-	///Return the column index within the track stream that contains the
-	///track stellar log luminosities.
+	///The column index within the track that contains the lg(luminosity).
 	int get_log_luminosity_col() const {return log_luminosity_col;}
 
-	///Returns the column index for the envelope mass.
+	///The column index for the envelope mass.
 	int get_envelope_mass_col() const {return envelope_mass_col;}
 
-	///Returns the column index for the convective-radiative boundary 
-	///radius.
+	///The column index for the convective-radiative boundary radius.
 	int get_core_boundary_col() const {return rad_conv_boundary_col;}
 
-	///Returns the column index for the moment of inertia of the 
-	///radiative core.
+	///The column index for the moment of inertia of the radiative core.
 	int get_rad_inertia_col() const {return rad_inertia_col;}
 
-	///Returns the column index for the moment of inertia of the 
-	///convective envelope.
+	///The column index for the moment of inertia of the convective envelope.
 	int get_conv_inertia_col() const {return conv_inertia_col;}
 };
 
+///\brief An iterator over the list of extracted tracks.
+///
+///\ingroup StellarSystem_group
 class EvolutionIterator {
 public:
+	///\brief Create an iterator, which must have all its *_iter members set
+	///before it can be used.
 	EvolutionIterator() {}
+
+	///Iterator over the masses of the tracks.
 	std::list<double>::iterator mass_iter;
-	std::list< std::valarray<double> >::iterator age_iter, radius_iter,
-		luminosity_iter, rad_mass_iter, core_boundary_iter,
-		conv_inertia_iter, rad_inertia_iter;
+
+	///Iterator over the arrays of ages of the tracks.
+	std::list< std::valarray<double> >::iterator age_iter,
+
+		///Iterator over the arrays of stellar radii of the tracks.
+		radius_iter,
+
+		///Iterator over the arrays of stellar lg(luminosity) of the tracks.
+		luminosity_iter,
+
+		///Iterator over the arrays of core masses of the tracks.
+		rad_mass_iter,
+
+		///\brief Iterator over the arrays of core-envelope boundaries of the
+		///tracks.
+		core_boundary_iter,
+
+		///\brief Iterator over the arrays of convective envelope moments of
+		///inertia of the tracks.
+		conv_inertia_iter,
+		
+		///\brief Iterator over the arrays of radiative core moments of
+		///inertia of the tracks.
+		rad_inertia_iter;
+
+	///Copy orig to *this.
 	EvolutionIterator(const EvolutionIterator &orig);
+
+	///Copy rhs to *this.
 	EvolutionIterator &operator=(const EvolutionIterator &rhs);
+
+	///Advance all iterators to the next track.
 	EvolutionIterator &operator++();
+
+	///Advance all iterators to the next track.
 	EvolutionIterator operator++(int);
+
+	///\brief Is RHS at the same position as this?
+	///
+	///Assumes that the iteration is over the same list of tracks.
 	bool operator==(const EvolutionIterator &rhs);
+
+	///\brief Is RHS at a different position than this?
+	///
+	///Assumes that the iteration is over the same list of tracks.
 	bool operator!=(const EvolutionIterator &rhs) {return !((*this)==rhs);}
 };
 
+///A stellar evolution interpolator based on the YREC tracks.
 class YRECEvolution : public StellarEvolution {
 	friend class boost::serialization::access;
+
+	///Saves the interpolation to a file for faster re-use.
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
 		ar & boost::serialization::base_object<StellarEvolution>(*this);
@@ -82,7 +148,9 @@ class YRECEvolution : public StellarEvolution {
 			core_boundaries & conv_inertias & rad_inertias;
 	}
 private:
+	///The masses of the available tracks.
 	std::list<double> mass_list;
+
 	std::list< std::valarray<double> > 
 		ages, ///< The ages in each track.
 		radii, ///< The stellar radii in each track.	
@@ -101,11 +169,11 @@ private:
 	///Reads a single evolution track file
 	void read_model_file(const std::string &filename);
 
-	///Returns an EvolutionIterator pointing to the beginning of all
+	///\brief Returns an EvolutionIterator pointing to the beginning of all
 	///quantities.
 	EvolutionIterator begin();
 
-	///Returns an EvolutionIterator pointing to the end of all
+	///\brief Returns an EvolutionIterator pointing to the end of all
 	///quantities.
 	EvolutionIterator end();
 
@@ -115,12 +183,15 @@ private:
 	///Sorts the data by mass.
 	void sort_masses();
 public:
+	///Default constructor, use load_state to get a working interpolator.
 	YRECEvolution(){};
-	///Creates a stellar evolution variable based on evolution tracks coputed
-	///with YREC.
+
+	///\brief Creates a stellar evolution interpolator based on evolution
+	///tracks coputed with YREC.
 	YRECEvolution(
 		///The directory containing the YREC evolution tracks
 		const std::string &model_directory,
+
 		///How much to smooth the moment of inertia of the convective zone
 		///when fitting.
 		double smooth_conv_inertia=0,
@@ -132,18 +203,27 @@ public:
 		///How much to smooth the mass in the radiative zone when fitting.
 		double smooth_rad_mass=2);
 
-	/*Loads data from serialization. Only call this on objects initialized
-	 * with the default constructor. */
+	///\brief Loads data from serialization.
+	///
+	///Only call this on objects initialized with the default constructor.
 	void load_state(std::string filename="../interp_state_data");
 
-	/*Only call this on objects NOT initialized using the default constructor
-	 * (otherwise it has no data to save). Serializes state to file.
-	 * Recursively saves data of YRECEvolution and every class it depends on:
-	 * StellarEvolution, InterpolatingFunctionALGLIB, OneArgumentDiffFunction,
-	 * OneArgumentFunction, spline1dinterpolant, and
-	 * _spline1dinterpolant_owner. In _spline1dinterpolant_owner, serialize()
-	 * serializes everything EXCEPT p_struct->x.data and p_struct->y.data,
-	 * because I have no idea what they are. .*/
+	///\brief Serializes the interpolation state to file.
+	///
+	///Only call this on objects NOT initialized using the default constructor
+	///(otherwise it has no data to save). Serializes state to file.
+	///Recursively saves data of YRECEvolution and every class it depends on:
+	/// - StellarEvolution
+	/// - InterpolatingFunctionALGLIB
+	/// - OneArgumentDiffFunction,
+	/// - OneArgumentFunction
+	/// - spline1dinterpolant
+	/// - _spline1dinterpolant_owner.
+	///
+	///In _spline1dinterpolant_owner, serialize() serializes everything
+	///EXCEPT p_struct->x.data and p_struct->y.data, because those are just
+	///copies of the original data on which the spline was based and are not
+	///necessary for evaluating the spline.
 	void save_state(std::string filename="../interp_state_data") const;
 };
 
