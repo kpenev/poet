@@ -384,6 +384,27 @@ the lock.
 
 \subsection NO_PLANET
 
+This is the evolution mode for a star without a planet in orbit and no
+proto-planetary disk. Usually this state is reached after the planet dies.
+The evolution variables are \f$L_\mathrm{conv}\f$ and \f$L_\mathrm{rad}\f$,
+and their evolution is given by:
+\f{eqnarray*}{
+	\frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + 
+	\left(\frac{dL}{dt}\right)_\mathrm{wind}
+\\
+	\frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt}
+\\
+	\Delta
+	L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}-
+		I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}}
+\f}
+
+This evolution mode persists until the end of the star's lifetime.
+
 \defgroup Utilities_group Utilities
 \brief General utilities useful when defining the stellar system or
 the orbit solver.
