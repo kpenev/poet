@@ -222,7 +222,8 @@ int StellarSystem::orbit_differential_equation(
 	else if(assume_sign>0)
 		orbital_derivatives[0]=planet->tidal_decay(age, semimajor, Inf,true);
 	else
-		orbital_derivatives[0]=planet->tidal_decay(age, semimajor, -Inf, true);
+		orbital_derivatives[0]=planet->tidal_decay(age, semimajor, -Inf,
+				true);
 	orbital_derivatives[0] /= std::pow(Rsun_AU, 6.5);
 	double semi_deriv = orbital_derivatives[0]/
 			(6.5*std::pow(orbital_parameters[0], 11.0/13.0))*Rsun_AU;

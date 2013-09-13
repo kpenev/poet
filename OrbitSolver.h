@@ -95,6 +95,9 @@ std::ostream &operator<<(std::ostream &os, const EvolVarType &evol_var);
 
 ///\brief A base class for all stopping conditions.
 ///
+///A more detailed description of the stopping condition mechanism and why it
+///is necessary are given in the \ref stop_cond section.
+///
 ///\ingroup OrbitSolver_group
 class StoppingCondition {
 private:

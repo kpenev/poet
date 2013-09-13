@@ -50,8 +50,339 @@ Describes the star and the planet, including:
 \defgroup OrbitSolver_group Orbit Solver
 \brief Calculates the orbital evolution under tides.
 
-Solves the differential equations governing the evolution of the orbit and
-the stellar spin.
+\section evolution Orbital Evolution
+
+The general evolution equations that govern the tidal evolution of a planet
+around a star in a circular orbit aligned with the stellar rotation are given
+by:
+
+\f{eqnarray}{
+	\frac{da}{dt}&=&\mathrm{sign}(\omega_\mathrm{conv}-\omega_\mathrm{orb})
+	\frac{9}{2}\sqrt{\frac{G}{aM_*}}\left( \frac{R_*}{a}
+	\right)^5\frac{m_p}{Q_*}
+\\
+	\left(\frac{dL}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p
+	M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt}
+\\
+	\left(\frac{dL}{dt}\right)_\mathrm{wind}&=&
+		-K\omega_\mathrm{conv}
+		\min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 
+	\left(
+		\frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot}
+	\right)^{-1/2}
+\\
+	\frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + 
+	\left(\frac{dL}{dt}\right)_\mathrm{wind} +
+	\left(\frac{dL}{dt}\right)_\mathrm{tide}
+\\
+	\frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt}
+\\
+	\Delta
+	L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}-
+		I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}}
+\f}
+
+Where:
+	* \f$M_*\f$ is the mass of the star
+	
+	* \f$R_*\f$ is the radius of the star
+
+	* \f$m_p\f$ is the mass of the planet
+	
+	* \f$Q_*\f$ is the tidal quality factor of the star, which is possibly
+	  dependent on the tidal frequency
+	  (\f$\omega_\mathrm{conv}-\omega_\mathrm{orb}\f$)
+
+	* \f$\mathrm{sign}(\omega_\mathrm{conv}-\omega_\mathrm{orb})\f$ takes the
+	  value 1 when the stellar convective zone is spinning faster than the
+	  planet and -1 when the reverse is true
+
+	* \f$K\f$ is the proportionality constant, parametrizing the strength of
+	  the magnetic wind of the star.
+
+	* \f$\omega_\mathrm{sat}\f$ is the wind saturation frequency
+
+	* \f$I_\mathrm{conv}\f$ is the moment of inertia of the stellar
+	  convective zone
+
+	* \f$L_\mathrm{conv}\f$ is the angular momentum of the stellar convective
+	  zone
+
+	* \f$I_\mathrm{rad}\f$ is the moment of inertia of the stellar radiative
+	  core
+
+	* \f$L_\mathrm{rad}\f$ is the angular momentum of the stellar radiative
+	  core
+
+	* \f$\tau_c\f$ is the stellar core-envelope coupling timescale
+
+	* \f$M_\mathrm{rad}\f$ is the mass of the stellar radiative core
+
+	* \f$R_\mathrm{rad}\f$ is the radius of the radiative-convective boundary
+	  in the star
+
+	* \f$\omega_\mathrm{conv}\equiv L_\mathrm{conv}/I_\mathrm{conv}\f$ is the
+	  angular frequency of the stellar convective zone.
+
+The following default values for the stellar rotation properties reproduce
+the present rotation rate of the Sun at the present age:
+	* \f$K=0.35\ \frac{M_{\odot}R_{\odot}^2
+	  \mathrm{day}^2}{\mathrm{rad}^2\mathrm{Gyr}}\f$
+	* \f$\omega_\mathrm{sat}=1.84\ \mathrm{rad}/\mathrm{day}\f$
+	* \f$\tau_c=5\ \mathrm{Myr}\f$
+
+\section stop_cond Stopping Conditions
+
+Because Equations 1 and 3 have discontinuities (when
+\f$\omega_\mathrm{conv}=\omega_\mathrm{orb}\f$ for equation 1 and when
+\f$\omega_\mathrm{conv}=\omega_\mathrm{sat}\f$), it is beneficial to detect
+when the evolution goes through these discontinuities and ensure that it does
+not simply jump over such points, but lands on them (to some precision of
+course). Such special treatment of allows the evolution to be calculated both
+more accurately and more efficientlfy.
+
+To see this, consider the discontinuity in Equation 1. Because the sign of
+the tidal evolution changes when the spin of the star goes through
+synchroneity with the orbit, it is possible to lock the system in a state
+where the two quantities are locked to each other. If we simply let the ODE
+solver handle this for us, it would result in tiny steps being taken,
+oscillating between super- and sub-synchronous rotation. If we go through the
+effort of detecting this and stopping the evolution precisely at the point
+where synchronous rotation is achieved, we can switch to a different system
+of differential equations that explicitly imposes the spin-orbit lock,
+getting rid of the oscillatory behavior in the evolution of the semimajor
+axis.
+
+The spin-orbit lock may not persist indefinitely. The orbit continues to
+evolve since the system is losing angular momentum due to the stellar wind.
+Because of this, there may come a point when the tidal dissipation in the
+star cannot drain sufficient amount of angular momentum from the orbit to
+compensate for the wind loss and the extra spin up required of the star in
+order to match the shorter orbital period, at which point the evolution has
+to revert back to the non-locked equations.
+
+Next, consider the discontinuity in Equation 3. Because in this case the rate
+of evolution of the convective angular momentum is not discontinuous, but its
+derivative is, the ODE solver can blindly jump over the 
+\f$\omega_\mathrm{conv}=\omega_\mathrm{sat}\f$ point resulting in the change
+from saturated to non-saturated wind (or vice-versa) happening later than it
+should. If on the other hand, we detect this and force the solver to land
+precisely on the critical point, the calculated evolution will be more
+precise.
+
+In addition to the above discontinuities, we have several others, which are
+due to the fact that we may want to include parts of the evolution of the
+system before and after the planet is present.
+
+In the present version of the code, we would like to start the evolution when
+the protoplanetary disk is still present, assuming that the stellar surface
+rotation is locked to the rotation rate of the inner edge of the disk. Then
+at some specified age, the disk is removed (releasing the surface rotation
+rate of the star from the lock) and replaced with a planet in a circular
+orbit, whose evolution we then follow to the point when either the star moves
+off the main-sequenc or the orbit shrinks so much that the planet is tidally
+destroyed or engulfed by the star. If the planet dies before the star, the
+angular momentum of the planetary orbit at the moment of death is added to
+the stellar convective zone and the subseqent rotational evolution of the
+star is followed until the end of its main sequence phase.
+
+Finally, often various applications for which calculating the planet-star
+orbital evolution is necessary require detecting when some special conditions
+in the evolution are met.
+
+In order to accomplish stopping the evolution when some condition is met,
+StoppingCondition objects have been introduced. Each Stopping Condition
+should be a quantity that varies smoothly with the evolution (continuous and
+continuously differentiable up to at least third order) and is zero exactly
+when the condition which should stop the evolution is met (see for example
+SynchronizedCondition, BreakLockCondition, PlanetDeathCondition).
+
+\section modes Evolution Modes
+
+As discussed above, discontinuities in the evolution require switching
+between different systems of differential equations when some
+StoppingCondition is encountered. The system of differential equations to use
+at any given time is determined by an evolution mode (#EvolModeType) and the
+wind saturation state (#WindSaturationState).
+
+The wind saturation state only affects how the following quantity is
+calculated:
+\f[
+	\left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{wind}=\left\{
+	\begin{array}{l@{\quad\mathrm{if}\quad}l}
+		-K\omega_\mathrm{conv}^3
+		\left(
+			\frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot}
+		\right)^{-1/2} & \mathrm{NOT\_SATURATED}\\
+		-K\omega_\mathrm{conv}
+			\min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 
+		\left(
+			\frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot}
+		\right)^{-1/2} & \mathrm{UNKNOWN}\\
+		-K\omega_\mathrm{conv} \omega_\mathrm{sat}^2 
+		\left(
+			\frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot}
+		\right)^{-1/2} & \mathrm{SATURATED}
+	\end{array}
+	\right.
+\f]
+
+Depending on the evolution mode, the evolution is calculated using different
+sets of  variables and equations governing their evolution.
+
+\subsection LOCKED_TO_DISK
+
+This is the evolution mode for a system for which the protoplanetary disk is
+still present. In this case, the spin of the surface convective zone is held
+at some prescribed constant value \f$\omega_\mathrm{disk}\f$, representing
+the orbital frequency of the inner edge of the protoplanetary disk, to which
+the stellar surface rotation is locked.
+
+In this case, the only evolution variable is \f$L_\mathrm{rad}\f$ and the
+equation governing its evolution is:
+\f{eqnarray}{
+	\frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3}
+		R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt}
+		\Delta
+\\
+	L&=&\frac{I_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}}
+		\left(L_\mathrm{rad}-I_\mathrm{rad}\omega_\mathrm{disk}\right)
+\f}
+
+The evolution will switch out of this mode at a prescribed disk-dissipation
+age. The subsequent evolution mode is FAST_PLANET, LOCKED_TO_PLANET or
+SLOW_PLANET depending on the initial semimajor axis at which the planet
+appears.
+
+\subsection FAST_PLANET
+
+This is the evolution mode for a system in which the orbital period is
+shorter than the spin period of the stellar surface convective zone. In this
+case the evolution variables are: \f$a^{6.5}\f$, \f$L_\mathrm{conv}\f$,
+\f$L_\mathrm{rad}\f$, and the equations for their evolution are:
+
+\f{eqnarray*}{
+	\frac{da^{6.5}}{dt}&=&
+		-\frac{9}{13}\sqrt{\frac{G}{M_*}}R_*^5\frac{m_p}{Q_*}
+\\
+	\left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p
+	M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt}
+\\
+	\frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + 
+	\left(\frac{dL}{dt}\right)_\mathrm{wind} +
+	\left(\frac{dL}{dt}\right)_\mathrm{tide}
+\\
+	\frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt}
+\\
+	\Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}-
+		I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}}
+\f}
+
+The reason for using \f$a^{6.5}\f$ instead of \f$a\f$ as the evolution
+variable is evident from the first equation above. The rate at which
+\f$a^{6.5}\f$ evolves is independent of \f$a\f$. In fact, for a constant
+\f$Q_*\f$ it only changes due to \f$R_*\f$ evolving. This allows the ODE
+solver to take much larger steps when the orbit has shrunk than would
+otherwise be possible. 
+
+This evolution mode can end in one of two ways:
+	* The orbit shrinks sufficiently to either be inside the star or inside
+	  the critical size when the planet gets destroyed by the tides from the
+	  star. In which case the subsequent evolution mode is NO_PLANET.
+	* The spin period of the stellar surface convective zone matches the
+	  orbital period. In which case the subsequent evolution mode is either
+	  LOCKED_TO_PLANET or SLOW_PLANET, depending on whether the transfer of
+	  angular momentum due to tides is sufficient to keep the lock.
+
+\subsection LOCKED_TO_PLANET
+
+This is the evolution mode for a system in which the surface rotation of the
+star is held locked to the orbit by the dissipation of the stellar tides. The
+evolution variables are \f$a\f$ and \f$L_\mathrm{rad}\f$ and the equations:
+\f{eqnarray*}{
+	\frac{da}{dt}&=&2\frac{T - \dot{I}_\mathrm{conv}/a}
+		{M_*m_p/(M_*+m_p) - 3I_\mathrm{conv}/a^2}
+\\
+	\left(\frac{dL}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p
+	M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt}
+\\
+	\left(\frac{dL}{dt}\right)_\mathrm{wind}&=&
+		-K\omega_\mathrm{conv}
+		\min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 
+	\left(
+		\frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot}
+	\right)^{-1/2}
+\\
+	\left(\frac{dL}{dt}\right)_\mathrm{coup}&=&
+		\frac{\Delta L}{\tau_c} - \frac{2}{3}
+		R_\mathrm{rad}^2
+		\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt}
+\\
+	T&=&\frac{a}{(M_*+m_p)G}\left[\left(\frac{dL}{dt}\right)_\mathrm{coup} +
+		\left(\frac{dL}{dt}\right)_\mathrm{wind}\right]
+\\
+	\frac{dL_\mathrm{conv}}{dt}&=& 
+	\left(\frac{dL}{dt}\right)_\mathrm{coup} +
+	\left(\frac{dL}{dt}\right)_\mathrm{wind} +
+	\left(\frac{dL}{dt}\right)_\mathrm{tide}
+\\
+	\frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt}
+\\
+	\Delta
+	L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}-
+		I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}}
+\f}
+
+This evolution mode can end either by the planet dying or by the rate of
+transfer of angular momentum from the orbit to the star falling below what is
+required to keep the lock. In the first case, the subsequent evolution mode
+is NO_PLANET and in the other case it is either FAST_PLANET or SLOW_PLANET.
+
+\subsection SLOW_PLANET
+
+This is the evolution mode for a system in which the orbital period is
+longer than the spin period of the stellar surface convective zone. In this
+case the evolution variables are: \f$a^{6.5}\f$, \f$L_\mathrm{conv}\f$,
+\f$L_\mathrm{rad}\f$, and the equations for their evolution are:
+
+\f{eqnarray*}{
+	\frac{da^{6.5}}{dt}&=&
+		\frac{9}{13}\sqrt{\frac{G}{M_*}}R_*^5\frac{m_p}{Q_*}
+\\
+	\left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p
+	M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt}
+\\
+	\frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + 
+	\left(\frac{dL}{dt}\right)_\mathrm{wind} +
+	\left(\frac{dL}{dt}\right)_\mathrm{tide}
+\\
+	\frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3}
+	R_\mathrm{rad}^2
+	\omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt}
+\\
+	\Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}-
+		I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}}
+\f}
+
+This evolution mode can end only if The spin period of the stellar surface
+convective zone matches the orbital period. In which case the subsequent
+evolution mode is either LOCKED_TO_PLANET or FAST_PLANET, depending on
+whether the transfer of angular momentum due to tides is sufficient to keep
+the lock.
+
+\subsection NO_PLANET
 
 \defgroup Utilities_group Utilities
 \brief General utilities useful when defining the stellar system or
