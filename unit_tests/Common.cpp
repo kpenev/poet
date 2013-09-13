@@ -3,7 +3,7 @@
 #include <fstream>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-///Returns the fractional difference between x and y.
+
 bool check_diff(double x, double y, double frac_tolerance, 
 		double abs_tolerance)
 {
@@ -46,7 +46,6 @@ bool approxEqual(double predicted, double actual, double thres) {
 	return getError(predicted, actual) < 0.02;
 }
 
-///The order-th derivative
 double PolynomialEvolutionTrack::order(unsigned deriv_order) const
 {
 	if(deriv_x<xmin || deriv_x>xmax) {
@@ -68,8 +67,6 @@ double PolynomialEvolutionTrack::order(unsigned deriv_order) const
 	return result;
 }
 
-///Uses the given values and polynomials for the quantities, unless they
-///are empty or NaN in which case random polynomials or values are used.
 MockStellarEvolution::MockStellarEvolution(double core_formation_age,
 		const std::valarray< std::valarray<double> > &radius,
 		const std::valarray< std::valarray<double> > &conv_moment_of_inertia,
@@ -101,11 +98,6 @@ MockStellarEvolution::MockStellarEvolution(double core_formation_age,
 	Menv[0][1]+=1;
 }
 
-///Returns a single argument function which gives the moment of
-///inertia of the specified zone of a star of the specified mass as a
-///function of age. The result must be destroyed when it becomes
-///obsolete. If the present age and radius are specified, the result is
-///scaled by (present_radius/r(present_age))^2.
 const EvolvingStellarQuantity *
 MockStellarEvolution::interpolate_moment_of_inertia(
 		double stellar_mass, StellarZone zone, double present_age) const
@@ -119,21 +111,12 @@ MockStellarEvolution::interpolate_moment_of_inertia(
 	}
 }
 
-///Returns a single argument function which gives the radius of a 
-///star of the specified mass as a function of age. The result must
-///be destroyed when it becomes obsolete. If the present age and radius
-///are specified, the result is scaled by
-///(present_radius/r(present_age)).
 const EvolvingStellarQuantity *MockStellarEvolution::interpolate_radius(
 		double stellar_mass, double present_age) const
 {
 	return exact_track(R, stellar_mass);
 }
 
-///Returns a single argument function which gives the mass of
-///of the specified zone of a star of the specified mass as a
-///function of age. The result must be destroyed when it becomes
-///obsolete.
 const EvolvingStellarQuantity *MockStellarEvolution::interpolate_zone_mass(
 		double stellar_mass, StellarZone zone) const
 {
@@ -146,11 +129,6 @@ const EvolvingStellarQuantity *MockStellarEvolution::interpolate_zone_mass(
 	}
 }
 
-///Returns a single argument function which gives the radius of the 
-///convective-radiative boundary for a star of the specified mass as
-///a function of age. The result must be destroyed when it becomes 
-///obsolete. If the present age and radius are specified, the result is
-///scaled by (present_radius/r(present_age)).
 const EvolvingStellarQuantity *
 MockStellarEvolution::interpolate_core_boundary(
 		double stellar_mass, double present_age) const
@@ -176,8 +154,6 @@ StarData::StarData() :
 	}
 }
 
-///Deletes the convective and radiative angular momenta tracks if they
-///were allocated.
 StarData::~StarData()
 {
 	if(Lrad_track) delete Lrad_track;
@@ -292,7 +268,6 @@ PlanetData::~PlanetData()
 	if(star) delete star;
 }
 
-///Prints an expression of the polynomial that this track represents.
 std::ostream &operator<<(std::ostream &os,
 			const PolynomialEvolutionTrack &track)
 {
@@ -307,9 +282,6 @@ std::ostream &operator<<(std::ostream &os,
 	return os;
 }
 
-///Returns an evolutionary track for a quantity that is polynomial in 
-///both mass and age, with the given polynomial coefficients.
-///The first index should be age and the second one mass.
 PolynomialEvolutionTrack *exact_track(
 		const std::valarray< std::valarray<double> > &poly_coef, double mass,
 		double low_mass_age_scaling, double high_mass_age_scaling,
@@ -332,8 +304,6 @@ PolynomialEvolutionTrack *exact_track(
 			std::numeric_limits<double>::max());
 }
 
-///Returns the value of the polynomial with the given coefficients at the
-///given mass and age.
 double eval_poly(const std::valarray< std::valarray<double> > &poly_coef,
 		double mass, double age, double low_mass_age_scaling,
 		double high_mass_age_scaling, double scale_mass)
@@ -353,8 +323,6 @@ double eval_poly(const std::valarray< std::valarray<double> > &poly_coef,
 	return result;
 }
 
-///Outputs the mass and age polynomial defined by the given polynomial
-///coefficients array
 std::ostream &operator<<(std::ostream &os, 
 		const std::valarray< std::valarray<double> > &poly_coef)
 {
@@ -372,7 +340,6 @@ std::ostream &operator<<(std::ostream &os,
 	return os;
 }
 
-///Fills the given valarray with a random set of polynomial coefficients.
 void rand_poly_coef(std::valarray< std::valarray<double> > &poly_coef,
 		double max_mass)
 {
@@ -390,7 +357,6 @@ void rand_poly_coef(std::valarray< std::valarray<double> > &poly_coef,
 	}
 }
 
-///Returns a random set of polynomial coefficients
 std::valarray< std::valarray<double> > rand_poly_coef(double max_mass)
 {
 	std::valarray< std::valarray<double> > poly_coef(std::valarray<double>(3), 3);
@@ -398,7 +364,6 @@ std::valarray< std::valarray<double> > rand_poly_coef(double max_mass)
 	return poly_coef;
 }
 
-///Returns an array of the values of the track at the given ages.
 std::valarray<double> tabulate_track(PolynomialEvolutionTrack *track,
 		std::valarray<double> ages, unsigned deriv_order)
 {
@@ -604,15 +569,12 @@ int rand_value(int min, int max)
 	return rand()%(max-min+1)+min;
 }
 
-///Given n, m and (n)C(m) return (n)C(m+1)
 unsigned next_binom_coef(unsigned n, unsigned m, unsigned nCm)
 {
 	assert(n>=m+1);
 	return (nCm*(n-m))/(m+1);
 }
 
-///Returns new polynomial coefficienst such that
-///output polynomial(mass, age+age_offset)=input polynomial(mass, age)
 std::valarray< std::valarray<double> > offset_age(
 		const std::valarray< std::valarray<double> > &poly_coef,
 		double age_offset)
@@ -632,7 +594,6 @@ std::valarray< std::valarray<double> > offset_age(
 	return result;
 }
 
-///Solves the given equation and its derivative using
 double solve(double guess_x, double abs_precision, double rel_precision,
 		double (*f)(double x, void *params),
 		double (*df) (double x, void *params),

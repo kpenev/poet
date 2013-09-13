@@ -1,3 +1,10 @@
+/**\file
+ *
+ * \brief Some declarations, but nothing useful.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #ifndef __EXAMPLE_EVOLUTIONS_H
 #define __EXAMPLE_EVOLUTIONS_H
 

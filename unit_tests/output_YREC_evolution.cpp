@@ -1,5 +1,15 @@
+/**\file
+ *
+ * \brief Outputs the interpolated stellar quantities derived from the YREC
+ * tracks.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "output_YREC_evolution.h"
 
+///\brief Outputs the function value, its first and second derivative as
+///consecutive real value to os.
 void output_all_deriv(std::ostream &os, const EvolvingStellarQuantity *q,
 		double age)
 {
@@ -10,8 +20,6 @@ void output_all_deriv(std::ostream &os, const EvolvingStellarQuantity *q,
 	delete deriv;
 }
 
-///Outputs the given evolution properly formatted with all quantities in
-///columns with comments labeling them etc.
 void output_evolution(std::ostream &os,
 		const StellarEvolution &evolution, double mass)
 {
@@ -90,6 +98,7 @@ void output_evolution(std::ostream &os,
 	os.fill(orig_os_fill);
 }
 
+///Outputs the interpolated stellar quantities derived from the YREC tracks.
 int main(int argc, char **argv)
 {
 	YRECEvolution toSave("../YREC", 0, 2.0, 2.0);

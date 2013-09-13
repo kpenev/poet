@@ -135,7 +135,13 @@ public:
 	bool operator!=(const EvolutionIterator &rhs) {return !((*this)==rhs);}
 };
 
-///A stellar evolution interpolator based on the YREC tracks.
+///\brief A stellar evolution interpolator based on the YREC tracks.
+///
+///It relies on 10 tracks, all at solar metallicitity and none of them going
+///past 10Gyr stellar age. The masses of the tracks are (in \f$M_\odot\f):
+///0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.05, 1.1, 1.15, and 1.2. 
+///
+///\ingroup StellarSystem_group
 class YRECEvolution : public StellarEvolution {
 	friend class boost::serialization::access;
 

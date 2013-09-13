@@ -38,7 +38,7 @@ all: $(ALL_DEP)
 doc:
 	doxygen documentation/DoxygenConfig
 	chmod -R a+r documentation/doxygen
-	chmod a+x documentation/doxygen/html/*.js
+	chmod a+x documentation/doxygen/html/search
 	rsync -azr documentation/doxygen/html/* kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
 
 clean:

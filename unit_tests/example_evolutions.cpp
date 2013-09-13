@@ -1,7 +1,17 @@
+/**\file
+ *
+ * \brief Produces an executable that calculates and outputs a relatively
+ * complicated evolution of a planet around a star.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "example_evolutions.h"
 
+///AU/\f$\mathrm{R}_\odot\f$.
 const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 
+///Outputs the solution calculated by the given solver.
 void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 		const std::string &filename)
 {
@@ -42,6 +52,8 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 	outf.close();
 }
 
+///\brief Sets up a test case for which an exact analytical solution is known
+///and calculates it.
 void calculate_test()
 {
 	const double tstart=2.0*min_age, Q=1e8,
@@ -84,6 +96,8 @@ void calculate_test()
 	output_solution(solver, system, "DiskFastLocked_test.txt");
 }
 
+///Calculates a realistic evolution chosen to be comlicated (no analytical
+///solution is available).
 void calculate_full()
 {
 	YRECEvolution stellar_evolution;
@@ -102,6 +116,7 @@ void calculate_full()
 //	output_solution(solver, system, "FullEvolutionHD.txt");
 }
 
+///Calculates a realistic evolution chosen to be comlicated.
 int main()
 {
 //	try {

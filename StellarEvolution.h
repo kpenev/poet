@@ -433,6 +433,11 @@ public:
 ///inrpolating functions that represents reasonably well the evolution of
 ///various properties of an arbitrary mass star as a function of age.
 ///
+///At present the only implementing class is YRECEvolution based on a set of
+///YREC tracks.
+///
+///\todo Add an implementing class based on pre-computed MESA tracks.
+///
 ///\ingroup StellarSystem_group
 class StellarEvolution {
 
