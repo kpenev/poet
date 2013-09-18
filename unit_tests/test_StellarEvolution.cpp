@@ -1,9 +1,13 @@
+/**\file
+ *
+ * \brief Defines the test methods of the test suite that exercises the
+ * StellarEvolution class.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "test_StellarEvolution.h"
 
-///Compares an exact polynomial track with an interpolated quantity,
-///deletes both the quantity and the track when done. The maximum allowed
-///error is either 1e-12 (if closest_tracks is NULL) or the difference 
-///between the exact and closest track
 void test_StellarEvolution::check_evolution(
 		const PolynomialEvolutionTrack *track, 
 		const EvolvingStellarQuantity *quantity,
@@ -50,9 +54,6 @@ void test_StellarEvolution::check_evolution(
 	if(closest_track) delete closest_track;
 }
 
-///Creates a stellar evolution based on polynomial expressions or all 
-///quantities imposing the given age scalings for low and high mass
-///tracks, no smoothing is applied to any stellar quantity.
 void test_StellarEvolution::polynomial_evolution_check(
 		double low_mass_age_scaling, double high_mass_age_scaling)
 {
@@ -141,7 +142,6 @@ void test_StellarEvolution::polynomial_evolution_check(
 	}
 }
 
-///Add all tests to the test suite.
 test_StellarEvolution::test_StellarEvolution()
 {
 	TEST_ADD(test_StellarEvolution::test_polynomial_evolution)

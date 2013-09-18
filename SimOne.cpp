@@ -38,7 +38,6 @@ void simulateOnce(double Q, RotationScenario rot, double star_mass,
 		std::cout << "Finished!" << std::endl;
 	} catch (Error::General err) {
 		std::cout << err.what() << ": " << err.get_message() << std::endl;
-		throw;
 	}
 }
 
@@ -100,6 +99,36 @@ int main(int argc, char** argv) {
 
 	//planet starts inside Roche radius - should fail!
 	smass=1.0333333; pmass=0.631816; Q=1e6; P0=0.2;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.5;		pmass=19.3989;		P0=4.08384;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.566667;	pmass= 19.3989;		P0=5.0798;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.566667;	pmass=25;			P0= 3.26364;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.7;		pmass= 15.0528;		P0=4.6697;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.7;		pmass= 17.0882;		P0=0.744444;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.7;		pmass= 17.0882;		P0=2.44343;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.766667;	pmass= 0.431864;	P0= 3.26364;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.766667;	pmass= 19.3989;		P0= 1.21313;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.766667;	pmass= 22.0221;		P0= 3.14646;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.766667; pmass=25;			P0=5.4899;
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	return 0;

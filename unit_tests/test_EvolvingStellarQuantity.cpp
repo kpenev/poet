@@ -1,6 +1,13 @@
+/**\file
+ * 
+ * \brief Defines some of the methods of the test suite that exercised the
+ * EvolvingStellarQuantity class.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "test_EvolvingStellarQuantity.h"
 
-///Returns the track with mass closest to the given mass.
 const OneArgumentDiffFunction *test_EvolvingStellarQuantity::closest_track(
 		double m, const std::valarray<double> &track_masses,
 		const std::list<const OneArgumentDiffFunction *> &tracks)
@@ -20,8 +27,6 @@ const OneArgumentDiffFunction *test_EvolvingStellarQuantity::closest_track(
 
 }
 
-///Tests interpolation over low stellar masses with coiniciding 
-///lifetimes, never asking for ages outside the lifetimes. 
 void test_EvolvingStellarQuantity::test_low_mass_no_death_interp(bool log_age)
 {
 	try {
@@ -92,8 +97,6 @@ void test_EvolvingStellarQuantity::test_low_mass_no_death_interp(bool log_age)
 	}
 }
 
-///Tests the interpolation over high stellar masses with coinciding 
-///lifetimes, never asking for ages outside the lifetimes.
 void test_EvolvingStellarQuantity::test_high_mass_no_death_interp(bool log_age)
 {
 	try {
@@ -167,11 +170,10 @@ void test_EvolvingStellarQuantity::test_high_mass_no_death_interp(bool log_age)
 	}
 }
 
-///Add all tests to the test suite.
 test_EvolvingStellarQuantity::test_EvolvingStellarQuantity()
 {
-/*	TEST_ADD(test_EvolvingStellarQuantity::test_low_mass_lin_age_interp)
-	TEST_ADD(test_EvolvingStellarQuantity::test_low_mass_log_age_interp)*/
+	TEST_ADD(test_EvolvingStellarQuantity::test_low_mass_lin_age_interp)
+	TEST_ADD(test_EvolvingStellarQuantity::test_low_mass_log_age_interp)
 	TEST_ADD(test_EvolvingStellarQuantity::test_high_mass_lin_age_interp)
 	TEST_ADD(test_EvolvingStellarQuantity::test_high_mass_log_age_interp)
 }

@@ -609,7 +609,8 @@ StopHistoryInterval OrbitSolver::select_stop_condition_interval(
 			stop_cond_discarded.begin(), first_stop_deriv,
 			stop_deriv_history.end(), stop_deriv_discarded.begin()),
 						result=interval;
-	int max_left_shift=std::min(discarded_stop_ages.size()-1, num_points-2);
+	int max_left_shift=std::min(discarded_stop_ages.size()-1,
+			num_points-(crossing ? 2 : 3));
 	int history_limit=0;
 	if(crossing)
 		history_limit=stop_history_ages.size()-go_back+failed_back-
@@ -784,6 +785,13 @@ size_t OrbitSolver::ode_dimension(EvolModeType evolution_mode)
 			throw Error::BadFunctionArguments("Unrecognized evolution "
 					"mode in OrbitSolver::ode_dimension");
 	}
+}
+
+std::ostream &operator<<(std::ostream &os, const std::list<double> &l)
+{
+	for(std::list<double>::const_iterator i=l.begin();
+			i!=l.end(); i++) os << *i << ", ";
+	return os;
 }
 
 ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(

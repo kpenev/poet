@@ -1,9 +1,15 @@
+/**\file
+ *
+ * \brief Defines some of the methods of the test suite that exercises the
+ * InterpolatingFuctionALGLIB class and the parent classes.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "test_InterpolatingFunctionALGLIB.h"
 #include <fstream>
 #include <iomanip>
 
-///Returns an array of the values of f evaluated at the given x 
-///positions. The only requirement for f is that in provide operator().
 template<class FUNC_TYPE>
 std::valarray<double> get_y(const FUNC_TYPE &f, 
 		const std::valarray<double> &x)
@@ -13,8 +19,6 @@ std::valarray<double> get_y(const FUNC_TYPE &f,
 	return y;
 }
 
-///Checks the intersections of the given interpolating function with a 
-///number of y values.
 void test_InterpolatingFunctionALGLIB::check_solutions(
 		const InterpolatingFunctionALGLIB &interpf,
 		const std::valarray<double> &check_crossings,
@@ -64,7 +68,6 @@ void test_InterpolatingFunctionALGLIB::check_solutions(
 	}
 }
 
-///Checks the derivatives of the given interpolating function.
 void test_InterpolatingFunctionALGLIB::check_deriv(
 		const InterpolatingFunctionALGLIB &interpf,
 		const std::valarray<double> &x, 
@@ -114,7 +117,6 @@ void test_InterpolatingFunctionALGLIB::check_deriv(
 	}
 }
 
-///Checks the results of an interpolation against the prescribed answers.
 void test_InterpolatingFunctionALGLIB::check_interp(
 		const InterpolatingFunctionALGLIB &interpf,
 		const std::valarray<double> &x, 
@@ -132,8 +134,6 @@ void test_InterpolatingFunctionALGLIB::check_interp(
 	}
 }
 
-///Tests the interpolation of a constant function without specifying 
-///derivative
 void test_InterpolatingFunctionALGLIB::test_const_no_deriv()
 {
 	std::valarray<double> x(5), y(0.0, x.size()), x_check(10),
@@ -198,8 +198,6 @@ void test_InterpolatingFunctionALGLIB::test_const_no_deriv()
 			"derivatives specified).");
 }
 
-///Tests the interpolation of a linear function without specifying 
-///derivative
 void test_InterpolatingFunctionALGLIB::test_linear_no_deriv()
 {
 	for(int two_slope=-2; two_slope<=2; two_slope++) {
@@ -251,8 +249,6 @@ void test_InterpolatingFunctionALGLIB::test_linear_no_deriv()
 	}
 }
 
-///Tests the interpolation of a constant function with specified(=0) 
-///derivative
 void test_InterpolatingFunctionALGLIB::test_const_deriv()
 {
 	for(int two_value=-2; two_value<=2; two_value++) {
@@ -294,8 +290,6 @@ void test_InterpolatingFunctionALGLIB::test_const_deriv()
 	}
 }
 
-///Tests the interpolation of a linear function with specified(=slope) 
-///derivative
 void test_InterpolatingFunctionALGLIB::test_linear_deriv()
 {
 	for(int two_slope=-2; two_slope<=2; two_slope++) {
@@ -348,8 +342,6 @@ void test_InterpolatingFunctionALGLIB::test_linear_deriv()
 	}
 }
 
-///Tests the interpolation of a quadratic function with specified
-///derivative
 void test_InterpolatingFunctionALGLIB::test_quadratic_deriv()
 {
 	for(int two_quadratic=-2; two_quadratic<=2; two_quadratic++) {
@@ -428,8 +420,6 @@ void test_InterpolatingFunctionALGLIB::test_quadratic_deriv()
 	}
 }
 
-///Tests the interpolation of a cubic function with specified
-///derivative
 void test_InterpolatingFunctionALGLIB::test_cubic_deriv()
 {
 	for(int two_cubic=-2; two_cubic<=2; two_cubic++) {
@@ -481,7 +471,6 @@ void test_InterpolatingFunctionALGLIB::test_cubic_deriv()
 	}
 }
 
-///Tests the approximate interpolation with smoothing.
 void test_InterpolatingFunctionALGLIB::test_sin_smoothed()
 {
 	unsigned frequency=3;
@@ -533,7 +522,6 @@ void test_InterpolatingFunctionALGLIB::test_sin_smoothed()
 			ysecond_check, test_descr.str(), 2.0*noise, 72.0*M_PI*M_PI*noise);
 }
 
-///Add all tests to the test suite.
 test_InterpolatingFunctionALGLIB::test_InterpolatingFunctionALGLIB()
 {
 	TEST_ADD(test_InterpolatingFunctionALGLIB::test_const_no_deriv)

@@ -1,3 +1,12 @@
+/**\file
+ *
+ * \brief Definitions of some of the methods  exercising the Star class.
+ *
+ * Lots of cleanup is necessary.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "test_Star.h"
 #include <assert.h>
 

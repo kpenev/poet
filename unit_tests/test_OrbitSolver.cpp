@@ -1,3 +1,10 @@
+/**\file
+ *
+ * \brief Defines some of the methods of the test suite that exercises the
+ * OrbitSolver class and the other clasess necessary to accomplish this.
+ *
+ * \ingroup UnitTests_group
+ */
 #include "test_OrbitSolver.h"
 
 const double tstart=2.0*min_age;
@@ -60,8 +67,6 @@ void TransformedSolution::operator()(const OrbitSolver &solver)
 
 }
 
-///Returns the values of the variables at the tabulated ages transformed
-///through the functions specified on construction.
 const std::list<double> *TransformedSolution::get_tabulated_var(
 		EvolVarType var_type) const
 {
@@ -69,9 +74,6 @@ const std::list<double> *TransformedSolution::get_tabulated_var(
 	return &(__transformed_orbit[var_type]);
 }
 
-///Returns the derivative of the independent variable at the points
-///specified by get_tabulated_indep_var transformed
-///through the functions specified on construction.
 const std::list<double> *TransformedSolution::get_tabulated_var_deriv(
 		EvolVarType var_type) const
 {
@@ -93,8 +95,6 @@ EvolModeType ExpectedEvolutionMode::operator()(double age) const
 	assert(false);
 }
 
-///Tests the latest evolution calculated by the solver against the given
-///tracks.
 template<class SOLVER_LIKE>
 void test_OrbitSolver::test_solution(const SOLVER_LIKE &solver,
 		const OneArgumentDiffFunction &expected_a,
@@ -259,8 +259,6 @@ void test_OrbitSolver::test_solution(const SOLVER_LIKE &solver,
 	}
 }
 
-///Generates and computes the evolution of stellar systems with disk
-///locking times larger than the stellar lifetimes.
 void test_OrbitSolver::test_disk_locked_no_stellar_evolution()
 {
 	try {
@@ -310,9 +308,6 @@ void test_OrbitSolver::test_disk_locked_no_stellar_evolution()
 	}
 }
 
-///Generates and computes the evolution of stellar systems with disk
-///locking times larger than the stellar lifetimes, creating a star
-///that evolves over time.
 void test_OrbitSolver::test_disk_locked_with_stellar_evolution()
 {
 	try {
@@ -390,10 +385,6 @@ void test_OrbitSolver::test_disk_locked_with_stellar_evolution()
 	}
 }
 
-///Tests the rotational evolution of a star without a planet and without
-///a disk locking phase. Calculates each evolution with NO_PLANET 
-///evolution mode, and with FAST_PLANET/SLOW_PLANET evolution mode, but
-///zero planet mass.
 void test_OrbitSolver::test_no_planet_evolution()
 {
 	try {
@@ -588,9 +579,6 @@ void test_OrbitSolver::test_no_planet_evolution()
 	}
 }
 
-///Tests the evolution of the orbit plus stellar rotation, starting with
-///the planet already present and ensuring it does not die or lock to
-///the star.
 void test_OrbitSolver::test_unlocked_evolution()
 {
 	try {
@@ -688,8 +676,10 @@ void test_OrbitSolver::test_unlocked_evolution()
 	}
 }
 
-///The equation that should be solved in order to get the semimamjor axis
-///at a gien time. The paramaters should be: alpha, beta, kappa, C, t
+///\brief The equation that should be solved in order to get the semimamjor
+///axis at a gien time.
+///
+///The paramaters should be: alpha, beta, kappa, C, t
 double locked_unsat_eq(double a, void *params)
 {
 	double *dbl_par=static_cast<double *>(params);
@@ -698,8 +688,10 @@ double locked_unsat_eq(double a, void *params)
 	return 0.1*alpha*std::pow(a, 5) - 0.5*beta*std::pow(a, 3) + kappa*t - c;
 }
 
-///The equation that should be solved in order to get the semimamjor axis
-///at a gien time. The paramaters should be: alpha, beta, kappa, C, t
+///\mbrief The equation that should be solved in order to get the semimamjor
+///axis at a given time for the locked evolution when the wind is saturated.
+///
+///The paramaters should be: alpha, beta, kappa, C, t
 double locked_sat_eq(double a, void *params)
 {
 	double *dbl_par=static_cast<double *>(params);
@@ -708,8 +700,11 @@ double locked_sat_eq(double a, void *params)
 	return alpha*a*a/4.0 - 1.5*beta*std::log(a) + kappa*t - c;
 }
 
-///The derivative of the equation that should be solved in order to get the
-///semimamjor axis at a gien time. The paramaters should be: alpha, beta.
+///\brief The derivative of the equation that should be solved in order to
+///get the semimamjor axis at a given time for the locked evolution when the
+///wind is not saturated.
+///
+///The paramaters should be: alpha, beta.
 double locked_unsat_deriv(double a, void *params)
 {
 	double *dbl_par=static_cast<double *>(params);
@@ -717,8 +712,11 @@ double locked_unsat_deriv(double a, void *params)
 	return 0.5*alpha*std::pow(a, 4) - 1.5*beta*std::pow(a, 2);
 }
 
-///The derivative of the equation that should be solved in order to get the
-///semimamjor axis at a gien time. The paramaters should be: alpha, beta.
+///\brief The derivative of the equation that should be solved in order to
+///get the semimamjor axis at a gien time for the locked evolution when the
+///wind is saturated.
+///
+///The paramaters should be: alpha, beta.
 double locked_sat_deriv(double a, void *params)
 {
 	double *dbl_par=static_cast<double *>(params);
@@ -726,6 +724,11 @@ double locked_sat_deriv(double a, void *params)
 	return alpha*a/2.0 - 1.5*beta/a;
 }
 
+///\brief The equation and its derivative that should be solved in order to
+///get the semimamjor axis at a given time for the locked evolution when the
+///wind is not saturated.
+///
+///The paramaters should be: alpha, beta, kappa, C, t
 void locked_unsat_eq_deriv(double a, void *params, double *f, double *df)
 {
 	double *dbl_par=static_cast<double *>(params);
@@ -735,6 +738,11 @@ void locked_unsat_eq_deriv(double a, void *params, double *f, double *df)
 	*df=0.5*alpha*std::pow(a, 4) - 1.5*beta*std::pow(a, 2);
 }
 
+///\brief The equation and its derivative that should be solved in order to
+///get the semimamjor axis at a given time for the locked evolution when the
+///wind is saturated.
+///
+///The paramaters should be: alpha, beta, kappa, C, t
 void locked_sat_eq_deriv(double a, void *params, double *f, double *df)
 {
 	double *dbl_par=static_cast<double *>(params);
@@ -744,8 +752,6 @@ void locked_sat_eq_deriv(double a, void *params, double *f, double *df)
 	*df=alpha*a/2.0 - 1.5*beta/a;
 }
 
-///Tests the evolution of the orbit plus stellar rotation for the case
-///where the star is locked in synchronous rotation with the orbit.
 void test_OrbitSolver::test_locked_evolution()
 {
 	try {

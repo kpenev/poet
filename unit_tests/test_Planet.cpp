@@ -1,3 +1,13 @@
+/**\file
+ *
+ * \brief The entire declaration/definition of the unit tests that exercise
+ * the Planet class.
+ *
+ * Much cleanup is necessary.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "test_Star.h"
 #include "Star.h"
 #include "StellarSystem.h"
@@ -5,6 +15,7 @@
 #include "Common.h"
 #include <assert.h>
 #include <limits>
+
 class test_Planet : public Test::Suite {
 	Star* star;
 	PlanetData d;

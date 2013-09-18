@@ -1,3 +1,12 @@
+/**\file
+ *
+ * \brief Declaration of the unit tests exercising the Star class.
+ *
+ * Lots of cleanup is necessary.
+ *
+ * \ingroup UnitTests_group
+ */
+
 /*
  * test_Star.h
  *

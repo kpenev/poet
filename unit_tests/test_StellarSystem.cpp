@@ -1,3 +1,11 @@
+/**\file
+ *
+ * \brief Defines some of the methods of the classes used to exercise
+ * StellarSystem.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "test_StellarSystem.h"
 
 const double
@@ -25,12 +33,10 @@ test_StellarSystem::test_StellarSystem()
 //	TEST_ADD(test_StellarSystem::test_jacobian);
 }
 
-///Create a random stellar system.
 void test_StellarSystem::setup()
 {
 }
 
-///Cleanup the random stellar system created for the test.
 void test_StellarSystem::tear_down()
 {
 }
@@ -41,8 +47,6 @@ void test_StellarSystem::test_basic()
 	std::cout << "Name: " << system->get_name() << std::endl;
 }
 
-///Calculates the quantities that are always calculated for all sets of
-///orbital parameters.
 void DeriveFromOrbit::init_common(double age, double Lrad, const StellarSystem &system)
 {
 	__Iconv=system.get_star().moment_of_inertia(age, convective)*convertI;
@@ -207,9 +211,6 @@ void test_StellarSystem::predict_result(int ageIndex, long double* results)
 	results[2] /= convertI/day/Gyr;
 }*/
 
-///Returns the expected differential equation for the given orbit for
-///the case of a planet around a star whose rotation is not locked to the
-///orbit.
 void test_StellarSystem::predict_unlocked_orbit_diff_eq(
 		const DeriveFromOrbit &quantities_SI, double* test_derivs,
 		int dadt_sign)
@@ -248,8 +249,6 @@ void test_StellarSystem::predict_unlocked_orbit_diff_eq(
 	test_derivs[2] *= convert_torque;
 }
 
-///Returns the expected differential equation for the given orbit for the
-///case of a planet whose orbit is locked to the rotation of the star.
 void test_StellarSystem::predict_locked_orbit_diff_eq(
 		const DeriveFromOrbit &quantities_SI, double* test_derivs)
 {
@@ -270,8 +269,6 @@ void test_StellarSystem::predict_locked_orbit_diff_eq(
 	test_derivs[1] *= convert_torque;
 }
 
-///Returns the expected differential equation for the rotational evolution
-///of a star with no planet around it.
 void test_StellarSystem::predict_no_planet_diff_eq(
 		const DeriveFromOrbit &quantities_SI, double *test_derivs)
 {
@@ -285,8 +282,6 @@ void test_StellarSystem::predict_no_planet_diff_eq(
 	test_derivs[1] *= convert_torque;
 }
 
-///Returns the torque on the core of the star when the convective zone is
-///locked to a disk.
 void test_StellarSystem::predict_disk_locked_diff_eq(
 		const DeriveFromOrbit &quantities_SI, double *test_derivs)
 {
@@ -310,8 +305,6 @@ void test_StellarSystem::test_interpolate()
 	}
 }
 
-///Tests the equation for the evolution of a^6.5, Lconv and Lrad under
-///the assumption that no lock to the orbit or the disk exists.
 void test_StellarSystem::test_unlocked_orbit()
 {
 	for (size_t i=0; i < sdata->evolution_ages.size(); i++) {
@@ -346,8 +339,6 @@ void test_StellarSystem::test_unlocked_orbit()
 	}
 }
 
-///Tests the equation for the evolution of a and Lrad under the 
-///assumption that the orbit is locked to the stellar rotation
 void test_StellarSystem::test_locked_orbit()
 {
 	try {
@@ -383,8 +374,6 @@ void test_StellarSystem::test_locked_orbit()
 	}
 }
 
-///Tests the equation for the evolution of a and Lrad under the 
-///assumption that the orbit is locked to the stellar rotation
 void test_StellarSystem::test_no_planet_orbit()
 {
 	try {
@@ -419,8 +408,6 @@ void test_StellarSystem::test_no_planet_orbit()
 	}
 }
 
-///Tests the equation for the evolution of the core angular momentum for
-///a star whose convective zone is locked to a disk.
 void test_StellarSystem::test_disk_locked_orbit()
 {
 	try {
@@ -451,7 +438,6 @@ void test_StellarSystem::test_disk_locked_orbit()
 	}
 }
 
-///Tests the jacobian of the unlocked orbit differential equation.
 void test_StellarSystem::test_unlocked_jacobian()
 {
 	try {
@@ -527,7 +513,6 @@ void test_StellarSystem::test_unlocked_jacobian()
 	}
 }
 
-///Tests the jacobian of the locked orbit differential equation.
 void test_StellarSystem::test_locked_jacobian()
 {
 	try {
@@ -599,8 +584,6 @@ void test_StellarSystem::test_locked_jacobian()
 	}
 }
 
-///Tests the jacobian of the planet-free stellar rotation differential
-///equation.
 void test_StellarSystem::test_no_planet_jacobian()
 {
 	try {
@@ -671,7 +654,6 @@ void test_StellarSystem::test_no_planet_jacobian()
 	}
 }
 
-///Tests the jacobian of the disk locked evolution
 void test_StellarSystem::test_disk_locked_jacobian()
 {
 	try {
