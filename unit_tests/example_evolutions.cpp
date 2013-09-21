@@ -116,12 +116,41 @@ void calculate_full()
 //	output_solution(solver, system, "FullEvolutionHD.txt");
 }
 
+void calculate_slow()
+{
+	YRECEvolution stellar_evolution;
+	stellar_evolution.load_state("../interp_state_data_phs4");
+	const double Mstar=0.90000000000000013323,
+		  Q=1e6,
+		  Kwind=0.155,
+		  wsat=2.454,
+		  coupling_timescale=0.012,
+		  wdisk=2*M_PI/1.4,
+		  tdisk=2.5e-3,
+		  Mplanet=25,
+		  Rplanet=0.714,
+		  P0=5.9000000000000003553,
+		  a_formation=AstroConst::G*Mstar*AstroConst::solar_mass*
+			  std::pow(P0*AstroConst::day, 2)/4/M_PI/M_PI,
+		  tstart=MIN_AGE;
+	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 0.0, wdisk, tdisk,
+			stellar_evolution);
+	double tend=std::min((const double)MAX_END_AGE,
+				star.get_lifetime());/**/
+	Planet planet(&star, Mplanet, Rplanet, a_formation/AU_Rsun);
+	StellarSystem system(&star, &planet);
+	OrbitSolver solver(tstart, tend, 1e-5, SPIN_THRES, MAIN_SEQ_START);
+	solver(system, Inf, PLANET_FORM_AGE, a_formation/AstroConst::AU, tstart);
+	output_solution(solver, system, "SlowEvolution.txt");
+}
+
 ///Calculates a realistic evolution chosen to be comlicated.
 int main()
 {
 //	try {
 //		calculate_test();
-		calculate_full();
+//		calculate_full();
+		calculate_slow();
 /*	} catch(Error::General &ex) {
 		std::cerr << "Unexpected exception thrown: " << ex.what() << ":	"
 			<< ex.get_message() << std::endl;

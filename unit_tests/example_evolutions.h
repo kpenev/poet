@@ -11,6 +11,7 @@
 #include "Common.h"
 #include "../OrbitSolver.h"
 #include "../YRECIO.h"
+#include "../SimAssumptions.hpp"
 #include <string>
 #include <fstream>
 #include <iomanip>

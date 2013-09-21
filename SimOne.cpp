@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 
 	//extremely slow evol
 	double smass=0.5, pmass=25, Q=1e6, P0=5.84141414;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+/*	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	//bad stop hostory interval
 	smass=1.0333333; pmass=0.631816; Q=1e6; P0=0.890909;
@@ -129,6 +129,9 @@ int main(int argc, char** argv) {
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.766667; pmass=25;			P0=5.4899;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);*/
+
+	smass=0.90000000000000013323; pmass=25, P0=5.9000000000000003553;
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	return 0;

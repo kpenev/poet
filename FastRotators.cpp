@@ -30,7 +30,7 @@ public:
 		       std::string pRadius_dist_file, std::string pPeriod_dist_file):
     rotSampler(rot_dist_file), smassSampler(smass_dist_file),
     pmassSampler(pmass_dist_file), pRadiusSampler(pRadius_dist_file),
-    pPeriodSampler(pPeriod_dist_file)
+    pPeriodSampler(pPeriod_dist_file)//, evol("YREC")
   {
     evol.load_state("interp_state_data");
   }
@@ -100,6 +100,10 @@ public:
   void simulateOnce(double Q, RotationScenario rot, double star_mass,
 		    double planet_mass, double P0, std::ofstream *ofs,
 		    std::string prefix) {
+    std::cout.unsetf(std::ios::floatfield);
+    std::cout.precision(20);
+    //    std::cout << star_mass << " " << planet_mass << " " << P0 << std::endl;
+
     using namespace AstroConst;
     double semi = G*star_mass*solar_mass*std::pow(P0*day, 2)/4/M_PI/M_PI;
     semi = std::pow(semi, 1.0/3.0)/AU;
@@ -112,9 +116,15 @@ public:
 			      star.get_lifetime());
     OrbitSolver solver(MIN_AGE, end_age, 1e-5,
 		       SPIN_THRES, MAIN_SEQ_START);
-    solver(system, Inf, PLANET_FORM_AGE, semi);
-    std::cout << "FInished!" << std::endl;
-    exit(-1);
+    try {
+      solver(system, Inf, PLANET_FORM_AGE, semi);
+    }
+    catch (Error::General e) {
+      std::cout.unsetf(std::ios::floatfield);
+      std::cout.precision(16);
+      std::cout << star_mass << " " << planet_mass << " " << P0 << std::endl;
+      std::cout << e.what() << std::endl;
+    }
     std::valarray<double> ages =
       list_to_valarray(*(solver.get_tabulated_var(AGE)));
     std::valarray<double> semis =
@@ -143,19 +153,19 @@ public:
     std::vector<double> P0 = linspace(0.1, 5.9, 100);
     int arrSize = all_Q.size()*all_rots.size()*smasses.size()*P0.size();
     std::ofstream ofs(filename.c_str());
+
     for (size_t Q_i=0; Q_i < all_Q.size(); Q_i++) {
       for (size_t rot_i=0; rot_i < all_rots.size(); rot_i++) {
-	for (size_t smass_i=3; smass_i < smasses.size(); smass_i++) {
+	for (size_t smass_i=4; smass_i < smasses.size(); smass_i++) {
 	  for (size_t pmass_i=49; pmass_i < ln_pmasses.size();
 	       pmass_i++) {
 #pragma omp parallel for
-	    for (size_t P0_i=96; P0_i < P0.size(); P0_i++) {
+	    for (size_t P0_i=92; P0_i < P0.size(); P0_i++) {
 	      double Q = all_Q[Q_i];
 	      RotationScenario rot = all_rots[rot_i];
 	      double star_mass = smasses[smass_i];
 	      double planet_mass = exp(ln_pmasses[pmass_i]);
 	      double Porb = P0[P0_i];
-	      std::cout << planet_mass << " " << Porb << std::endl;
 	      std::stringstream ss;
 	      ss << Q_i << " " << rot_i << " " << smass_i <<
 		" " << pmass_i << " " << P0_i;
