@@ -126,7 +126,7 @@ void calculate_slow()
 		  wsat=2.454,
 		  coupling_timescale=0.012,
 		  wdisk=2*M_PI/1.4,
-		  tdisk=2.5e-3,
+		  tdisk=0.0025,
 		  Mplanet=25,
 		  Rplanet=0.714,
 		  P0=5.9000000000000003553,
@@ -137,7 +137,7 @@ void calculate_slow()
 			stellar_evolution);
 	double tend=std::min((const double)MAX_END_AGE,
 				star.get_lifetime());/**/
-	Planet planet(&star, Mplanet, Rplanet, a_formation/AU_Rsun);
+	Planet planet(&star, Mplanet, Rplanet, a_formation/AstroConst::AU);
 	StellarSystem system(&star, &planet);
 	OrbitSolver solver(tstart, tend, 1e-5, SPIN_THRES, MAIN_SEQ_START);
 	solver(system, Inf, PLANET_FORM_AGE, a_formation/AstroConst::AU, tstart);
