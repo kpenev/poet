@@ -131,7 +131,16 @@ int main(int argc, char** argv) {
 	smass=0.766667; pmass=25;			P0=5.4899;
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);*/
 
-	smass=0.90000000000000013323; pmass=25, P0=5.9000000000000003553;
+	smass=0.5000000000000000; pmass=19.3989385656805; P0=4.083838383838384;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.5666666666666667; pmass=19.3989385656805; P0=5.079797979797980;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.5666666666666667; pmass=25.0000000000000; P0=3.263636363636364;
+	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+
+	smass=0.90000000000000013323; pmass=25; P0=5.9000000000000003553;
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	return 0;

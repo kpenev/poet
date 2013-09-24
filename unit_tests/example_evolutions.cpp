@@ -133,10 +133,10 @@ void calculate_slow()
 		  a_formation=AstroConst::G*Mstar*AstroConst::solar_mass*
 			  std::pow(P0*AstroConst::day, 2)/4/M_PI/M_PI,
 		  tstart=MIN_AGE;
-	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 0.0, wdisk, tdisk,
+	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 1e-3, wdisk, tdisk,
 			stellar_evolution);
 	double tend=std::min((const double)MAX_END_AGE,
-				star.get_lifetime());/**/
+				star.get_lifetime());
 	Planet planet(&star, Mplanet, Rplanet, a_formation/AstroConst::AU);
 	StellarSystem system(&star, &planet);
 	OrbitSolver solver(tstart, tend, 1e-5, SPIN_THRES, MAIN_SEQ_START);
