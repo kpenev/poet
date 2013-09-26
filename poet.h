@@ -7,7 +7,13 @@
  * executable.
  */
 
+#include "Common.h"
+#include "AstronomicalConstants.h"
+#include "OrbitSolver.h"
+#include "YRECIO.h"
 #include <argtable2.h>
+#include <iostream>
+#include <fstream>
 
 ///All command line options can be accessed through members.
 class CommandLineOptions {
@@ -60,7 +66,11 @@ private:
 			*__start_wrad,
 
 			///\brief Initial spin of the stellar surface in rad/day.
-			*__start_wsurf;
+			*__start_wsurf,
+			
+			///\brief The highest stellar mass which is still considered low
+			///mass in \f$M_\odot\f$.
+			*__max_low_mass;
 
 	///\brief The wind strength column for low mass stars in units of
 	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
@@ -114,6 +124,34 @@ private:
 			///\brief The column of the initial spin of the stellar surface
 			///in rad/day.
 			*__start_wsurf_column;
+
+	///The name of the file to read the evolution scenarios from.
+	arg_file *__input_fname,
+
+			 ///\brief The name of the file to read pre-serialized stellar
+			 ///evolution from.
+			 *__serialized_stellar_evolution;
+
+	///The stream to the input filename if stdin is not being used.
+	std::ifstream __input_stream;
+
+	///Defines the command line options.
+	void define_options();
+
+	///Sets default values to the appropriate options.
+	void set_defaults();
+
+	///\brief Updates some of the values of the command line options after
+	///parsing.
+	///
+	///On the command line, column indices are counted from 1, while it is
+	///more convenient to count from 0 in the code.
+	///
+	///Also opens the input file if it is being used.
+	void postprocess();
+
+	///Free all manually allocated memory and close open streams.
+	void cleanup();
 
 	///Did parsing the command line succeed.
 	bool __parsed_ok;
@@ -176,6 +214,10 @@ public:
 	///Initial spin of the stellar surface in rad/day.
 	double start_wsurf() const {return __start_wsurf->dval[0];}
 
+	///\brief The highest stellar mass which is still considered low mass in
+	/// \f$M_\odot\f$.
+	double max_low_mass() const {return __max_low_mass->dval[0];}
+
 	///\brief The wind strength column for low mass stars in units of
 	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
 	/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
@@ -237,8 +279,20 @@ public:
 	///in rad/day.
 	int start_wsurf_column() const {return __start_wsurf_column->ival[0];}
 
+	///\brief The stream to read the parameters of the planet-star systems 
+	///for which to calculate evolution.
+	std::istream &input()
+	{if(__input_fname->count) return __input_stream; else return std::cin;}
+
+	///The name of the file to read pre-serialized stellar evolution from.
+	const char *serialized_stellar_evolution()
+	{return __serialized_stellar_evolution->filename[0];}
+
 	///Did parsing the command line succeed.
 	operator bool() {return __parsed_ok;}
+
+	///Closes the input  filename if it was opened.
+	~CommandLineOptions() {cleanup();}
 };
 
 #endif

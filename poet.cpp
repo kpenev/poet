@@ -5,9 +5,10 @@
  *
  */
 
-#include "example_evolutions.h"
+#include "poet.h"
 
-CommandLineOptions::CommandLineOptions(int argc, char **argv)
+
+void CommandLineOptions::define_options()
 {
 	__low_mass_windK=arg_dbl0("K", "low-mass-K", "<double>",
 			"The wind strength for low mass stars in units of "
@@ -59,15 +60,19 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 			"of low mass stars is to be computed --init-wrad or "
 			"--init-wrad-col is also required.");
 
-	__start_wrad=arg_dbl0(NULL, "--init-wrad", "Initial spin of the stellar "
-			"core in rad/day for low mass stars. This argument is ignored, "
-			"unless --t0 or --t0-col is also specified.");
+	__start_wrad=arg_dbl0(NULL, "init-wrad", "<double>", "Initial spin of "
+			"the stellar core in rad/day for low mass stars. This argument "
+			"is ignored, unless --t0 or --t0-col is also specified.");
 
-	__start_wsurf=arg_dbl0(NULL, "--init-wsurf", "Initial spin of the "
-			"stellar surface in rad/day. For low mass stars this is the "
+	__start_wsurf=arg_dbl0(NULL, "init-wsurf", "<double>", "Initial spin of "
+			"the stellar surface in rad/day. For low mass stars this is the "
 			"rotation of the convective zone, and for high mass stars it is "
 			"the unique rotation of the star. This argument is ignored, "
 			"unless --t0 or --t0-col is also specified.");
+
+	__max_low_mass=arg_dbl0(NULL, "max-low-mass", "<double>", "The highest "
+			"stellar mass which is still considered low mass in solar "
+			"masses. Default: 1.1.");
 
 	__low_mass_windK_column=arg_int0(NULL, "low-mass-K-col", "<index>",
 			"Index in the input file of the column which contains the wind "
@@ -90,12 +95,13 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 			"specified the const value specified by --low-mass-wind-sat or "
 			"its default is used.");
 
-	__high_mass_wind_saturation_column=arg_int0(NULL, "high-mass-wind-sat-col",
-			"<index>", "Index in the input file of the column which "
-			"contains the frequency at which the wind saturates for high "
-			"mass stars in units of rad/day. If this parameter is not "
-			"specified the const value specified by --high-mass-wind-sat or "
-			"its default is used.");
+	__high_mass_wind_saturation_column=arg_int0(NULL,
+			"high-mass-wind-sat-col", "<index>",
+			"Index in the input file of the column which contains the "
+			"frequency at which the wind saturates for high mass stars in "
+			"units of rad/day. If this parameter is not specified the const "
+			"value specified by --high-mass-wind-sat or its default is "
+			"used.");
 
 	__core_env_coupling_timescale_column=arg_int0(NULL,
 			"core-env-coupling-timescale-col", "<index>", "Index in the "
@@ -115,10 +121,11 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 			"solar masses. If this parameter is not specified the const "
 			"value specified by --Mstar or its default is used.");
 
-	__planet_mass_column=arg_int0(NULL, "Mplanet-col", "<index>", "Index in the "
-			"input file of the column which contains the mass of the planet "
-			"in jovian masses. If this parameter is not specified the const "
-			"value specified by --Mplanet or its default is used.");
+	__planet_mass_column=arg_int0(NULL, "Mplanet-col", "<index>", "Index in "
+			"the input file of the column which contains the mass of the "
+			"planet in jovian masses. If this parameter is not specified "
+			"the const value specified by --Mplanet or its default is "
+			"used.");
 
 	__disk_lock_frequency_column=arg_int0(NULL, "w-disk-col", "<index>",
 			"Index in the input file of the column which contains the spin "
@@ -155,12 +162,155 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 			"argument is ignored, unless --t0 or --t0-col is also "
 			"specified.");
 
-	__start_wsurf_column=arg_int0(NULL, "--init-wsurf-col", "Index in the "
-			"input file of the column which contains theInitial spin of the "
-			"stellar surface in rad/day. For low mass stars this is the "
-			"rotation of the convective zone, and for high mass stars it is "
-			"the unique rotation of the star. This argument is ignored, "
-			"unless --t0 or --t0-col is also specified.");
+	__start_wsurf_column=arg_int0(NULL, "--init-wsurf-col", "<index>",
+			"Index in the input file of the column which contains the "
+			"initial spin of the stellar surface in rad/day. For low mass "
+			"stars this is the rotation of the convective zone, and for "
+			"high mass stars it is the unique rotation of the star. This "
+			"argument is ignored, unless --t0 or --t0-col is also "
+			"specified.");
+	__input_fname=arg_file0("i", "input", "<file>", "The file to read the "
+			"parameters of the planet-star systems to calculate evolutions "
+			"for. If omitted, standard input is used instead. If no --*-col "
+			"options are specified, this argument is ignored.");
+	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
+			"<file>", "The file to read previously serialized stellar "
+			"evolution from. Default: 'interp_state_data'.");
+}
+
+void CommandLineOptions::set_defaults()
+{
+	__low_mass_windK->dval[0]=0.35;
+	__high_mass_windK->dval[0]=0;
+	__low_mass_wind_saturation->dval[0]=1.84;
+	__high_mass_wind_saturation->dval[0]=0;
+	__core_env_coupling_timescale->dval[0]=5;
+	__lgQ->dval[0]=6;
+	__star_mass->dval[0]=1;
+	__planet_mass->dval[0]=1;
+	__disk_lock_frequency->dval[0]=0.68;
+	__disk_dissipation_age->dval[0]=5;
+	__planet_formation_semimajor->dval[0]=0.05;
+	__start_age->dval[0]=NaN; 
+	__start_wrad->dval[0]=NaN;
+	__start_wsurf->dval[0]=NaN;
+	__max_low_mass->dval[0]=1.1;
+	__serialized_stellar_evolution->filename[0]="interp_state_data";
+
+	__low_mass_windK_column->ival[0]=0;
+	__high_mass_windK_column->ival[0]=0;
+	__low_mass_wind_saturation_column->ival[0]=0;
+	__high_mass_wind_saturation_column->ival[0]=0;
+	__core_env_coupling_timescale_column->ival[0]=0;
+	__lgQ_column->ival[0]=0;
+	__star_mass_column->ival[0]=0;
+	__planet_mass_column->ival[0]=0;
+	__disk_lock_frequency_column->ival[0]=0;
+	__disk_dissipation_age_column->ival[0]=0;
+	__planet_formation_semimajor_column->ival[0]=0;
+	__start_age_column->ival[0]=0; 
+	__start_wrad_column->ival[0]=0;
+	__start_wsurf_column->ival[0]=0;
+}
+
+void CommandLineOptions::postprocess()
+{
+	--__low_mass_windK_column->ival[0];
+	--__high_mass_windK_column->ival[0];
+	--__low_mass_wind_saturation_column->ival[0];
+	--__high_mass_wind_saturation_column->ival[0];
+	--__core_env_coupling_timescale_column->ival[0];
+	--__lgQ_column->ival[0];
+	--__star_mass_column->ival[0];
+	--__planet_mass_column->ival[0];
+	--__disk_lock_frequency_column->ival[0];
+	--__disk_dissipation_age_column->ival[0];
+	--__planet_formation_semimajor_column->ival[0];
+	--__start_age_column->ival[0];
+	--__start_wrad_column->ival[0];
+	--__start_wsurf_column->ival[0];
+	if(__input_fname->count) __input_stream.open(__input_fname->filename[0]);
+}
+
+void CommandLineOptions::cleanup()
+{
+	if(__input_fname->count) __input_stream.close();
+	free(__low_mass_windK);
+	free(__low_mass_windK_column);
+	free(__high_mass_windK);
+	free(__high_mass_windK_column);
+	free(__low_mass_wind_saturation);
+	free(__low_mass_wind_saturation_column);
+	free(__high_mass_wind_saturation);
+	free(__high_mass_wind_saturation_column);
+	free(__core_env_coupling_timescale);
+	free(__core_env_coupling_timescale_column);
+	free(__lgQ);
+	free(__lgQ_column);
+	free(__star_mass);
+	free(__star_mass_column);
+	free(__planet_mass);
+	free(__planet_mass_column);
+	free(__disk_lock_frequency);
+	free(__disk_lock_frequency_column);
+	free(__disk_dissipation_age);
+	free(__disk_dissipation_age_column);
+	free(__planet_formation_semimajor);
+	free(__planet_formation_semimajor_column);
+	free(__start_age);
+	free(__start_age_column);
+	free(__start_wrad);
+	free(__start_wrad_column);
+	free(__start_wsurf);
+	free(__start_wsurf_column);
+	free(__max_low_mass);
+	free(__serialized_stellar_evolution);
+	free(__input_fname);
+}
+
+CommandLineOptions::CommandLineOptions(int argc, char **argv)
+{
+	define_options();
+	arg_lit *help_option=arg_lit0("h", "help", "Print this help and exit.");
+	struct arg_end *end = arg_end(100);
+	void *argtable[] = {
+		__low_mass_windK, 				__low_mass_windK_column,
+		__high_mass_windK, 				__high_mass_windK_column,
+		__low_mass_wind_saturation, 	__low_mass_wind_saturation_column,
+		__high_mass_wind_saturation, 	__high_mass_wind_saturation_column,
+		__core_env_coupling_timescale, 	__core_env_coupling_timescale_column,
+		__lgQ,							__lgQ_column,
+		__star_mass,					__star_mass_column,
+		__planet_mass,					__planet_mass_column,
+		__disk_lock_frequency,			__disk_lock_frequency_column,
+		__disk_dissipation_age,			__disk_dissipation_age_column,
+		__planet_formation_semimajor,	__planet_formation_semimajor_column,
+		__start_age,					__start_age_column,
+		__start_wrad,					__start_wrad_column,
+		__start_wsurf,					__start_wsurf_column,
+		__max_low_mass,
+		__serialized_stellar_evolution,
+		__input_fname,
+		help_option, end};
+	if(arg_nullcheck(argtable) != 0) {
+		cleanup();
+		throw Error::CommandLine("Failed to allocate argument table.");
+	}
+	set_defaults();
+	int nerrors=arg_parse(argc, argv, argtable);
+	if(help_option->count>0 || nerrors>0) {
+        printf("Usage: %s", "SubPixPhot");
+        arg_print_syntax(stdout,argtable,"\n");
+        arg_print_glossary(stdout,argtable,"  %-25s %s\n");
+		if(help_option->count==0)
+			arg_print_errors(stdout, end, "poet");
+		free(help_option);
+		free(end);
+		return;
+	}
+	postprocess();
+	free(help_option);
+	free(end);
 }
 
 ///AU/\f$\mathrm{R}_\odot\f$.
@@ -207,107 +357,32 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 	outf.close();
 }
 
-///\brief Sets up a test case for which an exact analytical solution is known
-///and calculates it.
-void calculate_test()
-{
-	const double tstart=2.0*min_age, Q=1e8,
-		  alpha=(-4.5*std::sqrt(AstroConst::G/
-					  (AstroConst::solar_radius*AstroConst::solar_mass))*
-				  AstroConst::jupiter_mass/Q*AstroConst::Gyr/
-				  AstroConst::solar_radius),
-		  Lscale=AstroConst::jupiter_mass/
-			  std::pow(AstroConst::solar_radius, 1.5)*
-			  std::sqrt(AstroConst::G/
-					  (AstroConst::jupiter_mass+AstroConst::solar_mass))*
-			  AstroConst::day,
-		  beta=std::sqrt(AstroConst::G*(AstroConst::solar_mass+
-					  AstroConst::jupiter_mass))*AstroConst::day/
-			  std::pow(AstroConst::solar_radius, 1.5),
-		  tdisk=1, async=2.5, tsync=2.0, tend=3,
-		  a6p5_offset=std::pow(async, 6.5)-6.5*alpha*tsync,
-		  a_formation=std::pow(a6p5_offset + 6.5*alpha*tdisk, 1.0/6.5),
-		  Ic=Lscale*(std::sqrt(a_formation)-std::sqrt(async))/
-			  (beta*(std::pow(async, -1.5)-0.5*std::pow(a_formation, -1.5))),
-		  wdisk=0.5*beta/std::pow(a_formation, 1.5);
-
-	MockStellarEvolution no_evol(-1,
-			std::valarray< std::valarray<double> >(
-				std::valarray<double>(1.0, 1), 1),
-			std::valarray< std::valarray<double> >(
-				std::valarray<double>(Ic, 1), 1),
-			std::valarray< std::valarray<double> >(
-				std::valarray<double>(1.0, 1), 1),
-			std::valarray< std::valarray<double> >(
-				std::valarray<double>(1.0, 1), 1),
-			std::valarray< std::valarray<double> >(
-				std::valarray<double>(1.0, 1), 1));
-	Star star_no_wind_no_coupling(1.0, Q, 0.0, 1.0, Inf, 0.0, wdisk,
-			tdisk, no_evol, 1.0, 0.0, 0.0);
-	Planet planet(&star_no_wind_no_coupling, 1.0, 0.0, 1.0);
-	StellarSystem system(&star_no_wind_no_coupling, &planet);
-	OrbitSolver solver(tstart, tend, 5e-8);
-	solver(system, Inf, 0.0, a_formation/AU_Rsun, tstart);
-	output_solution(solver, system, "DiskFastLocked_test.txt");
-}
-
 ///Calculates a realistic evolution chosen to be comlicated (no analytical
 ///solution is available).
-void calculate_full()
+void calculate_full(double Mstar, double Q, double Kwind, double wsat, 
+		double coupling_timescale, double wdisk, double tdisk,
+		double Mplanet, double Rplanet, double a_formation, double tstart,
+		double tend, const StellarEvolution &stellar_evolution,
+		OrbitSolver &solver)
 {
-	YRECEvolution stellar_evolution;
-	stellar_evolution.load_state("../interp_state_data_phs4");
-	const double Mstar=1, Q=3e6, Kwind=0.17, wsat=2.2,
-		  coupling_timescale=0.03, wdisk=0.9, tdisk=5e-3, Mplanet=10,
-		  Rplanet=1, a_formation=10.0, tstart=1e-3, tend=10.0;
 	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 0.0, wdisk, tdisk,
 			stellar_evolution);
 	Planet planet(&star, Mplanet, Rplanet, a_formation/AU_Rsun);
 	StellarSystem system(&star, &planet);
-	OrbitSolver solver(tstart, tend, 5e-6);
 	solver(system, Inf, 0.0, a_formation/AU_Rsun, tstart);
-	output_solution(solver, system, "FullEvolution.txt");
-//	solver(system, 1e-3, 0.0, a_formation/AU_Rsun, tstart);
-//	output_solution(solver, system, "FullEvolutionHD.txt");
-}
-
-void calculate_slow()
-{
-	YRECEvolution stellar_evolution;
-	stellar_evolution.load_state("../interp_state_data_phs4");
-	const double Mstar=0.90000000000000013323,
-		  Q=1e6,
-		  Kwind=0.155,
-		  wsat=2.454,
-		  coupling_timescale=0.012,
-		  wdisk=2*M_PI/1.4,
-		  tdisk=0.0025,
-		  Mplanet=25,
-		  Rplanet=0.714,
-		  P0=5.9000000000000003553,
-		  a_formation=AstroConst::G*Mstar*AstroConst::solar_mass*
-			  std::pow(P0*AstroConst::day, 2)/4/M_PI/M_PI,
-		  tstart=MIN_AGE;
-	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 1e-3, wdisk, tdisk,
-			stellar_evolution);
-	double tend=std::min((const double)MAX_END_AGE,
-				star.get_lifetime());
-	Planet planet(&star, Mplanet, Rplanet, a_formation/AstroConst::AU);
-	StellarSystem system(&star, &planet);
-	OrbitSolver solver(tstart, tend, 1e-5, SPIN_THRES, MAIN_SEQ_START);
-	solver(system, Inf, PLANET_FORM_AGE, a_formation/AstroConst::AU, tstart);
-	output_solution(solver, system, "SlowEvolution.txt");
 }
 
 ///Calculates a realistic evolution chosen to be comlicated.
-int main()
+int main(int argc, char **argv)
 {
-//	try {
-//		calculate_test();
-//		calculate_full();
-		calculate_slow();
-/*	} catch(Error::General &ex) {
-		std::cerr << "Unexpected exception thrown: " << ex.what() << ":	"
-			<< ex.get_message() << std::endl;
-	}*/
+	try {
+		CommandLineOptions options(argc, argv);
+		YRECEvolution stellar_evolution;
+		stellar_evolution.load_state(
+				options.serialized_stellar_evolution());
+		OrbitSolver solver(tstart, tend, 5e-6);
+	} catch(Error::General &err) {
+		std::cerr << err.what() << ": " << err.get_message() << std::endl;
+		return 1;
+	}
 }

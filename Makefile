@@ -2,7 +2,7 @@ CPPFLAGS= -g -Wall -L/u/mzzhang/bin/gsl/lib -L/u/mzzhang/bin/boost/lib -L/opt/lo
 CPP=g++
 ALL_OBJ=Functions.o OrbitSolver.o Planet.o Star.o StellarEvolution.o \
 	YRECIO.o Common.o StellarSystem.o sampleHist.o \
-	sampleRotation.o SimOne.o
+	sampleRotation.o poet.o
 ALL_DEP=alglib $(ALL_OBJ)
 ALGLIB_OBJ=alglib/src/interpolation.o alglib/src/ap.o \
 		   alglib/src/alglibinternal.o alglib/src/optimization.o \
@@ -10,7 +10,7 @@ ALGLIB_OBJ=alglib/src/interpolation.o alglib/src/ap.o \
 		   alglib/src/alglibmisc.o alglib/src/solvers.o \
 		   alglib/src/specialfunctions.o
 ALL_COMPILED=$(ALL_OBJ) $(ALGLIB_OBJ)
-LIB=-lgsl -lgslcblas -lboost_serialization-mt
+LIB=-lgsl -lgslcblas -lboost_serialization-mt -largtable2
 
 default: all
 Functions.o: Functions.h
@@ -27,6 +27,7 @@ sampleHist.o: sampleHist.h
 sampleRotation.o: sampleRotation.h
 FastRotators.o: *.cpp *.h
 SimOne.o: *.cpp *.h
+poet.o: *.cpp *.h
 
 alglib:
 	make -C alglib
