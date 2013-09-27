@@ -46,6 +46,16 @@ Star::Star(double current_mass, double tidal_quality,
 	low_mass=(mass<evolution.get_mass_break());
 }
 
+Star::~Star()
+{
+	delete radius;
+	delete luminosity;
+	delete conv_moment_of_inertia;
+	delete rad_moment_of_inertia;
+	delete rad_mass;
+	delete rad_radius;
+}
+
 /*
 //Same as above, but without unnecessary arguments
 Star::Star(double current_mass, double tidal_quality,

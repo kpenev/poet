@@ -1148,7 +1148,7 @@ EvolModeType OrbitSolver::next_evol_mode(double age,
 		double condition_value, bool stopped_before,
 		double planet_formation_age) const
 {
-	if(stopped_before!=NO_STOP) condition_value*=-1;
+	if(stopped_before) condition_value*=-1;
 	if(condition_type==NO_STOP) return critical_age_evol_mode(age, orbit,
 			initial_semimajor, system, evolution_mode, planet_formation_age);
 	if(condition_type==SYNCHRONIZED) {
@@ -1454,10 +1454,10 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		last_age=stop_evol_age;
 		if(last_age<end_age) {
 			EvolModeType old_evolution_mode=evolution_mode;
-			if(!no_evol_mode_change) evolution_mode=next_evol_mode(last_age, orbit,
-					planet_formation_semimajor, system, evolution_mode,
-					stop_reason, stop_condition_value, stopped_before,
-					planet_formation_age);
+			if(!no_evol_mode_change) evolution_mode=next_evol_mode(last_age,
+					orbit, planet_formation_semimajor, system,
+					evolution_mode, stop_reason, stop_condition_value,
+					stopped_before, planet_formation_age);
 			if(old_evolution_mode!=evolution_mode) {
 				std::valarray<double> new_orbit=transform_orbit(
 						old_evolution_mode, evolution_mode, last_age, orbit,

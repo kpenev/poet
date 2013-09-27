@@ -203,6 +203,10 @@ gsl_vector *polynomial_coefficients(ITERATOR x_i, ITERATOR y_i,
 	gsl_linalg_LU_refine(xpowers, xpowers_LU, permutation, y_vec,
 			coefficients, residuals);
 	gsl_permutation_free(permutation);
+	gsl_vector_free(y_vec);
+	gsl_vector_free(residuals);
+	gsl_matrix_free(xpowers);
+	gsl_matrix_free(xpowers_LU);
 	return coefficients;
 }
 

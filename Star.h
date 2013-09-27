@@ -630,6 +630,9 @@ public:
 
 	///The angular momentum of a stellar zone at the present time.
 	double get_current_angular_momentum(StellarZone zone) const;
+
+	///Delete the allocated interpolated stellar properties.
+	~Star();
 };
 
 #endif
