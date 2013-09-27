@@ -7,7 +7,6 @@
 
 #include "poet.h"
 
-
 void CommandLineOptions::define_options()
 {
 	__low_mass_windK=arg_dbl0("K", "low-mass-K", "<double>",
@@ -39,8 +38,13 @@ void CommandLineOptions::define_options()
 	__planet_mass=arg_dbl0("m", "Mplanet", "<double>", "Mass of the planet "
 			"in jupiter masses. Default: 1");
 
-	__planet_radius=arg_dbl0("r", "Rplanet", "<double>", "Radius of the planet"
-			" in jupiter radii. Default: 1");
+	__planet_radius=arg_dbl0("r", "Rplanet", "<double>", "Radius of the "
+			"planet in jupiter radii. Default: 1");
+
+	__planet_formation_age=arg_dbl0(NULL, "planet-formation-age", "<double>",
+			"The age at which the planet forms. If it is smaller than the "
+			"disk dissipation age, the planet forms at the disk dissipation "
+			"age. Default 0.");
 
 	__disk_lock_frequency=arg_dbl0(NULL, "w-disk", "<double>", "The spin at "
 			"which the star is locked while the disk is present in rad/day. "
@@ -144,6 +148,12 @@ void CommandLineOptions::define_options()
 			"the const value specified by --Rplanet or its default is "
 			"used.");
 
+	__planet_formation_age_column=arg_int0(NULL, "planet-formation-age-col",
+			"<index>", "Index in the input file of the column which "
+			"contains the age at which the planet forms. If that age is "
+			" smaller than the disk dissipation age, the planet forms at the"
+			" disk dissipation age.");
+
 	__disk_lock_frequency_column=arg_int0(NULL, "w-disk-col", "<index>",
 			"Index in the input file of the column which contains the spin "
 			"at which the star is locked while the disk is present in "
@@ -178,13 +188,13 @@ void CommandLineOptions::define_options()
 			" the evolution in Gyr. If this parameter is not specified the "
 			"const value specified by --tmax or its default is used.");
 
-	__start_wrad_column=arg_int0(NULL, "--init-wrad-col", "<index>", "Index "
+	__start_wrad_column=arg_int0(NULL, "init-wrad-col", "<index>", "Index "
 			"in the input file of the column which contains the initial spin"
 			" of the stellar core in rad/day for low mass stars. This "
 			"argument is ignored, unless --t0 or --t0-col is also "
 			"specified.");
 
-	__start_wsurf_column=arg_int0(NULL, "--init-wsurf-col", "<index>",
+	__start_wsurf_column=arg_int0(NULL, "init-wsurf-col", "<index>",
 			"Index in the input file of the column which contains the "
 			"initial spin of the stellar surface in rad/day. For low mass "
 			"stars this is the rotation of the convective zone, and for "
@@ -197,9 +207,21 @@ void CommandLineOptions::define_options()
 			"for. If omitted, standard input is used instead. If no --*-col "
 			"options are specified, this argument is ignored.");
 
+	__output_fname=arg_file0("o", "output", "<file|index>", "If nothing is "
+			"read from an input file, then this argument should be the name "
+			"of the file to use to output the evolution. If at least one "
+			"quantity is read from a list file, that file should also "
+			"contain a column specifying the input file name for each "
+			"parameter set, and this argument should be the index of that "
+			"column. Default: poet.evol");
+
 	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
 			"<file>", "The file to read previously serialized stellar "
 			"evolution from. Default: 'interp_state_data'.");
+
+	__start_locked=arg_lit0(NULL, "start-locked", "Whether the planet "
+			"should start locked to the star. If true, causes the value of "
+			"--init-wsurf-col to be ignored.");
 }
 
 void CommandLineOptions::set_defaults()
@@ -213,6 +235,7 @@ void CommandLineOptions::set_defaults()
 	__star_mass->dval[0]=1;
 	__planet_mass->dval[0]=1;
 	__planet_radius->dval[0]=1;
+	__planet_formation_age->dval[0]=0;
 	__disk_lock_frequency->dval[0]=0.68;
 	__disk_dissipation_age->dval[0]=5;
 	__planet_formation_semimajor->dval[0]=0.05;
@@ -233,33 +256,41 @@ void CommandLineOptions::set_defaults()
 	__star_mass_column->ival[0]=0;
 	__planet_mass_column->ival[0]=0;
 	__planet_radius_column->ival[0]=0;
+	__planet_formation_age_column->ival[0]=0;
 	__disk_lock_frequency_column->ival[0]=0;
 	__disk_dissipation_age_column->ival[0]=0;
 	__planet_formation_semimajor_column->ival[0]=0;
 	__start_age_column->ival[0]=0; 
 	__start_wrad_column->ival[0]=0;
 	__start_wsurf_column->ival[0]=0;
+
+	__output_fname->filename[0]="poet.evol";
 }
 
 void CommandLineOptions::postprocess()
 {
-	--__low_mass_windK_column->ival[0];
-	--__high_mass_windK_column->ival[0];
-	--__low_mass_wind_saturation_column->ival[0];
-	--__high_mass_wind_saturation_column->ival[0];
-	--__core_env_coupling_timescale_column->ival[0];
-	--__lgQ_column->ival[0];
-	--__star_mass_column->ival[0];
-	--__planet_mass_column->ival[0];
-	--__planet_radius_column->ival[0];
-	--__disk_lock_frequency_column->ival[0];
-	--__disk_dissipation_age_column->ival[0];
-	--__planet_formation_semimajor_column->ival[0];
-	--__start_age_column->ival[0];
-	--__start_wrad_column->ival[0];
-	--__start_wsurf_column->ival[0];
+	if(--__low_mass_windK_column->ival[0]>=0 || 
+			--__high_mass_windK_column->ival[0]>=0 ||
+			--__low_mass_wind_saturation_column->ival[0]>=0 ||
+			--__high_mass_wind_saturation_column->ival[0]>=0 ||
+			--__core_env_coupling_timescale_column->ival[0]>=0 ||
+			--__lgQ_column->ival[0]>=0 ||
+			--__star_mass_column->ival[0]>=0 ||
+			--__planet_mass_column->ival[0]>=0 ||
+			--__planet_radius_column->ival[0]>=0 ||
+			--__planet_formation_age_column->ival[0]>=0 ||
+			--__disk_lock_frequency_column->ival[0]>=0 ||
+			--__disk_dissipation_age_column->ival[0]>=0 ||
+			--__planet_formation_semimajor_column->ival[0]>=0 ||
+			--__start_age_column->ival[0]>=0 ||
+			--__start_wrad_column->ival[0]>=0 ||
+			--__start_wsurf_column->ival[0]>=0) {
+		__input_from_list=true;
+		std::istringstream outfname_col_str(__output_fname->filename[0]);
+		outfname_col_str >> __output_fname_column;
+	} else __input_from_list=false;
 	if(__input_fname->count) __input_stream.open(__input_fname->filename[0]);
-	__precision->dval[0]=-std::log10(__precision->dval[0]);
+	__precision->dval[0]=std::pow(10.0, -__precision->dval[0]);
 	__core_env_coupling_timescale->dval[0]*=1e-3;
 	__disk_dissipation_age->dval[0]*=1e-3;
 }
@@ -285,6 +316,8 @@ void CommandLineOptions::cleanup()
 	free(__planet_mass_column);
 	free(__planet_radius);
 	free(__planet_radius_column);
+	free(__planet_formation_age);
+	free(__planet_formation_age_column);
 	free(__disk_lock_frequency);
 	free(__disk_lock_frequency_column);
 	free(__disk_dissipation_age);
@@ -303,6 +336,8 @@ void CommandLineOptions::cleanup()
 	free(__precision);
 	free(__serialized_stellar_evolution);
 	free(__input_fname);
+	free(__output_fname);
+	free(__start_locked);
 }
 
 CommandLineOptions::CommandLineOptions(int argc, char **argv)
@@ -320,6 +355,7 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 		__star_mass,					__star_mass_column,
 		__planet_mass,					__planet_mass_column,
 		__planet_radius,				__planet_radius_column,
+		__planet_formation_age,			__planet_formation_age_column,
 		__disk_lock_frequency,			__disk_lock_frequency_column,
 		__disk_dissipation_age,			__disk_dissipation_age_column,
 		__planet_formation_semimajor,	__planet_formation_semimajor_column,
@@ -330,7 +366,9 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 		__max_timestep,
 		__precision,
 		__serialized_stellar_evolution,
+		__start_locked,
 		__input_fname,
+		__output_fname,
 		help_option, end};
 	if(arg_nullcheck(argtable) != 0) {
 		cleanup();
@@ -356,7 +394,6 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 ///AU/\f$\mathrm{R}_\odot\f$.
 const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 
-///Outputs the solution calculated by the given solver.
 void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 		const std::string &filename)
 {
@@ -397,74 +434,13 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 	outf.close();
 }
 
-///Calculates the evolution for a system with the given parameters.
-void calculate_evolution(
-		///Mass of the star
-		double Mstar,
-		
-		///Tidal quality factor of the star
-		double Q,
-		
-		///\brief Magnetic wind strength in
-		/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
-		/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
-		double Kwind,
-		
-		///Wind saturation frequency in rad/day
-		double wsat, 
-
-		///Core-envelope coupling timescare in Gyr
-		double coupling_timescale,
-		
-		///Rotation rate of the stellar surface while locked to the
-		///disk in rad/day.
-		double wdisk,
-		
-		///The age at which the disk dissipates in Gyr.
-		double tdisk,
-
-		///The mass of the planet in \f$M_\Jupiter\f$.
-		double Mplanet,
-		
-		///The radius of the planet in \f$R_\Jupiter\f$.
-		double Rplanet,
-		
-		///The semiamjor axis at which the planet first appears in AU.
-		double a_formation,
-
-		///The initial spin of the radiative core for a low mass
-		///star in rad/day. Ignored if the star is high mass, or if the
-		//evolution starts before the radiative core has formed.
-		double start_wrad,
-
-		///The initial spin of the stellar surface in rad/day. Ignored if the
-		///evolution starts before the disk has dissipated.
-		double start_wsurf,
-
-		///The minimum age to start the evolution from.
-		///If this is smaller than both the disk dissipation age and
-		///the age at which the stellar core forms, it is substituted
-		///by the smaller of these two values.
-		double tstart,
-
-		///The maximum age to end the evolution on. It is replaced by
-		///the star's lifetime if the latter is shorter.
-		double tend,
-
-		///The maximum time step the solver is allowed to take in Gyr.
-		double max_time_step,
-
-		///If true, and the start age is after the disk has
-		///dissipated, the evolution is started with the planet locked
-		///to the star, ignoring the value of start_wsurf.
-		bool start_locked,
-		
-		///A stellar evolution interpolator.
-		const StellarEvolution &stellar_evolution,
-
-		///An orbit solver variable which is used to calculate the
-		///evolution and as a result, on output contains it.
-		OrbitSolver &solver)
+void calculate_evolution(double Mstar, double Q, double Kwind, double wsat, 
+		double coupling_timescale, double wdisk, double tdisk, 
+		double Mplanet, double Rplanet, double planet_formation_age,
+		double a_formation, double start_wrad, double start_wsurf,
+		double tstart, double tend, double max_time_step, bool start_locked,
+		const StellarEvolution &stellar_evolution, OrbitSolver &solver,
+		const std::string &outfname)
 {
 	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 0.0, wdisk, tdisk,
 			stellar_evolution);
@@ -475,34 +451,36 @@ void calculate_evolution(
 				"before the stellar core starts to form is not supported.");
 	Planet planet(&star, Mplanet, Rplanet, a_formation);
 	StellarSystem system(&star, &planet);
-	start_orbit=std::valarray<double>(0.0, 1);
+	std::valarray<double> start_orbit(0.0, 1);
 	EvolModeType start_evol_mode;
-	if(star.is_low_mass()) {
-		if(tstart<star.get_disk_dissipation_age())
-			start_evol_mode=LOCKED_TO_DISK;
-		if(tstart<star.core_formation_age()) tstart=NaN;
-		else if(tstart<star.get_disk_dissipation_age()) {
-			start_orbit[0]=start_wrad*star.moment_of_inertia(tstart,
-					radiative);
-		} else if(start_locked) {
-			start_evol_mode=LOCKED_TO_PLANET;
-			start_orbit.resize(2);
-			start_orbit[0]=a_formation*AU_Rsun;
-			start_orbit[1]=start_wrad*
-				star.moment_of_inertia(tstart, radiative);
-		} else {
-			if(planet.orbital_angular_velocity_semimajor(a_formation)<
+	if(std::isnan(tstart) || tstart<star.get_disk_dissipation_age())
+		start_evol_mode=LOCKED_TO_DISK;
+	if(std::isnan(tstart) ||
+			(star.is_low_mass() && tstart<star.core_formation_age()))
+		tstart=NaN;
+	else if(tstart<star.get_disk_dissipation_age()) {
+		start_orbit[0]=(star.is_low_mass() ? start_wrad : start_wsurf)*
+			star.moment_of_inertia(tstart, radiative);
+	} else if(start_locked) {
+		start_evol_mode=LOCKED_TO_PLANET;
+		start_orbit.resize(2);
+		start_orbit[0]=a_formation*AU_Rsun;
+		start_orbit[1]=(star.is_low_mass() ? start_wrad*
+				star.moment_of_inertia(tstart, radiative) : 0);
+	} else {
+		if(planet.orbital_angular_velocity_semimajor(a_formation)<
 				start_wsurf) start_evol_mode=SLOW_PLANET;
-			else start_evol_mode=FAST_PLANET;
-			start_orbit.resize(3);
-			start_orbit[0]=std::pow(a_formation*AU_Rsun, 6.5);
-			start_orbit[1]=start_wsurf*
-				star.moment_of_inertia(tstart, convective);
-			start_orbit[2]=start_wrad*
-				star.moment_of_inertia(tstart, radiative);
-		}
-
-	solver(system, Inf, 0.0, a_formation, tstart);
+		else start_evol_mode=FAST_PLANET;
+		start_orbit.resize(3);
+		start_orbit[0]=std::pow(a_formation*AU_Rsun, 6.5);
+		start_orbit[1]=start_wsurf*
+			star.moment_of_inertia(tstart, convective);
+		start_orbit[2]=(star.is_low_mass() ? start_wrad*
+				star.moment_of_inertia(tstart, radiative) : 0);
+	}
+	solver(system, max_time_step, planet_formation_age, a_formation, tstart,
+			start_evol_mode, start_orbit);
+	output_solution(solver, system, outfname);
 }
 
 ///Calculates a realistic evolution chosen to be comlicated.
@@ -515,6 +493,25 @@ int main(int argc, char **argv)
 				options.serialized_stellar_evolution());
 		OrbitSolver solver(options.start_age(), options.end_age(),
 				options.precision());
+		double Kwind, wsat;
+		if(options.star_mass()>stellar_evolution.get_mass_break()) {
+			Kwind=options.high_mass_windK();
+			wsat=options.high_mass_wind_saturation();
+		} else {
+			Kwind=options.low_mass_windK();
+			wsat=options.low_mass_wind_saturation();
+		}
+		calculate_evolution(options.star_mass(),
+				std::pow(10.0, options.lgQ()),
+				Kwind, wsat, options.core_env_coupling_timescale(),
+				options.disk_lock_frequency(),
+				options.disk_dissipation_age(), options.planet_mass(),
+				options.planet_radius(), options.planet_formation_age(),
+				options.planet_formation_semimajor(), options.start_wrad(),
+				options.start_wsurf(), options.start_age(),
+				options.end_age(), options.max_timestep(),
+				options.start_locked(), stellar_evolution, solver,
+				options.output_filename());
 	} catch(Error::General &err) {
 		std::cerr << err.what() << ": " << err.get_message() << std::endl;
 		return 1;

@@ -51,6 +51,12 @@ private:
 			///Radius of the planet in \f$R_\Jupiter\f$
 			*__planet_radius,
 
+			///The age at which the planet forms.
+			///
+			///If it is smaller than the disk dissipation age, the planet
+			///forms at the disk dissipation age.
+			*__planet_formation_age,
+
 			///\brief The spin at which the star is locked while the
 			///disk is present in rad/day.
 			*__disk_lock_frequency,
@@ -114,6 +120,12 @@ private:
 			///The column of the radius of the planet in \f$R_\Jupiter\f$
 			*__planet_radius_column,
 
+			///The column of the age at which the planet forms.
+			///
+			///If it is smaller than the disk dissipation age, the planet
+			///forms at the disk dissipation age.
+			*__planet_formation_age_column,
+
 			///\brief The column of the spin at which the star is locked
 			///while the disk is present in rad/day.
 			*__disk_lock_frequency_column,
@@ -142,12 +154,26 @@ private:
 	///The name of the file to read the evolution scenarios from.
 	arg_file *__input_fname,
 
+			 ///The name of the file to output the solution to.
+			 *__output_fname,
+
 			 ///\brief The name of the file to read pre-serialized stellar
 			 ///evolution from.
 			 *__serialized_stellar_evolution;
 
+	///Whether the planet should start locked to the star.
+	///
+	///If true, causes the value of __start_wsurf to be ignored.
+	arg_lit *__start_locked;
+
 	///The stream to the input filename if stdin is not being used.
 	std::ifstream __input_stream;
+
+	///\brief The column number in the input file containing the name of the
+	///output filename.
+	///
+	///Not initialized if no quantities are read from a list file.
+	int __output_fname_column;
 
 	///Defines the command line options.
 	void define_options();
@@ -173,7 +199,10 @@ private:
 	void cleanup();
 
 	///Did parsing the command line succeed.
-	bool __parsed_ok;
+	bool __parsed_ok,
+
+		 ///Are any quantities to be read from a list file?
+		 __input_from_list;
 public:
 	///Parse the command line.
 	CommandLineOptions(int argc, char **argv);
@@ -190,12 +219,12 @@ public:
 
 	///\brief The frequency at which the wind saturates for
 	///low mass stars in units of rad/day.
-	double low_mass_wind_saturatior() const
+	double low_mass_wind_saturation() const
 	{return __low_mass_wind_saturation->dval[0];}
 
 	///\brief The frequency at which the wind saturates for
 	///high mass stars in units of rad/day.
-	double high_mass_wind_saturatior() const
+	double high_mass_wind_saturation() const
 	{return __high_mass_wind_saturation->dval[0];}
 
 	///The timescale on which the core end envelope are coupled.
@@ -213,6 +242,13 @@ public:
 
 	///Radius of the planet in \f$R_\Jupiter\f$
 	double planet_radius() const {return __planet_radius->dval[0];}
+
+	///\brief The age at which the planet forms.
+	///
+	///If it is smaller than the disk dissipation age, the planet
+	///forms at the disk dissipation age.
+	double planet_formation_age() const
+	{return __planet_formation_age->dval[0];}
 
 	///\brief The spin at which the star is locked while the
 	///disk is present in rad/day.
@@ -285,6 +321,13 @@ public:
 	int planet_radius_column() const
 	{return __planet_radius_column->ival[0];}
 
+	///\brief The column of the age at which the planet forms in Gyr.
+	///
+	///If it is smaller than the disk dissipation age, the planet
+	///forms at the disk dissipation age.
+	int planet_formation_age_column() const
+	{return __planet_formation_age_column->ival[0];}
+
 	///\brief The column of the spin at which the star is locked
 	///while the disk is present in rad/day.
 	int disk_lock_frequency_column() const
@@ -318,9 +361,24 @@ public:
 	std::istream &input()
 	{if(__input_fname->count) return __input_stream; else return std::cin;}
 
+	///The name of the file to output the solution to.
+	std::string output_filename() const {return __output_fname->filename[0];}
+
+	///The index of the column in the input file containing the output
+	///filename.
+	int output_filename_column() const {return __output_fname_column;}
+
 	///The name of the file to read pre-serialized stellar evolution from.
-	const char *serialized_stellar_evolution()
+	const char *serialized_stellar_evolution() const
 	{return __serialized_stellar_evolution->filename[0];}
+
+	///\brief Whether the planet should start locked to the star.
+	///
+	///If true, causes the value of __start_wsurf to be ignored.
+	bool start_locked() const {return __start_locked->count>0;}
+
+	///Are any quantities to be read from a list file?
+	bool input_from_list() const {return __input_from_list;}
 
 	///Did parsing the command line succeed.
 	operator bool() {return __parsed_ok;}
@@ -328,5 +386,92 @@ public:
 	///Closes the input  filename if it was opened.
 	~CommandLineOptions() {cleanup();}
 };
+
+///Calculates the evolution for a system with the given parameters.
+void calculate_evolution(
+		///Mass of the star
+		double Mstar,
+		
+		///Tidal quality factor of the star
+		double Q,
+		
+		///\brief Magnetic wind strength in
+		/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
+		/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
+		double Kwind,
+		
+		///Wind saturation frequency in rad/day
+		double wsat, 
+
+		///Core-envelope coupling timescare in Gyr
+		double coupling_timescale,
+		
+		///Rotation rate of the stellar surface while locked to the
+		///disk in rad/day.
+		double wdisk,
+		
+		///The age at which the disk dissipates in Gyr.
+		double tdisk,
+
+		///The mass of the planet in \f$M_\Jupiter\f$.
+		double Mplanet,
+		
+		///The radius of the planet in \f$R_\Jupiter\f$.
+		double Rplanet,
+
+		///The age at which the planet forms.
+		///
+		///If it is smaller than the disk dissipation age, the planet
+		///forms at the disk dissipation age.
+		double planet_formation_age,
+
+		///The semiamjor axis at which the planet first appears in AU.
+		double a_formation,
+
+		///The initial spin of the radiative core for a low mass
+		///star in rad/day. Ignored if the star is high mass, or if the
+		//evolution starts before the radiative core has formed.
+		double start_wrad,
+
+		///The initial spin of the stellar surface in rad/day. Ignored if the
+		///evolution starts before the disk has dissipated.
+		double start_wsurf,
+
+		///The minimum age to start the evolution from.
+		///If this is smaller than both the disk dissipation age and
+		///the age at which the stellar core forms, it is substituted
+		///by the smaller of these two values.
+		double tstart,
+
+		///The maximum age to end the evolution on. It is replaced by
+		///the star's lifetime if the latter is shorter.
+		double tend,
+
+		///The maximum time step the solver is allowed to take in Gyr.
+		double max_time_step,
+
+		///If true, and the start age is after the disk has
+		///dissipated, the evolution is started with the planet locked
+		///to the star, ignoring the value of start_wsurf.
+		bool start_locked,
+		
+		///A stellar evolution interpolator.
+		const StellarEvolution &stellar_evolution,
+
+		///An orbit solver variable which is used to calculate the
+		///evolution and as a result, on output contains it.
+		OrbitSolver &solver);
+
+///Outputs the solution calculated by the given solver.
+void output_solution(
+		///The solver that contains the solution. sover.operator() should
+		///already have been called.
+		const OrbitSolver &solver,
+		
+		///The planet-star system for which solution was derived.
+		const StellarSystem &system,
+
+		///The name of the file to output the solution to.
+		const std::string &filename);
 
 #endif
