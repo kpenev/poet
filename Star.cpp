@@ -43,6 +43,7 @@ Star::Star(double current_mass, double tidal_quality,
 		current_rad_angular_momentum=current_rad_spin*
 			(*rad_moment_of_inertia)(current_age);
 	}
+	low_mass=(mass<evolution.get_mass_break());
 }
 
 /*

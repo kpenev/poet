@@ -39,6 +39,9 @@ void CommandLineOptions::define_options()
 	__planet_mass=arg_dbl0("m", "Mplanet", "<double>", "Mass of the planet "
 			"in jupiter masses. Default: 1");
 
+	__planet_radius=arg_dbl0("r", "Rplanet", "<double>", "Radius of the planet"
+			" in jupiter radii. Default: 1");
+
 	__disk_lock_frequency=arg_dbl0(NULL, "w-disk", "<double>", "The spin at "
 			"which the star is locked while the disk is present in rad/day. "
 			"Default: 0.68");
@@ -60,6 +63,11 @@ void CommandLineOptions::define_options()
 			"of low mass stars is to be computed --init-wrad or "
 			"--init-wrad-col is also required.");
 
+	__end_age=arg_dbl0(NULL, "tmax", "<double>", "The maximum end age for "
+			"the evolution in Gyr. The evolution could stop earlier if the "
+			"star moves off the main sequence before this age. Default: "
+			"Inf.");
+
 	__start_wrad=arg_dbl0(NULL, "init-wrad", "<double>", "Initial spin of "
 			"the stellar core in rad/day for low mass stars. This argument "
 			"is ignored, unless --t0 or --t0-col is also specified.");
@@ -70,9 +78,12 @@ void CommandLineOptions::define_options()
 			"the unique rotation of the star. This argument is ignored, "
 			"unless --t0 or --t0-col is also specified.");
 
-	__max_low_mass=arg_dbl0(NULL, "max-low-mass", "<double>", "The highest "
-			"stellar mass which is still considered low mass in solar "
-			"masses. Default: 1.1.");
+	__max_timestep=arg_dbl0(NULL, "max-step", "<double>", "An upper limit to"
+			" impose on the sover timestep.");
+
+	__precision=arg_dbl0(NULL, "precision", "<double>", "The number of "
+			"digits of precision to require of the solution. Need not be an "
+			"integer. Default: 6.");
 
 	__low_mass_windK_column=arg_int0(NULL, "low-mass-K-col", "<index>",
 			"Index in the input file of the column which contains the wind "
@@ -127,6 +138,12 @@ void CommandLineOptions::define_options()
 			"the const value specified by --Mplanet or its default is "
 			"used.");
 
+	__planet_radius_column=arg_int0(NULL, "Rplanet-col", "<index>", "Index "
+			"in the input file of the column which contains the radius of "
+			"the planet in jovian radii. If this parameter is not specified "
+			"the const value specified by --Rplanet or its default is "
+			"used.");
+
 	__disk_lock_frequency_column=arg_int0(NULL, "w-disk-col", "<index>",
 			"Index in the input file of the column which contains the spin "
 			"at which the star is locked while the disk is present in "
@@ -156,6 +173,11 @@ void CommandLineOptions::define_options()
 			"of low mass stars is to be computed --init-wrad or "
 			"--init-wrad-col is also required.");
 
+	__end_age_column=arg_int0(NULL, "tmax-col", "<index>", "Index in the "
+			"input file of the column which contains the maximum end age for"
+			" the evolution in Gyr. If this parameter is not specified the "
+			"const value specified by --tmax or its default is used.");
+
 	__start_wrad_column=arg_int0(NULL, "--init-wrad-col", "<index>", "Index "
 			"in the input file of the column which contains the initial spin"
 			" of the stellar core in rad/day for low mass stars. This "
@@ -169,10 +191,12 @@ void CommandLineOptions::define_options()
 			"high mass stars it is the unique rotation of the star. This "
 			"argument is ignored, unless --t0 or --t0-col is also "
 			"specified.");
+
 	__input_fname=arg_file0("i", "input", "<file>", "The file to read the "
 			"parameters of the planet-star systems to calculate evolutions "
 			"for. If omitted, standard input is used instead. If no --*-col "
 			"options are specified, this argument is ignored.");
+
 	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
 			"<file>", "The file to read previously serialized stellar "
 			"evolution from. Default: 'interp_state_data'.");
@@ -188,13 +212,16 @@ void CommandLineOptions::set_defaults()
 	__lgQ->dval[0]=6;
 	__star_mass->dval[0]=1;
 	__planet_mass->dval[0]=1;
+	__planet_radius->dval[0]=1;
 	__disk_lock_frequency->dval[0]=0.68;
 	__disk_dissipation_age->dval[0]=5;
 	__planet_formation_semimajor->dval[0]=0.05;
 	__start_age->dval[0]=NaN; 
+	__end_age->dval[0]=Inf; 
 	__start_wrad->dval[0]=NaN;
 	__start_wsurf->dval[0]=NaN;
-	__max_low_mass->dval[0]=1.1;
+	__max_timestep->dval[0]=Inf;
+	__precision->dval[0]=6;
 	__serialized_stellar_evolution->filename[0]="interp_state_data";
 
 	__low_mass_windK_column->ival[0]=0;
@@ -205,6 +232,7 @@ void CommandLineOptions::set_defaults()
 	__lgQ_column->ival[0]=0;
 	__star_mass_column->ival[0]=0;
 	__planet_mass_column->ival[0]=0;
+	__planet_radius_column->ival[0]=0;
 	__disk_lock_frequency_column->ival[0]=0;
 	__disk_dissipation_age_column->ival[0]=0;
 	__planet_formation_semimajor_column->ival[0]=0;
@@ -223,6 +251,7 @@ void CommandLineOptions::postprocess()
 	--__lgQ_column->ival[0];
 	--__star_mass_column->ival[0];
 	--__planet_mass_column->ival[0];
+	--__planet_radius_column->ival[0];
 	--__disk_lock_frequency_column->ival[0];
 	--__disk_dissipation_age_column->ival[0];
 	--__planet_formation_semimajor_column->ival[0];
@@ -230,6 +259,9 @@ void CommandLineOptions::postprocess()
 	--__start_wrad_column->ival[0];
 	--__start_wsurf_column->ival[0];
 	if(__input_fname->count) __input_stream.open(__input_fname->filename[0]);
+	__precision->dval[0]=-std::log10(__precision->dval[0]);
+	__core_env_coupling_timescale->dval[0]*=1e-3;
+	__disk_dissipation_age->dval[0]*=1e-3;
 }
 
 void CommandLineOptions::cleanup()
@@ -251,6 +283,8 @@ void CommandLineOptions::cleanup()
 	free(__star_mass_column);
 	free(__planet_mass);
 	free(__planet_mass_column);
+	free(__planet_radius);
+	free(__planet_radius_column);
 	free(__disk_lock_frequency);
 	free(__disk_lock_frequency_column);
 	free(__disk_dissipation_age);
@@ -259,11 +293,14 @@ void CommandLineOptions::cleanup()
 	free(__planet_formation_semimajor_column);
 	free(__start_age);
 	free(__start_age_column);
+	free(__end_age);
+	free(__end_age_column);
 	free(__start_wrad);
 	free(__start_wrad_column);
 	free(__start_wsurf);
 	free(__start_wsurf_column);
-	free(__max_low_mass);
+	free(__max_timestep);
+	free(__precision);
 	free(__serialized_stellar_evolution);
 	free(__input_fname);
 }
@@ -282,13 +319,16 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 		__lgQ,							__lgQ_column,
 		__star_mass,					__star_mass_column,
 		__planet_mass,					__planet_mass_column,
+		__planet_radius,				__planet_radius_column,
 		__disk_lock_frequency,			__disk_lock_frequency_column,
 		__disk_dissipation_age,			__disk_dissipation_age_column,
 		__planet_formation_semimajor,	__planet_formation_semimajor_column,
 		__start_age,					__start_age_column,
+		__end_age,						__end_age_column,
 		__start_wrad,					__start_wrad_column,
 		__start_wsurf,					__start_wsurf_column,
-		__max_low_mass,
+		__max_timestep,
+		__precision,
 		__serialized_stellar_evolution,
 		__input_fname,
 		help_option, end};
@@ -357,19 +397,112 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 	outf.close();
 }
 
-///Calculates a realistic evolution chosen to be comlicated (no analytical
-///solution is available).
-void calculate_full(double Mstar, double Q, double Kwind, double wsat, 
-		double coupling_timescale, double wdisk, double tdisk,
-		double Mplanet, double Rplanet, double a_formation, double tstart,
-		double tend, const StellarEvolution &stellar_evolution,
+///Calculates the evolution for a system with the given parameters.
+void calculate_evolution(
+		///Mass of the star
+		double Mstar,
+		
+		///Tidal quality factor of the star
+		double Q,
+		
+		///\brief Magnetic wind strength in
+		/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
+		/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
+		double Kwind,
+		
+		///Wind saturation frequency in rad/day
+		double wsat, 
+
+		///Core-envelope coupling timescare in Gyr
+		double coupling_timescale,
+		
+		///Rotation rate of the stellar surface while locked to the
+		///disk in rad/day.
+		double wdisk,
+		
+		///The age at which the disk dissipates in Gyr.
+		double tdisk,
+
+		///The mass of the planet in \f$M_\Jupiter\f$.
+		double Mplanet,
+		
+		///The radius of the planet in \f$R_\Jupiter\f$.
+		double Rplanet,
+		
+		///The semiamjor axis at which the planet first appears in AU.
+		double a_formation,
+
+		///The initial spin of the radiative core for a low mass
+		///star in rad/day. Ignored if the star is high mass, or if the
+		//evolution starts before the radiative core has formed.
+		double start_wrad,
+
+		///The initial spin of the stellar surface in rad/day. Ignored if the
+		///evolution starts before the disk has dissipated.
+		double start_wsurf,
+
+		///The minimum age to start the evolution from.
+		///If this is smaller than both the disk dissipation age and
+		///the age at which the stellar core forms, it is substituted
+		///by the smaller of these two values.
+		double tstart,
+
+		///The maximum age to end the evolution on. It is replaced by
+		///the star's lifetime if the latter is shorter.
+		double tend,
+
+		///The maximum time step the solver is allowed to take in Gyr.
+		double max_time_step,
+
+		///If true, and the start age is after the disk has
+		///dissipated, the evolution is started with the planet locked
+		///to the star, ignoring the value of start_wsurf.
+		bool start_locked,
+		
+		///A stellar evolution interpolator.
+		const StellarEvolution &stellar_evolution,
+
+		///An orbit solver variable which is used to calculate the
+		///evolution and as a result, on output contains it.
 		OrbitSolver &solver)
 {
 	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 0.0, wdisk, tdisk,
 			stellar_evolution);
-	Planet planet(&star, Mplanet, Rplanet, a_formation/AU_Rsun);
+	if(star.is_low_mass() && 
+			star.core_formation_age()>star.get_disk_dissipation_age() &&
+			tstart<star.core_formation_age())
+		throw Error::Runtime("At present the case when the disk dissipates "
+				"before the stellar core starts to form is not supported.");
+	Planet planet(&star, Mplanet, Rplanet, a_formation);
 	StellarSystem system(&star, &planet);
-	solver(system, Inf, 0.0, a_formation/AU_Rsun, tstart);
+	start_orbit=std::valarray<double>(0.0, 1);
+	EvolModeType start_evol_mode;
+	if(star.is_low_mass()) {
+		if(tstart<star.get_disk_dissipation_age())
+			start_evol_mode=LOCKED_TO_DISK;
+		if(tstart<star.core_formation_age()) tstart=NaN;
+		else if(tstart<star.get_disk_dissipation_age()) {
+			start_orbit[0]=start_wrad*star.moment_of_inertia(tstart,
+					radiative);
+		} else if(start_locked) {
+			start_evol_mode=LOCKED_TO_PLANET;
+			start_orbit.resize(2);
+			start_orbit[0]=a_formation*AU_Rsun;
+			start_orbit[1]=start_wrad*
+				star.moment_of_inertia(tstart, radiative);
+		} else {
+			if(planet.orbital_angular_velocity_semimajor(a_formation)<
+				start_wsurf) start_evol_mode=SLOW_PLANET;
+			else start_evol_mode=FAST_PLANET;
+			start_orbit.resize(3);
+			start_orbit[0]=std::pow(a_formation*AU_Rsun, 6.5);
+			start_orbit[1]=start_wsurf*
+				star.moment_of_inertia(tstart, convective);
+			start_orbit[2]=start_wrad*
+				star.moment_of_inertia(tstart, radiative);
+		}
+
+	solver(system, Inf, 0.0, a_formation, tstart);
 }
 
 ///Calculates a realistic evolution chosen to be comlicated.
@@ -380,7 +513,8 @@ int main(int argc, char **argv)
 		YRECEvolution stellar_evolution;
 		stellar_evolution.load_state(
 				options.serialized_stellar_evolution());
-		OrbitSolver solver(tstart, tend, 5e-6);
+		OrbitSolver solver(options.start_age(), options.end_age(),
+				options.precision());
 	} catch(Error::General &err) {
 		std::cerr << err.what() << ": " << err.get_message() << std::endl;
 		return 1;

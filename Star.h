@@ -52,6 +52,10 @@ private:
 		   ///The age (in Gyrs) when the circumstellar disk dissipates.
 		   disk_dissipation_age;
 
+	///\brief Is this a low mass star according to the stellar evolution with
+	///which it was constructed?
+	bool low_mass;
+
 	const EvolvingStellarQuantity
 	///The radius of the star in \f$R_\odot\f$ as a function of age in Gyr.
 	*radius,
@@ -175,6 +179,9 @@ public:
 
 	///The mass of the star in solar masses.
 	double get_mass() const;
+
+	///True iff the star is considered a low mass star by stellar evolution.
+	bool is_low_mass() const {return low_mass;}
 
 	///The radius of the star (in \f$R_\odot\f$) for the given age (in Gyr).
 	double get_radius(double age) const;

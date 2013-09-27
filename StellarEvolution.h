@@ -457,10 +457,6 @@ private:
 	/// \f$M_\odot\f$
 	const std::valarray<double> *track_masses;
 
-	///Functions which interpolate the evulotion tracks for the radius of the
-	///star, the convective and whole star moments of inertia and the mass in
-	///the radiative zone.
-
 	///\brief Interpolates the evulotion of the radius of the star for each
 	///track in \f$R_\odot\f$.
 	std::list<const OneArgumentDiffFunction*> interpolated_radius,
@@ -729,6 +725,10 @@ public:
 
 	///The age at which the core begins to form in Gyr.
 	virtual double core_formation_age() const {return core_formation;}
+
+	///\brief Returns the mass that separates low from high mass stars in
+	/// \f$M_\odot\f$.
+	double get_mass_break() const {return mass_break;}
 };
 
 #endif

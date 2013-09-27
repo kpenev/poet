@@ -48,6 +48,9 @@ private:
 			///Mass of the planet in \f$M_\Jupiter\f$
 			*__planet_mass,
 
+			///Radius of the planet in \f$R_\Jupiter\f$
+			*__planet_radius,
+
 			///\brief The spin at which the star is locked while the
 			///disk is present in rad/day.
 			*__disk_lock_frequency,
@@ -61,6 +64,9 @@ private:
 			///The starting age for the evolution in Gyr.
 			*__start_age,
 
+			///The maximum end age for the evolution in Gyr.
+			*__end_age,
+
 			///\brief Initial spin of the stellar core in rad/day for low
 			///mass stars.
 			*__start_wrad,
@@ -68,10 +74,12 @@ private:
 			///\brief Initial spin of the stellar surface in rad/day.
 			*__start_wsurf,
 			
-			///\brief The highest stellar mass which is still considered low
-			///mass in \f$M_\odot\f$.
-			*__max_low_mass;
-
+			///A limit to impose on the ODE timestep in Gyr.
+			*__max_timestep,
+			
+			///The precision to require of the solution
+			*__precision;
+			
 	///\brief The wind strength column for low mass stars in units of
 	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
 	/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
@@ -103,6 +111,9 @@ private:
 			///The column of the mass of the planet in \f$M_\Jupiter\f$
 			*__planet_mass_column,
 
+			///The column of the radius of the planet in \f$R_\Jupiter\f$
+			*__planet_radius_column,
+
 			///\brief The column of the spin at which the star is locked
 			///while the disk is present in rad/day.
 			*__disk_lock_frequency_column,
@@ -116,6 +127,9 @@ private:
 
 			///The column of the starting age for the evolution in Gyr.
 			*__start_age_column,
+
+			///The column of the maximum end age for the evolution in Gyr.
+			*__end_age_column,
 
 			///\brief The column of the initial spin of the stellar core in
 			///rad/day for low mass stars.
@@ -148,6 +162,11 @@ private:
 	///more convenient to count from 0 in the code.
 	///
 	///Also opens the input file if it is being used.
+	///
+	///Converst the precision required from number of significant
+	///figures to an actual value.
+	///
+	///Converts the various ages that are specified in Myrs to Gyrs.
 	void postprocess();
 
 	///Free all manually allocated memory and close open streams.
@@ -192,6 +211,9 @@ public:
 	///Mass of the planet in \f$M_\Jupiter\f$
 	double planet_mass() const {return __planet_mass->dval[0];}
 
+	///Radius of the planet in \f$R_\Jupiter\f$
+	double planet_radius() const {return __planet_radius->dval[0];}
+
 	///\brief The spin at which the star is locked while the
 	///disk is present in rad/day.
 	double disk_lock_frequency() const
@@ -208,15 +230,20 @@ public:
 	///The starting age for the evolution in Gyr.
 	double start_age() const {return __start_age->dval[0];}
 
+	///The maximum end age for the evolution in Gyr.
+	double end_age() const {return __end_age->dval[0];}
+
 	///Initial spin of the stellar core in rad/day for low mass stars.
 	double start_wrad() const {return __start_wrad->dval[0];}
 
 	///Initial spin of the stellar surface in rad/day.
 	double start_wsurf() const {return __start_wsurf->dval[0];}
 
-	///\brief The highest stellar mass which is still considered low mass in
-	/// \f$M_\odot\f$.
-	double max_low_mass() const {return __max_low_mass->dval[0];}
+	///A limit to impose on the ODE timestep
+	double max_timestep() const {return __max_timestep->dval[0];}
+
+	///The precision to require of the solution
+	double precision() const {return __precision->dval[0];}
 
 	///\brief The wind strength column for low mass stars in units of
 	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
@@ -254,6 +281,10 @@ public:
 	///The column of the mass of the planet in \f$M_\Jupiter\f$
 	int planet_mass_column() const {return __planet_mass_column->ival[0];}
 
+	///The column of the radius of the planet in \f$R_\Jupiter\f$
+	int planet_radius_column() const
+	{return __planet_radius_column->ival[0];}
+
 	///\brief The column of the spin at which the star is locked
 	///while the disk is present in rad/day.
 	int disk_lock_frequency_column() const
@@ -270,6 +301,9 @@ public:
 
 	///The column of the starting age for the evolution in Gyr.
 	int start_age_column() const {return __start_age_column->ival[0];}
+
+	///The column of the maximum end age for the evolution in Gyr.
+	int end_age_column() const {return __end_age_column->ival[0];}
 
 	///\brief The column of the initial spin of the stellar core in
 	///rad/day for low mass stars.

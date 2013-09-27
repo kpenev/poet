@@ -34,7 +34,7 @@ alglib:
 
 all: $(ALL_DEP)
 	make -C alglib
-	$(CPP) $(CPPFLAGS) -o main $(ALL_COMPILED) $(LIB)
+	$(CPP) $(CPPFLAGS) -o poet $(ALL_COMPILED) $(LIB)
 
 doc:
 	doxygen documentation/DoxygenConfig
