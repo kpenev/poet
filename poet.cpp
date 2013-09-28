@@ -386,11 +386,13 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 			arg_print_errors(stdout, end, "poet");
 		free(help_option);
 		free(end);
+		__parsed_ok=false;
 		return;
 	}
 	postprocess();
 	free(help_option);
 	free(end);
+	__parsed_ok=true;
 }
 
 ///AU/\f$\mathrm{R}_\odot\f$.
@@ -507,65 +509,68 @@ void run(const CommandLineOptions &options,
 		   tstart=options.start_age(),
 		   tend=options.end_age();
 	std::string outfname=options.output_filename();
-	while(true) {
+	bool done=false;
+	while(!done) {
 		if(options.input_from_list()) {
 			std::string line("#"), word;
 			while(line[0]=='#' && !input.eof())
 				std::getline(input, line);
-			if(input.eof()) break;
-			std::istringstream line_stream(line);
-			for(int column=0; !line_stream.eof(); column++) {
-				if(column==options.star_mass_column())
-					line_stream >> star_mass;
-				else if(column==options.lgQ_column()) line_stream >> lgQ;
-				else if(column==options.high_mass_windK_column())
-					line_stream >> high_mass_windK; 
-				else if(column==options.low_mass_windK_column())
-					line_stream >> low_mass_windK; 
-				else if(column==options.high_mass_wind_saturation_column())
-					line_stream >> high_mass_wsat;
-				else if(column==options.core_env_coupling_timescale_column())
-					line_stream >> coupling_timescale;
-				else if(column==options.disk_lock_frequency_column())
-					line_stream >> wdisk;
-				else if(column==options.disk_dissipation_age_column())
-					line_stream >> tdisk;
-				else if(column==options.planet_mass_column())
-					line_stream >> Mplanet;
-				else if(column==options.planet_radius_column())
-					line_stream >> Rplanet;
-				else if(column==options.planet_formation_age_column())
-					line_stream >> planet_formation_age;
-				else if(column==options.planet_formation_semimajor_column())
-					line_stream >> a_formation;
-				else if(column==options.start_wrad_column())
-					line_stream >> start_wrad;
-				else if(column==options.start_wsurf_column())
-					line_stream >> start_wsurf;
-				else if(column==options.start_age_column())
-					line_stream >> tstart;
-				else if(column==options.end_age_column())
-					line_stream >> tend;
-				else if(column==options.output_filename_column())
-					line_stream >> outfname;
-				else line_stream >> word;
+			if(input.eof()) return;
+			else {
+				std::istringstream line_stream(line);
+				for(int column=0; !line_stream.eof(); column++) {
+					if(column==options.star_mass_column())
+						line_stream >> star_mass;
+					else if(column==options.lgQ_column()) line_stream >> lgQ;
+					else if(column==options.high_mass_windK_column())
+						line_stream >> high_mass_windK; 
+					else if(column==options.low_mass_windK_column())
+						line_stream >> low_mass_windK; 
+					else if(column==options.high_mass_wind_saturation_column())
+						line_stream >> high_mass_wsat;
+					else if(column==options.core_env_coupling_timescale_column())
+						line_stream >> coupling_timescale;
+					else if(column==options.disk_lock_frequency_column())
+						line_stream >> wdisk;
+					else if(column==options.disk_dissipation_age_column())
+						line_stream >> tdisk;
+					else if(column==options.planet_mass_column())
+						line_stream >> Mplanet;
+					else if(column==options.planet_radius_column())
+						line_stream >> Rplanet;
+					else if(column==options.planet_formation_age_column())
+						line_stream >> planet_formation_age;
+					else if(column==options.planet_formation_semimajor_column())
+						line_stream >> a_formation;
+					else if(column==options.start_wrad_column())
+						line_stream >> start_wrad;
+					else if(column==options.start_wsurf_column())
+						line_stream >> start_wsurf;
+					else if(column==options.start_age_column())
+						line_stream >> tstart;
+					else if(column==options.end_age_column())
+						line_stream >> tend;
+					else if(column==options.output_filename_column())
+						line_stream >> outfname;
+					else line_stream >> word;
+				}
 			}
-			double Kwind, wsat;
-			if(options.star_mass()>stellar_evolution.get_mass_break()) {
-				Kwind=high_mass_windK;
-				wsat=high_mass_wsat;
-			} else {
-				Kwind=low_mass_windK;
-				wsat=low_mass_wsat;
-			}
-			OrbitSolver solver(tstart, tend, options.precision());
-			calculate_evolution(star_mass, std::pow(10.0, lgQ), Kwind, wsat,
-					coupling_timescale, wdisk, tdisk, Mplanet, Rplanet,
-					planet_formation_age, a_formation, start_wrad,
-					start_wsurf, tstart, tend, options.max_timestep(),
-					options.start_locked(), stellar_evolution, solver,
-					options.output_filename());
+		} else done=true;
+		double Kwind, wsat;
+		if(options.star_mass()>stellar_evolution.get_mass_break()) {
+			Kwind=high_mass_windK;
+			wsat=high_mass_wsat;
+		} else {
+			Kwind=low_mass_windK;
+			wsat=low_mass_wsat;
 		}
+		OrbitSolver solver(tstart, tend, options.precision());
+		calculate_evolution(star_mass, std::pow(10.0, lgQ), Kwind, wsat,
+				coupling_timescale, wdisk, tdisk, Mplanet, Rplanet,
+				planet_formation_age, a_formation, start_wrad,
+				start_wsurf, tstart, tend, options.max_timestep(),
+				options.start_locked(), stellar_evolution, solver,
+				options.output_filename());
 	}
 }
 
@@ -574,12 +579,13 @@ int main(int argc, char **argv)
 {
 	try {
 		CommandLineOptions options(argc, argv);
+		if(!options) return 1;
 		YRECEvolution stellar_evolution;
 		stellar_evolution.load_state(
 				options.serialized_stellar_evolution());
 		run(options, stellar_evolution, options.input());
 	} catch(Error::General &err) {
 		std::cerr << err.what() << ": " << err.get_message() << std::endl;
-		return 1;
+		return 2;
 	}
 }
