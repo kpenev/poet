@@ -271,27 +271,48 @@ void CommandLineOptions::set_defaults()
 
 void CommandLineOptions::postprocess()
 {
-	if(--__low_mass_windK_column->ival[0]>=0 || 
-			--__high_mass_windK_column->ival[0]>=0 ||
-			--__low_mass_wind_saturation_column->ival[0]>=0 ||
-			--__high_mass_wind_saturation_column->ival[0]>=0 ||
-			--__core_env_coupling_timescale_column->ival[0]>=0 ||
-			--__lgQ_column->ival[0]>=0 ||
-			--__star_mass_column->ival[0]>=0 ||
-			--__planet_mass_column->ival[0]>=0 ||
-			--__planet_radius_column->ival[0]>=0 ||
-			--__planet_formation_age_column->ival[0]>=0 ||
-			--__disk_lock_frequency_column->ival[0]>=0 ||
-			--__disk_dissipation_age_column->ival[0]>=0 ||
-			--__planet_formation_semimajor_column->ival[0]>=0 ||
-			--__start_age_column->ival[0]>=0 ||
-			--__start_wrad_column->ival[0]>=0 ||
-			--__start_wsurf_column->ival[0]>=0) {
+	--__low_mass_windK_column->ival[0];
+	--__high_mass_windK_column->ival[0];
+	--__low_mass_wind_saturation_column->ival[0];
+	--__high_mass_wind_saturation_column->ival[0];
+	--__core_env_coupling_timescale_column->ival[0];
+	--__lgQ_column->ival[0];
+	--__star_mass_column->ival[0];
+	--__planet_mass_column->ival[0];
+	--__planet_radius_column->ival[0];
+	--__planet_formation_age_column->ival[0];
+	--__disk_lock_frequency_column->ival[0];
+	--__disk_dissipation_age_column->ival[0];
+	--__planet_formation_semimajor_column->ival[0];
+	--__start_age_column->ival[0];
+	--__start_wrad_column->ival[0];
+	--__start_wsurf_column->ival[0];
+	if(__low_mass_windK_column->ival[0]>=0 || 
+			__high_mass_windK_column->ival[0]>=0 ||
+			__low_mass_wind_saturation_column->ival[0]>=0 ||
+			__high_mass_wind_saturation_column->ival[0]>=0 ||
+			__core_env_coupling_timescale_column->ival[0]>=0 ||
+			__lgQ_column->ival[0]>=0 ||
+			__star_mass_column->ival[0]>=0 ||
+			__planet_mass_column->ival[0]>=0 ||
+			__planet_radius_column->ival[0]>=0 ||
+			__planet_formation_age_column->ival[0]>=0 ||
+			__disk_lock_frequency_column->ival[0]>=0 ||
+			__disk_dissipation_age_column->ival[0]>=0 ||
+			__planet_formation_semimajor_column->ival[0]>=0 ||
+			__start_age_column->ival[0]>=0 ||
+			__start_wrad_column->ival[0]>=0 ||
+			__start_wsurf_column->ival[0]>=0) {
 		__input_from_list=true;
 		std::istringstream outfname_col_str(__output_fname->filename[0]);
 		outfname_col_str >> __output_fname_column;
+		if(outfname_col_str.fail()) throw Error::CommandLine("The argument "
+				"to --output does not look like an integer number.");
+		--__output_fname_column;
 	} else __input_from_list=false;
-	if(__input_fname->count) __input_stream.open(__input_fname->filename[0]);
+	if(__input_fname->count) {
+		__input_stream.open(__input_fname->filename[0]);
+	} else if(__input_from_list) __input_fname->filename[0]="stdin";
 	__precision->dval[0]=std::pow(10.0, -__precision->dval[0]);
 	__core_env_coupling_timescale->dval[0]*=1e-3;
 	__disk_dissipation_age->dval[0]*=1e-3;
@@ -510,11 +531,14 @@ void run(const CommandLineOptions &options,
 		   tend=options.end_age();
 	std::string outfname=options.output_filename();
 	bool done=false;
+	size_t input_lineno=0;
 	while(!done) {
 		if(options.input_from_list()) {
 			std::string line("#"), word;
-			while(line[0]=='#' && !input.eof())
+			while(line[0]=='#' && !input.eof()) {
 				std::getline(input, line);
+				++input_lineno;
+			}
 			if(input.eof()) return;
 			else {
 				std::istringstream line_stream(line);
@@ -526,9 +550,11 @@ void run(const CommandLineOptions &options,
 						line_stream >> high_mass_windK; 
 					else if(column==options.low_mass_windK_column())
 						line_stream >> low_mass_windK; 
-					else if(column==options.high_mass_wind_saturation_column())
+					else if(column==
+							options.high_mass_wind_saturation_column())
 						line_stream >> high_mass_wsat;
-					else if(column==options.core_env_coupling_timescale_column())
+					else if(column==
+							options.core_env_coupling_timescale_column())
 						line_stream >> coupling_timescale;
 					else if(column==options.disk_lock_frequency_column())
 						line_stream >> wdisk;
@@ -540,7 +566,8 @@ void run(const CommandLineOptions &options,
 						line_stream >> Rplanet;
 					else if(column==options.planet_formation_age_column())
 						line_stream >> planet_formation_age;
-					else if(column==options.planet_formation_semimajor_column())
+					else if(column==
+							options.planet_formation_semimajor_column())
 						line_stream >> a_formation;
 					else if(column==options.start_wrad_column())
 						line_stream >> start_wrad;
@@ -553,6 +580,14 @@ void run(const CommandLineOptions &options,
 					else if(column==options.output_filename_column())
 						line_stream >> outfname;
 					else line_stream >> word;
+					if(line_stream.fail()) {
+						std::ostringstream msg;
+						msg << "Error while parsing column " << column+1
+							<< " on line " << input_lineno << " of the "
+							"input file '" << options.input_filename()
+							<< "'";
+						throw Error::IO(msg.str());
+					}
 				}
 			}
 		} else done=true;
@@ -570,7 +605,7 @@ void run(const CommandLineOptions &options,
 				planet_formation_age, a_formation, start_wrad,
 				start_wsurf, tstart, tend, options.max_timestep(),
 				options.start_locked(), stellar_evolution, solver,
-				options.output_filename());
+				outfname);
 	}
 }
 

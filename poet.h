@@ -362,6 +362,9 @@ public:
 	std::istream &input()
 	{if(__input_fname->count) return __input_stream; else return std::cin;}
 
+	///The name of the file to read in the various evolution scenarios.
+	std::string input_filename() const {return __input_fname->filename[0];}
+
 	///The name of the file to output the solution to.
 	std::string output_filename() const {return __output_fname->filename[0];}
 
