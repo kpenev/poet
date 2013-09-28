@@ -14,6 +14,7 @@
 #include <argtable2.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 ///All command line options can be accessed through members.
 class CommandLineOptions {
@@ -473,5 +474,14 @@ void output_solution(
 
 		///The name of the file to output the solution to.
 		const std::string &filename);
+
+///Actually calculates the orbital evolutions.
+void run(
+		///All the configuration from the command line.
+		const CommandLineOptions &options,
+
+		///A fully functional stellar evolution interpolator.
+		const StellarEvolution &stellar_evolution);
+		
 
 #endif
