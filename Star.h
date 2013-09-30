@@ -60,8 +60,8 @@ private:
 	///The radius of the star in \f$R_\odot\f$ as a function of age in Gyr.
 	*radius,
 
-	///\brief The luminosity of the star in \f$L_\odot\f$ as a function of age
-	///in Gyr.
+	///\brief The luminosity of the star in \f$L_\odot\f$ as a function of
+	///age in Gyr.
 	///
 	///Since the luminosity does not enter in the equations solved it might
 	///not be defined. If that is the case, this member should be NULL.

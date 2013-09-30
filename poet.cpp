@@ -12,10 +12,6 @@ const std::string CommandLineOptions::__input_column_names[]={
 	"tform", "wdisk", "pdisk", "tdisk", "aform", "pform", "t0", "tmax",
 	"wrad0", "wsurf0", "locked", "maxdt", "prec", "outf"};
 
-const std::string CommandLineOptions::__output_column_names[]={
-	"t", "a", "Lconv", "Lrad", "L", "Iconv", "Irad", "I", "Wsurf", "Wrad",
-	"Psurf", "Prad", "mode", "R", "Lum", "Rrad", "Mrad"};
-
 const std::string CommandLineOptions::__output_column_descr[]={
 	"Age in Gyr",
 	"Semimajor axis in AU",
@@ -89,8 +85,8 @@ void CommandLineOptions::define_options()
 			<< "' (identical to the --low-mass-K since only one K can be "
 			"applicable to a run). Default: "
 			<< __defaults[InCol::LOW_MASS_WINDK] << ".";
-	__direct_value_options[InCol::HIGH_MASS_WINDK]=arg_dbl0(NULL, "high-mass-K",
-			"<double>", option_help.str().c_str());
+	__direct_value_options[InCol::HIGH_MASS_WINDK]=arg_dbl0(NULL,
+			"high-mass-K", "<double>", option_help.str().c_str());
 
 	option_help.clear();
 	option_help << "The frequency at which the wind saturates for low mass "
@@ -116,7 +112,8 @@ void CommandLineOptions::define_options()
 
 	option_help.clear();
 	option_help << "The period at which the wind saturates for low mass "
-		"stars in days. This is an alternative to --low-mass-wind-sat-w. In "
+		"stars in days. This is an alternative to --low-mass-wind-sat-w. "
+		"If both options are specified, --low-mass-wind-sat-w is used. In "
 		"--input-columns identified by '"
 		<< __input_column_names[InCol::LOW_MASS_WIND_SAT_P] << "'.";
 	__direct_value_options[InCol::LOW_MASS_WIND_SAT_P]=arg_dbl0(NULL,
@@ -124,7 +121,8 @@ void CommandLineOptions::define_options()
 
 	option_help.clear();
 	option_help << "The period at which the wind saturates for high mass "
-		"stars in days. This is an alternative to --high-mass-wind-sat-w In "
+		"stars in days. This is an alternative to --high-mass-wind-sat-w. "
+		"If both options are specified, --high-mass-wind-sat-w is used. In "
 		"--input-columns identified by '"
 		<< __input_column_names[InCol::HIGH_MASS_WIND_SAT_P] << "'.";
 	__direct_value_options[InCol::HIGH_MASS_WIND_SAT_P]=arg_dbl0(NULL,
@@ -191,9 +189,9 @@ void CommandLineOptions::define_options()
 
 	option_help.clear();
 	option_help << "The spin period at which the star is locked while the "
-		"disk is present in days. This is an alternative to --w-disk. In "
-		"--input-columns identified by '"
-		<< __input_column_names[InCol::PDISK] << "'.";
+		"disk is present in days. This is an alternative to --w-disk. "
+		"If both options are specified, --w-disk is used. In --input-columns"
+		" identified by '" << __input_column_names[InCol::PDISK] << "'.";
 	__direct_value_options[InCol::PDISK]=arg_dbl0(NULL, "p-disk", "<double>",
 			option_help.str().c_str());
 
@@ -308,7 +306,7 @@ void CommandLineOptions::define_options()
 			"argument should be a comma separated list containing some of "
 			"the following columns:" << std::endl;
 	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; i++)
-		option_help << "\t* " << __output_column_names[i] << ": "
+		option_help << "\t* " << OUTPUT_COLUMN_NAMES[i] << ": "
 			<< __output_column_descr[i] << std::endl;
 	outpion_help << "Default: " << __default_output_columns;
 	__output_file_columns=arg_str0(NULL, "output-columns",
@@ -361,85 +359,83 @@ void CommandLineOptions::postprocess()
 				__input_column_names, NUM_INPUT_QUANTITIES,
 				__input_file_format, true);
 	parse_column_list(__output_file_columns->sval[0],
-			__output_column_names, NUM_OUTPUT_QUANTITIES,
+			OUTPUT_COLUMN_NAMES, NUM_OUTPUT_QUANTITIES,
 			__output_file_format);
+	if(__input_fname->count) {
+		__input_stream.open(__input_fname->filename[0]);
+		__opened_stream=true;
+	}
+		
+	if(__direct_value_options[InCol::LOW_MASS_WIND_SAT_W]->count==0 &&
+			__direct_value_options[InCol::LOW_MASS_WIND_SAT_P]->count>0)
+		__direct_value_options[InCol::LOW_MASS_WIND_SAT_W]->dval[0]=2.0*M_PI/
+			__direct_value_options[InCol::LOW_MASS_WIND_SAT_P]->dval[0];
+	else if(__direct_value_options[InCol::LOW_MASS_WIND_SAT_W]->count>0)
+		__direct_value_options[InCol::LOW_MASS_WIND_SAT_P]->dval[0]=2.0*M_PI/
+			__direct_value_options[InCol::LOW_MASS_WIND_SAT_W]->dval[0];
+
+	if(__direct_value_options[InCol::WDISK]->count==0 &&
+			__direct_value_options[InCol::PDISK]->count>0)
+		__direct_value_options[InCol::WDISK]->dval[0]=2.0*M_PI/
+			__direct_value_options[InCol::PDISK]->dval[0];
+	else if(__direct_value_options[InCol::WDISK]->count>0)
+		__direct_value_options[InCol::PDISK]->dval[0]=2.0*M_PI/
+			__direct_value_options[InCol::WDISK]->dval[0];
+
+	__direct_value_options[InCol::CORE_ENV_COUPLING_TIMESCALE]->dval[0]*=
+		1e-3;
+	__direct_value_options[InCol::PLANET_FORMATION_AGE]->dval[0]*=1e-3;
+	__direct_value_options[InCol::TDISK]->dval[0]*=1e-3;
+
+	if(__direct_value_options[InCol::A_FORMATION]->count>0 ||
+			__direct_value_options[InCol::P_FORMATION]->count>0) {
+		double M=__direct_value_options[InCol::MSTAR]->dval[0]*
+					AstroConst::solar_mass,
+			m=__direct_value_options[InCol::MPLANET]->dval[0]*
+					AstroConst::jupiter_mass;
+		if(__direct_value_options[InCol::A_FORMATION]->count==0 &&
+				__direct_value_options[InCol::P_FORMATION]->count>0) {
+				double P2=std::pow(
+						__direct_value_options[InCol::P_FORMATION]->dval[0]*
+						AstroConst::day, 2);
+				__direct_value_options[InCol::A_FORMATION]->dval[0]=
+					AstroConst::std::pow(AstroConst::G*(M+m)*P2/4/M_PI/M_PI,
+							1.0/3.0)/AstroConst::AU;
+		} else if(__direct_value_options[InCol::A_FORMATION]->count>0) {
+			double a3=std::pow(
+					__direct_value_options[InCol::A_FORMATION]->dval[0]*
+					AtsroConst::AU, 3);
+			__direct_value_options[InCol::P_FORMATION]->dval[0]=std::sqrt(
+					4.0*M_PI*M_PI*a3/(M+m)/AstroConst::G);
+		}
+	}
+	__direct_value_options[InCol::PRECISION]->dval[0]=std::pow(10.0,
+			-__direct_value_options[InCol::PRECISION]->dval[0]);
 }
 
 void CommandLineOptions::cleanup()
 {
-	if(__input_fname->count) __input_stream.close();
-	free(__low_mass_windK);
-	free(__low_mass_windK_column);
-	free(__high_mass_windK);
-	free(__high_mass_windK_column);
-	free(__low_mass_wind_saturation);
-	free(__low_mass_wind_saturation_column);
-	free(__high_mass_wind_saturation);
-	free(__high_mass_wind_saturation_column);
-	free(__core_env_coupling_timescale);
-	free(__core_env_coupling_timescale_column);
-	free(__lgQ);
-	free(__lgQ_column);
-	free(__star_mass);
-	free(__star_mass_column);
-	free(__planet_mass);
-	free(__planet_mass_column);
-	free(__planet_radius);
-	free(__planet_radius_column);
-	free(__planet_formation_age);
-	free(__planet_formation_age_column);
-	free(__disk_lock_frequency);
-	free(__disk_lock_frequency_column);
-	free(__disk_dissipation_age);
-	free(__disk_dissipation_age_column);
-	free(__planet_formation_semimajor);
-	free(__planet_formation_semimajor_column);
-	free(__start_age);
-	free(__start_age_column);
-	free(__end_age);
-	free(__end_age_column);
-	free(__start_wrad);
-	free(__start_wrad_column);
-	free(__start_wsurf);
-	free(__start_wsurf_column);
-	free(__max_timestep);
-	free(__precision);
-	free(__serialized_stellar_evolution);
-	free(__input_fname);
-	free(__output_fname);
-	free(__start_locked);
+	if(__opened_stream) __input_stream.close();
+	arg_freetable(__argtable);
 }
 
-CommandLineOptions::CommandLineOptions(int argc, char **argv)
+CommandLineOptions::CommandLineOptions(int argc, char **argv) :
+	__opened_stream(false)
 {
 	define_options();
 	arg_lit *help_option=arg_lit0("h", "help", "Print this help and exit.");
 	struct arg_end *end = arg_end(100);
-	void *argtable[] = {
-		__low_mass_windK, 				__low_mass_windK_column,
-		__high_mass_windK, 				__high_mass_windK_column,
-		__low_mass_wind_saturation, 	__low_mass_wind_saturation_column,
-		__high_mass_wind_saturation, 	__high_mass_wind_saturation_column,
-		__core_env_coupling_timescale, 	__core_env_coupling_timescale_column,
-		__lgQ,							__lgQ_column,
-		__star_mass,					__star_mass_column,
-		__planet_mass,					__planet_mass_column,
-		__planet_radius,				__planet_radius_column,
-		__planet_formation_age,			__planet_formation_age_column,
-		__disk_lock_frequency,			__disk_lock_frequency_column,
-		__disk_dissipation_age,			__disk_dissipation_age_column,
-		__planet_formation_semimajor,	__planet_formation_semimajor_column,
-		__start_age,					__start_age_column,
-		__end_age,						__end_age_column,
-		__start_wrad,					__start_wrad_column,
-		__start_wsurf,					__start_wsurf_column,
-		__max_timestep,
-		__precision,
-		__serialized_stellar_evolution,
-		__start_locked,
-		__input_fname,
-		__output_fname,
-		help_option, end};
+	for(int i=0; i<NUM_REAL_INPUT_QUANTITIES; i++)
+		__argtable[i]=__direct_value_options[i];
+	__argtable[InCol::OUT_FNAME]=__output_fname;
+	__argtable[InCol::START_LOCKED]=__start_locked;
+	__argtable[NUM_INPUT_QUANTITIES]=__input_file_columns;
+	__argtable[NUM_INPUT_QUANTITIES+1]=__output_file_columns;
+	__argtable[NUM_INPUT_QUANTITIES+2]=__input_fname;
+	__argtable[NUM_INPUT_QUANTITIES+3]=__serialized_stellar_evolution;
+	__argtable[NUM_INPUT_QUANTITIES+4]=help_option;
+	__argtable[NUM_INPUT_QUANTITIES+5]=end;
+
 	if(arg_nullcheck(argtable) != 0) {
 		cleanup();
 		throw Error::CommandLine("Failed to allocate argument table.");
@@ -463,94 +459,146 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
 	__parsed_ok=true;
 }
 
+double CommandLineOptions::get_real_value(InCol::InputColumns quantity)
+{
+	if(quantity<0 || quantity>=NUM_REAL_INPUT_QUANTITIES)
+		throw Error::BadFunctionArguments("Unrecognized real quantity in "
+				"CommandLineOptions::get_real_value().");
+	return __direct_value_options[quantity];
+}
+
+
+
+
+
 ///AU/\f$\mathrm{R}_\odot\f$.
 const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 
 void output_solution(const OrbitSolver &solver, const StellarSystem &system,
-		const std::string &filename)
+		const std::string &filename,
+		const std::vector<InCol::InputColumns> &output_file_format)
 {
+
 	std::list<double>::const_iterator
 		age_i=solver.get_tabulated_var(AGE)->begin(),
 		a_i=solver.get_tabulated_var(SEMIMAJOR)->begin(),
 		Lconv_i=solver.get_tabulated_var(LCONV)->begin(),
 		Lrad_i=solver.get_tabulated_var(LRAD)->begin();
-
+	const Star *star=&(system.get_star());
 	std::list<double>::const_iterator
 		last_age=solver.get_tabulated_var(AGE)->end();
 
 	std::list<EvolModeType>::const_iterator
 		mode_i=solver.get_tabulated_evolution_mode()->begin();
+
+
 	std::ofstream outf(filename.c_str());
 	outf.precision(16);
-	outf << '#' << std::setw(24) << "age"
-		<< std::setw(25) << "semimajor"
-		<< std::setw(25) << "Lconv"
-		<< std::setw(25) << "Lrad"
-		<< std::setw(25) << "Iconv"
-		<< std::setw(25) << "Irad"
-		<< std::setw(25) << "mode"
-		<< std::endl;
+	outf << "#";
+	for(size_t i=0; i<output_file_format.size(); i++)
+		outf << std::setw(i==0 ? 24 : 25) << OUTPUT_COLUMN_NAMES[i];
+	outf << std::endl;
+
 	while(age_i!=last_age) {
-		outf << std::setw(25) << *age_i
-			<< std::setw(25) << *a_i
-			<< std::setw(25) << *Lconv_i
-			<< std::setw(25) << *Lrad_i
-			<< std::setw(25)
-			<< system.get_star().moment_of_inertia(*age_i, convective)
-			<< std::setw(25)
-			<< system.get_star().moment_of_inertia(*age_i, radiative)
-			<< std::setw(25) << *mode_i
-			<< std::endl;
+		for(size_t i=0; i<output_file_format.size(); i++) {
+			double Iconv=star->moment_of_inertia(*age_i, convective),
+				   Irad=star->moment_of_inertia(*age_i, radiative);
+			outf << std::setw(25);
+			switch(output_file_format[i]) {
+				case OutCol::AGE : outf << *age_i; break;
+				case OutCol::SEMIMAJOR : outf << *a_i; break;
+				case OutCol::LCONV : outf << *Lconv_i; break;
+				case OutCol::LRAD : outf << *Lrad_i; break;
+				case OutCol::LTOT : outf << *Lconv_i + *Lrad_i; break;
+				case OutCol::ICONV : outf << Iconv; break;
+				case OutCol::IRAD : outf << Irad; break;
+				case OutCol::ITOT : outf << Iconv+Irad; break;
+				case OutCol::WSURF : outf << (*Lconv_i)/Iconv; break;
+				case OutCol::WRAD : outf << (*Lrad_i)/Irad; break;
+				case OutCol::PSURF : outf << 2.0*M_PI*Iconv/(*Lconv_i);
+									 break;
+				case OutCol::PRAD : outf << 2.0*M_PI*Irad/(*Lrad_i); break;
+				case OutCol::EVOL_MODE : outf << *mode_i; break;
+				case OutCol::RSTAR : outf << star->get_radius(*age_i); break;
+				case OutCol::LSTAR : outf << star->get_luminosity(*age_i);
+									 break;
+				case OutCol::RRAD : outf << star->get_rad_radius(*age_i);
+									break;
+				case OutCol::MRAD : outf << star->get_rad_mass(*age_i);
+									break;
+				default : throw Error::BadFunctionArguments(
+								  "Unrecognized output column encountered in"
+								  " output_file_format in "
+								  "poet.cpp:output_solution.");
+			}
+			outf << std::endl;
+		}
 		age_i++; a_i++; Lconv_i++; Lrad_i++; mode_i++;
 	}
 	outf.close();
 }
 
-void calculate_evolution(double Mstar, double Q, double Kwind, double wsat, 
-		double coupling_timescale, double wdisk, double tdisk, 
-		double Mplanet, double Rplanet, double planet_formation_age,
-		double a_formation, double start_wrad, double start_wsurf,
-		double tstart, double tend, double max_time_step, bool start_locked,
-		const StellarEvolution &stellar_evolution, OrbitSolver &solver,
+void calculate_evolution(const std::vector<double> &real_parameters,
+		bool start_locked, const StellarEvolution &stellar_evolution,
 		const std::string &outfname)
 {
-	Star star(Mstar, Q, Kwind, wsat, coupling_timescale, 0.0, wdisk, tdisk,
+	Star star(real_parameters[InCol::MSTAR],
+			std::pow(10.0, real_parameters[InCol::LGQ]),
+			real_parameters[InCol::WINDK],
+			real_parameters[InCol::WIND_SAT_W],
+			real_parameters[InCol::CORE_ENV_COUPLING_TIMESCAL],
+			0.0,
+			real_parameters[InCol::WDISK],
+			real_parameters[InCol::TDISK],
 			stellar_evolution);
 	if(star.is_low_mass() && 
 			star.core_formation_age()>star.get_disk_dissipation_age() &&
 			tstart<star.core_formation_age())
 		throw Error::Runtime("At present the case when the disk dissipates "
 				"before the stellar core starts to form is not supported.");
-	Planet planet(&star, Mplanet, Rplanet, a_formation);
+	Planet planet(&star, real_parameters[InCol::MPLANET],
+			real_parameters[InCol::RPLANET],
+			real_parameters[InCol::A_FORMATION]);
 	StellarSystem system(&star, &planet);
 	std::valarray<double> start_orbit(0.0, 1);
 	EvolModeType start_evol_mode;
+	double tstart=real_parameters[InCol::TSTART];
 	if(std::isnan(tstart) || tstart<star.get_disk_dissipation_age())
 		start_evol_mode=LOCKED_TO_DISK;
 	if(std::isnan(tstart) ||
 			(star.is_low_mass() && tstart<star.core_formation_age()))
 		tstart=NaN;
 	else if(tstart<star.get_disk_dissipation_age()) {
-		start_orbit[0]=(star.is_low_mass() ? start_wrad : start_wsurf)*
+		start_orbit[0]=(star.is_low_mass() ?
+				real_parameters[InCol::START_WRAD] :
+				real_parameters[InCol::START_WSURF])*
 			star.moment_of_inertia(tstart, radiative);
 	} else if(start_locked) {
 		start_evol_mode=LOCKED_TO_PLANET;
 		start_orbit.resize(2);
-		start_orbit[0]=a_formation*AU_Rsun;
-		start_orbit[1]=(star.is_low_mass() ? start_wrad*
+		start_orbit[0]=real_parameters[InCol::A_FORMATION]*AU_Rsun;
+		start_orbit[1]=(star.is_low_mass() ? real_parameters[START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);
 	} else {
-		if(planet.orbital_angular_velocity_semimajor(a_formation)<
-				start_wsurf) start_evol_mode=SLOW_PLANET;
+		if(planet.orbital_angular_velocity_semimajor(
+					real_parameters[InCol::A_FORMATION])<
+				real_parameters[InCol::START_WSURF])
+			start_evol_mode=SLOW_PLANET;
 		else start_evol_mode=FAST_PLANET;
 		start_orbit.resize(3);
-		start_orbit[0]=std::pow(a_formation*AU_Rsun, 6.5);
-		start_orbit[1]=start_wsurf*
+		start_orbit[0]=
+			std::pow(real_parameters[InCol::A_FORMATION]*AU_Rsun, 6.5);
+		start_orbit[1]=real_parameters[InCol::START_WSURF]*
 			star.moment_of_inertia(tstart, convective);
-		start_orbit[2]=(star.is_low_mass() ? start_wrad*
+		start_orbit[2]=(star.is_low_mass() ?
+				real_parameters[InCol::START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);
 	}
-	solver(system, max_time_step, planet_formation_age, a_formation, tstart,
+
+	OrbitSolver solver(tstart, tend, real_parameters[InCol::PRECISION]);
+	solver(system, real_parameters[InCol::MAX_STEP],
+			real_parameters[InCol::PLANET_FORMATION_AGE],
+			real_parameters[InCol::A_FORMATION], tstart,
 			start_evol_mode, start_orbit);
 	output_solution(solver, system, outfname);
 }
@@ -559,24 +607,12 @@ void run(const CommandLineOptions &options,
 		const StellarEvolution &stellar_evolution,
 		std::istream &input)
 {
-	double star_mass=options.star_mass(),
-		   lgQ=options.lgQ(),
-		   high_mass_windK=options.high_mass_windK(),
-		   low_mass_windK=options.low_mass_windK(),
-		   high_mass_wsat=options.high_mass_wind_saturation(),
-		   low_mass_wsat=options.low_mass_wind_saturation(),
-		   coupling_timescale=options.core_env_coupling_timescale(),
-		   wdisk=options.disk_lock_frequency(),
-		   tdisk=options.disk_dissipation_age(),
-		   Mplanet=options.planet_mass(),
-		   Rplanet=options.planet_radius(),
-		   planet_formation_age=options.planet_formation_age(),
-		   a_formation=options.planet_formation_semimajor(),
-		   start_wrad=options.start_wrad(),
-		   start_wsurf=options.start_wsurf(),
-		   tstart=options.start_age(),
-		   tend=options.end_age();
+	std::vector<double> real_parameters(InCol::NUM_REAL_INPUT_QUANTITIES);
+	for(int i=0; i<NUM_REAL_INPUT_QUANTITIES; i++)
+		real_parameters[i]=options.get_real_value(i);
+
 	std::string outfname=options.output_filename();
+	const std::vector<InCol::InputColumns> *input_format;
 	bool done=false;
 	size_t input_lineno=0;
 	while(!done) {
@@ -589,44 +625,18 @@ void run(const CommandLineOptions &options,
 			if(input.eof()) return;
 			else {
 				std::istringstream line_stream(line);
-				for(int column=0; !line_stream.eof(); column++) {
-					if(column==options.star_mass_column())
-						line_stream >> star_mass;
-					else if(column==options.lgQ_column()) line_stream >> lgQ;
-					else if(column==options.high_mass_windK_column())
-						line_stream >> high_mass_windK; 
-					else if(column==options.low_mass_windK_column())
-						line_stream >> low_mass_windK; 
-					else if(column==
-							options.high_mass_wind_saturation_column())
-						line_stream >> high_mass_wsat;
-					else if(column==
-							options.core_env_coupling_timescale_column())
-						line_stream >> coupling_timescale;
-					else if(column==options.disk_lock_frequency_column())
-						line_stream >> wdisk;
-					else if(column==options.disk_dissipation_age_column())
-						line_stream >> tdisk;
-					else if(column==options.planet_mass_column())
-						line_stream >> Mplanet;
-					else if(column==options.planet_radius_column())
-						line_stream >> Rplanet;
-					else if(column==options.planet_formation_age_column())
-						line_stream >> planet_formation_age;
-					else if(column==
-							options.planet_formation_semimajor_column())
-						line_stream >> a_formation;
-					else if(column==options.start_wrad_column())
-						line_stream >> start_wrad;
-					else if(column==options.start_wsurf_column())
-						line_stream >> start_wsurf;
-					else if(column==options.start_age_column())
-						line_stream >> tstart;
-					else if(column==options.end_age_column())
-						line_stream >> tend;
-					else if(column==options.output_filename_column())
+				for(int column=0; column<input_format->size(); column++) {
+					InCol::InputColumns quantity;
+					if(quantity<NUM_REAL_INPUT_QUANTITIES)
+						line_stream >> real_parameters[quantity];
+					else if(quantity==InCol::OUT_FNAME)
 						line_stream >> outfname;
-					else line_stream >> word;
+					else if(quantity==InCol::START_LOCKED)
+						line_stream >> start_locked;
+					else if(quantity==InCol::SKIP) line_stream >> word;
+					else throw Error::BadFunctionArguments(
+							"Unrecognized input quantity tag in "
+							"poet.cpp:run().");
 					if(line_stream.fail()) {
 						std::ostringstream msg;
 						msg << "Error while parsing column " << column+1
@@ -638,6 +648,11 @@ void run(const CommandLineOptions &options,
 				}
 			}
 		} else done=true;
+
+
+
+
+
 		double Kwind, wsat;
 		if(options.star_mass()>stellar_evolution.get_mass_break()) {
 			Kwind=high_mass_windK;

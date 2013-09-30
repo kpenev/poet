@@ -1,18 +1,23 @@
 CPPFLAGS= -g -Wall -L/u/mzzhang/bin/gsl/lib -L/u/mzzhang/bin/boost/lib -L/opt/local/lib
 CPP=g++
-ALL_OBJ=Functions.o OrbitSolver.o Planet.o Star.o StellarEvolution.o \
+NO_EXEC_OBJ=Functions.o OrbitSolver.o Planet.o Star.o StellarEvolution.o \
 	YRECIO.o Common.o StellarSystem.o sampleHist.o \
-	sampleRotation.o poet.o
-ALL_DEP=alglib $(ALL_OBJ)
+	sampleRotation.o 
+POET_OBJ=$(NO_EXEC_OBJ) poet.o
+SIMONE_OBJ=$(NO_EXEC_OBJ) SimOne.o
+POET_DEP=alglib $(POET_OBJ)
+SIMONE_DEP=alglib $(SIMONE_OBJ)
 ALGLIB_OBJ=alglib/src/interpolation.o alglib/src/ap.o \
 		   alglib/src/alglibinternal.o alglib/src/optimization.o \
 		   alglib/src/linalg.o alglib/src/integration.o \
 		   alglib/src/alglibmisc.o alglib/src/solvers.o \
 		   alglib/src/specialfunctions.o
-ALL_COMPILED=$(ALL_OBJ) $(ALGLIB_OBJ)
+POET_COMPILED=$(POET_OBJ) $(ALGLIB_OBJ)
+SIMONE_COMPILED=$(SIMONE_OBJ) $(ALGLIB_OBJ)
 LIB=-lgsl -lgslcblas -lboost_serialization-mt -largtable2
 
-default: all
+default: poet
+
 Functions.o: Functions.h
 OrbitSolver.o: OrbitSolver.h
 Planet.o: Planet.h AstronomicalConstants.h Functions.h
@@ -32,9 +37,13 @@ poet.o: *.cpp *.h
 alglib:
 	make -C alglib
 
-all: $(ALL_DEP)
+poet: $(POET_DEP)
 	make -C alglib
-	$(CPP) $(CPPFLAGS) -o poet $(ALL_COMPILED) $(LIB)
+	$(CPP) $(CPPFLAGS) -o poet $(POET_COMPILED) $(LIB)
+
+SimOne: $(SIMONE_DEP)
+	make -C alglib
+	$(CPP) $(CPPFLAGS) -o SimOne $(SIMONE_COMPILED) $(LIB)
 
 doc:
 	doxygen documentation/DoxygenConfig
