@@ -7,315 +7,362 @@
 
 #include "poet.h"
 
+const std::string CommandLineOptions::__input_column_names[]={
+	"K", "K", "wsat", "wsat", "psat", "psat", "tcoup", "lgQ", "M", "m", "r",
+	"tform", "wdisk", "pdisk", "tdisk", "aform", "pform", "t0", "tmax",
+	"wrad0", "wsurf0", "locked", "maxdt", "prec", "outf"};
+
+const std::string CommandLineOptions::__output_column_names[]={
+	"t", "a", "Lconv", "Lrad", "L", "Iconv", "Irad", "I", "Wsurf", "Wrad",
+	"Psurf", "Prad", "mode", "R", "Lum", "Rrad", "Mrad"};
+
+const std::string CommandLineOptions::__output_column_descr[]={
+	"Age in Gyr",
+	"Semimajor axis in AU",
+	"Convective zone angular momentum (low mass stars only else NaN).",
+	"Radiative zone angular momentum (low mass stars only else NaN).",
+	"Total angular momentum of the star.",
+	"Convective zone moment of inertia (low mass stars only else NaN).",
+	"Radiative zone moment of inertia (low mass stars only else NaN).",
+	"Total moment of inertia of the star.",
+	"Stellar surface angular velocity of the star in rad/day.",
+	"Angular velocity of the radiative zone in rad/day (low mass stars only,"
+		", else NaN)",
+	"Stellar surface spin period in days.",
+	"Spin period of the radiative zone in days (low mass stars only, else "
+		"NaN)",
+	"Evolution mode of the step starting at this age.",
+	"Stellar radius",
+	"Stellar luminosity",
+	"Radius of the stellar radiative zone (low mass stars only, else NaN).",
+	"Mass of the stellar radiative zone (low mass stars only, else NaN)."};
+
+const double CommandLineOptions::__defaults[]={
+		0.35,			//LOW_MASS_WINDK=WINDK
+		0,				//HIGH_MASS_WINDK=SKIP
+		1.84,			//LOW_MASS_WIND_SAT_W=WIND_SAT_W
+		0,				//HIGH_MASS_WIND_SAT_W,
+		NaN,			//LOW_MASS_WIND_SAT_P=WIND_SAT_P, 
+		Inf,			//HIGH_MASS_WIND_SAT_P,
+		5,				//CORE_ENV_COUPLING_TIMESCALE,
+		6,				//LGQ
+		1,				//MSTAR
+		1,				//MPLANET
+		1,				//RPLANET
+		0,				//PLANET_FORMATION_AGE
+		0.68,			//WDISK
+		NaN,			//PDISK
+		5,				//TDISK
+		0.05,			//A_FORMATION
+		NaN,			//P_FORMATION
+		NaN,			//TSTART
+		Inf,			//TEND
+		NaN,			//START_WRAD, 
+		NaN,			//START_WSURF, 
+		NaN,			//START_LOCKED,	
+		Inf,			//MAX_STEP
+		6				//PRECISION
+};
+
+const std::string CommandLineOptions::__default_outfname="poet.evol",
+	  CommandLineOptions::__default_serialized_evol="interp_state_data",
+	  CommandLineOptions::__default_output_columns=
+	  	"t,a,Lconv,Lrad,L,Iconv,Irad,I,mode";
+
 void CommandLineOptions::define_options()
 {
-	__low_mass_windK=arg_dbl0("K", "low-mass-K", "<double>",
-			"The wind strength for low mass stars in units of "
-			"Msun*Rsun^2*day^2/(rad^2*Gyr). Default: 0.35");
+	std::ostringstream option_help;
+	option_help << "The wind strength for low mass stars in units of "
+			"Msun*Rsun^2*day^2/(rad^2*Gyr). To identify this quantity in "
+			"--input-columns use '"
+			<< __input_column_names[InCol::LOW_MASS_WINDK] << "' (identical "
+			"to the --high-mass-K since only one K can be applicable to a "
+			"run). Default: " << __defaults[InCol::LOW_MASS_WINDK] << ".";
+	__direct_value_options[InCol::LOW_MASS_WINDK]=arg_dbl0("K", "low-mass-K",
+			"<double>", option_help.str().c_str());
 
-	__high_mass_windK=arg_dbl0(NULL, "high-mass-K", "<double>",
-			"The wind strength for low mass stars in units of "
-			"Msun*Rsun^2*day^2/(rad^2*Gyr). Default: 0");
+	option_help.clear();
+	option_help << "The wind strength for low mass stars in units of "
+			"Msun*Rsun^2*day^2/(rad^2*Gyr). To identify this quantity in "
+			"--input-columns use '"
+			<<  __input_column_names[InCol::HIGH_MASS_WINDK]
+			<< "' (identical to the --low-mass-K since only one K can be "
+			"applicable to a run). Default: "
+			<< __defaults[InCol::LOW_MASS_WINDK] << ".";
+	__direct_value_options[InCol::HIGH_MASS_WINDK]=arg_dbl0(NULL, "high-mass-K",
+			"<double>", option_help.str().c_str());
 
-	__low_mass_wind_saturation=arg_dbl0(NULL, "low-mass-wind-sat",
-			"<double>", "The frequency at which the wind saturates for low "
-			"mass stars in units of rad/day. Default: 1.84.");
+	option_help.clear();
+	option_help << "The frequency at which the wind saturates for low mass "
+		"stars in units of rad/day. To identify this quantity in "
+		"--input-columns use '"
+		<<  __input_column_names[InCol::LOW_MASS_WIND_SAT_W]
+		<< "' (identical to the --high-mass-wind-sat-w since only one "
+		"saturation frequency can be applicable to a run). Default: "
+		<< __defaults[InCol::LOW_MASS_WIND_SAT_W] << ".";
+	__direct_value_options[InCol::LOW_MASS_WIND_SAT_W]=arg_dbl0(NULL,
+			"low-mass-wind-sat-w", "<double>", option_help.str().c_str());
 
-	__high_mass_wind_saturation=arg_dbl0(NULL, "high-mass-wind-sat",
-			"<double>", "The frequency at which the wind saturates for high "
-			"mass stars in units of rad/day. Default: 0.");
+	option_help.clear();
+	option_help << "The frequency at which the wind saturates for high mass "
+		"stars in units of rad/day. To identify this quantity in "
+		"--input-columns use '"
+		<< __input_column_names[InCol::HIGH_MASS_WIND_SAT_W]
+		<< "' (identical to the --high-mass-wind-sat-w since only one "
+		"saturation frequency can be applicable to a run). Default: "
+		<< __defaults[InCol::HIGH_MASS_WIND_SAT_W] << ".";
+	__direct_value_options[InCol::HIGH_MASS_WIND_SAT_W]=arg_dbl0(NULL,
+			"high-mass-wind-sat-w", "<double>", option_help.str().c_str());
 
-	__core_env_coupling_timescale=arg_dbl0(NULL,
-			"core-env-coupling-timescale", "<double>", "The timescale on "
-			"which the core end envelope are coupled in Myr. Default: 5.");
+	option_help.clear();
+	option_help << "The period at which the wind saturates for low mass "
+		"stars in days. This is an alternative to --low-mass-wind-sat-w. In "
+		"--input-columns identified by '"
+		<< __input_column_names[InCol::LOW_MASS_WIND_SAT_P] << "'.";
+	__direct_value_options[InCol::LOW_MASS_WIND_SAT_P]=arg_dbl0(NULL,
+			"low-mass-wind-sat-p", "<double>", option_help.str().c_str());
 
-	__lgQ=arg_dbl0(NULL, "lgQ", "<double>", "Log base 10 of the tidal "
-			"quality factor of the star. Default: 6.");
+	option_help.clear();
+	option_help << "The period at which the wind saturates for high mass "
+		"stars in days. This is an alternative to --high-mass-wind-sat-w In "
+		"--input-columns identified by '"
+		<< __input_column_names[InCol::HIGH_MASS_WIND_SAT_P] << "'.";
+	__direct_value_options[InCol::HIGH_MASS_WIND_SAT_P]=arg_dbl0(NULL,
+			"high-mass-wind-sat-p", "<double>", option_help.str().c_str());
 
-	__star_mass=arg_dbl0("M", "Mstar", "<double>", "Mass of the star in "
-			"solar masses. Default: 1");
+	option_help.clear();
+	option_help << "The timescale on which the core end envelope are coupled"
+		" in Myr. In --input-columns identified by '"
+		<< __input_column_names[InCol::CORE_ENV_COUPLING_TIMESCALE]
+		<< "'. Default: " << __defaults[InCol::CORE_ENV_COUPLING_TIMESCALE]
+		<< "5.";
+	__direct_value_options[InCol::CORE_ENV_COUPLING_TIMESCALE]=arg_dbl0(NULL,
+			"core-env-coupling-timescale", "<double>",
+			option_help.str().c_str());
 
-	__planet_mass=arg_dbl0("m", "Mplanet", "<double>", "Mass of the planet "
-			"in jupiter masses. Default: 1");
+	option_help.clear();
+	option_help << "Log base 10 of the tidal quality factor of the star. In "
+		"--input-columns identified by "
+		<< __input_column_names[InCol::LGQ] << "'. Default: "
+		<< __defaults[InCol::LGQ] << ".";
+	__direct_value_options[InCol::LGQ]=arg_dbl0(NULL, "lgQ", "<double>",
+			option_help.str().c_str());
 
-	__planet_radius=arg_dbl0("r", "Rplanet", "<double>", "Radius of the "
-			"planet in jupiter radii. Default: 1");
+	option_help.clear();
+	option_help << "Mass of the star in solar masses. In --input-columns "
+		"identified by '"
+		<< __input_column_names[InCol::MSTAR] << "'. Default: "
+		<< __defaults[InCol::MSTAR] << "1.";
+	__direct_value_options[InCol::MSTAR]=arg_dbl0("M", "Mstar", "<double>",
+			option_help.str().c_str());
 
-	__planet_formation_age=arg_dbl0(NULL, "planet-formation-age", "<double>",
-			"The age at which the planet forms. If it is smaller than the "
-			"disk dissipation age, the planet forms at the disk dissipation "
-			"age. Default 0.");
+	option_help.clear();
+	option_help << "Mass of the planet in jupiter masses. In "
+		"--input-columns identified by '"
+		<< __input_column_names[InCol::MPLANET] << "'. Default: "
+		<< __defaults[InCol::MPLANET] << ".";
+	__direct_value_options[InCol::MPLANET]=arg_dbl0("m", "Mplanet",
+			"<double>", option_help.str().c_str());
 
-	__disk_lock_frequency=arg_dbl0(NULL, "w-disk", "<double>", "The spin at "
-			"which the star is locked while the disk is present in rad/day. "
-			"Default: 0.68");
+	option_help.clear();
+	option_help << "Radius of the planet in jupiter radii. In "
+		"--input-columns identified by '"
+		<< __input_column_names[InCol::RPLANET] << "'. Default: "
+		<< __defaults[InCol::RPLANET] << ".";
+	__direct_value_options[InCol::RPLANET]=arg_dbl0("r", "Rplanet",
+			"<double>", option_help.str().c_str());
 
-	__disk_dissipation_age=arg_dbl0(NULL, "t-disk", "<double>", "The age at "
-			"which the disk dissipates in Myr. Default: 5.");
+	option_help.clear();
+	option_help << "The age at which the planet forms. If it is smaller "
+		"than the disk dissipation age, the planet forms at the disk "
+		"dissipation age. In --input-columns identifid by '"
+		<< __input_column_names[InCol::PLANET_FORMATION_AGE] << "'. Default "
+		<< __defaults[InCol::PLANET_FORMATION_AGE] << ".";
+	__direct_value_options[InCol::PLANET_FORMATION_AGE]=arg_dbl0(NULL,
+			"planet-formation-age", "<double>", option_help.str().c_str());
 
-	__planet_formation_semimajor=arg_dbl0("a", "init-semimajor", "<double>",
-			"The semimajor axis at which the planet first appears in AU. "
-			"Default: 0.05");
+	option_help.clear();
+	option_help << "The spin frequency at which the star is locked while the"
+		" disk is present in rad/day. In --input-columns identifid by '"
+		<< __input_column_names[InCol::WDISK] << "'. Default: "
+		<< __defaults[InCol::WDISK] << ".";
+	__direct_value_options[InCol::WDISK]=arg_dbl0(NULL, "w-disk", "<double>",
+			option_help.str().c_str());
 
-	__start_age=arg_dbl0(NULL, "t0", "<double>", "The starting age for the "
-			"evolution in Gyr. If this argument is used, --w-disk, "
-			"--w-disk-col, --t-disk and --t-disk-col are ignored and "
-			"--init-semimajor or --init-semimajor-col is the semimajor axis "
-			"that the planet has at the age specified by this argument. "
-			"Further, if this argument is  used, --init-wsurf or "
-			"--init-wsurf-col must also be specified and if the evolution "
-			"of low mass stars is to be computed --init-wrad or "
-			"--init-wrad-col is also required.");
+	option_help.clear();
+	option_help << "The spin period at which the star is locked while the "
+		"disk is present in days. This is an alternative to --w-disk. In "
+		"--input-columns identified by '"
+		<< __input_column_names[InCol::PDISK] << "'.";
+	__direct_value_options[InCol::PDISK]=arg_dbl0(NULL, "p-disk", "<double>",
+			option_help.str().c_str());
 
-	__end_age=arg_dbl0(NULL, "tmax", "<double>", "The maximum end age for "
-			"the evolution in Gyr. The evolution could stop earlier if the "
-			"star moves off the main sequence before this age. Default: "
-			"Inf.");
+	option_help.clear();
+	option_help << "The age at which the disk dissipates in Myr. In "
+		"--input-columns identified by '"
+		<< __input_column_names[InCol::TDISK] << "'. Default: "
+		<< __defaults[InCol::TDISK] << ".";
+	__direct_value_options[InCol::TDISK]=arg_dbl0(NULL, "t-disk", "<double>",
+			option_help.str().c_str());
 
-	__start_wrad=arg_dbl0(NULL, "init-wrad", "<double>", "Initial spin of "
-			"the stellar core in rad/day for low mass stars. This argument "
-			"is ignored, unless --t0 or --t0-col is also specified.");
+	option_help.clear();
+	option_help << "The semimajor axis at which the planet first "
+			"appears in AU. In --input-columns identified by '"
+			<< __input_column_names[InCol::A_FORMATION] << "'. Default: "
+			<< __defaults[InCol::A_FORMATION] << ".";
+	__direct_value_options[InCol::A_FORMATION]=arg_dbl0("a",
+			"init-semimajor", "<double>", option_help.str().c_str());
 
-	__start_wsurf=arg_dbl0(NULL, "init-wsurf", "<double>", "Initial spin of "
-			"the stellar surface in rad/day. For low mass stars this is the "
-			"rotation of the convective zone, and for high mass stars it is "
-			"the unique rotation of the star. This argument is ignored, "
-			"unless --t0 or --t0-col is also specified.");
+	option_help.clear();
+	option_help << "The orbital period at which the planet first "
+			"appears in days. This is an alternative to --init-semimajor. In"
+			"--input-columns identified by '"
+			<< __input_column_names[InCol::P_FORMATION] << "'.";
+	__direct_value_options[InCol::P_FORMATION]=arg_dbl0("p",
+			"init-orbit-period", "<double>", option_help.str().c_str());
 
-	__max_timestep=arg_dbl0(NULL, "max-step", "<double>", "An upper limit to"
-			" impose on the sover timestep.");
+	option_help.clear();
+	option_help << "The starting age for the evolution in Gyr. If this "
+		"argument is used, --w-disk, --w-disk-col, --t-disk and --t-disk-col"
+		" are ignored and --init-semimajor or --init-semimajor-col is the "
+		"semimajor axis that the planet has at the age specified by this"
+		" argument. Further, if this argument is  used, --init-wsurf or "
+		"--init-wsurf-col must also be specified and if the evolution "
+		"of low mass stars is to be computed --init-wrad or "
+		"--init-wrad-col is also required. In --input-columns identified"
+		" by '" << __input_column_names[InCol::TSTART] << "'.";
+	__direct_value_options[InCol::TSTART]=arg_dbl0(NULL, "t0", "<double>",
+			option_help.str().c_str());
 
-	__precision=arg_dbl0(NULL, "precision", "<double>", "The number of "
-			"digits of precision to require of the solution. Need not be an "
-			"integer. Default: 6.");
+	option_help.clear();
+	option_help << "The maximum end age for the evolution in Gyr. The "
+		"evolution could stop earlier if the star moves off the main "
+		"sequence before this age. In --input-columns identified by '"
+		<< __input_column_names[InCol::TEND] << "'. Default: "
+		<< __defaults[InCol::TEND] << ".";
+	__direct_value_options[InCol::TEND]=arg_dbl0(NULL, "tmax", "<double>",
+			option_help.str().c_str());
 
-	__low_mass_windK_column=arg_int0(NULL, "low-mass-K-col", "<index>",
-			"Index in the input file of the column which contains the wind "
-			"strength for low mass stars in units of "
-			"Msun*Rsun^2*day^2/(rad^2*Gyr). If this parameter is not "
-			"specified the const value specified by --low-mass-K or its "
-			"default is used.");
+	option_help.clear();
+	option_help << "Initial spin of the stellar core in rad/day for low"
+		" mass stars. This argument is ignored, unless --t0 or --t0-col "
+		"is also specified. In --input-columns identified by '"
+		<< __input_column_names[InCol::START_WRAD] << "'.";
+	__direct_value_options[InCol::START_WRAD]=arg_dbl0(NULL, "init-wrad",
+			"<double>", option_help.str().c_str());
 
-	__high_mass_windK_column=arg_int0(NULL, "high-mass-K-col", "<index>",
-			"Index in the input file of the column which contains the wind "
-			"strength for high mass stars in units of "
-			"Msun*Rsun^2*day^2/(rad^2*Gyr). If this parameter is not "
-			"specified the const value specified by --high-mass-K or its "
-			"default is used.");
+	option_help.clear();
+	option_help << "Initial spin of the stellar surface in rad/day. For"
+		" low mass stars this is the rotation of the convective zone, "
+		"and for high mass stars it is the unique rotation of the star. "
+		"This argument is ignored, unless --t0 or --t0-col is also "
+		"specified. In --input-columns identified by '"
+		<< __input_column_names[InCol::START_WSURF] << "'.";
+	__direct_value_options[InCol::START_WSURF]=arg_dbl0(NULL, "init-wsurf",
+			"<double>", option_help.str().c_str());
 
-	__low_mass_wind_saturation_column=arg_int0(NULL, "low-mass-wind-sat-col",
-			"<index>", "Index in the input file of the column which "
-			"contains the frequency at which the wind saturates for low "
-			"mass stars in units of rad/day. If this parameter is not "
-			"specified the const value specified by --low-mass-wind-sat or "
-			"its default is used.");
+	option_help.clear();
+	option_help << "An upper limit to impose on the sover timestep. In "
+		"--input-columns identified by '"
+		<< __input_column_names[InCol::MAX_STEP] << "'.";
+	__direct_value_options[InCol::MAX_STEP]=arg_dbl0(NULL, "max-step",
+			"<double>", option_help.str().c_str());
 
-	__high_mass_wind_saturation_column=arg_int0(NULL,
-			"high-mass-wind-sat-col", "<index>",
-			"Index in the input file of the column which contains the "
-			"frequency at which the wind saturates for high mass stars in "
-			"units of rad/day. If this parameter is not specified the const "
-			"value specified by --high-mass-wind-sat or its default is "
-			"used.");
+	option_help.clear();
+	option_help << "The number of digits of precision to require of the "
+		"solution. Need not be an integer. In --input-columns identified by "
+		"'" << __input_column_names[InCol::PRECISION] << "'. Default: "
+		<< __defaults[InCol::PRECISION] << ".";
+	__direct_value_options[InCol::PRECISION]=arg_dbl0(NULL, "precision",
+			"<double>", option_help.str().c_str());
 
-	__core_env_coupling_timescale_column=arg_int0(NULL,
-			"core-env-coupling-timescale-col", "<index>", "Index in the "
-			"input file of the column which contains the timescale on "
-			"which the core end envelope are coupled in Myr. If this "
-			"parameter is not specified the const value specified by "
-			"--core-env-coupling-timescale or its default is used.");
+	__start_locked=arg_lit0(NULL, "start-locked", "Whether the planet should"
+		   " start locked to the star. If true, causes the value of "
+		   "--init-wsurf-col to be ignored.");
 
-	__lgQ_column=arg_int0(NULL, "lgQ-col", "<index>", "Index in the "
-			"input file of the column which contains log base 10 of the "
-			"tidal quality factor of the star. If this parameter is not "
-			"specified the const value specified by --lgQ or its default "
-			"is used.");
+	__output_fname=arg_file0("o", "output", "<file|index>", ("If nothing is "
+				"read from an input file, then this argument should be the "
+				"name of the file to use to output the evolution. If at "
+				"least one quantity is read from a list file, that file "
+				"should also contain a column specifying the input file name"
+				" for each parameter set, and this column should be "
+				"specified via the --input-columns option. In the latter "
+				"case, this argument is ignored. Default: "+
+				__default_outfname).c_str());
 
-	__star_mass_column=arg_int0(NULL, "Mstar-col", "<index>", "Index in the "
-			"input file of the column which contains the mass of the star in "
-			"solar masses. If this parameter is not specified the const "
-			"value specified by --Mstar or its default is used.");
+	__input_file_columns=arg_str0(NULL, "input-columns",
+			"<comma separated list>", "Allows multiple evolutions to be "
+			"calculated with a single run. This argument should be a list of"
+			" the columns in an input file that includes all quantities that"
+			" change, and also a column specifying the file to output the "
+			"corresponding evolution to. Any argument not included in this "
+			"list of columns is held constant at the value specified at the "
+			"corresponding option value or its default. Columns that should "
+			"be skipped should have no identifier listed (i.e. there should "
+			"be two consecutive commas). Not all columns in the input file "
+			"need to be listed. Any content past the last column identified "
+			"in this argument on each line is ignored.");
 
-	__planet_mass_column=arg_int0(NULL, "Mplanet-col", "<index>", "Index in "
-			"the input file of the column which contains the mass of the "
-			"planet in jovian masses. If this parameter is not specified "
-			"the const value specified by --Mplanet or its default is "
-			"used.");
-
-	__planet_radius_column=arg_int0(NULL, "Rplanet-col", "<index>", "Index "
-			"in the input file of the column which contains the radius of "
-			"the planet in jovian radii. If this parameter is not specified "
-			"the const value specified by --Rplanet or its default is "
-			"used.");
-
-	__planet_formation_age_column=arg_int0(NULL, "planet-formation-age-col",
-			"<index>", "Index in the input file of the column which "
-			"contains the age at which the planet forms. If that age is "
-			" smaller than the disk dissipation age, the planet forms at the"
-			" disk dissipation age.");
-
-	__disk_lock_frequency_column=arg_int0(NULL, "w-disk-col", "<index>",
-			"Index in the input file of the column which contains the spin "
-			"at which the star is locked while the disk is present in "
-			"rad/day. If this parameter is not specified the const "
-			"value specified by --w-disk or its default is used.");
-
-	__disk_dissipation_age_column=arg_int0(NULL, "t-disk-col", "<index>",
-			"Index in the input file of the column which contains the age "
-			"at which the disk dissipates in Myr. If this parameter is not "
-			"specified the const value specified by --t-disk or its default "
-			"is used.");
-
-	__planet_formation_semimajor_column=arg_int0(NULL, "init-semimajor-col",
-			"<index>", "Index in the input file of the column which contains"
-			" the semimajor axis at which the planet first appears in AU. If"
-			" this parameter is not specified the const value specified by "
-			"--init-semimajor or its default is used.");
-
-	__start_age_column=arg_int0(NULL, "t0-col", "<index>", "Index in the "
-			"input file of the column which contains the starting age for "
-			"the evolution in Gyr. If this argument is used, --w-disk, "
-			"--w-disk-col, --t-disk and --t-disk-col are ignored and "
-			"--init-semimajor or --init-semimajor-col is the semimajor axis "
-			"that the planet has at the age specified by this argument. "
-			"Further, if this argument is  used, --init-wsurf or "
-			"--init-wsurf-col must also be specified and if the evolution "
-			"of low mass stars is to be computed --init-wrad or "
-			"--init-wrad-col is also required.");
-
-	__end_age_column=arg_int0(NULL, "tmax-col", "<index>", "Index in the "
-			"input file of the column which contains the maximum end age for"
-			" the evolution in Gyr. If this parameter is not specified the "
-			"const value specified by --tmax or its default is used.");
-
-	__start_wrad_column=arg_int0(NULL, "init-wrad-col", "<index>", "Index "
-			"in the input file of the column which contains the initial spin"
-			" of the stellar core in rad/day for low mass stars. This "
-			"argument is ignored, unless --t0 or --t0-col is also "
-			"specified.");
-
-	__start_wsurf_column=arg_int0(NULL, "init-wsurf-col", "<index>",
-			"Index in the input file of the column which contains the "
-			"initial spin of the stellar surface in rad/day. For low mass "
-			"stars this is the rotation of the convective zone, and for "
-			"high mass stars it is the unique rotation of the star. This "
-			"argument is ignored, unless --t0 or --t0-col is also "
-			"specified.");
+	option_help.clear();
+	option_help << "Specifies what to output. This "
+			"argument should be a comma separated list containing some of "
+			"the following columns:" << std::endl;
+	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; i++)
+		option_help << "\t* " << __output_column_names[i] << ": "
+			<< __output_column_descr[i] << std::endl;
+	outpion_help << "Default: " << __default_output_columns;
+	__output_file_columns=arg_str0(NULL, "output-columns",
+			"<comma separated list>", option_help.str().c_str());
 
 	__input_fname=arg_file0("i", "input", "<file>", "The file to read the "
 			"parameters of the planet-star systems to calculate evolutions "
-			"for. If omitted, standard input is used instead. If no --*-col "
-			"options are specified, this argument is ignored.");
-
-	__output_fname=arg_file0("o", "output", "<file|index>", "If nothing is "
-			"read from an input file, then this argument should be the name "
-			"of the file to use to output the evolution. If at least one "
-			"quantity is read from a list file, that file should also "
-			"contain a column specifying the input file name for each "
-			"parameter set, and this argument should be the index of that "
-			"column. The output file should contain columns separated by "
-			"white space and optional comment lines that begin with #. "
-			"Default: poet.evol");
+			"for. If omitted, standard input is used instead. Any lines "
+			"beginning with '#' are ignored. The other lines should start "
+			"with at least the number of columns specified in the "
+			"--input-columns option with white space only between columns.");
 
 	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
 			"<file>", "The file to read previously serialized stellar "
 			"evolution from. Default: 'interp_state_data'.");
-
-	__start_locked=arg_lit0(NULL, "start-locked", "Whether the planet "
-			"should start locked to the star. If true, causes the value of "
-			"--init-wsurf-col to be ignored.");
 }
 
 void CommandLineOptions::set_defaults()
 {
-	__low_mass_windK->dval[0]=0.35;
-	__high_mass_windK->dval[0]=0;
-	__low_mass_wind_saturation->dval[0]=1.84;
-	__high_mass_wind_saturation->dval[0]=0;
-	__core_env_coupling_timescale->dval[0]=5;
-	__lgQ->dval[0]=6;
-	__star_mass->dval[0]=1;
-	__planet_mass->dval[0]=1;
-	__planet_radius->dval[0]=1;
-	__planet_formation_age->dval[0]=0;
-	__disk_lock_frequency->dval[0]=0.68;
-	__disk_dissipation_age->dval[0]=5;
-	__planet_formation_semimajor->dval[0]=0.05;
-	__start_age->dval[0]=NaN; 
-	__end_age->dval[0]=Inf; 
-	__start_wrad->dval[0]=NaN;
-	__start_wsurf->dval[0]=NaN;
-	__max_timestep->dval[0]=Inf;
-	__precision->dval[0]=6;
-	__serialized_stellar_evolution->filename[0]="interp_state_data";
+	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; i++)
+		__direct_value_options[i]->dval[0]=__defaults[i];
+	__output_fname->filename[0]=__default_outfname.c_str();
+	__serialized_stellar_evolution->filename[0]=
+		__default_serialized_evol.c_str();
+}
 
-	__low_mass_windK_column->ival[0]=0;
-	__high_mass_windK_column->ival[0]=0;
-	__low_mass_wind_saturation_column->ival[0]=0;
-	__high_mass_wind_saturation_column->ival[0]=0;
-	__core_env_coupling_timescale_column->ival[0]=0;
-	__lgQ_column->ival[0]=0;
-	__star_mass_column->ival[0]=0;
-	__planet_mass_column->ival[0]=0;
-	__planet_radius_column->ival[0]=0;
-	__planet_formation_age_column->ival[0]=0;
-	__disk_lock_frequency_column->ival[0]=0;
-	__disk_dissipation_age_column->ival[0]=0;
-	__planet_formation_semimajor_column->ival[0]=0;
-	__start_age_column->ival[0]=0; 
-	__start_wrad_column->ival[0]=0;
-	__start_wsurf_column->ival[0]=0;
-
-	__output_fname->filename[0]="poet.evol";
+template<typename COL_ID_TYPE>
+void CommandLineOptions::parse_column_list(char *columns_str,
+		const std::string[] column_names, int num_column_names,
+		std::vector<COL_ID_TYPE> &columns, bool allow_noname)
+{
+	std::istringstream instream(columns_str);
+	columns.clear();
+	while(!instream.eof()) {
+		std::string colname;
+		std::getline(instream, colname, ',');
+		for(int i=0; i<num_column_names && column_names[i]!=colname; i++);
+		if(column_names[i]==colname) columns.push_back(i);
+		else if(allow_noname && colname=="")
+			columns.push_back(num_column_names);
+		else throw Error::CommandLine("Unrecognized input column '"+colname+
+				"'");
+	}
 }
 
 void CommandLineOptions::postprocess()
 {
-	--__low_mass_windK_column->ival[0];
-	--__high_mass_windK_column->ival[0];
-	--__low_mass_wind_saturation_column->ival[0];
-	--__high_mass_wind_saturation_column->ival[0];
-	--__core_env_coupling_timescale_column->ival[0];
-	--__lgQ_column->ival[0];
-	--__star_mass_column->ival[0];
-	--__planet_mass_column->ival[0];
-	--__planet_radius_column->ival[0];
-	--__planet_formation_age_column->ival[0];
-	--__disk_lock_frequency_column->ival[0];
-	--__disk_dissipation_age_column->ival[0];
-	--__planet_formation_semimajor_column->ival[0];
-	--__start_age_column->ival[0];
-	--__start_wrad_column->ival[0];
-	--__start_wsurf_column->ival[0];
-	if(__low_mass_windK_column->ival[0]>=0 || 
-			__high_mass_windK_column->ival[0]>=0 ||
-			__low_mass_wind_saturation_column->ival[0]>=0 ||
-			__high_mass_wind_saturation_column->ival[0]>=0 ||
-			__core_env_coupling_timescale_column->ival[0]>=0 ||
-			__lgQ_column->ival[0]>=0 ||
-			__star_mass_column->ival[0]>=0 ||
-			__planet_mass_column->ival[0]>=0 ||
-			__planet_radius_column->ival[0]>=0 ||
-			__planet_formation_age_column->ival[0]>=0 ||
-			__disk_lock_frequency_column->ival[0]>=0 ||
-			__disk_dissipation_age_column->ival[0]>=0 ||
-			__planet_formation_semimajor_column->ival[0]>=0 ||
-			__start_age_column->ival[0]>=0 ||
-			__start_wrad_column->ival[0]>=0 ||
-			__start_wsurf_column->ival[0]>=0) {
-		__input_from_list=true;
-		std::istringstream outfname_col_str(__output_fname->filename[0]);
-		outfname_col_str >> __output_fname_column;
-		if(outfname_col_str.fail()) throw Error::CommandLine("The argument "
-				"to --output does not look like an integer number.");
-		--__output_fname_column;
-	} else __input_from_list=false;
-	if(__input_fname->count) {
-		__input_stream.open(__input_fname->filename[0]);
-	} else if(__input_from_list) __input_fname->filename[0]="stdin";
-	__precision->dval[0]=std::pow(10.0, -__precision->dval[0]);
-	__core_env_coupling_timescale->dval[0]*=1e-3;
-	__disk_dissipation_age->dval[0]*=1e-3;
+	if(__input_file_columns->count>0)
+		parse_column_list(__input_file_columns->sval[0],
+				__input_column_names, NUM_INPUT_QUANTITIES,
+				__input_file_format, true);
+	parse_column_list(__output_file_columns->sval[0],
+			__output_column_names, NUM_OUTPUT_QUANTITIES,
+			__output_file_format);
 }
 
 void CommandLineOptions::cleanup()

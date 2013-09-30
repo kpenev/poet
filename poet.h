@@ -16,141 +16,176 @@
 #include <fstream>
 #include <sstream>
 
+///Isolates the tags for the input columns.
+namespace InCol {
+	///\brief Tags for the quantities required to fully specify the system to
+	///evolve.
+	enum InputColumns {
+		///\brief Wind strength in 
+		/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
+		/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
+		WINDK=0, 
+
+		LOW_MASS_WINDK=WINDK,///< The wind strength for low mass stars
+		HIGH_MASS_WINDK,///< The wind strength for high mass stars
+		WIND_SAT_W, ///< Wind saturation frequency in rad/day.
+
+		///Wind saturation frequency in rad/day for low mass stars.
+		LOW_MASS_WIND_SAT_W=WIND_SAT_W,
+
+		///Wind saturation frequency in rad/day for high mass stars.
+		HIGH_MASS_WIND_SAT_W,
+
+		WIND_SAT_P, ///< Wind saturation period in days.
+
+		///Wind saturation period in days for low mass stars.
+		LOW_MASS_WIND_SAT_P=WIND_SAT_P, 
+
+		///Wind saturation period in days for high mass stars.
+		HIGH_MASS_WIND_SAT_P,
+
+		///\brief Core-envelope coupling timescale in Myr, ignore for high
+		///mass stars.
+		CORE_ENV_COUPLING_TIMESCALE,
+
+		LGQ,///< Lg(Q*).
+		MSTAR, ///< Mass of the star in \f$M_\odot\f$.
+		MPLANET, ///< Mass of the planet in \f$M_\Jupiter\f$.
+		RPLANET, ///< Radius of the planet in \f$R_\Jupiter\f$.
+		PLANET_FORMATION_AGE,///< Age when planet appears in Gyr.
+		WDISK,///< Stellar surface spin while disk is present in rad/day.
+
+		///Stellar surface rotation period in days while disk is present.
+		PDISK,
+		
+		TDISK, ///< Age in Myr when disk dissipates.
+		A_FORMATION, ///< Semimajor axis at which the planet forms in AU.
+		P_FORMATION, ///< Orbital period in days at which the planet forms.
+		TSTART, ///< The minimum age to start evolution at in Gyr.
+		TEND, ///< The maximum age to stop the evolution at in Gyr.
+
+		///\brief Initial rotation of the radiative core in rad/day if the
+		///evolution starts after the core has formed.
+		START_WRAD, 
+
+		///\brief Surface rotation of the star in rad/day if the evolution
+		///starts after the disk has dissipated.
+		START_WSURF, 
+
+		///\brief Should the evolution start with the stellar surface
+		///spinning synchronously with the orbit? 
+		START_LOCKED,	
+
+		MAX_STEP,///< The maximum timestep to take.
+		PRECISION,///< The precision to require of the evolution.
+		OUT_FNAME,///< The name of the file to write the evolution to.
+
+		///The number of real values quantities.
+		NUM_REAL_INPUT_QUANTITIES=OUT_FNAME,
+
+		SKIP,///< A column which is not needed to calculate the evolution.
+
+		///The number of different input quantities supported.
+		NUM_INPUT_QUANTITIES=SKIP
+	};
+};
+
+///Isolates the tags for the output columns.
+namespace OutCol {
+	///Tags for the possible columns to output.
+	enum OutputColumns {
+		AGE,///< Age of the system in Gyr.
+		SEMIMAJOR,///< Semimajor axis of the orbit in AU.
+
+		///\brief Angular momentum of the convective zone of the star in
+		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
+		///stars only)
+		LCONV,
+
+		///\brief Angular momentum of the radiative zone of the star in
+		// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
+		///stars only)
+		LRAD,
+
+		///\brief Total angular momentum of the star in 
+		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$.
+		LTOT,
+
+		///\brief Moment of inertia of the convective zone of the star (low mass
+		///stars only)
+		ICONV,
+
+		///\brief Moment of inertia of the radiative zone of the star (low mass
+		///stars only)
+		IRAD,
+
+		ITOT,///< Total moment of inertia of the star.
+		WSURF, ///< Angular velocity of the stellar surface in rad/day.
+
+		///Angular velocity of the stellar core in rad/day (low mass stars only).
+		WRAD,
+
+		PSURF, ///< Spin period of the stellar surface in days.
+		PRAD,///< Spin period of the stellar core in days (low mass stars only).
+
+		EVOL_MODE,///< The evolution mode for the step that starts at this age.
+
+		RSTAR,///< Radius of the star in \f$R_\odot\f$.
+		LSTAR,///< Luminosity of the star in \f$L_\odot\f$.
+
+		///Radius of the stellar core in \f$R_\odot\f$ (low mass stars only).
+		RRAD,
+
+		///Mass of the stellar core in \f$M_\odot\f$ (low mass stars only).
+		MRAD,
+
+		///The number of different output quantities supported.
+		NUM_OUTPUT_QUANTITIES
+	};
+};
+
 ///All command line options can be accessed through members.
 class CommandLineOptions {
 private:
-	///\brief The wind strength for low mass stars in units of
-	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
-	/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
-	arg_dbl *__low_mass_windK,
 
-			///\brief The wind strength for low mass stars in units of
-			/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
-			/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
-			*__high_mass_windK,
+	///\brief The names to use for the input columns in the --input-columns
+	///option (indexed by the corresponding InputColumns tag).
+	static const std::string __input_column_names[],
 
-			///\brief The frequency at which the wind saturates for
-			///low mass stars in units of rad/day.
-			*__low_mass_wind_saturation,
+				 ///\brief The names to use for the output columns in thei
+				 ///--output-columns option (indexed by the corresponding
+				 ///OutputColumns tag).
+				 __output_column_names[],
+				 
+				 ///Description of the output columns,
+				 __output_column_descr[];
 
-			///\brief The frequency at which the wind saturates for
-			///high mass stars in units of rad/day.
-			*__high_mass_wind_saturation,
+	///\brief The default values for the quantities defining the evolution to
+	///calculate.
+	static const double __defaults[];
 
-			///The timescale on which the core end envelope are coupled.
-			*__core_env_coupling_timescale,
+	///The default output filename.
+	static const std::string __default_outfname,
 
-			///Lg(tidal quality factor of the star).
-			*__lgQ,
+		///\brief The default filename to read the serialized stellar
+		///evoliton from.
+		__default_serialized_evol,
+		
+		///The default output columns
+		__default_output_columns;
 
-			///Mass of the star in \f$M_\odot\f$.
-			*__star_mass,
+	///The command line options which directly specify a value.
+	std::vector<arg_dbl*> __direct_value_options;
 
-			///Mass of the planet in \f$M_\Jupiter\f$
-			*__planet_mass,
+	///The columns in the input file.
+	arg_str *__input_file_columns,
 
-			///Radius of the planet in \f$R_\Jupiter\f$
-			*__planet_radius,
+			///The columns to write to the output file.
+			*__output_file_columns;
 
-			///The age at which the planet forms.
-			///
-			///If it is smaller than the disk dissipation age, the planet
-			///forms at the disk dissipation age.
-			*__planet_formation_age,
-
-			///\brief The spin at which the star is locked while the
-			///disk is present in rad/day.
-			*__disk_lock_frequency,
-
-			///The age at which the disk dissipates in Gyr.
-			*__disk_dissipation_age,
-
-			///The semimajor axis at which the planet first appears in AU.
-			*__planet_formation_semimajor,
-
-			///The starting age for the evolution in Gyr.
-			*__start_age,
-
-			///The maximum end age for the evolution in Gyr.
-			*__end_age,
-
-			///\brief Initial spin of the stellar core in rad/day for low
-			///mass stars.
-			*__start_wrad,
-
-			///\brief Initial spin of the stellar surface in rad/day.
-			*__start_wsurf,
-			
-			///A limit to impose on the ODE timestep in Gyr.
-			*__max_timestep,
-			
-			///The precision to require of the solution
-			*__precision;
-			
-	///\brief The wind strength column for low mass stars in units of
-	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
-	/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
-	arg_int *__low_mass_windK_column,
-
-			///\brief The wind strength column for high mass stars in units
-			///of \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
-			/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
-			*__high_mass_windK_column,
-
-			///\brief The column of the frequency at which the wind
-			///saturates for low mass stars in units of rad/day.
-			*__low_mass_wind_saturation_column,
-
-			///\brief The column of the frequency at which the wind
-			///saturates for high mass stars in units of rad/day.
-			*__high_mass_wind_saturation_column,
-
-			///\brief The column of the timescale on which the core end
-			///envelope are coupled.
-			*__core_env_coupling_timescale_column,
-
-			///The Lg(tidal quality factor of the star) column.
-			*__lgQ_column,
-
-			///The column of the mass of the star in \f$M_\odot\f$.
-			*__star_mass_column,
-
-			///The column of the mass of the planet in \f$M_\Jupiter\f$
-			*__planet_mass_column,
-
-			///The column of the radius of the planet in \f$R_\Jupiter\f$
-			*__planet_radius_column,
-
-			///The column of the age at which the planet forms.
-			///
-			///If it is smaller than the disk dissipation age, the planet
-			///forms at the disk dissipation age.
-			*__planet_formation_age_column,
-
-			///\brief The column of the spin at which the star is locked
-			///while the disk is present in rad/day.
-			*__disk_lock_frequency_column,
-
-			///The column of the age at which the disk dissipates in Gyr.
-			*__disk_dissipation_age_column,
-
-			///The column of the semimajor axis at which the planet first
-			///appears in AU.
-			*__planet_formation_semimajor_column,
-
-			///The column of the starting age for the evolution in Gyr.
-			*__start_age_column,
-
-			///The column of the maximum end age for the evolution in Gyr.
-			*__end_age_column,
-
-			///\brief The column of the initial spin of the stellar core in
-			///rad/day for low mass stars.
-			*__start_wrad_column,
-
-			///\brief The column of the initial spin of the stellar surface
-			///in rad/day.
-			*__start_wsurf_column;
+	///Whether the initial surfarce spin of the star should be
+	///synchronous to the orbit.
+	arg_lit *__start_locked;
 
 	///The name of the file to read the evolution scenarios from.
 	arg_file *__input_fname,
@@ -162,19 +197,18 @@ private:
 			 ///evolution from.
 			 *__serialized_stellar_evolution;
 
-	///Whether the planet should start locked to the star.
-	///
-	///If true, causes the value of __start_wsurf to be ignored.
-	arg_lit *__start_locked;
+	void *__argtable[InCol::NUM_INPUT_QUANTITIES+6];
+
+
+
+	///A list of the columns in the input file.
+	std::vector<InCol::InputColumns> __input_file_format;
+
+		///A list of the columns in the output file.
+	std::vector<OutCol::OutputColumns> __output_file_format;
 
 	///The stream to the input filename if stdin is not being used.
 	std::ifstream __input_stream;
-
-	///\brief The column number in the input file containing the name of the
-	///output filename.
-	///
-	///Not initialized if no quantities are read from a list file.
-	int __output_fname_column;
 
 	///Defines the command line options.
 	void define_options();
@@ -182,18 +216,45 @@ private:
 	///Sets default values to the appropriate options.
 	void set_defaults();
 
-	///\brief Updates some of the values of the command line options after
-	///parsing.
+	///Parses a comma separated list of column names.
+	template<typename COL_ID_TYPE>
+	void parse_column_list(
+			///The comma separated list of column names.
+			char *columns_str,
+
+			///The allowed column names 
+			const std::string[] column_names,
+
+			///The number of allowed column names
+			int num_column_names,
+
+			///This is updated to contain the columns in the correct
+			///order.
+			std::vector<COL_ID_TYPE> &columns,
+			
+			///Whether to allow zero length column names.
+			bool allow_noname=false);
+
+
+
+
+
+
+
+
+
+	///\brief Updates some command line options after parsing and
+	///parses column lists.
 	///
-	///On the command line, column indices are counted from 1, while it is
-	///more convenient to count from 0 in the code.
+	///Opens the input file if it is being used.
 	///
-	///Also opens the input file if it is being used.
-	///
-	///Converst the precision required from number of significant
+	///Converts the precision required from number of significant
 	///figures to an actual value.
 	///
 	///Converts the various ages that are specified in Myrs to Gyrs.
+	///
+	///Calculates values of options which were specified using an
+	///alternative.
 	void postprocess();
 
 	///Free all manually allocated memory and close open streams.
@@ -207,6 +268,10 @@ private:
 public:
 	///Parse the command line.
 	CommandLineOptions(int argc, char **argv);
+
+	///\brief Returns the value of the quantity, if it is not overwritten by
+	///the input list.
+	double get_value(InCol::InputColumns quantity);
 
 	///\brief The wind strength for low mass stars in units of
 	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
