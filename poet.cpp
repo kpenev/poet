@@ -308,7 +308,7 @@ void CommandLineOptions::define_options()
 	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; i++)
 		option_help << "\t* " << OUTPUT_COLUMN_NAMES[i] << ": "
 			<< __output_column_descr[i] << std::endl;
-	outpion_help << "Default: " << __default_output_columns;
+	option_help << "Default: " << __default_output_columns;
 	__output_file_columns=arg_str0(NULL, "output-columns",
 			"<comma separated list>", option_help.str().c_str());
 
@@ -334,8 +334,8 @@ void CommandLineOptions::set_defaults()
 }
 
 template<typename COL_ID_TYPE>
-void CommandLineOptions::parse_column_list(char *columns_str,
-		const std::string[] column_names, int num_column_names,
+void CommandLineOptions::parse_column_list(const char *columns_str,
+		const std::string *column_names, int num_column_names,
 		std::vector<COL_ID_TYPE> &columns, bool allow_noname)
 {
 	std::istringstream instream(columns_str);
@@ -343,10 +343,12 @@ void CommandLineOptions::parse_column_list(char *columns_str,
 	while(!instream.eof()) {
 		std::string colname;
 		std::getline(instream, colname, ',');
-		for(int i=0; i<num_column_names && column_names[i]!=colname; i++);
-		if(column_names[i]==colname) columns.push_back(i);
+		int i=0;
+		while(i<num_column_names && column_names[i]!=colname) i++;
+		if(column_names[i]==colname)
+			columns.push_back(static_cast<COL_ID_TYPE>(i));
 		else if(allow_noname && colname=="")
-			columns.push_back(num_column_names);
+			columns.push_back(static_cast<COL_ID_TYPE>(num_column_names));
 		else throw Error::CommandLine("Unrecognized input column '"+colname+
 				"'");
 	}
@@ -356,10 +358,10 @@ void CommandLineOptions::postprocess()
 {
 	if(__input_file_columns->count>0)
 		parse_column_list(__input_file_columns->sval[0],
-				__input_column_names, NUM_INPUT_QUANTITIES,
+				__input_column_names, InCol::NUM_INPUT_QUANTITIES,
 				__input_file_format, true);
 	parse_column_list(__output_file_columns->sval[0],
-			OUTPUT_COLUMN_NAMES, NUM_OUTPUT_QUANTITIES,
+			OUTPUT_COLUMN_NAMES, OutCol::NUM_OUTPUT_QUANTITIES,
 			__output_file_format);
 	if(__input_fname->count) {
 		__input_stream.open(__input_fname->filename[0]);
@@ -382,11 +384,6 @@ void CommandLineOptions::postprocess()
 		__direct_value_options[InCol::PDISK]->dval[0]=2.0*M_PI/
 			__direct_value_options[InCol::WDISK]->dval[0];
 
-	__direct_value_options[InCol::CORE_ENV_COUPLING_TIMESCALE]->dval[0]*=
-		1e-3;
-	__direct_value_options[InCol::PLANET_FORMATION_AGE]->dval[0]*=1e-3;
-	__direct_value_options[InCol::TDISK]->dval[0]*=1e-3;
-
 	if(__direct_value_options[InCol::A_FORMATION]->count>0 ||
 			__direct_value_options[InCol::P_FORMATION]->count>0) {
 		double M=__direct_value_options[InCol::MSTAR]->dval[0]*
@@ -399,24 +396,22 @@ void CommandLineOptions::postprocess()
 						__direct_value_options[InCol::P_FORMATION]->dval[0]*
 						AstroConst::day, 2);
 				__direct_value_options[InCol::A_FORMATION]->dval[0]=
-					AstroConst::std::pow(AstroConst::G*(M+m)*P2/4/M_PI/M_PI,
+					std::pow(AstroConst::G*(M+m)*P2/4/M_PI/M_PI,
 							1.0/3.0)/AstroConst::AU;
 		} else if(__direct_value_options[InCol::A_FORMATION]->count>0) {
 			double a3=std::pow(
 					__direct_value_options[InCol::A_FORMATION]->dval[0]*
-					AtsroConst::AU, 3);
+					AstroConst::AU, 3);
 			__direct_value_options[InCol::P_FORMATION]->dval[0]=std::sqrt(
-					4.0*M_PI*M_PI*a3/(M+m)/AstroConst::G);
+					4.0*M_PI*M_PI*a3/(M+m)/AstroConst::G)/AstroConst::day;
 		}
 	}
-	__direct_value_options[InCol::PRECISION]->dval[0]=std::pow(10.0,
-			-__direct_value_options[InCol::PRECISION]->dval[0]);
 }
 
 void CommandLineOptions::cleanup()
 {
 	if(__opened_stream) __input_stream.close();
-	arg_freetable(__argtable);
+	arg_freetable(__argtable, sizeof(__argtable)/sizeof(__argtable[0]));
 }
 
 CommandLineOptions::CommandLineOptions(int argc, char **argv) :
@@ -425,27 +420,27 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	define_options();
 	arg_lit *help_option=arg_lit0("h", "help", "Print this help and exit.");
 	struct arg_end *end = arg_end(100);
-	for(int i=0; i<NUM_REAL_INPUT_QUANTITIES; i++)
+	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; i++)
 		__argtable[i]=__direct_value_options[i];
 	__argtable[InCol::OUT_FNAME]=__output_fname;
 	__argtable[InCol::START_LOCKED]=__start_locked;
-	__argtable[NUM_INPUT_QUANTITIES]=__input_file_columns;
-	__argtable[NUM_INPUT_QUANTITIES+1]=__output_file_columns;
-	__argtable[NUM_INPUT_QUANTITIES+2]=__input_fname;
-	__argtable[NUM_INPUT_QUANTITIES+3]=__serialized_stellar_evolution;
-	__argtable[NUM_INPUT_QUANTITIES+4]=help_option;
-	__argtable[NUM_INPUT_QUANTITIES+5]=end;
+	__argtable[InCol::NUM_INPUT_QUANTITIES]=__input_file_columns;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+1]=__output_file_columns;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+2]=__input_fname;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+3]=__serialized_stellar_evolution;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+4]=help_option;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=end;
 
-	if(arg_nullcheck(argtable) != 0) {
+	if(arg_nullcheck(__argtable) != 0) {
 		cleanup();
 		throw Error::CommandLine("Failed to allocate argument table.");
 	}
 	set_defaults();
-	int nerrors=arg_parse(argc, argv, argtable);
+	int nerrors=arg_parse(argc, argv, __argtable);
 	if(help_option->count>0 || nerrors>0) {
         printf("Usage: %s", "SubPixPhot");
-        arg_print_syntax(stdout,argtable,"\n");
-        arg_print_glossary(stdout,argtable,"  %-25s %s\n");
+        arg_print_syntax(stdout, __argtable,"\n");
+        arg_print_glossary(stdout, __argtable,"  %-25s %s\n");
 		if(help_option->count==0)
 			arg_print_errors(stdout, end, "poet");
 		free(help_option);
@@ -459,12 +454,12 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	__parsed_ok=true;
 }
 
-double CommandLineOptions::get_real_value(InCol::InputColumns quantity)
+double CommandLineOptions::get_real_value(InCol::InputColumns quantity) const
 {
-	if(quantity<0 || quantity>=NUM_REAL_INPUT_QUANTITIES)
+	if(quantity<0 || quantity>=InCol::NUM_REAL_INPUT_QUANTITIES)
 		throw Error::BadFunctionArguments("Unrecognized real quantity in "
 				"CommandLineOptions::get_real_value().");
-	return __direct_value_options[quantity];
+	return __direct_value_options[quantity]->dval[0];
 }
 
 
@@ -476,7 +471,7 @@ const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 
 void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 		const std::string &filename,
-		const std::vector<InCol::InputColumns> &output_file_format)
+		const std::vector<OutCol::OutputColumns> &output_file_format)
 {
 
 	std::list<double>::const_iterator
@@ -540,17 +535,19 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 
 void calculate_evolution(const std::vector<double> &real_parameters,
 		bool start_locked, const StellarEvolution &stellar_evolution,
-		const std::string &outfname)
+		const std::string &outfname,
+		const std::vector<OutCol::OutputColumns> &output_file_format)
 {
 	Star star(real_parameters[InCol::MSTAR],
 			std::pow(10.0, real_parameters[InCol::LGQ]),
 			real_parameters[InCol::WINDK],
 			real_parameters[InCol::WIND_SAT_W],
-			real_parameters[InCol::CORE_ENV_COUPLING_TIMESCAL],
+			real_parameters[InCol::CORE_ENV_COUPLING_TIMESCALE]*1e-3,
 			0.0,
 			real_parameters[InCol::WDISK],
-			real_parameters[InCol::TDISK],
+			real_parameters[InCol::TDISK]*1e-3,
 			stellar_evolution);
+	double tstart=real_parameters[InCol::TSTART];
 	if(star.is_low_mass() && 
 			star.core_formation_age()>star.get_disk_dissipation_age() &&
 			tstart<star.core_formation_age())
@@ -562,7 +559,6 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 	StellarSystem system(&star, &planet);
 	std::valarray<double> start_orbit(0.0, 1);
 	EvolModeType start_evol_mode;
-	double tstart=real_parameters[InCol::TSTART];
 	if(std::isnan(tstart) || tstart<star.get_disk_dissipation_age())
 		start_evol_mode=LOCKED_TO_DISK;
 	if(std::isnan(tstart) ||
@@ -577,7 +573,8 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 		start_evol_mode=LOCKED_TO_PLANET;
 		start_orbit.resize(2);
 		start_orbit[0]=real_parameters[InCol::A_FORMATION]*AU_Rsun;
-		start_orbit[1]=(star.is_low_mass() ? real_parameters[START_WRAD]*
+		start_orbit[1]=(star.is_low_mass() ?
+				real_parameters[InCol::START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);
 	} else {
 		if(planet.orbital_angular_velocity_semimajor(
@@ -595,12 +592,78 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				star.moment_of_inertia(tstart, radiative) : 0);
 	}
 
-	OrbitSolver solver(tstart, tend, real_parameters[InCol::PRECISION]);
+	OrbitSolver solver(tstart, real_parameters[InCol::TEND],
+			std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	solver(system, real_parameters[InCol::MAX_STEP],
 			real_parameters[InCol::PLANET_FORMATION_AGE],
 			real_parameters[InCol::A_FORMATION], tstart,
 			start_evol_mode, start_orbit);
-	output_solution(solver, system, outfname);
+	output_solution(solver, system, outfname, output_file_format);
+}
+
+std::string update_run_parameters(std::vector<double> &real_parameters,
+		bool &start_locked,
+		const std::vector<InCol::InputColumns> &input_format,
+		std::istringstream &line, size_t input_lineno)
+{
+	std::string outfname;
+	bool read_wind_sat_w=false, read_wind_sat_p=false, read_wdisk=false,
+		 read_pdisk=false, read_a_formation=false, read_p_formation=false;
+	std::string word;
+	for(size_t column=0; column<input_format.size(); column++) {
+		InCol::InputColumns quantity=input_format[column];
+		if(quantity<InCol::NUM_REAL_INPUT_QUANTITIES) {
+			line >> real_parameters[quantity];
+			if(quantity==InCol::WINDK)
+				real_parameters[InCol::HIGH_MASS_WINDK]=
+					real_parameters[InCol::WINDK];
+			else if(quantity==InCol::WIND_SAT_W) {
+				real_parameters[InCol::HIGH_MASS_WIND_SAT_W]=
+					real_parameters[InCol::WIND_SAT_W];
+				read_wind_sat_w=true;
+			} else if(quantity==InCol::WIND_SAT_P) {
+				real_parameters[InCol::HIGH_MASS_WIND_SAT_P]=
+					real_parameters[InCol::WIND_SAT_P];
+				read_wind_sat_p=true;
+			} else if(quantity==InCol::WDISK) read_wdisk=true;
+			else if(quantity==InCol::PDISK) read_pdisk=true;
+			else if(quantity==InCol::A_FORMATION) read_a_formation=true;
+			else if(quantity==InCol::P_FORMATION) read_p_formation=true;
+		} else if(quantity==InCol::OUT_FNAME) line >> outfname;
+		else if(quantity==InCol::START_LOCKED) line >> start_locked;
+		else if(quantity==InCol::SKIP) line >> word;
+		else throw Error::BadFunctionArguments(
+				"Unrecognized input quantity tag in "
+				"poet.cpp:run().");
+		if(line.fail()) {
+			std::ostringstream msg;
+			msg << "Error while parsing column " << column+1
+				<< " on line " << input_lineno << " of the "
+				"input file.";
+			throw Error::IO(msg.str());
+		}
+	}
+	if(read_wind_sat_w) real_parameters[InCol::WIND_SAT_P]=
+		2.0*M_PI/real_parameters[InCol::WIND_SAT_W];
+	else if(read_wind_sat_p) real_parameters[InCol::WIND_SAT_W]=
+		2.0*M_PI/real_parameters[InCol::WIND_SAT_P];
+	if(read_wdisk) real_parameters[InCol::PDISK]=
+		2.0*M_PI/real_parameters[InCol::WDISK];
+	else if(read_pdisk) real_parameters[InCol::WDISK]=
+		2.0*M_PI/real_parameters[InCol::PDISK];
+	double M=real_parameters[InCol::MSTAR]*AstroConst::solar_mass,
+		m=real_parameters[InCol::MPLANET]*AstroConst::jupiter_mass;
+	if(read_a_formation) {
+		double a3=std::pow(real_parameters[InCol::A_FORMATION], 3);
+		real_parameters[InCol::P_FORMATION]=std::sqrt(
+					4.0*M_PI*M_PI*a3/(M+m)/AstroConst::G)/AstroConst::day;
+	} else if(read_p_formation) {
+		double P2=std::pow(real_parameters[InCol::P_FORMATION], 2);
+		real_parameters[InCol::A_FORMATION]=
+					std::pow(AstroConst::G*(M+m)*P2/4/M_PI/M_PI, 1.0/3.0)/
+					AstroConst::AU;
+	}
+	return outfname;
 }
 
 void run(const CommandLineOptions &options,
@@ -608,66 +671,38 @@ void run(const CommandLineOptions &options,
 		std::istream &input)
 {
 	std::vector<double> real_parameters(InCol::NUM_REAL_INPUT_QUANTITIES);
-	for(int i=0; i<NUM_REAL_INPUT_QUANTITIES; i++)
-		real_parameters[i]=options.get_real_value(i);
+	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; i++) 
+		real_parameters[i]=options.get_real_value(
+				static_cast<InCol::InputColumns>(i));
 
 	std::string outfname=options.output_filename();
-	const std::vector<InCol::InputColumns> *input_format;
-	bool done=false;
+	bool done=false, start_locked=options.start_locked();
 	size_t input_lineno=0;
 	while(!done) {
 		if(options.input_from_list()) {
-			std::string line("#"), word;
+			std::string line("#");
 			while(line[0]=='#' && !input.eof()) {
 				std::getline(input, line);
 				++input_lineno;
 			}
 			if(input.eof()) return;
 			else {
-				std::istringstream line_stream(line);
-				for(int column=0; column<input_format->size(); column++) {
-					InCol::InputColumns quantity;
-					if(quantity<NUM_REAL_INPUT_QUANTITIES)
-						line_stream >> real_parameters[quantity];
-					else if(quantity==InCol::OUT_FNAME)
-						line_stream >> outfname;
-					else if(quantity==InCol::START_LOCKED)
-						line_stream >> start_locked;
-					else if(quantity==InCol::SKIP) line_stream >> word;
-					else throw Error::BadFunctionArguments(
-							"Unrecognized input quantity tag in "
-							"poet.cpp:run().");
-					if(line_stream.fail()) {
-						std::ostringstream msg;
-						msg << "Error while parsing column " << column+1
-							<< " on line " << input_lineno << " of the "
-							"input file '" << options.input_filename()
-							<< "'";
-						throw Error::IO(msg.str());
-					}
-				}
+				std::istringstream line_str(line);
+				outfname=update_run_parameters(real_parameters,
+					start_locked, options.input_file_format(),
+					line_str, input_lineno);
 			}
 		} else done=true;
-
-
-
-
-
 		double Kwind, wsat;
-		if(options.star_mass()>stellar_evolution.get_mass_break()) {
-			Kwind=high_mass_windK;
-			wsat=high_mass_wsat;
+		if(real_parameters[InCol::MSTAR]>stellar_evolution.get_mass_break()){
+			Kwind=real_parameters[InCol::HIGH_MASS_WINDK];
+			wsat=real_parameters[InCol::HIGH_MASS_WIND_SAT_W];
 		} else {
-			Kwind=low_mass_windK;
-			wsat=low_mass_wsat;
+			Kwind=real_parameters[InCol::LOW_MASS_WINDK];
+			wsat=real_parameters[InCol::LOW_MASS_WIND_SAT_W];
 		}
-		OrbitSolver solver(tstart, tend, options.precision());
-		calculate_evolution(star_mass, std::pow(10.0, lgQ), Kwind, wsat,
-				coupling_timescale, wdisk, tdisk, Mplanet, Rplanet,
-				planet_formation_age, a_formation, start_wrad,
-				start_wsurf, tstart, tend, options.max_timestep(),
-				options.start_locked(), stellar_evolution, solver,
-				outfname);
+		calculate_evolution(real_parameters, start_locked, stellar_evolution,
+				outfname, options.output_file_format());
 	}
 }
 

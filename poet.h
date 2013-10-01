@@ -73,7 +73,10 @@ namespace InCol {
 		START_WSURF, 
 
 		MAX_STEP,///< The maximum timestep to take.
-		PRECISION,///< The precision to require of the evolution.
+
+		///The number of significant figures require of the evolution.
+		PRECISION,
+
 		OUT_FNAME,///< The name of the file to write the evolution to.
 
 		///The number of real values quantities.
@@ -150,7 +153,7 @@ namespace OutCol {
 ///\brief The names to use for the output columns in thei
 ///--output-columns option (indexed by the corresponding
 ///OutputColumns tag) as well as when labeling the output file.
-const OUPUT_COLUMN_NAMES[]={
+const std::string OUTPUT_COLUMN_NAMES[]={
 	"t", "a", "Lconv", "Lrad", "L", "Iconv", "Irad", "I", "Wsurf", "Wrad",
 	"Psurf", "Prad", "mode", "R", "Lum", "Rrad", "Mrad"};
 
@@ -224,10 +227,10 @@ private:
 	template<typename COL_ID_TYPE>
 	void parse_column_list(
 			///The comma separated list of column names.
-			char *columns_str,
+			const char *columns_str,
 
 			///The allowed column names 
-			const std::string[] column_names,
+			const std::string *column_names,
 
 			///The number of allowed column names
 			int num_column_names,
@@ -247,8 +250,6 @@ private:
 	///Converts the precision required from number of significant
 	///figures to an actual value.
 	///
-	///Converts the various ages that are specified in Myrs to Gyrs.
-	///
 	///Calculates values of options which were specified using an
 	///alternative.
 	void postprocess();
@@ -267,7 +268,7 @@ public:
 
 	///\brief Returns the value of the quantity, if it is not overwritten by
 	///the input list.
-	double get_real_value(InCol::InputColumns quantity);
+	double get_real_value(InCol::InputColumns quantity) const;
 
 	///\brief The stream to read the parameters of the planet-star systems 
 	///for which to calculate evolution.
@@ -295,7 +296,7 @@ public:
 	const std::vector<InCol::InputColumns> &input_file_format() const
 	{return __input_file_format;}
 
-	const std::vector<InCol::InputColumns> &output_file_format() const
+	const std::vector<OutCol::OutputColumns> &output_file_format() const
 	{return __output_file_format;}
 
 	///Did parsing the command line succeed.
@@ -318,7 +319,7 @@ void output_solution(
 		const std::string &filename,
 
 		///The columns to include in the output file in the desired order.
-		const std::vector<InCol::InputColumns> &output_file_format);
+		const std::vector<OutCol::OutputColumns> &output_file_format);
 
 ///Calculates the evolution for a set of parameters.
 void calculate_evolution(
@@ -334,7 +335,27 @@ void calculate_evolution(
 		const StellarEvolution &stellar_evolution,
 
 		///The filename to write the evolution to.
-		const std::string &outfname);
+		const std::string &outfname,
+
+		///The columns to include in the output file in the desired order.
+		const std::vector<OutCol::OutputColumns> &output_file_format);
+
+///\brief Updates the evolution parameters as indicated on the next line of
+///the input stream and returns filename to output the evolution to.
+std::string update_run_parameters(
+		///The array of real valued parameters to update, indexed by
+		///InCol::InputColumns.
+		std::vector<double> &real_parameters,
+
+		///Whether to start the system with the stellar surface spin
+		///synchronous with the orbit.
+		bool &start_locked,
+
+		///List of the columns to read from the input stream.
+		const std::vector<InCol::InputColumns> &input_format,
+
+		///The line from the input stream to read parameters from.
+		std::istringstream &line, size_t input_lineno);
 
 ///Actually calculates the orbital evolutions.
 void run(
