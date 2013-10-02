@@ -217,6 +217,12 @@ private:
 	///The stream to the input filename if stdin is not being used.
 	std::ifstream __input_stream;
 
+	///The copies of the option help strings made when creating the options.
+	std::list<char*> __option_help_copies;
+
+	///Returns a copy of the c-string content of the stream.
+	char *cstr_copy(const std::ostringstream &stream);
+
 	///Defines the command line options.
 	void define_options();
 

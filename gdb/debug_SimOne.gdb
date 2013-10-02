@@ -11,3 +11,5 @@ c
 end
 
 run
+bt
+q
