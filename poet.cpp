@@ -35,7 +35,7 @@ const std::string CommandLineOptions::__output_column_descr[]={
 
 const double CommandLineOptions::__defaults[]={
 		0.35,			//LOW_MASS_WINDK=WINDK
-		0,				//HIGH_MASS_WINDK=SKIP
+		0,				//HIGH_MASS_WINDK
 		1.84,			//LOW_MASS_WIND_SAT_W=WIND_SAT_W
 		0,				//HIGH_MASS_WIND_SAT_W,
 		NaN,			//LOW_MASS_WIND_SAT_P=WIND_SAT_P, 
@@ -55,7 +55,6 @@ const double CommandLineOptions::__defaults[]={
 		Inf,			//TEND
 		NaN,			//START_WRAD, 
 		NaN,			//START_WSURF, 
-		NaN,			//START_LOCKED,	
 		Inf,			//MAX_STEP
 		6				//PRECISION
 };
@@ -270,7 +269,8 @@ void CommandLineOptions::define_options()
 	option_help.str("");
 	option_help << "An upper limit to impose on the sover timestep. In "
 		"--input-columns identified by '"
-		<< __input_column_names[InCol::MAX_STEP] << "'.";
+		<< __input_column_names[InCol::MAX_STEP] << "'. Default: "
+		<< __defaults[InCol::MAX_STEP] << ".";
 	__direct_value_options[InCol::MAX_STEP]=arg_dbl0(NULL, "max-step",
 			"<double>", cstr_copy(option_help));
 
@@ -535,8 +535,8 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 								  " output_file_format in "
 								  "poet.cpp:output_solution.");
 			}
-			outf << std::endl;
 		}
+		outf << std::endl;
 		age_i++; a_i++; Lconv_i++; Lrad_i++; mode_i++;
 	}
 	outf.close();

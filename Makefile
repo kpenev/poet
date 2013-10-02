@@ -52,6 +52,6 @@ doc:
 	rsync -azr documentation/doxygen/html/* kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
 
 clean:
-	rm -f $(ALL_OBJ) main
+	rm -f $(ALL_OBJ) main poet SimOne
 	make -C alglib clean
 	make -C unit_tests clean

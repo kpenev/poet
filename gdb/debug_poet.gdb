@@ -1,6 +1,31 @@
-break OrbitSolver.cpp:1042
+break poet.cpp:606
 commands 1
-	printf "t=%25.16e, max_next_t=%25.16e\n", t, max_next_t
+	print real_parameters[InCol::MAX_STEP]
+	c
+end
+
+break poet.cpp:550
+commands 2
+	print real_parameters[InCol::MAX_STEP]
+	c
+end
+
+break poet.cpp:716
+commands 3
+	print real_parameters[InCol::MAX_STEP]
+	c
+end
+
+break poet.cpp:686
+commands 4
+	print real_parameters[InCol::MAX_STEP]
+	c
+end
+
+break poet.cpp:340
+commands 5
+	print __direct_value_options[InCol::MAX_STEP]->dval[0]
+	print __defaults[InCol::MAX_STEP]
 	c
 end
 
