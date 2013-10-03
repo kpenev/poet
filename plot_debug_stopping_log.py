@@ -1,5 +1,7 @@
 #!/usr/bin/python -u
 
+from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib import pyplot as plt
 from optparse import OptionParser
 from numpy import nan, inf
 
@@ -9,6 +11,9 @@ def parse_command_line() :
     parser=OptionParser(usage="%prog <log file>", description="Generates a "
                         "PDF file with each page showing all the information"
                         " about an attempted step.")
+    parser.add_option('-o', '--output', default='debug_stopping.pdf',
+                      help='Filename to use for the plots. '
+                      'Default: %default')
     options, args=parser.parse_args()
     return options, args[0]
 
@@ -286,14 +291,48 @@ def parse_extremum(line) :
             result['fallback']=parse_extremum(line)
     return result
 
+def plot_step(step_info) :
+    """ Plots all the information contained in the given step_info on a page
+    in the given PdfPages file. """
+
+    xpad=0.05
+    ypad=0.05
+    full_plot_fraction=0.66
+
+    num_cond=len(step_info['stored stop conditions']['conditions'])
+    width=full_plot_fraction*(1.0-3.0*xpad)
+    for cond_ind in range(num_cond) :
+        height=(1.0-ypad*(num_cond+1))/num_cond
+        ax_full=plt.axes([xpad, ypad*(cond_ind+1)+height*cond_ind, width,
+                          height])
+        if(step_info['condition_details'][cond_ind]) :
+            ax_zoom=plt.axes([xpad*2+width,
+                              ypad*(cond_ind+1)+height*cond_ind, width,
+                              height])
+        ax_full.plot(step_info['stored stop conditions']['age']['accepted']+
+                     step_info['stored stop conditions']['age']['rejected'],
+                     step_info['stored stop conditions']['conditions']\
+                        [cond_ind]['accepted']+
+                     step_info['stored stop conditions']['conditions']\
+                        [cond_ind]['rejected'], 'o')#,
+#                     markeredgecolor='black', markerfacecolor='black')
+
 if __name__=='__main__' :
     options, log_file=parse_command_line()
     f=open(log_file, 'r')
     line=f.readline()
     step_info=dict()
+    pdf=PdfPages(options.output)
     while line :
         if line[0]=='@' and line.strip('@')=='\n' :
-            print 'step_info=', step_info
+            if(step_info and
+               len(step_info['stored stop conditions']['conditions'])) :
+                print 'plotting'
+                plot_step(step_info)
+                print 'saving'
+#                plt.savefig(options.output)
+                pdf.savefig()
+                print 'done'
             step_info=dict(condition_stops=[], condition_details=[])
         elif line.strip()=='Stored stop condition information:' :
             line, step_info['stored stop conditions']=\
@@ -325,3 +364,4 @@ if __name__=='__main__' :
               line.strip().startswith('Cubic extrema between')) :
             condition_details['extremum']=parse_extremum(line)
         line=f.readline()
+    pdf.close()
