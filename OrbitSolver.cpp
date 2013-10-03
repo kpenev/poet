@@ -627,6 +627,7 @@ StopHistoryInterval OrbitSolver::select_stop_condition_interval(
 	return result;
 }
 
+#ifdef DEBUG_STOPPING
 void OrbitSolver::output_history_and_discarded(std::ostream &os)
 {
 	std::streamsize orig_precision=os.precision();
@@ -692,6 +693,7 @@ void OrbitSolver::output_history_and_discarded(std::ostream &os)
 	os.precision(orig_precision);
 	os.flags(orig_flags);
 }
+#endif
 
 void OrbitSolver::clear_discarded()
 {
@@ -813,6 +815,10 @@ ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
 
 	StopHistoryInterval stop_interval=select_stop_condition_interval(
 			false, condition_index, 4);
+#ifdef DEBUG_STOPPING
+	std::cerr << "Extremum search interval without derivative information:"
+		<< std::endl << stop_interval << std::endl;
+#endif
 	if(stop_interval.num_points()<3) return result;
 	double t0=stop_interval.age(),
 		   c0=stop_interval.stop_condition_value(condition_index),
@@ -868,6 +874,10 @@ double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 {
 	StopHistoryInterval stop_interval=select_stop_condition_interval(true,
 			condition_index, 4);
+#ifdef DEBUG_STOPPING
+	std::cerr << "Crossing search interval without derivative information:"
+		<< std::endl << stop_interval << std::endl;
+#endif
 	if(stop_interval.num_points()<2) return Inf;
 	double t0=stop_interval.age(),
 		   c0=stop_interval.stop_condition_value(condition_index),
@@ -966,12 +976,23 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		initialize_skip_history(stop_cond, stop_reason);
 	StopInformation result;
 	insert_discarded(age, current_stop_cond, current_stop_deriv);
+#ifdef DEBUG_STOPPING
+	std::cerr << std::string(77, '@') << std::endl;
+	output_history_and_discarded(std::cerr);
+#endif
 	for(size_t cond_ind=0; cond_ind<current_stop_cond.size(); cond_ind++) {
 		StoppingConditionType
 			stop_cond_type=stop_cond.type(cond_ind);
 		double stop_cond_value=current_stop_cond[cond_ind],
 			   crossing_age=crossing_from_history(cond_ind);
 		ExtremumInformation extremum=extremum_from_history(cond_ind);
+#ifdef DEBUG_STOPPING
+		std::cerr << "Condition[" << cond_ind << "](" << stop_cond_type <<
+			")=" << stop_cond_value << std::endl;
+		std::cerr << "crossing: age=" << crossing_age << std::endl;
+		std::cerr << "extremum: age=" << extremum.x() << ", value="
+			<< extremum.y() << std::endl;
+#endif
 		double extremum_precision=std::min(
 				std::abs(extremum.y()-stop_cond_value),
 				std::abs(extremum.y()-
@@ -985,6 +1006,10 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		if((!acceptable_step(age, stop_info) || is_crossing) &&
 				stop_info.stop_age()<result.stop_age()) result=stop_info;
 	}
+#ifdef DEBUG_STOPPING
+	std::cerr << "Final stop information:" << std::endl
+		<< result << std::endl;
+#endif
 	if(acceptable_step(age, result)) {
 		update_skip_history(current_stop_cond, stop_cond, result);
 		stop_history_ages.push_back(age);
@@ -992,7 +1017,13 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		stop_deriv_history.push_back(current_stop_deriv);
 		orbit_history.push_back(orbit);
 		orbit_deriv_history.push_back(derivatives);
+#ifdef DEBUG_STOPPING
+		std::cerr << "Accepted" << std::endl;
+#endif
 	}
+#ifdef DEBUG_STOPPING
+	else std::cerr << "Rejected" << std::endl;
+#endif 
 	return result;
 }
 

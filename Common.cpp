@@ -9,6 +9,15 @@
 #include "gsl/gsl_poly.h"
 #include <assert.h>
 
+std::ostream &operator<<(std::ostream &os, std::valarray<double> &arr)
+{
+	for(size_t i=0; i<arr.size(); i++) {
+		if(i) os << ", ";
+		os << arr[i];
+	}
+	return os;
+}
+
 std::valarray<double> list_to_valarray(const std::list<double> &inlist)
 {
 	std::valarray<double> result(inlist.size());
@@ -40,19 +49,40 @@ double estimate_zerocrossing(double x0, double y0, double x1,
 	double linear_solution=x0 - y0*slope_inv;
 	if(linear_solution<x0 || linear_solution>x1)
 		linear_solution=x1 - y1*slope_inv;
-	if(std::isnan(dy0) || std::isnan(dy1)) return linear_solution;
-	else {
+	if(std::isnan(dy0) || std::isnan(dy1)) {
+#ifdef DEBUG_STOPPING
+		std::cerr << "Linear zerocrossing between (" << x0 << ", " << y0
+			<< ") and (" << x1 << ", " << y1 << ")=" << linear_solution 
+			<< std::endl;
+#endif
+		return linear_solution;
+	} else {
 		double x1_2=std::pow(x1, 2), x0_2=std::pow(x0, 2),
 			   a=(dx*(dy1+dy0) - 2.0*dy)/std::pow(dx, 3),
 			   b=(dy1-dy0 - 3.0*a*(x1_2-x0_2))/(2.0*dx),
 			   c=dy0 - 3.0*a*x0_2 - 2.0*b*x0,
 			   d=y0 - a*x0*x0_2 - b*x0_2 - c*x0;
 		std::valarray<double> solutions=solve_cubic(d, c, b, a);
+#ifdef DEBUG_STOPPING
+		std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0
+		   << ", " << dy0 << ") and (" << x1 << ", " << y1 << ", " << dy1
+		   << "), coef=(" << a << ", " << b << ", " << c << ", " << d
+		   << "), solutions=(" << solutions << ")";
+#endif
 		for(size_t i=0; i<solutions.size(); i++) 
-			if(solutions[i]>=x0 && solutions[i]<=x1)
+			if(solutions[i]>=x0 && solutions[i]<=x1) {
+#ifdef DEBUG_STOPPING
+				std::cerr << "Selected: " << solutions[i] << std::endl;
+#endif
 				return solutions[i];
-		if(y0*y1<=0)
+			}
+		if(y0*y1<=0) {
+#ifdef DEBUG_STOPPING
+			std::cerr << "Fallback to linear: " << linear_solution
+				<< std::endl;
+#endif
 			return linear_solution;
+		}
 		std::ostringstream msg;
 		msg.precision(16);
 		msg << "No solution to " << a << "*x**3 + " << b << "*x**2 + " << c
@@ -92,9 +122,24 @@ double quadratic_zerocrossing(double x0, double y0, double x1, double y1,
 		require_range_low=x0;
 		require_range_high=x2;
 	}
+#ifdef DEBUG_STOPPING
+	std::cerr << "Quadratic zerocrossing between (" << x0 << ", " << y0 
+		<< "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
+		<< ") in range (" << require_range_low << ", " << require_range_high
+		<< "), coef=(" << a << ", " << b << ", " << c << "), solutions=("
+		<< solutions << ")";
+#endif
 	for(size_t i=0; i<solutions.size(); i++) 
 		if(solutions[i]>=require_range_low &&
-				solutions[i]<=require_range_high) return solutions[i];
+				solutions[i]<=require_range_high) {
+#ifdef DEBUG_STOPPING
+			std::cerr << "Selected: " << solutions[i] << std::endl;
+#endif
+			return solutions[i];
+		}
+#ifdef DEBUG_STOPPING
+	std::cerr << "Fallback to linear" << std::endl;
+#endif
 	return estimate_zerocrossing(xpre, ypre, xpost, ypost);
 }
 
@@ -121,16 +166,34 @@ double cubic_zerocrossing(double x0, double y0, double x1, double y1,
 			gsl_vector_get(cubic_coef, 1),
 			gsl_vector_get(cubic_coef, 2),
 			gsl_vector_get(cubic_coef, 3));
-	gsl_vector_free(cubic_coef);
 	if(std::isnan(require_range_low)) {
 		assert(std::isnan(require_range_high));
 		require_range_low=x0;
 		require_range_high=x3;
 	}
+#ifdef DEBUG_STOPPING
+	std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0 
+		<< "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
+		<< "), (" << x3 << ", " << y3 << ") in range ("
+		<< require_range_low << ", " << require_range_high << "), coef=(";
+	for(int i=3; i>=0; i--) {
+		std::cerr << gsl_vector_get(cubic_coef, i);
+		if(i>0) std::cerr << ", ";
+	}
+	std::cerr << "), solutions=(" << solutions << ")";
+#endif
+	gsl_vector_free(cubic_coef);
 	for(size_t i=0; i<solutions.size(); i++) 
 		if(solutions[i]>=require_range_low &&
-				solutions[i]<=require_range_high)
+				solutions[i]<=require_range_high) {
+#ifdef DEBUG_STOPPING
+			std::cerr << "Selected: " << solutions[i] << std::endl;
+#endif
 			return solutions[i];
+		}
+#ifdef DEBUG_STOPPING
+	std::cerr << "Fallback to linear" << std::endl;
+#endif
 	return estimate_zerocrossing(xpre, ypre, xpost, ypost);
 }
 
@@ -176,6 +239,14 @@ double quadratic_extremum(double x0, double y0, double x1,
 	if(extremum_y)
 		*extremum_y=y0 - s02*s02/(2.0*a) + s02*x2 
 			- a*(x0*x0 + x2*x2)/2.0;
+#ifdef DEBUG_STOPPING
+	double b=-2.0*a*extremum_x;
+	std::cerr << "Quadratic extremum between (" << x0 << ", " << y0 << "), ("
+		<< x1 << ", " << y1 << "), (" << x2 << ", " << y2 << "), coef=("
+		<< a << ", " << b << ", "
+		<< *extremum_y - a*extremum_x*extremum_x - b*extremum_x
+		<< "): (" << extremum_x << ", " << *extremum_y << ")" << std::endl;
+#endif
 	return extremum_x;
 }
 
@@ -189,6 +260,19 @@ double cubic_extremum(double x0, double y0, double x1,
 	double a=3.0*gsl_vector_get(cubic_coef, 3),
 		   b=2.0*gsl_vector_get(cubic_coef, 2),
 		   c=gsl_vector_get(cubic_coef, 1), sqrtD=std::sqrt(b*b-4.0*a*c);
+#ifndef DEBUG_STOPPING
+	double extremum_x1=(-b-sqrtD)/(2.0*a), extremum_x2=(-b+sqrtD)/(2.0*a),
+		   d=y0 - a*x0*x0*x0/3.0 - b*x0*x0/2.0 - c*x0;
+	std::cerr << "Cubic extrema between (" << x0 << ", " << y0 << "), ("
+		<< x1 << ", " << y1 << "), (" << x2 << ", " << y2 <<  << "), (" 
+		<< x3 << ", " << y3 << "), coef=("
+		<< a/3.0 << ", " << b/2.0 << ", " << ", " << c << ", "
+		<< d << "): (" << extremum_x1 << ", " << 
+		a*std::pow(extremum_x1,3)/3.0 + b*std::pow(extremum_x1,2)/2.0 +
+		c*extremum_x1 + d << "), (" << extremum_x2 << ", " 
+		<< a*std::pow(extremum_x2,3)/3.0 + b*std::pow(extremum_x2,2)/2.0 +
+		c*extremum_x2 + d << std::endl;
+#endif
 	if(a<0) {a*=-1; b*=-1; c*=-1;}
 	if(std::isnan(require_range_low)) {
 		assert(std::isnan(require_range_high));

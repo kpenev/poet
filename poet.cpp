@@ -722,6 +722,10 @@ void run(const CommandLineOptions &options,
 int main(int argc, char **argv)
 {
 	try {
+#ifndef DEBUG_STOPPING
+		std::cerr.precision(16);
+		std::setf(std::ios_base::scientific);
+#endif
 		CommandLineOptions options(argc, argv);
 		if(!options) return 1;
 		YRECEvolution stellar_evolution;

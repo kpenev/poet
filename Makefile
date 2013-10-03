@@ -1,4 +1,5 @@
-CPPFLAGS= -g -Wall -L/u/mzzhang/bin/gsl/lib -L/u/mzzhang/bin/boost/lib -L/opt/local/lib
+CPPFLAGS= -g -Wall -L/u/mzzhang/bin/gsl/lib -L/u/mzzhang/bin/boost/lib \
+		  -L/opt/local/lib -DDEBUG_STOPPING
 CPP=g++
 NO_EXEC_OBJ=Functions.o OrbitSolver.o Planet.o Star.o StellarEvolution.o \
 	YRECIO.o Common.o StellarSystem.o sampleHist.o \
