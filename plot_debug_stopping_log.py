@@ -102,7 +102,7 @@ def read_interval(f) :
     """ Reads an interval table from the given file. """
 
     line=f.readline()
-    if(line.strip()=='') line=f.readline()
+    if(line.strip()=='') : line=f.readline()
     entries=line.replace('|', ' ').split()
     assert(entries[0]=='Age:')
     result=dict(ages=map(eval, entries[1:]), conditions=[], derivatives=[])
@@ -124,19 +124,20 @@ def read_interval(f) :
 def parse_comma_separated_list(csl) :
     """ Parses a list of values of the form '<value1>, <value2>[, ...]. """
 
-    return map(lambda s: eval(s.strip()), cls.split(','))
+    return map(lambda s: eval(s.strip()), csl.split(','))
 
 def parse_zerocrossing(line) :
     """ Parses a line containing the information about how a zerocrossing is
     found. """
 
     line=line.strip()
-    if(line.startswith('Linear')) order=1;
-    elif(line.startswith('Quadratic')) order=2;
-    elif(line.startswith('Cubic')) order=3;
+    if(line.startswith('Linear')) : order=1;
+    elif(line.startswith('Quadratic')) : order=2;
+    elif(line.startswith('Cubic')) : order=3;
     else : assert(False)
-    result['order']=order
-    between=parse_comma_separated_list(line[line.index('(')+1:line.index(')')])
+    result=dict(order=order)
+    between=parse_comma_separated_list(
+        line[line.index('(')+1:line.index(')')])
     if(len(between)==3) :
         assert(order==3)
         has_deriv=True
@@ -144,28 +145,31 @@ def parse_zerocrossing(line) :
         assert(len(between)==2)
         has_deriv=False
     result=dict(ages=[between[0]], values=[between[1]],
-                derivs=([] if has_deriv else [between[2]]))
-    line=line[line.find(')'):]
-    between=parse_comma_separated_list(line[line.index('(')+1:line.index(')')])
+                derivs=([between[2]] if has_deriv else []))
+    line=line[line.find(')')+1:]
+    between=parse_comma_separated_list(
+        line[line.index('(')+1:line.index(')')])
     result['ages'].append(between[0])
-    result['values'].appned(between[1])
+    result['values'].append(between[1])
     if has_deriv :
         assert(len(between)==3)
         result['derivs'].append(between[2])
     else : assert(len(between)==2)
-    line=line[line.find(')'):].strip()
+    line=line[line.find(')')+1:].strip()
     if(order==2 or (order==3 and not has_deriv)) :
-        between=parse_comma_separated_list(line[line.index('(')+1:line.index(')')])
+        between=parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')])
         assert(len(between)==2)
         result['ages'].append(between[0])
-        result['values'].appned(between[1])
-        line=line[line.find(')'):].strip()
+        result['values'].append(between[1])
+        line=line[line.find(')')+1:].strip()
     if(order==3 and not has_deriv) :
-        between=parse_comma_separated_list(line[line.index('(')+1:line.index(')')])
+        between=parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')])
         assert(len(between)==2)
         result['ages'].append(between[0])
-        result['values'].appned(between[1])
-        line=line[line.find(')'):].strip()
+        result['values'].append(between[1])
+        line=line[line.find(')')+1:].strip()
     if(order==1) :
         result['coef']=None
         assert(line.startswith('='))
@@ -178,28 +182,108 @@ def parse_zerocrossing(line) :
             result['range']=tuple(parse_comma_separated_list(
                 line[line.index('(')+1:line.index(')')]))
             assert(len(result['range'])==2)
-            line=line[line.find(')'):].strip()
+            line=line[line.find(')')+1:].strip()
         assert(line.startswith(', coef=('))
         result['coef']=parse_comma_separated_list(
                 line[line.index('(')+1:line.index(')')])
-        line=line[line.find(')'):].strip()
+        line=line[line.find(')')+1:].strip()
         assert(line.startswith(', solutions=('))
         result['solutions']=parse_comma_separated_list(
                 line[line.index('(')+1:line.index(')')])
-        line=line[line.find(')'):].strip()
+        line=line[line.find(')')+1:].strip()
         if(line.startswith(', selected')) :
             result['fallback']=None
-            result['selected']=eval(line[line.index(':'):])
+            result['selected']=eval(line[line.index(':')+1:])
         else :
             assert(line.startswith(', fallback to linear:'))
             if(order==3 and has_deriv) :
-                result['fallback']=eval(line[line.index(':'):])
+                result['fallback']=eval(line[line.index(':')+1:])
             else :
-                line=line[line.index(':'):]
+                line=line[line.index(':')+1:]
                 result['fallback']=parse_zerocrossing(line)
 
-    if(order==1 or (order==3 and has_deriv))
+    if(order==1 or (order==3 and has_deriv)) :
         result['range']=tuple(result['ages'])
+    return result
+
+def parse_extremum(line) :
+    """ Parses a line containing the information about how a zerocrossing is
+    found. """
+
+    line=line.strip()
+    if(line.startswith('Quadratic')) : order=2;
+    elif(line.startswith('Cubic')) : order=3;
+    else : assert(False)
+    result=dict(order=order)
+    between=parse_comma_separated_list(
+        line[line.index('(')+1:line.index(')')])
+    if(len(between)==3) :
+        assert(order==3)
+        has_deriv=True
+    else :
+        assert(len(between)==2)
+        has_deriv=False
+    result=dict(ages=[between[0]], values=[between[1]],
+                derivs=([between[2]] if has_deriv else []))
+    line=line[line.find(')')+1:]
+    between=parse_comma_separated_list(
+        line[line.index('(')+1:line.index(')')])
+    result['ages'].append(between[0])
+    result['values'].append(between[1])
+    if has_deriv :
+        assert(len(between)==3)
+        result['derivs'].append(between[2])
+    else : assert(len(between)==2)
+    line=line[line.find(')')+1:].strip()
+    if(not has_deriv) :
+        between=parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')])
+        assert(len(between)==2)
+        result['ages'].append(between[0])
+        result['values'].append(between[1])
+        line=line[line.find(')')+1:].strip()
+    if(order==3 and not has_deriv) :
+        between=parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')])
+        assert(len(between)==2)
+        result['ages'].append(between[0])
+        result['values'].append(between[1])
+        line=line[line.find(')')+1:].strip()
+
+    if(order==3 and not has_deriv) :
+        assert(line.startswith('in range ('))
+        result['range']=tuple(parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')]))
+        assert(len(result['range'])==2)
+        line=line[line.find(')')+1:].strip()
+    else :
+        result['range']=(result['ages'][0], result['ages'][-1])
+    assert(line.startswith(', coef=('))
+    result['coef']=parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')])
+    line=line[line.find(')')+1:].strip()
+    assert(line.startswith(', solutions=('))
+    result['solutions']=[tuple(parse_comma_separated_list(
+        line[line.index('(')+1:line.index(')')]))]
+    line=line[line.find(')')+1:].strip()
+    if(order==3) :
+        result['solutions'].append(tuple(parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')])))
+        line=line[line.find(')')+1:].strip()
+    if(line.startswith(', selected')) :
+        result['fallback']=None
+        line=line[line.index(':')+1:]
+        result['selected']=tuple(parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')]))
+    else :
+        assert(line.startswith(', fallback to '))
+        if(order==3 and has_deriv) :
+            result['fallback']=tuple(parse_comma_separated_list(
+                line[line.index('(')+1:line.index(')')]))
+            result['selected']=None
+        else :
+            line=line[line.index(':')+1:]
+            result['fallback']=parse_extremum(line)
     return result
 
 if __name__=='__main__' :
@@ -218,10 +302,10 @@ if __name__=='__main__' :
             continue
         elif line.strip()==('Crossing search interval without derivative '
                             'information:') :
-            condition_details['crossing_interval']=read_interval(f))
+            condition_details['crossing_interval']=read_interval(f)
         elif line.strip()==('Extremum search interval without derivative '
                             'information:') :
-            condition_details['extremum_interval']=read_interval(f)))
+            condition_details['extremum_interval']=read_interval(f)
         elif line.startswith('Condition[') :
             step_info['condition_stops'].append(read_condition_stop(line, f))
             step_info['condition_details'].append(dict(condition_details))
@@ -229,10 +313,15 @@ if __name__=='__main__' :
         elif line.strip()=='Final stop information:' :
             step_info['final_stop']=read_final_stop(f)
             line=f.readline()
-            if(line.strip()=='Accepted') step_info['accepted']=True
+            if(line.strip()=='Accepted') : step_info['accepted']=True
             else :
                 assert(line.strip()=='Rejected')
                 step_info['accepted']=False
-        elif line.strip().startswith('Linear zerocrossing between') :
-            condition_details['linear_zerocrossing']=parse_zerocrossing(line)
+        elif (line.strip().startswith('Linear zerocrossing between') or 
+              line.strip().startswith('Quadratic zerocrossing between') or 
+              line.strip().startswith('Cubic zerocrossing between')) :
+            condition_details['zerocrossing']=parse_zerocrossing(line)
+        elif (line.strip().startswith('Quadratic extremum between') or 
+              line.strip().startswith('Cubic extrema between')) :
+            condition_details['extremum']=parse_extremum(line)
         line=f.readline()

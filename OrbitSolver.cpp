@@ -542,7 +542,6 @@ std::ostream &operator<<(std::ostream &os, StopHistoryInterval interval)
 			os << "|";
 	}
 	os << std::endl;
-	os << "number conditions: " << interval.number_conditions() << std::endl;
 	for(size_t cond_ind=0; cond_ind<interval.number_conditions();
 			cond_ind++) {
 		os << std::setw(13) << "Condition[" << std::setw(5)
