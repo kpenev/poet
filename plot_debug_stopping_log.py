@@ -3,7 +3,7 @@
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib import pyplot as plt
 from optparse import OptionParser
-from numpy import nan, inf
+from numpy import nan, inf, isfinite, array, arange
 
 def parse_command_line() :
     """ Returns the command line options as members of a structure. """
@@ -24,7 +24,7 @@ def read_stored_stop_conditions(f) :
     line=f.readline()
     entries=line.split()
     result=dict(age=dict(accepted=[], rejected=[]), conditions=[],
-                derivatives=[])
+                derivatives=[], zero_skip=[], extremum_skip=[])
     assert entries[0].startswith('Age:')
     if entries[0][-1]=='|' : dest=result['age']['rejected']
     else : dest=result['age']['accepted']
@@ -39,8 +39,13 @@ def read_stored_stop_conditions(f) :
     while(line.startswith('   Condition[') or
           line.startswith('  Derivative[')) :
         if line.startswith('   Condition[') :
-            result['conditions'].append(dict(accepted=[], rejected=[]))
             what='conditions'
+            if(len(result['zero_skip'])==len(result[what])-1) :
+                result['zero_skip'].append(len(result[what][-1]['accepted']))
+            if(len(result['extremum_skip'])==len(result[what])-1) :
+                result['extremum_skip'].append(
+                    len(result[what][-1]['accepted']))
+            result['conditions'].append(dict(accepted=[], rejected=[]))
         elif line.startswith('  Derivative[') :
             result['derivatives'].append(dict(accepted=[], rejected=[]))
             what='derivatives'
@@ -53,10 +58,12 @@ def read_stored_stop_conditions(f) :
                 dest=result[what][-1]['rejected']
                 line=line[1:]
             if line[0]=='z' :
-                result['zero skip']=len(result[what][-1]['accepted'])
+                result['zero_skip'].append(len(result[what][-1]['accepted']))
+                assert len(result['zero_skip'])==len(result[what])
             if line[1]=='e' :
-                result['extremum skip']=len(
-                    result[what][-1]['accepted'])
+                result['extremum_skip'].append(
+                    len(result[what][-1]['accepted']))
+                assert len(result['extremum_skip'])==len(result[what])
             if line[2]=='>' :
                 line=line[3:]
             line=line.strip()
@@ -69,6 +76,13 @@ def read_stored_stop_conditions(f) :
             dest.append(eval(line[:cut]))
             line=line[cut:]
         line=f.readline()
+    what='conditions'
+    if(len(result['zero_skip'])==len(result[what])-1) :
+        result['zero_skip'].append(len(result[what][-1]['accepted']))
+    if(len(result['extremum_skip'])==len(result[what])-1) :
+        result['extremum_skip'].append(
+            len(result[what][-1]['accepted']))
+
     return line, result
 
 def read_condition_stop(line, f) :
@@ -201,6 +215,7 @@ def parse_zerocrossing(line) :
             result['selected']=eval(line[line.index(':')+1:])
         else :
             assert(line.startswith(', fallback to linear:'))
+            result['selected']=None
             if(order==3 and has_deriv) :
                 result['fallback']=eval(line[line.index(':')+1:])
             else :
@@ -295,6 +310,160 @@ def plot_step(step_info) :
     """ Plots all the information contained in the given step_info on a page
     in the given PdfPages file. """
 
+    def plot_polynomial(coefficients, axis, style, resolution=200) :
+        """ Plots the polynomial defined by the given coefficients on the
+        given axis. """
+
+        xlim, ylim=axis.get_xlim(), axis.get_ylim()
+        x=arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/resolution)
+        xpow=x**0
+        y=None
+        for c in reversed(coefficients) :
+            if y is None : y=c*xpow
+            else : y+=c*xpow
+            xpow*=x
+        axis.plot(x, y, style)
+        axis.set_xlim(xlim)
+        axis.set_ylim(ylim)
+
+    def make_full_plot(ax_full, cond_ind) :
+        """ Makes the full plot. """
+
+        if(not step_info['stored stop conditions']['age']['accepted']) :
+            switch=step_info['stored stop conditions']['age']['rejected'][0]
+            ax_full.axvspan(
+                step_info['stored stop conditions']['age']['rejected'][0],
+                step_info['stored stop conditions']['age']['rejected'][-1],
+                facecolor='#FFAAAA', linewidth=0, edgecolor='#FFAAAA')
+        else :
+            switch=0.5*(
+                step_info['stored stop conditions']['age']['accepted'][-1]+
+                step_info['stored stop conditions']['age']['rejected'][0])
+            ax_full.axvspan(
+                step_info['stored stop conditions']['age']['accepted'][0],
+                switch, facecolor='#AAFFAA', linewidth=0,
+                edgecolor='#AAFFAA')
+            ax_full.axvspan(
+                switch,
+                step_info['stored stop conditions']['age']['rejected'][-1],
+                facecolor='#FFAAAA', linewidth=0, edgecolor='#FFAAAA')
+        zero_first=(
+            step_info['stored stop conditions']['zero_skip'][cond_ind]<=
+            step_info['stored stop conditions']['extremum_skip'][cond_ind])
+        all_skip=min(
+            step_info['stored stop conditions']['zero_skip'][cond_ind],
+            step_info['stored stop conditions']['extremum_skip'][cond_ind])
+        one_skip=max(
+            step_info['stored stop conditions']['zero_skip'][cond_ind],
+            step_info['stored stop conditions']['extremum_skip'][cond_ind])
+        ax_full.plot(step_info['stored stop conditions']['age']['accepted']\
+                     [:all_skip],
+                     step_info['stored stop conditions']['conditions']\
+                     [cond_ind]['accepted'][:all_skip], 'o', 
+                     markeredgecolor='black', markerfacecolor='black')
+        ax_full.plot(step_info['stored stop conditions']['age']['accepted']\
+                     [all_skip:one_skip],
+                     step_info['stored stop conditions']['conditions']\
+                     [cond_ind]['accepted'][all_skip:one_skip], 'o', 
+                     markeredgecolor=('black' if zero_first else 'blue'),
+                     markerfacecolor=('none' if zero_first else 'blue'))
+        ax_full.plot(step_info['stored stop conditions']['age']['accepted']\
+                     [one_skip:]+
+                     step_info['stored stop conditions']['age']['rejected'],
+                     step_info['stored stop conditions']['conditions']\
+                     [cond_ind]['accepted'][one_skip:]+
+                     step_info['stored stop conditions']['conditions']\
+                     [cond_ind]['rejected'], 'o',
+                     markeredgecolor='blue', markerfacecolor='none')
+        if(step_info['condition_details'][cond_ind]) :
+            details=step_info['condition_details'][cond_ind]
+            if 'zerocrossing' in details :
+                coef=details['zerocrossing']['coef']
+                if coef is not None :
+                    plot_polynomial(coef, ax_full, '-r')
+            if 'extremum' in details :
+                coef=details['extremum']['coef']
+                if coef is not None :
+                    plot_polynomial(coef, ax_full, '-b')
+            if 'crossing_interval' in details :
+                ax_full.plot(
+                    details['crossing_interval']['ages'],
+                    details['crossing_interval']['conditions'][cond_ind],
+                    'xr')
+            if 'extremum_interval' in details :
+                ax_full.plot(
+                    details['extremum_interval']['ages'],
+                    details['extremum_interval']['conditions'][cond_ind],
+                    'xg')
+        condition_stop=step_info['condition_stops'][cond_ind]
+        if(isfinite(condition_stop['crossing']['age'])) :
+            ax_full.axvline(condition_stop['crossing']['age'], color='black')
+        if(isfinite(condition_stop['extremum']['age'])) :
+            ax_full.axvline(condition_stop['extremum']['age'], color='red')
+            ax_full.axhline(condition_stop['extremum']['value'], color='red')
+        return switch
+
+    def make_zoom_plot(ax_zoom, cond_ind, reject_boundary) :
+        """ Makes a plot that zooms only on the search interval. """
+
+        details=step_info['condition_details'][cond_ind]
+        if 'zerocrossing' in details :
+            xmin=details['zerocrossing']['ages'][0]
+            xmax=details['zerocrossing']['ages'][-1]
+            ymin=min(details['zerocrossing']['values'])
+            ymax=max(details['zerocrossing']['values'])
+        else : xmin, xmax, ymin, ymax=inf, -inf, inf, -inf
+        if 'extremum' in details :
+            xmin=min(details['extremum']['ages'][0], xmin)
+            xmax=max(details['extremum']['ages'][-1], xmax)
+            ymin=min(min(details['extremum']['values']), ymin)
+            ymax=max(max(details['extremum']['values']), ymax)
+        if reject_boundary>xmin and reject_boundary<xmax :
+            ax_zoom.axvspan(xmin, reject_boundary, facecolor='#AAFFAA',
+                            linewidth=0, edgecolor='#AAFFAA')
+            ax_zoom.axvspan(reject_boundary, xmax, facecolor='#FFAAAA',
+                            linewidth=0, edgecolor='#FFAAAA')
+        elif reject_boundary<xmin :
+            ax_zoom.axvspan(xmin, xmax, facecolor='#FFAAAA',
+                            linewidth=0, edgecolor='#FFAAAA')
+        else : 
+            ax_zoom.axvspan(xmin, xmax, facecolor='#AAFFAA',
+                            linewidth=0, edgecolor='#AAFFAA')
+        ax_zoom.set_xlim(xmin-0.05*(xmax-xmin), xmax+0.05*(xmax-xmin))
+        ax_zoom.set_ylim(ymin-0.05*(ymax-ymin), ymax+0.05*(ymax-ymin))
+        if 'extremum' in details :
+            plot_polynomial(details['extremum']['coef'], ax_zoom, '-b')
+        if 'zerocrossing' in details :
+            if details['zerocrossing']['coef'] :
+                plot_polynomial(details['zerocrossing']['coef'], ax_zoom,
+                                '-r')
+            else :
+                assert len(details['zerocrossing']['ages'])==2
+                ax_zoom.plot(details['zerocrossing']['ages'], 
+                             details['zerocrossing']['values'], '-r')
+        if 'extremum' in details :
+            if details['extremum']['selected'] is not None :
+                extremum=details['extremum']['selected']
+            else :
+                if type(details['extremum']['fallback']) is tuple :
+                    extremum=details['extremum']['fallback']
+                else : extremum=details['extremum']['fallback']['selected']
+            ax_zoom.plot([extremum[0]], [extremum[1]], 'o',
+                         markeredgecolor='none', markerfacecolor='blue')
+            ax_zoom.plot(details['extremum']['ages'], 
+                         details['extremum']['values'], '+b')
+        if 'zerocrossing' in details :
+            if details['zerocrossing']['selected'] is not None :
+                crossing=details['zerocrossing']['selected']
+            elif type(details['zerocrossing']['fallback']) is dict :
+                crossing=details['zerocrossing']['fallback']['selected']
+            else : crossing=details['zerocrossing']['fallback']
+            ax_zoom.plot([crossing], [0], 'o',  markeredgecolor='none',
+                         markerfacecolor='red')
+            ax_zoom.plot(details['zerocrossing']['ages'], 
+                         details['zerocrossing']['values'], 'xr')
+
+    plt.clf()
     xpad=0.05
     ypad=0.05
     full_plot_fraction=0.66
@@ -305,17 +474,12 @@ def plot_step(step_info) :
         height=(1.0-ypad*(num_cond+1))/num_cond
         ax_full=plt.axes([xpad, ypad*(cond_ind+1)+height*cond_ind, width,
                           height])
+        reject_boundary=make_full_plot(ax_full, cond_ind)
         if(step_info['condition_details'][cond_ind]) :
             ax_zoom=plt.axes([xpad*2+width,
-                              ypad*(cond_ind+1)+height*cond_ind, width,
-                              height])
-        ax_full.plot(step_info['stored stop conditions']['age']['accepted']+
-                     step_info['stored stop conditions']['age']['rejected'],
-                     step_info['stored stop conditions']['conditions']\
-                        [cond_ind]['accepted']+
-                     step_info['stored stop conditions']['conditions']\
-                        [cond_ind]['rejected'], 'o')#,
-#                     markeredgecolor='black', markerfacecolor='black')
+                              ypad*(cond_ind+1)+height*cond_ind,
+                              1.0-xpad*3-width, height])
+            make_zoom_plot(ax_zoom, cond_ind, reject_boundary)
 
 if __name__=='__main__' :
     options, log_file=parse_command_line()
@@ -330,7 +494,6 @@ if __name__=='__main__' :
                 print 'plotting'
                 plot_step(step_info)
                 print 'saving'
-#                plt.savefig(options.output)
                 pdf.savefig()
                 print 'done'
             step_info=dict(condition_stops=[], condition_details=[])
