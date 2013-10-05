@@ -291,12 +291,12 @@ double cubic_extremum(double x0, double y0, double x1,
 		<< x1 << ", " << y1 << "), (" << x2 << ", " << y2 << "), (" 
 		<< x3 << ", " << y3 << ") in range (" << require_range_low << ", "
 		<< require_range_high << "), coef=("
-		<< a/3.0 << ", " << b/2.0 << ", " << ", " << c << ", "
-		<< d << "), solutions (" << extremum_x1 << ", " << 
+		<< a/3.0 << ", " << b/2.0 << ", " << c << ", " << d
+		<< "), solutions: (" << extremum_x1 << ", " << 
 		a*std::pow(extremum_x1,3)/3.0 + b*std::pow(extremum_x1,2)/2.0 +
 		c*extremum_x1 + d << ") and (" << extremum_x2 << ", " 
 		<< a*std::pow(extremum_x2,3)/3.0 + b*std::pow(extremum_x2,2)/2.0 +
-		c*extremum_x2 + d;
+		c*extremum_x2 + d << ")";
 #endif
 	if(a<0) {a*=-1; b*=-1; c*=-1;}
 	double extremum_x=(-b-sqrtD)/(2.0*a);

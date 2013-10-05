@@ -143,6 +143,7 @@ def read_interval(f) :
 def parse_comma_separated_list(csl) :
     """ Parses a list of values of the form '<value1>, <value2>[, ...]. """
 
+    print 'csl=', csl
     return map(lambda s: eval(s.strip()), csl.split(','))
 
 def parse_zerocrossing(line) :
@@ -282,28 +283,34 @@ def parse_extremum(line) :
     result['coef']=parse_comma_separated_list(
             line[line.index('(')+1:line.index(')')])
     line=line[line.find(')')+1:].strip()
-    assert(line.startswith(', solutions=('))
-    result['solutions']=[tuple(parse_comma_separated_list(
-        line[line.index('(')+1:line.index(')')]))]
-    line=line[line.find(')')+1:].strip()
-    if(order==3) :
+    if order==2 :
+        assert(line.startswith(': ('))
+        result['selected']=tuple(parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')]))
+        result['solutions']=[result['selected']]
+        result['fallback']=None
+    else :
+        assert(line.startswith(', solutions: ('))
+        result['solutions']=[tuple(parse_comma_separated_list(
+            line[line.index('(')+1:line.index(')')]))]
+        line=line[line.find(')')+1:].strip()
         result['solutions'].append(tuple(parse_comma_separated_list(
             line[line.index('(')+1:line.index(')')])))
         line=line[line.find(')')+1:].strip()
-    if(line.startswith(', selected')) :
-        result['fallback']=None
-        line=line[line.index(':')+1:]
-        result['selected']=tuple(parse_comma_separated_list(
-            line[line.index('(')+1:line.index(')')]))
-    else :
-        assert(line.startswith(', fallback to '))
-        if(order==3 and has_deriv) :
-            result['fallback']=tuple(parse_comma_separated_list(
-                line[line.index('(')+1:line.index(')')]))
-            result['selected']=None
-        else :
+        if(line.startswith(', selected')) :
+            result['fallback']=None
             line=line[line.index(':')+1:]
-            result['fallback']=parse_extremum(line)
+            result['selected']=tuple(parse_comma_separated_list(
+                line[line.index('(')+1:line.index(')')]))
+        else :
+            assert(line.startswith(', fallback to '))
+            result['selected']=None
+            if(has_deriv) :
+                result['fallback']=tuple(parse_comma_separated_list(
+                    line[line.index('(')+1:line.index(')')]))
+            else :
+                line=line[line.index(':')+1:]
+                result['fallback']=parse_extremum(line)
     return result
 
 def plot_step(step_info) :
@@ -493,9 +500,10 @@ if __name__=='__main__' :
                len(step_info['stored stop conditions']['conditions'])) :
                 print 'plotting'
                 plot_step(step_info)
-                print 'saving'
-                pdf.savefig()
-                print 'done'
+            else : plt.plot([], [])
+            print 'saving'
+            pdf.savefig()
+            print 'done'
             step_info=dict(condition_stops=[], condition_details=[])
         elif line.strip()=='Stored stop condition information:' :
             line, step_info['stored stop conditions']=\

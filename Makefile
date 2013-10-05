@@ -1,5 +1,5 @@
 CPPFLAGS= -g -Wall -L/u/mzzhang/bin/gsl/lib -L/u/mzzhang/bin/boost/lib \
-		  -L/opt/local/lib -DDEBUG_STOPPING
+		  -L/opt/local/lib #-DDEBUG_STOPPING
 CPP=g++
 NO_EXEC_OBJ=Functions.o OrbitSolver.o Planet.o Star.o StellarEvolution.o \
 	YRECIO.o Common.o StellarSystem.o sampleHist.o \
@@ -53,6 +53,6 @@ doc:
 	rsync -azr documentation/doxygen/html/* kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
 
 clean:
-	rm -f $(ALL_OBJ) main poet SimOne
+	rm -f *.o main poet SimOne
 	make -C alglib clean
 	make -C unit_tests clean

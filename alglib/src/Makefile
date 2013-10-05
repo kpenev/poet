@@ -1,5 +1,5 @@
 CPP = g++
-FLAGS = -O2 -Wall
+FLAGS = -g -Wall
 ALL = alglibinternal.o alglibmisc.o ap.o dataanalysis.o diffequations.o fasttransforms.o integration.o interpolation.o linalg.o optimization.o solvers.o specialfunctions.o statistics.o
 
 default: all
