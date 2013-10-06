@@ -1,15 +1,10 @@
-break OrbitSolver.cpp: 475
-commands 1
-printf "DISCARDING t=%+23.16e -> %+23.16e, mode=%3d, stop_reason=%3d", old_t, t, evolution_mode, stop_reason
-c
-end
-
-break OrbitSolver.cpp: 483
-commands 2
-printf "ACCEPTING  t=%+23.16e -> %+23.16e, mode=%3d, stop_reason=%3d", old_t, t, evolution_mode, stop_reason
-c
-end
+break Star.cpp:388
+break Star.cpp:336
+condition 2 assume_wind_saturation==UNKNOWN
+break Star::wind_torque_freq_deriv
+condition 3 assume_wind_saturation==UNKNOWN
+break Star::wind_torque_age_deriv
+condition 4 assume_wind_saturation==UNKNOWN
 
 run
 bt
-q

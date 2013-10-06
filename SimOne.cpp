@@ -27,7 +27,7 @@ void simulateOnce(double Q, RotationScenario rot, double star_mass,
 		StellarSystem system(&star, &planet);
 		double end_age = std::min((const double)MAX_END_AGE,
 				star.get_lifetime());
-		OrbitSolver solver(MIN_AGE, end_age, 1e-5,
+		OrbitSolver solver(MIN_AGE, end_age, 1e-6,
 				SPIN_THRES, MAIN_SEQ_START);
 		time_t start_time, end_time;
 		time(&start_time);
@@ -48,6 +48,11 @@ int main(int argc, char** argv) {
 	all_rots.push_back(RotationScenario(2*M_PI/1.4,0.155,0.012, 0.0025));
 	all_rots.push_back(RotationScenario(2*M_PI/7,0.17,0.028, 0.005));
 	all_rots.push_back(RotationScenario(2*M_PI/10,0.17,0.030, 0.005));
+
+	std::cout.precision(16);
+	std::cout.setf(std::ios_base::scientific);
+	std::cerr.precision(16);
+	std::cerr.setf(std::ios_base::scientific);
 
 	//extremely slow evol
 	double smass=0.5, pmass=25, Q=1e6, P0=5.84141414;

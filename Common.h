@@ -37,6 +37,9 @@ const double NaN=std::numeric_limits<double>::quiet_NaN();
 ///Infinity
 const double Inf=std::numeric_limits<double>::infinity();
 
+///Outputs a valarray as a sequence of ', ' separated values.
+std::ostream &operator<<(std::ostream &os, std::valarray<double> &arr);
+
 ///Creates a valarray containing the values in the given list.
 std::valarray<double> list_to_valarray(const std::list<double> &inlist);
 

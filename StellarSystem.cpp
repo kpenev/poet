@@ -270,7 +270,8 @@ int StellarSystem::no_planet_jacobian(double age,
 		dwconv_dLconv;
 	param_derivs[1]=-param_derivs[3];
 	age_derivs[0]=dcoupling_torque_dage -
-		star->wind_torque_age_deriv(age, Lconv, assume_wind_saturation);
+		star->wind_torque_age_deriv(age, Lconv, true,
+				assume_wind_saturation);
 	age_derivs[1]=-dcoupling_torque_dage;
 	return GSL_SUCCESS;
 }
@@ -356,8 +357,8 @@ int StellarSystem::orbit_jacobian(double age,
 			true)/pow(Rsun_AU, 6.5);
 	age_derivs[2]= -dcoupling_torque_dage;
 	age_derivs[1]=-age_derivs[2] -
-		star->wind_torque_age_deriv(age, Lconv, assume_wind_saturation) -
-			planet->orbit_angmom_deriv_age_deriv(age, semimajor, semi_deriv,
+		star->wind_torque_age_deriv(age, Lconv, true, assume_wind_saturation)
+			-planet->orbit_angmom_deriv_age_deriv(age, semimajor, semi_deriv,
 					wconv_tidal);
 	return GSL_SUCCESS;
 }
