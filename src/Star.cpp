@@ -294,7 +294,7 @@ double Star::spin_frequency_age_deriv(double age, StellarZone zone,
 }
 
 double Star::spin_frequency_angmom_deriv(double age, StellarZone zone,
-		double angular_momentum) const
+		double) const
 {
 	return 1.0/moment_of_inertia(age, zone);
 }
@@ -426,7 +426,7 @@ double Star::differential_rotation_torque(double age,
 }
 
 double Star::differential_rotation_torque_deriv(double age, 
-		double differential_rotation_amount, 
+		double, 
 		double differential_rotation_deriv,
 		double conv_frequency,
 		double conv_frequency_deriv, 

@@ -587,7 +587,7 @@ void StellarSystem::solve_init(double start_age, double curr_age,
 	}
 }*/
 
-void StellarSystem::output_evolution(std::string &filename) const
+void StellarSystem::output_evolution(std::string &) const
 {
 	throw Error::Runtime("Method output_evolution of StellarSystem is not implemented yet.");
 }

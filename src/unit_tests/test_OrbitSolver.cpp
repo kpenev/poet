@@ -688,7 +688,7 @@ double locked_unsat_eq(double a, void *params)
 	return 0.1*alpha*std::pow(a, 5) - 0.5*beta*std::pow(a, 3) + kappa*t - c;
 }
 
-///\mbrief The equation that should be solved in order to get the semimamjor
+///\brief The equation that should be solved in order to get the semimamjor
 ///axis at a given time for the locked evolution when the wind is saturated.
 ///
 ///The paramaters should be: alpha, beta, kappa, C, t

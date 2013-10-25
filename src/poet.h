@@ -361,7 +361,10 @@ std::string update_run_parameters(
 		const std::vector<InCol::InputColumns> &input_format,
 
 		///The line from the input stream to read parameters from.
-		std::istringstream &line, size_t input_lineno);
+		std::istringstream &line,
+
+		///The line number being processed (used only for error messages).
+		size_t input_lineno);
 
 ///Actually calculates the orbital evolutions.
 void run(

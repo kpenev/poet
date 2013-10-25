@@ -138,7 +138,7 @@ public:
 ///\brief A stellar evolution interpolator based on the YREC tracks.
 ///
 ///It relies on 10 tracks, all at solar metallicitity and none of them going
-///past 10Gyr stellar age. The masses of the tracks are (in \f$M_\odot\f):
+///past 10Gyr stellar age. The masses of the tracks are (in \f$M_\odot\f$):
 ///0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.05, 1.1, 1.15, and 1.2. 
 ///
 ///\ingroup StellarSystem_group
@@ -147,7 +147,7 @@ class YRECEvolution : public StellarEvolution {
 
 	///Saves the interpolation to a file for faster re-use.
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
+	void serialize(Archive & ar, const unsigned int) {
 		ar & boost::serialization::base_object<StellarEvolution>(*this);
 		ar & mass_list;
 		ar & ages & radii & luminosities & rad_masses &

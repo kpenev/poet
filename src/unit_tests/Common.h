@@ -183,7 +183,9 @@ public:
 	///
 	///If empty polynomial coefficients are specified or NaN for constant
 	///quantities in which case random polynomials or values are used.
-	MockStellarEvolution(double core_formation_age=NaN,
+	MockStellarEvolution(
+			///The age at which the core forms in Gyr.
+			double core_formation_age=NaN,
 
 			///The polynomial coefficients of the radius dependence on mass
 			///and age.
@@ -647,7 +649,7 @@ std::valarray< std::valarray<double> > rand_poly_coef(double max_mass=-1);
 std::valarray<double> tabulate_track(PolynomialEvolutionTrack *track,
 		std::valarray<double> ages, unsigned deriv_order=0);
 
-///\bief Returns the value of the polynomial with the given coefficients at
+///\brief Returns the value of the polynomial with the given coefficients at
 ///the given mass and age.
 double eval_poly(const std::valarray< std::valarray<double> > &poly_coef,
 		double mass, double age, double low_mass_age_scaling=0,

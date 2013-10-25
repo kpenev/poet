@@ -121,7 +121,7 @@ std::valarray<double> BreakLockCondition::operator()(double age,
 		const std::valarray<double> &derivatives,
 		const StellarSystem &system, 
 		std::valarray<double> &stop_deriv,
-		EvolModeType evol_mode) const
+		EvolModeType) const
 {
 	double semimajor=orbit[0]*Rsun_AU;
 	double dwconv_dt=no_planet_dwconv_dt(age, orbit, system),
@@ -137,7 +137,8 @@ std::valarray<double> BreakLockCondition::operator()(double age,
 
 std::valarray<double> PlanetDeathCondition::operator()(double age,
 		const std::valarray<double> &orbit,
-		const std::valarray<double> &derivatives,
+		//Accepts but never uses derivatives
+		const std::valarray<double> &,
 		const StellarSystem &system,
 		std::valarray<double> &stop_deriv,
 		EvolModeType evol_mode) const
@@ -181,7 +182,8 @@ double convective_frequency(double age, const StellarSystem &system,
 
 std::valarray<double> WindSaturationCondition::operator()(double age,
 		const std::valarray<double> &orbit,
-		const std::valarray<double> &derivatives,
+		//Accepts but never uses derivatives
+		const std::valarray<double> &,
 		const StellarSystem &system,
 		std::valarray<double> &stop_deriv,
 		EvolModeType evol_mode) const
@@ -196,7 +198,8 @@ std::valarray<double> WindSaturationCondition::operator()(double age,
 
 std::valarray<double> RotFastCondition::operator()(double age,
 		const std::valarray<double> &orbit,
-		const std::valarray<double> &derivatives,
+		//Accepts but never uses derivatives
+		const std::valarray<double> &,
 		const StellarSystem &system,
 		std::valarray<double> &stop_deriv,
 		EvolModeType evol_mode) const
@@ -841,7 +844,9 @@ ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
 			range_low=t0; range_high=t2;
 		} else if(std::abs(c2)<=std::abs(c1) && std::abs(c2)<=std::abs(c3)) {
 			range_low=t1; range_high=t3;
-		}
+		} else throw Error::BadFunctionArguments("Searching for extremum "
+				"among monotonic stopping condition values in "
+				"OrbitSolver::extremum_from_history_no_deriv.");
 		result.x()=cubic_extremum(t0, c0, t1, c1, t2, c2, t3, c3,
 				&(result.y()), range_low, range_high);
 	}
@@ -889,7 +894,7 @@ double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 		return estimate_zerocrossing(t0, c0, t1, c1);
 	double t2=(++stop_interval).age(),
 		   c2=stop_interval.stop_condition_value(condition_index);
-	double range_low, range_high;
+	double range_low=NaN, range_high=NaN;
 	if(c0*c1<=0) {range_low=t0; range_high=t1;}
 	else if(c1*c2<=0) {range_low=t1; range_high=t2;}
 	if(stop_interval.num_points()==3)
@@ -1063,7 +1068,7 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 	double step_size=0.01*(max_age-start_age);
 
 	stop_reason=NO_STOP;
-	bool result;
+	bool result=false;
 	while(t<max_age) {
 		double max_next_t=std::min(t + max_step, max_age); 
 		int status=GSL_SUCCESS;
@@ -1479,7 +1484,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
 				evolution_mode, planet_formation_semimajor,
 				&system.get_planet());
-		double stop_condition_value;
+		double stop_condition_value=NaN;
 		bool stopped_before=!evolve_until(&system, start_age, stop_evol_age,
 				orbit, stop_condition_value, stop_reason, max_step,
 				evolution_mode, wind_state, *stopping_condition,

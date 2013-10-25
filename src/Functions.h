@@ -117,7 +117,7 @@ class OneArgumentFunction {
 
 	///Serialize this function.
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {}
+	void serialize(Archive &, const unsigned int) {}
 #endif
 public:
 	///The value of the function at the given abscissa.
@@ -179,8 +179,9 @@ private :
 	friend class boost::serialization::access;
 
 	///Serialize this function.
+	//The second parameter is supposed to be version
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
+	void serialize(Archive & ar, const unsigned int) {
 		ar & boost::serialization::base_object< OneArgumentFunction<double,double> >(*this);
 	}
 #endif
@@ -200,8 +201,9 @@ private:
 	friend class boost::serialization::access;
 
 	///Serialize this function.
+	//The second parameter should eventually be version
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
+	void serialize(Archive & ar, const unsigned int) {
 		ar & boost::serialization::base_object<OneArgumentDiffFunction>(
 				*this);
 		ar & spline;

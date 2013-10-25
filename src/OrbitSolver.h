@@ -151,7 +151,7 @@ public:
 	///In addition the interpolation should only include monotonic points, in
 	///addition if derivatives are provided, no points other than the ones at
 	///t_before and t_after should be considered.
-	virtual double interpolation_range(unsigned index=0) const
+	virtual double interpolation_range(unsigned =0) const
 	{return __interpolation_range;}
 };
 
@@ -164,16 +164,16 @@ public:
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
-	std::valarray<double> operator()(double age,
-			const std::valarray<double> &orbit,
-			const std::valarray<double> &derivatives,
-			const StellarSystem &system,
+	std::valarray<double> operator()(double,
+			const std::valarray<double>&,
+			const std::valarray<double>&,
+			const StellarSystem&,
 			std::valarray<double> &stop_deriv,
-			EvolModeType evol_mode) const
+			EvolModeType) const
 	{stop_deriv.resize(1, NaN); return std::valarray<double>(1, 1);}
 
 	///Identifies the condition as NO_STOP.
-	StoppingConditionType type(unsigned index=0) const {return NO_STOP;}
+	StoppingConditionType type(unsigned =0) const {return NO_STOP;}
 };
 
 ///\brief Satisfied when the orbit and stellar rotation are synchronized.
@@ -196,16 +196,17 @@ public:
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
+	///
+	///The evolution mode must be FAST_PLANET or SLOW_PLANET
 	std::valarray<double> operator()(double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
-			///Only FAST_PLANET and SLOW_PLANET are allowed.
 			EvolModeType evol_mode) const;
 
 	///Identify this as a SYNCHRONIZED condition.
-	StoppingConditionType type(unsigned index=0) const {return SYNCHRONIZED;}
+	StoppingConditionType type(unsigned =0) const {return SYNCHRONIZED;}
 };
 
 ///\brief Satisfied when the maximum tidal torque that the planet can exert
@@ -220,17 +221,18 @@ public:
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
-	std::valarray<double> operator()(double age,
+	///
+	///The evolution mode must be LOCKED_TO_PLANET.
+	std::valarray<double> operator()(
+			double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
-
-			///Only LOCKED_TO_PLANET is allowed.
 			EvolModeType evol_mode) const;
 
 	///Identify this as a BREAK_LOCK condition.
-	StoppingConditionType type(unsigned index=0) const {return BREAK_LOCK;}
+	StoppingConditionType type(unsigned =0) const {return BREAK_LOCK;}
 };
 
 ///\brief Satisfied when the planet enters below either the roche sphere or
@@ -244,18 +246,19 @@ public:
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
-	std::valarray<double> operator()(double age,
+	///
+	///The evolution mode must be FAST_PLANET, LOCKED_TO_PLANET or
+	///SLOW_PLANET.
+	std::valarray<double> operator()(
+			double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
-
-			///\brief Only FAST_PLANET, LOCKED_TO_PLANET and SLOW_PLANET are
-			///allowed.
 			EvolModeType evol_mode) const;
 
 	///Identify this as a PLANET_DEATH condition.
-	StoppingConditionType type(unsigned index=0) const {return PLANET_DEATH;}
+	StoppingConditionType type(unsigned =0) const {return PLANET_DEATH;}
 };
 
 ///\brief Satisfied when the stellar convective zone is spinning at exactly
@@ -274,7 +277,7 @@ public:
 			EvolModeType evol_mode) const;
 
 	///Identify this as a WIND_SATURATION condition.
-	StoppingConditionType type(unsigned index=0) const
+	StoppingConditionType type(unsigned =0) const
 	{return WIND_SATURATION;}
 };
 
@@ -299,7 +302,7 @@ public:
 			EvolModeType evol_mode) const;
 
 	///Identify this as a ROT_FAST condition.
-	StoppingConditionType type(unsigned index=0) const {return ROT_FAST;}
+	StoppingConditionType type(unsigned =0) const {return ROT_FAST;}
 };
 
 ///\brief A class combining the the outputs of multiple stopping conditions.
@@ -420,7 +423,7 @@ public:
 			///The target stopping age in Gyr.
 			double stop_age=Inf,
 			
-		   ///\brief The precision up to which the reason to stop is satisfied.
+			///The precision up to which the reason to stop is satisfied.
 			double stop_precision=NaN,
 
 			///The reason for stopping.
@@ -936,8 +939,11 @@ private:
 			///The rates of change of the evolution variables per Gyr.
 			const std::valarray<double> &derivatives,
 
+			///The stellar system being evolved.
+			const StellarSystem &system,
+			
 			///The current evolution mode.
-			const StellarSystem &system, EvolModeType evolution_mode,
+			EvolModeType evolution_mode,
 
 			///The conditions indicating where evolution should stop.
 			const StoppingCondition &stop_cond,
@@ -1161,9 +1167,9 @@ public:
 
 	/* Evolves the given system from start to end, with its initial orbit
 	 * given in y.  The final orbit is put into y.*/
-	///Should not exist.
-	void evolve_to(double start, double end, double* y,
-			StellarSystem* system) {};
+	//Should not exist.
+/*	void evolve_to(double start, double end, double* y,
+			StellarSystem* system) {};*/
 
 	///\brief The time, in Gyr, that the convective rotation rate is above
 	///spin_thres.

@@ -97,7 +97,7 @@ namespace Error {
 		PathNotFound(const std::string &message, 
 			     const std::string &filename="", 
 			     bool isdir=false) :
-			Runtime(filename+", "+message) {}
+			Runtime(filename+", "+message), directory(isdir) {}
 
 		///Reports "File/Directory not found" as the error type.
 		virtual const char *what() const throw() {return (directory ?

@@ -241,7 +241,7 @@ class _spline1dinterpolant_owner
 {
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive & ar,const unsigned int file_version){
+	void serialize(Archive & ar,const unsigned int){
 		/*Serializes everything EXCEPT p_struct->x.data and p_struct->y.data,
 		 * because I have no idea what they are. Also assumes that the spline
 		 * data are all stored as doubles.*/
@@ -276,7 +276,7 @@ class spline1dinterpolant : public _spline1dinterpolant_owner
 {
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
+	void serialize(Archive & ar, const unsigned int) {
 		ar & boost::serialization::base_object<_spline1dinterpolant_owner>(*this);
 	}
 public:

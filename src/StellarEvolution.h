@@ -210,7 +210,7 @@ public:
 	ZeroDerivatives() {}
 
 	///The deriv_order-th derivative.
-	double order(unsigned deriv_order=1) const {return 0;}
+	double order(unsigned =1) const {return 0;}
 };
 
 ///\brief A class for stellar properties that depend on age.
@@ -378,7 +378,7 @@ public:
 
 	///An iterator over the ages (in Gyr) where the quantity takes the given
 	///y value.
-	InterpSolutionIterator crossings(double y=0) const
+	InterpSolutionIterator crossings(double =0) const
 	{throw Error::Runtime("Called EvolvingStellarQuantity::crossings, "
 			"which are ill defined.");}
 };
@@ -418,7 +418,7 @@ public:
 	{return std::max(q1->range_low(), q2->range_low());}
 
 	///An iterator over the ages where the quantity takes the given y value.
-	InterpSolutionIterator crossings(double y=0) const
+	InterpSolutionIterator crossings(double =0) const
 	{throw Error::Runtime("Called EvolvingStellarQuantity::crossings, "
 			"which are ill defined.");}
 
@@ -444,7 +444,7 @@ class StellarEvolution {
 	///Serialize the found interpolation.
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
+	void serialize(Archive & ar, const unsigned int) {
 		ar & track_masses;
 		ar & interpolated_radius & interpolated_luminosity &
 			interpolated_conv_inertia & interpolated_rad_inertia &

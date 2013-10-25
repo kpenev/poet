@@ -119,7 +119,7 @@ double Planet::tidal_decay_star_spin_deriv(double age, double semimajor,
 	return -dQ_dw/Q*da_dt;
 }
 
-double Planet::tidal_torque_star_spin_deriv(double age, double semimajor,
+double Planet::tidal_torque_star_spin_deriv(double, double semimajor,
 		double semi_deriv, double stellar_spin_frequency) const
 {
 	double tidal_freq=orbital_angular_velocity_semimajor(semimajor)-

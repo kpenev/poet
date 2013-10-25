@@ -416,7 +416,7 @@ void StellarEvolution::interpolate_from(
 
 const EvolvingStellarQuantity 
 	*StellarEvolution::interpolate_moment_of_inertia(
-			double stellar_mass, StellarZone zone, double present_age) const
+			double stellar_mass, StellarZone zone, double) const
 {
 	switch (zone) {
 		case radiative : return new EvolvingStellarQuantity(stellar_mass,
@@ -452,8 +452,7 @@ const EvolvingStellarQuantity
 }
 
 const EvolvingStellarQuantity *StellarEvolution::interpolate_radius(
-		double stellar_mass,
-		double present_age) const
+		double stellar_mass, double) const
 {
 	return new EvolvingStellarQuantity(stellar_mass, *track_masses, 
 			interpolated_radius, true, mass_break, low_age_scaling,
@@ -461,7 +460,7 @@ const EvolvingStellarQuantity *StellarEvolution::interpolate_radius(
 }
 
 const EvolvingStellarQuantity *StellarEvolution::interpolate_luminosity(
-		double stellar_mass, double present_age) const
+		double stellar_mass, double) const
 {
 	if(interpolated_luminosity.size()==0) return NULL;
 	return new EvolvingStellarQuantity(stellar_mass, *track_masses, 
@@ -481,8 +480,7 @@ const EvolvingStellarQuantity *StellarEvolution::interpolate_zone_mass(
 }
 
 const EvolvingStellarQuantity *StellarEvolution::interpolate_core_boundary(
-		double stellar_mass,
-		double present_age) const
+		double stellar_mass, double) const
 {
 	return new EvolvingStellarQuantity(stellar_mass, *track_masses,
 			interpolated_core_env_boundary, true, mass_break,
