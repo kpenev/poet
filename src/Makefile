@@ -148,6 +148,7 @@ del:
 	@echo "cleaning up ..."
 	@make clean
 	@cd $(ALGLIBSRCPATH) && make clean
+	@rm -rf $(DOXY_HTML)
 
 #############################################################################
 # build ctags index
@@ -200,6 +201,7 @@ help:
 	@echo "poet             : build the $(POET) executable"
 	@echo "SimOne           : build the $(SIMONE) executable"
 	@echo "clean            : delete intermediate files and executables"
-	@echo "del              : same as clean, plus clean extern libs"
+	@echo "del              : same as clean, plus clean extern libs and"
+							 "documentation"
 	@echo "ctags            : rebuild ctags index file"
 	@echo ""

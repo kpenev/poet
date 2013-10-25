@@ -50,8 +50,8 @@ namespace InCol {
 
 		LGQ,///< Lg(Q*).
 		MSTAR, ///< Mass of the star in \f$M_\odot\f$.
-		MPLANET, ///< Mass of the planet in \f$M_\Jupiter\f$.
-		RPLANET, ///< Radius of the planet in \f$R_\Jupiter\f$.
+		MPLANET, ///< Mass of the planet in Jupiter masses.
+		RPLANET, ///< Radius of the planet in Jupiter radii.
 		PLANET_FORMATION_AGE,///< Age when planet appears in Gyr.
 		WDISK,///< Stellar surface spin while disk is present in rad/day.
 

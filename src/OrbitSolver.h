@@ -977,7 +977,7 @@ private:
 			
 			///The orbital parameters. The contents depends on the value of
 			///evolution_mode:
-			/// - FAST_PLANET or SLOW_PLANET: \f$a^6.5\f$, \f$L_{conv}\f$,
+			/// - FAST_PLANET or SLOW_PLANET: \f$a^{6.5}\f$, \f$L_{conv}\f$,
 			///   \f$L_{rad}\f$
 			/// - LOCKED_TO_PLANET: \f$a\f$, \f$L_{rad}\f$
 			/// - NO_PLANET: \f$L_{conv}\f$, \f$L_{rad}\f$
