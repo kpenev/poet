@@ -48,8 +48,8 @@ ALGLIBOBJECTS   = $(addprefix $(ALGLIBSRCPATH), $(ALGLIBOBJS))
 ###############################################################################
 # Doxygen documentation:
 
-DOXY_CONF        = documentation/DoxygenConfig
-DOXY_DEST        = documentation/doxygen
+DOXY_CONF        = ../documentation/DoxygenConfig
+DOXY_DEST        = ../documentation/doxygen
 DOXY_HTML        = $(addsuffix /html, $(DOXY_DEST))
 DOXY_WWW         = kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
 
@@ -203,15 +203,3 @@ help:
 	@echo "del              : same as clean, plus clean extern libs"
 	@echo "ctags            : rebuild ctags index file"
 	@echo ""
-
-
-#doc:
-#	doxygen documentation/DoxygenConfig
-#	chmod -R a+r documentation/doxygen
-#	chmod a+x documentation/doxygen/html/search
-#	rsync -azr documentation/doxygen/html/* kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
-
-#clean:
-#	rm -f *.o main poet SimOne
-#	make -C alglib clean
-#	make -C unit_tests clean
