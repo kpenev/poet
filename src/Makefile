@@ -3,7 +3,7 @@
 #############################################################################
 # install dir
 
-BINDIR = ../../bin/
+BINDIR = ../bin/
 
 #############################################################################
 # sources
@@ -13,11 +13,13 @@ BINDIR = ../../bin/
 COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
                   StellarSystem YRECIO
 
+BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = -lgsl -lgslcblas -lboost_serialization-mt -largtable2
 
 #POET
 
 POET            = poet
+COMPILE_POET	= compile_poet
 
 POET_MODULES    = $(POET) $(COMMON_MODULES)
 POET_OBJECTS    = $(addsuffix .o, $(POET_MODULES))
@@ -25,14 +27,15 @@ POET_DEPS       = $(addsuffix .d, $(POET_MODULES))
 
 #SimOne
 SIMONE          = SimOne
+COMPILE_SIMONE	= compile_SimOne
 
 SIMONE_MODULES  = $(SIMONE) $(COMMON_MODULES)
-SIMONE_OBJECTS  = $(addsuffix .o, $(POET_MODULES))
-SIMONE_DEPS     = $(addsuffix .d, $(POET_MODULES))
+SIMONE_OBJECTS  = $(addsuffix .o, $(SIMONE_MODULES))
+SIMONE_DEPS     = $(addsuffix .d, $(SIMONE_MODULES))
 
 #list of executables
 EXECUTABLES     = $(POET) $(SIMONE)
-TARGETS         = $(POET) $(SIMONE)
+COMPILES        = $(COMPILE_POET) $(COMPILE_SIMONE)
 
 ###############################################################################
 # alglib:
@@ -79,21 +82,21 @@ LFLAGS_PROFILE  = $(CFLAGS_PROFILE) $(LFLAGS_COMMON)
 all: override CFLAGS = $(CFLAGS_RELEASE)
 all: override LFLAGS = $(LFLAGS_RELEASE)
 
-all: $(EXECUTABLES) ctags
+all: $(COMPILES) ctags
 
 .PHONY: debug
 
 debug: override CFLAGS = $(CFLAGS_DEBUG)
 debug: override LFLAGS = $(LFLAGS_DEBUG)
 
-debug: $(EXECUTABLES) ctags
+debug: $(COMPILES) ctags
 
 .PHONY: profile
 
 profile: override CFLAGS = $(CFLAGS_PROFILE)
 profile: override LFLAGS = $(LFLAGS_PROFILE)
 
-profile: $(EXECUTABLES) ctags
+profile: $(COMPILES) ctags
 
 #############################################################################
 
@@ -101,9 +104,10 @@ profile: $(EXECUTABLES) ctags
 
 $(POET): override CFLAGS = $(CFLAGS_RELEASE)
 $(POET): override LFLAGS = $(LFLAGS_RELEASE)
+$(POET): $(COMPILE_POET)
 
-$(POET): $(POET_OBJECTS) $(ALGLIB)
-	@$(COMPILER) -o $@ $(POET_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+$(COMPILE_POET): $(POET_OBJECTS) $(ALGLIB)
+	@$(COMPILER) -o $(POET) $(POET_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(POET) compiled successfully!"
 
@@ -113,9 +117,10 @@ $(POET): $(POET_OBJECTS) $(ALGLIB)
 
 $(SIMONE): override CFLAGS = $(CFLAGS_RELEASE)
 $(SIMONE): override LFLAGS = $(LFLAGS_RELEASE)
+$(SIMONE): $(COMPILE_SIMONE)
 
-$(SIMONE): $(SIMONE_OBJECTS) $(ALGLIB)
-	@$(COMPILER) -o $@ $(SIMONE_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+$(COMPILE_SIMONE): $(SIMONE_OBJECTS) $(ALGLIB)
+	@$(COMPILER) -o $(SIMONE) $(SIMONE_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(SIMONE) compiled successfully!"
 
@@ -127,6 +132,15 @@ $(SIMONE): $(SIMONE_OBJECTS) $(ALGLIB)
 $(ALGLIB):
 	@echo "building the ALGLIB library ..."
 	@cd $(ALGLIBSRCPATH) && make
+
+#############################################################################
+# deploy executables
+
+.PHONY: install
+
+install: $(EXECUTABLES)
+	@echo "installing executables to the bin directory ..."
+	@cp -f $(EXECUTABLES) $(BINDIR)
 
 #############################################################################
 # clean: delete intermediate and target files
@@ -191,17 +205,25 @@ doc:
 help:
 	@echo "Makefile for the P(lanetary) O(rbital) E(volution) due to"\
           "T(ides) package"
-	@echo "External libraries needed: gsl, lapack, blas, argtable2."
+	@echo "External libraries needed: gsl gslcblas boost_serialization"\
+	      "argtable2."
+	@echo "Since the BOOST serialization library can be named either"\
+          "boost_serialization or boost_serialization-mt you can change the"\
+          "name by providing BOOST_LIB='boost_serialization' on the command"\
+          "line. By default 'boost_serialization-mt' is used."
 	@echo ""
 	@echo "Makefile targets :"
 	@echo "all              : build all executables (default)"
 	@echo "debug            : build all executables in debug mode"
 	@echo "profile          : build all executables to be used with gprof"
-	@echo "install          : TODO build all and copy executables to bin"
+	@echo "install          : TODO build all and copy executables to"\
+	                          "$(BINDIR). Use BINDIR='<install path>' on "\
+							  "the command line to change where the"\
+							  "binaries are installed." 
 	@echo "poet             : build the $(POET) executable"
 	@echo "SimOne           : build the $(SIMONE) executable"
 	@echo "clean            : delete intermediate files and executables"
-	@echo "del              : same as clean, plus clean extern libs and"
-							 "documentation"
+	@echo "del              : same as clean, plus clean extern libs and"\
+							  "documentation"
 	@echo "ctags            : rebuild ctags index file"
 	@echo ""
