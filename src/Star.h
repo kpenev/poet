@@ -22,6 +22,10 @@ enum WindSaturationState {
 	SATURATED			///< The wind is saturated.
 };
 
+///More civilized output for WindSaturationState variables.
+std::ostream &operator<<(std::ostream &os,
+		const WindSaturationState &wind_state);
+
 ///\brief Describes a star hosting a planet.
 ///
 ///\ingroup StellarSystem_group

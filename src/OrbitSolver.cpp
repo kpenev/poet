@@ -725,8 +725,9 @@ void OrbitSolver::insert_discarded(double age,
 
 void OrbitSolver::append_to_orbit(const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
-		EvolModeType evolution_mode, double age, const StellarSystem &system,
-		double planet_formation_semimajor)
+		EvolModeType evolution_mode, WindSaturationState wind_state,
+        double age, const StellarSystem &system,
+        double planet_formation_semimajor)
 {
 	clear_discarded();
 	std::valarray<double> orbit_to_tabulate=transform_orbit(evolution_mode,
@@ -740,6 +741,7 @@ void OrbitSolver::append_to_orbit(const std::valarray<double> &orbit,
 		tabulated_deriv[i].push_back(deriv_to_tabulate[i]);
 	}
 	tabulated_evolution_mode.push_back(evolution_mode);
+    tabulated_wind_saturation.push_back(wind_state);
 }
 
 void OrbitSolver::clear_history()
@@ -758,6 +760,7 @@ double OrbitSolver::go_back(double max_age, std::valarray<double> &orbit,
 	while(max_age<tabulated_ages.back()) {
 		tabulated_ages.pop_back();
 		tabulated_evolution_mode.pop_back();
+        tabulated_wind_saturation.pop_back();
 		for(size_t i=0; i<tabulated_orbit.size(); i++) {
 			tabulated_orbit[i].pop_back();
 			tabulated_deriv[i].pop_back();
@@ -1048,7 +1051,7 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 
 	gsl_odeiv2_step *step=gsl_odeiv2_step_alloc(step_type, nargs);
 	gsl_odeiv2_control *step_control=gsl_odeiv2_control_standard_new(
-			precision, precision, 1, 1);
+			precision, precision, 1, 0);
 	gsl_odeiv2_evolve *evolve=gsl_odeiv2_evolve_alloc(nargs);
 
 	void *sys_mode_windstate[3]={system, &evolution_mode, &wind_state};
@@ -1059,8 +1062,8 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 		age_derivatives(nargs);
 	stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
 			sys_mode_windstate);
-	append_to_orbit(orbit, derivatives, evolution_mode, t, *system,
-			planet_formation_semimajor);
+	append_to_orbit(orbit, derivatives, evolution_mode, wind_state, t,
+            *system, planet_formation_semimajor);
 
 	update_stop_condition_history(t, orbit, derivatives, *system,
 			evolution_mode, stop_cond, stop_reason);
@@ -1103,7 +1106,8 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 		}
 		if(!step_rejected)
 			append_to_orbit(orbit, derivatives,
-				evolution_mode, t, *system, planet_formation_semimajor);
+				evolution_mode, wind_state, t, *system,
+                planet_formation_semimajor);
 		if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
 			stop_reason=stop.stop_reason();
 			result=(t>stop.stop_age());
@@ -1392,6 +1396,7 @@ void OrbitSolver::reset()
 {
 	tabulated_ages.clear();
 	tabulated_evolution_mode.clear();
+    tabulated_wind_saturation.clear();
 	for (int i=0; i < 3; i++) {
 		tabulated_orbit[i].clear();
 		tabulated_deriv[i].clear();
@@ -1503,7 +1508,13 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 				orbit.resize(new_orbit.size());
 				orbit=new_orbit;
 			}
-			if(stop_reason==WIND_SATURATION)
+            if(evolution_mode==NO_PLANET) {
+                wconv=system.get_star().spin_frequency(start_age, convective,
+                        orbit[0]); 
+                wind_state=(
+                    wconv<system.get_star().get_wind_saturation_frequency() ?
+                    NOT_SATURATED : SATURATED);
+            } else if(stop_reason==WIND_SATURATION)
 				wind_state=static_cast<WindSaturationState>(-wind_state);
 			start_age=last_age;
 		}

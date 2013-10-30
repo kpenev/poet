@@ -779,6 +779,9 @@ private:
 	///The evolution mode corresponding to the matching tabulated age.
 	std::list<EvolModeType> tabulated_evolution_mode;
 
+    ///The wind saturation state corresponding to the matching tabulated age.
+    std::list<WindSaturationState> tabulated_wind_saturation;
+
 	///The orbital ODE variables at the tabulated ages
 	std::vector< std::list<double> > tabulated_orbit, 
 
@@ -842,8 +845,8 @@ private:
 	///evolution mode.
 	void append_to_orbit(const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
-			EvolModeType evolution_mode, double age,
-			const StellarSystem &system,
+			EvolModeType evolution_mode, WindSaturationState wind_state,
+            double age, const StellarSystem &system,
 			double planet_formation_semimajor=NaN);
 
 	///Clears the current stopping condition history.
@@ -1123,7 +1126,7 @@ public:
 			double spin_thres=4*M_PI,
 			
 			///The main sequence age in Gyr.
-			double main_seq_start=0.1);
+			double main_seq_start=0.2);
 
 	///\brief Actually solves the given differential equation with the given
 	///boundary conditions.
@@ -1194,6 +1197,10 @@ public:
 	///Returns a list of the evolution modes.
 	const std::list<EvolModeType> *get_tabulated_evolution_mode() const
 	{return &tabulated_evolution_mode;}
+
+	///Returns a list of the wind saturation states.
+	const std::list<WindSaturationState> *get_tabulated_wind_state() const
+	{return &tabulated_wind_saturation;}
 
 	///\brief returns the L2 norm of the last fractional error between the
 	///last simulated orbit, and the arguments (a, Lc).

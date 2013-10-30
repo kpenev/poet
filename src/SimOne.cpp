@@ -48,6 +48,7 @@ int main(int argc, char** argv) {
 	all_rots.push_back(RotationScenario(2*M_PI/1.4,0.155,0.012, 0.0025));
 	all_rots.push_back(RotationScenario(2*M_PI/7,0.17,0.028, 0.005));
 	all_rots.push_back(RotationScenario(2*M_PI/10,0.17,0.030, 0.005));
+	all_rots.push_back(RotationScenario(2*M_PI/6.5,0.17,0.028, 0.005));
 
 	std::cout.precision(16);
 	std::cout.setf(std::ios_base::scientific);
@@ -150,10 +151,13 @@ int main(int argc, char** argv) {
 	simulateOnce(Q, all_rots[0], smass, pmass, P0);*/
 
 	//Slow as of 20131004
-	smass=0.90000000000000010; pmass=10.000000000000010; P0=4.611111111111112;
-	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//	smass=0.90000000000000010; pmass=10.000000000000010; P0=4.611111111111112;
+//	simulateOnce(Q, all_rots[0], smass, pmass, P0);
 
 	smass=0.96666666666666679; pmass=7.2297055951858527; P0=2.5020202020202027;
 //	simulateOnce(Q, all_rots[0], smass, pmass, P0);
+//
+	Q=1e8; smass=1.0423; pmass=1.01557; P0=5.875;
+	simulateOnce(Q, all_rots.back(), smass, pmass, P0);
 	return 0;
 }

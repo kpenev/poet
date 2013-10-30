@@ -8,29 +8,95 @@
 #include "poet.h"
 
 const std::string CommandLineOptions::__input_column_names[]={
-	"K", "K", "wsat", "wsat", "psat", "psat", "tcoup", "lgQ", "M", "m", "r",
-	"tform", "wdisk", "pdisk", "tdisk", "aform", "pform", "t0", "tmax",
-	"wrad0", "wsurf0", "locked", "maxdt", "prec", "outf"};
+	"K",		//LOW_MASS_WINDK
+	"K",		//HIGH_MASS_WINDK
+	"wsat",		//LOW_MASS_WIND_SAT_W
+	"wsat",		//HIGH_MASS_WIND_SAT_W
+	"psat",		//LOW_MASS_WIND_SAT_P
+	"psat",		//HIGH_MASS_WIND_SAT_P
+	"tcoup",	//CORE_ENV_COUPLING_TIMESCALE
+	"lgQ",		//LGQ
+	"M",		//MSTAR
+	"m",		//MPLANET
+	"r",		//RPLANET
+	"tform",	//PLANET_FORMATION_AGE
+	"wdisk",	//WDISK
+	"pdisk",	//PDISK
+	"tdisk",	//TDISK
+	"aform",	//A_FORMATION
+	"pform",	//P_FORMATION
+	"t0",		//TSTART
+	"tmax",		//TEND
+	"wrad0",	//START_WRAD
+	"wsurf0",	//START_WSURF
+	"maxdt",	//MAX_STEP
+	"prec",		//PRECISION
+	"outf",		//OUT_FNAME
+	"locked",	//START_LOCKED
+};
 
 const std::string CommandLineOptions::__output_column_descr[]={
+	//AGE
 	"Age in Gyr",
+
+	//SEMIMAJOR
 	"Semimajor axis in AU",
+
+	//WORB
+	"Orbital frequency in rad/day",
+
+	//PORB
+	"Orbital period in days",
+
+	//LCONV
 	"Convective zone angular momentum (low mass stars only else NaN).",
+
+	//LRAD
 	"Radiative zone angular momentum (low mass stars only else NaN).",
+
+	//LTOT
 	"Total angular momentum of the star.",
+
+	//ICONV
 	"Convective zone moment of inertia (low mass stars only else NaN).",
+
+	//IRAD
 	"Radiative zone moment of inertia (low mass stars only else NaN).",
+
+	//ITOT
 	"Total moment of inertia of the star.",
+
+	//WSURF
 	"Stellar surface angular velocity of the star in rad/day.",
+
+	//WRAD
 	"Angular velocity of the radiative zone in rad/day (low mass stars only,"
 		", else NaN)",
+
+	//PSURF
 	"Stellar surface spin period in days.",
+
+	//PRAD
 	"Spin period of the radiative zone in days (low mass stars only, else "
 		"NaN)",
+
+	//EVOL_MODE
 	"Evolution mode of the step starting at this age.",
+
+	//WIND_STATE
+	"The wind state (saturated/not saturated) of the step starting at this "
+		"age.",
+
+	//RSTAR
 	"Stellar radius",
+
+	//LSTAR
 	"Stellar luminosity",
+
+	//RRAD
 	"Radius of the stellar radiative zone (low mass stars only, else NaN).",
+
+	//MRAD
 	"Mass of the stellar radiative zone (low mass stars only, else NaN)."};
 
 const double CommandLineOptions::__defaults[]={
@@ -488,29 +554,36 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 		a_i=solver.get_tabulated_var(SEMIMAJOR)->begin(),
 		Lconv_i=solver.get_tabulated_var(LCONV)->begin(),
 		Lrad_i=solver.get_tabulated_var(LRAD)->begin();
-	const Star *star=&(system.get_star());
+	const Star &star=system.get_star();
+	const Planet &planet=system.get_planet();
 	std::list<double>::const_iterator
 		last_age=solver.get_tabulated_var(AGE)->end();
 
 	std::list<EvolModeType>::const_iterator
 		mode_i=solver.get_tabulated_evolution_mode()->begin();
-
+	std::list<WindSaturationState>::const_iterator
+		wind_i=solver.get_tabulated_wind_state()->begin();
 
 	std::ofstream outf(filename.c_str());
 	outf.precision(16);
 	outf << "#";
 	for(size_t i=0; i<output_file_format.size(); i++)
-		outf << std::setw(i==0 ? 24 : 25) << OUTPUT_COLUMN_NAMES[i];
+		outf << std::setw(i==0 ? 24 : 25)
+            << OUTPUT_COLUMN_NAMES[output_file_format[i]];
 	outf << std::endl;
 
 	while(age_i!=last_age) {
 		for(size_t i=0; i<output_file_format.size(); i++) {
-			double Iconv=star->moment_of_inertia(*age_i, convective),
-				   Irad=star->moment_of_inertia(*age_i, radiative);
+			double Iconv=star.moment_of_inertia(*age_i, convective),
+				   Irad=star.moment_of_inertia(*age_i, radiative);
 			outf << std::setw(25);
+			double semimajor=(*a_i)/AU_Rsun,
+				   worb=planet.orbital_angular_velocity_semimajor(semimajor);
 			switch(output_file_format[i]) {
 				case OutCol::AGE : outf << *age_i; break;
-				case OutCol::SEMIMAJOR : outf << *a_i; break;
+				case OutCol::SEMIMAJOR : outf << semimajor; break;
+				case OutCol::WORB : outf << worb; break;
+				case OutCol::PORB : outf << 2.0*M_PI/worb; break;
 				case OutCol::LCONV : outf << *Lconv_i; break;
 				case OutCol::LRAD : outf << *Lrad_i; break;
 				case OutCol::LTOT : outf << *Lconv_i + *Lrad_i; break;
@@ -523,12 +596,13 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 									 break;
 				case OutCol::PRAD : outf << 2.0*M_PI*Irad/(*Lrad_i); break;
 				case OutCol::EVOL_MODE : outf << *mode_i; break;
-				case OutCol::RSTAR : outf << star->get_radius(*age_i); break;
-				case OutCol::LSTAR : outf << star->get_luminosity(*age_i);
+				case OutCol::WIND_STATE : outf << *wind_i; break;
+				case OutCol::RSTAR : outf << star.get_radius(*age_i); break;
+				case OutCol::LSTAR : outf << star.get_luminosity(*age_i);
 									 break;
-				case OutCol::RRAD : outf << star->get_rad_radius(*age_i);
+				case OutCol::RRAD : outf << star.get_rad_radius(*age_i);
 									break;
-				case OutCol::MRAD : outf << star->get_rad_mass(*age_i);
+				case OutCol::MRAD : outf << star.get_rad_mass(*age_i);
 									break;
 				default : throw Error::BadFunctionArguments(
 								  "Unrecognized output column encountered in"
@@ -537,7 +611,7 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 			}
 		}
 		outf << std::endl;
-		age_i++; a_i++; Lconv_i++; Lrad_i++; mode_i++;
+		++age_i; ++a_i; ++Lconv_i; ++Lrad_i; ++mode_i; ++wind_i;
 	}
 	outf.close();
 }
@@ -552,7 +626,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 			real_parameters[InCol::WINDK],
 			real_parameters[InCol::WIND_SAT_W],
 			real_parameters[InCol::CORE_ENV_COUPLING_TIMESCALE]*1e-3,
-			0.0,
+			1e-3, //HACK
 			real_parameters[InCol::WDISK],
 			real_parameters[InCol::TDISK]*1e-3,
 			stellar_evolution);
@@ -600,8 +674,8 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				real_parameters[InCol::START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);
 	}
-
-	OrbitSolver solver(tstart, real_parameters[InCol::TEND],
+    double tend=std::min(real_parameters[InCol::TEND], star.get_lifetime());
+	OrbitSolver solver(tstart, tend,
 			std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	solver(system, real_parameters[InCol::MAX_STEP],
 			real_parameters[InCol::PLANET_FORMATION_AGE],
@@ -663,11 +737,13 @@ std::string update_run_parameters(std::vector<double> &real_parameters,
 	double M=real_parameters[InCol::MSTAR]*AstroConst::solar_mass,
 		m=real_parameters[InCol::MPLANET]*AstroConst::jupiter_mass;
 	if(read_a_formation) {
-		double a3=std::pow(real_parameters[InCol::A_FORMATION], 3);
+		double a3=std::pow(
+                real_parameters[InCol::A_FORMATION]*AstroConst::AU, 3);
 		real_parameters[InCol::P_FORMATION]=std::sqrt(
 					4.0*M_PI*M_PI*a3/(M+m)/AstroConst::G)/AstroConst::day;
 	} else if(read_p_formation) {
-		double P2=std::pow(real_parameters[InCol::P_FORMATION], 2);
+		double P2=std::pow(
+                real_parameters[InCol::P_FORMATION]*AstroConst::day, 2);
 		real_parameters[InCol::A_FORMATION]=
 					std::pow(AstroConst::G*(M+m)*P2/4/M_PI/M_PI, 1.0/3.0)/
 					AstroConst::AU;

@@ -102,7 +102,7 @@ void output_evolution(std::ostream &os,
 int main(int argc, char **argv)
 {
 	YRECEvolution toSave("../YREC", 0, 2.0, 2.0);
-	toSave.save_state("new_interp_state_data");
+	toSave.save_state("interp_state_data_phs4");
 	return 0;
 	assert(argc==2);
 	try {

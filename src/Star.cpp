@@ -10,6 +10,17 @@
 #include <iostream>
 #include <assert.h>
 
+std::ostream &operator<<(std::ostream &os,
+		const WindSaturationState &wind_state)
+{
+	switch(wind_state) {
+		case NOT_SATURATED: os << "NOT_SATURATED"; break;
+		case UNKNOWN: os << "UNKNOWN"; break;
+		case SATURATED: os << "SATURATED"; break;
+	}
+	return os;
+}
+
 Star::Star(double current_mass, double tidal_quality, 
 		double wind_strength, double wind_saturation,
 		double coupling_timescale, double dissipation_transition_width,

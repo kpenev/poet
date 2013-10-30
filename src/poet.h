@@ -99,6 +99,8 @@ namespace OutCol {
 	enum OutputColumns {
 		AGE,///< Age of the system in Gyr.
 		SEMIMAJOR,///< Semimajor axis of the orbit in AU.
+		WORB,///< The orbital frequency in rad/day.
+		PORB,///< The orbital period days.
 
 		///\brief Angular momentum of the convective zone of the star in
 		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
@@ -134,8 +136,10 @@ namespace OutCol {
 		///Spin period of the stellar core in days (low mass stars only).
 		PRAD,
 
-		EVOL_MODE,///< The evolution mode for the step that starts at this age.
+		///The evolution mode for the step that starts at this age.
+		EVOL_MODE,
 
+		WIND_STATE,///< The saturation state of the wind.
 		RSTAR,///< Radius of the star in \f$R_\odot\f$.
 		LSTAR,///< Luminosity of the star in \f$L_\odot\f$.
 
@@ -154,8 +158,26 @@ namespace OutCol {
 ///--output-columns option (indexed by the corresponding
 ///OutputColumns tag) as well as when labeling the output file.
 const std::string OUTPUT_COLUMN_NAMES[]={
-	"t", "a", "Lconv", "Lrad", "L", "Iconv", "Irad", "I", "Wsurf", "Wrad",
-	"Psurf", "Prad", "mode", "R", "Lum", "Rrad", "Mrad"};
+	"t",		//AGE
+	"a",		//SEMIMAJOR
+	"Worb",		//WORB
+	"Porb",		//PORB
+	"Lconv",	//LCONV
+	"Lrad",		//LRAD
+	"L",		//LTOT
+	"Iconv",	//ICONV
+	"Irad",		//IRAD
+	"I",		//ITOT
+	"Wsurf",	//WSURF
+	"Wrad",		//WRAD
+	"Psurf",	//PSURF
+	"Prad",		//PRAD
+	"mode",		//EVOL_MODE
+	"wind",		//WIND_STATE
+	"R",		//RSTAR
+	"Lum",		//LSTAR
+	"Rrad",		//RRAD
+	"Mrad"};	//MRAD
 
 
 ///All command line options can be accessed through members.
