@@ -73,8 +73,8 @@ std::valarray<double> SynchronizedCondition::operator()(double age,
 		std::valarray<double> &stop_deriv,
 		EvolModeType evol_mode) const
 {
-	double a=(evol_mode==LOCKED_TO_DISK ? __initial_semimajor :
-			std::pow(orbit[0], 1.0/6.5)*Rsun_AU),
+	double a=(evol_mode==LOCKED_TO_DISK || evol_mode==NO_PLANET ?
+            __initial_semimajor : std::pow(orbit[0], 1.0/6.5)*Rsun_AU),
 		   worb=system.get_planet().orbital_angular_velocity_semimajor(a),
 		   Lconv=(evol_mode==LOCKED_TO_DISK ?
 				   system.get_star().get_disk_lock_frequency()*
