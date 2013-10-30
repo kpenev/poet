@@ -729,6 +729,8 @@ public:
 	///\brief Returns the mass that separates low from high mass stars in
 	/// \f$M_\odot\f$.
 	double get_mass_break() const {return mass_break;}
+
+	virtual ~StellarEvolution() {}
 };
 
 #endif

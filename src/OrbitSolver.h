@@ -153,6 +153,8 @@ public:
 	///t_before and t_after should be considered.
 	virtual double interpolation_range(unsigned =0) const
 	{return __interpolation_range;}
+
+    virtual ~StoppingCondition() {}
 };
 
 ///\brief A stopping condition that is never satisfied.

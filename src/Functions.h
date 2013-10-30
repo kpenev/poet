@@ -132,6 +132,9 @@ public:
 	///\brief An iterator over the abscissas where the function takes the
 	///given y value.
 	virtual InterpSolutionIterator crossings(double y=0) const =0;
+
+	///Provide a virtual destructor for a virtual class.
+	virtual ~OneArgumentFunction() {};
 };
 
 ///A class representing arbitrary order derivatives of a function.
@@ -191,6 +194,8 @@ public:
 	///The use of a pointer allows avoiding potentially expensive copy
 	///opertaions.
 	virtual const FunctionDerivatives *deriv(double x) const=0;
+
+	virtual ~OneArgumentDiffFunction() {}
 };
 
 ///Function which interpolates, with possible smoothing, between points.
