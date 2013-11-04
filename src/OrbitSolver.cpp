@@ -1509,7 +1509,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 				orbit=new_orbit;
 			}
             if(evolution_mode==NO_PLANET) {
-                wconv=system.get_star().spin_frequency(start_age, convective,
+                wconv=system.get_star().spin_frequency(last_age, convective,
                         orbit[0]); 
                 wind_state=(
                     wconv<system.get_star().get_wind_saturation_frequency() ?
