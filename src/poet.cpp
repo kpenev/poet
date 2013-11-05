@@ -649,8 +649,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 		tstart=NaN;
 	else if(tstart<star.get_disk_dissipation_age()) {
 		start_orbit[0]=(star.is_low_mass() ?
-				real_parameters[InCol::START_WRAD] :
-				real_parameters[InCol::START_WSURF])*
+				real_parameters[InCol::START_WRAD] : 0)*
 			star.moment_of_inertia(tstart, radiative);
 	} else if(start_locked) {
 		start_evol_mode=LOCKED_TO_PLANET;
@@ -797,8 +796,8 @@ void run(const CommandLineOptions &options,
 ///Calculates a realistic evolution chosen to be comlicated.
 int main(int argc, char **argv)
 {
-	try {
-#ifdef DEBUG_STOPPING
+//	try {
+#ifdef DEBUG
 		std::cerr.precision(16);
 		std::cerr.setf(std::ios_base::scientific);
 #endif
@@ -808,8 +807,8 @@ int main(int argc, char **argv)
 		stellar_evolution.load_state(
 				options.serialized_stellar_evolution());
 		run(options, stellar_evolution, options.input());
-	} catch(Error::General &err) {
+/*	} catch(Error::General &err) {
 		std::cerr << err.what() << ": " << err.get_message() << std::endl;
 		return 2;
-	}
+	}*/
 }

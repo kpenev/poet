@@ -632,7 +632,7 @@ StopHistoryInterval OrbitSolver::select_stop_condition_interval(
 	return result;
 }
 
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 void OrbitSolver::output_history_and_discarded(std::ostream &os)
 {
 	std::streamsize orig_precision=os.precision();
@@ -823,7 +823,7 @@ ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
 
 	StopHistoryInterval stop_interval=select_stop_condition_interval(
 			false, condition_index, 4);
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 	std::cerr << "Extremum search interval without derivative information:"
 		<< std::endl << stop_interval << std::endl;
 #endif
@@ -884,7 +884,7 @@ double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 {
 	StopHistoryInterval stop_interval=select_stop_condition_interval(true,
 			condition_index, 4);
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 	std::cerr << "Crossing search interval without derivative information:"
 		<< std::endl << stop_interval << std::endl;
 #endif
@@ -986,7 +986,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		initialize_skip_history(stop_cond, stop_reason);
 	StopInformation result;
 	insert_discarded(age, current_stop_cond, current_stop_deriv);
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 	std::cerr << std::string(77, '@') << std::endl;
 	output_history_and_discarded(std::cerr);
 #endif
@@ -996,7 +996,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		double stop_cond_value=current_stop_cond[cond_ind],
 			   crossing_age=crossing_from_history(cond_ind);
 		ExtremumInformation extremum=extremum_from_history(cond_ind);
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 		std::cerr << "Condition[" << cond_ind << "](" << stop_cond_type <<
 			")=" << stop_cond_value << std::endl;
 		std::cerr << "crossing: age=" << crossing_age << std::endl;
@@ -1016,7 +1016,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		if((!acceptable_step(age, stop_info) || is_crossing) &&
 				stop_info.stop_age()<result.stop_age()) result=stop_info;
 	}
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 	std::cerr << "Final stop information:" << std::endl
 		<< result << std::endl;
 #endif
@@ -1027,11 +1027,11 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		stop_deriv_history.push_back(current_stop_deriv);
 		orbit_history.push_back(orbit);
 		orbit_deriv_history.push_back(derivatives);
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 		std::cerr << "Accepted" << std::endl;
 #endif
 	}
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 	else std::cerr << "Rejected" << std::endl;
 #endif 
 	return result;
@@ -1418,60 +1418,58 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		double start_age, EvolModeType initial_evol_mode,
 		const std::valarray<double> &start_orbit, bool no_evol_mode_change)
 {
-	if(std::isnan(start_age))
-		start_age=system.get_star().core_formation_age();
-	double wconv;
+	const Planet &planet=system.get_planet();
+	const Star &star=system.get_star();
+	if(std::isnan(start_age)) start_age=star.core_formation_age();
+	double stop_evol_age=std::min(end_age, star.get_lifetime());
 	if(initial_evol_mode==FAST_PLANET || initial_evol_mode==SLOW_PLANET
 			|| initial_evol_mode==LOCKED_TO_PLANET) {
-		if(start_orbit[0]<=
-				system.get_planet().minimum_semimajor(start_age)/Rsun_AU)
+		if(start_orbit[0]<=planet.minimum_semimajor(start_age)/Rsun_AU)
 			throw Error::BadFunctionArguments("Attempting to calculate the "
 					"evolution of a system where the planet starts "
 					"inside the Roche radius or its parent star!");
-	} else if(std::isfinite(planet_formation_age)) {
-		if(planet_formation_semimajor/Rsun_AU<=
-				system.get_planet().minimum_semimajor(
+	} else if(std::isfinite(planet_formation_age) &&
+			  planet_formation_age<stop_evol_age) {
+		if(planet_formation_semimajor/Rsun_AU<=planet.minimum_semimajor(
 					std::max(planet_formation_age,
-						system.get_star().get_disk_dissipation_age()))/
-				Rsun_AU)
+						star.get_disk_dissipation_age()))/Rsun_AU)
 			throw Error::BadFunctionArguments("Attempting to calculate the "
 					"evolution of a system where the planet will be formed "
 					"inside the Roche radius or its parent star!");
 	}
+	double wconv;
 	switch(initial_evol_mode) {
 		case FAST_PLANET : case SLOW_PLANET :
 			assert(start_orbit.size()==3); 
-			wconv=system.get_star().spin_frequency(start_age, convective,
-					start_orbit[1]);
+			wconv=star.spin_frequency(start_age, convective, start_orbit[1]);
 			break;
 		case LOCKED_TO_PLANET :
 			assert(start_orbit.size()==2);
-			wconv=system.get_planet().orbital_angular_velocity_semimajor(
+			wconv=planet.orbital_angular_velocity_semimajor(
 					start_orbit[0]*Rsun_AU);
 			break;
 		case NO_PLANET :
 			assert(start_orbit.size()==2);
-			wconv=system.get_star().spin_frequency(start_age, convective,
-					start_orbit[0]);
+			wconv=star.spin_frequency(start_age, convective, start_orbit[0]);
 			break;
 		case LOCKED_TO_DISK :
 			assert(start_orbit.size()==1);
-			wconv=system.get_star().get_disk_lock_frequency();
+			wconv=star.get_disk_lock_frequency();
 			break;
 		default:
 			throw Error::BadFunctionArguments("Unsupported initial evolution"
 					" mode encountered in OrbitSolver::operator().");
 	}
 	WindSaturationState wind_state=(
-			wconv<system.get_star().get_wind_saturation_frequency() ?
-			NOT_SATURATED : SATURATED);
+			wconv<star.get_wind_saturation_frequency() ? NOT_SATURATED : 
+			                                             SATURATED);
 
 	reset();
 	StoppingConditionType stop_reason=NO_STOP;
 	double last_age=start_age;
 	std::valarray<double> orbit=start_orbit;
 	EvolModeType evolution_mode=initial_evol_mode;
-	while(last_age<end_age) {
+	while(last_age<stop_evol_age) {
 /*		if (evolution_mode == FAST_PLANET || evolution_mode == SLOW_PLANET ||
 				evolution_mode == LOCKED_TO_PLANET) {
 			//if planet starts out below minimum semimajor axis,
@@ -1487,8 +1485,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		double stop_evol_age=stopping_age(last_age, evolution_mode,
 				system, planet_formation_age);
 		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
-				evolution_mode, planet_formation_semimajor,
-				&system.get_planet());
+				evolution_mode, planet_formation_semimajor, &planet);
 		double stop_condition_value=NaN;
 		bool stopped_before=!evolve_until(&system, start_age, stop_evol_age,
 				orbit, stop_condition_value, stop_reason, max_step,
@@ -1509,10 +1506,10 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 				orbit=new_orbit;
 			}
             if(evolution_mode==NO_PLANET) {
-                wconv=system.get_star().spin_frequency(last_age, convective,
+                wconv=star.spin_frequency(last_age, convective,
                         orbit[0]); 
                 wind_state=(
-                    wconv<system.get_star().get_wind_saturation_frequency() ?
+                    wconv<star.get_wind_saturation_frequency() ?
                     NOT_SATURATED : SATURATED);
             } else if(stop_reason==WIND_SATURATION)
 				wind_state=static_cast<WindSaturationState>(-wind_state);

@@ -821,11 +821,11 @@ private:
 		///Useful for interpolating to zeroes and extrema.
 		stop_deriv_discarded;
 
-#ifdef DEBUG_STOPPING
+#ifdef DEBUG
 	///\brief Generates a nicely formatted table of the contents of the
 	///discarded and history stopping condition information.
 	///
-	///Only exists if DEBUG_STOPPING is \#defined.
+	///Only exists if DEBUG is \#defined.
 	void output_history_and_discarded(std::ostream &os);
 #endif
 
