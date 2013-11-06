@@ -383,6 +383,27 @@ public:
 			"which are ill defined.");}
 };
 
+class ZeroQuantity : public EvolvingStellarQuantity {
+public:
+	///Return the value the quantity takes at the given age.
+	double operator()(double) const {return 0;}
+
+	///Return the age derivative of the quantity at the given age.
+	const FunctionDerivatives *deriv(double) const
+	{return new ZeroDerivatives;}
+
+	///The largest age for which the quantity can be interpolated
+	double range_high() const {return Inf;}
+
+	///The smallest age for which the quantity can be interpolated.
+	double range_low() const {return -Inf;}
+
+	///An iterator over the ages where the quantity takes the given y value.
+	InterpSolutionIterator crossings(double =0) const
+	{throw Error::Runtime("Called ZeroQuantity::crossings, "
+			"which are ill defined.");}
+};
+
 ///\brief A clas for stellar quantities that are the sum of two other
 ///quantities.
 ///

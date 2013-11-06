@@ -1153,7 +1153,9 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 {
 	if(system.get_star().get_disk_dissipation_age()>age)
 		return LOCKED_TO_DISK;
-	else if(planet_formation_age>age) return NO_PLANET;
+	else if(planet_formation_age>age || 
+			(planet_formation_age<age && evolution_mode==NO_PLANET))
+		return NO_PLANET;
 	SynchronizedCondition sync_condition(&(system.get_planet()),
 			initial_semimajor);
 	std::valarray<double> dummy_cond_deriv;

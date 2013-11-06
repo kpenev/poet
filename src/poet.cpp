@@ -651,6 +651,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 		start_orbit[0]=(star.is_low_mass() ?
 				real_parameters[InCol::START_WRAD] : 0)*
 			star.moment_of_inertia(tstart, radiative);
+		tstart=std::max(tstart, star.core_formation_age());
 	} else if(start_locked) {
 		start_evol_mode=LOCKED_TO_PLANET;
 		start_orbit.resize(2);

@@ -40,21 +40,29 @@ Star::Star(double current_mass, double tidal_quality,
 	core_formation(evolution.core_formation_age())
 {
 	lifetime = 9*std::pow(mass, -3);
+	low_mass=(mass<evolution.get_mass_break());
 	radius=evolution.interpolate_radius(mass);
 	luminosity=evolution.interpolate_luminosity(mass);
-	conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
-			mass, convective);
-	rad_moment_of_inertia=evolution.interpolate_moment_of_inertia(
-			mass, radiative);
-	rad_mass=evolution.interpolate_zone_mass(mass, radiative);
-	rad_radius=evolution.interpolate_core_boundary(mass);
+	if(low_mass) {
+		conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
+				mass, convective);
+		rad_moment_of_inertia=evolution.interpolate_moment_of_inertia(
+				mass, radiative);
+		rad_mass=evolution.interpolate_zone_mass(mass, radiative);
+		rad_radius=evolution.interpolate_core_boundary(mass);
+	} else {
+		conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
+				mass, total);
+		rad_moment_of_inertia=new ZeroQuantity();
+		rad_mass=new ZeroQuantity();
+		rad_radius=new ZeroQuantity();
+	}
 	if(!std::isnan(current_age)) {
 		current_conv_angular_momentum=current_conv_spin*
 			(*conv_moment_of_inertia)(current_age);
 		current_rad_angular_momentum=current_rad_spin*
 			(*rad_moment_of_inertia)(current_age);
 	}
-	low_mass=(mass<evolution.get_mass_break());
 }
 
 Star::~Star()
