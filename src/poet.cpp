@@ -7,123 +7,121 @@
 
 #include "poet.h"
 
-const std::string CommandLineOptions::__input_column_names[]={
-	"K",		//LOW_MASS_WINDK
-	"K",		//HIGH_MASS_WINDK
-	"wsat",		//LOW_MASS_WIND_SAT_W
-	"wsat",		//HIGH_MASS_WIND_SAT_W
-	"psat",		//LOW_MASS_WIND_SAT_P
-	"psat",		//HIGH_MASS_WIND_SAT_P
-	"tcoup",	//CORE_ENV_COUPLING_TIMESCALE
-	"lgQ",		//LGQ
-	"M",		//MSTAR
-	"m",		//MPLANET
-	"r",		//RPLANET
-	"tform",	//PLANET_FORMATION_AGE
-	"wdisk",	//WDISK
-	"pdisk",	//PDISK
-	"tdisk",	//TDISK
-	"aform",	//A_FORMATION
-	"pform",	//P_FORMATION
-	"t0",		//TSTART
-	"tmax",		//TEND
-	"wrad0",	//START_WRAD
-	"wsurf0",	//START_WSURF
-	"maxdt",	//MAX_STEP
-	"prec",		//PRECISION
-	"outf",		//OUT_FNAME
-	"locked",	//START_LOCKED
-};
+///Fills in all the static members.
+void CommandLineOptions::setup()
+{
+	__input_column_names.resize(InCol::NUM_INPUT_QUANTITIES);
+	__input_column_names[InCol::LOW_MASS_WINDK]="K";
+	__input_column_names[InCol::HIGH_MASS_WINDK]="K";
+	__input_column_names[InCol::LOW_MASS_WIND_SAT_W]="wsat";
+	__input_column_names[InCol::HIGH_MASS_WIND_SAT_W]="wsat";
+	__input_column_names[InCol::LOW_MASS_WIND_SAT_P]="psat";
+	__input_column_names[InCol::HIGH_MASS_WIND_SAT_P]="psat";
+	__input_column_names[InCol::CORE_ENV_COUPLING_TIMESCALE]="tcoup";
+	__input_column_names[InCol::LGQ]="lgQ";
+	__input_column_names[InCol::MSTAR]="M";
+	__input_column_names[InCol::MPLANET]="m";
+	__input_column_names[InCol::RPLANET]="r";
+	__input_column_names[InCol::PLANET_FORMATION_AGE]="tform";
+	__input_column_names[InCol::WDISK]="wdisk";
+	__input_column_names[InCol::PDISK]="pdisk";
+	__input_column_names[InCol::TDISK]="tdisk";
+	__input_column_names[InCol::A_FORMATION]="aform";
+	__input_column_names[InCol::P_FORMATION]="pform";
+	__input_column_names[InCol::TSTART]="t0";
+	__input_column_names[InCol::TEND]="tmax";
+	__input_column_names[InCol::START_WRAD]="wrad0";
+	__input_column_names[InCol::START_WSURF]="wsurf0";
+	__input_column_names[InCol::MAX_STEP]="maxdt";
+	__input_column_names[InCol::PRECISION]="prec";
+	__input_column_names[InCol::OUT_FNAME]="outf";
+	__input_column_names[InCol::START_LOCKED]="locked";
 
-const std::string CommandLineOptions::__output_column_descr[]={
-	//AGE
-	"Age in Gyr",
+	__output_column_descr.resize(OutCol::NUM_OUTPUT_QUANTITIES);
+	__output_column_descr[OutCol::AGE]="Age in Gyr";
+	__output_column_descr[OutCol::SEMIMAJOR]="Semimajor axis in AU";
+	__output_column_descr[OutCol::WORB]="Orbital frequency in rad/day";
+	__output_column_descr[OutCol::PORB]="Orbital period in days";
+	__output_column_descr[OutCol::LCONV]=
+		"Convective zone angular momentum (low mass stars only else NaN).";
+	__output_column_descr[OutCol::LRAD]=
+		"Radiative zone angular momentum (low mass stars only else NaN).";
+	__output_column_descr[OutCol::LTOT]=
+		"Total angular momentum of the star.";
+	__output_column_descr[OutCol::ICONV]=
+		"Convective zone moment of inertia (low mass stars only else NaN).";
+	__output_column_descr[OutCol::IRAD]=
+		"Radiative zone moment of inertia (low mass stars only else NaN).";
+	__output_column_descr[OutCol::ITOT]=
+		"Total moment of inertia of the star.";
+	__output_column_descr[OutCol::WSURF]=
+		"Stellar surface angular velocity of the star in rad/day.";
+	__output_column_descr[OutCol::WRAD]="Angular velocity of the radiative "
+		"zone in rad/day (low mass stars only, else NaN)";
+	__output_column_descr[OutCol::PSURF]=
+		"Stellar surface spin period in days.";
+	__output_column_descr[OutCol::PRAD]="Spin period of the radiative zone "
+		"in days (low mass stars only, else NaN)";
+	__output_column_descr[OutCol::EVOL_MODE]=
+		"Evolution mode of the step starting at this age.";
+	__output_column_descr[OutCol::WIND_STATE]="The wind state (saturated/not"
+	   " saturated) of the step starting at this age.";
+	__output_column_descr[OutCol::RSTAR]="Stellar radius";
+	__output_column_descr[OutCol::LSTAR]="Stellar luminosity";
+	__output_column_descr[OutCol::RRAD]="Radius of the stellar radiative "
+		"zone (low mass stars only, else NaN).";
+	__output_column_descr[OutCol::MRAD]="Mass of the stellar radiative zone "
+		"(low mass stars only, else NaN).";
 
-	//SEMIMAJOR
-	"Semimajor axis in AU",
+	__defaults.resize(InCol::NUM_REAL_INPUT_QUANTITIES);
+	__defaults[InCol::LOW_MASS_WINDK]=0.35;
+	__defaults[InCol::HIGH_MASS_WINDK]=0;
+	__defaults[InCol::LOW_MASS_WIND_SAT_W]=1.84;
+	__defaults[InCol::HIGH_MASS_WIND_SAT_W]=0;
+	__defaults[InCol::LOW_MASS_WIND_SAT_P]=NaN;
+	__defaults[InCol::HIGH_MASS_WIND_SAT_P]=Inf;
+	__defaults[InCol::CORE_ENV_COUPLING_TIMESCALE]=5;
+	__defaults[InCol::LGQ]=6;
+	__defaults[InCol::MSTAR]=1;
+	__defaults[InCol::MPLANET]=1;
+	__defaults[InCol::RPLANET]=1;
+	__defaults[InCol::PLANET_FORMATION_AGE]=0;
+	__defaults[InCol::WDISK]=0.68;
+	__defaults[InCol::PDISK]=NaN;
+	__defaults[InCol::TDISK]=5;
+	__defaults[InCol::A_FORMATION]=0.05;
+	__defaults[InCol::P_FORMATION]=NaN;
+	__defaults[InCol::TSTART]=NaN;
+	__defaults[InCol::TEND]=Inf;
+	__defaults[InCol::START_WRAD]=NaN;
+	__defaults[InCol::START_WSURF]=NaN;
+	__defaults[InCol::MAX_STEP]=Inf;
+	__defaults[InCol::PRECISION]=6;
+}
 
-	//WORB
-	"Orbital frequency in rad/day",
-
-	//PORB
-	"Orbital period in days",
-
-	//LCONV
-	"Convective zone angular momentum (low mass stars only else NaN).",
-
-	//LRAD
-	"Radiative zone angular momentum (low mass stars only else NaN).",
-
-	//LTOT
-	"Total angular momentum of the star.",
-
-	//ICONV
-	"Convective zone moment of inertia (low mass stars only else NaN).",
-
-	//IRAD
-	"Radiative zone moment of inertia (low mass stars only else NaN).",
-
-	//ITOT
-	"Total moment of inertia of the star.",
-
-	//WSURF
-	"Stellar surface angular velocity of the star in rad/day.",
-
-	//WRAD
-	"Angular velocity of the radiative zone in rad/day (low mass stars only,"
-		", else NaN)",
-
-	//PSURF
-	"Stellar surface spin period in days.",
-
-	//PRAD
-	"Spin period of the radiative zone in days (low mass stars only, else "
-		"NaN)",
-
-	//EVOL_MODE
-	"Evolution mode of the step starting at this age.",
-
-	//WIND_STATE
-	"The wind state (saturated/not saturated) of the step starting at this "
-		"age.",
-
-	//RSTAR
-	"Stellar radius",
-
-	//LSTAR
-	"Stellar luminosity",
-
-	//RRAD
-	"Radius of the stellar radiative zone (low mass stars only, else NaN).",
-
-	//MRAD
-	"Mass of the stellar radiative zone (low mass stars only, else NaN)."};
-
-const double CommandLineOptions::__defaults[]={
-		0.35,			//LOW_MASS_WINDK=WINDK
-		0,				//HIGH_MASS_WINDK
-		1.84,			//LOW_MASS_WIND_SAT_W=WIND_SAT_W
-		0,				//HIGH_MASS_WIND_SAT_W,
-		NaN,			//LOW_MASS_WIND_SAT_P=WIND_SAT_P, 
-		Inf,			//HIGH_MASS_WIND_SAT_P,
-		5,				//CORE_ENV_COUPLING_TIMESCALE,
-		6,				//LGQ
-		1,				//MSTAR
-		1,				//MPLANET
-		1,				//RPLANET
-		0,				//PLANET_FORMATION_AGE
-		0.68,			//WDISK
-		NaN,			//PDISK
-		5,				//TDISK
-		0.05,			//A_FORMATION
-		NaN,			//P_FORMATION
-		NaN,			//TSTART
-		Inf,			//TEND
-		NaN,			//START_WRAD, 
-		NaN,			//START_WSURF, 
-		Inf,			//MAX_STEP
-		6				//PRECISION
-};
+void init_output_column_names()
+{
+	OUTPUT_COLUMN_NAMES[OutCol::AGE]="t";
+	OUTPUT_COLUMN_NAMES[OutCol::SEMIMAJOR]="a";
+	OUTPUT_COLUMN_NAMES[OutCol::WORB]="Worb";
+	OUTPUT_COLUMN_NAMES[OutCol::PORB]="Porb";
+	OUTPUT_COLUMN_NAMES[OutCol::LCONV]="Lconv";
+	OUTPUT_COLUMN_NAMES[OutCol::LRAD]="Lrad";
+	OUTPUT_COLUMN_NAMES[OutCol::LTOT]="L";
+	OUTPUT_COLUMN_NAMES[OutCol::ICONV]="Iconv";
+	OUTPUT_COLUMN_NAMES[OutCol::IRAD]="Irad";
+	OUTPUT_COLUMN_NAMES[OutCol::ITOT]="I";
+	OUTPUT_COLUMN_NAMES[OutCol::WSURF]="Wsurf";
+	OUTPUT_COLUMN_NAMES[OutCol::WRAD]="Wrad";
+	OUTPUT_COLUMN_NAMES[OutCol::PSURF]="Psurf";
+	OUTPUT_COLUMN_NAMES[OutCol::PRAD]="Prad";
+	OUTPUT_COLUMN_NAMES[OutCol::EVOL_MODE]="mode";
+	OUTPUT_COLUMN_NAMES[OutCol::WIND_STATE]="wind";
+	OUTPUT_COLUMN_NAMES[OutCol::RSTAR]="R";
+	OUTPUT_COLUMN_NAMES[OutCol::LSTAR]="Lum";
+	OUTPUT_COLUMN_NAMES[OutCol::RRAD]="Rrad";
+	OUTPUT_COLUMN_NAMES[OutCol::MRAD]="Mrad";
+}
 
 const std::string CommandLineOptions::__default_outfname="poet.evol",
 	  CommandLineOptions::__default_serialized_evol="interp_state_data",
@@ -411,7 +409,7 @@ void CommandLineOptions::set_defaults()
 
 template<typename COL_ID_TYPE>
 void CommandLineOptions::parse_column_list(const char *columns_str,
-		const std::string *column_names, int num_column_names,
+		const std::vector<std::string> column_names, int num_column_names,
 		std::vector<COL_ID_TYPE> &columns, bool allow_noname)
 {
 	std::istringstream instream(columns_str);
@@ -496,6 +494,7 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	__direct_value_options(InCol::NUM_REAL_INPUT_QUANTITIES),
 	__opened_stream(false)
 {
+	setup();
 	define_options();
 	arg_lit *help_option=arg_lit0("h", "help", "Print this help and exit.");
 	struct arg_end *end = arg_end(100);
@@ -802,6 +801,7 @@ int main(int argc, char **argv)
 		std::cerr.precision(16);
 		std::cerr.setf(std::ios_base::scientific);
 #endif
+		init_output_column_names();
 		CommandLineOptions options(argc, argv);
 		if(!options) return 1;
 		YRECEvolution stellar_evolution;

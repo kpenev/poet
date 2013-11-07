@@ -154,46 +154,29 @@ namespace OutCol {
 	};
 };
 
-///\brief The names to use for the output columns in thei
+///\brief The names to use for the output columns in the
 ///--output-columns option (indexed by the corresponding
 ///OutputColumns tag) as well as when labeling the output file.
-const std::string OUTPUT_COLUMN_NAMES[]={
-	"t",		//AGE
-	"a",		//SEMIMAJOR
-	"Worb",		//WORB
-	"Porb",		//PORB
-	"Lconv",	//LCONV
-	"Lrad",		//LRAD
-	"L",		//LTOT
-	"Iconv",	//ICONV
-	"Irad",		//IRAD
-	"I",		//ITOT
-	"Wsurf",	//WSURF
-	"Wrad",		//WRAD
-	"Psurf",	//PSURF
-	"Prad",		//PRAD
-	"mode",		//EVOL_MODE
-	"wind",		//WIND_STATE
-	"R",		//RSTAR
-	"Lum",		//LSTAR
-	"Rrad",		//RRAD
-	"Mrad"};	//MRAD
-
+std::vector<std::string> OUTPUT_COLUMN_NAMES(OutCol::NUM_OUTPUT_QUANTITIES);
 
 ///All command line options can be accessed through members.
 class CommandLineOptions {
 private:
 
-	///\brief The names to use for the input columns in the --input-columns
-	///option (indexed by the corresponding InputColumns tag).
-	static const std::string __input_column_names[],
+	///\brief The names to use for the input columns in the
+	///--input-columns option.
+	///
+	///Indexed by the corresponding InputColumns tag.
+	std::vector<std::string> __input_column_names,
 
-				 ///Description of the output columns,
-				 __output_column_descr[];
+				 ///\brief Description of the output columns.
+				 ///
+				 ///Indexed by the corresponding OutputColumns tag.
+				 __output_column_descr;
 
 	///\brief The default values for the quantities defining the evolution to
 	///calculate.
-	static const double __defaults[];
+	std::vector<double> __defaults;
 
 	///The default output filename.
 	static const std::string __default_outfname,
@@ -258,7 +241,7 @@ private:
 			const char *columns_str,
 
 			///The allowed column names 
-			const std::string *column_names,
+			const std::vector<std::string> column_names,
 
 			///The number of allowed column names
 			int num_column_names,
@@ -290,6 +273,9 @@ private:
 
 		 ///Set to true only if and when the #__input_stream is opened.
 		 __opened_stream;
+
+	///Fills in all the static members.
+	void setup();
 public:
 	///Parse the command line.
 	CommandLineOptions(int argc, char **argv);
