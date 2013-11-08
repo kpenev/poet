@@ -711,7 +711,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 	solver(system, real_parameters[InCol::MAX_STEP],
 			real_parameters[InCol::PLANET_FORMATION_AGE],
 			real_parameters[InCol::A_FORMATION], tstart,
-			start_evol_mode, start_orbit);
+			start_evol_mode, start_orbit, required_ages);
 	output_solution(solver, system, outfname, output_file_format);
 }
 

@@ -1226,7 +1226,8 @@ EvolModeType OrbitSolver::next_evol_mode(double age,
 }
 
 double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
-		const StellarSystem &system, double planet_formation_age)
+		const StellarSystem &system, double planet_formation_age,
+		const std::list<double> &required_ages)
 {
 	double result;
 	switch(evolution_mode) {
@@ -1247,9 +1248,15 @@ double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
 	double core_formation_age=system.get_star().core_formation_age();
 	if(age < core_formation_age)
 		result = std::min(result, core_formation_age);
-	//we want 1 data point right at main sequence start
-	if (age < main_seq_start)
-		result = std::min(result, main_seq_start);
+	static std::list<double>::const_iterator
+		next_required_age=required_ages.begin();
+	if(age<=required_ages.front())
+		next_required_age=required_ages.begin();
+	if(next_required_age!=required_ages.end() && 
+			result>*next_required_age) {
+		if(age==*next_required_age) ++next_required_age;
+		result=*next_required_age;
+	}
 	return result;
 }
 
@@ -1405,12 +1412,10 @@ void OrbitSolver::reset()
 	}
 }
 
-OrbitSolver::OrbitSolver(
-		double min_age, double max_age, double required_precision,
-		double spin_thres, double main_seq_start) :
+OrbitSolver::OrbitSolver(double min_age, double max_age,
+		double required_precision, double spin_thres) :
 	start_age(min_age), end_age(max_age), precision(required_precision),
-	spin_thres(spin_thres), main_seq_start(main_seq_start),
-	tabulated_orbit(3), tabulated_deriv(3)
+	spin_thres(spin_thres), tabulated_orbit(3), tabulated_deriv(3)
 {
 	if (max_age > MAX_END_AGE) end_age = MAX_END_AGE;
 }
@@ -1418,7 +1423,8 @@ OrbitSolver::OrbitSolver(
 void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		double planet_formation_age, double planet_formation_semimajor,
 		double start_age, EvolModeType initial_evol_mode,
-		const std::valarray<double> &start_orbit, bool no_evol_mode_change)
+		const std::valarray<double> &start_orbit,
+		const std::list<double> &required_ages, bool no_evol_mode_change)
 {
 	const Planet &planet=system.get_planet();
 	const Star &star=system.get_star();
@@ -1484,16 +1490,16 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 			if (deathResult < 0) return;
 		}
 		//std::cout << deathResult << std::endl;*/
-		double stop_evol_age=stopping_age(last_age, evolution_mode,
-				system, planet_formation_age);
+		double next_stop_age=stopping_age(last_age, evolution_mode,
+				system, planet_formation_age, required_ages);
 		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
 				evolution_mode, planet_formation_semimajor, &planet);
 		double stop_condition_value=NaN;
-		bool stopped_before=!evolve_until(&system, start_age, stop_evol_age,
+		bool stopped_before=!evolve_until(&system, start_age, next_stop_age,
 				orbit, stop_condition_value, stop_reason, max_step,
 				evolution_mode, wind_state, *stopping_condition,
 				planet_formation_semimajor);
-		last_age=stop_evol_age;
+		last_age=next_stop_age;
 		if(last_age<end_age) {
 			EvolModeType old_evolution_mode=evolution_mode;
 			if(!no_evol_mode_change) evolution_mode=next_evol_mode(last_age,
@@ -1526,7 +1532,8 @@ double OrbitSolver::fast_time(StellarSystem &system,
 		double max_step, double planet_formation_age,
 		double planet_formation_semimajor, double start_age,
 		EvolModeType initial_evol_mode,
-		std::valarray<double> start_orbit) {
+		std::valarray<double> start_orbit,
+		double main_seq_start) {
   (*this)(system, max_step, planet_formation_age, 
 	  planet_formation_semimajor, start_age, initial_evol_mode,
 	  start_orbit);
@@ -1541,7 +1548,6 @@ double OrbitSolver::fast_time(StellarSystem &system,
 		double age = *ages;
 		if (age < main_seq_start) continue;
 		double spin = (*Lc)/star.moment_of_inertia(age, convective);
-		//std::cout << age << " " << Rsun6p5_to_AU(*a) << " " << spin << std::endl;
 		if (spin > spin_thres && prev_age != -1)
 			tot_time += age - prev_age;
 		prev_age = age;

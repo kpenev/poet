@@ -767,13 +767,7 @@ private:
 
 		   ///\brief A threshold for the stellar spin to note while
 		   ///calculating the evolution
-	       spin_thres, 
-
-		   ///\brief Should not exist.
-		   ///
-		   ///A definition of the ZAMS age (a point at this age is forced to
-		   ///be included in the tabulated evolution.
-		   main_seq_start;
+	       spin_thres;
 
 	///The ages at which solution is tabulated
 	std::list<double> tabulated_ages;
@@ -1090,10 +1084,20 @@ private:
 			///The age at which the planet suddenly appears in Gyr.
 			double planet_formation_age) const;
 
-	///\brief The age at which the evolution with the given mode should stop
-	///if no other stopping condition occurs.
-	double stopping_age(double age, EvolModeType evolution_mode,
-			const StellarSystem &system, double planet_formation_age);
+	///\brief The age at which the evolution should stop next if no other
+	///stopping condition occurs.
+	double stopping_age(
+			///The age from which the next part of the evolution starts.
+			double age, EvolModeType evolution_mode,
+
+			///The stellar system being evolved.
+			const StellarSystem &system,
+			
+			///The age at which the planet forms.
+			double planet_formation_age,
+
+			///A sorted list of ages which must be stopped at.
+			const std::list<double> &required_ages);
 
 	///\brief Transforms orbital parameters from one evolution mode 
 	///(from_mode) to another (to_mode).
@@ -1125,10 +1129,7 @@ public:
 			double required_precision,
 
 			///The critical stellar surface spin in rad/day.
-			double spin_thres=4*M_PI,
-			
-			///The main sequence age in Gyr.
-			double main_seq_start=0.2);
+			double spin_thres=4*M_PI);
 
 	///\brief Actually solves the given differential equation with the given
 	///boundary conditions.
@@ -1164,6 +1165,9 @@ public:
 			///depends on initial_evol_mode.
 			const std::valarray<double>
 				&start_orbit=std::valarray<double>(0.0, 1),
+
+			///A sorted list of ages to include in the tabulated evolution.
+			const std::list<double> &required_ages=std::list<double>(),
 			
 			///If given, the evolution mode is kept constant regardless
 			///of what actually occurs with the evolution
@@ -1185,7 +1189,8 @@ public:
 			double planet_formation_semimajor=NaN, double start_age=NaN,
 			EvolModeType initial_evol_mode=LOCKED_TO_DISK,
 			std::valarray<double>
-				start_orbit=std::valarray<double>(0.0, 1));
+				start_orbit=std::valarray<double>(0.0, 1),
+			double main_seq_start=0.2);
 
 	///Returns the values of a variable at the tabulated ages.
 	const std::list<double>
