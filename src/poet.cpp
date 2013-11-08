@@ -36,6 +36,7 @@ void CommandLineOptions::setup()
 	__input_column_names[InCol::PRECISION]="prec";
 	__input_column_names[InCol::OUT_FNAME]="outf";
 	__input_column_names[InCol::START_LOCKED]="locked";
+	__input_column_names[InCol::REQUIRED_AGES]="trequired";
 
 	__output_column_descr.resize(OutCol::NUM_OUTPUT_QUANTITIES);
 	__output_column_descr[OutCol::AGE]="Age in Gyr";
@@ -351,6 +352,16 @@ void CommandLineOptions::define_options()
 		   "--init-wsurf-col to be ignored.");
 
 	option_help.str("");
+	option_help << "A list of ages to include in the calculated evolution. "
+		"This argument can be overwritten or appended to by the '"
+		<< __input_column_names[InCol::REQUIRED_AGES] << "' column in the "
+		"input file. If the entry in the file starts with a comma, the ages "
+		"listed there are combined with the value specified by this "
+		"argument, otherwise only the ages listed in the file are used.";
+	__required_ages_option=arg_str0(NULL, "require-ages",
+			"<comma separated list>", cstr_copy(option_help));
+
+	option_help.str("");
 	option_help << "If nothing is read from an input file, then this "
 		"argument should be the name of the file to use to output the "
 		"evolution. If at least one quantity is read from a list file, that "
@@ -428,6 +439,24 @@ void CommandLineOptions::parse_column_list(const char *columns_str,
 	}
 }
 
+void parse_real_list(const char *values_str, std::list<double> &values)
+{
+	std::istringstream instream(values_str);
+	if(values_str[0]==',') ++values_str;
+	else values.clear();
+	while(!instream.eof()) {
+		std::string val_string;
+		std::getline(instream, val_string, ',');
+		std::istringstream val_stream(val_string);
+		double v;
+		val_stream >> v;
+		if(val_stream) values.push_back(v);
+		else throw Error::BadFunctionArguments("The entry '"+
+				val_string+"' cannot be parsed to a real number");
+	}
+
+}
+
 void CommandLineOptions::postprocess()
 {
 	if(__input_file_columns->count>0)
@@ -480,6 +509,11 @@ void CommandLineOptions::postprocess()
 					4.0*M_PI*M_PI*a3/(M+m)/AstroConst::G)/AstroConst::day;
 		}
 	}
+
+	if(__required_ages_option->count>0) {
+		parse_real_list(__required_ages_option->sval[0], __required_ages);
+		__required_ages.sort();
+	}
 }
 
 void CommandLineOptions::cleanup()
@@ -502,6 +536,7 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 		__argtable[i]=__direct_value_options[i];
 	__argtable[InCol::OUT_FNAME]=__output_fname;
 	__argtable[InCol::START_LOCKED]=__start_locked;
+	__argtable[InCol::REQUIRED_AGES]=__required_ages_option;
 	__argtable[InCol::NUM_INPUT_QUANTITIES]=__input_file_columns;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+1]=__output_file_columns;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+2]=__input_fname;
@@ -535,10 +570,6 @@ double CommandLineOptions::get_real_value(InCol::InputColumns quantity) const
 				"CommandLineOptions::get_real_value().");
 	return __direct_value_options[quantity]->dval[0];
 }
-
-
-
-
 
 ///AU/\f$\mathrm{R}_\odot\f$.
 const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
@@ -616,7 +647,8 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 }
 
 void calculate_evolution(const std::vector<double> &real_parameters,
-		bool start_locked, const StellarEvolution &stellar_evolution,
+		bool start_locked, const std::list<double> &required_ages,
+		const StellarEvolution &stellar_evolution,
 		const std::string &outfname,
 		const std::vector<OutCol::OutputColumns> &output_file_format)
 {
@@ -684,7 +716,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 }
 
 std::string update_run_parameters(std::vector<double> &real_parameters,
-		bool &start_locked,
+		bool &start_locked, std::list<double> &required_ages,
 		const std::vector<InCol::InputColumns> &input_format,
 		std::istringstream &line, size_t input_lineno)
 {
@@ -713,7 +745,11 @@ std::string update_run_parameters(std::vector<double> &real_parameters,
 			else if(quantity==InCol::P_FORMATION) read_p_formation=true;
 		} else if(quantity==InCol::OUT_FNAME) line >> outfname;
 		else if(quantity==InCol::START_LOCKED) line >> start_locked;
-		else if(quantity==InCol::SKIP) line >> word;
+		else if(quantity==InCol::REQUIRED_AGES) {
+			line >> word;
+			parse_real_list(word.c_str(), required_ages);
+			required_ages.sort();
+		} else if(quantity==InCol::SKIP) line >> word;
 		else throw Error::BadFunctionArguments(
 				"Unrecognized input quantity tag in "
 				"poet.cpp:run().");
@@ -762,6 +798,7 @@ void run(const CommandLineOptions &options,
 	std::string outfname=options.output_filename();
 	bool done=false, start_locked=options.start_locked();
 	size_t input_lineno=0;
+	std::list<double> required_ages=options.required_ages();
 	while(!done) {
 		if(options.input_from_list()) {
 			std::string line("#");
@@ -772,8 +809,9 @@ void run(const CommandLineOptions &options,
 			if(input.eof()) return;
 			else {
 				std::istringstream line_str(line);
+				required_ages=options.required_ages();
 				outfname=update_run_parameters(real_parameters,
-					start_locked, options.input_file_format(),
+					start_locked, required_ages, options.input_file_format(),
 					line_str, input_lineno);
 			}
 		} else done=true;
@@ -788,8 +826,8 @@ void run(const CommandLineOptions &options,
 			real_parameters[InCol::WIND_SAT_W]=
 				real_parameters[InCol::LOW_MASS_WIND_SAT_W];
 		}
-		calculate_evolution(real_parameters, start_locked, stellar_evolution,
-				outfname, options.output_file_format());
+		calculate_evolution(real_parameters, start_locked, required_ages,
+				stellar_evolution, outfname, options.output_file_format());
 	}
 }
 

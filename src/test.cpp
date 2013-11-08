@@ -3,6 +3,7 @@
 //#include <solve_polynomial.h>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 
 #define STR(x) #x
 #define STRING(str) STR(str)
@@ -24,5 +25,11 @@ int main()
 	output_array(approx_solutions, "cubic");*/
 	std::cout << "test_value=" STRING(TEST_VALUE) << std::endl;
 	double *p=NULL;
+	std::istringstream is("12,3.2,1");
+	while(!is.eof() && is) {
+		double v;
+		is >> v;
+		std::cout << "extracted: " << v << std::endl;
+	}
 	return 0;
 }

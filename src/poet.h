@@ -86,6 +86,9 @@ namespace InCol {
 		///spinning synchronously with the orbit? 
 		START_LOCKED,	
 
+		///A list of ages guaranteed to be included in the tabulated orbit.
+		REQUIRED_AGES,
+
 		SKIP,///< A column which is not needed to calculate the evolution.
 
 		///The number of different input quantities supported.
@@ -195,7 +198,11 @@ private:
 	arg_str *__input_file_columns,
 
 			///The columns to write to the output file.
-			*__output_file_columns;
+			*__output_file_columns,
+			
+			///\brief The comma separated list of ages to include in the
+			///tabulated evolution.
+			*__required_ages_option;
 
 	///Whether the initial surfarce spin of the star should be
 	///synchronous to the orbit.
@@ -224,6 +231,10 @@ private:
 
 	///The copies of the option help strings made when creating the options.
 	std::list<char*> __option_help_copies;
+
+	///\brief The sorted list of ages to make sure are included in the
+	///tabulated evolution.
+	std::list<double> __required_ages;
 
 	///Returns a copy of the c-string content of the stream.
 	char *cstr_copy(const std::ostringstream &stream);
@@ -313,12 +324,26 @@ public:
 	const std::vector<OutCol::OutputColumns> &output_file_format() const
 	{return __output_file_format;}
 
+	const std::list<double> &required_ages() const
+	{return __required_ages;}
+
 	///Did parsing the command line succeed.
 	operator bool() {return __parsed_ok;}
 
 	///Closes the input  filename if it was opened.
 	~CommandLineOptions() {cleanup();}
 };
+
+///\brief Parses a comma separated list of real values.
+///
+///If the list starts with a comma, the values are appended to the output
+///list, otherwise the output list is overwritten with the new values.
+void parse_real_list(
+		///The comma separated list of values.
+		const char *values_str,
+
+		///The values to append to or overwrite.
+		std::list<double> &values);
 
 ///Outputs the solution calculated by the given solver.
 void output_solution(
@@ -345,6 +370,9 @@ void calculate_evolution(
 		///synchronized to the orbit.
 		bool start_locked,
 
+		///The ages required to be included in the evolution (sorted).
+		const std::list<double> &required_ages,
+
 		///The stellar evolution interpolator.
 		const StellarEvolution &stellar_evolution,
 
@@ -364,6 +392,9 @@ std::string update_run_parameters(
 		///Whether to start the system with the stellar surface spin
 		///synchronous with the orbit.
 		bool &start_locked,
+
+		///The ages required to be included in the evolution (sorted).
+		std::list<double> &required_ages,
 
 		///List of the columns to read from the input stream.
 		const std::vector<InCol::InputColumns> &input_format,
