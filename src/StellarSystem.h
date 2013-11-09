@@ -346,4 +346,16 @@ public:
 ///Not sure what it does but is not used.
 bool stop_evolution(double age, const double* y, void *stellar_system);
 
+///\brief The rate of change of the angular velocity of the stellar 
+///convective zone that would occur if no planet were present in rad/day/Gyr.
+double no_planet_dwconv_dt(
+		///The age of the system in Gyr.
+		double age,
+		
+		///The present orbit for a spin-orbit locked system.
+		const std::valarray<double> &orbit,
+
+		///The stellar system
+		const StellarSystem &system);
+
 #endif

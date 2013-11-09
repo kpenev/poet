@@ -11,7 +11,8 @@ BINDIR = ../bin/
 # modules
 #
 COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
-                  StellarSystem YRECIO
+                  StellarSystem YRECIO StoppingConditions \
+				  ExternalStoppingConditions
 
 BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = -lgsl -lgslcblas -lboost_serialization-mt -largtable2

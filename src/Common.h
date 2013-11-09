@@ -9,6 +9,7 @@
 #define __COMMON_DEFINITIONS_H
 
 #include "Error.h"
+#include "AstronomicalConstants.h"
 #include <list>
 #include <valarray>
 #include <limits>
@@ -36,6 +37,36 @@ const double NaN=std::numeric_limits<double>::quiet_NaN();
 
 ///Infinity
 const double Inf=std::numeric_limits<double>::infinity();
+
+///A shortcut for the solar radius in astronomical units.
+const double Rsun_AU=AstroConst::solar_radius/AstroConst::AU;
+
+///\brief The various evolution modes.
+///
+///Each corresponds to a different system of differential equations with
+///different variables.
+enum EvolModeType {
+	///The orbital period is shorter than the stellar spin period.
+	FAST_PLANET=-1, 
+
+	///The orbital and the stellar spin periods are locked to be the same.
+	LOCKED_TO_PLANET,
+	
+	///The orbital period is longer than the stellar spin period.
+	SLOW_PLANET,
+	
+	///There is no planet in the system (only the stellar rotation evolves).
+	NO_PLANET,
+
+	///The stellar surface rotation is locked to a protoplanetary disk.
+	LOCKED_TO_DISK,
+	
+	///Used as the mode to transform to from all other modes when storing the
+	///computed evolution.
+	TABULATION};
+
+///More civilized output for EvolModeType variables.
+std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode);
 
 ///Outputs a valarray as a sequence of ', ' separated values.
 std::ostream &operator<<(std::ostream &os, std::valarray<double> &arr);

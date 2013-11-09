@@ -13,9 +13,6 @@
 
 #include <gsl/gsl_matrix.h>
 
-///\f$R_\odot/\mathrm{AU}\f$.
-const double Rsun_AU=AstroConst::solar_radius/AstroConst::AU;
-
 double energy(void* xp) {
 	StellarSystem* system = static_cast< StellarSystem* >(xp);
 	return system->annealing_energy();
@@ -592,4 +589,19 @@ void StellarSystem::output_evolution(std::string &) const
 	throw Error::Runtime("Method output_evolution of StellarSystem is not implemented yet.");
 }
 
-
+double no_planet_dwconv_dt(double age, const std::valarray<double> &orbit,
+		const StellarSystem &system)
+{
+	double no_planet_diff_eq[2], no_planet_orbit[2];
+	double semimajor=orbit[0]*Rsun_AU,
+		   worb=system.get_planet().orbital_angular_velocity_semimajor(
+				   semimajor),
+		   Iconv=system.get_star().moment_of_inertia(age, convective),
+		   dIconv_dt=system.get_star().moment_of_inertia_deriv(age,
+				   convective);
+	no_planet_orbit[0]=worb*Iconv;
+	no_planet_orbit[1]=orbit[1];
+	system.no_planet_differential_equation(age, no_planet_orbit,
+			no_planet_diff_eq);
+	return (no_planet_diff_eq[0] - dIconv_dt*worb)/Iconv;
+}
