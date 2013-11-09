@@ -35,7 +35,7 @@ std::ostream &operator<<(std::ostream &os,
 		case BREAK_LOCK: os << "BREAK_LOCK"; break;
 		case PLANET_DEATH: os << "PLANET_DEATH"; break;
 		case WIND_SATURATION: os << "WIND_SATURATION"; break;
-		case ROT_FAST: os << "ROT_FAST";
+		case EXTERNAL: os << "EXTERNAL";
 	}
 	return os;
 }
@@ -213,23 +213,38 @@ std::valarray<double> RotFastCondition::operator()(double age,
 CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		const CombinedStoppingCondition &rhs)
 {
-	for(std::vector<const StoppingCondition *>::const_iterator
-			i=rhs.sub_conditions.begin(); i!=rhs.sub_conditions.end(); i++)
-		sub_conditions.push_back(*i);
+	__sub_conditions.insert(__sub_conditions.end(),
+			rhs.__sub_conditions.begin(), rhs.__sub_conditions.end());
+	__num_subconditions+=rhs.__num_subconditions;
+	if(__delete_subcond)
+		const_cast<CombinedStoppingCondition &>(rhs).__delete_subcond=false;
+	__types.insert(__types.end(), rhs.__types.begin(), rhs.__types.end());
+	__interpolation_ranges.insert(__interpolation_ranges.end(),
+			rhs.__interpolation_ranges.begin(),
+			rhs.__interpolation_ranges.end());
 	return *this;
 }
 
 CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		const StoppingCondition *rhs)
 {
-	sub_conditions.push_back(rhs);
+	size_t num_new_subcond=rhs->num_subconditions();
+	__num_subconditions+=num_new_subcond;
+	__sub_conditions.push_back(rhs);
+	__types.reserve(__types.size()+num_new_subcond);
+	__interpolation_ranges.reserve(
+			__interpolation_ranges.size()+num_new_subcond);
+	for(size_t i=0; i<num_new_subcond; i++) {
+		__types.push_back(rhs->type(i));
+		__interpolation_ranges.push_back(rhs->interpolation_range(i));
+	}
 	return *this;
 }
 
 CombinedStoppingCondition::~CombinedStoppingCondition()
 {
 	for(std::vector<const StoppingCondition *>::const_iterator
-			i=sub_conditions.begin(); i!=sub_conditions.end(); i++)
+			i=__sub_conditions.begin(); i!=__sub_conditions.end(); i++)
 		delete *i;
 }
 
@@ -240,17 +255,21 @@ std::valarray<double> CombinedStoppingCondition::operator()(double age,
 		std::valarray<double> &stop_deriv,
 		EvolModeType evol_mode) const
 {
-	std::valarray<double> result(sub_conditions.size());
-	stop_deriv.resize(sub_conditions.size(), NaN);
+	std::valarray<double> result(__num_subconditions);
+	stop_deriv.resize(__num_subconditions, NaN);
 	size_t i=0;
 	for(std::vector<const StoppingCondition *>::const_iterator
-			cond=sub_conditions.begin(); cond!=sub_conditions.end(); cond++) {
+			cond=__sub_conditions.begin(); cond!=__sub_conditions.end();
+			cond++) {
 		std::valarray<double> sub_stop_deriv(1),
 			temp_array=(**cond)(age, orbit, derivatives, system,
 					sub_stop_deriv, evol_mode);
-		result[i]=temp_array[0];
-		stop_deriv[i]=sub_stop_deriv[0];
-		i++;
+		for(size_t subcond_ind=0; subcond_ind<temp_array.size();
+				subcond_ind++) {
+			result[i]=temp_array[subcond_ind];
+			stop_deriv[i]=sub_stop_deriv[subcond_ind];
+			i++;
+		}
 	}
 	return result;
 }
@@ -1215,7 +1234,7 @@ EvolModeType OrbitSolver::next_evol_mode(double age,
 		return (no_planet_dwconv_dt(age, orbit, system)>0 ? SLOW_PLANET :
 				FAST_PLANET);
 	} else if(condition_type==PLANET_DEATH) return NO_PLANET;
-	else if(condition_type==WIND_SATURATION || condition_type==ROT_FAST)
+	else if(condition_type==WIND_SATURATION || condition_type==EXTERNAL)
 		return evolution_mode;
 	else {
 		std::ostringstream msg;
@@ -1255,7 +1274,8 @@ double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
 	if(next_required_age!=required_ages.end() && 
 			result>*next_required_age) {
 		if(age==*next_required_age) ++next_required_age;
-		result=*next_required_age;
+		if(next_required_age!=required_ages.end()) 
+			result=*next_required_age;
 	}
 	return result;
 }

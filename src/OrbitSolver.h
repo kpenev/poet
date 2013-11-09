@@ -73,7 +73,7 @@ enum StoppingConditionType {
 	
 	///The stellar rotation reached some critical value (from either
 	///direction).
-	ROT_FAST};
+	EXTERNAL};
 
 ///Tags for the variables being evolved.
 enum EvolVarType {
@@ -303,8 +303,8 @@ public:
 			std::valarray<double> &stop_deriv,
 			EvolModeType evol_mode) const;
 
-	///Identify this as a ROT_FAST condition.
-	StoppingConditionType type(unsigned =0) const {return ROT_FAST;}
+	///Identify this as an EXTERNAL condition.
+	StoppingConditionType type(unsigned =0) const {return EXTERNAL;}
 };
 
 ///\brief A class combining the the outputs of multiple stopping conditions.
@@ -313,13 +313,26 @@ public:
 class CombinedStoppingCondition : public StoppingCondition {
 private:
 	///The conditions that are to be combined
-	std::vector<const StoppingCondition *> sub_conditions;
+	std::vector<const StoppingCondition *> __sub_conditions;
+
+	///\brief The number of subconditinos included, allowing for
+	///subconditions with multiple entries.
+	unsigned __num_subconditions;
 
 	///Whether to delete the sub-conditions then *this is destroyed.
-	bool delete_subcond;
+	bool __delete_subcond;
+
+	///\brief The types of the subconditinos, including subconditions of
+	///subconditions.
+	std::vector<StoppingConditionType> __types;
+
+	///\brief The interpolation ranges of the subconditinos, including
+	///subconditions of subconditions.
+	std::vector<double> __interpolation_ranges;
 public:
 	///Create an empty stopping condition (identical to NoStopCondition).
-	CombinedStoppingCondition() : sub_conditions(), delete_subcond(true) {}
+	CombinedStoppingCondition() :
+		__sub_conditions(), __num_subconditions(0), __delete_subcond(true) {}
 
 	///Adds the conditions in RHS to the conditions of *this.
 	CombinedStoppingCondition &operator|=(
@@ -340,15 +353,15 @@ public:
 			EvolModeType evol_mode) const;
 
 	///Disables the destruction of the subconditions when *this is destroyed.
-	void no_delete_subcond() {delete_subcond=false;}
+	void no_delete_subcond() {__delete_subcond=false;}
 
-	virtual size_t num_subconditions() const {return sub_conditions.size();}
+	virtual size_t num_subconditions() const {return __num_subconditions;}
 
 	StoppingConditionType type(unsigned index=0) const
-	{return sub_conditions[index]->type();}
+	{return __types[index];}
 
 	double interpolation_range(unsigned index=0) const
-	{return sub_conditions[index]->interpolation_range();}
+	{return __interpolation_ranges[index];}
 
 	///\brief Deletes all subconditions, unless no_delete_subcond has been
 	///previously called.
