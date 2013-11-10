@@ -531,6 +531,8 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	setup();
 	define_options();
 	arg_lit *help_option=arg_lit0("h", "help", "Print this help and exit.");
+	arg_lit *doxyhelp_option=arg_lit0(NULL, "doxygen-help", "Print this help "
+			"formatted suitably for Doxygen and exit.");
 	struct arg_end *end = arg_end(100);
 	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; i++)
 		__argtable[i]=__direct_value_options[i];
@@ -542,7 +544,8 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	__argtable[InCol::NUM_INPUT_QUANTITIES+2]=__input_fname;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+3]=__serialized_stellar_evolution;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+4]=help_option;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=end;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=doxyhelp_option;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+6]=end;
 
 	if(arg_nullcheck(__argtable) != 0) {
 		cleanup();
@@ -552,12 +555,23 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	int nerrors=arg_parse(argc, argv, __argtable);
 	if(help_option->count>0 || nerrors>0) {
         printf("Usage: %s", "SubPixPhot");
-        arg_print_syntax(stdout, __argtable,"\n");
+        arg_print_syntax(stdout, __argtable,"\n\n");
         arg_print_glossary(stdout, __argtable,"  %-25s %s\n");
 		if(help_option->count==0)
 			arg_print_errors(stdout, end, "poet");
+		else exit(0);
 		__parsed_ok=false;
 		return;
+	}
+	if(doxyhelp_option->count>0) {
+        printf("SubPixPhot [options]\n\n");
+		printf("Supported Options\n");
+		printf("-----------------\n");
+		printf("<dl>");
+        arg_print_glossary(stdout, __argtable,
+				"<dt>%s</dt>\n <dd>%s</dd>\n\n");
+		printf("</dl>");
+		exit(0);
 	}
 	postprocess();
 	__parsed_ok=true;

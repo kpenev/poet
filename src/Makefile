@@ -15,7 +15,8 @@ COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
 				  ExternalStoppingConditions
 
 BOOST_LIB		= boost_serialization-mt
-LIBRARIES       = -lgsl -lgslcblas -lboost_serialization-mt -largtable2
+LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \
+					echo -lgsl -lgslcblas) -lboost_serialization-mt -largtable2
 
 #POET
 
@@ -52,8 +53,9 @@ ALGLIBOBJECTS   = $(addprefix $(ALGLIBSRCPATH), $(ALGLIBOBJS))
 ###############################################################################
 # Doxygen documentation:
 
-DOXY_CONF        = ../documentation/DoxygenConfig
-DOXY_DEST        = ../documentation/doxygen
+DOC_ROOT         = ../documentation
+DOXY_CONF        = $(DOC_ROOT)/DoxygenConfig
+DOXY_DEST        = $(DOC_ROOT)/doxygen
 DOXY_HTML        = $(addsuffix /html, $(DOXY_DEST))
 DOXY_WWW         = kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
 
@@ -63,7 +65,9 @@ DOXY_WWW         = kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_e
 COMPILER        = g++
 
 INCLUDES        = 
-CFLAGS_COMMON   = -W -Wall $(INCLUDES) -D'GLOBAL_SVN="$(shell svnversion -n)"'
+CFLAGS_COMMON   = -W -Wall $(INCLUDES) \
+				  $(shell gsl-config --cflags 2>/dev/null) \
+				  -D'GLOBAL_SVN="$(shell svnversion -n)"'
 
 CFLAGS_DEBUG   = -ggdb3 -DDEBUG $(CFLAGS_COMMON)
 CFLAGS_RELEASE = -O3 $(CFLAGS_COMMON)
@@ -189,7 +193,13 @@ ctags:
 
 .PHONY: doc
 
-doc:
+doc: poet
+	@echo "Compilation {#compilation}" > $(DOC_ROOT)/compilation.md
+	@echo "===========" >> $(DOC_ROOT)/compilation.md
+	@make help >> $(DOC_ROOT)/compilation.md
+	@echo "Usage {#usage}" > $(DOC_ROOT)/usage.md
+	@echo "=====" >> $(DOC_ROOT)/usage.md
+	@./poet --doxygen-help |sed -f format_doxyhelp.sed >>$(DOC_ROOT)/usage.md
 	@doxygen $(DOXY_CONF) > /dev/null \
 		|| [ $$? -eq 0 ]
 	@echo "Documentation generated successfully!"
@@ -204,27 +214,42 @@ doc:
 
 .PHONY: help
 help:
-	@echo "Makefile for the P(lanetary) O(rbital) E(volution) due to"\
-          "T(ides) package"
-	@echo "External libraries needed: gsl gslcblas boost_serialization"\
-	      "argtable2."
-	@echo "Since the BOOST serialization library can be named either"\
-          "boost_serialization or boost_serialization-mt you can change the"\
-          "name by providing BOOST_LIB='boost_serialization' on the command"\
-          "line. By default 'boost_serialization-mt' is used."
+	@echo "Compiling the (P)lanetary (O)rbital (E)volution due to (T)ides"\
+		  "package"
+	@echo "-----------------------------------------------------------------"
+	@echo ""
+	@echo "External libraries needed: **gsl**, **gslcblas**,"\
+		  "**boost_serialization**, **argtable2**."
+	@echo ""
+	@echo "If the **gsl-config** executable is in the search path, it is"\
+		  "used to figure out the compiler options that provide the search"\
+		  "paths to header files and libraries."
+	@echo ""
+	@echo "We have encountered BOOST serialization libraries named either"\
+          "**boost_serialization** or **boost_serialization-mt** you can"\
+		  "change the name by providing **BOOST_LIB='boost_serialization'**"\
+		  "on the command line. By default **boost_serialization-mt** is"\
+		  "used."
+	@echo ""
+	@echo "Depending on your set-up, the **BOOST/argtable2** header files"\
+		  "and/or libraries may not be in your standard search paths. If"\
+		  "you see compile time errors to that effect, please use the"\
+		  "**CPATH** and **LIBRARY_PATH** environment variables to tell g++"\
+		  "where to find those."
 	@echo ""
 	@echo "Makefile targets :"
-	@echo "all              : build all executables (default)"
-	@echo "debug            : build all executables in debug mode"
-	@echo "profile          : build all executables to be used with gprof"
-	@echo "install          : TODO build all and copy executables to"\
-	                          "$(BINDIR). Use BINDIR='<install path>' on "\
-							  "the command line to change where the"\
-							  "binaries are installed." 
-	@echo "poet             : build the $(POET) executable"
-	@echo "SimOne           : build the $(SIMONE) executable"
-	@echo "clean            : delete intermediate files and executables"
-	@echo "del              : same as clean, plus clean extern libs and"\
-							  "documentation"
-	@echo "ctags            : rebuild ctags index file"
+	@echo "------------------"
+	@echo " * all              : build all executables (default)"
+	@echo " * debug            : build all executables in debug mode"
+	@echo " * profile          : build all executables to be used with gprof"
+	@echo " * install          : TODO build all and copy executables to"\
+	                             "$(BINDIR). Use BINDIR='<install path>' on"\
+							     "the command line to change where the"\
+							     "binaries are installed." 
+	@echo " * poet             : build the $(POET) executable"
+	@echo " * SimOne           : build the $(SIMONE) executable"
+	@echo " * clean            : delete intermediate files and executables"
+	@echo " * del              : same as clean, plus clean extern libs and"\
+							     "documentation"
+	@echo " * ctags            : rebuild ctags index file"
 	@echo ""
