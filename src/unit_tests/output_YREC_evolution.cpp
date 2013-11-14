@@ -101,14 +101,14 @@ void output_evolution(std::ostream &os,
 ///Outputs the interpolated stellar quantities derived from the YREC tracks.
 int main(int argc, char **argv)
 {
-	YRECEvolution toSave("../YREC", 0, 2.0, 2.0);
-	toSave.save_state("interp_state_data_phs4");
-	return 0;
+/*	YRECEvolution toSave("../YREC", 0, 2.0, 2.0);
+	toSave.save_state("../interp_state_data_phs4");
+	return 0;*/
 	assert(argc==2);
 	try {
 //		YRECEvolution evolution("../YREC", 0, 2.0, 2.0);
 		YRECEvolution evolution;
-		evolution.load_state("../interp_state_data");
+		evolution.load_state("../interp_state_data_phs4");
 		for(double m=0.5; m<1.22; m+=0.001) {
 			std::ostringstream fname;
 			fname.precision(3);

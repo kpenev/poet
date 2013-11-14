@@ -216,7 +216,7 @@ void YRECEvolution::sort_masses()
 		}
 		if(iter==stop_iter) break;
 		EvolutionIterator dest=begin();
-		while(*((++dest).mass_iter)<=*iter.mass_iter) {}
+		while(*(dest.mass_iter)<=*iter.mass_iter) {++dest;}
 		EvolutionIterator source=iter++;
 		move(dest, source);
 	}

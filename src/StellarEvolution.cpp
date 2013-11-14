@@ -224,10 +224,13 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 	int good_ind=0;
 	for(track=low_mass_tracks.begin(); track!=low_mass_tracks.end(); 
 			track++) {
-		good_values[good_ind]=evaluate_track(*model_age, **track,
+		double value=evaluate_track(*model_age, **track,
 				(derivatives ? &((*good_derivatives)[good_ind]) : NULL));
-		if(!std::isnan(good_values[good_ind]))
-			(*good_masses)[good_ind++]=*mass;
+		if(!std::isnan(value)) {
+			good_values[good_ind]=value;
+			(*good_masses)[good_ind]=*mass;
+			++good_ind;
+		}
 		mass++;
 		model_age++;
 	}

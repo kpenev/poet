@@ -4,7 +4,7 @@ ALGLIB_OBJ=../alglib/src/interpolation.o ../alglib/src/ap.o \
 		   ../alglib/src/linalg.o ../alglib/src/integration.o \
 		   ../alglib/src/alglibmisc.o ../alglib/src/solvers.o \
 		   ../alglib/src/specialfunctions.o
-COMBINED_CODE = ../Functions.o ../OrbitSolver.o ../Planet.o ../Star.o ../StellarEvolution.o ../YRECIO.o ../StellarSystem.o ../Common.o Common.o
+COMBINED_CODE = ../Functions.o ../OrbitSolver.o ../Planet.o ../Star.o ../StellarEvolution.o ../YRECIO.o ../StellarSystem.o ../Common.o ../StoppingConditions.o Common.o
 TEST_LIB = -lcpptest -lgsl -lblas -lboost_serialization-mt
 ALL_EXEC=test_InterpolatingFunctionALGLIB test_EvolvingStellarQuantity test_Star test_Planet test_StellarEvolution test_StellarSystem
 CPPFLAGS = -g -Wall -I../ -I/opt/local/include -L/opt/local/lib -D STANDALONE 

@@ -22,7 +22,7 @@ def evol_fname(mass) :
     """ Returns the filename with the interpolated track corresponding to the
     given mass. """
 
-    return "test_evol/serialized_evol_M%.3f.evol"%mass
+    return "test_YREC_interp/test_YREC_interp_M%.3f.evol"%mass
 
 def read_YREC_file(fname, mass) :
     """ Reads a YREC track. """
@@ -48,7 +48,7 @@ def read_evol_file(fname) :
     """ Reads an output interpolated evolution file. """
 
     f=open(fname)
-    result={'t':[], 'R':[[], [], []], 'Iconv':[[], [], []],
+    result={'t':[], 'R':[[], [], []], 'L':[[], [], []], 'Iconv':[[], [], []],
             'Irad':[[], [], []], 'Mrad':[[], [], []], 'Rcore':[[], [], []]}
     for l in f :
         if l[0]=='#' : continue
@@ -56,10 +56,11 @@ def read_evol_file(fname) :
         result['t'].append(entries[0])
         for i in range(3) :
             result['R'][i].append(entries[1+i])
-            result['Iconv'][i].append(entries[4+i])
-            result['Mrad'][i].append(entries[10+i])
-            result['Rcore'][i].append(entries[13+i])
-            result['Irad'][i].append(entries[16+i])
+            result['L'][i].append(entries[4+i])
+            result['Iconv'][i].append(entries[7+i])
+            result['Mrad'][i].append(entries[13+i])
+            result['Rcore'][i].append(entries[16+i])
+            result['Irad'][i].append(entries[19+i])
     return result
 
 def plot_quantity(quantity, low_mass, high_mass, YREC, evol, pdf, logx=True,
@@ -99,7 +100,7 @@ if __name__=='__main__' :
     evol=dict()
     for mass in arange(0.5, 1.205, 0.001) :
         evol[str(mass)]=read_evol_file(evol_fname(mass))
-    pdf = PdfPages('serialized_evol_plots.pdf')
+    pdf = PdfPages('test_YREC_interp.pdf')
     YREC_masses=sorted(map(eval, YREC_files.keys()))
     for q in ['R', 'Iconv', 'Irad', 'Mrad', 'Rcore'] :
         for i in range(len(YREC_masses)-1) :
