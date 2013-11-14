@@ -11,7 +11,7 @@ BINDIR = ../bin/
 # modules
 #
 COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
-                  StellarSystem YRECIO StoppingConditions \
+                  StellarSystem YRECIO MESAIO StoppingConditions \
 				  ExternalStoppingConditions
 
 BOOST_LIB		= boost_serialization-mt
@@ -35,9 +35,17 @@ SIMONE_MODULES  = $(SIMONE) $(COMMON_MODULES)
 SIMONE_OBJECTS  = $(addsuffix .o, $(SIMONE_MODULES))
 SIMONE_DEPS     = $(addsuffix .d, $(SIMONE_MODULES))
 
+#MESAIO
+MESAIO          = debug_mesaio
+COMPILE_MESAIO	= compile_MESAIO
+
+MESAIO_MODULES  = $(MESAIO) $(COMMON_MODULES)
+MESAIO_OBJECTS  = $(addsuffix .o, $(MESAIO_MODULES))
+MESAIO_DEPS     = $(addsuffix .d, $(MESAIO_MODULES))
+
 #list of executables
-EXECUTABLES     = $(POET) $(SIMONE)
-COMPILES        = $(COMPILE_POET) $(COMPILE_SIMONE)
+EXECUTABLES     = $(POET) $(MESAIO) $(SIMONE)
+COMPILES        = $(COMPILE_POET) $(COMPILE_MESAIO) $(COMPILE_SIMONE)
 
 ###############################################################################
 # alglib:
@@ -130,6 +138,19 @@ $(COMPILE_SIMONE): $(SIMONE_OBJECTS) $(ALGLIB)
 	@echo "$(SIMONE) compiled successfully!"
 
 #############################################################################
+
+.PHONY: $(MESAIO)
+
+$(MESAIO): override CFLAGS = $(CFLAGS_RELEASE)
+$(MESAIO): override LFLAGS = $(LFLAGS_RELEASE)
+$(MESAIO): $(COMPILE_MESAIO)
+
+$(COMPILE_MESAIO): $(MESAIO_OBJECTS) $(ALGLIB)
+	@$(COMPILER) -o $(MESAIO) $(MESAIO_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+		|| [ $$? -eq 0 ]
+	@echo "$(MESAIO) compiled successfully!"
+
+#############################################################################
 # ALGLIB library
 
 .PHONY: $(ALGLIB)
@@ -156,6 +177,7 @@ clean:
 	@echo "deleting intermediate and target files ..."
 	@rm -f $(POET_OBJECTS) $(POET_DEPS)
 	@rm -f $(SIMONE_OBJECTS) $(SIMONE_DEPS)
+	@rm -f $(MESAIO_OBJECTS) $(MESAIO_DEPS)
 	@rm -f $(EXECUTABLES)
 
 #############################################################################
@@ -187,6 +209,7 @@ ctags:
 
 -include $(POET_DEPS)
 -include $(SIMONE_DEPS)
+-include $(MESAIO_DEPS)
 
 #############################################################################
 # Prepare and install documentation to Penev's homepage
@@ -248,6 +271,7 @@ help:
 							     "binaries are installed." 
 	@echo " * poet             : build the $(POET) executable"
 	@echo " * SimOne           : build the $(SIMONE) executable"
+	@echo " * MESAIO           : build the $(MESAIO) executable"
 	@echo " * clean            : delete intermediate files and executables"
 	@echo " * del              : same as clean, plus clean extern libs and"\
 							     "documentation"

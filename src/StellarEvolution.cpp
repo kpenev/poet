@@ -111,7 +111,8 @@ void EvolvingStellarQuantity::init_low_mass(
 		if(stellar_mass>=mass) {
 			track_below=track;
 			mass_below=mass;
-		} else if(track_above==evolution_tracks.end()) {
+		}
+		if(stellar_mass<=mass && track_above==evolution_tracks.end()) {
 			track_above=track;
 			mass_above=mass;
 		}
@@ -176,8 +177,23 @@ double EvolvingStellarQuantity::high_mass_interp(double age,
 	} else return (*closest_high_mass_track)(model_age);
 }
 
+double EvolvingStellarQuantity::evaluate_track(double age,
+		const OneArgumentDiffFunction &track,
+		const FunctionDerivatives **derivatives) const
+{
+	bool too_young=age<track.range_low(),
+		 too_old=age>track.range_high()*extrapolate_low_mass;
+	if((!too_young || initially_zero) && !too_old) {
+		if(derivatives==NULL) return (too_young ? 0.0 : track(age));
+		else {
+			*derivatives=(too_young ? new ZeroDerivatives :track.deriv(age));
+			return (*derivatives)->order(0);
+		}
+	} else return NaN;
+}
+
 double EvolvingStellarQuantity::low_mass_interp(double age,
-		const InterpolatedDerivatives **derivatives) const
+		const FunctionDerivatives **derivatives) const
 {
 	int num_good_tracks=0;
 	std::list<const OneArgumentDiffFunction *>::const_iterator 
@@ -185,6 +201,9 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 	std::list<double>::const_iterator mass=low_masses.begin();
 	std::list<double> scaled_ages;
 	for(; track!=low_mass_tracks.end(); track++) {
+		if(*mass==stellar_mass)
+			return evaluate_track((use_log_age ? std::log(age) : age),
+					**track, derivatives);
 		double model_age=std::pow(stellar_mass/(*mass), 
 				age_scaling_low_mass)*age;
 		if(use_log_age) model_age=std::log(model_age);
@@ -205,17 +224,10 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 	int good_ind=0;
 	for(track=low_mass_tracks.begin(); track!=low_mass_tracks.end(); 
 			track++) {
-		bool too_young=(*model_age)<(*track)->range_low(),
-			 too_old=(*model_age)>(*track)->range_high()*extrapolate_low_mass;
-		if((!too_young || initially_zero) && !too_old) {
-			(*good_masses)[good_ind]=*mass;
-			if(derivatives==NULL)
-				good_values[good_ind]=(too_young ? 0.0 :
-						(**track)(*model_age));
-			else (*good_derivatives)[good_ind]=(too_young ?
-					new ZeroDerivatives : (*track)->deriv(*model_age));
-			good_ind++;
-		}
+		good_values[good_ind]=evaluate_track(*model_age, **track,
+				(derivatives ? &((*good_derivatives)[good_ind]) : NULL));
+		if(!std::isnan(good_values[good_ind]))
+			(*good_masses)[good_ind++]=*mass;
 		mass++;
 		model_age++;
 	}
@@ -265,7 +277,7 @@ double EvolvingStellarQuantity::operator()(double age) const
 const FunctionDerivatives *EvolvingStellarQuantity::deriv(double age) const
 {
 	if(is_low_mass) {
-		const InterpolatedDerivatives *deriv;
+		const FunctionDerivatives *deriv;
 		low_mass_interp(age, &deriv);
 		return deriv;
 	} else {
@@ -309,7 +321,6 @@ void StellarEvolution::interpolate_from(
 		L_iter=tabulated_luminosities.begin();
 
 	for(size_t i=0; i<num_tracks; i++) {
-		std::cout<<i<<std::endl;
 		if(ages_iter==tabulated_ages.end())
 			throw Error::BadFunctionArguments(
 				"The number of age arrays is smaller than the number of "

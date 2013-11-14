@@ -292,6 +292,15 @@ private:
 			///The mass above which the stars are considered high mass.
 			double max_low_mass);
 
+	///\brief Interpolate the quantity for the given track to the given age,
+	///returning NaN if out of age range.
+	///
+	///If derivatives is not NULL initializes that to a pointer to a
+	///derivatives at the current age structure.
+	double evaluate_track(double age,
+			const OneArgumentDiffFunction &track,
+			const FunctionDerivatives **derivatives) const;
+
 	///\brief Interpolate the quantity to the desired age assuming we are in
 	///the high mass regime.
 	///
@@ -306,7 +315,7 @@ private:
 	///If derivatives is not NULL initializes that to a pointer to a
 	///derivatives at the current age structure.
 	double low_mass_interp(double age, 
-			const InterpolatedDerivatives **derivatives=NULL) const;
+			const FunctionDerivatives **derivatives=NULL) const;
 
 	///Calculates the derivatives of the quantity for a high mass star.
 	const CubicSplineDerivatives *high_mass_deriv(double age) const;

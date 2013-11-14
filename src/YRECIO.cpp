@@ -36,9 +36,9 @@ EvolutionIterator &EvolutionIterator::operator=(const EvolutionIterator &rhs)
 
 EvolutionIterator &EvolutionIterator::operator++()
 {
-	mass_iter++; age_iter++; radius_iter++; luminosity_iter++;
-	rad_mass_iter++; core_boundary_iter++; conv_inertia_iter++;
-	rad_inertia_iter++;
+	++mass_iter; ++age_iter; ++radius_iter; ++luminosity_iter;
+	++rad_mass_iter; ++core_boundary_iter; ++conv_inertia_iter;
+	++rad_inertia_iter;
 	return *this;
 }
 

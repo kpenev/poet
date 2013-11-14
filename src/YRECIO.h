@@ -143,6 +143,7 @@ public:
 ///
 ///\ingroup StellarSystem_group
 class YRECEvolution : public StellarEvolution {
+private:
 	friend class boost::serialization::access;
 
 	///Saves the interpolation to a file for faster re-use.
@@ -153,7 +154,7 @@ class YRECEvolution : public StellarEvolution {
 		ar & ages & radii & luminosities & rad_masses &
 			core_boundaries & conv_inertias & rad_inertias;
 	}
-private:
+
 	///The masses of the available tracks.
 	std::list<double> mass_list;
 
@@ -193,7 +194,7 @@ public:
 	YRECEvolution(){};
 
 	///\brief Creates a stellar evolution interpolator based on evolution
-	///tracks coputed with YREC.
+	///tracks computed with YREC.
 	YRECEvolution(
 		///The directory containing the YREC evolution tracks
 		const std::string &model_directory,
