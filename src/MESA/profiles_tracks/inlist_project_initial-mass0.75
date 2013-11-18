@@ -1,0 +1,320 @@
+
+! inlist_project
+
+! contains the parameters controlling this job
+
+! for the sake of future readers of this (yourself included),
+! ONLY include the controls you are actually using.
+! DO NOT include all of the other controls that
+! simply have their default values.
+
+
+
+&star_job
+
+      mesa_dir = '' ! empty string defaults to environment variable MESA_DIR
+
+      create_pre_main_sequence_model = .true.
+
+      change_net = .true. ! switch nuclear reaction network
+      new_net_name = 'o18_and_ne22.net'
+
+      eos_file_prefix = 'mesa'
+      kappa_file_prefix = 'gs98'
+
+      pgstar_flag = .false.
+
+/ !end of star_job
+
+&controls
+
+   !max_model_number = 15
+
+  ! starting specifications
+      initial_mass = 0.75 ! Modified by update_inlist.py, 2013-11-14T12:26:58
+      initial_Z = 0.0
+      initial_Y = 0.25
+
+   ! output to files and terminal
+      photostep = 50
+      profile_interval = 50
+      history_interval = 1
+      terminal_interval = 10
+      write_header_frequency = 10
+
+  ! mass gain or loss
+      RGB_wind_scheme = 'Reimers'
+      AGB_wind_scheme = 'Blocker'
+      RGB_to_AGB_wind_switch = 1d-4
+      Reimers_wind_eta = 0.8d0
+      Blocker_wind_eta = 0.5d0
+
+  ! when to stop
+      xa_central_lower_limit_species(1) = 'he4'
+      xa_central_lower_limit(1) = 1d-12
+         ! stop when the center abundance by mass of he4 drops below this limit.
+
+/
+
+
+&pgstar
+
+      ! top level controls
+
+         !pause = .true.
+            ! if true, the code waits for user to enter a RETURN on the command line
+
+      ! main window
+
+         MAIN_win_flag = .true.
+
+         show_TRho_Profile_with_main = .true.
+
+         show_HR_TRho_with_main = .true. ! if false, use aspect ratio > 1
+         MAIN_win_width = 8
+         MAIN_win_aspect_ratio = 1.2 ! aspect_ratio = height/width
+
+         xaxis_by = 'by_mass' ! select xaxis for main window
+
+         show_main_win_text_info = .true.
+
+         ! xaxis limits -- to override system default selections
+         !main_xmin = -12 !0.4
+         !main_xmax = 0.5
+
+         logxq_cutoff = -12.1 ! min value when using logxm for xaxis
+         !main_logL_max = 7
+         !main_logL_min = 0
+
+         ! control for plot showing abundances
+         log_mass_frac_ymax = 0.7 ! making this > 0 helps readability
+         log_mass_frac_ymin = -7.5
+         num_abundance_line_labels = 5
+
+         log_abund_vary = 0.1 ! don't show species if it would vary by < this in plot
+
+         ! file output
+         !MAIN_file_flag = .true.
+         MAIN_file_dir = 'png'
+         MAIN_file_prefix = 'main'
+         MAIN_file_cnt = 2 ! output when mod(model_number,main_file_cnt)==0
+
+
+      ! TRho Profile window -- current model in T-Rho plane
+
+         TRho_Profile_win_flag = .false.
+
+         TRho_Profile_win_width = 7.5
+         TRho_Profile_win_aspect_ratio = 0.618 ! aspect_ratio = height/width
+
+         show_TRho_Profile_text_info = .false.
+         show_TRho_Profile_legend = .true.
+         show_HR_TRho_with_TRho_Profile = .false.
+         show_TRho_Profile_burn_labels = .true.
+         TRho_Profile_show_logQ_limit = .true.
+         !show_TRho_Profile_cross_hair = .true.
+         show_TRho_Profile_mass_locs = .false.
+
+         show_TRho_Profile_kap_regions = .false.
+         show_TRho_Profile_eos_regions = .true.
+         show_TRho_Profile_degeneracy_line = .true.
+         show_TRho_Profile_Pgas_Prad_line = .true.
+         show_TRho_Profile_burn_lines = .true.
+
+         !show_TRho_Profile_annotation1 = .true.
+         !show_TRho_Profile_annotation2 = .true.
+         !show_TRho_Profile_annotation3 = .true.
+
+         ! axis limits
+         TRho_Profile_xmin = -10
+         TRho_Profile_xmax = 10
+         TRho_Profile_ymin = 3.0
+         TRho_Profile_ymax = 10
+
+         ! file output
+         !TRho_Profile_file_flag = .true.
+         TRho_Profile_file_dir = 'png'
+         TRho_Profile_file_prefix = 'trho_profile'
+         TRho_Profile_file_cnt = 2 ! output when mod(model_number,TRho_Profile_file_cnt)==0
+
+
+      ! Profile window
+
+         Profile_win_flag = .false.
+
+         Profile_win_width = 7.5
+         Profile_win_aspect_ratio = 0.618 ! aspect_ratio = height/width
+
+         show_Profile_legend = .false.
+         Profile_legend_coord = 0.65
+         Profile_legend_fjust = 0.0
+         Profile_legend_disp1 = -7.5
+         Profile_legend_del_disp = -1.5
+         Profile_show_mass_locs = .false.
+         Profile_show_decorated_line = .false.
+
+         show_HR_TRho_with_Profile = .false.
+         show_Profile_text_info = .false.
+         Profile_text_info_xfac = 0.78 ! controls x location
+         Profile_text_info_dxfac = 0.02 ! controls x spacing to value from text
+         Profile_text_info_yfac = 0.95 ! controls y location of 1st line
+         Profile_text_info_dyfac = -0.04 ! controls line spacing
+         show_Profile_cross_hair = .false.
+
+         show_Profile_annotation1 = .false.
+         show_Profile_annotation2 = .false.
+         show_Profile_annotation3 = .false.
+
+         ! axis choices
+            ! to get a list of axis identifiers, edit your star_job controls
+               ! to set show_profile_column_numbers = .true.
+            ! you can use any identifier for x or y
+         Profile_xaxis_name = 'logxm'
+         Profile_xaxis_reversed = .true.
+         Profile_xmin = -12 ! only used if > -100
+         !Profile_xmax = 1.2 !-101 ! only used if > -100
+
+         Profile_yaxis_name = 'entropy' !'grada'
+         Profile_yaxis_reversed = .false.
+         Profile_ymin = -111 !5.4 ! only used if > -100
+         Profile_ymax = -111 !8.6 ! only used if > -100
+         Profile_dymin = 0.025
+
+         Profile_other_yaxis_name = 'logL'
+         Profile_other_yaxis_reversed = .false.
+         Profile_other_ymin = -101 ! only used if > -100
+         Profile_other_ymax = -101 ! only used if > -100
+
+         ! file output
+         !Profile_file_flag = .true.
+         Profile_file_dir = 'png'
+         Profile_file_prefix = 'profile'
+         Profile_file_cnt = 5 ! output when mod(model_number,Profile_file_cnt)==0
+
+
+      ! Convection window -- history of convection and more.
+
+         CONV_win_flag = .true.
+
+         CONV_win_width = 9
+         CONV_win_aspect_ratio = 0.62 ! aspect_ratio = height/width
+
+         ! axis limits
+         CONV_xmax = -1 ! step number.  negative means use default.
+         CONV_xmin = -1 ! step number.  negative means use default.
+         CONV_max_width = 0 ! only used if > 0.  causes xmin to move with xmax.
+         CONV_mmax = -1 ! (Msun units) negative means use start initial mass
+         CONV_mmin = 0 ! (Msun units)
+         CONV_lgLmax = -101 ! only used if > -100; (L in Lsun units)
+         CONV_lgLmin = -2 ! only used if > -100; (L in Lsun units)
+
+         CONV_show_burn = .true.
+         CONV_show_mixing = .true.
+         CONV_show_log_radius = .true.
+         CONV_show_luminosities = .true.
+         CONV_show_mass_boundaries = .true.
+
+         show_CONV_annotation1 = .false.
+         show_CONV_annotation2 = .false.
+         show_CONV_annotation3 = .false.
+
+         ! file output
+         CONV_file_flag = .false.
+         CONV_file_dir = 'pgstar_out'
+         CONV_file_prefix = 'conv'
+         CONV_file_cnt = 5 ! output when mod(model_number,CONV_file_cnt)==0
+         CONV_file_width = -1 ! negative means use same value as for window
+         CONV_file_aspect_ratio = -1 ! negative means use same value as for window
+
+
+
+
+      ! Surface History window
+
+         Surf_Hist_win_flag = .true.
+
+         Surf_Hist_win_width = 6
+         Surf_Hist_win_aspect_ratio = 1.5 ! aspect_ratio = height/width
+
+         ! axis limits
+         Surf_Hist_xmax = -1 ! step number.  negative means use default.
+         Surf_Hist_xmin = -1 ! step number.  negative means use default.
+         Surf_Hist_max_width = 0 ! only used if > 0.  causes xmin to move with xmax.
+
+         ! abundance limits
+         Surf_Hist_mass_frac_min = 0
+         Surf_Hist_mass_frac_max = 1.1 ! > 0 helps legibility
+
+         show_Surf_Hist_annotation1 = .false.
+         show_Surf_Hist_annotation2 = .false.
+         show_Surf_Hist_annotation3 = .false.
+
+         ! file output
+         Surf_Hist_file_flag = .false.
+         Surf_Hist_file_dir = 'pgstar_out'
+         Surf_Hist_file_prefix = 'conv'
+         Surf_Hist_file_cnt = 5 ! output when mod(model_number,Surf_Hist_file_cnt)==0
+         Surf_Hist_file_width = -1 ! negative means use same value as for window
+         Surf_Hist_file_aspect_ratio = -1 ! negative means use same value as for window
+
+
+
+      ! Power window
+
+         Power_win_flag = .false.
+
+         Power_win_width = 7.5
+         Power_win_aspect_ratio = 0.618 ! aspect_ratio = height/width
+
+         Power_xaxis_by = 'by_mass' ! select xaxis
+
+         ! power xaxis limits -- to override system default selections
+         Power_xmin = -101 ! only used if > -100
+         Power_xmax = -101 ! only used if > -100
+
+         ! power yaxis limits -- to override system default selections
+         Power_ymin = -101 ! only used if > -100
+         Power_ymax = -101 ! only used if > -100
+
+         show_Power_cross_hair = .false.
+
+         ! file output
+         Power_file_flag = .false.
+         Power_file_dir = 'pgstar_out'
+         Power_file_prefix = 'power'
+         Power_file_cnt = 5 ! output when mod(model_number,Power_file_cnt)==0
+         Power_file_width = -1 ! negative means use same value as for window
+         Power_file_aspect_ratio = -1 ! negative means use same value as for window
+
+
+      ! Abundance window
+
+         Abundance_win_flag = .true.
+
+         Abundance_win_width = 9.0
+         Abundance_win_aspect_ratio = 0.5 ! aspect_ratio = height/width
+
+         Abundance_xaxis_by = 'by_logR'
+
+         ! power xaxis limits -- to override system default selections
+         Abundance_xmin = -101 ! only used if > -100
+         Abundance_xmax = -101 ! only used if > -100
+
+         ! power yaxis limits -- to override system default selections
+         Abundance_log_mass_frac_min = 1 ! only used if < 0
+         Abundance_log_mass_frac_max = 1 ! only used if < 0
+
+         show_Abundance_cross_hair = .false.
+
+         ! file output
+         Abundance_file_flag = .false.
+         Abundance_file_dir = 'pgstar_out'
+         Abundance_file_prefix = 'abund'
+         Abundance_file_cnt = 5 ! output when mod(model_number,Abundance_file_cnt)==0
+         Abundance_file_width = -1 ! negative means use same value as for window
+         Abundance_file_aspect_ratio = -1 ! negative means use same value as for window
+
+
+
+
+/ ! end of pgstar namelist

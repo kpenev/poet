@@ -2,7 +2,7 @@
 &star_job
 
       read_extra_star_job_inlist1 = .true.
-      extra_star_job_inlist1_name = 'inlist_project'
+      extra_star_job_inlist1_name = 'inlist_project_initial-mass1.2'
 
 / ! end of star_job namelist
 
@@ -11,7 +11,7 @@
 &controls
 
       read_extra_controls_inlist1 = .true.
-      extra_controls_inlist1_name = 'inlist_project'
+      extra_controls_inlist1_name = 'inlist_project_initial-mass1.2'
 
 / ! end of controls namelist
 
@@ -20,6 +20,6 @@
 &pgstar
 
       read_extra_pgstar_inlist1 = .true.
-      extra_pgstar_inlist1_name = 'inlist_project'
+      extra_pgstar_inlist1_name = 'inlist_project_initial-mass1.2'
 
 / ! end of pgstar namelist
