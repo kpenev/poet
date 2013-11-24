@@ -120,7 +120,7 @@ $(POET): override LFLAGS = $(LFLAGS_RELEASE)
 $(POET): $(COMPILE_POET)
 
 $(COMPILE_POET): $(POET_OBJECTS) $(ALGLIB)
-	@$(COMPILER) -o $(POET) $(POET_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+	$(COMPILER) -o $(POET) $(POET_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(POET) compiled successfully!"
 
@@ -216,7 +216,9 @@ ctags:
 
 .PHONY: doc
 
-doc: poet
+doc: CFLAGS_RELEASE+=-D'COLUMN_NAME_EMPHASIS="__"'
+
+doc: clean $(POET)
 	@echo "Compilation {#compilation}" > $(DOC_ROOT)/compilation.md
 	@echo "===========" >> $(DOC_ROOT)/compilation.md
 	@make help >> $(DOC_ROOT)/compilation.md

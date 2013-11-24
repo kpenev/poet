@@ -36,6 +36,12 @@ void CommandLineOptions::init_input_column_names()
 	__input_column_names[InCol::OUT_FNAME]="outf";
 	__input_column_names[InCol::START_LOCKED]="locked";
 	__input_column_names[InCol::REQUIRED_AGES]="trequired";
+#ifdef COLUMN_NAME_EMPHASIS
+	for(int i=0; i<InCol::NUM_INPUT_QUANTITIES; ++i)
+		__input_column_names[i]=std::string(COLUMN_NAME_EMPHASIS) +
+								__input_column_names[i] +
+								std::string(COLUMN_NAME_EMPHASIS);
+#endif
 }
 
 void CommandLineOptions::init_output_column_descriptions()
@@ -114,6 +120,24 @@ void CommandLineOptions::init_output_column_descriptions()
 		"stellar radiative core in solar radii per Gyr^2.";
 }
 
+void CommandLineOptions::init_track_column_descriptions()
+{
+	__track_column_descr.resize(TrackCol::NUM_TRACK_QUANTITIES);
+
+	__track_column_descr[TrackCol::AGE]="Age in Gyr";
+	__track_column_descr[TrackCol::ICONV]=
+		"Convective zone moment of inertia Msun Rsun^2 ";
+	__track_column_descr[TrackCol::IRAD]=
+		"Radiative zone moment of inertia Msun Rsun^2 ";
+	__track_column_descr[TrackCol::RSTAR]="Stellar radius in solar radii";
+	__track_column_descr[TrackCol::LSTAR]=
+		"Stellar luminosity in solar luminosities";
+	__track_column_descr[TrackCol::RRAD]="Radius of the stellar radiative "
+		"zone in solar radii.";
+	__track_column_descr[TrackCol::MRAD]="Mass of the stellar radiative zone "
+		"in solar masses.";
+}
+
 void CommandLineOptions::init_defaults()
 {
 	__defaults.resize(InCol::NUM_REAL_INPUT_QUANTITIES);
@@ -147,6 +171,7 @@ void CommandLineOptions::setup()
 {
 	init_input_column_names();
 	init_output_column_descriptions();
+	init_track_column_descriptions();
 	init_defaults();
 }
 
@@ -182,12 +207,36 @@ void init_output_column_names()
 	OUTPUT_COLUMN_NAMES[OutCol::IRAD_SECOND_DERIV]="DDIrad";
 	OUTPUT_COLUMN_NAMES[OutCol::ITOT_SECOND_DERIV]="DDI";
 	OUTPUT_COLUMN_NAMES[OutCol::RRAD_SECOND_DERIV]="DDRrad";
+#ifdef COLUMN_NAME_EMPHASIS
+	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; ++i)
+		OUTPUT_COLUMN_NAMES[i]=std::string(COLUMN_NAME_EMPHASIS) +
+								OUTPUT_COLUMN_NAMES[i] +
+								std::string(COLUMN_NAME_EMPHASIS);
+#endif
+}
+
+void init_track_column_names()
+{
+	TRACK_COLUMN_NAMES[TrackCol::AGE]="t";
+	TRACK_COLUMN_NAMES[TrackCol::ICONV]="Iconv";
+	TRACK_COLUMN_NAMES[TrackCol::IRAD]="Irad";
+	TRACK_COLUMN_NAMES[TrackCol::RSTAR]="R";
+	TRACK_COLUMN_NAMES[TrackCol::LSTAR]="Lum";
+	TRACK_COLUMN_NAMES[TrackCol::RRAD]="Rrad";
+	TRACK_COLUMN_NAMES[TrackCol::MRAD]="Mrad";
+#ifdef COLUMN_NAME_EMPHASIS
+	for(int i=0; i<TrackCol::NUM_TRACK_QUANTITIES; ++i)
+		TRACK_COLUMN_NAMES[i]=std::string(COLUMN_NAME_EMPHASIS) +
+								TRACK_COLUMN_NAMES[i] +
+								std::string(COLUMN_NAME_EMPHASIS);
+#endif
 }
 
 const std::string CommandLineOptions::__default_outfname="poet.evol",
 	  CommandLineOptions::__default_serialized_evol="interp_state_data",
 	  CommandLineOptions::__default_output_columns=
-	  	"t,a,Lconv,Lrad,L,Iconv,Irad,I,mode";
+	  	"t,a,Lconv,Lrad,L,Iconv,Irad,I,mode",
+	  CommandLineOptions::__default_track_columns="t,R,Iconv,Irad,Rrad,Mrad";
 
 char *CommandLineOptions::cstr_copy(const std::ostringstream &stream)
 {
@@ -449,9 +498,9 @@ void CommandLineOptions::define_options()
 	option_help << "Specifies what to output. This "
 			"argument should be a comma separated list containing some of "
 			"the following columns:" << std::endl;
-	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; i++)
-		option_help << "\t* " << OUTPUT_COLUMN_NAMES[i] << ": "
-			<< __output_column_descr[i] << std::endl;
+	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; ++i)
+		option_help << "\t* " << OUTPUT_COLUMN_NAMES[i]
+					<< ": " << __output_column_descr[i] << std::endl;
 	option_help << "Default: " << __default_output_columns;
 	__output_file_columns=arg_str0(NULL, "output-columns",
 			"<comma separated list>", cstr_copy(option_help));
@@ -466,6 +515,31 @@ void CommandLineOptions::define_options()
 	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
 			"<file>", "The file to read previously serialized stellar "
 			"evolution from. Default: 'interp_state_data'.");
+
+	__custom_stellar_evolution=arg_file0(NULL, "custom-stellar-evolution",
+			"<file>", "A single stellar evolution track from which to "
+			"construct the stellar evolution to use (assumed to apply to all"
+			" input systems regardless of the stellar mass). It should "
+			"contain the quantities specified by "
+			"--custom-stellar-evolution-format as columns in the precise "
+			"order specified there. If this option is used, all input stars "
+			"are treated as low mass stars, since that way the high mass "
+			"star behavior can be reproduced  by simply assigning the entire"
+			"star to a surface  convective zone.");
+
+	option_help.str("");
+	option_help << "A comma separated list of the columns in the custom "
+		"stellar evolution track specified by the --custom-stellar-evolution"
+		" option. The recognized column names are:" << std::endl;
+	for(int i=0; i<TrackCol::NUM_TRACK_QUANTITIES; ++i)
+		option_help << "\t* "  << TRACK_COLUMN_NAMES[i]
+					<< ": " << __track_column_descr[i] << std::endl;
+	__custom_stellar_evolution_format=arg_str0(NULL,
+			"custom-stellar-evolution-format", "<col1,col2,...>",
+			cstr_copy(option_help));
+	__direct_value_options[InCol::NUM_REAL_INPUT_QUANTITIES]=arg_dbl0(NULL,
+			"precision",
+			"<double>", cstr_copy(option_help));
 }
 
 void CommandLineOptions::set_defaults()
@@ -476,6 +550,8 @@ void CommandLineOptions::set_defaults()
 	__serialized_stellar_evolution->filename[0]=
 		__default_serialized_evol.c_str();
 	__output_file_columns->sval[0]=__default_output_columns.c_str();
+	__custom_stellar_evolution_format->sval[0]=
+		__default_track_columns.c_str();
 }
 
 template<typename COL_ID_TYPE>
@@ -603,9 +679,11 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	__argtable[InCol::NUM_INPUT_QUANTITIES+1]=__output_file_columns;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+2]=__input_fname;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+3]=__serialized_stellar_evolution;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+4]=help_option;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=doxyhelp_option;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+6]=end;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+4]=__custom_stellar_evolution;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=__custom_stellar_evolution_format;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+6]=help_option;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+7]=doxyhelp_option;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+8]=end;
 
 	if(arg_nullcheck(__argtable) != 0) {
 		cleanup();
@@ -941,6 +1019,7 @@ int main(int argc, char **argv)
 		std::cerr.setf(std::ios_base::scientific);
 #endif
 		init_output_column_names();
+		init_track_column_names();
 		CommandLineOptions options(argc, argv);
 		if(!options) return 1;
 		YRECEvolution stellar_evolution;

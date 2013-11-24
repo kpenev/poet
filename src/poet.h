@@ -198,10 +198,41 @@ namespace OutCol {
 	};
 };
 
+///Isolates the tags for the custom stellar evolution track columns.
+namespace TrackCol {
+	///Tags for the columns in input stellar tracks.
+	enum StellarTrackColumns {
+		AGE,///< Age of the star in Gyr.
+
+		///\brief Moment of inertia of the convective envelope of the star in
+		/// \f$M_\odot R_\odot^2\f$.
+		ICONV,
+
+		///\brief Moment of inertia of the radiative core of the star in 
+		/// \f$M_\odot R_\odot^2\f$.
+		IRAD,
+
+		RSTAR,///< Radius of the star in \f$R_\odot\f$.
+		LSTAR,///< Luminosity of the star in \f$L_\odot\f$.
+
+		///Radius of the stellar core in \f$R_\odot\f$ (low mass stars only).
+		RRAD,
+
+		///Mass of the stellar core in \f$M_\odot\f$ (low mass stars only).
+		MRAD,
+
+		SKIP,///< A column which is not needed to interpolate the evolution.
+
+		///The number of different input quantities supported.
+		NUM_TRACK_QUANTITIES=SKIP
+	};
+};
+
 ///\brief The names to use for the output columns in the
 ///--output-columns option (indexed by the corresponding
 ///OutputColumns tag) as well as when labeling the output file.
-std::vector<std::string> OUTPUT_COLUMN_NAMES(OutCol::NUM_OUTPUT_QUANTITIES);
+std::vector<std::string> OUTPUT_COLUMN_NAMES(OutCol::NUM_OUTPUT_QUANTITIES),
+						 TRACK_COLUMN_NAMES(TrackCol::NUM_TRACK_QUANTITIES);
 
 ///All command line options can be accessed through members.
 class CommandLineOptions {
@@ -216,7 +247,13 @@ private:
 				 ///\brief Description of the output columns.
 				 ///
 				 ///Indexed by the corresponding OutputColumns tag.
-				 __output_column_descr;
+				 __output_column_descr,
+				 
+				 ///\brief Description of the columns in the input stellar
+				 ///evolution track.
+				 ///
+				 ///Indexed by the corresponding StellarTrackColumns tag.
+				 __track_column_descr;
 
 	///\brief The default values for the quantities defining the evolution to
 	///calculate.
@@ -230,10 +267,17 @@ private:
 		__default_serialized_evol,
 		
 		///The default output columns
-		__default_output_columns;
+		__default_output_columns,
+		
+		///The default columns in a custom stellar evolution track.
+		__default_track_columns;
 
 	///The command line options which directly specify a value.
 	std::vector<arg_dbl*> __direct_value_options;
+
+	///\brief The command line options which specify the smoothing for custom
+	///stellar evolution tracks.
+	std::vector<arg_dbl*> __custom_track_smoothing;
 
 	///The columns in the input file.
 	arg_str *__input_file_columns,
@@ -243,7 +287,9 @@ private:
 			
 			///\brief The comma separated list of ages to include in the
 			///tabulated evolution.
-			*__required_ages_option;
+			*__required_ages_option,
+			
+			*__custom_stellar_evolution_format;
 
 	///Whether the initial surfarce spin of the star should be
 	///synchronous to the orbit.
@@ -257,7 +303,9 @@ private:
 
 			 ///\brief The name of the file to read pre-serialized stellar
 			 ///evolution from.
-			 *__serialized_stellar_evolution;
+			 *__serialized_stellar_evolution,
+			 
+			 *__custom_stellar_evolution;
 
 	void *__argtable[InCol::NUM_INPUT_QUANTITIES+6];
 
@@ -332,6 +380,10 @@ private:
 	///\brief Fills is the descriptions of the output columns in
 	///__output_column_descr.
 	void init_output_column_descriptions();
+
+	///\brief Fills is the descriptions of the columns in a custom stellar
+	///evolution track in __track_column_descr.
+	void init_track_column_descriptions();
 
 	///Fills in default values for all possible real valued input quantities.
 	void init_defaults();

@@ -34,7 +34,7 @@ namespace MESA {
 	///Names for the interesting columns in a MESA track.
 	enum Column {
 		AGE,      ///< Stellar age in years.
-		LOG_RSTAR,///< Log10 of the radius of the star in \f$\R_\odot\f$.
+		LOG_RSTAR,///< Log10 of the radius of the star in \f$R_\odot\f$.
 		RSTAR=LOG_RSTAR,///< We convert Log10(R*) to R*
 		LOG_LSTAR,///< Log10 of the luminosity of the star in \f$\L_\odot\f$.
 		LSTAR=LOG_LSTAR,///< We convert Log10(L*) to L*
@@ -155,7 +155,7 @@ namespace MESA {
 		///particular track as a function of age. 
 		///
 		///The middle list holds the same quantity for all tracks and is
-		///in the same order as #mass_list.
+		///in the same order as #__mass_list.
 		///
 		///The outside array is indexed by quantity identified by
 		///MESA::Column.
