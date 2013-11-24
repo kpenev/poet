@@ -124,7 +124,7 @@ namespace MESA {
 	EvolutionIterator &EvolutionIterator::operator++()
 	{
 		++mass_iter;
-		for(size_t i=0; i<quantity_iter.size(); i++) ++quantity_iter[i];
+		for(size_t i=0; i<quantity_iter.size(); ++i) ++quantity_iter[i];
 		return *this;
 	}
 
@@ -138,7 +138,7 @@ namespace MESA {
 		__mass_list.push_back(header.get_mass());
 		const double Inorm=AstroConst::solar_mass*
 			std::pow(AstroConst::solar_radius, 2);
-		for(int i=0; i<NUM_COLUMNS; i++)
+		for(int i=0; i<NUM_COLUMNS; ++i)
 			if(i==AGE)
 				track_quantities[i].push_back(
 						list_to_valarray(track_columns[i])*1e-9);
@@ -156,7 +156,7 @@ namespace MESA {
 	{
 		EvolutionIterator result;
 		result.mass_iter=__mass_list.begin();
-		for(size_t i=0; i<track_quantities.size(); i++)
+		for(size_t i=0; i<track_quantities.size(); ++i)
 			result.quantity_iter[i]=track_quantities[i].begin();
 		return result;
 	}
@@ -165,7 +165,7 @@ namespace MESA {
 	{
 		EvolutionIterator result;
 		result.mass_iter=__mass_list.end();
-		for(size_t i=0; i<track_quantities.size(); i++)
+		for(size_t i=0; i<track_quantities.size(); ++i)
 			result.quantity_iter[i]=track_quantities[i].end();
 		return result;
 	}
@@ -173,7 +173,7 @@ namespace MESA {
 	void Evolution::move(EvolutionIterator &dest, EvolutionIterator &source)
 	{
 		__mass_list.splice(dest.mass_iter, __mass_list, source.mass_iter);
-		for(size_t i=0; i<track_quantities.size(); i++)
+		for(size_t i=0; i<track_quantities.size(); ++i)
 			track_quantities[i].splice(dest.quantity_iter[i],
 					track_quantities[i], source.quantity_iter[i]);
 	}
@@ -190,7 +190,7 @@ namespace MESA {
 			}
 			if(iter==stop_iter) break;
 			EvolutionIterator dest=begin();
-			while(*((++dest).mass_iter)<=*iter.mass_iter) {}
+			while(*(dest.mass_iter)<=*iter.mass_iter) {++dest;}
 			EvolutionIterator source=iter++;
 			move(dest, source);
 		}

@@ -29,7 +29,7 @@ double LogArgDerivatives::order(unsigned deriv_order) const
 		return value;
 	}
 	if(deriv_values.size()<deriv_order)
-		for(unsigned i=deriv_values.size(); i<deriv_order; i++)
+		for(unsigned i=deriv_values.size(); i<deriv_order; ++i)
 			if(correct_log_arg) {
 				underlying_deriv_values.push_back(calc_deriv(i+1));
 				deriv_values.push_back(transform_log_arg_deriv(i+1));
@@ -41,7 +41,7 @@ double InterpolatedDerivatives::calc_deriv(unsigned deriv_order) const
 {
 	if(deriv_order>2) return 0.0;
 	std::valarray<double> interp_values(interp_deriv->size());
-	for(unsigned i=0; i<interp_deriv->size(); i++)
+	for(unsigned i=0; i<interp_deriv->size(); ++i)
 		interp_values[i]=(*interp_deriv)[i]->order(deriv_order);
 	return InterpolatingFunctionALGLIB(*interp_masses,
 			interp_values)(stellar_mass);
@@ -64,7 +64,7 @@ void EvolvingStellarQuantity::init_high_mass(
 	closest_high_mass=masses_of_tracks[0];
 	double current_diff=std::abs(closest_high_mass-stellar_mass);
 	for(size_t track_m_ind=0; track_m_ind<masses_of_tracks.size(); 
-			track_m_ind++) {
+			++track_m_ind) {
 		if(track==evolution_tracks.end())
 			throw Error::BadFunctionArguments(
 				" The number of evolution tracks provided "
@@ -77,7 +77,7 @@ void EvolvingStellarQuantity::init_high_mass(
 			closest_high_mass_track=*track;
 			current_diff=diff;
 		}
-		track++;
+		++track;
 	}
 	double age_scaling=std::pow(closest_high_mass/stellar_mass, age_scaling_high_mass);
 	min_age=(initially_zero ? 0 : closest_high_mass_track->range_low());
@@ -101,7 +101,7 @@ void EvolvingStellarQuantity::init_low_mass(
 		track_below=evolution_tracks.begin(),
 		track_above=evolution_tracks.end();
 	double mass_below=masses_of_tracks[0], mass_above=NaN;
-	for(size_t i=0; i<masses_of_tracks.size(); i++) {
+	for(size_t i=0; i<masses_of_tracks.size(); ++i) {
 		if(track==evolution_tracks.end())
 			throw Error::BadFunctionArguments(
 				"The number of evolution tracks provided "
@@ -200,8 +200,8 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 			track=low_mass_tracks.begin();
 	std::list<double>::const_iterator mass=low_masses.begin();
 	std::list<double> scaled_ages;
-	for(; track!=low_mass_tracks.end(); track++) {
-		if(*mass==stellar_mass)
+	for(; track!=low_mass_tracks.end(); ++track) {
+		if(*mass==stellar_mass || low_mass_tracks.size()==1)
 			return evaluate_track((use_log_age ? std::log(age) : age),
 					**track, derivatives);
 		double model_age=std::pow(stellar_mass/(*mass), 
@@ -210,8 +210,8 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 		scaled_ages.push_back(model_age);
 		if(((*track)->range_low()<=model_age || initially_zero) && 
 				(*track)->range_high()*extrapolate_low_mass>=model_age)
-			num_good_tracks++;
-		mass++;
+			++num_good_tracks;
+		++mass;
 	}
 	std::valarray<double> 
 		*good_masses=new std::valarray<double>(num_good_tracks), 
@@ -223,7 +223,7 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 	std::list<double>::const_iterator model_age=scaled_ages.begin();
 	int good_ind=0;
 	for(track=low_mass_tracks.begin(); track!=low_mass_tracks.end(); 
-			track++) {
+			++track) {
 		double value=evaluate_track(*model_age, **track,
 				(derivatives ? &((*good_derivatives)[good_ind]) : NULL));
 		if(!std::isnan(value)) {
@@ -231,8 +231,8 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 			(*good_masses)[good_ind]=*mass;
 			++good_ind;
 		}
-		mass++;
-		model_age++;
+		++mass;
+		++model_age;
 	}
 	double result;
 	if(derivatives==NULL) {
@@ -323,7 +323,7 @@ void StellarEvolution::interpolate_from(
 		core_boundary_iter=tabulated_core_env_boundary.begin(),
 		L_iter=tabulated_luminosities.begin();
 
-	for(size_t i=0; i<num_tracks; i++) {
+	for(size_t i=0; i<num_tracks; ++i) {
 		if(ages_iter==tabulated_ages.end())
 			throw Error::BadFunctionArguments(
 				"The number of age arrays is smaller than the number of "
@@ -367,7 +367,7 @@ void StellarEvolution::interpolate_from(
 				*Iconv_iter, std::valarray<double>(), smooth_conv_inertia));
 
 		size_t first_core_index=0;
-		while((*Mrad_iter)[first_core_index+1]==0) first_core_index++;
+		while((*Mrad_iter)[first_core_index+1]==0) ++first_core_index;
 		std::slice core_slice(first_core_index,
 				log_ages.size()-first_core_index, 1);
 		std::valarray<double> core_log_ages=log_ages[core_slice];
@@ -388,14 +388,14 @@ void StellarEvolution::interpolate_from(
 		if(tabulated_luminosities.size()>0) {
 			interpolated_luminosity.push_back(
 					new InterpolatingFunctionALGLIB(log_ages, *L_iter));
-			L_iter++;
+			++L_iter;
 		}
-		ages_iter++;
-		radii_iter++;
-		Iconv_iter++;
-		Irad_iter++;
-		Mrad_iter++;
-		core_boundary_iter++;
+		++ages_iter;
+		++radii_iter;
+		++Iconv_iter;
+		++Irad_iter;
+		++Mrad_iter;
+		++core_boundary_iter;
 	}
 	if(ages_iter!=tabulated_ages.end())
 		throw Error::BadFunctionArguments(

@@ -120,14 +120,16 @@ namespace OutCol {
 		LTOT,
 
 		///\brief Moment of inertia of the convective zone of the star (low
-		///mass stars only)
+		///mass stars only) in \f$M_\odot R_\odot^2\f$.
 		ICONV,
 
 		///\brief Moment of inertia of the radiative zone of the star (low
-		///mass stars only)
+		///mass stars only) in \f$M_\odot R_\odot^2\f$.
 		IRAD,
 
-		ITOT,///< Total moment of inertia of the star.
+		///Total moment of inertia of the star in \f$M_\odot R_\odot^2\f$.
+		ITOT,
+
 		WSURF, ///< Angular velocity of the stellar surface in rad/day.
 
 		///\brief Angular velocity of the stellar core in rad/day (low mass
@@ -151,6 +153,45 @@ namespace OutCol {
 
 		///Mass of the stellar core in \f$M_\odot\f$ (low mass stars only).
 		MRAD,
+
+		///\brief Age derivative of the convective moment of inertia in
+		/// \f$M_\odot R_\odot^2/Gyr\f$.
+		ICONV_DERIV,
+
+		///Age derivative of the radiative moment of inertia in
+		/// \f$M_\odot R_\odot^2/Gyr\f$.
+		IRAD_DERIV,
+
+		///Age derivative of the moment of inertia of the entire star in
+		/// \f$M_\odot R_\odot^2/Gyr\f$.
+		ITOT_DERIV,
+
+		///Age derivative of the stellar radius in \f$R_\odot/Gyr\f$.
+		RSTAR_DERIV,
+
+		///Age derivative of the radius of the radiative core in
+		/// \f$R_\odot/Gyr\f$.
+		RRAD_DERIV,
+
+		///Age derivative of the mass of the radiative core in
+		/// \f$M_\odot/Gyr\f$.
+		MRAD_DERIV,
+
+		///Secord age derivative of the convective moment of inertia in
+		/// \f$M_\odot R_\odot^2/Gyr^2\f$.
+		ICONV_SECOND_DERIV,
+
+		///Second age derivative of the radiative moment of inertia in
+		/// \f$M_\odot R_\odot^2/Gyr^2\f$.
+		IRAD_SECOND_DERIV,
+
+		///Second age derivative of the moment of inertia of the entire star
+		///in \f$M_\odot R_\odot^2/Gyr^2\f$.
+		ITOT_SECOND_DERIV,
+
+		///Second age derivative of the radius of the radiative core in
+		/// \f$R_\odot/Gyr^2\f$.
+		RRAD_SECOND_DERIV,
 
 		///The number of different output quantities supported.
 		NUM_OUTPUT_QUANTITIES
@@ -284,6 +325,16 @@ private:
 
 		 ///Set to true only if and when the #__input_stream is opened.
 		 __opened_stream;
+
+	///Fills in the names of the input columns in __input_column_names
+	void init_input_column_names();
+
+	///\brief Fills is the descriptions of the output columns in
+	///__output_column_descr.
+	void init_output_column_descriptions();
+
+	///Fills in default values for all possible real valued input quantities.
+	void init_defaults();
 
 	///Fills in all the static members.
 	void setup();

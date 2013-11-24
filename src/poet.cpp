@@ -7,8 +7,7 @@
 
 #include "poet.h"
 
-///Fills in all the static members.
-void CommandLineOptions::setup()
+void CommandLineOptions::init_input_column_names()
 {
 	__input_column_names.resize(InCol::NUM_INPUT_QUANTITIES);
 	__input_column_names[InCol::LOW_MASS_WINDK]="K";
@@ -37,24 +36,31 @@ void CommandLineOptions::setup()
 	__input_column_names[InCol::OUT_FNAME]="outf";
 	__input_column_names[InCol::START_LOCKED]="locked";
 	__input_column_names[InCol::REQUIRED_AGES]="trequired";
+}
 
+void CommandLineOptions::init_output_column_descriptions()
+{
 	__output_column_descr.resize(OutCol::NUM_OUTPUT_QUANTITIES);
 	__output_column_descr[OutCol::AGE]="Age in Gyr";
 	__output_column_descr[OutCol::SEMIMAJOR]="Semimajor axis in AU";
 	__output_column_descr[OutCol::WORB]="Orbital frequency in rad/day";
 	__output_column_descr[OutCol::PORB]="Orbital period in days";
 	__output_column_descr[OutCol::LCONV]=
-		"Convective zone angular momentum (low mass stars only else NaN).";
+		"Convective zone angular momentum in Msun Rsun^2 rad/day "
+		"(low mass stars only else NaN).";
 	__output_column_descr[OutCol::LRAD]=
-		"Radiative zone angular momentum (low mass stars only else NaN).";
+		"Radiative zone angular momentum in Msun Rsun^2 rad/day "
+		"(low mass stars only else NaN).";
 	__output_column_descr[OutCol::LTOT]=
-		"Total angular momentum of the star.";
+		"Total angular momentum of the star in Msun Rsun^2 rad/day.";
 	__output_column_descr[OutCol::ICONV]=
-		"Convective zone moment of inertia (low mass stars only else NaN).";
+		"Convective zone moment of inertia Msun Rsun^2 "
+		"(low mass stars only else NaN).";
 	__output_column_descr[OutCol::IRAD]=
-		"Radiative zone moment of inertia (low mass stars only else NaN).";
+		"Radiative zone moment of inertia Msun Rsun^2 "
+		"(low mass stars only else NaN).";
 	__output_column_descr[OutCol::ITOT]=
-		"Total moment of inertia of the star.";
+		"Total moment of inertia of the star Msun Rsun^2.";
 	__output_column_descr[OutCol::WSURF]=
 		"Stellar surface angular velocity of the star in rad/day.";
 	__output_column_descr[OutCol::WRAD]="Angular velocity of the radiative "
@@ -67,13 +73,49 @@ void CommandLineOptions::setup()
 		"Evolution mode of the step starting at this age.";
 	__output_column_descr[OutCol::WIND_STATE]="The wind state (saturated/not"
 	   " saturated) of the step starting at this age.";
-	__output_column_descr[OutCol::RSTAR]="Stellar radius";
-	__output_column_descr[OutCol::LSTAR]="Stellar luminosity";
+	__output_column_descr[OutCol::RSTAR]="Stellar radius in solar radii";
+	__output_column_descr[OutCol::LSTAR]=
+		"Stellar luminosity in solar luminosities";
 	__output_column_descr[OutCol::RRAD]="Radius of the stellar radiative "
-		"zone (low mass stars only, else NaN).";
+		"zone in solar radii (low mass stars only, else NaN).";
 	__output_column_descr[OutCol::MRAD]="Mass of the stellar radiative zone "
+		"in solar masses (low mass stars only, else NaN).";
+	__output_column_descr[OutCol::ICONV_DERIV]="First order derivative with "
+		"respect to age of the moment of inertia of the stallar surface "
+		"convective zone in Msun Rsun^2/Gyr "
 		"(low mass stars only, else NaN).";
+	__output_column_descr[OutCol::IRAD_DERIV]="First order derivative with "
+		"respect to age of the moment of inertia of the stallar radiative "
+		"core in Msun Rsun^2/Gyr (low mass stars only, else NaN).";
+	__output_column_descr[OutCol::ITOT_DERIV]="First order derivative with "
+		"respect to age of the moment of inertia of the entire star in Msun "
+		"Rsun^2/Gyr.";
+	__output_column_descr[OutCol::RSTAR_DERIV]="First order derivative with "
+		"respect to age of the stellar radius in solar radii per Gyr.";
+	__output_column_descr[OutCol::RRAD_DERIV]="First order derivative with "
+		"respect to age of the radius of the stellar radiative core in solar"
+		" radii per Gyr (low mass stars only, else NaN).";
+	__output_column_descr[OutCol::MRAD_DERIV]=="First order derivative with "
+		"respect to age of the mass of the stellar radiative core in solar "
+		"masses per Gyr (low mass stars only, else NaN).";
+	__output_column_descr[OutCol::ICONV_SECOND_DERIV]=
+		"Second order derivative with respect to age of the moment of "
+		"inertia of the stallar surface convective zone in Msun Rsun^2/Gyr^2"
+		" (low mass stars only, else NaN).";
+	__output_column_descr[OutCol::IRAD_SECOND_DERIV]=
+		"Second order derivative with respect to age of the moment of "
+		"inertia of the stallar radiative core in Msun Rsun^2/Gyr^2"
+		" (low mass stars only, else NaN).";
+	__output_column_descr[OutCol::ITOT_SECOND_DERIV]=
+		"Second order derivative with respect to age of the moment of "
+		"inertia of the entire star in Msun Rsun^2/Gyr^2";
+	__output_column_descr[OutCol::RRAD_SECOND_DERIV]=
+		"First order derivative with respect to age of the radius of the "
+		"stellar radiative core in solar radii per Gyr^2.";
+}
 
+void CommandLineOptions::init_defaults()
+{
 	__defaults.resize(InCol::NUM_REAL_INPUT_QUANTITIES);
 	__defaults[InCol::LOW_MASS_WINDK]=0.35;
 	__defaults[InCol::HIGH_MASS_WINDK]=0;
@@ -100,6 +142,14 @@ void CommandLineOptions::setup()
 	__defaults[InCol::PRECISION]=6;
 }
 
+///Fills in all the static members.
+void CommandLineOptions::setup()
+{
+	init_input_column_names();
+	init_output_column_descriptions();
+	init_defaults();
+}
+
 void init_output_column_names()
 {
 	OUTPUT_COLUMN_NAMES[OutCol::AGE]="t";
@@ -122,6 +172,16 @@ void init_output_column_names()
 	OUTPUT_COLUMN_NAMES[OutCol::LSTAR]="Lum";
 	OUTPUT_COLUMN_NAMES[OutCol::RRAD]="Rrad";
 	OUTPUT_COLUMN_NAMES[OutCol::MRAD]="Mrad";
+	OUTPUT_COLUMN_NAMES[OutCol::ICONV_DERIV]="DIconv";
+	OUTPUT_COLUMN_NAMES[OutCol::IRAD_DERIV]="DIrad";
+	OUTPUT_COLUMN_NAMES[OutCol::ITOT_DERIV]="DI";
+	OUTPUT_COLUMN_NAMES[OutCol::RSTAR_DERIV]="DR";
+	OUTPUT_COLUMN_NAMES[OutCol::RRAD_DERIV]="DRrad";
+	OUTPUT_COLUMN_NAMES[OutCol::MRAD_DERIV]="DMrad";
+	OUTPUT_COLUMN_NAMES[OutCol::ICONV_SECOND_DERIV]="DDIconv";
+	OUTPUT_COLUMN_NAMES[OutCol::IRAD_SECOND_DERIV]="DDIrad";
+	OUTPUT_COLUMN_NAMES[OutCol::ITOT_SECOND_DERIV]="DDI";
+	OUTPUT_COLUMN_NAMES[OutCol::RRAD_SECOND_DERIV]="DDRrad";
 }
 
 const std::string CommandLineOptions::__default_outfname="poet.evol",
@@ -619,7 +679,14 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 	while(age_i!=last_age) {
 		for(size_t i=0; i<output_file_format.size(); i++) {
 			double Iconv=star.moment_of_inertia(*age_i, convective),
-				   Irad=star.moment_of_inertia(*age_i, radiative);
+				   Irad=star.moment_of_inertia(*age_i, radiative),
+				   dIconv_dt=star.moment_of_inertia_deriv(*age_i,convective),
+				   dIrad_dt=star.moment_of_inertia_deriv(*age_i, radiative),
+				   d2Iconv_dt2=
+					   star.moment_of_inertia_deriv(*age_i, convective, 2),
+				   d2Irad_dt2=
+					   star.moment_of_inertia_deriv(*age_i, radiative, 2),
+				   Rstar=star.get_radius(*age_i);
 			outf << std::setw(25);
 			double semimajor=(*a_i)/AU_Rsun,
 				   worb=planet.orbital_angular_velocity_semimajor(semimajor);
@@ -641,13 +708,33 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 				case OutCol::PRAD : outf << 2.0*M_PI*Irad/(*Lrad_i); break;
 				case OutCol::EVOL_MODE : outf << *mode_i; break;
 				case OutCol::WIND_STATE : outf << *wind_i; break;
-				case OutCol::RSTAR : outf << star.get_radius(*age_i); break;
+				case OutCol::RSTAR : outf << Rstar; break;
 				case OutCol::LSTAR : outf << star.get_luminosity(*age_i);
 									 break;
 				case OutCol::RRAD : outf << star.get_rad_radius(*age_i);
 									break;
 				case OutCol::MRAD : outf << star.get_rad_mass(*age_i);
 									break;
+				case OutCol::ICONV_DERIV : outf << dIconv_dt; break;
+				case OutCol::IRAD_DERIV : outf << dIrad_dt; break;
+				case OutCol::ITOT_DERIV : outf << dIconv_dt+dIrad_dt; break;
+				case OutCol::RSTAR_DERIV : outf << 
+										   	star.get_logradius_deriv(*age_i)*
+								   			Rstar; break;
+				case OutCol::RRAD_DERIV : outf <<
+										  	star.get_rad_radius_deriv(*age_i);
+										  break;
+				case OutCol::MRAD_DERIV : outf <<
+										  	star.get_rad_mass_deriv(*age_i);
+								  break;
+				case OutCol::ICONV_SECOND_DERIV : outf << d2Iconv_dt2; break;
+				case OutCol::IRAD_SECOND_DERIV : outf << d2Irad_dt2; break;
+				case OutCol::ITOT_SECOND_DERIV : outf <<
+												 	d2Iconv_dt2 + d2Irad_dt2;
+												 break;
+				case OutCol::RRAD_SECOND_DERIV : outf <<
+												 star.get_rad_radius_deriv(
+														 *age_i, 2); break;
 				default : throw Error::BadFunctionArguments(
 								  "Unrecognized output column encountered in"
 								  " output_file_format in "
