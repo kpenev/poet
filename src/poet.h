@@ -202,8 +202,6 @@ namespace OutCol {
 namespace TrackCol {
 	///Tags for the columns in input stellar tracks.
 	enum StellarTrackColumns {
-		AGE,///< Age of the star in Gyr.
-
 		///\brief Moment of inertia of the convective envelope of the star in
 		/// \f$M_\odot R_\odot^2\f$.
 		ICONV,
@@ -221,6 +219,7 @@ namespace TrackCol {
 		///Mass of the stellar core in \f$M_\odot\f$ (low mass stars only).
 		MRAD,
 
+		AGE,///< Age of the star in Gyr.
 		SKIP,///< A column which is not needed to interpolate the evolution.
 
 		///The number of different input quantities supported.
@@ -253,11 +252,28 @@ private:
 				 ///evolution track.
 				 ///
 				 ///Indexed by the corresponding StellarTrackColumns tag.
-				 __track_column_descr;
+				 __track_column_descr,
+				 
+				 ///\brief Descriptions of the units expected of the stellar
+				 ///evolution track quantities.
+				 __track_column_units;
 
 	///\brief The default values for the quantities defining the evolution to
 	///calculate.
 	std::vector<double> __defaults;
+
+	///\brief Default smoothing to apply to custom stellar evolution track
+	///quantities.
+	///
+	///Smoothing value of NaN signifies no smoothing.
+	std::vector<double> __default_track_smoothing;
+
+	///\brief Default numbef or spline nodes for custom stellar evolution
+	///track quantities.
+	///
+	///For non-smoothed quantities (NaN entries in __default_track_smoothing)
+	///this value is ignored.
+	std::vector<unsigned> __default_track_nodes;
 
 	///The default output filename.
 	static const std::string __default_outfname,
@@ -278,6 +294,10 @@ private:
 	///\brief The command line options which specify the smoothing for custom
 	///stellar evolution tracks.
 	std::vector<arg_dbl*> __custom_track_smoothing;
+
+	///\brief The command line options which specify the number of nodes to
+	///use if a custom track quantity is to be smoothed.
+	std::vector<arg_int*> __custom_track_nodes;
 
 	///The columns in the input file.
 	arg_str *__input_file_columns,
@@ -305,15 +325,19 @@ private:
 			 ///evolution from.
 			 *__serialized_stellar_evolution,
 			 
+			 ///The filename of the custom stellar evolution track.
 			 *__custom_stellar_evolution;
 
-	void *__argtable[InCol::NUM_INPUT_QUANTITIES+6];
+	void *__argtable[InCol::NUM_INPUT_QUANTITIES+2*TrackCol::AGE+9];
 
 	///A list of the columns in the input file.
 	std::vector<InCol::InputColumns> __input_file_format;
 
-		///A list of the columns in the output file.
+	///A list of the columns in the output file.
 	std::vector<OutCol::OutputColumns> __output_file_format;
+
+	///A list of the columns in the custom stellar evolution track.
+	std::vector<TrackCol::StellarTrackColumns> __track_format;
 
 	///The stream to the input filename if stdin is not being used.
 	std::ifstream __input_stream;
@@ -325,8 +349,18 @@ private:
 	///tabulated evolution.
 	std::list<double> __required_ages;
 
+	///Did parsing the command line succeed.
+	bool __parsed_ok,
+
+		 ///Set to true only if and when the #__input_stream is opened.
+		 __opened_stream;
+
 	///Returns a copy of the c-string content of the stream.
-	char *cstr_copy(const std::ostringstream &stream);
+	char *cstr_copy(const std::ostringstream &stream)
+	{return cstr_copy(stream.str());}
+
+	///Returns a copy of the c-string content of the stream.
+	char *cstr_copy(const std::string &str);
 
 	///Defines the command line options.
 	void define_options();
@@ -368,12 +402,6 @@ private:
 	///Free all manually allocated memory and close open streams.
 	void cleanup();
 
-	///Did parsing the command line succeed.
-	bool __parsed_ok,
-
-		 ///Set to true only if and when the #__input_stream is opened.
-		 __opened_stream;
-
 	///Fills in the names of the input columns in __input_column_names
 	void init_input_column_names();
 
@@ -383,13 +411,19 @@ private:
 
 	///\brief Fills is the descriptions of the columns in a custom stellar
 	///evolution track in __track_column_descr.
-	void init_track_column_descriptions();
+	void init_track_column_descriptions_and_units();
 
-	///Fills in default values for all possible real valued input quantities.
+	///\brief Fills in default values for all possible real valued input
+	///quantities and the smoothing parameters for custom stellar evolution.
 	void init_defaults();
 
 	///Fills in all the static members.
 	void setup();
+
+	///Applies common sense checks that all custom stellar evolution options.
+	///
+	///Throws an exception if something is wrong.
+	void verify_custom_stellar_evolution();
 public:
 	///Parse the command line.
 	CommandLineOptions(int argc, char **argv);
@@ -421,14 +455,35 @@ public:
 	///Are any quantities to be read from a list file?
 	bool input_from_list() const {return __input_file_format.size();}
 
+	///List of the columns expected in the input file.
 	const std::vector<InCol::InputColumns> &input_file_format() const
 	{return __input_file_format;}
 
+	///The columns to output.
 	const std::vector<OutCol::OutputColumns> &output_file_format() const
 	{return __output_file_format;}
 
+	///Ages at which the evolution should definitely step.
 	const std::list<double> &required_ages() const
 	{return __required_ages;}
+
+	///The filename from which to read a custom stellar evolution track.
+	///
+	///Empty string designates that a default evolution should be used.
+	const std::string custom_stellar_evolution() const
+	{return __custom_stellar_evolution->filename[0];}
+
+	///A list of the columns in the custom stellar evolution track.
+	const std::vector<TrackCol::StellarTrackColumns>&
+		custom_track_format() const {return __track_format;}
+
+	///\brief The smoothing to apply to the given column from the custom 
+	///stellar evolution track.
+	double custom_track_smoothing(TrackCol::StellarTrackColumns column)const;
+
+	///\brief The nodes to use for the given column from the custom stellar
+	///evolution track.
+	double custom_track_nodes(TrackCol::StellarTrackColumns column) const;
 
 	///Did parsing the command line succeed.
 	operator bool() {return __parsed_ok;}

@@ -120,22 +120,29 @@ void CommandLineOptions::init_output_column_descriptions()
 		"stellar radiative core in solar radii per Gyr^2.";
 }
 
-void CommandLineOptions::init_track_column_descriptions()
+void CommandLineOptions::init_track_column_descriptions_and_units()
 {
-	__track_column_descr.resize(TrackCol::NUM_TRACK_QUANTITIES);
+	__track_column_descr.resize(TrackCol::NUM_TRACK_QUANTITIES-1);
+	__track_column_units.resize(TrackCol::NUM_TRACK_QUANTITIES-1);
 
-	__track_column_descr[TrackCol::AGE]="Age in Gyr";
 	__track_column_descr[TrackCol::ICONV]=
-		"Convective zone moment of inertia Msun Rsun^2 ";
-	__track_column_descr[TrackCol::IRAD]=
-		"Radiative zone moment of inertia Msun Rsun^2 ";
-	__track_column_descr[TrackCol::RSTAR]="Stellar radius in solar radii";
-	__track_column_descr[TrackCol::LSTAR]=
-		"Stellar luminosity in solar luminosities";
-	__track_column_descr[TrackCol::RRAD]="Radius of the stellar radiative "
-		"zone in solar radii.";
-	__track_column_descr[TrackCol::MRAD]="Mass of the stellar radiative zone "
-		"in solar masses.";
+		"Convective zone moment of inertia";
+	__track_column_units[TrackCol::ICONV]="Msun Rsun^2";
+
+	__track_column_descr[TrackCol::IRAD]="Radiative zone moment of inertia";
+	__track_column_units[TrackCol::IRAD]="Msun Rsun^2 ";
+
+	__track_column_descr[TrackCol::RSTAR]="Stellar radius";
+	__track_column_units[TrackCol::RSTAR]="solar radii";
+
+	__track_column_descr[TrackCol::LSTAR]="Stellar luminosity";
+	__track_column_units[TrackCol::LSTAR]="solar luminosities";
+
+	__track_column_descr[TrackCol::RRAD]="Radius of the radiative zone";
+	__track_column_units[TrackCol::RRAD]="solar radii.";
+
+	__track_column_descr[TrackCol::MRAD]="Mass of the radiative zone";
+	__track_column_units[TrackCol::MRAD]="solar masses.";
 }
 
 void CommandLineOptions::init_defaults()
@@ -164,6 +171,22 @@ void CommandLineOptions::init_defaults()
 	__defaults[InCol::START_WSURF]=NaN;
 	__defaults[InCol::MAX_STEP]=Inf;
 	__defaults[InCol::PRECISION]=6;
+
+	__default_track_smoothing.resize(TrackCol::AGE);
+	__default_track_smoothing[TrackCol::ICONV]=NaN;
+	__default_track_smoothing[TrackCol::IRAD]=NaN;
+	__default_track_smoothing[TrackCol::RSTAR]=NaN;
+	__default_track_smoothing[TrackCol::LSTAR]=NaN;
+	__default_track_smoothing[TrackCol::RRAD]=NaN;
+	__default_track_smoothing[TrackCol::MRAD]=NaN;
+
+	__default_track_nodes.resize(TrackCol::AGE);
+	__default_track_nodes[TrackCol::ICONV]=1000;
+	__default_track_nodes[TrackCol::IRAD]=1000;
+	__default_track_nodes[TrackCol::RSTAR]=1000;
+	__default_track_nodes[TrackCol::LSTAR]=1000;
+	__default_track_nodes[TrackCol::RRAD]=1000;
+	__default_track_nodes[TrackCol::MRAD]=1000;
 }
 
 ///Fills in all the static members.
@@ -171,8 +194,28 @@ void CommandLineOptions::setup()
 {
 	init_input_column_names();
 	init_output_column_descriptions();
-	init_track_column_descriptions();
+	init_track_column_descriptions_and_units();
 	init_defaults();
+}
+
+void CommandLineOptions::verify_custom_stellar_evolution()
+{
+	std::vector<bool> found_quantity(TrackCol::NUM_TRACK_QUANTITIES);
+	for(size_t i=0; i<__track_format.size(); ++i)
+		found_quantity[__track_format[i]]=true;
+	for(int i=0; i<TrackCol::NUM_TRACK_QUANTITIES; ++i) {
+		if(!found_quantity[i] && i!=TrackCol::LSTAR && i!=TrackCol::SKIP)
+			throw Error::CommandLine(TRACK_COLUMN_NAMES[i]+" not found in "
+					"the list of columns contained in the custom stellar "
+					"evolution track.");
+		double smoothing=__custom_track_smoothing[i]->dval[0];
+		if(!std::isnan(smoothing) && (smoothing<-15 || smoothing>15))
+			throw Error::CommandLine("Smoothing for "+TRACK_COLUMN_NAMES[i]+
+					" is outside the allowed range of [-15; 15]!");
+		if(!std::isnan(smoothing) && __custom_track_nodes[i]->ival[0]<0)
+			throw Error::CommandLine("Negative number of smoothing spline "
+					"nodes specified for " + TRACK_COLUMN_NAMES[i] + "!");
+	}
 }
 
 void init_output_column_names()
@@ -238,10 +281,10 @@ const std::string CommandLineOptions::__default_outfname="poet.evol",
 	  	"t,a,Lconv,Lrad,L,Iconv,Irad,I,mode",
 	  CommandLineOptions::__default_track_columns="t,R,Iconv,Irad,Rrad,Mrad";
 
-char *CommandLineOptions::cstr_copy(const std::ostringstream &stream)
+char *CommandLineOptions::cstr_copy(const std::string &str)
 {
-	char *cstr=new char[stream.str().length()+1];
-	std::strcpy(cstr, stream.str().c_str());
+	char *cstr=new char[str.length()+1];
+	std::strcpy(cstr, str.c_str());
 	__option_help_copies.push_back(cstr);
 	return cstr;
 }
@@ -531,15 +574,44 @@ void CommandLineOptions::define_options()
 	option_help << "A comma separated list of the columns in the custom "
 		"stellar evolution track specified by the --custom-stellar-evolution"
 		" option. The recognized column names are:" << std::endl;
-	for(int i=0; i<TrackCol::NUM_TRACK_QUANTITIES; ++i)
+	for(int i=0; i<TrackCol::NUM_TRACK_QUANTITIES-1; ++i)
 		option_help << "\t* "  << TRACK_COLUMN_NAMES[i]
-					<< ": " << __track_column_descr[i] << std::endl;
+					<< ": " << __track_column_descr[i] << " in " 
+					<< __track_column_units[i] << std::endl;
 	__custom_stellar_evolution_format=arg_str0(NULL,
 			"custom-stellar-evolution-format", "<col1,col2,...>",
 			cstr_copy(option_help));
-	__direct_value_options[InCol::NUM_REAL_INPUT_QUANTITIES]=arg_dbl0(NULL,
-			"precision",
-			"<double>", cstr_copy(option_help));
+	for(int i=0; i<TrackCol::AGE; ++i) {
+		option_help.str("");
+		option_help << "Smoothing to apply to the "
+			<< __track_column_descr[i] << " when interpolating the custom "
+			   "stellar evolution track. If no smoothing should be applied "
+			   "use 'NaN'. Default: " << __default_track_smoothing[i]
+			<< "This option is ignored, unless --custom-stellar-evolution is"
+			   " specified.";
+		int to_strip=
+#ifdef COLUMN_NAME_EMPHASIS
+			std::string(COLUMN_NAME_EMPHASIS).size();
+#else 
+			0;
+#endif
+		std::string colname=TRACK_COLUMN_NAMES[i].substr(to_strip,
+				TRACK_COLUMN_NAMES[i].size()-2*to_strip);
+
+		__custom_track_smoothing[i]=arg_dbl0(NULL,
+				cstr_copy(colname+"-smoothing"), "<double>",
+				cstr_copy(option_help));
+		option_help.str("");
+		option_help << "The number of nodes to use when smoothing the "
+			<< __track_column_descr[i] << " of the custom stellar evolution "
+			   "track. This value is ignored unless both "
+			   "--custom-stellar-evolution is used and --" + 
+			   (colname+"-smoothing") + " is not NaN. "
+			   "Default: " << __default_track_nodes[i] << ".";
+		__custom_track_nodes[i]=arg_int0(NULL,
+				cstr_copy(colname+"-nodes"),
+				"<positive integer>", cstr_copy(option_help));
+	}
 }
 
 void CommandLineOptions::set_defaults()
@@ -602,6 +674,9 @@ void CommandLineOptions::postprocess()
 	parse_column_list(__output_file_columns->sval[0],
 			OUTPUT_COLUMN_NAMES, OutCol::NUM_OUTPUT_QUANTITIES,
 			__output_file_format);
+	parse_column_list(__custom_stellar_evolution_format->sval[0],
+			TRACK_COLUMN_NAMES, TrackCol::NUM_TRACK_QUANTITIES,
+			__track_format);
 	if(__input_fname->count) {
 		__input_stream.open(__input_fname->filename[0]);
 		__opened_stream=true;
@@ -662,6 +737,8 @@ void CommandLineOptions::cleanup()
 
 CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	__direct_value_options(InCol::NUM_REAL_INPUT_QUANTITIES),
+	__custom_track_smoothing(TrackCol::AGE),
+	__custom_track_nodes(TrackCol::AGE),
 	__opened_stream(false)
 {
 	setup();
@@ -681,9 +758,15 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	__argtable[InCol::NUM_INPUT_QUANTITIES+3]=__serialized_stellar_evolution;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+4]=__custom_stellar_evolution;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=__custom_stellar_evolution_format;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+6]=help_option;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+7]=doxyhelp_option;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+8]=end;
+	for(int i=0; i<TrackCol::AGE; ++i) {
+		__argtable[InCol::NUM_INPUT_QUANTITIES+6+2*i]=
+			__custom_track_smoothing[i];
+		__argtable[InCol::NUM_INPUT_QUANTITIES+7+2*i]=
+			__custom_track_nodes[i];
+	}
+	__argtable[InCol::NUM_INPUT_QUANTITIES+2*TrackCol::AGE+6]=help_option;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+2*TrackCol::AGE+7]=doxyhelp_option;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+2*TrackCol::AGE+8]=end;
 
 	if(arg_nullcheck(__argtable) != 0) {
 		cleanup();
@@ -712,6 +795,8 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 		exit(0);
 	}
 	postprocess();
+	if(__custom_stellar_evolution->count>0)
+		verify_custom_stellar_evolution();
 	__parsed_ok=true;
 }
 
@@ -721,6 +806,30 @@ double CommandLineOptions::get_real_value(InCol::InputColumns quantity) const
 		throw Error::BadFunctionArguments("Unrecognized real quantity in "
 				"CommandLineOptions::get_real_value().");
 	return __direct_value_options[quantity]->dval[0];
+}
+
+double CommandLineOptions::custom_track_smoothing(
+		TrackCol::StellarTrackColumns column) const
+{
+	if(column==TrackCol::AGE)
+		throw Error::BadFunctionArguments(
+				"Requesting the smoothing to apply to custom track ages!");
+	else if(column>=TrackCol::NUM_TRACK_QUANTITIES)
+		throw Error::BadFunctionArguments("Requesting the smoothing for an "
+				"unknown custom track quantity!");
+	else return __custom_track_smoothing[column]->dval[0];
+}
+
+double CommandLineOptions::custom_track_nodes(
+		TrackCol::StellarTrackColumns column) const
+{
+	if(column==TrackCol::AGE)
+		throw Error::BadFunctionArguments("Requesting the number of "
+				"smoothing nodes for custom track ages!");
+	else if(column>=TrackCol::NUM_TRACK_QUANTITIES)
+		throw Error::BadFunctionArguments("Requesting the number of "
+				"smoothing nodes for an unknown custom track quantity!");
+	else return __custom_track_nodes[column]->ival[0];
 }
 
 ///AU/\f$\mathrm{R}_\odot\f$.
@@ -1013,7 +1122,7 @@ void run(const CommandLineOptions &options,
 ///Calculates a realistic evolution chosen to be comlicated.
 int main(int argc, char **argv)
 {
-//	try {
+	try {
 #ifdef DEBUG
 		std::cerr.precision(16);
 		std::cerr.setf(std::ios_base::scientific);
@@ -1026,8 +1135,8 @@ int main(int argc, char **argv)
 		stellar_evolution.load_state(
 				options.serialized_stellar_evolution());
 		run(options, stellar_evolution, options.input());
-/*	} catch(Error::General &err) {
+	} catch(Error::General &err) {
 		std::cerr << err.what() << ": " << err.get_message() << std::endl;
 		return 2;
-	}*/
+	}
 }

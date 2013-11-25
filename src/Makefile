@@ -120,7 +120,7 @@ $(POET): override LFLAGS = $(LFLAGS_RELEASE)
 $(POET): $(COMPILE_POET)
 
 $(COMPILE_POET): $(POET_OBJECTS) $(ALGLIB)
-	$(COMPILER) -o $(POET) $(POET_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+	@$(COMPILER) -o $(POET) $(POET_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(POET) compiled successfully!"
 
