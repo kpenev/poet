@@ -22,6 +22,8 @@
       eos_file_prefix = 'mesa'
       kappa_file_prefix = 'gs98'
       
+      history_columns_file = 'history_columns.list'
+
       pgstar_flag = .false.
 
 / !end of star_job
@@ -50,12 +52,9 @@
       Blocker_wind_eta = 0.5d0  
 
   ! when to stop
-      xa_central_lower_limit_species(1) = 'he4'
-      xa_central_lower_limit(1) = 1d-12
-         ! stop when the center abundance by mass of he4 drops below this limit.
+      max_age = 10d9
 
 /
-
 
 &pgstar
          

@@ -18,6 +18,7 @@ def main():
   initial_filename = 'inlist_project'
 
   for i in range(0, len(stellar_masses)):
+# for i in range(0, 1):
     inlist_filename = 'inlist_project_initial-mass' + str(stellar_masses[i])
 
     if(not os.path.isfile(inlist_filename)):
@@ -26,6 +27,10 @@ def main():
     command_string = 'python update_inlist.py -m initial_mass ' + \
       str(stellar_masses[i]) + ' ' + inlist_filename
 #   print command_string
+    os.system(command_string)
+
+    command_string = "sed 's/inlist_project/" + inlist_filename + \
+      "/g' orig_inlist > inlist"
     os.system(command_string)
 
     command_string = "./mk"
