@@ -186,7 +186,10 @@ double EvolvingStellarQuantity::evaluate_track(double age,
 	if((!too_young || initially_zero) && !too_old) {
 		if(derivatives==NULL) return (too_young ? 0.0 : track(age));
 		else {
-			*derivatives=(too_young ? new ZeroDerivatives :track.deriv(age));
+			if(too_young) *derivatives=new ZeroDerivatives;
+			else if(use_log_age) *derivatives=new RemoveLogDeriv(
+					std::exp(age), track.deriv(age), true);
+			else *derivatives=track.deriv(age);
 			return (*derivatives)->order(0);
 		}
 	} else return NaN;
@@ -299,9 +302,23 @@ void StellarEvolution::interpolate_from(
 	const std::list< std::valarray<double> > &tabulated_rad_inertia,
 	const std::list< std::valarray<double> > &tabulated_rad_mass,
 	const std::list< std::valarray<double> > &tabulated_core_env_boundary,
-	double smooth_conv_inertia, double smooth_rad_inertia,
+
+	double smooth_radius,
+	double smooth_conv_inertia,
+	double smooth_rad_inertia,
 	double smooth_rad_mass,
+	double smooth_core_env_boundary,
+
+	unsigned radius_nodes,
+	unsigned conv_inertia_nodes,
+	unsigned rad_inertia_nodes,
+	unsigned rad_mass_nodes,
+	unsigned core_env_boundary_nodes,
+
 	const std::list< std::valarray<double> > &tabulated_luminosities,
+	double smooth_luminosities,
+	unsigned luminosities_nodes,
+
 	double max_low_mass, double low_mass_age_scaling,
 	double high_mass_age_scaling, double low_mass_extrapolate,
 	double high_mass_extrapolate)
@@ -356,15 +373,16 @@ void StellarEvolution::interpolate_from(
 			throw Error::BadFunctionArguments(
 				"The number of luminosity arrays is smaller than the number "
 				"of masses in StellarEvolution::interpolate_from.");
-		interpolated_radius.push_back(
-			new InterpolatingFunctionALGLIB(std::log(*ages_iter),
-				*radii_iter));
-
 		std::valarray<double> log_ages=std::log(*ages_iter);
+
+		interpolated_radius.push_back(
+			new InterpolatingFunctionALGLIB(log_ages, *radii_iter,
+				std::valarray<double>(), smooth_radius, radius_nodes));
 
 		interpolated_conv_inertia.push_back(
 			new InterpolatingFunctionALGLIB(log_ages,
-				*Iconv_iter, std::valarray<double>(), smooth_conv_inertia));
+				*Iconv_iter, std::valarray<double>(), smooth_conv_inertia,
+				conv_inertia_nodes));
 
 		size_t first_core_index=0;
 		while((*Mrad_iter)[first_core_index+1]==0) ++first_core_index;
@@ -376,18 +394,21 @@ void StellarEvolution::interpolate_from(
 		interpolated_rad_inertia.push_back(
 			new InterpolatingFunctionALGLIB(core_log_ages,
 				(*Irad_iter)[core_slice], std::valarray<double>(),
-				smooth_rad_inertia/tabulated_masses[i]));
+				smooth_rad_inertia/tabulated_masses[i], rad_inertia_nodes));
 
 		interpolated_rad_mass.push_back(
 			new InterpolatingFunctionALGLIB(core_log_ages,
 				(*Mrad_iter)[core_slice], std::valarray<double>(),
-				smooth_rad_mass/tabulated_masses[i]));
+				smooth_rad_mass/tabulated_masses[i], rad_mass_nodes));
 		interpolated_core_env_boundary.push_back(
 			new InterpolatingFunctionALGLIB(core_log_ages, 
-				(*core_boundary_iter)[core_slice]));
+				(*core_boundary_iter)[core_slice], std::valarray<double>(),
+				smooth_core_env_boundary, core_env_boundary_nodes));
 		if(tabulated_luminosities.size()>0) {
 			interpolated_luminosity.push_back(
-					new InterpolatingFunctionALGLIB(log_ages, *L_iter));
+					new InterpolatingFunctionALGLIB(log_ages, *L_iter,
+						std::valarray<double>(), smooth_luminosities,
+						luminosities_nodes));
 			++L_iter;
 		}
 		++ages_iter;
