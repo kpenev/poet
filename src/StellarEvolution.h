@@ -121,6 +121,31 @@ public:
 	}
 };
 
+///\brief Makes a derivative with respect to linear argument from a
+///derivative with respect to log(argument).
+class RemoveLogDeriv : public LogArgDerivatives {
+private:
+	///The original logarithmic derivative 
+	const FunctionDerivatives *__log_deriv;
+
+	///Whether to delete the underlying log-derivative on destruction.
+	bool __delete_deriv;
+protected:
+	///Returns the deriv_order-th derivative of the quantity
+	double calc_deriv(unsigned deriv_order) const
+	{return __log_deriv->order(deriv_order);}
+public:
+	///Create a linear derivative from a log one.
+	RemoveLogDeriv(double age, const FunctionDerivatives *log_deriv,
+			bool delete_deriv) :
+		LogArgDerivatives(age), __log_deriv(log_deriv), 
+		__delete_deriv(delete_deriv) {}
+
+	///Deletes the input logarithmic derivative if so specified on creation.
+	~RemoveLogDeriv()
+	{if(__delete_deriv) delete __log_deriv;}
+};
+
 ///\brief Derivative class for stellar quantities which age scaled
 ///quantities for a tabulated mass.
 ///
@@ -466,8 +491,6 @@ public:
 ///At present the only implementing class is YRECEvolution based on a set of
 ///YREC tracks.
 ///
-///\todo Add an implementing class based on pre-computed MESA tracks.
-///
 ///\ingroup StellarSystem_group
 class StellarEvolution {
 
@@ -571,6 +594,10 @@ public:
 		const std::list< std::valarray<double> > 
 			&tabulated_core_env_boundary,
 
+		///How much to smooth the stellar radius when fitting. Use NaN for no
+		///smoothing.
+		double smooth_radius,
+
 		///How much to smooth the moment of inertia of the convective zone
 		///when fitting.
 		double smooth_conv_inertia,
@@ -579,15 +606,46 @@ public:
 		///when fitting.
 		double smooth_rad_inertia,
 
-		///How much to smooth the mass in the radiative zone when 
-		///fitting.
-		double smooth_rad_mass, 
+		///How much to smooth the mass in the radiative zone when fitting.
+		double smooth_rad_mass,
+
+		///How much to smooth the radius of the radiative zone when fitting.
+		double smooth_core_env_boundary, 
+
+		///How many nodes to use when smoothing the stellar radius (ignored
+		///if #smooth_radius is NaN - no smoothing).
+		int radius_nodes,
+
+		///How many nodes to use when smoothing the moment of inertia of the
+		///convective zone (ignored if #smooth_conv_inertia is NaN - no
+		///smoothing).
+		int conv_inertia_nodes,
+
+		///How many nodes to use when smoothing the moment of inertia of the
+		///radiative zone (ignored if #smooth_rad_inertia is NaN - no
+		///smoothing).
+		int rad_inertia_nodes,
+
+		///How many nodes to use when smoothing the mass of the radiative
+		///zone (ignored if #smooth_rad_inertia is NaN - no smoothing).
+		int rad_mass_nodes,
+
+		///How many nodes to use when smoothing the radius of the radiative
+		///zone (ignored if #smooth_core_env_boundary is NaN - no smoothing).
+		int core_env_boundary_nodes, 
 
 		///A set of lg(luminosities) (in \f$L_\odot\f$) for each age of
 		///each track. Can be omitted if lominosity interpolation is not
 		///necessary.
 		const std::list< std::valarray<double> > &tabulated_luminosities=
 			std::list< std::valarray<double> >(),
+
+		///How much to smooth the luminosities when fitting.
+		double smooth_luminosities=NaN,
+
+		///How many nodes to use when smoothing the luminosities (ignored if
+		///#smooth_luminosities is NaN - no smoothing).
+		int luminosities_nodes=0,
 
 		///The mass above which the stars are considered 
 		///high mass in \f$M_\odot\f$.
@@ -619,9 +677,23 @@ public:
 					tabulated_rad_inertia, 
 					tabulated_rad_mass,
 					tabulated_core_env_boundary, 
+
+					smooth_radius,
 					smooth_conv_inertia, 
 					smooth_rad_inertia,
-					smooth_rad_mass, tabulated_luminosities, 
+					smooth_rad_mass,
+					smooth_core_env_boundary,
+
+					radius_nodes,
+					conv_inertia_nodes,
+					rad_inertia_nodes,
+					rad_mass_nodes,
+					core_env_boundary_nodes,
+
+					tabulated_luminosities, 
+					smooth_luminosities,
+					luminosities_nodes,
+
 					max_low_mass, low_mass_age_scaling,
 					high_mass_age_scaling, low_mass_extrapolate,
 					high_mass_extrapolate);}
@@ -656,6 +728,10 @@ public:
 		const std::list< std::valarray<double> > 
 			&tabulated_core_env_boundary,
 
+		///How much to smooth the stellar radius when fitting. Use NaN for no
+		///smoothing.
+		double smooth_radius,
+
 		///How much to smooth the moment of inertia of the convective zone
 		///when fitting.
 		double smooth_conv_inertia,
@@ -667,11 +743,43 @@ public:
 		///How much to smooth the mass in the radiative zone when fitting.
 		double smooth_rad_mass,
 
+		///How much to smooth the radius of the radiative zone when fitting.
+		double smooth_core_env_boundary, 
+
+		///How many nodes to use when smoothing the stellar radius (ignored
+		///if #smooth_radius is NaN - no smoothing).
+		int radius_nodes,
+
+		///How many nodes to use when smoothing the moment of inertia of the
+		///convective zone (ignored if #smooth_conv_inertia is NaN - no
+		///smoothing).
+		int conv_inertia_nodes,
+
+		///How many nodes to use when smoothing the moment of inertia of the
+		///radiative zone (ignored if #smooth_rad_inertia is NaN - no
+		///smoothing).
+		int rad_inertia_nodes,
+
+		///How many nodes to use when smoothing the mass of the radiative
+		///zone (ignored if #smooth_rad_inertia is NaN - no smoothing).
+		int rad_mass_nodes,
+
+		///How many nodes to use when smoothing the radius of the radiative
+		///zone (ignored if #smooth_core_env_boundary is NaN - no smoothing).
+		int core_env_boundary_nodes, 
+
 		///A set of lg(luminosities) (in \f$L_\odot\f$) for each age of
 		///each track. Can be omitted if lominosity interpolation is not
 		///necessary.
 		const std::list< std::valarray<double> > &tabulated_luminosities=
 			std::list< std::valarray<double> >(),
+
+		///How much to smooth the luminosities when fitting.
+		double smooth_luminosities=NaN,
+
+		///How many nodes to use when smoothing the luminosities (ignored if
+		///#smooth_luminosities is NaN - no smoothing).
+		int luminosities_nodes=0,
 			
 		///The mass above which the stars are considered 
 		///high mass in \f$M_\odot\f$
