@@ -25,7 +25,8 @@ COMPILE_POET	= compile_poet
 
 POET_MODULES    = $(POET) $(COMMON_MODULES)
 POET_OBJECTS    = $(addsuffix .o, $(POET_MODULES))
-POET_DEPS       = $(addsuffix .d, $(POET_MODULES))
+POET_DEPS       = $(addsuffix .d, $(POET_MODULES)) \
+				  $(addsuffix .d-e, $(POET_MODULES))
 
 #SimOne
 SIMONE          = SimOne
@@ -33,7 +34,8 @@ COMPILE_SIMONE	= compile_SimOne
 
 SIMONE_MODULES  = $(SIMONE) $(COMMON_MODULES)
 SIMONE_OBJECTS  = $(addsuffix .o, $(SIMONE_MODULES))
-SIMONE_DEPS     = $(addsuffix .d, $(SIMONE_MODULES))
+SIMONE_DEPS     = $(addsuffix .d, $(SIMONE_MODULES)) \
+				  $(addsuffix .d-e, $(SIMONE_MODULES))
 
 #MESAIO
 MESAIO          = debug_mesaio
@@ -41,7 +43,8 @@ COMPILE_MESAIO	= compile_MESAIO
 
 MESAIO_MODULES  = $(MESAIO) $(COMMON_MODULES)
 MESAIO_OBJECTS  = $(addsuffix .o, $(MESAIO_MODULES))
-MESAIO_DEPS     = $(addsuffix .d, $(MESAIO_MODULES))
+MESAIO_DEPS     = $(addsuffix .d, $(MESAIO_MODULES)) \
+				  $(addsuffix .d-e, $(MESAIO_MODULES))
 
 #list of executables
 EXECUTABLES     = $(POET) $(MESAIO) $(SIMONE)
@@ -51,12 +54,12 @@ COMPILES        = $(COMPILE_POET) $(COMPILE_MESAIO) $(COMPILE_SIMONE)
 # alglib:
 
 ALGLIB          = alglib
-ALGLIBSRCPATH   = alglib/src/
-ALGLIBMODULES   = alglibinternal alglibmisc ap dataanalysis diffequations \
+ALGLIB_SRCPATH  = alglib/src/
+ALGLIB_MODULES  = alglibinternal alglibmisc ap dataanalysis diffequations \
                   fasttransforms integration interpolation linalg \
                   optimization solvers specialfunctions statistics
-ALGLIBOBJS      = $(addsuffix .o, $(ALGLIBMODULES))
-ALGLIBOBJECTS   = $(addprefix $(ALGLIBSRCPATH), $(ALGLIBOBJS))
+ALGLIB_OBJS     = $(addsuffix .o, $(ALGLIB_MODULES))
+ALGLIB_OBJECTS  = $(addprefix $(ALGLIB_SRCPATH), $(ALGLIB_OBJS))
 
 ###############################################################################
 # Doxygen documentation:
@@ -120,7 +123,7 @@ $(POET): override LFLAGS = $(LFLAGS_RELEASE)
 $(POET): $(COMPILE_POET)
 
 $(COMPILE_POET): $(POET_OBJECTS) $(ALGLIB)
-	@$(COMPILER) -o $(POET) $(POET_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+	@$(COMPILER) -o $(POET) $(POET_OBJECTS) $(ALGLIB_OBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(POET) compiled successfully!"
 
@@ -133,7 +136,7 @@ $(SIMONE): override LFLAGS = $(LFLAGS_RELEASE)
 $(SIMONE): $(COMPILE_SIMONE)
 
 $(COMPILE_SIMONE): $(SIMONE_OBJECTS) $(ALGLIB)
-	@$(COMPILER) -o $(SIMONE) $(SIMONE_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+	@$(COMPILER) -o $(SIMONE) $(SIMONE_OBJECTS) $(ALGLIB_OBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(SIMONE) compiled successfully!"
 
@@ -146,7 +149,7 @@ $(MESAIO): override LFLAGS = $(LFLAGS_RELEASE)
 $(MESAIO): $(COMPILE_MESAIO)
 
 $(COMPILE_MESAIO): $(MESAIO_OBJECTS) $(ALGLIB)
-	@$(COMPILER) -o $(MESAIO) $(MESAIO_OBJECTS) $(ALGLIBOBJECTS) $(LFLAGS) \
+	@$(COMPILER) -o $(MESAIO) $(MESAIO_OBJECTS) $(ALGLIB_OBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(MESAIO) compiled successfully!"
 
@@ -157,7 +160,8 @@ $(COMPILE_MESAIO): $(MESAIO_OBJECTS) $(ALGLIB)
 
 $(ALGLIB):
 	@echo "building the ALGLIB library ..."
-	@cd $(ALGLIBSRCPATH) && make
+	@cd $(ALGLIB_SRCPATH) && make COMPILER="$(COMPILER)" CFLAGS="$(CFLAGS)" \
+		ALGLIB_MODULES="$(ALGLIB_MODULES)" 2>/dev/null
 
 #############################################################################
 # deploy executables
@@ -188,7 +192,7 @@ clean:
 del:
 	@echo "cleaning up ..."
 	@make clean
-	@cd $(ALGLIBSRCPATH) && make clean
+	@cd $(ALGLIB_SRCPATH) && make clean ALGLIB_MODULES="$(ALGLIB_MODULES)"
 	@rm -rf $(DOXY_HTML)
 
 #############################################################################
