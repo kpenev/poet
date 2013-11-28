@@ -5,12 +5,18 @@
  *
  * \brief Defines the command line options class for the main
  * executable.
+ *
+ * \todo Add command line option to chose between YREC and MESA
+ *
+ * \todo If no orbital parameters are listed in the output columns, the
+ * evolution should not be calculated.
  */
 
 #include "Common.h"
 #include "AstronomicalConstants.h"
 #include "OrbitSolver.h"
 #include "YRECIO.h"
+#include "CustomStellarEvolution.h"
 #include <argtable2.h>
 #include <iostream>
 #include <fstream>
@@ -198,40 +204,11 @@ namespace OutCol {
 	};
 };
 
-///Isolates the tags for the custom stellar evolution track columns.
-namespace TrackCol {
-	///Tags for the columns in input stellar tracks.
-	enum StellarTrackColumns {
-		///\brief Moment of inertia of the convective envelope of the star in
-		/// \f$M_\odot R_\odot^2\f$.
-		ICONV,
-
-		///\brief Moment of inertia of the radiative core of the star in 
-		/// \f$M_\odot R_\odot^2\f$.
-		IRAD,
-
-		RSTAR,///< Radius of the star in \f$R_\odot\f$.
-		LSTAR,///< Luminosity of the star in \f$L_\odot\f$.
-
-		///Radius of the stellar core in \f$R_\odot\f$ (low mass stars only).
-		RRAD,
-
-		///Mass of the stellar core in \f$M_\odot\f$ (low mass stars only).
-		MRAD,
-
-		AGE,///< Age of the star in Gyr.
-		SKIP,///< A column which is not needed to interpolate the evolution.
-
-		///The number of different input quantities supported.
-		NUM_TRACK_QUANTITIES=SKIP
-	};
-};
-
 ///\brief The names to use for the output columns in the
 ///--output-columns option (indexed by the corresponding
 ///OutputColumns tag) as well as when labeling the output file.
 std::vector<std::string> OUTPUT_COLUMN_NAMES(OutCol::NUM_OUTPUT_QUANTITIES),
-						 TRACK_COLUMN_NAMES(TrackCol::NUM_TRACK_QUANTITIES);
+	TRACK_COLUMN_NAMES(CustomStellarEvolution::NUM_TRACK_QUANTITIES);
 
 ///All command line options can be accessed through members.
 class CommandLineOptions {
@@ -251,7 +228,8 @@ private:
 				 ///\brief Description of the columns in the input stellar
 				 ///evolution track.
 				 ///
-				 ///Indexed by the corresponding StellarTrackColumns tag.
+				 ///Indexed by the corresponding
+				 ///CustomStellarEvolution::Columns tag.
 				 __track_column_descr,
 				 
 				 ///\brief Descriptions of the units expected of the stellar
@@ -273,7 +251,7 @@ private:
 	///
 	///For non-smoothed quantities (NaN entries in __default_track_smoothing)
 	///this value is ignored.
-	std::vector<unsigned> __default_track_nodes;
+	std::vector<int> __default_track_nodes;
 
 	///The default output filename.
 	static const std::string __default_outfname,
@@ -328,7 +306,8 @@ private:
 			 ///The filename of the custom stellar evolution track.
 			 *__custom_stellar_evolution;
 
-	void *__argtable[InCol::NUM_INPUT_QUANTITIES+2*TrackCol::AGE+9];
+	void *__argtable[InCol::NUM_INPUT_QUANTITIES+
+		2*CustomStellarEvolution::AGE+9];
 
 	///A list of the columns in the input file.
 	std::vector<InCol::InputColumns> __input_file_format;
@@ -337,7 +316,7 @@ private:
 	std::vector<OutCol::OutputColumns> __output_file_format;
 
 	///A list of the columns in the custom stellar evolution track.
-	std::vector<TrackCol::StellarTrackColumns> __track_format;
+	std::vector<CustomStellarEvolution::Columns> __track_format;
 
 	///The stream to the input filename if stdin is not being used.
 	std::ifstream __input_stream;
@@ -474,16 +453,18 @@ public:
 	{return __custom_stellar_evolution->filename[0];}
 
 	///A list of the columns in the custom stellar evolution track.
-	const std::vector<TrackCol::StellarTrackColumns>&
+	const std::vector<CustomStellarEvolution::Columns>&
 		custom_track_format() const {return __track_format;}
 
 	///\brief The smoothing to apply to the given column from the custom 
 	///stellar evolution track.
-	double custom_track_smoothing(TrackCol::StellarTrackColumns column)const;
+	double custom_track_smoothing(CustomStellarEvolution::Columns column)
+		const;
 
 	///\brief The nodes to use for the given column from the custom stellar
 	///evolution track.
-	double custom_track_nodes(TrackCol::StellarTrackColumns column) const;
+	int custom_track_nodes(CustomStellarEvolution::Columns column)
+		const;
 
 	///Did parsing the command line succeed.
 	operator bool() {return __parsed_ok;}

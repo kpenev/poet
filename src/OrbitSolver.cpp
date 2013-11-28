@@ -1285,16 +1285,25 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 				evolution_mode, wind_state, *stopping_condition,
 				planet_formation_semimajor);
 		last_age=next_stop_age;
-		if(last_age<end_age) {
+		if(last_age<stop_evol_age) {
 			EvolModeType old_evolution_mode=evolution_mode;
 			if(!no_evol_mode_change) evolution_mode=next_evol_mode(last_age,
 					orbit, planet_formation_semimajor, system,
 					evolution_mode, stop_reason, stop_condition_value,
 					stopped_before, planet_formation_age);
+#ifdef DEBUG
+			std::cerr << "Changing evolution mode from "
+				<< old_evolution_mode << " to " << evolution_mode
+				<< std::endl;
+#endif
 			if(old_evolution_mode!=evolution_mode) {
 				std::valarray<double> new_orbit=transform_orbit(
 						old_evolution_mode, evolution_mode, last_age, orbit,
 						planet_formation_semimajor, system);
+#ifdef DEBUG
+				std::cerr << "Transforming orbit from: " << orbit
+					<< " to " << new_orbit << std::endl;
+#endif
 				orbit.resize(new_orbit.size());
 				orbit=new_orbit;
 			}

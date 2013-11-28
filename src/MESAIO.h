@@ -29,6 +29,8 @@
 ///conflicts with other StellarEvolution implentations (e.g. YREC).
 ///
 ///\ingroup StellarSystem_group
+///
+///\todo Tune default nodes and smoothing for good interpolation.
 namespace MESA {
 
 	///Names for the interesting columns in a MESA track.
@@ -190,16 +192,41 @@ namespace MESA {
 				const std::string &model_directory,
 
 				///How much to smooth the moment of inertia of the
-				///convective zone when fitting.
+				///convective zone when fitting. Use NaN for no smoothing.
 				double smooth_conv_inertia=0,
 
 				///How much to smooth the moment of inertia of the
-				///radiative zone of the star when fitting.
+				///radiative zone of the star when fitting. Use NaN for no
+				///smoothing.
 				double smooth_rad_inertia=2,
 
 				///How much to smooth the mass in the radiative zone when
-				///fitting.
-				double smooth_rad_mass=2);
+				///fitting. Use NaN for no smoothing.
+				double smooth_rad_mass=2,
+				
+				///How many nodes to use when smoothing the moment of inertia
+				///of the convective zone (ignored if #smooth_conv_inertia is
+				///NaN - no smoothing).
+				///
+				///Negative values result in using min(-conv_inertia_nodes,
+				///number of tabulated ages for each track).
+				int conv_inertia_nodes=-1000,
+
+				///How many nodes to use when smoothing the moment of inertia
+				///of the radiative zone (ignored if #smooth_rad_inertia is
+				///NaN - no smoothing).
+				///
+				///Negative values result in using min(-rad_inertia_nodes,
+				///number of tabulated ages for each track).
+				int rad_inertia_nodes=-1000,
+
+				///How many nodes to use when smoothing the mass of the
+				///radiative zone (ignored if #smooth_rad_inertia is NaN - no
+				///smoothing).
+				///
+				///Negative values result in using min(-rad_mass_nodes,
+				///number of tabulated ages for each track).
+				int rad_mass_nodes=-1000);
 	};
 };
 

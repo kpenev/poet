@@ -14,10 +14,6 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(InterpolatingFunctionALGLIB)
 #endif
 
-///\brief When smoothing splines are used limit the degrees of freedom to
-///this value.
-const int max_default_degrees_of_freedom=1000;
-
 void InterpSolutionIterator::get_solutions()
 {
 	bool found=false;
@@ -136,7 +132,7 @@ InterpolatingFunctionALGLIB::InterpolatingFunctionALGLIB(
 		double smoothing, int degrees_of_freedom)
 {
 	if(degrees_of_freedom<0) degrees_of_freedom=std::min(
-			max_default_degrees_of_freedom, static_cast<int>(3*x.size()));
+			-degrees_of_freedom, static_cast<int>(3*x.size()));
 
 	alglib::real_1d_array alglib_x, alglib_y, alglib_yprime;
 	alglib_x.setcontent(x.size(), &x[0]);

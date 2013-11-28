@@ -13,6 +13,7 @@
 #include "../Functions.h"
 #include "../StellarZone.h"
 #include "../YRECIO.h"
+#include "../MESAIO.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>

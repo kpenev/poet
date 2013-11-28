@@ -198,7 +198,9 @@ namespace MESA {
 
 	Evolution::Evolution(const std::string &model_directory,
 			double smooth_conv_inertia, double smooth_rad_inertia,
-			double smooth_rad_mass) : track_quantities(NUM_COLUMNS)
+			double smooth_rad_mass, int conv_inertia_nodes,
+			int rad_inertia_nodes, int rad_mass_nodes) :
+		track_quantities(NUM_COLUMNS)
 	{
 		DIR *dirstream=opendir(model_directory.c_str());
 		std::string join;
@@ -220,8 +222,9 @@ namespace MESA {
 		interpolate_from(masses, track_quantities[AGE],
 				track_quantities[RSTAR], track_quantities[ICONV],
 				track_quantities[IRAD], track_quantities[MRAD],
-				track_quantities[RRAD], smooth_conv_inertia,
-				smooth_rad_inertia, smooth_rad_mass, 
-				track_quantities[LSTAR]);
+				track_quantities[RRAD], NaN, smooth_conv_inertia,
+				smooth_rad_inertia, smooth_rad_mass, NaN, 0,
+				conv_inertia_nodes, rad_inertia_nodes, rad_mass_nodes, 0,
+				track_quantities[LSTAR], NaN, 0);
 	}
 };

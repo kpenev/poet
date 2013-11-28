@@ -309,15 +309,15 @@ void StellarEvolution::interpolate_from(
 	double smooth_rad_mass,
 	double smooth_core_env_boundary,
 
-	unsigned radius_nodes,
-	unsigned conv_inertia_nodes,
-	unsigned rad_inertia_nodes,
-	unsigned rad_mass_nodes,
-	unsigned core_env_boundary_nodes,
+	int radius_nodes,
+	int conv_inertia_nodes,
+	int rad_inertia_nodes,
+	int rad_mass_nodes,
+	int core_env_boundary_nodes,
 
 	const std::list< std::valarray<double> > &tabulated_luminosities,
 	double smooth_luminosities,
-	unsigned luminosities_nodes,
+	int luminosities_nodes,
 
 	double max_low_mass, double low_mass_age_scaling,
 	double high_mass_age_scaling, double low_mass_extrapolate,
