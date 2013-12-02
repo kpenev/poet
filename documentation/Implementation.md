@@ -201,6 +201,19 @@ continuously differentiable up to at least third order) and is zero exactly
 when the condition which should stop the evolution is met (see for example
 SynchronizedCondition, BreakLockCondition, PlanetDeathCondition).
 
+It is possible for users to define external stopping conditions. This is
+accomplished by editing the files ExternalStoppingConditions.h and
+ExternalStoppingConditions.cpp. The user needs to inherit a class from
+the #ExternalStoppingCondition class and define operator() for it, which
+should return a valarray of real values which vary smoothly with age and the
+orbital parameters and one of which is zero exactly for the evolution states
+that the evolution needs to meet precisely. If it is known, operator() should
+also overwrite an input derivatives valarray with the rate at which the
+stopping condition values change with age (per Gyr). For a more detailed
+description of the input arguments see #StoppingCondition::operator()().
+**Recompliing the code is necessary after defining or changing external 
+stopping conditions!**
+
 \section modes Evolution Modes
 
 As discussed above, discontinuities in the evolution require switching
