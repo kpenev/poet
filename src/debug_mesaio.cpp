@@ -3,7 +3,9 @@
 int main(int, char **argv)
 {
 	try {
+		std::cout << "Generating MESA evolution." << std::endl;
 		MESA::Evolution evolution("MESA/tracks");
+		std::cout << "Done with MESA evolution" << std::endl;
 		const EvolvingStellarQuantity
 			*radius=evolution.interpolate_radius(1.0);
 		std::cout.setf(std::ios_base::scientific);

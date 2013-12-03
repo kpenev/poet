@@ -202,6 +202,7 @@ namespace MESA {
 			int rad_inertia_nodes, int rad_mass_nodes) :
 		track_quantities(NUM_COLUMNS)
 	{
+		std::cout << "Reading tracks from " << std::endl;
 		DIR *dirstream=opendir(model_directory.c_str());
 		std::string join;
 		if(model_directory[model_directory.size()-1]=='/') join="";
@@ -211,14 +212,19 @@ namespace MESA {
 		struct dirent *entry; 
 		while((entry=readdir(dirstream))) {
 			std::string fname(entry->d_name);
-			if(fname[0]!='.' && fname.substr(fname.size()-5)==".data")
+			if(fname[0]!='.' && fname.substr(fname.size()-5)==".data") {
+				std::cout << "Reading " << model_directory+join+entry->d_name
+					<< std::endl;
 				read_model_file(model_directory+join+entry->d_name);
+			}
 		}
 		if(closedir(dirstream)) throw Error::Runtime(
 				"Failed to close directory stream tied to "+model_directory+
 				" in MESA::Evolution constructor.");
 		sort_masses();
 		std::valarray<double> masses = list_to_valarray(__mass_list);
+		std::cout << "Done reading tracks." << std::endl
+			<< "Starting interpolation" << std::endl;
 		interpolate_from(masses, track_quantities[AGE],
 				track_quantities[RSTAR], track_quantities[ICONV],
 				track_quantities[IRAD], track_quantities[MRAD],
@@ -226,5 +232,6 @@ namespace MESA {
 				smooth_rad_inertia, smooth_rad_mass, NaN, 0,
 				conv_inertia_nodes, rad_inertia_nodes, rad_mass_nodes, 0,
 				track_quantities[LSTAR], NaN, 0);
+		std::cout << "Done with interpolation" << std::endl;
 	}
 };
