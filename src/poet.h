@@ -7,9 +7,6 @@
  * executable.
  *
  * \todo Add command line option to chose between YREC and MESA
- *
- * \todo If no orbital parameters are listed in the output columns, the
- * evolution should not be calculated.
  */
 
 #include "Common.h"
@@ -107,23 +104,6 @@ namespace OutCol {
 	///Tags for the possible columns to output.
 	enum OutputColumns {
 		AGE,///< Age of the system in Gyr.
-		SEMIMAJOR,///< Semimajor axis of the orbit in AU.
-		WORB,///< The orbital frequency in rad/day.
-		PORB,///< The orbital period days.
-
-		///\brief Angular momentum of the convective zone of the star in
-		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
-		///stars only)
-		LCONV,
-
-		///\brief Angular momentum of the radiative zone of the star in
-		// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
-		///stars only)
-		LRAD,
-
-		///\brief Total angular momentum of the star in 
-		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$.
-		LTOT,
 
 		///\brief Moment of inertia of the convective zone of the star (low
 		///mass stars only) in \f$M_\odot R_\odot^2\f$.
@@ -136,21 +116,6 @@ namespace OutCol {
 		///Total moment of inertia of the star in \f$M_\odot R_\odot^2\f$.
 		ITOT,
 
-		WSURF, ///< Angular velocity of the stellar surface in rad/day.
-
-		///\brief Angular velocity of the stellar core in rad/day (low mass
-		///stars only).
-		WRAD,
-
-		PSURF, ///< Spin period of the stellar surface in days.
-
-		///Spin period of the stellar core in days (low mass stars only).
-		PRAD,
-
-		///The evolution mode for the step that starts at this age.
-		EVOL_MODE,
-
-		WIND_STATE,///< The saturation state of the wind.
 		RSTAR,///< Radius of the star in \f$R_\odot\f$.
 		LSTAR,///< Luminosity of the star in \f$L_\odot\f$.
 
@@ -198,6 +163,43 @@ namespace OutCol {
 		///Second age derivative of the radius of the radiative core in
 		/// \f$R_\odot/Gyr^2\f$.
 		RRAD_SECOND_DERIV,
+
+		///The index of the last quantity requiring no orbital evolution.
+		LAST_NO_ORBIT=RRAD_SECOND_DERIV,
+
+		SEMIMAJOR,///< Semimajor axis of the orbit in AU.
+		WORB,///< The orbital frequency in rad/day.
+		PORB,///< The orbital period days.
+
+		///\brief Angular momentum of the convective zone of the star in
+		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
+		///stars only)
+		LCONV,
+
+		///\brief Angular momentum of the radiative zone of the star in
+		// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
+		///stars only)
+		LRAD,
+
+		///\brief Total angular momentum of the star in 
+		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$.
+		LTOT,
+
+		WSURF, ///< Angular velocity of the stellar surface in rad/day.
+
+		///\brief Angular velocity of the stellar core in rad/day (low mass
+		///stars only).
+		WRAD,
+
+		PSURF, ///< Spin period of the stellar surface in days.
+
+		///Spin period of the stellar core in days (low mass stars only).
+		PRAD,
+
+		///The evolution mode for the step that starts at this age.
+		EVOL_MODE,
+
+		WIND_STATE,///< The saturation state of the wind.
 
 		///The number of different output quantities supported.
 		NUM_OUTPUT_QUANTITIES
@@ -332,7 +334,11 @@ private:
 	bool __parsed_ok,
 
 		 ///Set to true only if and when the #__input_stream is opened.
-		 __opened_stream;
+		 __opened_stream,
+		 
+		 ///Do we need to calculate the evolution in order to have all
+		 ///required output quantities.
+		 __need_orbit;
 
 	///Returns a copy of the c-string content of the stream.
 	char *cstr_copy(const std::ostringstream &stream)
@@ -466,6 +472,10 @@ public:
 	int custom_track_nodes(CustomStellarEvolution::Columns column)
 		const;
 
+	///Do we need to calculate the evolution in order to have all required
+	///output quantities.
+	bool need_orbit() const {return __need_orbit;}
+
 	///Did parsing the command line succeed.
 	operator bool() {return __parsed_ok;}
 
@@ -497,7 +507,23 @@ void output_solution(
 		const std::string &filename,
 
 		///The columns to include in the output file in the desired order.
-		const std::vector<OutCol::OutputColumns> &output_file_format);
+		const std::vector<OutCol::OutputColumns> &output_file_format,
+
+		///The starting age if no orbit was calculated. Ignored if solver 
+		///contains an orbit.
+		double start_age,
+
+		///The starting age if no orbit was calculated. Ignored if solver 
+		///contains an orbit.
+		double end_age,
+		
+		///The time step if no orbit was calculated. Ignored if solver 
+		///contains an orbit.
+		double timestep,
+		
+		///A list of ages for which an output line must be written. Ignored
+		///if solver contains an orbit
+		const std::list<double> &required_ages=std::list<double>());
 
 ///Calculates the evolution for a set of parameters.
 void calculate_evolution(
@@ -519,7 +545,10 @@ void calculate_evolution(
 		const std::string &outfname,
 
 		///The columns to include in the output file in the desired order.
-		const std::vector<OutCol::OutputColumns> &output_file_format);
+		const std::vector<OutCol::OutputColumns> &output_file_format,
+
+		///Is calculating the orbit requried by the output.
+		bool need_orbit);
 
 ///\brief Updates the evolution parameters as indicated on the next line of
 ///the input stream and returns filename to output the evolution to.

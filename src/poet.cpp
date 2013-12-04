@@ -685,6 +685,9 @@ void CommandLineOptions::postprocess()
 	parse_column_list(__output_file_columns->sval[0],
 			OUTPUT_COLUMN_NAMES, OutCol::NUM_OUTPUT_QUANTITIES,
 			__output_file_format);
+	__need_orbit=false;
+	for(size_t i=0; i<__output_file_format.size(); ++i)
+		if(__output_file_format[i]>OutCol::LAST_NO_ORBIT) __need_orbit=true;
 	parse_column_list(__custom_stellar_evolution_format->sval[0],
 			TRACK_COLUMN_NAMES, CustomStellarEvolution::NUM_TRACK_QUANTITIES,
 			__track_format);
@@ -851,7 +854,9 @@ const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 
 void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 		const std::string &filename,
-		const std::vector<OutCol::OutputColumns> &output_file_format)
+		const std::vector<OutCol::OutputColumns> &output_file_format,
+		double start_age, double end_age, double timestep,
+		const std::list<double> &required_ages)
 {
 
 	std::list<double>::const_iterator
@@ -863,6 +868,19 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 	const Planet &planet=system.get_planet();
 	std::list<double>::const_iterator
 		last_age=solver.get_tabulated_var(AGE)->end();
+	std::list<double> age_list;
+	if(age_i==last_age) {
+		std::list<double>::const_iterator
+			required_ages_iter=required_ages.begin();
+		for(double age=start_age; age<=end_age; age+=timestep) {
+			for(;required_ages_iter!=required_ages.end() &&
+					*required_ages_iter<age; ++required_ages_iter)
+				age_list.push_back(*required_ages_iter);
+			age_list.push_back(age);
+		}
+		age_i=age_list.begin();
+		last_age=age_list.end();
+	}
 
 	std::list<EvolModeType>::const_iterator
 		mode_i=solver.get_tabulated_evolution_mode()->begin();
@@ -952,7 +970,8 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 		bool start_locked, const std::list<double> &required_ages,
 		const StellarEvolution &stellar_evolution,
 		const std::string &outfname,
-		const std::vector<OutCol::OutputColumns> &output_file_format)
+		const std::vector<OutCol::OutputColumns> &output_file_format,
+		bool need_orbit)
 {
 	Star star(real_parameters[InCol::MSTAR],
 			std::pow(10.0, real_parameters[InCol::LGQ]),
@@ -1012,11 +1031,13 @@ void calculate_evolution(const std::vector<double> &real_parameters,
     double tend=std::min(real_parameters[InCol::TEND], star.get_lifetime());
 	OrbitSolver solver(tstart, tend,
 			std::pow(10.0, -real_parameters[InCol::PRECISION]));
-	solver(system, real_parameters[InCol::MAX_STEP],
-			real_parameters[InCol::PLANET_FORMATION_AGE],
-			real_parameters[InCol::A_FORMATION], tstart,
-			start_evol_mode, start_orbit, required_ages);
-	output_solution(solver, system, outfname, output_file_format);
+	if(need_orbit)
+		solver(system, real_parameters[InCol::MAX_STEP],
+				real_parameters[InCol::PLANET_FORMATION_AGE],
+				real_parameters[InCol::A_FORMATION], tstart,
+				start_evol_mode, start_orbit, required_ages);
+	output_solution(solver, system, outfname, output_file_format,
+			tstart, tend, real_parameters[InCol::MAX_STEP]);
 }
 
 std::string update_run_parameters(std::vector<double> &real_parameters,
@@ -1131,7 +1152,8 @@ void run(const CommandLineOptions &options,
 				real_parameters[InCol::LOW_MASS_WIND_SAT_W];
 		}
 		calculate_evolution(real_parameters, start_locked, required_ages,
-				stellar_evolution, outfname, options.output_file_format());
+				stellar_evolution, outfname, options.output_file_format(),
+				options.need_orbit());
 	}
 }
 
