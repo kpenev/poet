@@ -35,13 +35,14 @@ std::valarray< std::list<double> > parse_columns(std::istream &is,
 				<< "parse_columns.";
 			throw Error::IO(msg.str());
 		}
+		if(line[0]=='#') continue;
 		std::istringstream line_stream(line);
 		for(int column_number=0; column_number<=last_column;
 				++column_number) {
 			std::ostringstream msg;
 			msg << "Failed to parse column " << column_number
 				<< " on line " << line_number << " of the data section of an"
-				"input stream in parse_columns.";
+				" input stream in parse_columns.";
 			if(!line_stream.good()) throw Error::IO(msg.str());
 			typename COLNUM_STRUCTURE::const_iterator
 				colnum_iter=column_numbers.begin();
@@ -57,7 +58,7 @@ std::valarray< std::list<double> > parse_columns(std::istream &is,
 				std::string word;
 				line_stream >> word;
 			}
-			if(!line_stream.good()) throw Error::IO(msg.str());
+			if(line_stream.bad()) throw Error::IO(msg.str());
 		}
 	}
 	return result;

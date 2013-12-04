@@ -123,9 +123,9 @@ void CommandLineOptions::init_output_column_descriptions()
 void CommandLineOptions::init_track_column_descriptions_and_units()
 {
 	__track_column_descr.resize(
-			CustomStellarEvolution::NUM_TRACK_QUANTITIES-1);
+			CustomStellarEvolution::NUM_TRACK_QUANTITIES);
 	__track_column_units.resize(
-			CustomStellarEvolution::NUM_TRACK_QUANTITIES-1);
+			CustomStellarEvolution::NUM_TRACK_QUANTITIES);
 
 	__track_column_descr[CustomStellarEvolution::ICONV]=
 		"Convective zone moment of inertia";
@@ -148,6 +148,9 @@ void CommandLineOptions::init_track_column_descriptions_and_units()
 	__track_column_descr[CustomStellarEvolution::MRAD]=
 		"Mass of the radiative zone";
 	__track_column_units[CustomStellarEvolution::MRAD]="solar masses.";
+
+	__track_column_descr[CustomStellarEvolution::AGE]="Stellar age";
+	__track_column_units[CustomStellarEvolution::AGE]="Gyr";
 }
 
 void CommandLineOptions::init_defaults()
@@ -216,10 +219,13 @@ void CommandLineOptions::verify_custom_stellar_evolution()
 			throw Error::CommandLine(TRACK_COLUMN_NAMES[i]+" not found in "
 					"the list of columns contained in the custom stellar "
 					"evolution track.");
-		double smoothing=__custom_track_smoothing[i]->dval[0];
-		if(!std::isnan(smoothing) && (smoothing<-15 || smoothing>15))
-			throw Error::CommandLine("Smoothing for "+TRACK_COLUMN_NAMES[i]+
-					" is outside the allowed range of [-15; 15]!");
+		if(i<CustomStellarEvolution::AGE) {
+			double smoothing=__custom_track_smoothing[i]->dval[0];
+			if(!std::isnan(smoothing) && (smoothing<-15 || smoothing>15))
+				throw Error::CommandLine("Smoothing for "+
+						TRACK_COLUMN_NAMES[i]+
+						" is outside the allowed range of [-15; 15]!");
+		}
 	}
 }
 
@@ -581,7 +587,7 @@ void CommandLineOptions::define_options()
 	option_help << "A comma separated list of the columns in the custom "
 		"stellar evolution track specified by the --custom-stellar-evolution"
 		" option. The recognized column names are:" << std::endl;
-	for(int i=0; i<CustomStellarEvolution::NUM_TRACK_QUANTITIES-1; ++i)
+	for(int i=0; i<CustomStellarEvolution::NUM_TRACK_QUANTITIES; ++i)
 		option_help << "\t* "  << TRACK_COLUMN_NAMES[i]
 					<< ": " << __track_column_descr[i] << " in " 
 					<< __track_column_units[i] << std::endl;
@@ -626,7 +632,7 @@ void CommandLineOptions::define_options()
 
 void CommandLineOptions::set_defaults()
 {
-	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; i++)
+	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; ++i)
 		__direct_value_options[i]->dval[0]=__defaults[i];
 	__output_fname->filename[0]=__default_outfname.c_str();
 	__serialized_stellar_evolution->filename[0]=
@@ -635,6 +641,10 @@ void CommandLineOptions::set_defaults()
 	__custom_stellar_evolution->filename[0]="";
 	__custom_stellar_evolution_format->sval[0]=
 		__default_track_columns.c_str();
+	for(int i=0; i<CustomStellarEvolution::AGE; ++i) {
+		__custom_track_smoothing[i]->dval[0]=__default_track_smoothing[i];
+		__custom_track_nodes[i]->ival[0]=__default_track_nodes[i];
+	}
 }
 
 template<typename COL_ID_TYPE>
@@ -648,13 +658,15 @@ void CommandLineOptions::parse_column_list(const char *columns_str,
 		std::string colname;
 		std::getline(instream, colname, ',');
 		int i=0;
-		while(i<num_column_names && column_names[i]!=colname) i++;
-		if(column_names[i]==colname)
-			columns.push_back(static_cast<COL_ID_TYPE>(i));
-		else if(allow_noname && colname=="")
+		if(allow_noname && colname=="")
 			columns.push_back(static_cast<COL_ID_TYPE>(num_column_names));
-		else throw Error::CommandLine("Unrecognized input column '"+colname+
-				"'");
+		else {
+			while(i<num_column_names && column_names[i]!=colname) ++i;
+			if(i==num_column_names)
+				throw Error::CommandLine("Unrecognized input column '"+colname+
+						"'");
+			columns.push_back(static_cast<COL_ID_TYPE>(i));
+		}
 	}
 }
 
