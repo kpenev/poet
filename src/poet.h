@@ -428,7 +428,8 @@ public:
 	///The name of the file to output the solution to.
 	std::string output_filename() const {return __output_fname->filename[0];}
 
-	///The name of the file to read pre-serialized stellar evolution from.
+	///\brief The name of the file to read/write a serialized stellar
+	///evolution from/to.
 	const char *serialized_stellar_evolution() const
 	{return __serialized_stellar_evolution->filename[0];}
 

@@ -544,3 +544,20 @@ const EvolvingStellarQuantity *StellarEvolution::interpolate_core_boundary(
 			low_age_scaling, high_age_scaling, extrapolate_low,
 			extrapolate_high, true);
 }
+
+#ifndef NO_SERIALIZE
+void StellarEvolution::load_state(const std::string &filename)
+{
+    std::ifstream ifs(filename.c_str());
+    boost::archive::text_iarchive ia(ifs);
+    ia >> (*this);
+    ifs.close();
+}
+
+void StellarEvolution::save_state(const std::string &filename) const
+{
+	std::ofstream ofs(filename.c_str());
+	boost::archive::text_oarchive oa(ofs);
+	oa << (*this);
+}
+#endif

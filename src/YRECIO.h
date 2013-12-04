@@ -146,17 +146,6 @@ public:
 ///\ingroup StellarSystem_group
 class YRECEvolution : public StellarEvolution {
 private:
-	friend class boost::serialization::access;
-
-	///Saves the interpolation to a file for faster re-use.
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int) {
-		ar & boost::serialization::base_object<StellarEvolution>(*this);
-		ar & mass_list;
-		ar & ages & radii & luminosities & rad_masses &
-			core_boundaries & conv_inertias & rad_inertias;
-	}
-
 	///The masses of the available tracks.
 	std::list<double> mass_list;
 
@@ -234,29 +223,6 @@ public:
 		///Negative values result in using min(-rad_mass_nodes, number of
 		///tabulated ages for each track).
 		int rad_mass_nodes=-1000);
-
-	///\brief Loads data from serialization.
-	///
-	///Only call this on objects initialized with the default constructor.
-	void load_state(std::string filename="../interp_state_data");
-
-	///\brief Serializes the interpolation state to file.
-	///
-	///Only call this on objects NOT initialized using the default constructor
-	///(otherwise it has no data to save). Serializes state to file.
-	///Recursively saves data of YRECEvolution and every class it depends on:
-	/// - StellarEvolution
-	/// - InterpolatingFunctionALGLIB
-	/// - OneArgumentDiffFunction,
-	/// - OneArgumentFunction
-	/// - spline1dinterpolant
-	/// - _spline1dinterpolant_owner.
-	///
-	///In _spline1dinterpolant_owner, serialize() serializes everything
-	///EXCEPT p_struct->x.data and p_struct->y.data, because those are just
-	///copies of the original data on which the spline was based and are not
-	///necessary for evaluating the spline.
-	void save_state(std::string filename="../interp_state_data") const;
 };
 
 #endif

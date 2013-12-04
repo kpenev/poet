@@ -16,6 +16,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -493,9 +494,10 @@ public:
 ///
 ///\ingroup StellarSystem_group
 class StellarEvolution {
-
+private:
 	///Serialize the found interpolation.
 	friend class boost::serialization::access;
+
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int) {
 		ar & track_masses;
@@ -505,7 +507,7 @@ class StellarEvolution {
 		ar & mass_break & low_age_scaling & high_age_scaling &
 			extrapolate_low & extrapolate_high & core_formation;
 	}
-private:
+
 	///The stellar masses for which evolution tracks are available in
 	/// \f$M_\odot\f$
 	const std::valarray<double> *track_masses;
@@ -867,6 +869,33 @@ public:
 	///\brief Returns the mass that separates low from high mass stars in
 	/// \f$M_\odot\f$.
 	double get_mass_break() const {return mass_break;}
+
+	///\brief Serializes the interpolation state to file.
+	///
+	///Only call this on objects initialized with the default constructor.
+	virtual void save_state(
+			const std::string &filename="../interp_state_data") const;
+
+	///\brief Loads data from serialization.
+	///
+	///Only call this on objects NOT initialized using the default
+	///constructor (otherwise it has no data to save). Serializes state to
+	///file.
+	///
+	///Recursively saves data of YRECEvolution and every class it depends on:
+	/// - StellarEvolution
+	/// - InterpolatingFunctionALGLIB
+	/// - OneArgumentDiffFunction,
+	/// - OneArgumentFunction
+	/// - spline1dinterpolant
+	/// - _spline1dinterpolant_owner.
+	///
+	///In _spline1dinterpolant_owner, serialize() serializes everything
+	///EXCEPT p_struct->x.data and p_struct->y.data, because those are just
+	///copies of the original data on which the spline was based and are not
+	///necessary for evaluating the spline.
+	virtual void load_state(
+			const std::string &filename="../interp_state_data");
 
 	virtual ~StellarEvolution() {}
 };

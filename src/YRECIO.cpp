@@ -249,20 +249,3 @@ YRECEvolution::YRECEvolution(const std::string &model_directory,
 			smooth_rad_inertia, smooth_rad_mass, NaN, 0, conv_inertia_nodes,
 			rad_inertia_nodes, rad_mass_nodes, 0, luminosities, NaN, 0);
 }
-
-#ifndef NO_SERIALIZE
-void YRECEvolution::load_state(std::string filename)
-{
-    std::ifstream ifs(filename.c_str());
-    boost::archive::text_iarchive ia(ifs);
-    ia >> (*this);
-    ifs.close();
-}
-
-void YRECEvolution::save_state(std::string filename) const
-{
-	std::ofstream ofs(filename.c_str());
-	boost::archive::text_oarchive oa(ofs);
-	oa << (*this);
-}
-#endif

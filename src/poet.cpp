@@ -287,7 +287,7 @@ void init_track_column_names()
 }
 
 const std::string CommandLineOptions::__default_outfname="poet.evol",
-	  CommandLineOptions::__default_serialized_evol="interp_state_data",
+	  CommandLineOptions::__default_serialized_evol="serialized_evolution",
 	  CommandLineOptions::__default_output_columns=
 	  	"t,a,Lconv,Lrad,L,Iconv,Irad,I,mode",
 	  CommandLineOptions::__default_track_columns="t,R,Iconv,Irad,Rrad,Mrad";
@@ -570,7 +570,8 @@ void CommandLineOptions::define_options()
 
 	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
 			"<file>", "The file to read previously serialized stellar "
-			"evolution from. Default: 'interp_state_data'.");
+			"evolution from or write one if the file does not exist. "
+			"Default: 'serialized_evolution'.");
 
 	__custom_stellar_evolution=arg_file0(NULL, "custom-stellar-evolution",
 			"<file>", "A single stellar evolution track from which to "
@@ -1173,12 +1174,12 @@ void run(const CommandLineOptions &options,
 ///according to options.
 StellarEvolution *get_stellar_evolution(const CommandLineOptions &options)
 {
-	if(options.custom_stellar_evolution().empty()) {
-		YRECEvolution *stellar_evolution=new YRECEvolution;
-		stellar_evolution->load_state(
-				options.serialized_stellar_evolution());
-		return stellar_evolution;
-	} else {
+	std::ifstream serialized_file(options.serialized_stellar_evolution());
+	bool serialized_exists=serialized_file.good();
+	serialized_file.close();
+
+	StellarEvolution *stellar_evolution;
+	if(!options.custom_stellar_evolution().empty()) {
 		std::vector<double> smoothing(CustomStellarEvolution::AGE);
 		std::vector<int> nodes(CustomStellarEvolution::AGE);
 		for(int i=0; i<CustomStellarEvolution::AGE; ++i) {
@@ -1187,13 +1188,20 @@ StellarEvolution *get_stellar_evolution(const CommandLineOptions &options)
 			smoothing[i]=options.custom_track_smoothing(col);
 			nodes[i]=options.custom_track_nodes(col);
 		}
-		CustomStellarEvolution::Evolution *stellar_evolution=new 
-			CustomStellarEvolution::Evolution(
-					options.custom_stellar_evolution(),
-					options.custom_track_format(),
-					smoothing, nodes);
+		stellar_evolution=new CustomStellarEvolution::Evolution(
+				options.custom_stellar_evolution(),
+				options.custom_track_format(),
+				smoothing, nodes);
+	} else if(serialized_exists) {
+		stellar_evolution=new YRECEvolution;
+		stellar_evolution->load_state(
+				options.serialized_stellar_evolution());
 		return stellar_evolution;
-	}
+	} else
+		stellar_evolution=new YRECEvolution("YREC", 0, 2.0, 2.0);
+	if(!serialized_exists) stellar_evolution->save_state(
+			options.serialized_stellar_evolution());
+	return stellar_evolution;
 }
 
 ///Calculates a realistic evolution chosen to be comlicated.
