@@ -9,7 +9,10 @@ gsl_prefix=gsl_config.communicate()[0].strip()
 
 orbital_evolution_code=['Common.cpp', 'Functions.cpp', 'OrbitSolver.cpp',
                         'Planet.cpp', 'Star.cpp', 'StellarEvolution.cpp',
-                        'StellarSystem.cpp', 'YRECIO.cpp']
+                        'StellarSystem.cpp', 'YRECIO.cpp',
+                        'StoppingConditions.cpp',
+                        'ExternalStoppingConditions',
+                        'CustomStellarEvolution']
 alglib_code=['alglib/src/interpolation.cpp', 'alglib/src/ap.cpp',
              'alglib/src/alglibinternal.cpp', 'alglib/src/optimization.cpp',
              'alglib/src/linalg.cpp', 'alglib/src/integration.cpp',
