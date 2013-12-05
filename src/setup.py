@@ -11,8 +11,8 @@ orbital_evolution_code=['Common.cpp', 'Functions.cpp', 'OrbitSolver.cpp',
                         'Planet.cpp', 'Star.cpp', 'StellarEvolution.cpp',
                         'StellarSystem.cpp', 'YRECIO.cpp',
                         'StoppingConditions.cpp',
-                        'ExternalStoppingConditions',
-                        'CustomStellarEvolution']
+                        'ExternalStoppingConditions.cpp',
+                        'CustomStellarEvolution.cpp']
 alglib_code=['alglib/src/interpolation.cpp', 'alglib/src/ap.cpp',
              'alglib/src/alglibinternal.cpp', 'alglib/src/optimization.cpp',
              'alglib/src/linalg.cpp', 'alglib/src/integration.cpp',
