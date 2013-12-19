@@ -161,9 +161,9 @@ double cubic_zerocrossing(double x0, double y0, double x1, double y1,
 		double require_range_low, double require_range_high)
 {
 	double xpre, ypre, xpost, ypost;
-	if(y0*y1<0) {xpre=x0; xpost=x1; ypre=y0; ypost=y1;}
-	else if(y1*y2<0) {xpre=x1; xpost=x2; ypre=y1; ypost=y2;}
-	else if(y2*y3<0) {xpre=x2; xpost=x3; ypre=y2; ypost=y3;}
+	if(y0*y1<=0) {xpre=x0; xpost=x1; ypre=y0; ypost=y1;}
+	else if(y1*y2<=0) {xpre=x1; xpost=x2; ypre=y1; ypost=y2;}
+	else if(y2*y3<=0) {xpre=x2; xpost=x3; ypre=y2; ypost=y3;}
 	else {
 		std::ostringstream msg;
 		msg.precision(16);

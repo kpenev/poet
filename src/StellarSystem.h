@@ -28,14 +28,14 @@ class StellarSystem {
 private:
 	///\brief Age in Gyr at which evolution starts when searching for initial
 	///conditions
-	const static double MIN_AGE = 0.005;
+//	const static double MIN_AGE = 0.005;
 
 	///Precision to which orbit should be solved
-	const static double PRECISION=1e-3;
+//	const static double PRECISION=1e-3;
 
 	///\brief What energy to assign if the planet does not survive to the
 	///present age when searching for initial conditions.
-	const static double INVALID_ENERGY = 0;
+//	const static double INVALID_ENERGY = 0;
 
 	///The name of the stellar system (e.g. "HAT-P-20")
 	std::string name;
@@ -299,23 +299,23 @@ public:
 
 	///\brief The energy definition for the simulated annealing initial
 	///condition solver.
-	double annealing_energy();
+//	double annealing_energy();
 
 	///\brief Performs a single step of the simulated annealing initial
 	///condition solver.
-	void annealing_step(const gsl_rng *r, double step_size);
+//	void annealing_step(const gsl_rng *r, double step_size);
 
 	///\brief A definition of the distance between the initial conditions
 	///between this system and that.
-	double annealing_metric(StellarSystem* that);
+//	double annealing_metric(StellarSystem* that);
 
 	///\brief Print the current guess for the initial semimajor axis and
 	///rotation frequency.
-	void annealing_print();
+//	void annealing_print();
 
 	///\brief Solve for the initial conditions that reproduce the present
 	///conditions using simulated annealing.
-	bool anneal_solve_IC(
+/*	bool anneal_solve_IC(
 			///Whether to output the progress of solving to stdout.
 			bool verbose=true,
 
@@ -334,7 +334,7 @@ public:
 			///If an error less than this cannot be achieved it is declared
 			///that no initial conditions can reproduced the observed present
 			///configuration.
-			double max_err=0.1);
+			double max_err=0.1);*/
 
 //	void solve_init(double start_age, double curr_age, double curr_spin);
 

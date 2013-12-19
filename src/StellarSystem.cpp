@@ -13,6 +13,7 @@
 
 #include <gsl/gsl_matrix.h>
 
+/*
 double energy(void* xp) {
 	StellarSystem* system = static_cast< StellarSystem* >(xp);
 	return system->annealing_energy();
@@ -47,7 +48,7 @@ bool stop_evolution(double age, const double* y, void *stellar_system) {
 	//cout<<"stop evol "<<curr_semi<<" "<<min_semi<<endl;
 	if (std::isnan(curr_semi)) return true;
 	return curr_semi <= min_semi;
-}
+}*/
 
 StellarSystem::StellarSystem(Star *system_star, Planet *system_planet,
 		double age, const std::string &system_name) :
@@ -127,6 +128,7 @@ StellarSystem::StellarSystem(
 	}
 }*/
 
+/*
 double StellarSystem::annealing_energy() {
 	double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 	OrbitSolver solver(MIN_AGE, age, PRECISION);
@@ -201,7 +203,7 @@ bool StellarSystem::anneal_solve_IC(bool verbose, double min_a0,
 	if (last_energy == INVALID_ENERGY || last_energy > std::log10(max_err))
 		return false;
 	return true;
-}
+}*/
 
 int StellarSystem::orbit_differential_equation(
 		double age,
