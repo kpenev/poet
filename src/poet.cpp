@@ -1050,7 +1050,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				real_parameters[InCol::A_FORMATION], tstart,
 				start_evol_mode, start_orbit, required_ages);
 	output_solution(solver, system, outfname, output_file_format,
-			tstart, tend, real_parameters[InCol::MAX_STEP]);
+			tstart, tend, real_parameters[InCol::MAX_STEP], required_ages);
 }
 
 std::string update_run_parameters(std::vector<double> &real_parameters,

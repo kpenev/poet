@@ -940,11 +940,15 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 	else if(planet_formation_age>age || 
 			(planet_formation_age<age && evolution_mode==NO_PLANET))
 		return NO_PLANET;
-	SynchronizedCondition sync_condition(&(system.get_planet()),
-			initial_semimajor);
+	double in_sync;
 	std::valarray<double> dummy_cond_deriv;
-	double in_sync=sync_condition(age, orbit, std::valarray<double>(),system,
+	if(evolution_mode==LOCKED_TO_PLANET) in_sync=0;
+	else {
+		SynchronizedCondition sync_condition(&(system.get_planet()),
+				initial_semimajor);
+		in_sync=sync_condition(age, orbit, std::valarray<double>(),system,
 			dummy_cond_deriv, evolution_mode)[0];
+	}
 	if(std::abs(in_sync)<precision) {
 		BreakLockCondition locked_cond;
 		std::valarray<double> locked_orbit=transform_orbit(evolution_mode,
@@ -958,9 +962,9 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 			static_cast<void*>(&wind_sat)};
 		stellar_system_diff_eq(age, &locked_orbit[0], &locked_deriv[0],
 				static_cast<void*>(diff_eq_params));
-
-		if(locked_cond(age, locked_orbit, locked_deriv, system,
-					dummy_cond_deriv, evolution_mode)[0]>=0)
+		double locked_cond_value=locked_cond(age, locked_orbit, locked_deriv,
+				system, dummy_cond_deriv, evolution_mode)[0];
+		if(locked_cond_value>=0)
 			return LOCKED_TO_PLANET;
 		else return (no_planet_dwconv_dt(age, locked_orbit, system) > 0 ?
 				SLOW_PLANET : FAST_PLANET);
