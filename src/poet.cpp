@@ -998,7 +998,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 	double tstart=real_parameters[InCol::TSTART];
 	if(star.is_low_mass() && 
 			star.core_formation_age()>star.get_disk_dissipation_age() &&
-			tstart<star.core_formation_age())
+			tstart<star.core_formation_age() && need_orbit)
 		throw Error::Runtime("At present the case when the disk dissipates "
 				"before the stellar core starts to form is not supported.");
 	Planet planet(&star, real_parameters[InCol::MPLANET],
@@ -1193,7 +1193,7 @@ StellarEvolution *get_stellar_evolution(const CommandLineOptions &options)
 				options.custom_track_format(),
 				smoothing, nodes);
 	} else if(serialized_exists) {
-		stellar_evolution=new YRECEvolution;
+		stellar_evolution=new StellarEvolution;
 		stellar_evolution->load_state(
 				options.serialized_stellar_evolution());
 		return stellar_evolution;
