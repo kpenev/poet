@@ -1218,7 +1218,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 	const Planet &planet=system.get_planet();
 	const Star &star=system.get_star();
 	if(std::isnan(start_age)) start_age=star.core_formation_age();
-	double stop_evol_age=std::min(end_age, star.get_lifetime());
+	double stop_evol_age=(end_age>0 ? end_age :
+			std::min(-end_age, star.get_lifetime()));
 	if(initial_evol_mode==FAST_PLANET || initial_evol_mode==SLOW_PLANET
 			|| initial_evol_mode==LOCKED_TO_PLANET) {
 		if(start_orbit[0]<=planet.minimum_semimajor(start_age)/Rsun_AU)

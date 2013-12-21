@@ -43,6 +43,7 @@ namespace CustomStellarEvolution {
 				 std::list< std::valarray<double> >() :
 				 std::list< std::valarray<double> >(1,
 					 list_to_valarray(quantities[LSTAR]))),
-				smoothing[LSTAR], nodes[LSTAR]);
+				smoothing[LSTAR], nodes[LSTAR],
+				std::numeric_limits<double>::max(), 0);
 	}
 };

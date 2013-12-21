@@ -120,18 +120,22 @@ void EvolvingStellarQuantity::init_low_mass(
 		low_masses.push_back(mass);
 		if(mass>max_low_mass) break;
 	}
-	if(std::isnan(mass_above)) {
+	double age_scaling_below, age_scaling_above;
+	if(masses_of_tracks.size()==1)
+		age_scaling_below=age_scaling_above=0;
+	else if(std::isnan(mass_above)) {
 		std::ostringstream msg;
 		msg << "Stellar mass: " << stellar_mass
 			<< " is larger than the masses of all tracks.";
 		throw Error::BadFunctionArguments(msg.str());
+	} else {
+		age_scaling_below=std::pow(mass_below/stellar_mass,
+				age_scaling_low_mass);
+		age_scaling_above=std::pow(mass_above/stellar_mass,
+				age_scaling_low_mass);
 	}
 	if(track_above==evolution_tracks.end()) track_above--;
-	double age_scaling_below=std::pow(mass_below/stellar_mass,
-			age_scaling_low_mass),
-		   age_scaling_above=std::pow(mass_above/stellar_mass,
-			age_scaling_low_mass),
-		   min_age_below=(*track_below)->range_low(),
+	double min_age_below=(*track_below)->range_low(),
 		   min_age_above=(*track_above)->range_low(),
 		   max_age_below=(*track_below)->range_high(),
 		   max_age_above=(*track_above)->range_high();

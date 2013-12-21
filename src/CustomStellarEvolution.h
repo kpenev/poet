@@ -13,6 +13,7 @@
 #include "IOUtil.h"
 #include <fstream>
 #include <string>
+#include <limits>
 
 ///A namespace to isolate all custom stellar evolution related entities.
 ///

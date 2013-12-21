@@ -174,7 +174,7 @@ void CommandLineOptions::init_defaults()
 	__defaults[InCol::A_FORMATION]=0.05;
 	__defaults[InCol::P_FORMATION]=NaN;
 	__defaults[InCol::TSTART]=NaN;
-	__defaults[InCol::TEND]=Inf;
+	__defaults[InCol::TEND]=-Inf;
 	__defaults[InCol::START_WRAD]=NaN;
 	__defaults[InCol::START_WSURF]=NaN;
 	__defaults[InCol::MAX_STEP]=Inf;
@@ -468,9 +468,10 @@ void CommandLineOptions::define_options()
 			cstr_copy(option_help));
 
 	option_help.str("");
-	option_help << "The maximum end age for the evolution in Gyr. The "
-		"evolution could stop earlier if the star moves off the main "
-		"sequence before this age. In --input-columns identified by '"
+	option_help << "The maximum end age for the evolution in Gyr. If a "
+		"negative value is passed, the evolution stops at absolute value "
+		" of this parameter of if the star moves off the main sequence "
+		"In --input-columns identified by '"
 		<< __input_column_names[InCol::TEND] << "'. Default: "
 		<< __defaults[InCol::TEND] << ".";
 	__direct_value_options[InCol::TEND]=arg_dbl0(NULL, "tmax", "<double>",
@@ -1041,14 +1042,17 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				real_parameters[InCol::START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);
 	}
-    double tend=std::min(real_parameters[InCol::TEND], star.get_lifetime());
-	OrbitSolver solver(tstart, tend,
+	OrbitSolver solver(tstart, real_parameters[InCol::TEND],
 			std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	if(need_orbit)
 		solver(system, real_parameters[InCol::MAX_STEP],
 				real_parameters[InCol::PLANET_FORMATION_AGE],
 				real_parameters[InCol::A_FORMATION], tstart,
 				start_evol_mode, start_orbit, required_ages);
+    double tend=(real_parameters[InCol::TEND]>0 ? 
+					real_parameters[InCol::TEND] :
+					std::min(-real_parameters[InCol::TEND], 
+							 star.get_lifetime()));
 	output_solution(solver, system, outfname, output_file_format,
 			tstart, tend, real_parameters[InCol::MAX_STEP], required_ages);
 }
