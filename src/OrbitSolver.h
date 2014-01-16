@@ -456,6 +456,8 @@ private:
 		   ///calculating the evolution
 	       spin_thres;
 
+	bool adjust_end_age;
+
 	///The ages at which solution is tabulated
 	std::list<double> tabulated_ages;
 

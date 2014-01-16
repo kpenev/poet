@@ -1203,10 +1203,11 @@ void OrbitSolver::reset()
 
 OrbitSolver::OrbitSolver(double min_age, double max_age,
 		double required_precision, double spin_thres) :
-	start_age(min_age), end_age(max_age), precision(required_precision),
-	spin_thres(spin_thres), tabulated_orbit(3), tabulated_deriv(3)
+	start_age(min_age), end_age(std::abs(max_age)),
+	precision(required_precision), spin_thres(spin_thres),
+	adjust_end_age(max_age<0), tabulated_orbit(3), tabulated_deriv(3)
 {
-	if (max_age > MAX_END_AGE) end_age = MAX_END_AGE;
+	if (end_age > MAX_END_AGE) end_age = MAX_END_AGE;
 }
 
 void OrbitSolver::operator()(StellarSystem &system, double max_step,
@@ -1218,8 +1219,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 	const Planet &planet=system.get_planet();
 	const Star &star=system.get_star();
 	if(std::isnan(start_age)) start_age=star.core_formation_age();
-	double stop_evol_age=(end_age>0 ? end_age :
-			std::min(-end_age, star.get_lifetime()));
+	double stop_evol_age=(adjust_end_age ?
+			std::min(end_age, star.get_lifetime()) : end_age);
 	if(initial_evol_mode==FAST_PLANET || initial_evol_mode==SLOW_PLANET
 			|| initial_evol_mode==LOCKED_TO_PLANET) {
 		if(start_orbit[0]<=planet.minimum_semimajor(start_age)/Rsun_AU)
@@ -1280,8 +1281,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 			if (deathResult < 0) return;
 		}
 		//std::cout << deathResult << std::endl;*/
-		double next_stop_age=stopping_age(last_age, evolution_mode,
-				system, planet_formation_age, required_ages);
+		double next_stop_age=std::min(stopping_age(last_age, evolution_mode,
+				system, planet_formation_age, required_ages), stop_evol_age);
 		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
 				evolution_mode, planet_formation_semimajor, &planet);
 		double stop_condition_value=NaN;
