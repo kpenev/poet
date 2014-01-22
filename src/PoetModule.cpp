@@ -13,11 +13,11 @@
 #define DEFAULT_QSTAR				1e7
 #define DEFAULT_P0					3.0
 #define DEFAULT_WINDK				0.17
-#define DEFAULT_WIND_WSAT			2.2
-#define DEFAULT_CORE_ENV_COUPLING	0.03
-#define DEFAULT_STAR_P0				10.0
+#define DEFAULT_WIND_WSAT			2.45
+#define DEFAULT_CORE_ENV_COUPLING	0.028
+#define DEFAULT_STAR_P0				7.0
 #define DEFAULT_DISK_DISSIPATION	0.005
-#define DEFAULT_STELLAR_INTERP		"interp_state_data"
+#define DEFAULT_STELLAR_INTERP		"serialized_evolution"
 
 #ifdef __cplusplus
 extern "C" {

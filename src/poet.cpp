@@ -156,9 +156,9 @@ void CommandLineOptions::init_track_column_descriptions_and_units()
 void CommandLineOptions::init_defaults()
 {
 	__defaults.resize(InCol::NUM_REAL_INPUT_QUANTITIES);
-	__defaults[InCol::LOW_MASS_WINDK]=0.35;
+	__defaults[InCol::LOW_MASS_WINDK]=0.17;
 	__defaults[InCol::HIGH_MASS_WINDK]=0;
-	__defaults[InCol::LOW_MASS_WIND_SAT_W]=1.84;
+	__defaults[InCol::LOW_MASS_WIND_SAT_W]=2.45;
 	__defaults[InCol::HIGH_MASS_WIND_SAT_W]=0;
 	__defaults[InCol::LOW_MASS_WIND_SAT_P]=NaN;
 	__defaults[InCol::HIGH_MASS_WIND_SAT_P]=Inf;
@@ -168,7 +168,7 @@ void CommandLineOptions::init_defaults()
 	__defaults[InCol::MPLANET]=1;
 	__defaults[InCol::RPLANET]=1;
 	__defaults[InCol::PLANET_FORMATION_AGE]=0;
-	__defaults[InCol::WDISK]=0.68;
+	__defaults[InCol::WDISK]=0.898;
 	__defaults[InCol::PDISK]=NaN;
 	__defaults[InCol::TDISK]=5;
 	__defaults[InCol::A_FORMATION]=0.05;
@@ -806,7 +806,7 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	set_defaults();
 	int nerrors=arg_parse(argc, argv, __argtable);
 	if(help_option->count>0 || nerrors>0) {
-        printf("Usage: %s", "SubPixPhot");
+        printf("Usage: %s", "poet");
         arg_print_syntax(stdout, __argtable,"\n\n");
         arg_print_glossary(stdout, __argtable,"  %-25s %s\n");
 		if(help_option->count==0)

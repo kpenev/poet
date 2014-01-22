@@ -16,7 +16,7 @@ COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
 
 BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \
-					echo -lgsl -lgslcblas) -lboost_serialization-mt -largtable2
+					echo -lgsl -lgslcblas) -l$(BOOST_LIB) -largtable2
 
 #POET
 
