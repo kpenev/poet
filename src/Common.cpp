@@ -228,8 +228,8 @@ double estimate_extremum(double x0, double y0, double x1,
 #ifdef DEBUG
 	std::cerr << "Cubic extrema between (" << x0 << ", " << y0 << ", " << dy0
 		<< ") and (" << x1 << ", " << y1 << ", " << dy1 << "), coef=("
-		<< a << ", " << b << ", " << ", " << c << ", " << d
-		<< "), solutions=(" << solutions[0] << ", "
+		<< a << ", " << b << ", " << c << ", " << d
+		<< "), solutions: (" << solutions[0] << ", "
 		<< a*std::pow(solutions[0], 3) + b*std::pow(solutions[0], 2) + 
 		   c*solutions[0] + d << "), (" << solutions[1] << ", "
 		<< a*std::pow(solutions[1], 3) + b*std::pow(solutions[1], 2) + 

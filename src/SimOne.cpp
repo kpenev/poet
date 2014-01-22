@@ -27,8 +27,7 @@ void simulateOnce(double Q, RotationScenario rot, double star_mass,
 		StellarSystem system(&star, &planet);
 		double end_age = std::min((const double)MAX_END_AGE,
 				star.get_lifetime());
-		OrbitSolver solver(MIN_AGE, end_age, 1e-6,
-				SPIN_THRES, MAIN_SEQ_START);
+		OrbitSolver solver(MIN_AGE, end_age, 1e-6);
 		time_t start_time, end_time;
 		time(&start_time);
 		solver(system, Inf, PLANET_FORM_AGE, semi);

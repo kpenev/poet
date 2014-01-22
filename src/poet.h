@@ -212,6 +212,13 @@ namespace OutCol {
 std::vector<std::string> OUTPUT_COLUMN_NAMES(OutCol::NUM_OUTPUT_QUANTITIES),
 	TRACK_COLUMN_NAMES(CustomStellarEvolution::NUM_TRACK_QUANTITIES);
 
+std::string data_directory()
+{
+	std::string datadir=DATADIR;
+	if(datadir[datadir.size()-1]!='/') datadir+='/';
+	return datadir;
+}
+
 ///All command line options can be accessed through members.
 class CommandLineOptions {
 private:

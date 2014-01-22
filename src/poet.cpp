@@ -569,10 +569,13 @@ void CommandLineOptions::define_options()
 			"with at least the number of columns specified in the "
 			"--input-columns option with white space only between columns.");
 
-	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
-			"<file>", "The file to read previously serialized stellar "
+	option_help.str("");
+	option_help << "The file to read previously serialized stellar "
 			"evolution from or write one if the file does not exist. "
-			"Default: 'serialized_evolution'.");
+			"Default: '" << data_directory() << __default_serialized_evol
+			<< "'.";
+	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
+			"<file>", cstr_copy(option_help));
 
 	__custom_stellar_evolution=arg_file0(NULL, "custom-stellar-evolution",
 			"<file>", "A single stellar evolution track from which to "
@@ -637,8 +640,10 @@ void CommandLineOptions::set_defaults()
 	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; ++i)
 		__direct_value_options[i]->dval[0]=__defaults[i];
 	__output_fname->filename[0]=__default_outfname.c_str();
+	std::ostringstream default_serialized;
+	default_serialized << data_directory() << __default_serialized_evol;
 	__serialized_stellar_evolution->filename[0]=
-		__default_serialized_evol.c_str();
+		cstr_copy(default_serialized);
 	__output_file_columns->sval[0]=__default_output_columns.c_str();
 	__custom_stellar_evolution->filename[0]="";
 	__custom_stellar_evolution_format->sval[0]=
@@ -1202,7 +1207,8 @@ StellarEvolution *get_stellar_evolution(const CommandLineOptions &options)
 				options.serialized_stellar_evolution());
 		return stellar_evolution;
 	} else
-		stellar_evolution=new YRECEvolution("YREC", 0, 2.0, 2.0);
+		stellar_evolution=new YRECEvolution(data_directory()+"YREC", 0, 2.0,
+				2.0);
 	if(!serialized_exists) stellar_evolution->save_state(
 			options.serialized_stellar_evolution());
 	return stellar_evolution;

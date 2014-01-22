@@ -22,6 +22,7 @@ def read_stored_stop_conditions(f) :
     given file. """
 
     line=f.readline()
+    lines_read=1
     entries=line.split()
     result=dict(age=dict(accepted=[], rejected=[]), conditions=[],
                 derivatives=[], zero_skip=[], extremum_skip=[])
@@ -34,8 +35,10 @@ def read_stored_stop_conditions(f) :
             dest=result['age']['rejected']
             e=e[:-1]
     line=f.readline()
+    lines_read+=1
     assert(line[0]=='_' and line.strip('_')=='\n')
     line=f.readline()
+    lines_read+=1
     while(line.startswith('   Condition[') or
           line.startswith('  Derivative[')) :
         if line.startswith('   Condition[') :
@@ -76,6 +79,7 @@ def read_stored_stop_conditions(f) :
             dest.append(eval(line[:cut]))
             line=line[cut:]
         line=f.readline()
+        lines_read+=1
     what='conditions'
     if(len(result['zero_skip'])==len(result[what])-1) :
         result['zero_skip'].append(len(result[what][-1]['accepted']))
@@ -83,7 +87,7 @@ def read_stored_stop_conditions(f) :
         result['extremum_skip'].append(
             len(result[what][-1]['accepted']))
 
-    return line, result
+    return line, result, lines_read
 
 def read_condition_stop(line, f) :
     """ Parses the information for where to stop because of the current
@@ -101,7 +105,7 @@ def read_condition_stop(line, f) :
         age=eval(line[line.index('=')+1:line.index(',')]))
     line=line[line.index(',')+1:]
     result['extremum']['value']=eval(line[line.index('=')+1:])
-    return result
+    return result, 2
 
 def read_final_stop(f) :
     """ Reads the final stop information for the step. """
@@ -120,12 +124,16 @@ def read_final_stop(f) :
 def read_interval(f) :
     """ Reads an interval table from the given file. """
 
+    lines_read=1
     line=f.readline()
-    if(line.strip()=='') : line=f.readline()
+    if(line.strip()=='') : 
+        line=f.readline()
+        lines_read+=1
     entries=line.replace('|', ' ').split()
     assert(entries[0]=='Age:')
     result=dict(ages=map(eval, entries[1:]), conditions=[], derivatives=[])
     line=f.readline()
+    lines_read+=1
     while(line.strip()) :
         if line.strip().startswith('Condition[') :
             dest=result['conditions']
@@ -138,7 +146,8 @@ def read_interval(f) :
             map(eval, line[line.index(':')+1:].replace('|', ' ').split()))
         assert(len(dest[-1])==len(result['ages']))
         line=f.readline()
-    return result
+        lines_read+=1
+    return result, lines_read
 
 def parse_comma_separated_list(csl) :
     """ Parses a list of values of the form '<value1>, <value2>[, ...]. """
@@ -494,45 +503,62 @@ if __name__=='__main__' :
     line=f.readline()
     step_info=dict()
     pdf=PdfPages(options.output)
+    line_number=2
     while line :
-        if line[0]=='@' and line.strip('@')=='\n' :
-            if(step_info and
-               len(step_info['stored stop conditions']['conditions'])) :
-                print 'plotting'
-                plot_step(step_info)
-            else : plt.plot([], [])
-            print 'saving'
-            pdf.savefig()
-            print 'done'
-            step_info=dict(condition_stops=[], condition_details=[])
-        elif line.strip()=='Stored stop condition information:' :
-            line, step_info['stored stop conditions']=\
-                    read_stored_stop_conditions(f)
-            condition_details=dict()
-            continue
-        elif line.strip()==('Crossing search interval without derivative '
-                            'information:') :
-            condition_details['crossing_interval']=read_interval(f)
-        elif line.strip()==('Extremum search interval without derivative '
-                            'information:') :
-            condition_details['extremum_interval']=read_interval(f)
-        elif line.startswith('Condition[') :
-            step_info['condition_stops'].append(read_condition_stop(line, f))
-            step_info['condition_details'].append(dict(condition_details))
-            condition_details=dict()
-        elif line.strip()=='Final stop information:' :
-            step_info['final_stop']=read_final_stop(f)
+        try :
+            if line[0]=='@' and line.strip('@')=='\n' :
+                if(step_info and
+                   len(step_info['stored stop conditions']['conditions'])) :
+                    print 'plotting'
+                    plot_step(step_info)
+                else : plt.plot([], [])
+                print 'saving'
+                pdf.savefig()
+                print 'done'
+                step_info=dict(condition_stops=[], condition_details=[])
+            elif line.strip()=='Stored stop condition information:' :
+                line, step_info['stored stop conditions'], lines_read=\
+                        read_stored_stop_conditions(f)
+                line_number+=lines_read
+                condition_details=dict()
+                continue
+            elif line.strip()==('Crossing search interval without '
+                                'derivative information:') :
+                condition_details['crossing_interval'], lines_read=\
+                        read_interval(f)
+                line_number+=lines_read
+            elif line.strip()==('Extremum search interval without '
+                                'derivative information:') :
+                condition_details['extremum_interval'], lines_read=\
+                        read_interval(f)
+                line_number+=lines_read
+            elif line.startswith('Condition[') :
+                new_condition_stops, lines_read=read_condition_stop(line, f)
+                line_number+=lines_read
+                step_info['condition_stops'].append(new_condition_stops)
+                step_info['condition_details'].append(
+                    dict(condition_details))
+                condition_details=dict()
+            elif line.strip()=='Final stop information:' :
+                step_info['final_stop']=read_final_stop(f)
+                line=f.readline()
+                line_number+=1
+                if(line.strip()=='Accepted') : step_info['accepted']=True
+                else :
+                    assert(line.strip()=='Rejected')
+                    step_info['accepted']=False
+            elif (line.strip().startswith('Linear zerocrossing between') or 
+                  line.strip().startswith('Quadratic zerocrossing between')
+                  or 
+                  line.strip().startswith('Cubic zerocrossing between')) :
+                condition_details['zerocrossing']=parse_zerocrossing(line)
+            elif (line.strip().startswith('Quadratic extremum between') or 
+                  line.strip().startswith('Cubic extrema between')) :
+                condition_details['extremum']=parse_extremum(line)
             line=f.readline()
-            if(line.strip()=='Accepted') : step_info['accepted']=True
-            else :
-                assert(line.strip()=='Rejected')
-                step_info['accepted']=False
-        elif (line.strip().startswith('Linear zerocrossing between') or 
-              line.strip().startswith('Quadratic zerocrossing between') or 
-              line.strip().startswith('Cubic zerocrossing between')) :
-            condition_details['zerocrossing']=parse_zerocrossing(line)
-        elif (line.strip().startswith('Quadratic extremum between') or 
-              line.strip().startswith('Cubic extrema between')) :
-            condition_details['extremum']=parse_extremum(line)
-        line=f.readline()
+            line_number+=1
+        except :
+            print 'Exception caught when parsing line:', line_number,\
+                    'of', log_file
+            raise
     pdf.close()

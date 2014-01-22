@@ -76,9 +76,11 @@ DOXY_WWW         = kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_e
 COMPILER        = g++
 
 INCLUDES        = 
+DATADIR			= .
 CFLAGS_COMMON   = -W -Wall $(INCLUDES) \
 				  $(shell gsl-config --cflags 2>/dev/null) \
-				  -D'GLOBAL_SVN="$(shell svnversion -n)"'
+				  -D'GLOBAL_SVN="$(shell svnversion -n)"' \
+				  -D'DATADIR="$(DATADIR)"'
 
 CFLAGS_DEBUG   = -ggdb3 -DDEBUG $(CFLAGS_COMMON)
 CFLAGS_RELEASE = -O3 $(CFLAGS_COMMON)
@@ -170,7 +172,14 @@ $(ALGLIB):
 
 install: $(EXECUTABLES)
 	@echo "installing executables to the bin directory ..."
+	@mkdir -p $(BINDIR)
+	@mkdir -p $(DATADIR)/YREC
+	@sed -e "s%@DATA_PATH@%$(DATADIR)%" setup.py > POETModule/setup.py
 	@cp -f $(EXECUTABLES) $(BINDIR)
+	@cp YREC/*.track $(DATADIR)/YREC/
+	@cp -r serialized_evolution $(DATADIR)
+	@cd POETModule && python setup.py install
+	cd ..
 
 #############################################################################
 # clean: delete intermediate and target files
@@ -183,6 +192,8 @@ clean:
 	@rm -f $(SIMONE_OBJECTS) $(SIMONE_DEPS)
 	@rm -f $(MESAIO_OBJECTS) $(MESAIO_DEPS)
 	@rm -f $(EXECUTABLES)
+	@cd POETModule && python setup.py clean
+	@rm -rf POETModule/build
 
 #############################################################################
 # del: delete everything

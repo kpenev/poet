@@ -477,7 +477,7 @@ static PyObject *evolve_orbit(PyObject *self, PyObject *pos_args,
 	}
 }
 
-static PyMethodDef OrbitSolverMethods[] = {
+static PyMethodDef poetMethods[] = {
 	{"serialize_stellar_evolution", serialize_stellar_evolution,
 		METH_VARARGS,
 		"Prepares and saves in a file the interpolation between YREC "
@@ -555,7 +555,7 @@ static PyMethodDef OrbitSolverMethods[] = {
 	{NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC initOrbitSolver(void)
+PyMODINIT_FUNC initpoet(void)
 {
-	(void) Py_InitModule("OrbitSolver", OrbitSolverMethods);
+	(void) Py_InitModule("poet", poetMethods);
 }
