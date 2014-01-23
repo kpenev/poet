@@ -28,6 +28,7 @@ POET_OBJECTS    = $(addsuffix .o, $(POET_MODULES))
 POET_DEPS       = $(addsuffix .d, $(POET_MODULES)) \
 				  $(addsuffix .d-e, $(POET_MODULES))
 
+#NOT IN RELEASE
 #SimOne
 SIMONE          = SimOne
 COMPILE_SIMONE	= compile_SimOne
@@ -45,10 +46,17 @@ MESAIO_MODULES  = $(MESAIO) $(COMMON_MODULES)
 MESAIO_OBJECTS  = $(addsuffix .o, $(MESAIO_MODULES))
 MESAIO_DEPS     = $(addsuffix .d, $(MESAIO_MODULES)) \
 				  $(addsuffix .d-e, $(MESAIO_MODULES))
+#NOT IN RELEASE
 
 #list of executables
-EXECUTABLES     = $(POET) $(MESAIO) $(SIMONE)
-COMPILES        = $(COMPILE_POET) $(COMPILE_MESAIO) $(COMPILE_SIMONE)
+EXECUTABLES     = $(POET) 
+#NOT IN RELEASE
+EXECUTABLE		+= $(MESAIO) $(SIMONE)
+#NOT IN RELEASE
+COMPILES        = $(COMPILE_POET) 
+#NOT IN RELEASE
+COMPILES		+= $(COMPILE_MESAIO) $(COMPILE_SIMONE)
+#NOT IN RELEASE
 
 ###############################################################################
 # alglib:
@@ -61,6 +69,7 @@ ALGLIB_MODULES  = alglibinternal alglibmisc ap dataanalysis diffequations \
 ALGLIB_OBJS     = $(addsuffix .o, $(ALGLIB_MODULES))
 ALGLIB_OBJECTS  = $(addprefix $(ALGLIB_SRCPATH), $(ALGLIB_OBJS))
 
+#NOT IN RELEASE
 ###############################################################################
 # Doxygen documentation:
 
@@ -69,6 +78,15 @@ DOXY_CONF        = $(DOC_ROOT)/DoxygenConfig
 DOXY_DEST        = $(DOC_ROOT)/doxygen
 DOXY_HTML        = $(addsuffix /html, $(DOXY_DEST))
 DOXY_WWW         = kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
+
+###############################################################################
+# Generating public release:
+
+RELEASE_FNAME	= poet.tgz
+RELEASE_TEMP	= release
+RELEASE_WWW		= kpenev@huffy.astro.princeton.edu:~/WWW/public/tidal_orbital_evolution/
+
+#NOT IN RELEASE
 
 #############################################################################
 # compiler
@@ -129,6 +147,7 @@ $(COMPILE_POET): $(POET_OBJECTS) $(ALGLIB)
 		|| [ $$? -eq 0 ]
 	@echo "$(POET) compiled successfully!"
 
+#NOT IN RELEASE
 #############################################################################
 
 .PHONY: $(SIMONE)
@@ -154,6 +173,7 @@ $(COMPILE_MESAIO): $(MESAIO_OBJECTS) $(ALGLIB)
 	@$(COMPILER) -o $(MESAIO) $(MESAIO_OBJECTS) $(ALGLIB_OBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(MESAIO) compiled successfully!"
+#NOT IN RELEASE
 
 #############################################################################
 # ALGLIB library
@@ -181,6 +201,21 @@ install: $(EXECUTABLES)
 	@cd POETModule && python setup.py install
 	cd ..
 
+#NOT IN RELEASE
+#############################################################################
+# create and upload a release
+
+.PHONY: release
+
+release: clean
+	@mkdir -p $(RELEASE_TEMP)
+	@cp -r $(shell ls |grep -v -x -f norelease.lst) $(RELEASE_TEMP)
+	@sed '/^\#NOT IN RELEASE/,/^\#NOT IN RELEASE/d' Makefile > $(RELEASE_TEMP)/Makefile
+	@tar -czf $(RELEASE_FNAME) release --transform "s%^$(RELEASE_TEMP)%poet%"
+	@rm -rf $(RELEASE_TEMP)
+	@rsync -a $(RELEASE_FNAME) $(RELEASE_WWW) 
+#NOT IN RELEASE
+
 #############################################################################
 # clean: delete intermediate and target files
 
@@ -192,8 +227,8 @@ clean:
 	@rm -f $(SIMONE_OBJECTS) $(SIMONE_DEPS)
 	@rm -f $(MESAIO_OBJECTS) $(MESAIO_DEPS)
 	@rm -f $(EXECUTABLES)
-	@cd POETModule && python setup.py clean
 	@rm -rf POETModule/build
+	@rm -rf release
 
 #############################################################################
 # del: delete everything
@@ -226,6 +261,7 @@ ctags:
 -include $(SIMONE_DEPS)
 -include $(MESAIO_DEPS)
 
+#NOT IN RELEASE
 #############################################################################
 # Prepare and install documentation to Penev's homepage
 
@@ -248,6 +284,7 @@ doc: clean $(POET)
 	@rsync -azr $(addsuffix /*, $(DOXY_HTML)) $(DOXY_WWW) \
 		|| [ $$? -eq 0 ]
 	@echo "Documentation uploaded to homepage successfully!"
+#NOT IN RELEASE
 
 #############################################################################
 # help screen
@@ -286,9 +323,16 @@ help:
 	                             "$(BINDIR). Use BINDIR='<install path>' on"\
 							     "the command line to change where the"\
 							     "binaries are installed." 
+#NOT IN RELEASE
+	@echo " * release          : creates and uploads a .tgz file from which"\
+							     "poet can be installed ot a publicly"\
+								 "accessible location."
+#NOT IN RELEASE
 	@echo " * poet             : build the $(POET) executable"
+#NOT IN RELEASE
 	@echo " * SimOne           : build the $(SIMONE) executable"
 	@echo " * MESAIO           : build the $(MESAIO) executable"
+#NOT IN RELEASE
 	@echo " * clean            : delete intermediate files and executables"
 	@echo " * del              : same as clean, plus clean extern libs and"\
 							     "documentation"
