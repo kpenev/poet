@@ -12,20 +12,22 @@ import stat
 gsl_config=Popen(['gsl-config', '--prefix'], stdout=PIPE)
 gsl_prefix=gsl_config.communicate()[0].strip()
 
-orbital_evolution_code=['../Common.cpp', '../Functions.cpp',
-                        '../OrbitSolver.cpp', '../Planet.cpp', '../Star.cpp',
-                        '../StellarEvolution.cpp', '../StellarSystem.cpp',
-                        '../YRECIO.cpp', '../StoppingConditions.cpp',
-                        '../ExternalStoppingConditions.cpp',
-                        '../CustomStellarEvolution.cpp']
-alglib_code=['../alglib/src/interpolation.cpp', '../alglib/src/ap.cpp',
-             '../alglib/src/alglibinternal.cpp',
-             '../alglib/src/optimization.cpp', '../alglib/src/linalg.cpp',
-             '../alglib/src/integration.cpp', '../alglib/src/alglibmisc.cpp',
-             '../alglib/src/solvers.cpp',
-             '../alglib/src/specialfunctions.cpp']
+orbital_evolution_code=['src/Common.cpp', 'src/Functions.cpp',
+                        'src/OrbitSolver.cpp', 'src/Planet.cpp',
+                        'src/Star.cpp',
+                        'src/StellarEvolution.cpp', 'src/StellarSystem.cpp',
+                        'src/YRECIO.cpp', 'src/StoppingConditions.cpp',
+                        'src/ExternalStoppingConditions.cpp',
+                        'src/CustomStellarEvolution.cpp']
+alglib_code=['src/alglib/src/interpolation.cpp', 'src/alglib/src/ap.cpp',
+             'src/alglib/src/alglibinternal.cpp',
+             'src/alglib/src/optimization.cpp', 'src/alglib/src/linalg.cpp',
+             'src/alglib/src/integration.cpp',
+             'src/alglib/src/alglibmisc.cpp',
+             'src/alglib/src/solvers.cpp',
+             'src/alglib/src/specialfunctions.cpp']
 
-YREC_tracks=glob(join_paths('../YREC', '*.track'))
+YREC_tracks=glob(join_paths('src/YREC', '*.track'))
 
 data_path="@DATA_PATH@"
 
@@ -39,17 +41,19 @@ setup(name='POET',
                              ['poetModule.cpp']+
                              orbital_evolution_code+
                              alglib_code,
-                             include_dirs=['..',
+                             include_dirs=['src',
                                            join_paths(gsl_prefix, 'include')],
                              libraries=['gsl', 'gslcblas',
                                         'boost_serialization-mt'],
                              define_macros=[('YREC_TRACK_PATH',
-                                             join_paths(data_path, 'YREC'))]
+                                             join_paths(data_path, 'YREC'))],
+                             depends=(glob('src/*.h')+
+                                      glob('src/alglib/src/*.h'))
                             )],
-      data_files=[(data_path, YREC_tracks)]
+      data_files=[(join_paths(data_path, 'YREC'), YREC_tracks)]
      )
 
-import poet
-chmod(poet.__file__,
-      stat.S_IRUSR | stat.S_IXUSR | stat.S_IWUSR | stat.S_IRGRP |
-      stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+#import poet
+#chmod(poet.__file__,
+#      stat.S_IRUSR | stat.S_IXUSR | stat.S_IWUSR | stat.S_IRGRP |
+#      stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)

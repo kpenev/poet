@@ -26,4 +26,6 @@ Paxton, B., Cantiello, M., Arras, P., et al. 2013, ApJS, 208, 4</a>
 <a href="http://www.boost.org/">boost</a>: 
 <a href="http://www.boost.org/doc/libs/1_54_0/libs/serialization/doc/index.html">serialization</a>
 
+<a href="http://argtable.sourceforge.net/">Argtable</a>
+
 <a href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a>

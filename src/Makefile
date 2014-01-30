@@ -149,7 +149,7 @@ $(COMPILE_POET): $(POET_OBJECTS) $(ALGLIB)
 
 #NOT IN RELEASE
 #############################################################################
-
+# SimOne
 .PHONY: $(SIMONE)
 
 $(SIMONE): override CFLAGS = $(CFLAGS_RELEASE)
@@ -162,7 +162,7 @@ $(COMPILE_SIMONE): $(SIMONE_OBJECTS) $(ALGLIB)
 	@echo "$(SIMONE) compiled successfully!"
 
 #############################################################################
-
+# MESAIO
 .PHONY: $(MESAIO)
 
 $(MESAIO): override CFLAGS = $(CFLAGS_RELEASE)
@@ -173,6 +173,11 @@ $(COMPILE_MESAIO): $(MESAIO_OBJECTS) $(ALGLIB)
 	@$(COMPILER) -o $(MESAIO) $(MESAIO_OBJECTS) $(ALGLIB_OBJECTS) $(LFLAGS) \
 		|| [ $$? -eq 0 ]
 	@echo "$(MESAIO) compiled successfully!"
+
+#############################################################################
+# Python module
+PYMODULE_PATH = ../POETModule
+
 #NOT IN RELEASE
 
 #############################################################################
@@ -186,19 +191,25 @@ $(ALGLIB):
 		ALGLIB_MODULES="$(ALGLIB_MODULES)" 2>/dev/null
 
 #############################################################################
+# Prepare the python module 
+.PHONY: python_module
+
+python_module:
+	@sed -e "s%@DATA_PATH@%$(DATADIR)%" setup.py > $(PYMODULE_PATH)/setup.py
+
+#############################################################################
 # deploy executables
 
 .PHONY: install
 
-install: $(EXECUTABLES)
+install: $(EXECUTABLES) python_module
 	@echo "installing executables to the bin directory ..."
 	@mkdir -p $(BINDIR)
 	@mkdir -p $(DATADIR)/YREC
-	@sed -e "s%@DATA_PATH@%$(DATADIR)%" setup.py > POETModule/setup.py
 	@cp -f $(EXECUTABLES) $(BINDIR)
 	@cp YREC/*.track $(DATADIR)/YREC/
 	@cp -r serialized_evolution $(DATADIR)
-	@cd POETModule && python setup.py install
+	@cd $(PYMODULE_PATH) && python setup.py install
 	cd ..
 
 #NOT IN RELEASE
@@ -207,13 +218,15 @@ install: $(EXECUTABLES)
 
 .PHONY: release
 
-release: clean
+release: clean python_module
 	@mkdir -p $(RELEASE_TEMP)
 	@cp -r $(shell ls |grep -v -x -f norelease.lst) $(RELEASE_TEMP)
 	@sed '/^\#NOT IN RELEASE/,/^\#NOT IN RELEASE/d' Makefile > $(RELEASE_TEMP)/Makefile
 	@tar -czf $(RELEASE_FNAME) release --transform "s%^$(RELEASE_TEMP)%poet%"
+	@chmod a+r $(RELEASE_FNAME)
 	@rm -rf $(RELEASE_TEMP)
 	@rsync -a $(RELEASE_FNAME) $(RELEASE_WWW) 
+	@cd $(PYMODULE_PATH) && python setup.py sdist upload
 #NOT IN RELEASE
 
 #############################################################################
@@ -227,7 +240,7 @@ clean:
 	@rm -f $(SIMONE_OBJECTS) $(SIMONE_DEPS)
 	@rm -f $(MESAIO_OBJECTS) $(MESAIO_DEPS)
 	@rm -f $(EXECUTABLES)
-	@rm -rf POETModule/build
+	@rm -rf $(PYMODULE_PATH)/build
 	@rm -rf release
 
 #############################################################################

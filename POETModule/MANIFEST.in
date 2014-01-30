@@ -1,0 +1,3 @@
+include *.txt
+include src/*.h
+include src/alglib/src/*.h
