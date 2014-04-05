@@ -1,6 +1,6 @@
 #include "Common.h"
 #include "SimAssumptions.hpp"
-#include "Star.h"
+#include "StellarQ.h"
 #include "Planet.h"
 #include "StellarSystem.h"
 #include "OrbitSolver.h"

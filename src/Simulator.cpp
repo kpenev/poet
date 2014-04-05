@@ -4,7 +4,7 @@
  *  Created on: Dec 4, 2012
  *      Author: stanley
  */
-#include "Star.h"
+#include "StellarQ.h"
 #include "Planet.h"
 #include "StellarSystem.h"
 #include "OrbitSolver.h"

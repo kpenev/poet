@@ -9,7 +9,7 @@
 #define __PLANET_H
 
 #include "Functions.h"
-#include "Star.h"
+#include "StellarQ.h"
 #include "AstronomicalConstants.h"
 #include <string>
 

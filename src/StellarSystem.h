@@ -8,7 +8,7 @@
 #ifndef __STELLAR_SYSTEM_H
 #define __STELLAR_SYSTEM_H
 
-#include "Star.h"
+#include "StellarQ.h"
 #include "Planet.h"
 #include "AstronomicalConstants.h"
 #include "Common.h"

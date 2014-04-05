@@ -10,7 +10,7 @@
 
 /**\file
  *
- * \brief Defines the Star class.
+ * \brief Defines the StarBase class.
  * 
  * \ingroup StellarSystem_group
  */
@@ -26,26 +26,16 @@ enum WindSaturationState {
 std::ostream &operator<<(std::ostream &os,
 		const WindSaturationState &wind_state);
 
-///\brief Describes a star hosting a planet.
+///\brief Describes a star hosting a planet apart from \f$Q^*\f$.
 ///
 ///\ingroup StellarSystem_group
-class Star {
+class StarBase {
 private:
 	///The mass of the star in \f$M_\odot\f$.
 	double mass,
 
 		   ///The present age of the star in Gyr.
 		   age,
-
-		   ///\deprecated
-		   ///\brief The frequency range (in rad/day) over which 1/Q decays
-		   ///to zero.
-		   ///
-		   ///This parameter was initially used to avoid a
-		   ///discontinuity in the equations when the orbit and the stallar
-		   ///spin went through synchroneity. It can now be safely set to
-		   ///zero.
-		   Q_transition_width,
 
 		   ///\brief The frequency of the stellar convective zone while the
 		   ///disk is present.
@@ -98,42 +88,38 @@ private:
 	///function of age in Gyrs.
 	*rad_angular_momentum;
 
-	///The tidal quality factor of the star.
-	double tidal_Q,
-
 	///The age at which the star leaves the main sequence in Gyrs.
-	lifetime,
+	double lifetime,
 
-	///The normalization constant (K) in the magnetic wind equation in
-	/// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
-	/// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
-	magnetic_wind_strength, 
-	
-	///The saturation frequency (rad/day) in the magnetic wind equation.
-	magnetic_wind_saturation_freq,
-	
-	///\brief The timescale on which the rotation of the core and the
-	///envelope are coupled in Gyr.
-	core_env_coupling_timescale,
+		   ///\brief The normalization constant (K) in the magnetic wind
+		   ///equation in
+		   /// \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
+		   /// {\mathrm{rad}^2\cdot\mathrm{Gyr}}\f$.
+		   magnetic_wind_strength, 
 
-	///The age at which the core first forms in Gyr.
-	core_formation,
-	
-	///The current convective zone angular momentum in
-	/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
-	current_conv_angular_momentum,
+		   ///\brief The saturation frequency (rad/day) in the magnetic wind
+		   ///equation.
+		   magnetic_wind_saturation_freq,
 
-	///The current radiative core angular momentum in 
-	/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
-	current_rad_angular_momentum;
+		   ///\brief The timescale on which the rotation of the core and the
+		   ///envelope are coupled in Gyr.
+		   core_env_coupling_timescale,
+
+		   ///\brief The age at which the core first forms in Gyr.
+		   core_formation,
+
+		   ///\brief  The current convective zone angular momentum in
+		   /// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
+		   current_conv_angular_momentum,
+
+		   ///\brief The current radiative core angular momentum in 
+		   /// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
+		   current_rad_angular_momentum;
 public:
 	///Create a star with the given properties.
-	Star(
+	StarBase(
 			///Mass of the star
 			double current_mass,
-
-			///Tidal quality factor
-			double tidal_quality, 
 
 			///The normalization constant (K) in the magnetic wind equation
 			//in \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
@@ -148,13 +134,6 @@ public:
 			///envelope are coupled in Gyr.
 			double coupling_timescale,
 			
-			///The frequency range (in rad/day) over which 1/Q decays to zero.
-			///Deprecated: This parameter was initially used to avoid a
-			///discontinuity in the equations when the orbit and the stallar
-			///spin went through synchroneity. It can now be safely set to
-			///zero.
-			double dissipation_transition_width,
-
 			///The frequency of the stellar convective zone while the
 			///disk is present in rad/day.
 			double disk_lock_ang_vel,
@@ -199,9 +178,6 @@ public:
 
 	//The present radius of the star (in \f$R_\odot\f$).
 //	double get_radius() const;
-
-	///\brief The transition width of the tidal quality factor.
-	double get_trans_width() const;
 
 	///The age at which the radiative core first forms in Gyr.
 	double core_formation_age() const;
@@ -623,11 +599,11 @@ public:
 
 	///\brief The tidal quality factor of the star for tides having the
 	///specified frequency (in rad/day).
-	double get_tidal_Q(double tidal_frequency) const;
+	virtual double get_tidal_Q(double tidal_frequency) const =0;
 
 	///\brief The frequency derivative of tidal quality factor of the star
 	///for tides having the specified frequency (in rad/day).
-	double get_tidal_Q_deriv(double tidal_frequency) const;
+	virtual double get_tidal_Q_deriv(double tidal_frequency) const =0;
 
 	///The age at which the star leaves the main sequence in Gyr.
 	double get_lifetime() const;
@@ -636,7 +612,7 @@ public:
 	double get_current_angular_momentum(StellarZone zone) const;
 
 	///Delete the allocated interpolated stellar properties.
-	~Star();
+	~StarBase();
 };
 
 #endif
