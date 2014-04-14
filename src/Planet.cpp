@@ -196,6 +196,7 @@ double Planet::orbital_angmom_deriv(double age) const
 
 double Planet::get_tidal_Q_age_deriv(double age, double semi, double Lc) const
 {
+	if(!std::isfinite(Lc)) return 0;
 	double tidal_freq = orbital_angular_velocity_semimajor(semi) -
 			star->spin_frequency(age, convective, Lc);
 	double wc_deriv = star->spin_frequency_age_deriv(age, convective, Lc);
