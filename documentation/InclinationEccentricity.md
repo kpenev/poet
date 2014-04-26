@@ -7,14 +7,14 @@ the formalism of Lai 2012, hence we will use the same notation.
 The first thing is to derive the spherical harmonic expansion of the tidal
 potential. 
 \f[
-	U(\mathbf{r}, t) = \frac{GM'}{a(t)}\left(
-		1-\frac{a(t)}{\left|\mathbf{r}_{M'}\right|}\right)
+	U(\mathbf{r}, t) = \frac{GM'}{r(t)}\left(
+		1-\frac{r(t)}{\left|\mathbf{r}_{M'}\right|}\right)
 \f]
 
-where \f$a(t)\f$ is the distance between the centers of \f$M\f$ and \f$M'\f$
+where \f$r(t)\f$ is the distance between the centers of \f$M\f$ and \f$M'\f$
 and \f$\left|\mathbf{r}_{M'}\right|\f$ is the distance between \f$M'\f$ and
 the point \f$\mathbf{r}\f$ where the potential is being evaluated. Obviously
-for a circular orbit \f$a(t)\f$ is a constant.
+for a circular orbit \f$r(t)\f$ is a constant.
 
 We start with the expansion in a coordinate system with
 \f$\mathbf{\hat{z}}=\mathbf{\hat{L}}\f$, and
@@ -22,7 +22,7 @@ We start with the expansion in a coordinate system with
 
 Let us define this expansion as:
 \f[
-	U(\mathbf{r}, t) = \frac{GM'}{a(t)}\sum_{l,m} c_{l,m}(\rho) 
+	U(\mathbf{r}, t) = \frac{GM'}{r(t)}\sum_{l,m} c_{l,m}(\rho) 
 		Y_{l,m}(\theta, \phi)
 \f]
 With \f$ \mathbf{r}=(\rho, \theta, \phi)\f$ in spherical coordinates.
@@ -32,7 +32,7 @@ Clearly:
 	c_{l,m}(\rho, t) = \int_{0}^{2\pi} d\phi \int_{0}^{\pi} d\theta
 		\tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi)
 \f]
-where \f$\tilde{U}(\mathbf{r}, t)\equiv U(\mathbf{r}, t)a(t)/(GM')\f$.
+where \f$\tilde{U}(\mathbf{r}, t)\equiv U(\mathbf{r}, t)r(t)/(GM')\f$.
 
 The integrals are calulated the easiest by writing both
 \f$U(\mathbf{r}, t)\f$ and \f$Y_{l,m}(\theta, \phi)\f$ in a coondinate
@@ -45,14 +45,14 @@ will be used to identify coordinates in that system.
 \f]
 where \f$\tilde{x}\f$, \f$\tilde{y}\f$ and \f$\tilde{z}\f$ are the
 coordinates of the point the potential is being evaluated scaled by
-\f$a(t)\f$:
+\f$r(t)\f$:
 
 \f{eqnarray*}{
 	\tilde{x}&=&\tilde{\rho}\sin\tilde{\theta}\cos\tilde{\phi}\\
 	\tilde{y}&=&\tilde{\rho}\sin\tilde{\theta}\sin\tilde{\phi}\\
 	\tilde{z}&=&\tilde{\rho}\cos\tilde{\theta}
 \f}
-with \f$\tilde{\rho}\f$ also scaled by \f$a(t)\f$.
+with \f$\tilde{\rho}\f$ also scaled by \f$r(t)\f$.
 
 With these we have:
 \f[
@@ -116,16 +116,17 @@ Note that:
 			\int_{0}^{\Delta\phi(t)}  d\phi_{rot}
 				\int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 				Y_{l,m}^*(\theta, \phi_{rot}+2\pi)\right\}\\
-		&=& e^{im\Delta\phi(t)} \int_{0}^{2\pi}
+		&=& e^{-im\Delta\phi(t)} \int_{0}^{2\pi}
 			d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 			Y_{l,m}^*(\theta, \phi_{rot})
 \f}
 We can then use Mathematica to evaluate:
 \f[
 	c_{0,0}=c_{1,0}=c_{2,\pm1}=0\quad,
-	\quad c_{1,\pm 1}=\pm\sqrt{\frac{2\pi}{3}}\tilde{\rho}\quad,
-	\quad c_{2,0}=\sqrt{\frac{\pi}{5}}\rho^2\quad,
-	\quad c_{2,\pm 2}=-\sqrt{\frac{3\pi}{10}}\rho^2
+	\quad c_{1,\pm 1}=\pm\sqrt{\frac{2\pi}{3}}\tilde{\rho}
+		e^{-im\Delta\phi(t)}\quad,
+	\quad c_{2,0}=\sqrt{\frac{\pi}{5}}\rho^2e^{-im\Delta\phi(t)}\quad,
+	\quad c_{2,\pm 2}=-\sqrt{\frac{3\pi}{10}}\rho^2e^{-im\Delta\phi(t)}
 \f]
 The \f$c_{1,\pm 1}\f$ coefficients represent the gravitational acceleration
 of the center of mass of \f$M\f$ due to \f$m\f$, and \f$c_{2,*}\f$ are the
@@ -151,4 +152,102 @@ system. We have the following relations:
 \f}
 Then using mathematica we show that the transformation between the prime and
 non-prime coordinate system is indeed given by the Wigner D matrices quoted
-in Lai 2012 (Equations 6-10).
+in Lai 2012 (Equations 6-11).
+
+The equivalent of Lai 2014 eq. 12 is then:
+\f[
+	U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi')
+		e^{-im\Delta\phi(t)}
+\f]
+with
+\f[
+	U_{m,m'} \equiv \frac{GM'}{r^3(t)}W_{2,m'}D_{m,m'}(\Theta)
+\f]
+
+This is where we diverge from Lai 2012 because we wish to consider elliptical
+orbits. For general elliptical orbits it is convenient to define the origin
+of time so that the planet is at periastron at $t=0$. Further we will take
+\f$\Delta\phi(t)=\phi(t)+\phi_0\f$ where \f$\phi(0)=0\f$, which implies that
+\f$\phi_0\f$ is the angle between periastron and \f$\hat{x}\f$ or
+\f$90^\circ\f$ less than the angle between periastron and
+\f$\hat{S}\times\hat{L}\f$. With these definitions:
+\f{eqnarray*}{
+	r(t)&=&a(1-e\cos u)\\
+	\tan\left(\frac{\phi}{2}\right)&=&\sqrt{\frac{1+e}{1-e}}
+		\tan\left(\frac{u}{2}\right)\\
+	\Rightarrow
+	1+\tan^2\left(\frac{\phi}{2}\right)&=&\frac{1-e\cos u}
+		{(1-e)\cos^2\left(\frac{u}{2}\right)}\\
+	1-\tan^2\left(\frac{\phi}{2}\right)&=&\frac{\cos u - e}
+		{(1-e)\cos^2\left(\frac{u}{2}\right)}\\
+	\Rightarrow
+	\cos\phi &=& \frac{\cos u - e}{1 - e\cos u}\\
+	\sin\phi &=& \frac{\sqrt{1-e^2}\sin u}{1 - e\cos u}
+\f}
+Where \f$u\f$ is the eccentric anomaly:
+\f[
+	u-e\sin u = \omega t,\quad\omega=\sqrt{\frac{G(M+M')}{a^3}}
+\f]
+Differentiating:
+\f[
+	dt=\frac{1-e\cos u}{\omega}du
+\f]
+Since the orbital solution \f$r(t)\f$ and \f$\Delta \phi(t)\f$ is periodic
+with a period of \f$2\pi/\omega\f$, we can expand:
+\f[
+	\frac{e^{-im\Delta \phi(t)}}{r^3(t)}=\sum_s p_{m,s} e^{-i s \omega t}
+\f]
+We need only \f$m=0\f$ and \f$m=\pm2\f$.
+Clearly:
+\f{eqnarray*}{
+	p_{m,s}&=&\int_0^{2\pi/\omega} 
+		\frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\
+	&=& \int_0^{2\pi/\omega} 
+		e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} 
+		e^{i s \omega t}dt
+\f}
+For \f$m=0\f$:
+\f{eqnarray*}{
+	p_{0,s}&=& \int_{0}^{2\pi} 
+		\frac{e^{i s (u-e\sin u)}}{\omega a^3(1-e\cos u)^2} du\\
+	&=& \frac{1}{\omega a^3}
+		\int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du
+\f}
+From \f$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\f$:
+\f{eqnarray*}{
+	p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{\omega a^3}
+		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+		\int_{0}^{2\pi} e^{i s (u-e\sin u)}
+			\left(e^{iu}+e^{-iu}\right)^k du\\
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}\sum_{c=0}^\infty
+		{k \choose c} \int_{0}^{2\pi} e^{i s (u-e\sin u)} 
+									e^{icu}e^{-i(k-c)u} du\\
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}\sum_{c=0}^\infty
+		{k \choose c} \int_{0}^{2\pi} e^{i (s+2c-k) u} e^{-ies\sin u} du
+\f}
+If we change variable \f$u=u'-\pi/2\Rightarrow \sin u = -\cos u'\f$:
+\f{eqnarray*}{
+	p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+		\sum_{c=0}^\infty {k \choose c} e^{-i (s+2c-k)\pi/2}
+			\int_{\pi/2}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+		\sum_{c=0}^\infty {k \choose c} (-i)^{s+2c-k} \left\{
+			\int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'
+			+
+			\int_{2\pi}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' 
+		\right\}\\
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{
+			\int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'
+			+
+			\int_{0}^{\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' \right\}\\
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k}
+			\int_{0}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega a^3}
+		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} i^{s+2c-k}
+			J_{s+2c-k}(es)\\
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega a^3}
+		\sum_{c=0}^k {k \choose c} J_{s+2c-k}(es)
+\f}
