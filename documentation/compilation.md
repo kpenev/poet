@@ -1,6 +1,5 @@
 Compilation {#compilation}
 ===========
-make[1]: Entering directory `/home/kaloyan/work/assembla/tidal-orbital-evolution/trunk/src'
 Compiling the (P)lanetary (O)rbital (E)volution due to (T)ides package
 -----------------------------------------------------------------
 
@@ -26,4 +25,3 @@ Makefile targets :
  * del              : same as clean, plus clean extern libs and documentation
  * ctags            : rebuild ctags index file
 
-make[1]: Leaving directory `/home/kaloyan/work/assembla/tidal-orbital-evolution/trunk/src'
