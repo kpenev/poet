@@ -249,8 +249,37 @@ If we change variable \f$u=u'-\pi/2\Rightarrow \sin u = -\cos u'\f$:
 		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} i^{s+2c-k}
 			J_{s+2c-k}(es)\\
 	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega a^3}
-		\sum_{c=0}^k {k \choose c} J_{s+2c-k}(es)
+		\sum_{c=0}^k {k \choose c} J_{s+2c-k}(es)\\
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega a^3 s^k}
+		\sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
+			\frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}}
+				{2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega a^3 s^k}
+		\sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
+			\frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}}
+				{2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\
+	&=&\frac{2\pi}{\omega a^3} \left(\frac{es}{2}\right)^s
+		\sum_{k=0}^\infty \frac{(k+1)}{s^k}
+		\sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
+			\frac{(-1)^\lambda (s^2e^2/4)^{\lambda+c}}
+				{\lambda!(\lambda+s+2c-k)!}\\
 \f}
+If we now change indices to
+ \f$n=\lambda+c\Rightarrow \lambda=n-c,\quad\lambda+s+2c-k=n+s+c-k\f$. The
+lower limit on \f$\lambda\f$ gives:
+ \f$k-s-2c\leq n-c\Rightarrow c\geq k-n-s\f$. Finally, in order for the range
+of \f$c\f$ to not be empty: \f$k-n-s\leq n\Rightarrow k\leq 2n+s\f$. With all
+these we can write:
+\f[
+	p_{0,s}=\sum_{n=0}^\infty \alpha^0_{s,n}e^{s+2n}
+\f]
+with
+\f[
+	\alpha^0_{s,n}\equiv\frac{2\pi}{\omega a^3}
+		\left(\frac{s}{2}\right)^{s+2n} (-1)^n
+		\sum_{k=0}^{2n+s} \frac{k+1}{s^k} \sum_{c=max(0,k-n-s)}^{min(n,k)}
+		{k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!}
+\f]
 
 For \f$m=\pm2\f$ we need:
 \f{eqnarray*}{
