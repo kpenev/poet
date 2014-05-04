@@ -1,0 +1,7 @@
+*.o
+*.d
+*.d-e
+tags
+SimOne
+debug_mesaio
+poet
