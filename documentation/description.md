@@ -22,3 +22,6 @@ At present the following effects are included in the evolution:
 
  * The loss of stellar convective zone angular momentum to a magnetically
    launched wind.
+
+Download from
+[http://www.astro.princeton.edu/~kpenev/tidal_orbital_evolution/poet.tgz](http://www.astro.princeton.edu/~kpenev/tidal_orbital_evolution/poet.tgz)
