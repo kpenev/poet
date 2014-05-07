@@ -14,7 +14,7 @@ gsl_prefix=gsl_config.communicate()[0].strip()
 
 orbital_evolution_code=['src/Common.cpp', 'src/Functions.cpp',
                         'src/OrbitSolver.cpp', 'src/Planet.cpp',
-                        'src/Star.cpp',
+                        'src/Star.cpp', 'src/StellarQ.cpp',
                         'src/StellarEvolution.cpp', 'src/StellarSystem.cpp',
                         'src/YRECIO.cpp', 'src/StoppingConditions.cpp',
                         'src/ExternalStoppingConditions.cpp',
