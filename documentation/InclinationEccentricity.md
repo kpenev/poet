@@ -1,4 +1,4 @@
-Inclined and Eccentric Orbital Evolution (NOT IMPLEMENTED YET!!!)
+Inclined and Eccentric Orbital Evolution (NOT IMPLEMENTED YET!!!) {#InclinationEccentricity}
 =================================================================
 
 The implementation of the evolution of inclined/eccentric orbits is based on
@@ -215,7 +215,8 @@ with
 	U_{m,m'} \equiv \frac{GM'}{a^3} \mathcal{U}_{m,m'}\equiv
 		\frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'}
 \f]
-where we have switched the \f$m'\f$ and $s$ coefficients.
+where we have switched the \f$m'\f$ and \f$s\f$ coefficients. Here is a (\ref
+InclinationEccentricity_Ummtable "table") of \f$W_{2,m'}D_{m,m'}\f$.
 
 From here we proceed following Lai (2012) again, but we have more than 6
 independent timelags if the orbit is eccentric (for circular orbits,
@@ -239,3 +240,13 @@ dynamical frequency of \f$M\f$.
 Here are the detailed devirations of the tidal (\ref
 InclinationEccentricity_torque "torque") and (\ref
 InclinationEccentricity_power "power").
+
+As noted before, for general eccentric orbits, the number of timelags is not
+only six, like in Lai (2012), but could be arbitrarily large, depending on
+the precision required of the expansion and the value of the eccentricity.
+Luckily, the fully general solution can be preserved, except we will need to
+specify the dissipation as 3 timelags that are functions of frequency: one
+for each \f$m=0,1,2\f$. The negative \f$m\f$ values can be handled by
+inverting the sign of \f$m'\f$ and the forcing frequency.
+
+
