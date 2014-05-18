@@ -1,68 +1,68 @@
 Calculation of the Pm,s Coefficients {#InclinationEccentricity_pms1}
-=============================================
+====================================
 
 We need only \f$m=0\f$ and \f$m=\pm2\f$.
 Clearly:
 \f{eqnarray*}{
-	p_{m,s}&=&\int_0^{2\pi/\omega} 
+	p_{m,s}&=&a^3\int_0^{2\pi/\omega} 
 		\frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\
-	&=& \int_0^{2\pi/\omega} 
+	&=& a^3\int_0^{2\pi/\omega} 
 		e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} 
 		e^{i s \omega t}dt
 \f}
 For \f$m=0\f$:
 \f{eqnarray*}{
 	p_{0,s}&=& \int_{0}^{2\pi} 
-		\frac{e^{i s (u-e\sin u)}}{\omega a^3(1-e\cos u)^2} du\\
-	&=& \frac{1}{\omega a^3}
+		\frac{e^{i s (u-e\sin u)}}{\omega (1-e\cos u)^2} du\\
+	&=& \frac{1}{\omega}
 		\int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du
 \f}
 From \f$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\f$:
 \f{eqnarray*}{
-	p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{\omega a^3}
+	p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)}
 			\left(e^{iu}+e^{-iu}\right)^k du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}\sum_{c=0}^k
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}\sum_{c=0}^k
 		{k \choose c} \int_{0}^{2\pi} e^{i s (u-e\sin u)} 
 									e^{icu}e^{-i(k-c)u} du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}\sum_{c=0}^k
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}\sum_{c=0}^k
 		{k \choose c} \int_{0}^{2\pi} e^{i (s+2c-k) u} e^{-ies\sin u} du
 \f}
 If we change variable \f$u=u'-\pi/2\Rightarrow \sin u = -\cos u'\f$:
 \f{eqnarray*}{
-	p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+	p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} e^{-i (s+2c-k)\pi/2}
 			\int_{\pi/2}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{
 			\int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'
 			+
 			\int_{2\pi}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' 
 		\right\}\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{
 			\int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'
 			+
 			\int_{0}^{\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' \right\}\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega a^3}
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k}
 			\int_{0}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
-	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega a^3}
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} i^{s+2c-k}
 			J_{s+2c-k}(es)\\
-	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega a^3}
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} J_{s+2c-k}(es)\\
-	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega a^3 s^k}
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k}
 		\sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
 			\frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}}
 				{2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\
-	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega a^3 s^k}
+	&=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k}
 		\sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
 			\frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}}
 				{2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\
-	&=&\frac{2\pi}{\omega a^3} \left(\frac{es}{2}\right)^s
+	&=&\frac{2\pi}{\omega} \left(\frac{es}{2}\right)^s
 		\sum_{k=0}^\infty \frac{(k+1)}{s^k}
 		\sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
 			\frac{(-1)^\lambda (s^2e^2/4)^{\lambda+c}}
@@ -79,7 +79,7 @@ these we can write:
 \f]
 with
 \f[
-	\alpha^0_{s,n}\equiv\frac{2\pi}{\omega a^3}
+	\alpha^0_{s,n}\equiv\frac{2\pi}{\omega}
 		\left(\frac{s}{2}\right)^{s+2n} (-1)^n
 		\sum_{k=0}^{2n+s} \frac{k+1}{s^k} \sum_{c=max(0,k-n-s)}^{min(n,k)}
 		{k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!}
@@ -96,9 +96,9 @@ For \f$m=\pm2\f$ we need:
 Plugging into the expression for \f$p_{\pm2,s}\f$:
 \f{eqnarray*}{
 	p_{\pm2,s}&=& \int_0^{2\pi/\omega} 
-		\exp(\mp 2i\phi_0)\frac{\cos(2\phi(t))\mp i\sin(2\phi(t))}{r^3(t)}
+		a^3\exp(\mp 2i\phi_0)\frac{\cos(2\phi(t))\mp i\sin(2\phi(t))}{r^3(t)}
 		\exp[i s (u-e\sin u)]dt\\
-	&=& \frac{e^{\mp 2i\phi_0}}{\omega a^3}\int_0^{2\pi} 
+	&=& \frac{e^{\mp 2i\phi_0}}{\omega}\int_0^{2\pi} 
 		\left[1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2}
 				\mp
 				i\sqrt{1-e^2}\frac{\sin 2u - 2e\sin u}{(1-e\cos u)^2}\right]
@@ -108,15 +108,15 @@ Thus we need to evaluate 5 different integrals, the first of which was
 already done while calculating \f$p_{0,s}\f$:
 \f{eqnarray*}{
 	p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\
-		&&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega a^3}
+		&&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\
-		&&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega a^3}
+		&&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4}
 		du\mp\\
-		&&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega a^3}
+		&&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4}
 		du\pm\\
-		&&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega a^3}
+		&&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4}
 		du\\
 \f}
@@ -138,12 +138,12 @@ calculate the following general integral:
 In terms of $I_\lambda$:
 \f{eqnarray*}{
 	p_{\pm2,s}&=&\exp(\mp 2i\phi_0)\left\{p_{0,s}
-		-\frac{1-e^2}{\omega a^3}I_0
-		+\frac{1-e^2}{2\omega a^3}(I_2+I_{-2})
-		\mp \frac{\sqrt{1-e^2}}{2\omega a^3}(I_2-I_{-2})
-		\pm \frac{e\sqrt{1-e^2}}{\omega a^3}(I_1-I_{-1})
+		-\frac{1-e^2}{\omega}I_0
+		+\frac{1-e^2}{2\omega}(I_2+I_{-2})
+		\mp \frac{\sqrt{1-e^2}}{2\omega}(I_2-I_{-2})
+		\pm \frac{e\sqrt{1-e^2}}{\omega}(I_1-I_{-1})
 	\right\}\\
-	&=&\frac{\exp(\mp 2i\phi_0)}{\omega a^3}\sum_{k=0}^\infty 
+	&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty 
 		2\pi \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c}
 		\Bigg\{
 			(k+1)J_{s+2c-k}(es) + \\

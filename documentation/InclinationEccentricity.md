@@ -87,7 +87,7 @@ Now we need to write \f$Y_{l,m}\f$ in the tilde coordinate system:
 \f}
 Where coordinates with "rot" subscript are in a coordinate system where
 \f$\mathbf{\hat{z}_{rot}}=\mathbf{\hat{L}}\f$ and \f$\hat{x}_{rot}\f$ points
-from the center f \f$M\f$ to the center of \f$M'\f$, and \f$\Delta\phi(t)\f$
+from the center of \f$M\f$ to the center of \f$M'\f$, and \f$\Delta\phi(t)\f$
 is the angle between \f$\hat{x}_{rot}\f$ and \f$\hat{x}\f$
 (\f$\Delta\phi(t)=\Omega t\f$ for a circular orbit with angular velocity
 \f$\Omega\f$).
@@ -97,10 +97,10 @@ Note that:
 	c_{l,m}(\rho, t) &=& \int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)}
 		d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 		Y_{l,m}^*(\theta,\phi_{rot}-\Delta\phi(t))\\
-		&=& e^{-im\Delta\phi(t)}\int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)}
+		&=& exp(-im\Delta\phi(t))\int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)}
 			d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 				Y_{l,m}^*(\theta, \phi_{rot})\\
-		&=& e^{-im\Delta\phi(t)}\left\{
+		&=& \exp(-im\Delta\phi(t))\left\{
 			\int_{\Delta\phi(t)}^{2\pi}  d\phi_{rot}
 				\int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 				Y_{l,m}^*(\theta, \phi_{rot})
@@ -108,7 +108,7 @@ Note that:
 			\int_{2\pi}^{2\pi+\Delta\phi(t)}  d\phi_{rot}
 				\int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 				Y_{l,m}^*(\theta, \phi_{rot})\right\}\\
-		&=& e^{-im\Delta\phi(t)}\left\{
+		&=& \exp(-im\Delta\phi(t))\left\{
 			\int_{\Delta\phi(t)}^{2\pi}  d\phi_{rot}
 				\int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 				Y_{l,m}^*(\theta, \phi_{rot})
@@ -116,7 +116,7 @@ Note that:
 			\int_{0}^{\Delta\phi(t)}  d\phi_{rot}
 				\int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 				Y_{l,m}^*(\theta, \phi_{rot}+2\pi)\right\}\\
-		&=& e^{-im\Delta\phi(t)} \int_{0}^{2\pi}
+		&=& \exp(-im\Delta\phi(t)) \int_{0}^{2\pi}
 			d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
 			Y_{l,m}^*(\theta, \phi_{rot})
 \f}
@@ -124,9 +124,9 @@ We can then use Mathematica to evaluate:
 \f[
 	c_{0,0}=c_{1,0}=c_{2,\pm1}=0\quad,
 	\quad c_{1,\pm 1}=\pm\sqrt{\frac{2\pi}{3}}\tilde{\rho}
-		e^{-im\Delta\phi(t)}\quad,
-	\quad c_{2,0}=\sqrt{\frac{\pi}{5}}\rho^2e^{-im\Delta\phi(t)}\quad,
-	\quad c_{2,\pm 2}=-\sqrt{\frac{3\pi}{10}}\rho^2e^{-im\Delta\phi(t)}
+		\exp(-im\Delta\phi(t))\quad,
+	\quad c_{2,0}=\sqrt{\frac{\pi}{5}}\rho^2\exp(-im\Delta\phi(t))\quad,
+	\quad c_{2,\pm 2}=-\sqrt{\frac{3\pi}{10}}\rho^2\exp(-im\Delta\phi(t))
 \f]
 The \f$c_{1,\pm 1}\f$ coefficients represent the gravitational acceleration
 of the center of mass of \f$M\f$ due to \f$m\f$, and \f$c_{2,*}\f$ are the
@@ -145,7 +145,7 @@ system. We have the following relations:
 		=\rho'\sin\theta'\cos\phi'\cos\Theta - \rho'\cos\theta'\sin\Theta\\
 	\rho&=&\rho'\\
 	\cos\theta&=&z/\rho=\sin\theta'\cos\phi'\sin\Theta+\cos\theta'\cos\Theta\\
-	e^{i\phi}&=&\frac{x+iy}{\rho\sin\theta}
+	\exp(i\phi)&=&\frac{x+iy}{\rho\sin\theta}
 		=\frac{\sin\theta'\sin\phi'+i\left(\sin\theta'\cos\phi'\cos\Theta -
 									\cos\theta'\sin\Theta\right)}
 			{\sqrt{1-\cos^2\theta}}
@@ -157,16 +157,16 @@ in Lai 2012 (Equations 6-11).
 The equivalent of Lai 2014 eq. 12 is then:
 \f[
 	U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi')
-		e^{-im'\Delta\phi(t)}
+		\frac{\exp\left(-im'\Delta\phi(t)\right)a^3}{r^3(t)}
 \f]
 with
 \f[
-	U_{m,m'} \equiv \frac{GM'}{r^3(t)}W_{2,m'}D_{m,m'}(\Theta)
+	U_{m,m'} \equiv \frac{GM'}{a^3}W_{2,m'}D_{m,m'}(\Theta)
 \f]
 
 This is where we diverge from Lai 2012 because we wish to consider elliptical
 orbits. For general elliptical orbits it is convenient to define the origin
-of time so that the planet is at periastron at $t=0$. Further we will take
+of time so that the planet is at periastron at \f$t=0\f$. Further we will take
 \f$\Delta\phi(t)=\phi(t)+\phi_0\f$ where \f$\phi(0)=0\f$, which implies that
 \f$\phi_0\f$ is the angle between periastron and \f$\hat{x}\f$ or
 \f$90^\circ\f$ less than the angle between periastron and
@@ -186,18 +186,56 @@ of time so that the planet is at periastron at $t=0$. Further we will take
 \f}
 Where \f$u\f$ is the eccentric anomaly:
 \f[
-	u-e\sin u = \omega t,\quad\omega=\sqrt{\frac{G(M+M')}{a^3}}
+	u-e\sin u = \Omega t,\quad\Omega=\sqrt{\frac{G(M+M')}{a^3}}
 \f]
 Differentiating:
 \f[
-	dt=\frac{1-e\cos u}{\omega}du
-\f]
-Since the orbital solution \f$r(t)\f$ and \f$\Delta \phi(t)\f$ is periodic
-with a period of \f$2\pi/\omega\f$, we can expand:
-\f[
-	\frac{e^{-im\Delta \phi(t)}}{r^3(t)}=\sum_s p_{m,s} e^{-i s \omega t}
+	dt=\frac{1-e\cos u}{\Omega}du
 \f]
 
-Expressions for the \f$p_{m,s}\f$ coefficients are derived 
+Since the orbital solution \f$r(t)\f$ and \f$\Delta \phi(t)\f$ is periodic
+with a period of \f$2\pi/\Omega\f$, we can expand:
+\f[
+	\frac{a^3\exp(-im'\Delta \phi(t))}{r^3(t)}=\sum_s p_{m',s}
+		\exp\left(-i s \Omega t\right)
+\f]
+
+Expressions for the \f$p_{m',s}(e)\f$ coefficients are derived 
 (\ref InclinationEccentricity_pms1 "here") or 
 (\ref InclinationEccentricity_pms2 "here").
+
+Hence, our tidal potential can be written exactly as in Lai (2012), eq. 12,
+except with \f$m'\f$ not limited to only 0 and 2:
+\f[
+	U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi')
+		\exp\left(-im'\Omega t\right)
+\f]
+with
+\f[
+	U_{m,m'} \equiv \frac{GM'}{a^3} \mathcal{U}_{m,m'}\equiv
+		\frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'}
+\f]
+where we have switched the \f$m'\f$ and $s$ coefficients.
+
+From here we proceed following Lai (2012) again, but we have more than 6
+independent timelags if the orbit is eccentric (for circular orbits,
+\f$p_{m',s}=\delta_{m',s}\f$). 
+
+The ansatz:
+\f{eqnarray*}{
+	\mathbf{\xi}_{m,s}(\mathbf{r},t)&=&
+		\frac{U_{m,s}}{\omega_0^2}\mathbf{\bar{\xi}}_{m,s}(\mathbf{r})
+		\exp(-is\Omega t + i\Delta_{m,s})\\
+	\delta\rho(\mathbf{r},t)&=&\frac{U_{m,s}}{\omega_0^2}
+		\delta\bar{\rho}_{m,s}(\mathbf{r}) 
+		\exp(-is\Omega t + i\Delta_{m,s})\\
+	\Delta_{m,s}&=&\tilde{\omega}_{m,s}t_{m,s}
+\f}
+with \f$\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})\f$,
+\f$\tilde{\omega}{m,s}=s\Omega-m\Omega_s\f$, where \f$\Omega_s\f$ is the
+spin angular velocity of \f$M\f$, and \f$\omega_0\equiv\sqrt{GM/R^3}\f$ is the
+dynamical frequency of \f$M\f$.
+
+Here are the detailed devirations of the tidal (\ref
+InclinationEccentricity_torque "torque") and (\ref
+InclinationEccentricity_power "power").
