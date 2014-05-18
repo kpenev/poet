@@ -445,11 +445,10 @@ std::ostream &operator<<(std::ostream &os, StopHistoryInterval interval);
 class OrbitSolver {
 private:
 	///A hard limit for the maximum age imposed on all solvers.
-	static const double MAX_END_AGE = 10;
+	static const double MAX_END_AGE;
 
 	
-	double start_age, ///< The first age for which evolution is required.
-		   end_age, ///< The last  age for which evolution is required.
+	double end_age, ///< The last  age for which evolution is required.
 	       precision,///< The precision required of the solution
 
 		   ///\brief A threshold for the stellar spin to note while
@@ -711,10 +710,7 @@ private:
 
 				///The semimajor axis at which the planet will appear the
 				///planet formation age is reached.
-				double initial_semimajor,
-
-				///The planet in orbit.
-				const Planet *planet) const;
+				double initial_semimajor) const;
 
 	///\brief Returns the evolution mode that the system is entering,
 	///assuming that some critical age is reached (e.g. the disk dissipated).
@@ -808,9 +804,6 @@ private:
 public:
 	///\brief Prepare to solve for the orbital evolution.
 	OrbitSolver(
-			///The starting age for the evolution.
-			double min_age,
-			
 			///The end age for the evolution.
 			double max_age,
 			

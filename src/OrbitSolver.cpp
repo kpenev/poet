@@ -11,6 +11,8 @@
 #include <iostream>
 #include <iomanip>
 
+const double OrbitSolver::MAX_END_AGE = 10;
+
 std::ostream &operator<<(std::ostream &os, const EvolVarType &evol_var)
 {
 	switch(evol_var) {
@@ -906,8 +908,7 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 }
 
 CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
-		EvolModeType evolution_mode, double initial_semimajor,
-		const Planet *planet) const
+		EvolModeType evolution_mode, double initial_semimajor) const
 {
 	CombinedStoppingCondition *result=new CombinedStoppingCondition();
 	if(evolution_mode==LOCKED_TO_DISK) return result;
@@ -919,7 +920,7 @@ CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
 	(*result)|=new PlanetDeathCondition();
 	switch(evolution_mode) {
 		case FAST_PLANET : case SLOW_PLANET :
-			*result|=new SynchronizedCondition(planet, initial_semimajor);
+			*result|=new SynchronizedCondition(initial_semimajor);
 			break;
 		case LOCKED_TO_PLANET :
 			*result|=new BreakLockCondition();
@@ -944,8 +945,7 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 	std::valarray<double> dummy_cond_deriv;
 	if(evolution_mode==LOCKED_TO_PLANET) in_sync=0;
 	else {
-		SynchronizedCondition sync_condition(&(system.get_planet()),
-				initial_semimajor);
+		SynchronizedCondition sync_condition(initial_semimajor);
 		in_sync=sync_condition(age, orbit, std::valarray<double>(),system,
 			dummy_cond_deriv, evolution_mode)[0];
 	}
@@ -1201,11 +1201,11 @@ void OrbitSolver::reset()
 	}
 }
 
-OrbitSolver::OrbitSolver(double min_age, double max_age,
-		double required_precision, double spin_thres) :
-	start_age(min_age), end_age(std::abs(max_age)),
-	precision(required_precision), spin_thres(spin_thres),
-	adjust_end_age(max_age<0), tabulated_orbit(3), tabulated_deriv(3)
+OrbitSolver::OrbitSolver(double max_age, double required_precision, 
+		double spin_thres) :
+	end_age(std::abs(max_age)), precision(required_precision), 
+	spin_thres(spin_thres), adjust_end_age(max_age<0), tabulated_orbit(3), 
+	tabulated_deriv(3)
 {
 	if (end_age > MAX_END_AGE) end_age = MAX_END_AGE;
 }
@@ -1284,7 +1284,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		double next_stop_age=std::min(stopping_age(last_age, evolution_mode,
 				system, planet_formation_age, required_ages), stop_evol_age);
 		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
-				evolution_mode, planet_formation_semimajor, &planet);
+				evolution_mode, planet_formation_semimajor);
 		double stop_condition_value=NaN;
 		bool stopped_before=!evolve_until(&system, start_age, next_stop_age,
 				orbit, stop_condition_value, stop_reason, max_step,

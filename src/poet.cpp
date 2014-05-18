@@ -101,7 +101,7 @@ void CommandLineOptions::init_output_column_descriptions()
 	__output_column_descr[OutCol::RRAD_DERIV]="First order derivative with "
 		"respect to age of the radius of the stellar radiative core in solar"
 		" radii per Gyr (low mass stars only, else NaN).";
-	__output_column_descr[OutCol::MRAD_DERIV]=="First order derivative with "
+	__output_column_descr[OutCol::MRAD_DERIV]="First order derivative with "
 		"respect to age of the mass of the stellar radiative core in solar "
 		"masses per Gyr (low mass stars only, else NaN).";
 	__output_column_descr[OutCol::ICONV_SECOND_DERIV]=

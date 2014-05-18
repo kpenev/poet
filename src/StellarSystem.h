@@ -49,23 +49,6 @@ private:
 	///The planet in the system.
 	Planet *planet;
 
-	///Minimum semimajor axis when solving for initial conditions.
-	double min_a0,
-
-		   ///Maximum semimajor axis when solving for initial conditions.
-		   max_a0,
-		   
-		   ///Minimum stellar spin when solving for initial conditions.
-		   min_w0,
-		   
-		   ///Maximum stellar spin when solving for initial conditions.
-		   max_w0;
-
-	///Initial semimajor axis found by the initial condition solver.
-	double a0,
-		   
-		   ///Initial stellar spin found by the initial condition solver.
-		   w0;
 public:
 	///Construct a stellar system.
 	StellarSystem(

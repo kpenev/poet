@@ -29,11 +29,12 @@ double LogArgDerivatives::order(unsigned deriv_order) const
 		return value;
 	}
 	if(deriv_values.size()<deriv_order)
-		for(unsigned i=deriv_values.size(); i<deriv_order; ++i)
+		for(unsigned i=deriv_values.size(); i<deriv_order; ++i) {
 			if(correct_log_arg) {
 				underlying_deriv_values.push_back(calc_deriv(i+1));
 				deriv_values.push_back(transform_log_arg_deriv(i+1));
 			} else deriv_values.push_back(calc_deriv(i+1));
+		}
 	return deriv_values[deriv_order-1];
 }
 

@@ -128,15 +128,12 @@ public:
 ///\ingroup OrbitSolver_group
 class SynchronizedCondition : public StoppingCondition{
 private:
-	///The planet whose orbit is checked for synchronization with the star.
-	const Planet *planet;
-	
 	///The semimajor axis at which the planet first appears.
 	double __initial_semimajor;
 public:
 	///Create the synchronization condition for the given planet.
-	SynchronizedCondition(const Planet *p, double initial_semimajor) :
-		planet(p), __initial_semimajor(initial_semimajor) {}
+	SynchronizedCondition(double initial_semimajor) :
+		__initial_semimajor(initial_semimajor) {}
 
 	///\brief Returns the difference between the orbital and stellar spin
 	///angular velocities divided by the orbital angular velocity.

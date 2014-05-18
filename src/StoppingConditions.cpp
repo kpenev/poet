@@ -67,7 +67,9 @@ std::valarray<double> BreakLockCondition::operator()(double age,
 				   (dwconv_dt>0 ? Inf : -Inf), false)/Rsun_AU,
 		   da_dt=derivatives[0];
 	stop_deriv.resize(1, NaN);
-	if(orbit[0]==0) *static_cast<int*>(NULL)=0;
+	if(orbit[0]==0)
+		throw Error::BadFunctionArguments("Zero semimajor axis encountered "
+				"in BreakLockCondition::operator()!");
 	if(derivatives[0]==0) return std::valarray<double>(Inf, 1);
 	return std::valarray<double>(
 			(max_semi_evol - da_dt)/da_dt, 1);

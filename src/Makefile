@@ -97,7 +97,7 @@ INCLUDES        =
 DATADIR			= .
 CFLAGS_COMMON   = -W -Wall $(INCLUDES) \
 				  $(shell gsl-config --cflags 2>/dev/null) \
-				  -D'GLOBAL_SVN="$(shell svnversion -n)"' \
+				  -D'REVISION="$(shell git log --pretty=format:\%H -n 1)"' \
 				  -D'DATADIR="$(DATADIR)"'
 
 CFLAGS_DEBUG   = -ggdb3 -DDEBUG $(CFLAGS_COMMON)
