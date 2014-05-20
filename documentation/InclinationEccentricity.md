@@ -249,4 +249,16 @@ specify the dissipation as 3 timelags that are functions of frequency: one
 for each \f$m=0,1,2\f$. The negative \f$m\f$ values can be handled by
 inverting the sign of \f$m'\f$ and the forcing frequency.
 
-
+Finally, we use the orbital energy and angular momentum:
+\f{eqnarray*}{
+	E_{orb}&=&-\frac{GMM'}{2a}\\
+	L_{orb}&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2}=GMM'\sqrt{\frac{(1-e^2)MM'}{2E(M+M')}}
+\f}
+To derive the rate of change of the orbit and spin of \f$M\f$:
+\f{eqnarray*}{
+	\dot{S}&=&T_z\\
+	\dot{a}&=&\frac{GMM'}{2E^2}\dot{E}\\
+	\dot{\Theta}&=&-\frac{T_x}{S} - \frac{T_x\cos\Theta}{L} +
+					\frac{T_z\sin\Theta}{L}\\
+	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}
+\f}
