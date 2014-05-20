@@ -280,47 +280,6 @@ public:
 			///orbital_parameters method and age is in Gyr.
 			double *age_derivs) const;
 
-	///\brief The energy definition for the simulated annealing initial
-	///condition solver.
-//	double annealing_energy();
-
-	///\brief Performs a single step of the simulated annealing initial
-	///condition solver.
-//	void annealing_step(const gsl_rng *r, double step_size);
-
-	///\brief A definition of the distance between the initial conditions
-	///between this system and that.
-//	double annealing_metric(StellarSystem* that);
-
-	///\brief Print the current guess for the initial semimajor axis and
-	///rotation frequency.
-//	void annealing_print();
-
-	///\brief Solve for the initial conditions that reproduce the present
-	///conditions using simulated annealing.
-/*	bool anneal_solve_IC(
-			///Whether to output the progress of solving to stdout.
-			bool verbose=true,
-
-			///The minimum initial semimajor axis to consider in AU.
-			double min_a0=0.01,
-
-			///The maximum initial semimajor axis to consider in AU.
-			double max_a0=0.1,
-			
-			///The minimum initial stellar rotation to consider in rad/day.
-			double min_w0=0.63,
-			
-			///The maximum initial stellar rotation to consider in rad/day.
-			double max_w0=6.3,
-
-			///If an error less than this cannot be achieved it is declared
-			///that no initial conditions can reproduced the observed present
-			///configuration.
-			double max_err=0.1);*/
-
-//	void solve_init(double start_age, double curr_age, double curr_spin);
-
 	///\brief Writes the evolution of the system (orbital and stellar) to a
 	///file with the given name.
 	void output_evolution(std::string &filename) const;
