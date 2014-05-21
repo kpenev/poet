@@ -12,7 +12,8 @@ BINDIR = ../bin/
 #
 COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
                   StellarSystem YRECIO MESAIO StoppingConditions \
-				  ExternalStoppingConditions CustomStellarEvolution StellarQ
+				  ExternalStoppingConditions CustomStellarEvolution \
+				  TidalDissipation StellarQ
 
 BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \

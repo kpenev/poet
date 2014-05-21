@@ -14,6 +14,7 @@
 #include "StellarSystem.h"
 #include "StoppingConditions.h"
 #include "ExternalStoppingConditions.h"
+#include "TidalDissipation.h"
 #include <math.h>
 #include <list>
 #include <vector>
