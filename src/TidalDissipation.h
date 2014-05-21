@@ -127,8 +127,14 @@ private:
 	std::valarray< std::valarray<double> > __Umm;
 
 	///\brief Rates of change of the various quantities and derivatives due
-	///to tidal dissipation
+	///to tidal dissipation. 
+	///
+	///There are separate entries for in each body, and tidally locked terms
+	///are ignored.
 	std::valarray<double> __dissipation_rate,
+
+		///\brief The rates of change to quantities only due to locked terms.
+		__locked_dissipation_rate,
 
 		///The spin angular momenta of the bodies
 		__spin_angular_momentum,
@@ -146,9 +152,13 @@ private:
 			Dissipation::Quantity quantity,
 
 			///Return the quantity itself or one of its derivatives.
-			Dissipation::Derivative derivative=Dissipation::NO_DERIV)
-	{return __dissipation_rate[quantity+Dissipation::NUM_QUANTITIES*(
-			derivative+Dissipation::NUM_DERIVATIVES*body_index)];}
+			Dissipation::Derivative derivative,
+			
+			///Return the locked rate instead of the rate?
+			bool locked)
+	{return (locked ? __locked_dissipation_rate : __dissipation_rate)[
+		quantity+Dissipation::NUM_QUANTITIES*(
+				derivative+Dissipation::NUM_DERIVATIVES*body_index)];}
 
 	///Computes the \f$\mathcal{U}_{m,m'}\f$ values. 
 	void fill_Umm(
@@ -168,13 +178,9 @@ private:
 			///The body doing the dissipating.
 			const DissipatingBody &body,
 
-			///If this values is not zero, the spin frequency of is /assumed
-			//to approach the orbital frequency from below/above if
-			///forcing_sign is +1/-1 instead, regardless of the currently set
-			///spin frequency of the body. Result is undefined if the spin
-			///frequency is not very close to the orbital frequency and yet
-			///this value is non-zero.
-			short forcing_sign,
+			///Whether to assume that body 1 is in a spin orbit lock and
+			///identify the term that is locked.
+			const SpinOrbitLockInfo &lock,
 
 			///Which body's dissipation is needed (shold be 0 or 1).
 			short body_index,
@@ -221,6 +227,10 @@ public:
 	///
 	///For now only works for zero eccentricity, throws and ecception
 	///otherwise.
+	///
+	///If some term in the tidal dissipation equations is locked (see the
+	///lock1 and lock2 arguments) the dissipation due to that term is kept
+	///separate.
 	TidalDissipation(
 			///The first dissipating body.
 			const DissipatingBody &body1,
@@ -234,21 +244,13 @@ public:
 			///The eccentricity of the orbit.
 			double eccentricity,
 				
-			///If this values is not zero, the spin frequency of body1 is
-			///assumed to approach the orbital frequency from below/above if
-			///forcing_sign is +1/-1 instead, regardless of the currently set
-			///spin frequency of body1. Result is undefined if the spin
-			///frequency is not very close to the orbital frequency and yet
-			///this value is non-zero.
-			short forcing_sign1=0,
+			///Whether to assume that body 1 is in a spin orbit lock and
+			///identify the term that is locked.
+			const SpinOrbitLockInfo &lock1,
 
-			///If this values is not zero, the spin frequency of body2 is
-			///assumed to approach the orbital frequency from below/above if
-			///forcing_sign is +/- instead, regardless of the currently set
-			///spin frequency of body2. Result is undefined if the spin
-			///frequency is not very close to the orbital frequency and yet
-			///this value is non-zero.
-			short forcing_sign2=0);
+			///Whether to assume that body 2 is in a spin orbit lock and
+			///identify the term that is locked.
+			const SpinOrbitLockInfo &lock2);
 
 	///\brief Retuns the rate of change of some quantity due to tidal
 	///dissipation.
@@ -260,7 +262,10 @@ public:
 			Dissipation::Quantity quantity,
 
 			///Return the quantity itself or one of its derivatives.
-			Dissipation::Derivative derivative=Dissipation::NO_DERIV);
+			Dissipation::Derivative derivative=Dissipation::NO_DERIV,
+			
+			///Whether to return the locked or the non-locked rate.
+			bool locked=false);
 };
 
 #endif

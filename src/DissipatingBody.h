@@ -34,6 +34,77 @@ namespace PhaseLag {
 	};
 };
 
+///\brief Defines a lock between the spin of a dissipating body and the
+///orbit.
+///
+///With inclined and eccentric orbits, locks can occur at many different
+//frequencies, not only when the orbital and spin periods are the same. In
+///general almost any rational ratio can result in a lock if the dissipation
+///has the appropriate frequency dependence.
+///
+///\ingroup StellarSystem_group
+class SpinOrbitLockInfo {
+private:
+	///The mutiplier in front of the orbital frequency in the lock.
+	int __orbital_freq_mult,
+
+		///The multiplier in front of the spin frequency in the lock.
+		__spin_freq_mult;
+
+	///\brief Should a lock be assumed, and if so from which direction is it
+	///approached?
+	///
+	///The values have the following meanings:
+	/// - <0 	: the spin frequency of the body is slightly smaller than
+	///			  necessary for a lock
+	///
+	/// - 0 	: no lock should be assumed
+	///
+	/// - >0 	: the spin frequency of the body is slightly larger than
+	///			  necessary for the lock
+	short __lock_direction;
+
+public:
+	///\brief Define which tidal dissipation term is in a lock.
+	SpinOrbitLockInfo(
+			///The multiple of the orbital frequency at the lock.
+			int orbital_freq_mult,
+
+			///The multiple of the spin frequency at the lock.
+			int spin_freq_mult,
+
+			///The direction from which the spin frequency is approaching the
+			///lock. See #__lock_direction for the meaning of the values.
+			short lock_direction) : 
+		__orbital_freq_mult(orbital_freq_mult),
+		__spin_freq_mult(spin_freq_mult),
+		__lock_direction(lock_direction) {}
+
+	///\brief Spin frequency at exactly the lock that corresponds to the
+	///given orbital frequency.
+	double lock_spin(double orbital_frequency) const
+	{return (orbital_frequency*__orbital_freq_mult)/__spin_freq_mult;}
+
+	///Is the given tidal dissipation term one of the locked terms?
+	bool operator()(
+			///The multiple of the orbital frequency to consider.
+			int orbital_freq_mult,
+
+			///The multiple of the spin frequency to consider.
+			int spin_freq_mult) const
+	{
+		if(__lock_direction==0) return false;
+		return orbital_freq_mult*__spin_freq_mult==
+			spin_freq_mult*__orbital_freq_mult;
+	}
+
+	///Should this lock be assumed.
+	operator bool() const {return __lock_direction;}
+
+	///The direction from which the spin approaches the lock.
+	short lock_direction() const {return __lock_direction;}
+};
+
 
 ///\brief A base class for any body contributing to tidal dissipation.
 ///
@@ -93,14 +164,14 @@ public:
 			double forcing_frequency,
 			
 			///If this function is discontinuous at zero and an exactly zero
-			///forcing frequency is encountered, this flag determines if the
-			///zero should be interpreted as an infinitesimal positive or
-			///negative amount above. It is safe to ignore this flag if the
+			///forcing frequency is encountered, this argument determines if
+			///the zero should be interpreted as an infinitesimal positive or
+			///negative amount. It is safe to ignore this flag if the
 			///function is continuous at zero forcing frequency.
-			short forcing_sign,
+			const SpinOrbitLockInfo &lock,
 
 			///Whether to return the phase lag or one of its derivatives.
-			PhaseLag::Derivative derivativ=PhaseLag::NO_DERIV) const=0;
+			PhaseLag::Derivative derivative=PhaseLag::NO_DERIV) const=0;
 
 	///The current radius of this body in \f$R_\odot\f$.
 	virtual double current_radius() const 
