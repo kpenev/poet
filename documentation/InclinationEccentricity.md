@@ -257,7 +257,7 @@ Finally, we use the orbital energy and angular momentum:
 To derive the rate of change of the orbit and spin of \f$M\f$:
 \f{eqnarray*}{
 	\dot{S}&=&T_z\\
-	\dot{a}&=&\frac{GMM'}{2E^2}\dot{E}\\
+	\dot{a}&=&-\frac{GMM'}{2E^2}\dot{E}\\
 	\dot{\Theta}&=&-\frac{T_x}{S} - \frac{T_x\cos\Theta}{L} +
 					\frac{T_z\sin\Theta}{L}\\
 	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}
