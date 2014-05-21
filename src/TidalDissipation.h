@@ -53,7 +53,7 @@ namespace Dissipation {
 		MOMENT_OF_INERTIA,
 				
 		///The derivative w.r.t. the spin angular momentum in
-		/// \f$M_\odot R_\dot^2 rad/day\f$.
+		/// \f$M_\odot R_\odot^2 rad/day\f$.
 		SPIN_ANGMOM,
 		
 		///The derivative w.r.t. the semimajor axis in AU.
