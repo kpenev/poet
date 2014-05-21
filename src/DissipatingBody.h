@@ -1,14 +1,22 @@
+#ifndef __DISSIPATING_BODY_H
+#define __DISSIPATING_BODY_H
+
+#include "Common.h"
+
+#include <assert.h>
+
 /**\file 
  *
- * \brief Declares the DissipatingBody class.
+ * \brief Declares the DissipatingBody class and supporting constants.
  *
  * \ingroup StellarSystem_group
  */
 
-#include "Common.h"
-#include <assert.h>
 
-///Isolate the constant identifying what to differentiate phase lags w.r.t.
+///\brief Isolate the constant identifying what to differentiate phase lags
+///w.r.t.
+///
+///\ingroup StellarSystem_group
 namespace PhaseLag {
 	///What derivatives should a dissipating body be able to compute.
 	enum Derivative {
@@ -24,7 +32,7 @@ namespace PhaseLag {
 		///Derivative w.r.t. the forcing frequency in units of rad/day.
 		FORCING_FREQUENCY
 	};
-}
+};
 
 
 ///\brief A base class for any body contributing to tidal dissipation.
@@ -104,7 +112,7 @@ public:
 	}
 
 	///\brief Set the current radius of this body to the given value in
-	///\f$R_\odot\f$.
+	/// \f$R_\odot\f$.
 	virtual void current_radius(double radius) 
 	{
 #ifdef DEBUG
@@ -175,5 +183,8 @@ public:
 
 	///\brief Set the current angle between the spin and orbital angular 
 	///momentum to the given value in radians.
-	virtual void current_inclination(double inclination) {__inclination=inclination;}
+	virtual void current_inclination(double inclination)
+	{__inclination=inclination;}
 };
+
+#endif

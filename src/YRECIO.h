@@ -202,7 +202,7 @@ public:
 		double smooth_rad_mass=2,
 		
 		///How many nodes to use when smoothing the moment of inertia of the
-		///convective zone (ignored if #smooth_conv_inertia is NaN - no
+		///convective zone (ignored if smooth_conv_inertia is NaN - no
 		///smoothing).
 		///
 		///Negative values result in using min(-conv_inertia_nodes, number of
@@ -210,7 +210,7 @@ public:
 		int conv_inertia_nodes=-1000,
 
 		///How many nodes to use when smoothing the moment of inertia of the
-		///radiative zone (ignored if #smooth_rad_inertia is NaN - no
+		///radiative zone (ignored if smooth_rad_inertia is NaN - no
 		///smoothing).
 		///
 		///Negative values result in using min(-rad_inertia_nodes, number of
@@ -218,7 +218,7 @@ public:
 		int rad_inertia_nodes=-1000,
 
 		///How many nodes to use when smoothing the mass of the radiative
-		///zone (ignored if #smooth_rad_inertia is NaN - no smoothing).
+		///zone (ignored if smooth_rad_inertia is NaN - no smoothing).
 		///
 		///Negative values result in using min(-rad_mass_nodes, number of
 		///tabulated ages for each track).

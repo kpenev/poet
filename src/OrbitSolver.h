@@ -774,7 +774,10 @@ private:
 	///stopping condition occurs.
 	double stopping_age(
 			///The age from which the next part of the evolution starts.
-			double age, EvolModeType evolution_mode,
+			double age, 
+			
+			///The current evolution mode.
+			EvolModeType evolution_mode,
 
 			///The stellar system being evolved.
 			const StellarSystem &system,

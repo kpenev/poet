@@ -135,7 +135,7 @@ calculate the following general integral:
 	&=&\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k
 		\sum_{c=0}^k {k \choose c} J_{s+\lambda+2c-k}(es)
 \f}
-In terms of $I_\lambda$:
+In terms of \f$I_\lambda\f$:
 \f{eqnarray*}{
 	p_{\pm2,s}&=&\exp(\mp 2i\phi_0)\left\{p_{0,s}
 		-\frac{1-e^2}{\omega}I_0

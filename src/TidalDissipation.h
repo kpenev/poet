@@ -1,9 +1,21 @@
+#ifndef __TIDAL_DISSIPATION_H
+#define __TIDAL_DISSIPATION_H
+
 #include "DissipatingBody.h"
 #include "AstronomicalConstants.h"
 #include "Common.h"
 #include <cmath>
 
-///Isolates constants related to the tidal dissipation.
+/**\file
+ *
+ * \brief Declares the TidalDissipation class and supporting constants.
+ *
+ * \ingroup StellarSystem_group
+ */
+
+///\brief Isolates constants related to the tidal dissipation.
+///
+///\ingroup StellarSystem_group
 namespace Dissipation {
 	///The quantities which evolve due to tidal dissipation
 	enum Quantity {
@@ -71,6 +83,8 @@ namespace Dissipation {
 };
 
 ///\brief The rates of change of various quantities due to tidal dissipation.
+///
+///\ingroup StellarSystem_group
 class TidalDissipation {
 private:
 	///\brief The constant coefficiients in \f$\mathcal{U}_{m,m'}\f$ of Lai
@@ -249,3 +263,4 @@ public:
 			Dissipation::Derivative derivative=Dissipation::NO_DERIV);
 };
 
+#endif

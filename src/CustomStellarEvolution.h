@@ -68,14 +68,13 @@ namespace CustomStellarEvolution {
 				///A list of the columns in the track
 				const std::vector<Columns> &format,
 				
-				///\brief The smoothing to apply to each column (NaN for no
+				///The smoothing to apply to each column (NaN for no 
 				///smoothing).
 				///
 				///Entries for AGE and SKIP are ignored.
 				const std::vector<double> &smoothing,
 				
-				///\brief The number of nodes to use when smoothing each
-				///column.
+				///The number of nodes to use when smoothing each column.
 				///
 				///This is ignored for columns for which the corresponding
 				///entry in smoothing is NaN

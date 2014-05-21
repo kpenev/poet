@@ -615,25 +615,25 @@ public:
 		double smooth_core_env_boundary, 
 
 		///How many nodes to use when smoothing the stellar radius (ignored
-		///if #smooth_radius is NaN - no smoothing).
+		///if smooth_radius is NaN - no smoothing).
 		int radius_nodes,
 
 		///How many nodes to use when smoothing the moment of inertia of the
-		///convective zone (ignored if #smooth_conv_inertia is NaN - no
+		///convective zone (ignored if smooth_conv_inertia is NaN - no
 		///smoothing).
 		int conv_inertia_nodes,
 
 		///How many nodes to use when smoothing the moment of inertia of the
-		///radiative zone (ignored if #smooth_rad_inertia is NaN - no
+		///radiative zone (ignored if smooth_rad_inertia is NaN - no
 		///smoothing).
 		int rad_inertia_nodes,
 
 		///How many nodes to use when smoothing the mass of the radiative
-		///zone (ignored if #smooth_rad_inertia is NaN - no smoothing).
+		///zone (ignored if smooth_rad_inertia is NaN - no smoothing).
 		int rad_mass_nodes,
 
 		///How many nodes to use when smoothing the radius of the radiative
-		///zone (ignored if #smooth_core_env_boundary is NaN - no smoothing).
+		///zone (ignored if smooth_core_env_boundary is NaN - no smoothing).
 		int core_env_boundary_nodes, 
 
 		///A set of lg(luminosities) (in \f$L_\odot\f$) for each age of
@@ -646,7 +646,7 @@ public:
 		double smooth_luminosities=NaN,
 
 		///How many nodes to use when smoothing the luminosities (ignored if
-		///#smooth_luminosities is NaN - no smoothing).
+		///smooth_luminosities is NaN - no smoothing).
 		int luminosities_nodes=0,
 
 		///The mass above which the stars are considered 
@@ -749,25 +749,25 @@ public:
 		double smooth_core_env_boundary, 
 
 		///How many nodes to use when smoothing the stellar radius (ignored
-		///if #smooth_radius is NaN - no smoothing).
+		///if smooth_radius is NaN - no smoothing).
 		int radius_nodes,
 
 		///How many nodes to use when smoothing the moment of inertia of the
-		///convective zone (ignored if #smooth_conv_inertia is NaN - no
+		///convective zone (ignored if smooth_conv_inertia is NaN - no
 		///smoothing).
 		int conv_inertia_nodes,
 
 		///How many nodes to use when smoothing the moment of inertia of the
-		///radiative zone (ignored if #smooth_rad_inertia is NaN - no
+		///radiative zone (ignored if smooth_rad_inertia is NaN - no
 		///smoothing).
 		int rad_inertia_nodes,
 
 		///How many nodes to use when smoothing the mass of the radiative
-		///zone (ignored if #smooth_rad_inertia is NaN - no smoothing).
+		///zone (ignored if smooth_rad_inertia is NaN - no smoothing).
 		int rad_mass_nodes,
 
 		///How many nodes to use when smoothing the radius of the radiative
-		///zone (ignored if #smooth_core_env_boundary is NaN - no smoothing).
+		///zone (ignored if smooth_core_env_boundary is NaN - no smoothing).
 		int core_env_boundary_nodes, 
 
 		///A set of lg(luminosities) (in \f$L_\odot\f$) for each age of
@@ -780,7 +780,7 @@ public:
 		double smooth_luminosities=NaN,
 
 		///How many nodes to use when smoothing the luminosities (ignored if
-		///#smooth_luminosities is NaN - no smoothing).
+		///smooth_luminosities is NaN - no smoothing).
 		int luminosities_nodes=0,
 			
 		///The mass above which the stars are considered 

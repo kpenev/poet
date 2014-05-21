@@ -286,7 +286,7 @@ doc: CFLAGS_RELEASE+=-D'COLUMN_NAME_EMPHASIS="__"'
 doc: clean $(POET)
 	@echo "Compilation {#compilation}" > $(DOC_ROOT)/compilation.md
 	@echo "===========" >> $(DOC_ROOT)/compilation.md
-	@make help >> $(DOC_ROOT)/compilation.md
+	@make help |sed -f format_doxyhelp.sed >> $(DOC_ROOT)/compilation.md
 	@echo "Usage {#usage}" > $(DOC_ROOT)/usage.md
 	@echo "=====" >> $(DOC_ROOT)/usage.md
 	@./poet --doxygen-help |sed -f format_doxyhelp.sed >>$(DOC_ROOT)/usage.md

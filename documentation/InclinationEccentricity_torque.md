@@ -214,9 +214,9 @@ part of the above expression is:
 		\right]
 \f}
 
-We have already expressed \f$\kappa_{m,m'}^-\f$ in terms of $\kappa_{m,m'}$,
-and just as in Lai (2012), we only need \f$\kappa_{m,m'}^+\f$ for \f$m=0, \pm
-1, 2\f$. 
+We have already expressed \f$\kappa_{m,m'}^-\f$ in terms of
+\f$\kappa_{m,m'}\f$, and just as in Lai (2012), we only need \f$\kappa_{m,m'}^+\f$ for 
+\f$m=0, \pm 1, 2\f$. 
 \f{eqnarray*}{
 	\kappa_{0,m'}^+&=&-\frac{1}{MR^2} \int d^3 x 
 		\delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2\left[
