@@ -5,25 +5,28 @@
  * \ingroup StellarSystem_group
  */
 
-const double TidalDissipation::__Umm_coef{{std::sqrt(3.0*M_PI/10.0)/4.0,
-										   -std::sqrt(6.0*M_PI/5.0)/4.0,
-										   std::sqrt(3.0*M_PI/10.0)/4.0},
+#include "TidalDissipation.h"
 
-	  								      {-std::sqrt(3.0*M_PI/10.0)/2.0,
-										   std::sqrt(6.0*M_PI/5.0)/2.0,
-										   std::sqrt(3.0*M_PI/10.0)/2.0},
+const double TidalDissipation::__Umm_coef[][3]={
+	{std::sqrt(3.0*M_PI/10.0)/4.0,
+	 -std::sqrt(6.0*M_PI/5.0)/4.0,
+	 std::sqrt(3.0*M_PI/10.0)/4.0},
 
-									      {3.0*std::sqrt(M_PI/5.0)/4.0,
-										   -std::sqrt(M_PI/5.0)/2.0,
-										   3.0*std::sqrt(M_PI/5.0)/4.0},
+	{-std::sqrt(3.0*M_PI/10.0)/2.0,
+	 std::sqrt(6.0*M_PI/5.0)/2.0,
+	 std::sqrt(3.0*M_PI/10.0)/2.0},
 
-									      {-std::sqrt(3.0*M_PI/10.0)/2.0,
-										   std::sqrt(6.0*M_PI/5.0)/2.0,
-										   std::sqrt(3.0*M_PI/10.0)/2.0},
+	{3.0*std::sqrt(M_PI/5.0)/4.0,
+	 -std::sqrt(M_PI/5.0)/2.0,
+	 3.0*std::sqrt(M_PI/5.0)/4.0},
+
+	{-std::sqrt(3.0*M_PI/10.0)/2.0,
+	 std::sqrt(6.0*M_PI/5.0)/2.0,
+	 std::sqrt(3.0*M_PI/10.0)/2.0},
 									   
-									      {std::sqrt(3.0*M_PI/10.0)/4.0,
-										   -std::sqrt(6.0*M_PI/5.0)/4.0,
-										   std::sqrt(3.0*M_PI/10.0)/4.0}};
+	{std::sqrt(3.0*M_PI/10.0)/4.0,
+	 -std::sqrt(6.0*M_PI/5.0)/4.0,
+	 std::sqrt(3.0*M_PI/10.0)/4.0}};
 
 const double TidalDissipation::__torque_x_plus_coef[]={1.0, 
 													   std::sqrt(1.5),
@@ -37,7 +40,7 @@ const double TidalDissipation::__torque_x_minus_coef[]={0.0,
 													    std::sqrt(1.5),
 													    1.0};
 
-void DissipatingBody::fill_Umm(double inclination, bool deriv)
+void TidalDissipation::fill_Umm(double inclination, bool deriv)
 {
 	double c=std::cos(inclination), s=std::sin(inclination),
 		   s2=std::pow(s, 2), sc=s*c, cp1=c+1.0, cm1=c-1.0;
@@ -46,11 +49,11 @@ void DissipatingBody::fill_Umm(double inclination, bool deriv)
 	__Umm[1][0]=__Umm_coef[1][0]*(deriv ? cp1+2.0*s2 : s*cp1);
 	__Umm[2][0]=__Umm_coef[2][0]*(deriv ? 2.0*sc : s2);
 	__Umm[3][0]=-__Umm_coef[3][0]*(deriv ? c*cm1-s2 : s*cm1);
-	__Umm[4][0]=__Umm_coef[4][0]*(deriv ? -2.0*s*cm1 ? std::pow(cm1, 2));
+	__Umm[4][0]=__Umm_coef[4][0]*(deriv ? -2.0*s*cm1 : std::pow(cm1, 2));
 
 	__Umm[0][1]=__Umm_coef[0][1]*(deriv ? 2.0*sc : s2);
 	__Umm[1][1]=__Umm_coef[1][1]*(deriv ? 1.0-2.0*s2 : sc);
-	__Umm[2][1]=__Umm_coef[2][1]*(deriv ? -6.0sc : 2.0-3.0*s2);
+	__Umm[2][1]=__Umm_coef[2][1]*(deriv ? -6.0*sc : 2.0-3.0*s2);
 	__Umm[3][1]=__Umm_coef[3][1]*(deriv ? 1.0-2.0*s2 : sc);
 	__Umm[4][1]=__Umm_coef[4][1]*(deriv ? 2.0*sc : s2);
 
@@ -61,69 +64,220 @@ void DissipatingBody::fill_Umm(double inclination, bool deriv)
 	__Umm[4][2]=__Umm_coef[4][2]*(deriv ? -2.0*cp1*s: std::pow(cp1, 2));
 }
 
-void TidalDissipation::calculate_torque_power(DissipatingBody &body,
-		short forcing_sign, double &power, double &torque_x,
-		double &torque_y)
+void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
+		short forcing_sign, short body_index,
+		Dissipation::Derivative derivative)
 {
 	double spin_frequency=(forcing_sign ? __orbital_frequency :
-				   		   body.spin_frequency()),
+				   		   body.current_spin());
+	double &power=rate_entry(body_index, Dissipation::POWER, derivative),
+		   &torque_x=rate_entry(body_index, Dissipation::TORQUEX, derivative),
+		   &torque_z=rate_entry(body_index, Dissipation::TORQUEZ, derivative);
 	torque_x=0, torque_z=0, power=0;
 	for(int m=-2; m<=2; ++m) {
 		double m_spin_freq=m*spin_frequency;
 		for(int mp=-2; mp<=2; mp+=2) {
-			double Umm_squared=std::pow(Umm[m][mp], 2),
+			PhaseLag::Derivative phase_lag_deriv=PhaseLag::NO_DERIV;
+			switch(derivative) {
+				case Dissipation::NO_DERIV : case Dissipation::RADIUS :
+				case Dissipation::INCLINATION :
+					phase_lag_deriv=PhaseLag::NO_DERIV; break;
+				case Dissipation::AGE : phase_lag_deriv=PhaseLag::AGE; break;
+				case Dissipation::MOMENT_OF_INERTIA : 
+				case Dissipation::SPIN_ANGMOM : 
+				case Dissipation::SEMIMAJOR :
+						   phase_lag_deriv=PhaseLag::FORCING_FREQUENCY;
+						   break;
+				default :
+#ifdef DEBUG
+						   assert(false)
+#endif
+						;
+			};
+			int mp_ind=mp/2+1, m_ind=m+2;
+			double Umm_squared=std::pow(__Umm[m_ind][mp_ind], 2),
 				   mod_phase_lag=body.modified_phase_lag(m, 
-						   mp*__orbital_frequency-m_spin_freq, spin_frequency,
-						   forcing_sign),
+						   mp*__orbital_frequency-m_spin_freq, forcing_sign,
+						   phase_lag_deriv);
+			if(derivative==Dissipation::MOMENT_OF_INERTIA || 
+					derivative==Dissipation::SPIN_ANGMOM)
+				mod_phase_lag=
+					-m*mod_phase_lag
+					+
+					body.modified_phase_lag(m, 
+						   mp*__orbital_frequency-m_spin_freq, forcing_sign,
+						   PhaseLag::SPIN_FREQUENCY);
+			else if(derivative==Dissipation::SEMIMAJOR) mod_phase_lag*=mp;
 			torque_z+=Umm_squared*m*mod_phase_lag;
 			power+=Umm_squared*mp*mod_phase_lag;
-			torque_x+=Umm[m][mp]*(
-					(mp>-2 ? __torque_x_minus_coef[mp]*Umm[m-1][mp] : 0)+
-					(mp<2 ? __torque_x_plus_coef[mp]*Umm[m+1][mp] : 0));
+			torque_x+=__Umm[m_ind][mp_ind]*(
+					(mp>-2 ? 
+					 __torque_x_minus_coef[mp_ind]*__Umm[m_ind-1][mp_ind] : 0)+
+					(mp<2 ? 
+					 __torque_x_plus_coef[mp_ind]*__Umm[m_ind+1][mp_ind] : 0));
 		}
 	}
 }
 
-TidalDissipation::TidalDissipation(DissipatingBody body1, 
-		DissipatingBody body2, double semimajor, double eccentricity, 
-		short forcing_sign1, short forcing_sign2) :
-	__orbital_frequency=std::sqrt(
-			AstroConst::G*
-			(body1.mass()+body2.mass())*AstroConst::solar_mass/
-			std::pow(semimajor*AstroConst::AU, 3))*AstroConst::day,
-	__Umm(std::valarray<double>(3), 5);
-	__dissipation_rates(NaN, 2*NUM_DISSIPATION_QUANTITIES)
+void TidalDissipation::calculate_semimajor_decay(short body_index)
 {
-	double torque_common=AstroCosnt::G*AstroConst::Msun*
-			   			 std::pow(AstroConst::Rsun, 3)*AstroConst::Gyr*
-						 AstroConst::day/
-	DissipatingBody &body=body1;
+	double coef=__mass_product/(2.0*std::pow(__orbital_energy, 2))*\
+				AstroConst::G*AstroConst::solar_mass/AstroConst::AU*
+				std::pow(AstroConst::day/AstroConst::solar_radius, 2);
+	for(int fill_deriv=Dissipation::NO_DERIV;
+			fill_deriv<Dissipation::NUM_DERIVATIVES; ++fill_deriv)
+		rate_entry(body_index, Dissipation::SEMIMAJOR_DECAY, 
+				static_cast<Dissipation::Derivative>(fill_deriv))=
+			coef*rate_entry(body_index, Dissipation::POWER, 
+					static_cast<Dissipation::Derivative>(fill_deriv));
+	rate_entry(body_index, Dissipation::SEMIMAJOR_DECAY,
+			Dissipation::SEMIMAJOR)+=rate_entry(body_index, 
+				Dissipation::POWER, Dissipation::NO_DERIV)/
+				__orbital_energy;
+}
+
+void TidalDissipation::calculate_inclination_decay(short body_index)
+{
+	double sin_inclination=std::sin(__inclination[body_index]),
+		   cos_inclination=std::cos(__inclination[body_index]),
+		   x_coef=1.0/__spin_angular_momentum[body_index]
+			   +
+			   cos_inclination/__orbital_angular_momentum,
+		   z_coef=-sin_inclination/__orbital_angular_momentum;
+	for(int fill_deriv=Dissipation::NO_DERIV;
+			fill_deriv<Dissipation::NUM_DERIVATIVES; ++fill_deriv)
+
+		rate_entry(body_index, Dissipation::INCLINATION_DECAY,
+				static_cast<Dissipation::Derivative>(fill_deriv))=
+			x_coef*rate_entry(body_index,  Dissipation::TORQUEX,
+					static_cast<Dissipation::Derivative>(fill_deriv))
+			+
+			z_coef*rate_entry(body_index,  Dissipation::TORQUEZ,
+					static_cast<Dissipation::Derivative>(fill_deriv));
+	rate_entry(body_index, Dissipation::INCLINATION_DECAY,
+			Dissipation::INCLINATION)-=
+		(sin_inclination*rate_entry(body_index, Dissipation::TORQUEX,
+									Dissipation::NO_DERIV)
+		 +
+		 cos_inclination*rate_entry(body_index, Dissipation::TORQUEZ,
+			 Dissipation::NO_DERIV)
+		)/__orbital_angular_momentum;
+	rate_entry(body_index, Dissipation::INCLINATION_DECAY,
+			Dissipation::SPIN_ANGMOM)-=rate_entry(body_index,
+				Dissipation::TORQUEX, Dissipation::NO_DERIV)/
+				std::pow(__spin_angular_momentum[body_index], 2);
+	rate_entry(body_index, Dissipation::INCLINATION_DECAY,
+			Dissipation::SEMIMAJOR)-=0.5/__semimajor*(
+				cos_inclination/__orbital_angular_momentum
+				+z_coef);
+}
+
+void TidalDissipation::calculate_eccentricity_decay(short)
+{
+	throw Error::NotImplemented("Eccentric orbits");
+}
+
+TidalDissipation::TidalDissipation(const DissipatingBody &body1, 
+		const DissipatingBody &body2, double semimajor, double eccentricity,
+		short forcing_sign1, short forcing_sign2) :
+	__orbital_frequency(std::sqrt(
+			AstroConst::G*
+			(body1.current_mass()+body2.current_mass())*
+			AstroConst::solar_mass/
+			std::pow(semimajor*AstroConst::AU, 3))*AstroConst::day),
+	__mass_product(body1.current_mass()*body2.current_mass()),
+	__reduced_mass(
+			__mass_product/(body1.current_mass()+body2.current_mass())),
+	__orbital_energy(-__mass_product/(2.0*semimajor)*
+			AstroConst::G*AstroConst::solar_mass*
+			std::pow(AstroConst::day/AstroConst::solar_radius, 2)/
+			AstroConst::AU),
+	__orbital_angular_momentum(__reduced_mass*__orbital_frequency*
+			std::sqrt(1.0-std::pow(eccentricity, 2))*
+			std::pow(semimajor/Rsun_AU, 2)),
+	__Umm(std::valarray<double>(3), 5),
+	__dissipation_rate(NaN, 
+			2*Dissipation::NUM_QUANTITIES*Dissipation::NUM_DERIVATIVES),
+	__spin_angular_momentum(2), __inclination(2)
+{
+	__spin_angular_momentum[0]=
+		body1.current_moment_of_inertia()*body1.current_spin();
+	__spin_angular_momentum[1]=
+		body2.current_moment_of_inertia()*body2.current_spin();
+	__inclination[0]=body1.current_inclination();
+	__inclination[1]=body2.current_inclination();
+
+	double torque_common=AstroConst::G*AstroConst::solar_mass*
+			   			 std::pow(AstroConst::solar_radius/
+								  std::pow(semimajor*AstroConst::AU, 2), 3)*
+						 AstroConst::Gyr*AstroConst::day,
+		   other_mass=body2.current_mass();
 	short forcing_sign=forcing_sign1;
-	for(short body_ind=0; body_ind<2; ++body_ind) {
-
-		fill_Umm(body.inclination());
-		calculate_torque_power(body, forcing_sign,
-				__dissipation_rates[2*POWER+body_ind],
-				__dissipation_rates[2*TORQUEX+body_ind], 
-				__dissipation_rates[2*TORQUEZ+body_ind]);
-
-		fill_Umm(body.inclination(), true);
-		calculate_torque_power(body, forcing_sign,
-				__dissipation_rates[2*DPOWER_DINCLINATION+body_ind],
-				__dissipation_rates[2*DTORQUEX_DINCLINATION+body_ind],
-				__dissipation_rates[2*DTORQUEZ_DINCLINATION+body_ind]);
-
-		double torque_scale=std::pow(body.radius(),5)*
-			std::pow(body.mass(),2)*torque_common;
-		__dissipation_rates[2*POWER+body_ind]*=
-			torque_scale*__orbital_frequency;
-		__dissipation_rates[2*DPOWER_DINCLINATION+body_ind]*=
-			torque_scale*__orbital_frequency;
-		__dissipation_rates[2*TORQUEX+body_ind]*=torque_scale;
-		__dissipation_rates[2*DTORQUEX_DINCLINATION+body_ind]*=torque_scale;
-		__dissipation_rates[2*TORQUEZ+body_ind]*=torque_scale;
-		__dissipation_rates[2*DTORQUEZ_DINCLINATION+body_ind]*=torque_scale;
-		body=body2;
+#ifdef DEBUG
+	assert(Dissipation::INCLINATION==Dissipation::NUM_DERIVATIVES-1);
+#endif
+	for(short body_index=0; body_index<2; ++body_index) {
+		const DissipatingBody &body=(body_index==0 ? body1 : body2);
+		double torque_scale=std::pow(body.current_radius(),5)*
+			std::pow(other_mass, 2)*torque_common;
+		fill_Umm(body.current_inclination(), false);
+		for(int deriv_ind=Dissipation::NO_DERIV;
+				deriv_ind<Dissipation::NUM_DERIVATIVES; ++deriv_ind) {
+			Dissipation::Derivative derivative=
+				static_cast<Dissipation::Derivative>(deriv_ind);
+			if(derivative==Dissipation::RADIUS)
+				torque_scale*=5.0/body.current_radius();
+			else if(derivative==Dissipation::SEMIMAJOR)
+				torque_scale*=-1.5/semimajor;
+			else if(derivative==Dissipation::SPIN_ANGMOM)
+				torque_scale/=body.current_moment_of_inertia();
+			else if(derivative==Dissipation::MOMENT_OF_INERTIA)
+				torque_scale*=-body.current_spin()/
+					body.current_moment_of_inertia();
+			else if(derivative==Dissipation::INCLINATION)
+				fill_Umm(body.current_inclination(), true);
+			calculate_torque_power(body, forcing_sign, body_index,
+					derivative);
+			rate_entry(body_index, Dissipation::POWER, derivative)*=
+				torque_scale*__orbital_frequency;
+			rate_entry(body_index, Dissipation::TORQUEX, derivative)*=
+				torque_scale;
+			rate_entry(body_index, Dissipation::TORQUEZ, derivative)*=
+				torque_scale;
+			if(derivative==Dissipation::SEMIMAJOR) {
+				rate_entry(body_index, Dissipation::POWER, derivative)-=
+					7.5/semimajor*rate_entry(body_index, Dissipation::POWER,
+							Dissipation::NO_DERIV);
+				rate_entry(body_index, Dissipation::TORQUEX, derivative)-=
+					6.0/semimajor*rate_entry(body_index, 
+							Dissipation::TORQUEX, Dissipation::NO_DERIV);
+				rate_entry(body_index, Dissipation::TORQUEZ, derivative)-=
+					6.0/semimajor*rate_entry(body_index, 
+							Dissipation::TORQUEZ, Dissipation::NO_DERIV);
+			}
+		}
 		forcing_sign=forcing_sign2;
+		other_mass=body1.current_mass();
 	}
+}
+
+double TidalDissipation::operator()(short body_index, 
+		Dissipation::Quantity quantity,
+		Dissipation::Derivative derivative)
+{
+	if(std::isnan(rate_entry(body_index, quantity, derivative)))
+		switch(quantity) {
+			case Dissipation::SEMIMAJOR_DECAY : 
+				calculate_semimajor_decay(body_index);
+				break;
+			case Dissipation::INCLINATION_DECAY : 
+				calculate_inclination_decay(body_index);
+				break;
+			default :
+#ifdef DEBUG
+				assert(false)
+#endif
+					;
+		}
+	return rate_entry(body_index, quantity, derivative);
 }
