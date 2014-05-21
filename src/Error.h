@@ -128,6 +128,18 @@ namespace Error {
 		virtual const char *what() const throw()
 		{return "Error parsing the command line";}
 	};
+
+	///Encountered an unimplemented feature.
+	class NotImplemented : public Runtime {
+	public:
+		///Create a not-implemented exception.
+		NotImplemented(const std::string &feature_name="") :
+			Runtime(feature_name+" not implemented yet") {}
+
+		///Returns "Not implemented" as the error type
+		virtual const char *what() const throw()
+		{return "Not implemented";}
+	};
 };
 #endif
 
