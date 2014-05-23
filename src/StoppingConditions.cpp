@@ -61,10 +61,15 @@ std::valarray<double> BreakLockCondition::operator()(double,
 		const TidalDissipation &tidal_dissipation,
 		const StellarSystem &, 
 		std::valarray<double> &stop_deriv,
-		EvolModeType) const
+		EvolModeType
+#ifdef DEBUG
+		evol_mode
+#endif
+		) const
 {
 #ifdef DEBUG
-	assert(evol_mode==LOCKED_TO_PLANET);
+	assert(evol_mode==BINARY);
+	assert(derivatives.size()==4);
 #endif
 	double below_da_dt=0, above_da_dt=0, da_dt=derivatives[0];
 	for(short body_ind=0; body_ind<=1; ++body_ind) {
@@ -94,11 +99,14 @@ std::valarray<double> PlanetDeathCondition::operator()(double age,
 		const TidalDissipation &tidal_dissipation,
 		const StellarSystem &system,
 		std::valarray<double> &stop_deriv,
-		EvolModeType) const
+		EvolModeType
+#ifdef DEBUG
+		evol_mode
+#endif
+		) const
 {
 #ifdef DEBUG
-	std::assart(evol_mode==FAST_PLANET || evol_mode==SLOW_PLANET ||
-			evol_mode==LOCKED_TO_PLANET);
+	assert(evol_mode==BINARY);
 #endif
 
 	double min_semimajor=system.get_planet().minimum_semimajor(age);

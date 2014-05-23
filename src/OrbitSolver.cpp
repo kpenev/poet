@@ -1091,7 +1091,7 @@ void OrbitSolver::parse_orbit_or_derivatives(EvolModeType evolution_mode,
 {
 	const Star &star=system.get_star();
 #ifdef DEBUG
-	assert(from_mode!=TABULATION);
+	assert(evolution_mode!=TABULATION);
 #endif
 	if(evolution_mode==BINARY) {
 		theta=orbit_deriv[1];
