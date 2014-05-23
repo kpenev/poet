@@ -5,7 +5,7 @@
  *      Author: stanley
  */
 #include "StellarSystem.h"
-#include "StellarQ.h"
+#include "StellarDissipation.h"
 #include "Planet.h"
 #include "YRECIO.h"
 #include <iostream>

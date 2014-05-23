@@ -6,15 +6,11 @@
  */
 
 #include "Common.h"
-#include "gsl/gsl_poly.h"
-#include <assert.h>
 
 std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode)
 {
 	switch(evol_mode) {
-		case FAST_PLANET: os << "FAST_PLANET"; break;
-		case LOCKED_TO_PLANET: os << "LOCKED_TO_PLANET"; break;
-		case SLOW_PLANET: os << "SLOW_PLANET"; break;
+		case BINARY: os << "BINARY"; break;
 		case NO_PLANET: os << "NO_PLANET"; break;
 		case LOCKED_TO_DISK: os << "LOCKED_TO_DISK"; break;
 		case TABULATION : os << "TABULATION";

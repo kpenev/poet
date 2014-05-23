@@ -924,7 +924,7 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 					   star.moment_of_inertia_deriv(*age_i, convective, 2),
 				   d2Irad_dt2=
 					   star.moment_of_inertia_deriv(*age_i, radiative, 2),
-				   Rstar=star.get_radius(*age_i);
+				   Rstar=star.radius(*age_i);
 			outf << std::setw(25);
 			double semimajor=(*a_i)/AU_Rsun,
 				   worb=planet.orbital_angular_velocity_semimajor(semimajor);
@@ -947,23 +947,23 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 				case OutCol::EVOL_MODE : outf << *mode_i; break;
 				case OutCol::WIND_STATE : outf << *wind_i; break;
 				case OutCol::RSTAR : outf << Rstar; break;
-				case OutCol::LSTAR : outf << star.get_luminosity(*age_i);
+				case OutCol::LSTAR : outf << star.luminosity(*age_i);
 									 break;
-				case OutCol::RRAD : outf << star.get_rad_radius(*age_i);
+				case OutCol::RRAD : outf << star.rad_radius(*age_i);
 									break;
-				case OutCol::MRAD : outf << star.get_rad_mass(*age_i);
+				case OutCol::MRAD : outf << star.rad_mass(*age_i);
 									break;
 				case OutCol::ICONV_DERIV : outf << dIconv_dt; break;
 				case OutCol::IRAD_DERIV : outf << dIrad_dt; break;
 				case OutCol::ITOT_DERIV : outf << dIconv_dt+dIrad_dt; break;
 				case OutCol::RSTAR_DERIV : outf << 
-										   	star.get_logradius_deriv(*age_i)*
+										   	star.logradius_deriv(*age_i)*
 								   			Rstar; break;
 				case OutCol::RRAD_DERIV : outf <<
-										  	star.get_rad_radius_deriv(*age_i);
+										  	star.rad_radius_deriv(*age_i);
 										  break;
 				case OutCol::MRAD_DERIV : outf <<
-										  	star.get_rad_mass_deriv(*age_i);
+										  	star.rad_mass_deriv(*age_i);
 								  break;
 				case OutCol::ICONV_SECOND_DERIV : outf << d2Iconv_dt2; break;
 				case OutCol::IRAD_SECOND_DERIV : outf << d2Irad_dt2; break;
@@ -971,7 +971,7 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 												 	d2Iconv_dt2 + d2Irad_dt2;
 												 break;
 				case OutCol::RRAD_SECOND_DERIV : outf <<
-												 star.get_rad_radius_deriv(
+												 star.rad_radius_deriv(
 														 *age_i, 2); break;
 				default : throw Error::BadFunctionArguments(
 								  "Unrecognized output column encountered in"
@@ -1003,17 +1003,18 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 			stellar_evolution);
 	double tstart=real_parameters[InCol::TSTART];
 	if(star.is_low_mass() && 
-			star.core_formation_age()>star.get_disk_dissipation_age() &&
+			star.core_formation_age()>star.disk_dissipation_age() &&
 			tstart<star.core_formation_age() && need_orbit)
 		throw Error::Runtime("At present the case when the disk dissipates "
 				"before the stellar core starts to form is not supported.");
-	Planet planet(&star, real_parameters[InCol::MPLANET],
+	Planet planet(star, real_parameters[InCol::MPLANET],
 			real_parameters[InCol::RPLANET],
 			real_parameters[InCol::A_FORMATION]);
-	StellarSystem system(&star, &planet);
+	StellarSystem system(star, planet);
 	std::valarray<double> start_orbit(0.0, 1);
 	EvolModeType start_evol_mode;
-	if(std::isnan(tstart) || tstart<star.get_disk_dissipation_age()) {
+	SpinOrbitLockInfo start_star_lock(1, 1, 0);
+	if(std::isnan(tstart) || tstart<star.disk_dissipation_age()) {
 		start_evol_mode=LOCKED_TO_DISK;
 		if(std::isnan(tstart) || tstart<star.core_formation_age()) {
 			tstart=star.core_formation_age();
@@ -1026,18 +1027,19 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				star.moment_of_inertia(tstart, radiative);
 		}
 	} else if(start_locked) {
-		start_evol_mode=LOCKED_TO_PLANET;
+		throw Error::NotImplemented("Starting in locked orbit");
+/*		start_evol_mode=LOCKED_TO_PLANET;
 		start_orbit.resize(2);
 		start_orbit[0]=real_parameters[InCol::A_FORMATION]*AU_Rsun;
 		start_orbit[1]=(star.is_low_mass() ?
 				real_parameters[InCol::START_WRAD]*
-				star.moment_of_inertia(tstart, radiative) : 0);
+				star.moment_of_inertia(tstart, radiative) : 0);*/
 	} else {
 		if(planet.orbital_angular_velocity_semimajor(
 					real_parameters[InCol::A_FORMATION])<
 				real_parameters[InCol::START_WSURF])
-			start_evol_mode=SLOW_PLANET;
-		else start_evol_mode=FAST_PLANET;
+			start_evol_mode=BINARY;
+		else start_evol_mode=BINARY;
 		start_orbit.resize(3);
 		start_orbit[0]=
 			std::pow(real_parameters[InCol::A_FORMATION]*AU_Rsun, 6.5);
@@ -1053,11 +1055,12 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 		solver(system, real_parameters[InCol::MAX_STEP],
 				real_parameters[InCol::PLANET_FORMATION_AGE],
 				real_parameters[InCol::A_FORMATION], tstart,
-				start_evol_mode, start_orbit, required_ages);
+				start_evol_mode, start_star_lock, start_orbit,
+				required_ages);
     double tend=(real_parameters[InCol::TEND]>0 ? 
 					real_parameters[InCol::TEND] :
 					std::min(-real_parameters[InCol::TEND], 
-							 star.get_lifetime()));
+							 star.lifetime()));
 	output_solution(solver, system, outfname, output_file_format,
 			tstart, tend, real_parameters[InCol::MAX_STEP], required_ages);
 }
@@ -1160,6 +1163,8 @@ void run(const CommandLineOptions &options,
 				outfname=update_run_parameters(real_parameters,
 					start_locked, required_ages, options.input_file_format(),
 					line_str, input_lineno);
+				if(start_locked)
+					throw Error::NotImplemented("Locked evolution");
 			}
 		} else done=true;
 		if(real_parameters[InCol::MSTAR]>stellar_evolution.get_mass_break()){

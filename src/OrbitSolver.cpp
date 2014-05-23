@@ -39,45 +39,45 @@ std::ostream &operator<<(std::ostream &os, const StopInformation &stop)
 	return os;
 }
 
-int stellar_system_diff_eq(double age, const double *orbital_parameters,
-		double *orbital_derivatives, void *system_mode_windstate)
+void get_tidal_dissipation(StellarSystem &system, 
+		double age, const double *parameters, SpinOrbitLockInfo &star_lock,
+		TidalDissipation &dissipation)
 {
-	void **input_params=static_cast<void **>(system_mode_windstate);
-	StellarSystem *system=static_cast< StellarSystem* >(input_params[0]);
+	double semimajor=(star_lock ? parameters[0] :
+			std::pow(parameters[0], 1.0/6.5))*Rsun_AU;
+	SpinOrbitLockInfo planet_lock(1, 1, 1);
+	dissipation.init(
+			system.get_star()(age, (star_lock ? NaN : parameters[2]),
+				parameters[1]),
+			system.get_planet(), semimajor, 0, star_lock, planet_lock);
+}
+
+int stellar_system_diff_eq(double age, const double *parameters,
+		double *derivatives, void *system_mode_windstate_lock_dissipation)
+{
+	void **input_params=static_cast<void **>(
+			system_mode_windstate_lock_dissipation);
+	StellarSystem &system=*static_cast< StellarSystem* >(
+			input_params[0]);
 	EvolModeType evol_mode=*static_cast< EvolModeType* >(input_params[1]);
 	WindSaturationState wind_state=*static_cast<WindSaturationState*>(
 			input_params[2]);
-
-	int result;
-	switch(evol_mode) {
-		case FAST_PLANET : case SLOW_PLANET :
-			result=system->orbit_differential_equation(
-					age, orbital_parameters, orbital_derivatives, evol_mode,
-					wind_state);
-			break;
-		case LOCKED_TO_PLANET :
-			result=system->locked_orbit_differential_equation(
-					age, orbital_parameters, orbital_derivatives,wind_state);
-			break;
-		case NO_PLANET :
-			result=system->no_planet_differential_equation(
-					age, orbital_parameters, orbital_derivatives,wind_state);
-			break;
-		case LOCKED_TO_DISK :
-			result=system->locked_conv_differential_equation(
-					age, orbital_parameters, orbital_derivatives);
-			break;
-		default :
-			throw Error::BadFunctionArguments("Unrecognized evolution mode "
-					"encountered in stellar_system_diff_eq!");
-	}
+	SpinOrbitLockInfo &star_lock=*static_cast<SpinOrbitLockInfo*>(
+			input_params[3]);
+	TidalDissipation &dissipation=*static_cast<TidalDissipation*>(
+			input_params[4]);
+	if(evol_mode==BINARY) get_tidal_dissipation(system, age, &parameters[0],
+											    star_lock, dissipation);
+	int result=system.differential_equations(age, parameters,
+			evol_mode, wind_state, star_lock, dissipation, derivatives);
 	return result;
 }
 
 int stellar_system_jacobian(double age, const double *orbital_parameters,
 		double *param_derivs, double *age_derivs,void *system_mode_windstate)
 {
-	void **input_params=static_cast<void **>(system_mode_windstate);
+	throw Error::NotImplemented("Jacobian");
+/*	void **input_params=static_cast<void **>(system_mode_windstate);
 	StellarSystem *system=static_cast< StellarSystem* >(input_params[0]);
 	EvolModeType evol_mode=*static_cast< EvolModeType* >(input_params[1]);
 	WindSaturationState wind_state=*static_cast<WindSaturationState*>(
@@ -105,7 +105,7 @@ int stellar_system_jacobian(double age, const double *orbital_parameters,
 			throw Error::BadFunctionArguments("Unrecognized evolution mode "
 					"encountered in stellar_system_jacobian!");
 	}
-	return result;
+	return result;*/
 }
 
 void StopHistoryInterval::advance_iterator_set(
@@ -509,15 +509,17 @@ void OrbitSolver::insert_discarded(double age,
 
 void OrbitSolver::append_to_orbit(const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
-		EvolModeType evolution_mode, WindSaturationState wind_state,
-        double age, const StellarSystem &system,
-        double planet_formation_semimajor)
+		EvolModeType evolution_mode, const SpinOrbitLockInfo &star_lock,
+		WindSaturationState wind_state, double age,
+		const StellarSystem &system, double planet_formation_semimajor)
 {
 	clear_discarded();
 	std::valarray<double> orbit_to_tabulate=transform_orbit(evolution_mode,
-			TABULATION, age, orbit, planet_formation_semimajor, system),
-		deriv_to_tabulate=transform_derivatives(evolution_mode, TABULATION, 
-				age, orbit, derivatives, planet_formation_semimajor, system);
+			TABULATION, star_lock, star_lock, age, orbit,
+			planet_formation_semimajor, system),
+		deriv_to_tabulate=transform_derivatives(evolution_mode, TABULATION,
+				star_lock, star_lock, age, orbit, derivatives,
+				planet_formation_semimajor, system);
 	size_t nargs=orbit_to_tabulate.size();
 	tabulated_ages.push_back(age);
 	for(size_t i=0; i<nargs; i++) {
@@ -569,11 +571,12 @@ double OrbitSolver::go_back(double max_age, std::valarray<double> &orbit,
 	return stop_history_ages.back();
 }
 
-size_t OrbitSolver::ode_dimension(EvolModeType evolution_mode)
+size_t OrbitSolver::ode_dimension(EvolModeType evolution_mode,
+		const SpinOrbitLockInfo &star_lock)
 {
 	switch(evolution_mode) {
-		case FAST_PLANET : case SLOW_PLANET : return 3;
-		case LOCKED_TO_PLANET : case NO_PLANET : return 2;
+		case BINARY : return (star_lock ? 4 : 5);
+		case NO_PLANET : return 3;
 		case LOCKED_TO_DISK : return 1;
 		default :
 			throw Error::BadFunctionArguments("Unrecognized evolution "
@@ -757,13 +760,14 @@ bool OrbitSolver::acceptable_step(double age,
 StopInformation OrbitSolver::update_stop_condition_history(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
+		const TidalDissipation &dissipation,
 		const StellarSystem &system, EvolModeType evolution_mode,
 		const StoppingCondition &stop_cond,
 		StoppingConditionType stop_reason)
 {
 	std::valarray<double> current_stop_cond(stop_cond.num_subconditions()),
 		current_stop_deriv;
-	current_stop_cond=stop_cond(age, orbit, derivatives, system,
+	current_stop_cond=stop_cond(age, orbit, derivatives, dissipation, system,
 			current_stop_deriv, evolution_mode);
 
 	if(stop_history_ages.size()==0)
@@ -821,35 +825,40 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 	return result;
 }
 
-bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
+bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
 		double &max_age, std::valarray<double> &orbit,
 		double &stop_condition_value, StoppingConditionType &stop_reason,
 		double max_step, EvolModeType evolution_mode,
-		WindSaturationState wind_state, const StoppingCondition &stop_cond,
+		const SpinOrbitLockInfo &star_lock, WindSaturationState wind_state,
+		const StoppingCondition &stop_cond,
 		double planet_formation_semimajor)
 {
 	size_t nargs=orbit.size();
 
-	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
-//	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
+//	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
+	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
 
 	gsl_odeiv2_step *step=gsl_odeiv2_step_alloc(step_type, nargs);
 	gsl_odeiv2_control *step_control=gsl_odeiv2_control_standard_new(
 			precision, precision, 1, 0);
 	gsl_odeiv2_evolve *evolve=gsl_odeiv2_evolve_alloc(nargs);
 
-	void *sys_mode_windstate[3]={system, &evolution_mode, &wind_state};
+	TidalDissipation dissipation;
+
+	void *sys_mode_windstate_lock_dissipation[5]={&system, &evolution_mode,
+		&wind_state, const_cast<SpinOrbitLockInfo*>(&star_lock),
+		&dissipation};
 	gsl_odeiv2_system ode_system={stellar_system_diff_eq,
-		stellar_system_jacobian, nargs, sys_mode_windstate};
+		stellar_system_jacobian, nargs, sys_mode_windstate_lock_dissipation};
 	double t=start_age; 
 	std::valarray<double> derivatives(nargs), param_derivatives(nargs),
 		age_derivatives(nargs);
 	stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
-			sys_mode_windstate);
-	append_to_orbit(orbit, derivatives, evolution_mode, wind_state, t,
-            *system, planet_formation_semimajor);
+			sys_mode_windstate_lock_dissipation);
+	append_to_orbit(orbit, derivatives, evolution_mode, star_lock, 
+			wind_state, t, system, planet_formation_semimajor);
 
-	update_stop_condition_history(t, orbit, derivatives, *system,
+	update_stop_condition_history(t, orbit, derivatives, dissipation, system,
 			evolution_mode, stop_cond, stop_reason);
 	clear_discarded();
 	double step_size=0.01*(max_age-start_age);
@@ -866,9 +875,10 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 					evolve, step_control, step, &ode_system,
 					&t, max_next_t, &step_size, &(orbit[0]));
 			stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
-					sys_mode_windstate);
-			stop=update_stop_condition_history(t, orbit, derivatives, *system,
-					evolution_mode, stop_cond, stop_reason);
+					sys_mode_windstate_lock_dissipation);
+			stop=update_stop_condition_history(t, orbit, derivatives,
+					dissipation, system, evolution_mode, stop_cond,
+					stop_reason);
 			if(!acceptable_step(t, stop)) {
 				t=go_back(stop.stop_age(), orbit, derivatives);
 				if(stop.is_crossing())
@@ -890,7 +900,7 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 		}
 		if(!step_rejected)
 			append_to_orbit(orbit, derivatives,
-				evolution_mode, wind_state, t, *system,
+				evolution_mode, star_lock, wind_state, t, system,
                 planet_formation_semimajor);
 		if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
 			stop_reason=stop.stop_reason();
@@ -908,25 +918,31 @@ bool OrbitSolver::evolve_until(StellarSystem *system, double start_age,
 }
 
 CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
-		EvolModeType evolution_mode, double initial_semimajor) const
+		EvolModeType evolution_mode, const SpinOrbitLockInfo &star_lock)
+	const
 {
 	CombinedStoppingCondition *result=new CombinedStoppingCondition();
-	if(evolution_mode==LOCKED_TO_DISK) return result;
+	if(evolution_mode==LOCKED_TO_DISK) {
+		*result|=new NoStopCondition();
+		return result;
+	}
 	(*result)|=new WindSaturationCondition;
 #ifdef EXTERNAL_CONDITION
 	(*result)|= new EXTERNAL_CONDITION;
 #endif
 	if(evolution_mode==NO_PLANET) return result;
 	(*result)|=new PlanetDeathCondition();
-	switch(evolution_mode) {
-		case FAST_PLANET : case SLOW_PLANET :
-			*result|=new SynchronizedCondition(initial_semimajor);
-			break;
-		case LOCKED_TO_PLANET :
-			*result|=new BreakLockCondition();
-			break;
-		default :
-			*result|=new NoStopCondition();
+#ifdef DEBUG
+	assert(evolution_mode==BINARY);
+#endif
+	if(star_lock)
+		*result|=new BreakLockCondition();
+	else {
+		*result|=new SynchronizedCondition(1, 1, 0);
+		*result|=new SynchronizedCondition(2, 1, 0);
+		*result|=new SynchronizedCondition(2, -1, 0);
+		*result|=new SynchronizedCondition(1, -1, 0);
+		*result|=new SynchronizedCondition(0, 1, 0);
 	}
 	return result;
 }
@@ -934,23 +950,38 @@ CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
 EvolModeType OrbitSolver::critical_age_evol_mode(double age, 
 		const std::valarray<double> &orbit,
 		double initial_semimajor, const StellarSystem &system, 
-		EvolModeType evolution_mode, double planet_formation_age) const
+		EvolModeType evolution_mode, const SpinOrbitLockInfo &star_lock,
+		double planet_formation_age) const
 {
-	if(system.get_star().get_disk_dissipation_age()>age)
+	if(system.get_star().disk_dissipation_age()>age)
 		return LOCKED_TO_DISK;
 	else if(planet_formation_age>age || 
 			(planet_formation_age<age && evolution_mode==NO_PLANET))
 		return NO_PLANET;
+	const Star &star=system.get_star();
 	double in_sync;
 	std::valarray<double> dummy_cond_deriv;
-	if(evolution_mode==LOCKED_TO_PLANET) in_sync=0;
+	if(star_lock) in_sync=0;
 	else {
-		SynchronizedCondition sync_condition(initial_semimajor);
-		in_sync=sync_condition(age, orbit, std::valarray<double>(),system,
-			dummy_cond_deriv, evolution_mode)[0];
+		double wconv, worb=orbital_angular_velocity(
+				system.get_planet().mass(), star.mass(), initial_semimajor);
+		switch(evolution_mode) {
+			case LOCKED_TO_DISK : wconv=star.disk_lock_frequency();
+								  break;
+			case NO_PLANET : 
+					wconv=orbit[0]/star.moment_of_inertia(age, convective);
+					break;
+			default:
+#ifdef DEBUG
+					assert(evolution_mode==BINARY);
+#endif
+					wconv=orbit[2]/star.moment_of_inertia(age, convective);
+		}
+		in_sync=(worb-wconv)/worb;
 	}
 	if(std::abs(in_sync)<precision) {
-		BreakLockCondition locked_cond;
+		throw Error::NotImplemented("Starting planet synchronized");
+/*		BreakLockCondition locked_cond;
 		std::valarray<double> locked_orbit=transform_orbit(evolution_mode,
 				LOCKED_TO_PLANET, age, orbit, initial_semimajor, system);
 		std::valarray<double> locked_deriv(2);
@@ -967,24 +998,27 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 		if(locked_cond_value>=0)
 			return LOCKED_TO_PLANET;
 		else return (no_planet_dwconv_dt(age, locked_orbit, system) > 0 ?
-				SLOW_PLANET : FAST_PLANET);
+				SLOW_PLANET : FAST_PLANET);*/
 	}
-	return (in_sync>0 ? FAST_PLANET : SLOW_PLANET);
+	return BINARY;
 }
 
 EvolModeType OrbitSolver::next_evol_mode(double age,
 		const std::valarray<double> &orbit,
 		double initial_semimajor, const StellarSystem &system,
 		EvolModeType evolution_mode,
+		const SpinOrbitLockInfo &star_lock,
 		StoppingConditionType condition_type,
 		double condition_value, bool stopped_before,
 		double planet_formation_age) const
 {
 	if(stopped_before) condition_value*=-1;
 	if(condition_type==NO_STOP) return critical_age_evol_mode(age, orbit,
-			initial_semimajor, system, evolution_mode, planet_formation_age);
+			initial_semimajor, system, evolution_mode, star_lock, 
+			planet_formation_age);
 	if(condition_type==SYNCHRONIZED) {
-		std::valarray<double> locked_orbit=transform_orbit(evolution_mode,
+		throw Error::NotImplemented("Locked spin-orbit evolution");
+/*		std::valarray<double> locked_orbit=transform_orbit(evolution_mode,
 				LOCKED_TO_PLANET, age, orbit, initial_semimajor, system);
 		std::valarray<double> locked_orbit_diff_eq(2), stop_deriv;
 		WindSaturationState wind_sat=UNKNOWN;
@@ -998,10 +1032,9 @@ EvolModeType OrbitSolver::next_evol_mode(double age,
 		if(BreakLockCondition()(age, locked_orbit, locked_orbit_diff_eq,
 					system, stop_deriv, evolution_mode)[0]>=0)
 			return LOCKED_TO_PLANET;
-		else return (condition_value>0 ? FAST_PLANET : SLOW_PLANET);
+		else return (condition_value>0 ? FAST_PLANET : SLOW_PLANET);*/
 	} else if(condition_type==BREAK_LOCK) {
-		return (no_planet_dwconv_dt(age, orbit, system)>0 ? SLOW_PLANET :
-				FAST_PLANET);
+		return BINARY;
 	} else if(condition_type==PLANET_DEATH) return NO_PLANET;
 	else if(condition_type==WIND_SATURATION || condition_type==EXTERNAL)
 		return evolution_mode;
@@ -1019,7 +1052,7 @@ double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
 {
 	double result;
 	switch(evolution_mode) {
-		case FAST_PLANET : case LOCKED_TO_PLANET : case SLOW_PLANET :
+		case BINARY :
 			result=end_age; break;
 		case NO_PLANET :
 			result=(std::isnan(planet_formation_age) || 
@@ -1027,7 +1060,7 @@ double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
 					std::min(planet_formation_age, end_age));
 			break;
 		case LOCKED_TO_DISK :
-			result=std::min(system.get_star().get_disk_dissipation_age(),
+			result=std::min(system.get_star().disk_dissipation_age(),
 					end_age); break;
 		default :
 			throw Error::BadFunctionArguments("Unrecognized evolution "
@@ -1049,144 +1082,160 @@ double OrbitSolver::stopping_age(double age, EvolModeType evolution_mode,
 	return result;
 }
 
+void OrbitSolver::parse_orbit_or_derivatives(EvolModeType evolution_mode,
+		const SpinOrbitLockInfo &star_lock, double age,
+		const std::valarray<double> &orbit_deriv, 
+		const StellarSystem &system, bool evolution, double &a,
+		double &theta, double &Lconv, double &Lrad_parallel,
+		double &Lrad_perpendicular) const
+{
+	const Star &star=system.get_star();
+#ifdef DEBUG
+	assert(from_mode!=TABULATION);
+#endif
+	if(evolution_mode==BINARY) {
+		theta=orbit_deriv[1];
+		if(star_lock) {
+#ifdef DEBUG
+			assert(orbit_deriv.size()==4);
+#endif
+			double mplanet=system.get_planet().mass(),
+				   mstar=star.mass();
+			if(evolution) {
+				Lconv=orbital_angular_velocity(mstar, mplanet, a*Rsun_AU,
+						true)*star.moment_of_inertia(age, convective)*
+					orbit_deriv[0]*Rsun_AU
+					+
+					orbital_angular_velocity(mstar, mplanet, a*Rsun_AU)*
+					star.moment_of_inertia_deriv(age, convective);
+			} else {
+				Lconv=orbital_angular_velocity(mplanet, mstar,
+						orbit_deriv[0]*Rsun_AU)*
+					star.moment_of_inertia(age, convective);
+			}
+			a=orbit_deriv[0];
+		} else {
+#ifdef DEBUG
+			assert(orbit_deriv.size()==5);
+#endif
+			a=(evolution ? 1.0/6.5*std::pow(a, -5.5)*orbit_deriv[0] :
+					std::pow(orbit_deriv[0], 1.0/6.5));
+			Lconv=orbit_deriv[2];
+		}
+	} else if (evolution_mode==NO_PLANET) {
+#ifdef DEBUG
+		assert(orbit_deriv.size()==3);
+#endif
+		a = theta = NaN;
+		Lconv=orbit_deriv[0];
+	} 
+	if(evolution_mode==LOCKED_TO_DISK) {
+#ifdef DEBUG
+		assert(orbit_deriv.size()==1);
+#endif
+		a=theta=NaN;
+		Lconv=star.disk_lock_frequency()*
+			(evolution ? star.moment_of_inertia_deriv(age, convective) :
+			 star.moment_of_inertia(age, convective));
+		Lrad_parallel=orbit_deriv[0];
+		Lrad_perpendicular=0;
+	} else {
+		Lrad_parallel=orbit_deriv[orbit_deriv.size()-2];
+		Lrad_perpendicular=orbit_deriv[orbit_deriv.size()-1];
+	}
+}
+
+void OrbitSolver::collect_orbit_or_derivatives(EvolModeType evolution_mode,
+		const SpinOrbitLockInfo &star_lock,
+		double a, double theta, double Lconv, double Lrad_parallel,
+		double Lrad_perpendicular, std::valarray<double> &result,
+		double semimajor) const
+{
+	if(evolution_mode==BINARY) {
+		if(star_lock) {
+			result.resize(4);
+			result[0]=a;
+		} else {
+			result.resize(5);
+			result[0]=(std::isnan(semimajor) ? std::pow(a, 6.5) :
+					6.5*std::pow(semimajor, 5.5)*a);
+			result[2]=Lconv;
+		}
+		result[1]=theta;
+	} else if(evolution_mode==NO_PLANET) {
+		result.resize(3);
+		result[0]=Lconv;
+	} else if(evolution_mode==TABULATION) {
+		result.resize(5);
+		result[0]=a;
+		result[1]=theta;
+		result[2]=Lconv;
+	}
+
+	if(evolution_mode==LOCKED_TO_DISK) 
+		result.resize(Lrad_parallel, 1);
+	else {
+		result[result.size()-2]=Lrad_parallel;
+		result[result.size()-1]=Lrad_perpendicular;
+	}
+
+}
+
 std::valarray<double> OrbitSolver::transform_orbit(EvolModeType from_mode,
-		EvolModeType to_mode, double age,
+		EvolModeType to_mode, const SpinOrbitLockInfo &from_star_lock,
+		const SpinOrbitLockInfo &to_star_lock, double age,
 		const std::valarray<double> &from_orbit, 
 		double initial_semimajor, const StellarSystem &system) const
 {
-	double a, Lconv, Lrad;
-	switch(from_mode) {
-		case FAST_PLANET : case SLOW_PLANET :
-			assert(from_orbit.size()==3);
-			a=std::pow(from_orbit[0], 1.0/6.5);
-			Lconv=from_orbit[1]; Lrad=from_orbit[2];
-			break;
-		case LOCKED_TO_PLANET :
-			assert(from_orbit.size()==2);
-			a=from_orbit[0]; Lrad=from_orbit[1];
-			Lconv=system.get_planet().orbital_angular_velocity_semimajor(
-					a*Rsun_AU)*
-				system.get_star().moment_of_inertia(age, convective);
-			break;
-		case NO_PLANET :
-			Lconv=from_orbit[0]; Lrad=from_orbit[1];
-			if (to_mode != TABULATION)
-				a = initial_semimajor/Rsun_AU;
-			else
-				a = NaN;
-			break;
-		case LOCKED_TO_DISK :
-			assert(from_orbit.size()==1);
-			a=(to_mode==TABULATION ? NaN : initial_semimajor/Rsun_AU);
-			Lconv=system.get_star().get_disk_lock_frequency()*
-				system.get_star().moment_of_inertia(age, convective);
-			Lrad=from_orbit[0];
-			break;
-		default :
-			throw Error::BadFunctionArguments("Urecognized evolution mode "
-					"(from_mode) in transform_orbit.");
-	}
+	double a, theta, Lconv, Lrad_parallel, Lrad_perpendicular;
+	parse_orbit_or_derivatives(from_mode, from_star_lock, age, from_orbit,
+			system, false, a, theta, Lconv, Lrad_parallel,
+			Lrad_perpendicular);
+	if(to_mode!=TABULATION && std::isnan(a)) a=initial_semimajor/Rsun_AU;
+
 	std::valarray<double> to_orbit;
-	switch(to_mode) {
-		case FAST_PLANET : case SLOW_PLANET :
-			to_orbit.resize(3);
-			to_orbit[0]=std::pow(a, 6.5); to_orbit[1]=Lconv; to_orbit[2]=Lrad;
-			break;
-		case LOCKED_TO_PLANET :
-			to_orbit.resize(2);
-			to_orbit[0]=a; to_orbit[1]=Lrad;
-			break;
-		case NO_PLANET :
-			to_orbit.resize(2);
-			to_orbit[0]=Lconv+(from_mode==FAST_PLANET || 
-					from_mode==LOCKED_TO_PLANET || 
-					from_mode==SLOW_PLANET ?
-					system.get_planet().orbital_angular_momentum(a*Rsun_AU) :
-					0.0);
-			to_orbit[1]=Lrad;
-			break;
-		case LOCKED_TO_DISK :
-			to_orbit.resize(1, Lrad);
-			break;
-		case TABULATION:
-			to_orbit.resize(3);
-			to_orbit[0]=a; to_orbit[1]=Lconv; to_orbit[2]=Lrad;
+	collect_orbit_or_derivatives(to_mode, to_star_lock, a, theta, Lconv,
+			Lrad_parallel, Lrad_perpendicular, to_orbit);
+	if(from_mode==BINARY && to_mode==NO_PLANET) {
+		to_orbit[0]+=orbital_angular_momentum(
+				system.get_star().mass(), 
+				system.get_planet().mass(), a*Rsun_AU, 0);
 	}
+
 	return to_orbit;
 }
 
 std::valarray<double> OrbitSolver::transform_derivatives(
-		EvolModeType from_mode, EvolModeType to_mode, double age,
+		EvolModeType from_mode, EvolModeType to_mode, 
+		const SpinOrbitLockInfo &from_star_lock,
+		const SpinOrbitLockInfo &to_star_lock, double age,
 		const std::valarray<double> &from_orbit, 
 		const std::valarray<double> &from_deriv,
 		double initial_semimajor, const StellarSystem &system)
 {
+#ifdef DEBUG
 	if(from_mode==NO_PLANET && to_mode!=TABULATION) 
 		throw Error::BadFunctionArguments(
 				"No evolution mode can possibly follow NO_PLANET in "
 				"transform_derivatives.");
-
-	double a, da_dt, dLconv_dt, dLrad_dt;
 	assert(from_orbit.size()==from_deriv.size());
-	switch(from_mode) {
-		case FAST_PLANET : case SLOW_PLANET :
-			assert(from_orbit.size()==3);
-			a=std::pow(from_orbit[0], 1.0/6.5);
-			da_dt=1.0/6.5*std::pow(from_orbit[0], -5.5/6.5)*from_deriv[0];
-			dLconv_dt=from_deriv[1]; dLrad_dt=from_deriv[2];
-			break;
-		case LOCKED_TO_PLANET :
-			assert(from_orbit.size()==2);
-			a=from_orbit[0];
-			da_dt=from_deriv[0]; dLrad_dt=from_deriv[1];
-			dLconv_dt=
-				system.get_planet().orbital_angular_velocity_semimajor_deriv(
-						a*Rsun_AU)*
-				system.get_star().moment_of_inertia(age, convective)*
-				da_dt*Rsun_AU
-				+
-				system.get_planet().orbital_angular_velocity_semimajor(
-					a*Rsun_AU)*
-				system.get_star().moment_of_inertia_deriv(age, convective);
-			break;
-		case NO_PLANET :
-			a=NaN; da_dt=NaN;
-			dLconv_dt=from_deriv[0]; dLrad_dt=from_deriv[1];
-			break;
-		case LOCKED_TO_DISK :
-			assert(from_orbit.size()==1);
-			a=(to_mode==TABULATION ? NaN : initial_semimajor/Rsun_AU);
-			da_dt=NaN;
-			dLconv_dt=system.get_star().get_disk_lock_frequency()*
-				system.get_star().moment_of_inertia_deriv(age, convective);
-			dLrad_dt=from_deriv[0];
-			break;
-		default :
-			throw Error::BadFunctionArguments("Urecognized evolution mode "
-					"(from_mode) in transform_orbit.");
-	}
+#endif
+
+	double a, da_dt, dtheta_dt, dLconv_dt, dLrad_parallel_dt,
+		   dLrad_perpendicular_dt;
+	if(from_mode==BINARY) {
+		a=da_dt=(from_star_lock ? from_orbit[0] :
+				std::pow(from_orbit[0], 1.0/6.5));
+	} else a=(to_mode==TABULATION ? NaN : initial_semimajor/Rsun_AU);
+	parse_orbit_or_derivatives(from_mode, from_star_lock, age, from_deriv,
+			system, true, da_dt, dtheta_dt, dLconv_dt,
+			dLrad_parallel_dt, dLrad_perpendicular_dt);
+
+
 	std::valarray<double> to_deriv;
-	switch(to_mode) {
-		case FAST_PLANET : case SLOW_PLANET :
-			to_deriv.resize(3);
-			to_deriv[0]=6.5*std::pow(a, 5.5)*da_dt;
-			to_deriv[1]=dLconv_dt; to_deriv[2]=dLrad_dt;
-			break;
-		case LOCKED_TO_PLANET :
-			to_deriv.resize(2);
-			to_deriv[0]=da_dt; to_deriv[1]=dLrad_dt;
-			break;
-		case NO_PLANET :
-			to_deriv.resize(2);
-			to_deriv[0]=dLconv_dt; to_deriv[1]=dLrad_dt;
-			break;
-		case LOCKED_TO_DISK :
-			to_deriv.resize(1, dLrad_dt);
-			break;
-		case TABULATION:
-			to_deriv.resize(3);
-			to_deriv[0]=da_dt; to_deriv[1]=dLconv_dt; to_deriv[2]=dLrad_dt;
-	}
+	collect_orbit_or_derivatives(to_mode, to_star_lock, da_dt, dtheta_dt,
+			dLconv_dt, dLrad_parallel_dt, dLrad_perpendicular_dt, to_deriv,
+			a);
 	return to_deriv;
 }
 
@@ -1213,6 +1262,7 @@ OrbitSolver::OrbitSolver(double max_age, double required_precision,
 void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		double planet_formation_age, double planet_formation_semimajor,
 		double start_age, EvolModeType initial_evol_mode,
+		const SpinOrbitLockInfo &initial_lock,
 		const std::valarray<double> &start_orbit,
 		const std::list<double> &required_ages, bool no_evol_mode_change)
 {
@@ -1220,9 +1270,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 	const Star &star=system.get_star();
 	if(std::isnan(start_age)) start_age=star.core_formation_age();
 	double stop_evol_age=(adjust_end_age ?
-			std::min(end_age, star.get_lifetime()) : end_age);
-	if(initial_evol_mode==FAST_PLANET || initial_evol_mode==SLOW_PLANET
-			|| initial_evol_mode==LOCKED_TO_PLANET) {
+			std::min(end_age, star.lifetime()) : end_age);
+	if(initial_evol_mode==BINARY) {
 		if(start_orbit[0]<=planet.minimum_semimajor(start_age)/Rsun_AU)
 			throw Error::BadFunctionArguments("Attempting to calculate the "
 					"evolution of a system where the planet starts "
@@ -1231,36 +1280,41 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 			  planet_formation_age<stop_evol_age) {
 		if(planet_formation_semimajor/Rsun_AU<=planet.minimum_semimajor(
 					std::max(planet_formation_age,
-						star.get_disk_dissipation_age()))/Rsun_AU)
+						star.disk_dissipation_age()))/Rsun_AU)
 			throw Error::BadFunctionArguments("Attempting to calculate the "
 					"evolution of a system where the planet will be formed "
 					"inside the Roche radius or its parent star!");
 	}
 	double wconv;
 	switch(initial_evol_mode) {
-		case FAST_PLANET : case SLOW_PLANET :
-			assert(start_orbit.size()==3); 
-			wconv=star.spin_frequency(start_age, convective, start_orbit[1]);
-			break;
-		case LOCKED_TO_PLANET :
-			assert(start_orbit.size()==2);
-			wconv=planet.orbital_angular_velocity_semimajor(
-					start_orbit[0]*Rsun_AU);
+		case BINARY :
+#ifdef DEBUG
+			assert(start_orbit.size()==(initial_lock ? 4 : 5)); 
+#endif
+			wconv=(initial_lock 
+					? 
+					initial_lock.spin(
+						orbital_angular_velocity(planet.mass(), star.mass(),
+							start_orbit[0]*Rsun_AU))
+					:
+					star.spin_frequency(start_age, convective,
+						start_orbit[1])
+					);
 			break;
 		case NO_PLANET :
-			assert(start_orbit.size()==2);
+			assert(start_orbit.size()==3);
 			wconv=star.spin_frequency(start_age, convective, start_orbit[0]);
 			break;
 		case LOCKED_TO_DISK :
 			assert(start_orbit.size()==1);
-			wconv=star.get_disk_lock_frequency();
+			wconv=star.disk_lock_frequency();
 			break;
 		default:
 			throw Error::BadFunctionArguments("Unsupported initial evolution"
 					" mode encountered in OrbitSolver::operator().");
 	}
 	WindSaturationState wind_state=(
-			wconv<star.get_wind_saturation_frequency() ? NOT_SATURATED : 
+			wconv<star.wind_saturation_frequency() ? NOT_SATURATED : 
 			                                             SATURATED);
 
 	reset();
@@ -1268,35 +1322,25 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 	double last_age=start_age;
 	std::valarray<double> orbit=start_orbit;
 	EvolModeType evolution_mode=initial_evol_mode;
+	SpinOrbitLockInfo star_lock=initial_lock, old_star_lock=star_lock;
 	while(last_age<stop_evol_age) {
-/*		if (evolution_mode == FAST_PLANET || evolution_mode == SLOW_PLANET ||
-				evolution_mode == LOCKED_TO_PLANET) {
-			//if planet starts out below minimum semimajor axis,
-			//PlanetDeathCondition never reaches 0, so we have to manually
-			//check for it
-			PlanetDeathCondition deathTest;
-			std::valarray<double> fakeArr;
-			double deathResult = deathTest(last_age, orbit, fakeArr,
-					system, fakeArr, evolution_mode)[0];
-			if (deathResult < 0) return;
-		}
-		//std::cout << deathResult << std::endl;*/
 		double next_stop_age=std::min(stopping_age(last_age, evolution_mode,
 				system, planet_formation_age, required_ages), stop_evol_age);
 		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
-				evolution_mode, planet_formation_semimajor);
+				evolution_mode, star_lock);
 		double stop_condition_value=NaN;
-		bool stopped_before=!evolve_until(&system, start_age, next_stop_age,
+		bool stopped_before=!evolve_until(system, start_age, next_stop_age,
 				orbit, stop_condition_value, stop_reason, max_step,
-				evolution_mode, wind_state, *stopping_condition,
-				planet_formation_semimajor);
+				evolution_mode, initial_lock, wind_state,
+				*stopping_condition, planet_formation_semimajor);
 		last_age=next_stop_age;
 		if(last_age<stop_evol_age) {
 			EvolModeType old_evolution_mode=evolution_mode;
 			if(!no_evol_mode_change) evolution_mode=next_evol_mode(last_age,
 					orbit, planet_formation_semimajor, system,
-					evolution_mode, stop_reason, stop_condition_value,
-					stopped_before, planet_formation_age);
+					evolution_mode, star_lock, stop_reason,
+					stop_condition_value, stopped_before,
+					planet_formation_age);
 #ifdef DEBUG
 			std::cerr << "Changing evolution mode from "
 				<< old_evolution_mode << " to " << evolution_mode
@@ -1304,7 +1348,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 #endif
 			if(old_evolution_mode!=evolution_mode) {
 				std::valarray<double> new_orbit=transform_orbit(
-						old_evolution_mode, evolution_mode, last_age, orbit,
+						old_evolution_mode, evolution_mode, old_star_lock,
+						star_lock, last_age, orbit,
 						planet_formation_semimajor, system);
 #ifdef DEBUG
 				std::cerr << "Transforming orbit from: " << orbit
@@ -1317,7 +1362,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
                 wconv=star.spin_frequency(last_age, convective,
                         orbit[0]); 
                 wind_state=(
-                    wconv<star.get_wind_saturation_frequency() ?
+                    wconv<star.wind_saturation_frequency() ?
                     NOT_SATURATED : SATURATED);
             } else if(stop_reason==WIND_SATURATION)
 				wind_state=static_cast<WindSaturationState>(-wind_state);
@@ -1327,39 +1372,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 	}
 }
 
-
-double OrbitSolver::fast_time(StellarSystem &system,
-		double max_step, double planet_formation_age,
-		double planet_formation_semimajor, double start_age,
-		EvolModeType initial_evol_mode,
-		std::valarray<double> start_orbit,
-		double main_seq_start) {
-  (*this)(system, max_step, planet_formation_age, 
-	  planet_formation_semimajor, start_age, initial_evol_mode,
-	  start_orbit);
-	Star star = system.get_star();
-	std::list<double>::iterator a = tabulated_orbit[0].begin();
-	std::list<double>::iterator Lc = tabulated_orbit[1].begin();
-	std::list<double>::iterator Lr = tabulated_orbit[2].begin();
-	double tot_time = 0;
-	double prev_age = -1;
-	for(std::list<double>::iterator ages = tabulated_ages.begin();
-			ages != tabulated_ages.end(); ages++, a++, Lc++,  Lr++) {
-		double age = *ages;
-		if (age < main_seq_start) continue;
-		double spin = (*Lc)/star.moment_of_inertia(age, convective);
-		if (spin > spin_thres && prev_age != -1)
-			tot_time += age - prev_age;
-		prev_age = age;
-
-	}
-	return tot_time;
-
-}
-
-
-const std::list<double>
-*OrbitSolver::get_tabulated_var(EvolVarType var_type) const
+const std::list<double> *OrbitSolver::get_tabulated_var(EvolVarType var_type)
+	const
 {
 	if(var_type==AGE) return &tabulated_ages;
 	return &(tabulated_orbit[var_type]);
@@ -1371,20 +1385,3 @@ const std::list<double> *OrbitSolver::get_tabulated_var_deriv(
 	assert(var_type!=AGE);
 	return &(tabulated_deriv[var_type]);
 }
-
-double OrbitSolver::last_error(double age, double a, double Lc)
-{
-	/*returns the L2 norm of the last fractional error between the last
-	simulated orbit, and the arguments (a, Lc). If the last simulated age
-	is not age, returns NaN. */
-	double last_age = tabulated_ages.back();
-	if (abs(age - last_age) > 1e-6) return NaN;
-	double last_a6p5 = (tabulated_orbit[0]).back();
-	double last_a = pow(last_a6p5, 1.0/6.5)*
-			AstroConst::solar_radius/AstroConst::AU;
-	double last_Lc = (tabulated_orbit[1]).back();
-	double sqr_err = pow((last_a - a)/a, 2) + pow((last_Lc - Lc)/2, 2);
-	return std::sqrt(sqr_err);
-}
-
-

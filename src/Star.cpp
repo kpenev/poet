@@ -8,7 +8,6 @@
 #include "Star.h"
 #include "Error.h"
 #include <iostream>
-#include <assert.h>
 
 std::ostream &operator<<(std::ostream &os,
 		const WindSaturationState &wind_state)
@@ -21,187 +20,116 @@ std::ostream &operator<<(std::ostream &os,
 	return os;
 }
 
-StarBase::StarBase(double current_mass, double wind_strength,
+StarBase::StarBase(double mass, double wind_strength,
 		double wind_saturation, double coupling_timescale,
 		double disk_lock_ang_vel, double disk_lock_time,
-		const StellarEvolution &evolution, double current_age,
-		double current_conv_spin, double current_rad_spin) :
-	mass(current_mass), age(current_age),
-	disk_lock_frequency(disk_lock_ang_vel),
-	disk_dissipation_age(disk_lock_time),
-	conv_angular_momentum(NULL), 
-	rad_angular_momentum(NULL),
-	magnetic_wind_strength(wind_strength), 
-	magnetic_wind_saturation_freq(wind_saturation), 
-	core_env_coupling_timescale(coupling_timescale),
-	core_formation(evolution.core_formation_age())
+		const StellarEvolution &evolution, double age,
+		double conv_spin, double rad_spin) :
+	__mass(mass), __age(age),
+	__disk_lock_frequency(disk_lock_ang_vel),
+	__disk_dissipation_age(disk_lock_time),
+	__low_mass(mass<evolution.get_mass_break()),
+	__radius(evolution.interpolate_radius(mass)),
+	__luminosity(evolution.interpolate_luminosity(mass)),
+	__conv_angular_momentum(NULL),
+	__rad_angular_momentum(NULL),
+	__lifetime(9*std::pow(mass, -3)),
+	__magnetic_wind_strength(wind_strength), 
+	__magnetic_wind_saturation_freq(wind_saturation), 
+	__core_env_coupling_timescale(coupling_timescale),
+	__core_formation(evolution.core_formation_age())
 {
-	lifetime = 9*std::pow(mass, -3);
-	low_mass=(mass<evolution.get_mass_break());
-	radius=evolution.interpolate_radius(mass);
-	luminosity=evolution.interpolate_luminosity(mass);
-	if(low_mass) {
-		conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
+	if(__low_mass) {
+		__conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
 				mass, convective);
-		rad_moment_of_inertia=evolution.interpolate_moment_of_inertia(
+		__rad_moment_of_inertia=evolution.interpolate_moment_of_inertia(
 				mass, radiative);
-		rad_mass=evolution.interpolate_zone_mass(mass, radiative);
-		rad_radius=evolution.interpolate_core_boundary(mass);
+		__rad_mass=evolution.interpolate_zone_mass(mass, radiative);
+		__rad_radius=evolution.interpolate_core_boundary(mass);
 	} else {
-		conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
+		__conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
 				mass, total);
-		rad_moment_of_inertia=new ZeroQuantity();
-		rad_mass=new ZeroQuantity();
-		rad_radius=new ZeroQuantity();
+		__rad_moment_of_inertia=new ZeroQuantity();
+		__rad_mass=new ZeroQuantity();
+		__rad_radius=new ZeroQuantity();
 	}
-	if(!std::isnan(current_age)) {
-		current_conv_angular_momentum=current_conv_spin*
-			(*conv_moment_of_inertia)(current_age);
-		current_rad_angular_momentum=current_rad_spin*
-			(*rad_moment_of_inertia)(current_age);
+	if(!std::isnan(age)) {
+		__current_conv_angular_momentum=conv_spin*
+			(*__conv_moment_of_inertia)(age);
+		__current_rad_angular_momentum=rad_spin*
+			(*__rad_moment_of_inertia)(age);
 	}
 }
 
 StarBase::~StarBase()
 {
-	delete radius;
-	delete luminosity;
-	delete conv_moment_of_inertia;
-	delete rad_moment_of_inertia;
-	delete rad_mass;
-	delete rad_radius;
+	delete __radius;
+	delete __luminosity;
+	delete __conv_moment_of_inertia;
+	delete __rad_moment_of_inertia;
+	delete __rad_mass;
+	delete __rad_radius;
 }
 
-/*
-//Same as above, but without unnecessary arguments
-StarBase::StarBase(double current_mass, double tidal_quality,
-		double wind_strength, double wind_saturation,
-		double coupling_timescale, double dissipation_transition_width,
-		const StellarEvolution &evolution) :
-	mass(current_mass),
-	Q_transition_width(dissipation_transition_width),
-	conv_angular_momentum(NULL),
-	rad_angular_momentum(NULL),
-	tidal_Q(tidal_quality),
-	magnetic_wind_strength(wind_strength),
-	magnetic_wind_saturation_freq(wind_saturation),
-	core_env_coupling_timescale(coupling_timescale),
-	current_conv_angular_momentum(0),
-	current_rad_angular_momentum(0),
-	core_formation(evolution.core_formation_age())
+double StarBase::luminosity(double age) const
 {
-	const double FAKE_AGE = 5;
-	radius=evolution.interpolate_radius(mass, FAKE_AGE);
-	conv_moment_of_inertia=evolution.interpolate_moment_of_inertia(
-			mass, convective, FAKE_AGE);
-	tot_moment_of_inertia=evolution.interpolate_moment_of_inertia(
-			mass, total, FAKE_AGE);
-	rad_mass=evolution.interpolate_zone_mass(mass, radiative);
-	rad_radius=evolution.interpolate_core_boundary(mass, FAKE_AGE);
-	lifetime = 9*std::pow(mass, -3);
-}*/
-
-double StarBase::current_age() const
-{
-	return age;
+	if(__luminosity==NULL) throw Error::Runtime("Asking for the luminosity "
+			"of a star for which the luminosity is not defined.");
+	return (*__luminosity)(age);
 }
 
-double StarBase::get_mass() const
+double StarBase::rad_radius(double age) const
 {
-	return mass;
+	if(age<__core_formation) return 0;
+	return (*__rad_radius)(age);
 }
 
-double StarBase::get_radius(double age) const
+double StarBase::rad_mass(double age) const
 {
-	return (*radius)(age);
+	if(age<__core_formation) return 0;
+	return (*__rad_mass)(age);
 }
 
-double StarBase::get_luminosity(double age) const
+double StarBase::moment_of_inertia(double age, StellarZone zone) const
 {
-	if(luminosity==NULL) throw Error::Runtime("Asking for the luminosity of "
-			"a star for which the luminosity is not defined.");
-	return (*luminosity)(age);
+	switch(zone) {
+		case total : return (*__conv_moment_of_inertia)(age) +
+					 (age<__core_formation ? 0 :
+					  (*__rad_moment_of_inertia)(age));
+		case radiative : return (age<__core_formation ? 0 :
+								 (*__rad_moment_of_inertia)(age));
+		case convective : return (*__conv_moment_of_inertia)(age);
+		default : throw Error::BadStellarZone(
+		  "Unrecognized stellar zone in StarBase::moment_of_inertia."
+		  );
+	}
 }
 
-double StarBase::core_formation_age() const
+double StarBase::logradius_deriv(double age) const
 {
-	return core_formation;
-}
-
-double StarBase::get_disk_lock_frequency() const
-{
-	return disk_lock_frequency;
-}
-
-void StarBase::set_disk_lock_frequency(double value)
-{
-	disk_lock_frequency=value;
-}
-
-double StarBase::get_disk_dissipation_age() const
-{
-	return disk_dissipation_age;
-}
-
-double StarBase::get_rad_radius(double age) const
-{
-	if(age<core_formation) return 0;
-	return (*rad_radius)(age);
-}
-
-double StarBase::get_rad_radius_deriv(double age, unsigned order) const
-{
-	if(age<core_formation) return 0;
-	const FunctionDerivatives *rad_radius_derivatives =
-		rad_radius->deriv(age);
-	double rad_radius_deriv=rad_radius_derivatives->order(order);
-	delete rad_radius_derivatives;
-	return rad_radius_deriv;
-}
-
-double StarBase::get_rad_mass(double age) const
-{
-	if(age<core_formation) return 0;
-	return (*rad_mass)(age);
-}
-
-double StarBase::get_rad_mass_deriv(double age) const
-{
-	if(age<core_formation) return 0;
-	const FunctionDerivatives *rad_mass_derivatives=
-		rad_mass->deriv(age);
-	double rad_mass_deriv=rad_mass_derivatives->order(1);
-	delete rad_mass_derivatives;
-	return rad_mass_deriv;
-}
-
-double StarBase::get_logradius_deriv(double age) const
-{
-	const FunctionDerivatives *deriv=radius->deriv(age);
+	const FunctionDerivatives *deriv=__radius->deriv(age);
 	double result=deriv->order(1)/deriv->order(0);
 	delete deriv;
 	return result;
 }
 
-///Returns the present radius of the star (in solar radii).
-/*double StarBase::get_radius() const
+double StarBase::rad_radius_deriv(double age, unsigned order) const
 {
-	return (*radius)(curr_age);
-}*/
+	if(age<__core_formation) return 0;
+	const FunctionDerivatives *rad_radius_derivatives =
+		__rad_radius->deriv(age);
+	double rad_radius_deriv=rad_radius_derivatives->order(order);
+	delete rad_radius_derivatives;
+	return rad_radius_deriv;
+}
 
-double StarBase::moment_of_inertia(double age, StellarZone zone) const
+double StarBase::rad_mass_deriv(double age) const
 {
-	switch(zone) {
-		case total : return (*conv_moment_of_inertia)(age) +
-					 (age<core_formation ? 0 :
-					  (*rad_moment_of_inertia)(age));
-		case radiative : return (age<core_formation ? 0 :
-								 (*rad_moment_of_inertia)(age));
-		case convective : return (*conv_moment_of_inertia)(age);
-		default : throw Error::BadStellarZone(
-		  "Unrecognized stellar zone in StarBase::moment_of_inertia."
-		  );
-	}
+	if(age<__core_formation) return 0;
+	const FunctionDerivatives *rad_mass_derivatives=__rad_mass->deriv(age);
+	double rad_mass_deriv=rad_mass_derivatives->order(1);
+	delete rad_mass_derivatives;
+	return rad_mass_deriv;
 }
 
 double StarBase::moment_of_inertia_deriv(double age, StellarZone zone,
@@ -209,47 +137,49 @@ double StarBase::moment_of_inertia_deriv(double age, StellarZone zone,
 {
 	double result;
 	if(zone==total) {
-		const FunctionDerivatives *dIconv=conv_moment_of_inertia->deriv(age);
+		const FunctionDerivatives
+			*dIconv=__conv_moment_of_inertia->deriv(age);
 		result=dIconv->order(order);
 		delete dIconv;
-		if(age>core_formation) {
+		if(age>__core_formation) {
 			const FunctionDerivatives 
-				*dIrad=rad_moment_of_inertia->deriv(age);
+				*dIrad=__rad_moment_of_inertia->deriv(age);
 			result+=dIrad->order(order);
 			delete dIrad;
 		}
 	} else {
-		if(zone==radiative && age<core_formation) return 0;
+		if(zone==radiative && age<__core_formation) return 0;
 		const FunctionDerivatives *dI=(zone==convective ?
-				conv_moment_of_inertia->deriv(age) :
-				rad_moment_of_inertia->deriv(age));
+				__conv_moment_of_inertia->deriv(age) :
+				__rad_moment_of_inertia->deriv(age));
 		result=dI->order(order);
 		delete dI;
 	}
 	return result;
 }
 
-double StarBase::get_angular_momentum(double age, StellarZone zone) const
+double StarBase::angular_momentum(double age, StellarZone zone) const
 {
 	switch(zone) {
-		case total : return (*conv_angular_momentum)(age)+
-			     (age<core_formation ? 0 : (*rad_angular_momentum)(age));
-		case radiative : return (age<core_formation ? 0 :
-								 (*rad_angular_momentum)(age));
-		case convective : return (*conv_angular_momentum)(age);
+		case total : return (*__conv_angular_momentum)(age)+
+			     (age<__core_formation ? 0 : (*__rad_angular_momentum)(age));
+		case radiative : return (age<__core_formation ? 0 :
+								 (*__rad_angular_momentum)(age));
+		case convective : return (*__conv_angular_momentum)(age);
 		default : throw Error::BadStellarZone(
 		  "Unrecognized stellar zone in StarBase::get_angular_momentum."
 		  );
 	}
 }
 
-double StarBase::angular_momentum_deriv(double age, StellarZone zone, int order) {
-	if(zone==radiative && age<core_formation) return 0;
+double StarBase::angular_momentum_deriv(double age, StellarZone zone,
+		int order) {
+	if(zone==radiative && age<__core_formation) return 0;
 	const FunctionDerivatives* deriv;
 	switch(zone) {
-		case radiative: deriv = rad_angular_momentum->deriv(age);
+		case radiative: deriv = __rad_angular_momentum->deriv(age);
 			break;
-		case convective: deriv = conv_angular_momentum->deriv(age);
+		case convective: deriv = __conv_angular_momentum->deriv(age);
 			break;
 		default: throw Error::BadStellarZone(
 				"Unrecognized zone in StarBase::angular_momentum");
@@ -265,9 +195,9 @@ double StarBase::spin_frequency(double age, StellarZone zone) const
 		case total : throw Error::BadStellarZone(
 		     "Spin of the entire star is not defined");
 		case radiative : return spin_frequency(age, zone,
-					(*rad_angular_momentum)(age));
+					(*__rad_angular_momentum)(age));
 		case convective : return spin_frequency(age, zone,
-				 	(*conv_angular_momentum)(age));
+				 	(*__conv_angular_momentum)(age));
 		default : throw Error::BadStellarZone(
 		  "Unrecognized stellar zone in StarBase::spin_frequency.");
 	}
@@ -282,12 +212,12 @@ double StarBase::spin_frequency(double age, StellarZone zone,
 double StarBase::spin_frequency_age_deriv(double age, StellarZone zone,
 		double angular_momentum) const
 {
-	if(zone==radiative && age<core_formation) return 0;
+	if(zone==radiative && age<__core_formation) return 0;
 	double I, I_deriv;
 	if(zone==total) {
 		const FunctionDerivatives
-			*Ic_deriv=conv_moment_of_inertia->deriv(age),
-			*Ir_deriv=rad_moment_of_inertia->deriv(age);
+			*Ic_deriv=__conv_moment_of_inertia->deriv(age),
+			*Ir_deriv=__rad_moment_of_inertia->deriv(age);
 		I= Ic_deriv->order(0) + Ir_deriv->order(0);
 		I_deriv=Ic_deriv->order(1) + Ir_deriv->order(1);
 		delete Ic_deriv;
@@ -295,24 +225,13 @@ double StarBase::spin_frequency_age_deriv(double age, StellarZone zone,
 	} else {
 		const FunctionDerivatives *Ideriv_func =
 				(zone==convective ?
-				 conv_moment_of_inertia->deriv(age) :
-				 rad_moment_of_inertia->deriv(age));
+				 __conv_moment_of_inertia->deriv(age) :
+				 __rad_moment_of_inertia->deriv(age));
 		I=Ideriv_func->order(0);
 		I_deriv=Ideriv_func->order(1);
 		delete Ideriv_func;
 	}
 	return -(angular_momentum/std::pow(I,2)*I_deriv);
-}
-
-double StarBase::spin_frequency_angmom_deriv(double age, StellarZone zone,
-		double) const
-{
-	return 1.0/moment_of_inertia(age, zone);
-}
-
-double StarBase::spin_period(double age, StellarZone zone) const
-{
-	return 2.0*M_PI/spin_frequency(age, zone);
 }
 
 void StarBase::set_angular_momentum_evolution(
@@ -321,21 +240,23 @@ void StarBase::set_angular_momentum_evolution(
 		const std::valarray<double> &L_derivatives,
 		StellarZone zone)
 {
-	if(zone==convective) conv_angular_momentum=new 
+	if(zone==convective) __conv_angular_momentum=new 
 		InterpolatingFunctionALGLIB(ages, L_values, L_derivatives);
-	else if(zone==radiative) rad_angular_momentum=new 
+	else if(zone==radiative) __rad_angular_momentum=new 
 		InterpolatingFunctionALGLIB(ages, L_values, L_derivatives);
 	else throw Error::BadStellarZone("Attempting to set total angular "
 			"momentum of the star.");
 }
 
-double StarBase::get_zone_mass(double age, StellarZone zone) const
+double StarBase::zone_mass(double age, StellarZone zone) const
 {
 	switch(zone) {
-		case total : return mass;
-		case radiative : return (age<core_formation ? 0 : (*rad_mass)(age));
+		case total : return __mass;
+		case radiative : return (age<__core_formation ? 0 :
+								 (*__rad_mass)(age));
 		case convective :
-					 return mass-(age<core_formation ? 0 : (*rad_mass)(age));
+					 return __mass-(age<__core_formation ? 0 :
+							 (*__rad_mass)(age));
 		default : throw Error::BadStellarZone(
 		  "Unrecognized stellar zone in StarBase::get_zone_mass.");
 	}
@@ -344,26 +265,26 @@ double StarBase::get_zone_mass(double age, StellarZone zone) const
 double StarBase::wind_torque(double age, double conv_frequency,
 		WindSaturationState assume_wind_saturation) const
 {
-	double coef=magnetic_wind_strength*std::sqrt((*radius)(age)/mass);
+	double coef=__magnetic_wind_strength*std::sqrt((*__radius)(age)/__mass);
 	if(assume_wind_saturation!=SATURATED &&
-			(conv_frequency<magnetic_wind_saturation_freq ||
+			(conv_frequency<__magnetic_wind_saturation_freq ||
 			 assume_wind_saturation==NOT_SATURATED)) 
 		return coef*std::pow(conv_frequency, 3);
 	else {
 		return coef*conv_frequency*std::pow(
-			magnetic_wind_saturation_freq, 2);
+			__magnetic_wind_saturation_freq, 2);
 	}
 }
 
 double StarBase::wind_torque_freq_deriv(double age, double conv_frequency,
 		WindSaturationState assume_wind_saturation) const
 {
-	double coef=magnetic_wind_strength*std::sqrt((*radius)(age)/mass);
+	double coef=__magnetic_wind_strength*std::sqrt((*__radius)(age)/__mass);
 	if(assume_wind_saturation!=SATURATED &&
-			(conv_frequency<magnetic_wind_saturation_freq ||
+			(conv_frequency<__magnetic_wind_saturation_freq ||
 			 assume_wind_saturation==NOT_SATURATED)) 
 		return 3.0*coef*std::pow(conv_frequency, 2);
-	else return coef*std::pow(magnetic_wind_saturation_freq, 2);
+	else return coef*std::pow(__magnetic_wind_saturation_freq, 2);
 }
 
 double StarBase::wind_torque_age_deriv(double age, double angular_momentum,
@@ -371,9 +292,9 @@ double StarBase::wind_torque_age_deriv(double age, double angular_momentum,
 		WindSaturationState assume_wind_saturation) const
 {
 	using namespace std;
-	const FunctionDerivatives *radius_deriv=radius->deriv(age);
+	const FunctionDerivatives *radius_deriv=__radius->deriv(age);
 	const FunctionDerivatives  *Ic_deriv =
-			conv_moment_of_inertia->deriv(age);
+			__conv_moment_of_inertia->deriv(age);
 
 	double r=radius_deriv->order(0), r_deriv=radius_deriv->order(1);
 	double wc = angular_momentum/Ic_deriv->order(0);
@@ -383,34 +304,29 @@ double StarBase::wind_torque_age_deriv(double age, double angular_momentum,
 
 	delete radius_deriv;
 	delete Ic_deriv;
-	double coef = magnetic_wind_strength/sqrt(mass);
+	double coef = __magnetic_wind_strength/sqrt(__mass);
 	if (assume_wind_saturation!=SATURATED &&
-			(wc<magnetic_wind_saturation_freq ||
+			(wc<__magnetic_wind_saturation_freq ||
 			 assume_wind_saturation==NOT_SATURATED))
 		return coef*wc*wc*(3*sqrt(r)*wc_deriv + 0.5*wc*r_deriv/sqrt(r));
 	else
-		return coef*pow(magnetic_wind_saturation_freq, 2)*
+		return coef*pow(__magnetic_wind_saturation_freq, 2)*
 				(wc_deriv*sqrt(r) + 0.5*wc*r_deriv/sqrt(r));
-
 }
 
-double StarBase::wind_torque(double age) const
-{
-	return wind_torque(age, spin_frequency(age, envelope));
-}
-
-double StarBase::differential_rotation_torque_angmom(double age, 
-		double Lconv,
-		double Lrad) const
+std::complex<double> StarBase::differential_rotation_torque_angmom(
+		double age, double Lconv, std::complex<double> Lrad) const
 {
 	return differential_rotation_torque(age, 
 		differential_rotation(age, Lconv, Lrad),
 		spin_frequency(age, convective, Lconv));
 }
 
-double StarBase::differential_rotation_torque_deriv(double age, double Lconv,
-		double Lrad, StellarZone with_respect_to) const
+std::complex<double> StarBase::differential_rotation_torque_deriv(double age,
+		double Lconv, std::complex<double> Lrad,
+		StellarZone with_respect_to) const
 {
+	throw Error::NotImplemented("differential_rotation_torque_deriv");
 	double w_deriv;
 	if (with_respect_to == total) {
 		w_deriv = spin_frequency_age_deriv(age, convective, Lconv);
@@ -428,51 +344,57 @@ double StarBase::differential_rotation_torque_deriv(double age, double Lconv,
 			with_respect_to_age);
 }
 
-double StarBase::differential_rotation_torque(double age, 
-		double differential_rotation_amount,
+std::complex<double> StarBase::differential_rotation_torque(double age, 
+		std::complex<double> differential_rotation_amount,
 		double conv_frequency) const
 {
-	return differential_rotation_amount/core_env_coupling_timescale-
+	return differential_rotation_amount/__core_env_coupling_timescale-
 		core_inertia_gain(age)*conv_frequency;
 }
 
-double StarBase::differential_rotation_torque_deriv(double age, 
-		double, 
-		double differential_rotation_deriv,
+std::complex<double> StarBase::differential_rotation_torque_deriv(double age,
+		std::complex<double>, 
+		std::complex<double> differential_rotation_deriv,
 		double conv_frequency,
 		double conv_frequency_deriv, 
 		bool with_respect_to_age) const
 {
-	return differential_rotation_deriv/core_env_coupling_timescale-
+	throw Error::NotImplemented("differential_rotation_torque_deriv");
+	return differential_rotation_deriv/__core_env_coupling_timescale-
 		(with_respect_to_age ? core_inertia_gain_deriv(age)*conv_frequency :
 		 0.0) - core_inertia_gain(age)*conv_frequency_deriv;
 }
 
-double StarBase::differential_rotation_torque(double age) const
+std::complex<double> StarBase::differential_rotation_torque(double age) const
 {
-	double diff_rot = differential_rotation(age);
+	throw Error::NotImplemented(
+			"differential_rotation_torque interpolation");
+	std::complex<double> diff_rot = differential_rotation(age);
 	double conv_freq = spin_frequency(age, convective);
 	return differential_rotation_torque(age, diff_rot, conv_freq);
 
 }
 
-double StarBase::differential_rotation(double age, double Lconv, double Lrad) 
+std::complex<double> StarBase::differential_rotation(double age,
+		double Lconv, std::complex<double> Lrad) 
 	const
 {
-	double Iconv=(*conv_moment_of_inertia)(age),
-	       Irad=(age<core_formation ? 0 : (*rad_moment_of_inertia)(age));
+	double Iconv=(*__conv_moment_of_inertia)(age),
+	       Irad=(age<__core_formation ? 0 : (*__rad_moment_of_inertia)(age));
 	return (Iconv*Lrad-Irad*Lconv)/(Iconv+Irad);
 }
 
-double StarBase::differential_rotation_deriv(double age, double Lconv, 
-	double Lrad, StellarZone with_respect_to) const
+std::complex<double> StarBase::differential_rotation_deriv(double age,
+		double Lconv, std::complex<double> Lrad, StellarZone with_respect_to)
+	const
 {
+	throw Error::NotImplemented("differential_rotation_deriv");
 	using namespace std;
 	if(with_respect_to==total) {
-		if(age<core_formation) return 0;
+		if(age<__core_formation) return 0;
 		const FunctionDerivatives 
-			*Iconv_deriv=conv_moment_of_inertia->deriv(age),
-			*Irad_deriv=rad_moment_of_inertia->deriv(age);
+			*Iconv_deriv=__conv_moment_of_inertia->deriv(age),
+			*Irad_deriv=__rad_moment_of_inertia->deriv(age);
 		double Ic=Iconv_deriv->order(0),
 		       Ic_deriv=Iconv_deriv->order(1);
 
@@ -484,34 +406,36 @@ double StarBase::differential_rotation_deriv(double age, double Lconv,
 			 (Ic*Lrad-Ir*Lconv)/std::pow(Ic+Ir, 2)*
 			 (Ic_deriv+Ir_deriv);
 	} else {
-		double Iconv=(*conv_moment_of_inertia)(age),
-			   Irad=(age<core_formation ? 0 : (*rad_moment_of_inertia)(age));
+		double Iconv=(*__conv_moment_of_inertia)(age),
+			   Irad=(age<__core_formation ? 0 :
+					   (*__rad_moment_of_inertia)(age));
 		if(with_respect_to==convective) return -Irad/(Iconv+Irad);
 		else return Iconv/(Iconv+Irad);
 	}
 }
 
-double StarBase::differential_rotation(double age) const
+std::complex<double> StarBase::differential_rotation(double age) const
 {
-	return differential_rotation(age, (*conv_angular_momentum)(age), 
-			(*rad_angular_momentum)(age));
+	throw Error::NotImplemented("Differential rotation interpolation");
+	return differential_rotation(age, (*__conv_angular_momentum)(age), 
+			(*__rad_angular_momentum)(age));
 }
 
 double StarBase::core_inertia_gain(double age) const
 {
-	if(age<core_formation) return 0.0;
+	if(age<__core_formation) return 0.0;
 	const FunctionDerivatives *rad_mass_derivatives=
-		rad_mass->deriv(age);
+		__rad_mass->deriv(age);
 	double rad_mass_deriv=rad_mass_derivatives->order(1);
 	delete rad_mass_derivatives;
-	return 2.0/3.0*std::pow((*rad_radius)(age), 2)*rad_mass_deriv;
+	return 2.0/3.0*std::pow((*__rad_radius)(age), 2)*rad_mass_deriv;
 }
 
 double StarBase::core_inertia_gain_deriv(double age) const
 {
-	if(age<core_formation) return 0;
-	const FunctionDerivatives *Rrad_deriv=rad_radius->deriv(age),
-			    *Mrad_deriv=rad_mass->deriv(age);
+	if(age<__core_formation) return 0;
+	const FunctionDerivatives *Rrad_deriv=__rad_radius->deriv(age),
+			    *Mrad_deriv=__rad_mass->deriv(age);
 	double r_rad=Rrad_deriv->order(0), r_rad_deriv=Rrad_deriv->order(1),
 	       m_rad_deriv=Mrad_deriv->order(1),
 	       m_rad_deriv2=Mrad_deriv->order(2);
@@ -520,17 +444,4 @@ double StarBase::core_inertia_gain_deriv(double age) const
 
 	return 2.0/3.0*(2.0*r_rad*m_rad_deriv*r_rad_deriv+
 			r_rad*r_rad*m_rad_deriv2);
-}
-
-double StarBase::get_lifetime() const
-{
-	return lifetime;
-}
-
-double StarBase::get_current_angular_momentum(StellarZone zone) const
-{
-	if(zone==convective) return current_conv_angular_momentum;
-	else if(zone==radiative) return current_rad_angular_momentum;
-	else return current_conv_angular_momentum+
-		current_rad_angular_momentum;
 }

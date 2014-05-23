@@ -1,7 +1,7 @@
 #include "sampleHist.h"
 #include <iostream>
 #include <fstream>
-#include <assert.h>
+#include <cassert>
 
 HistSampler::HistSampler(std::string filename) {
 	/*Initializes object based on histogram in filename. The file must be of

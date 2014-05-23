@@ -20,6 +20,8 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
+#include "gsl/gsl_poly.h"
+#include <cassert>
 
 ///Has no business being here.
 ///TODO: move it to a more appropriate file.
@@ -46,21 +48,15 @@ const double Rsun_AU=AstroConst::solar_radius/AstroConst::AU;
 ///Each corresponds to a different system of differential equations with
 ///different variables.
 enum EvolModeType {
-	///The orbital period is shorter than the stellar spin period.
-	FAST_PLANET=-1, 
-
-	///The orbital and the stellar spin periods are locked to be the same.
-	LOCKED_TO_PLANET,
+	///The stellar surface rotation is locked to a protoplanetary disk.
+	LOCKED_TO_DISK,
 	
-	///The orbital period is longer than the stellar spin period.
-	SLOW_PLANET,
+	///The orbital period is shorter than the stellar spin period.
+	BINARY,
 	
 	///There is no planet in the system (only the stellar rotation evolves).
 	NO_PLANET,
 
-	///The stellar surface rotation is locked to a protoplanetary disk.
-	LOCKED_TO_DISK,
-	
 	///Used as the mode to transform to from all other modes when storing the
 	///computed evolution.
 	TABULATION};

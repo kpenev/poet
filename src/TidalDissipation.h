@@ -3,6 +3,7 @@
 
 #include "DissipatingBody.h"
 #include "AstronomicalConstants.h"
+#include "OrbitalExpressions.h"
 #include "Common.h"
 #include <cmath>
 
@@ -33,6 +34,9 @@ namespace Dissipation {
 
 		///Minus the rate of change of the semimajor axis in AU/Gyr.
 		SEMIMAJOR_DECAY,
+
+		///The rate of change of the orbital frequency in rad/day/Gyr.
+		ORBIT_SPINUP,
 
 		///The rate of decrease of the the angle between the spin angular
 		///momentum of the body and the orbital angular momentum. In units of
@@ -127,20 +131,26 @@ private:
 	std::valarray< std::valarray<double> > __Umm;
 
 	///\brief Rates of change of the various quantities and derivatives due
-	///to tidal dissipation. 
+	///to tidal dissipation for each body. 
 	///
-	///There are separate entries for in each body, and tidally locked terms
-	///are ignored.
+	///There are three separate entries for quantity:
+	/// - the evolution rate only due to the locked terms, assuming the
+	//    body's spin is approaching the lock from below.
+	//  - the evolution rate due to only non-locked terms
+	//  - the evolution rate only due to the locked terms, assuming the
+	//    body's spin is approaching the lock from above.
 	std::valarray<double> __dissipation_rate,
-
-		///\brief The rates of change to quantities only due to locked terms.
-		__locked_dissipation_rate,
 
 		///The spin angular momenta of the bodies
 		__spin_angular_momentum,
 		
 		///The inclinations of the bodies.
 		__inclination;
+
+#ifdef DEBUG
+	///Is this a valid tidal dissipation?
+	bool __valid;
+#endif
 
 	///\brief Returns a reference to the entry __dissipation_rates 
 	///corresponding to the given variable.
@@ -154,11 +164,26 @@ private:
 			///Return the quantity itself or one of its derivatives.
 			Dissipation::Derivative derivative,
 			
-			///Return the locked rate instead of the rate?
-			bool locked)
-	{return (locked ? __locked_dissipation_rate : __dissipation_rate)[
-		quantity+Dissipation::NUM_QUANTITIES*(
-				derivative+Dissipation::NUM_DERIVATIVES*body_index)];}
+			///Which lock state terms to access (+/-1 for body spin 
+			///approaching the lock from above/below, 0 for not locked terms.
+			short lock_direction)
+	{
+		return __dissipation_rate[
+			lock_direction+1 + 3*(
+				quantity + Dissipation::NUM_QUANTITIES*(
+					derivative + Dissipation::NUM_DERIVATIVES*body_index
+				)
+			)
+		];
+	}
+
+	///Returns a copy of the same value that the non-const rate entry does.
+	inline double rate_entry(
+			short body_index,
+			Dissipation::Quantity quantity,
+			Dissipation::Derivative derivative,
+			short lock_direction) const
+	{return rate_entry(body_index, quantity, derivative, lock_direction);}
 
 	///Computes the \f$\mathcal{U}_{m,m'}\f$ values. 
 	void fill_Umm(
@@ -180,7 +205,7 @@ private:
 
 			///Whether to assume that body 1 is in a spin orbit lock and
 			///identify the term that is locked.
-			const SpinOrbitLockInfo &lock,
+			SpinOrbitLockInfo &lock,
 
 			///Which body's dissipation is needed (shold be 0 or 1).
 			short body_index,
@@ -210,18 +235,24 @@ private:
 			///Which body's dissipation is needed (shold be 0 or 1).
 			short body_index);
 
-	///Calculates the given quantity from the tidal power and torque.
-	void calculate_secondary_quantity(
-			///Which body's dissipation is needed (shold be 0 or 1).
-			short body_index,
-
-			///The quantity needed.
-			Dissipation::Quantity quantity,
-
-			///Return the quantity itself or one of its derivatives.
-			Dissipation::Derivative derivative=Dissipation::NO_DERIV);
-
 public:
+	///Create an invalid tidal dissipation, which fails an assert if used.
+	TidalDissipation()
+#ifdef DEBUG
+		: __valid(false)
+#endif
+		{}
+
+	///See #init().
+	TidalDissipation(
+			const DissipatingBody &body1,
+			const DissipatingBody &body2,
+			double semimajor,
+			double eccentricity,
+			SpinOrbitLockInfo &lock1,
+			SpinOrbitLockInfo &lock2)
+	{init(body1, body2, semimajor, eccentricity, lock1, lock2);}
+
 	///\brief Calculates the rates of change of various quantities due to
 	///tidal dissipation.
 	///
@@ -231,7 +262,7 @@ public:
 	///If some term in the tidal dissipation equations is locked (see the
 	///lock1 and lock2 arguments) the dissipation due to that term is kept
 	///separate.
-	TidalDissipation(
+	void init(
 			///The first dissipating body.
 			const DissipatingBody &body1,
 
@@ -245,12 +276,16 @@ public:
 			double eccentricity,
 				
 			///Whether to assume that body 1 is in a spin orbit lock and
-			///identify the term that is locked.
-			const SpinOrbitLockInfo &lock1,
+			///identify the term that is locked. The direction is ignored. If
+			///this variable converts to true, the angular momentum and spin 
+			///frequency of body1 are never used.
+			SpinOrbitLockInfo &lock1,
 
 			///Whether to assume that body 2 is in a spin orbit lock and
-			///identify the term that is locked.
-			const SpinOrbitLockInfo &lock2);
+			///identify the term that is locked. The direction is ignored. If
+			///this variable converts to true, the angular momentum and spin 
+			///frequency of body2 are never used.
+			SpinOrbitLockInfo &lock2);
 
 	///\brief Retuns the rate of change of some quantity due to tidal
 	///dissipation.
@@ -264,8 +299,21 @@ public:
 			///Return the quantity itself or one of its derivatives.
 			Dissipation::Derivative derivative=Dissipation::NO_DERIV,
 			
-			///Whether to return the locked or the non-locked rate.
-			bool locked=false);
+			///Whether to return one of the locked rates or the non-locked
+			///rate.
+			short lock_dir=false) const;
+
+	///\brief The semimajor axis used when creating this tidal dissipation
+	///object in AU.
+	double semimajor() const {return __semimajor*Rsun_AU;}
+
+	///\brief The orbital frequency corresponding to the semimajor axis in
+	///rad/day.
+	double orbital_frequency() const {return __orbital_frequency;}
+
+	///\brief The spin frequency of one of the bodies in rad/day.
+	double spin_angular_momentum(short body_index) const
+	{return __spin_angular_momentum[body_index];}
 };
 
 #endif

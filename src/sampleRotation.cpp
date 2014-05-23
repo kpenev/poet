@@ -1,7 +1,7 @@
 #include "sampleRotation.h"
 #include <iostream>
 #include <fstream>
-#include <assert.h>
+#include <cassert>
 #include <sstream>
 
 RotationSampler::RotationSampler(std::string filename) {

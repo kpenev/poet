@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-#include <assert.h>
+#include <cassert>
 
 /**\file 
  *
@@ -82,7 +82,7 @@ public:
 
 	///\brief Spin frequency at exactly the lock that corresponds to the
 	///given orbital frequency.
-	double lock_spin(double orbital_frequency) const
+	double spin(double orbital_frequency) const
 	{return (orbital_frequency*__orbital_freq_mult)/__spin_freq_mult;}
 
 	///Is the given tidal dissipation term one of the locked terms?
@@ -103,6 +103,9 @@ public:
 
 	///The direction from which the spin approaches the lock.
 	short lock_direction() const {return __lock_direction;}
+
+	///Set the lock direction to the given value.
+	void lock_direction(short value) {__lock_direction=value;}
 };
 
 
@@ -111,43 +114,17 @@ public:
 ///\ingroup StellarSystem_group
 class DissipatingBody {
 private:
-	///The mass of the body in \f$M_\odot\f$.
-	double __mass,
-
-		   ///The radius of the body in \f$R_\odot\f$.
-		   __radius,
-
-		   ///The moment of inertia of the body in \f$M_\odot R_\odot^2\f$.
-		   __moment_of_inertia,
-
-		   ///The spin frequency of the body in rad/day.
-		   __spin,
+	///\brief The spin angular momentum of the body in 
+	/// \f$M_\odot R_\odot^2 rad/day\f$.
+	double __angular_momentum,
 
 		   ///Angle between the spin and orbital angular momentum in radians.
 		   __inclination;
 public:
-	///Create a dissipating body with the given parameters.
-	DissipatingBody(
-			///The current mass of the body in \f$M_\odot\f$.
-			double mass=NaN,
-
-			///The current radius of the body in \f$R_\odot\f$.
-			double radius=NaN,
-			
-			///The current spin frequency of the body in rad/day.
-			double spin=NaN,
-
-			///The current angle between the angular momentum of the body and
-			///the orbit
-			double inclination=NaN) :
-		__mass(mass), __radius(radius), __spin(spin),
-		__inclination(inclination)
-	{
-#ifdef DEBUG
-		assert(!(mass<0));
-		assert(!(radius<0));
-#endif
-	}
+	///\brief Initialize the angular momentum and the inclination of the
+	///DissipatingBody.
+	DissipatingBody(double angular_momentum=NaN, double inclination=NaN) :
+		__angular_momentum(angular_momentum), __inclination(inclination) {}
 
 	///\brief A function defining the dissipation efficiency of the body.
 	///
@@ -166,85 +143,48 @@ public:
 			///If this function is discontinuous at zero and an exactly zero
 			///forcing frequency is encountered, this argument determines if
 			///the zero should be interpreted as an infinitesimal positive or
-			///negative amount. It is safe to ignore this flag if the
-			///function is continuous at zero forcing frequency.
+			///negative amount. If this argument evaluates to true, the
+			///pre-set spin should be ignored and the spin at the lock used
+			///instead.
 			const SpinOrbitLockInfo &lock,
 
 			///Whether to return the phase lag or one of its derivatives.
 			PhaseLag::Derivative derivative=PhaseLag::NO_DERIV) const=0;
 
-	///The current radius of this body in \f$R_\odot\f$.
-	virtual double current_radius() const 
-	{
-#ifdef DEBUG
-		assert(!std::isnan(__radius));
-#endif
-		return __radius;
-	}
+	///The radius of this body in \f$R_\odot\f$.
+	virtual double radius() const =0;
 
-	///\brief Set the current radius of this body to the given value in
-	/// \f$R_\odot\f$.
-	virtual void current_radius(double radius) 
-	{
-#ifdef DEBUG
-		assert(radius>0);
-#endif
-		__radius=radius;
-	}
+	///The mass of this body in \f$M_\odot\f$.
+	virtual double mass() const =0;
 
-	///The current mass of this body in \f$M_\odot\f$.
-	virtual double current_mass() const
-	{
-#ifdef DEBUG
-		assert(!std::isnan(__mass));
-#endif
-		return __mass;
-	}
+	///The moment of inertia of the body in \f$M_\odot R_\odot^2\f$.
+	virtual double moment_of_inertia() const =0;
 
-	///Set the current mass of this body to the given value in \f$M_\odot\f$.
-	virtual void current_mass(double mass)
+	///The angular momentum of the body in \f$M_\odot R_\odot^2 rad/day\f$.
+	virtual double angular_momentum() const
 	{
 #ifdef DEBUG
-		assert(mass>0);
+		assert(!std::isnan(__angular_momentum));
 #endif
-		__mass=mass;
-	}
-
-	///The current moment of inertia of the body in \f$M_\odot R_\odot^2\f$.
-	virtual double current_moment_of_inertia() const
-	{
-#ifdef DEBUG
-		assert(!std::isnan(__moment_of_inertia));
-#endif
-		return __moment_of_inertia;
-	}
-
-	///\brief Set the current moment of inertia to the givan value in
-	/// \f$M_\odot R_\odot^2\f$.
-	virtual void current_moment_of_inertia(double moment_of_inertia)
-	{
-#ifdef DEBUG
-		assert(moment_of_inertia>0);
-#endif
-		__moment_of_inertia=moment_of_inertia;
-	}
-
-	///The current spin frequency of the body in rad/day.
-	virtual double current_spin() const
-	{
-#ifdef DEBUG
-		assert(!std::isnan(__spin));
-#endif
-		return __spin;
+		return __angular_momentum;
 	};
 
-	///\brief Set the current spin frequency of the body to the given value
-	///in rad/day.
-	virtual void current_spin(double spin) {__spin=spin;}
+	///\brief Set the angular momentum of the body to the given value
+	///in \f$M_\odot R_\odot^2 rad/day\f$.
+	virtual void angular_momentum(double value)
+	{__angular_momentum=value;}
 
-	///\brief The current angle between the spin and orbital angular momentum
-	///in radians.
-	virtual double current_inclination() const
+	///\brief The spin angular velocity of the body in rad/day.
+	virtual double spin() const
+	{
+#ifdef DEBUG
+		assert(!std::isnan(__angular_momentum));
+#endif
+		return __angular_momentum/moment_of_inertia();
+	}
+
+	///The angle between the spin and orbital angular momentum in radians.
+	virtual double inclination() const
 	{
 #ifdef DEBUG
 		assert(!std::isnan(__inclination));
@@ -252,10 +192,10 @@ public:
 		return __inclination;
 	}
 
-	///\brief Set the current angle between the spin and orbital angular 
-	///momentum to the given value in radians.
-	virtual void current_inclination(double inclination)
-	{__inclination=inclination;}
+	///\brief Set the angle between the spin and orbital angular momentum to
+	///the given value in radians.
+	virtual void inclination(double value)
+	{__inclination=value;}
 };
 
 #endif

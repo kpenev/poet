@@ -10,6 +10,10 @@
 
 #include "Common.h"
 #include "StellarSystem.h"
+#include "TidalDissipation.h"
+#include "OrbitalExpressions.h"
+
+#include <cassert>
 
 ///The reasons for stopping the evolution currently supported.
 enum StoppingConditionType {
@@ -69,6 +73,14 @@ public:
 			///system of differential equations.
 			const std::valarray<double> &derivatives,
 
+			///The rates of change of various quantities at the last step,
+			///split into locked and not locked components and per body.
+			///The convention to follow is that the planet should always be
+			///body2. This argument bust be ignored by all stopping
+			///conditions evaluated at evolution modes where the planet is
+			///not present.
+			const TidalDissipation &tidal_dissipation,
+
 			///The planet-star system being evolved.
 			const StellarSystem &system,
 
@@ -112,8 +124,9 @@ public:
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
 	std::valarray<double> operator()(double,
-			const std::valarray<double>&,
-			const std::valarray<double>&,
+			const std::valarray<double> &,
+			const std::valarray<double> &,
+			const TidalDissipation &,
 			const StellarSystem&,
 			std::valarray<double> &stop_deriv,
 			EvolModeType) const
@@ -123,28 +136,48 @@ public:
 	StoppingConditionType type(unsigned =0) const {return NO_STOP;}
 };
 
-///\brief Satisfied when the orbit and stellar rotation are synchronized.
+///\brief Satisfied when some multiples of the orbit and stellar rotation are
+///synchronized.
 ///
 ///\ingroup OrbitSolver_group
 class SynchronizedCondition : public StoppingCondition{
 private:
-	///The semimajor axis at which the planet first appears.
-	double __initial_semimajor;
+	///The mutiplier in front of the orbital frequency in the lock.
+	int __orbital_freq_mult,
+
+		///The multiplier in front of the spin frequency in the lock.
+		__spin_freq_mult;
+
+	///Which body's spin is checked for locking.
+	short __body_index;
+
 public:
 	///Create the synchronization condition for the given planet.
-	SynchronizedCondition(double initial_semimajor) :
-		__initial_semimajor(initial_semimajor) {}
+	SynchronizedCondition(
+			///The mutiplier in front of the orbital frequency in the lock.
+			int orbital_freq_mult,
 
-	///\brief Returns the difference between the orbital and stellar spin
-	///angular velocities divided by the orbital angular velocity.
+			///The multiplier in front of the spin frequency in the lock.
+			int spin_freq_mult,
+
+			///Which body's spin is checked for locking.
+			short body_index) :
+		__orbital_freq_mult(orbital_freq_mult),
+		__spin_freq_mult(spin_freq_mult), __body_index(body_index) {}
+
+	///\brief Returns the difference between the orbital and multiplier
+	///scaled stellar spin angular velocities divided by the orbital angular
+	///velocity.
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
 	///
-	///The evolution mode must be FAST_PLANET or SLOW_PLANET
+	///The evolution mode must be FAST_PLANET, SLOW_PLANET or LOCKED_TO_DISK
+	///or NO_PLANET.
 	std::valarray<double> operator()(double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
+			const TidalDissipation &tidal_dissipation,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
 			EvolModeType evol_mode) const;
@@ -159,9 +192,17 @@ public:
 ///\ingroup OrbitSolver_group
 class BreakLockCondition : public StoppingCondition {
 public: 
-	///\brief The difference between the maximum evolution of the semimajor
-	///axis and the evolution required to keep the star synchronized divided
-	///by the latter.
+	///\brief How far away from breaking the lock the system is.
+	///
+	///Two values are calculated: 
+	/// - The difference between the maximum evolution of the semimajor
+	///	  axis and the evolution required to keep the star synchronized
+	///   divided by the latter.
+	/// - The difference between the evolution required to keep the star
+	///   synchronized and the minimum evolution of the semimajor axis
+	///   divided by the former.
+	///
+	///This way both values are positive if the lock is maintained.
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
@@ -171,9 +212,13 @@ public:
 			double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
+			const TidalDissipation &tidal_dissipation,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
 			EvolModeType evol_mode) const;
+
+	///The number of subconditions in the current condition.
+	virtual size_t num_subconditions() const {return 2;}
 
 	///Identify this as a BREAK_LOCK condition.
 	StoppingConditionType type(unsigned =0) const {return BREAK_LOCK;}
@@ -197,6 +242,7 @@ public:
 			double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
+			const TidalDissipation &tidal_dissipation,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
 			EvolModeType evol_mode) const;
@@ -216,6 +262,7 @@ public:
 	std::valarray<double> operator()(double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
+			const TidalDissipation &tidal_dissipation,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
 			EvolModeType evol_mode) const;
@@ -275,6 +322,7 @@ public:
 	std::valarray<double> operator()(double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
+			const TidalDissipation &tidal_dissipation,
 			const StellarSystem &system,
 			std::valarray<double> &stop_deriv,
 			EvolModeType evol_mode) const;

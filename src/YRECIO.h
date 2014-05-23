@@ -18,7 +18,7 @@
 #include <fstream>
 #include <dirent.h>
 #include <string>
-#include <assert.h>
+#include <cassert>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/base_object.hpp>

@@ -19,7 +19,7 @@
 #include <fstream>
 #include <dirent.h>
 #include <string>
-#include <assert.h>
+#include <cassert>
 #include <vector>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>

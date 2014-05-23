@@ -65,7 +65,7 @@ public:
 	best_index = i;
       }
     }
-    assert(best_index != -1);
+	assert(best_index != -1);
     RotationScenario bestModel = all_rot[best_index];
     Star star(star_mass, Q, bestModel.K, WIND_SAT_FREQ, bestModel.Tc,
 	      Q_TRANS_WIDTH, bestModel.initSpin, bestModel.Tdisk,
@@ -73,7 +73,7 @@ public:
     Planet planet(&star, planet_mass, planet_radius, semi);
     StellarSystem system(&star, &planet);
 
-    double end_age = std::min((const double)MAX_END_AGE, star.get_lifetime());
+    double end_age = std::min((const double)MAX_END_AGE, star.lifetime());
     OrbitSolver solver(MIN_AGE, end_age, PRECISION,
 		       SPIN_THRES, MAIN_SEQ_START);
     if (fdata != NULL) {
@@ -89,7 +89,7 @@ public:
     return frac;
   }
   std::vector<double> linspace(double min, double max, int steps) {
-    assert(steps > 1);
+	  assert(steps > 1);
     std::vector<double> vals;
     for (int i=0; i < steps; i++) {
       vals.push_back(min + i*(max - min)/(steps - 1));
@@ -113,7 +113,7 @@ public:
     Planet planet(&star, planet_mass, 0.714, semi);
     StellarSystem system(&star, &planet);
     double end_age = std::min((const double)MAX_END_AGE,
-			      star.get_lifetime());
+			      star.lifetime());
     OrbitSolver solver(MIN_AGE, end_age, 1e-5,
 		       SPIN_THRES, MAIN_SEQ_START);
     try {
