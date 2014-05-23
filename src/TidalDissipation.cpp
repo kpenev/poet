@@ -123,11 +123,11 @@ void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 						derivative, lock_dir)+=Umm_squared*mp*mod_phase_lag;
 				rate_entry(body_index, Dissipation::TORQUEX,
 						derivative, lock_dir)+=__Umm[m_ind][mp_ind]*(
-							(mp>-2 ? 
+							(m>-2 ? 
 							 __torque_x_minus_coef[mp_ind]
 							 *
 							 __Umm[m_ind-1][mp_ind] : 0)+
-							(mp<2 ? 
+							(m<2 ? 
 							 __torque_x_plus_coef[mp_ind]
 							 *
 							 __Umm[m_ind+1][mp_ind] : 0));

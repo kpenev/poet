@@ -183,7 +183,15 @@ private:
 			Dissipation::Quantity quantity,
 			Dissipation::Derivative derivative,
 			short lock_direction) const
-	{return rate_entry(body_index, quantity, derivative, lock_direction);}
+	{
+		return __dissipation_rate[
+			lock_direction+1 + 3*(
+				quantity + Dissipation::NUM_QUANTITIES*(
+					derivative + Dissipation::NUM_DERIVATIVES*body_index
+				)
+			)
+		];
+	}
 
 	///Computes the \f$\mathcal{U}_{m,m'}\f$ values. 
 	void fill_Umm(

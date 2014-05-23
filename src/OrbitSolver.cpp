@@ -18,8 +18,15 @@ std::ostream &operator<<(std::ostream &os, const EvolVarType &evol_var)
 	switch(evol_var) {
 		case AGE : os << "AGE"; break;
 		case SEMIMAJOR : os << "SEMIMAJOR"; break;
+		case INCLINATION : os << "INCLINATION"; break;
 		case LCONV : os << "LCONV"; break;
-		case LRAD : os << "LRAD";
+		case LRAD_PAR : os << "LRAD_PAR";
+		case LRAD_PERP : os << "LRAD_PERP";
+		default :
+#ifdef DEBUG
+						 assert(false)
+#endif
+							 ;
 	};
 	return os;
 }
@@ -511,12 +518,14 @@ void OrbitSolver::append_to_orbit(const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
 		EvolModeType evolution_mode, const SpinOrbitLockInfo &star_lock,
 		WindSaturationState wind_state, double age,
-		const StellarSystem &system, double planet_formation_semimajor)
+		const StellarSystem &system, double planet_formation_semimajor,
+		double planet_formation_inclination)
 {
 	clear_discarded();
 	std::valarray<double> orbit_to_tabulate=transform_orbit(evolution_mode,
 			TABULATION, star_lock, star_lock, age, orbit,
-			planet_formation_semimajor, system),
+			planet_formation_semimajor, planet_formation_inclination,
+			system),
 		deriv_to_tabulate=transform_derivatives(evolution_mode, TABULATION,
 				star_lock, star_lock, age, orbit, derivatives,
 				planet_formation_semimajor, system);
@@ -831,7 +840,8 @@ bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
 		double max_step, EvolModeType evolution_mode,
 		const SpinOrbitLockInfo &star_lock, WindSaturationState wind_state,
 		const StoppingCondition &stop_cond,
-		double planet_formation_semimajor)
+		double planet_formation_semimajor,
+		double planet_formation_inclination)
 {
 	size_t nargs=orbit.size();
 
@@ -856,7 +866,8 @@ bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
 	stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
 			sys_mode_windstate_lock_dissipation);
 	append_to_orbit(orbit, derivatives, evolution_mode, star_lock, 
-			wind_state, t, system, planet_formation_semimajor);
+			wind_state, t, system, planet_formation_semimajor,
+			planet_formation_inclination);
 
 	update_stop_condition_history(t, orbit, derivatives, dissipation, system,
 			evolution_mode, stop_cond, stop_reason);
@@ -901,7 +912,7 @@ bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
 		if(!step_rejected)
 			append_to_orbit(orbit, derivatives,
 				evolution_mode, star_lock, wind_state, t, system,
-                planet_formation_semimajor);
+                planet_formation_semimajor, planet_formation_inclination);
 		if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
 			stop_reason=stop.stop_reason();
 			result=(t>stop.stop_age());
@@ -1086,7 +1097,7 @@ void OrbitSolver::parse_orbit_or_derivatives(EvolModeType evolution_mode,
 		const SpinOrbitLockInfo &star_lock, double age,
 		const std::valarray<double> &orbit_deriv, 
 		const StellarSystem &system, bool evolution, double &a,
-		double &theta, double &Lconv, double &Lrad_parallel,
+		double &inclination, double &Lconv, double &Lrad_parallel,
 		double &Lrad_perpendicular) const
 {
 	const Star &star=system.get_star();
@@ -1094,7 +1105,7 @@ void OrbitSolver::parse_orbit_or_derivatives(EvolModeType evolution_mode,
 	assert(evolution_mode!=TABULATION);
 #endif
 	if(evolution_mode==BINARY) {
-		theta=orbit_deriv[1];
+		inclination=orbit_deriv[1];
 		if(star_lock) {
 #ifdef DEBUG
 			assert(orbit_deriv.size()==4);
@@ -1126,14 +1137,14 @@ void OrbitSolver::parse_orbit_or_derivatives(EvolModeType evolution_mode,
 #ifdef DEBUG
 		assert(orbit_deriv.size()==3);
 #endif
-		a = theta = NaN;
+		a = inclination = NaN;
 		Lconv=orbit_deriv[0];
 	} 
 	if(evolution_mode==LOCKED_TO_DISK) {
 #ifdef DEBUG
 		assert(orbit_deriv.size()==1);
 #endif
-		a=theta=NaN;
+		a=inclination=NaN;
 		Lconv=star.disk_lock_frequency()*
 			(evolution ? star.moment_of_inertia_deriv(age, convective) :
 			 star.moment_of_inertia(age, convective));
@@ -1147,7 +1158,7 @@ void OrbitSolver::parse_orbit_or_derivatives(EvolModeType evolution_mode,
 
 void OrbitSolver::collect_orbit_or_derivatives(EvolModeType evolution_mode,
 		const SpinOrbitLockInfo &star_lock,
-		double a, double theta, double Lconv, double Lrad_parallel,
+		double a, double inclination, double Lconv, double Lrad_parallel,
 		double Lrad_perpendicular, std::valarray<double> &result,
 		double semimajor) const
 {
@@ -1161,14 +1172,14 @@ void OrbitSolver::collect_orbit_or_derivatives(EvolModeType evolution_mode,
 					6.5*std::pow(semimajor, 5.5)*a);
 			result[2]=Lconv;
 		}
-		result[1]=theta;
+		result[1]=inclination;
 	} else if(evolution_mode==NO_PLANET) {
 		result.resize(3);
 		result[0]=Lconv;
 	} else if(evolution_mode==TABULATION) {
 		result.resize(5);
 		result[0]=a;
-		result[1]=theta;
+		result[1]=inclination;
 		result[2]=Lconv;
 	}
 
@@ -1185,17 +1196,20 @@ std::valarray<double> OrbitSolver::transform_orbit(EvolModeType from_mode,
 		EvolModeType to_mode, const SpinOrbitLockInfo &from_star_lock,
 		const SpinOrbitLockInfo &to_star_lock, double age,
 		const std::valarray<double> &from_orbit, 
-		double initial_semimajor, const StellarSystem &system) const
+		double initial_semimajor, double initial_inclination,
+		const StellarSystem &system) const
 {
-	double a, theta, Lconv, Lrad_parallel, Lrad_perpendicular;
+	double a, inclination, Lconv, Lrad_parallel, Lrad_perpendicular;
 	parse_orbit_or_derivatives(from_mode, from_star_lock, age, from_orbit,
-			system, false, a, theta, Lconv, Lrad_parallel,
+			system, false, a, inclination, Lconv, Lrad_parallel,
 			Lrad_perpendicular);
 	if(to_mode!=TABULATION && std::isnan(a)) a=initial_semimajor/Rsun_AU;
+	if(to_mode!=TABULATION && std::isnan(inclination)) 
+		inclination=initial_inclination;
 
 	std::valarray<double> to_orbit;
-	collect_orbit_or_derivatives(to_mode, to_star_lock, a, theta, Lconv,
-			Lrad_parallel, Lrad_perpendicular, to_orbit);
+	collect_orbit_or_derivatives(to_mode, to_star_lock, a, inclination,
+			Lconv, Lrad_parallel, Lrad_perpendicular, to_orbit);
 	if(from_mode==BINARY && to_mode==NO_PLANET) {
 		to_orbit[0]+=orbital_angular_momentum(
 				system.get_star().mass(), 
@@ -1221,21 +1235,21 @@ std::valarray<double> OrbitSolver::transform_derivatives(
 	assert(from_orbit.size()==from_deriv.size());
 #endif
 
-	double a, da_dt, dtheta_dt, dLconv_dt, dLrad_parallel_dt,
+	double a, da_dt, dinclination_dt, dLconv_dt, dLrad_parallel_dt,
 		   dLrad_perpendicular_dt;
 	if(from_mode==BINARY) {
 		a=da_dt=(from_star_lock ? from_orbit[0] :
 				std::pow(from_orbit[0], 1.0/6.5));
 	} else a=(to_mode==TABULATION ? NaN : initial_semimajor/Rsun_AU);
 	parse_orbit_or_derivatives(from_mode, from_star_lock, age, from_deriv,
-			system, true, da_dt, dtheta_dt, dLconv_dt,
+			system, true, da_dt, dinclination_dt, dLconv_dt,
 			dLrad_parallel_dt, dLrad_perpendicular_dt);
 
 
 	std::valarray<double> to_deriv;
-	collect_orbit_or_derivatives(to_mode, to_star_lock, da_dt, dtheta_dt,
-			dLconv_dt, dLrad_parallel_dt, dLrad_perpendicular_dt, to_deriv,
-			a);
+	collect_orbit_or_derivatives(to_mode, to_star_lock, da_dt,
+			dinclination_dt, dLconv_dt, dLrad_parallel_dt,
+			dLrad_perpendicular_dt, to_deriv, a);
 	return to_deriv;
 }
 
@@ -1244,24 +1258,24 @@ void OrbitSolver::reset()
 	tabulated_ages.clear();
 	tabulated_evolution_mode.clear();
     tabulated_wind_saturation.clear();
-	for (int i=0; i < 3; i++) {
+	for (int i=0; i < NUM_EVOL_VAR; i++) {
 		tabulated_orbit[i].clear();
 		tabulated_deriv[i].clear();
 	}
 }
 
-OrbitSolver::OrbitSolver(double max_age, double required_precision, 
-		double spin_thres) :
+OrbitSolver::OrbitSolver(double max_age, double required_precision) :
 	end_age(std::abs(max_age)), precision(required_precision), 
-	spin_thres(spin_thres), adjust_end_age(max_age<0), tabulated_orbit(3), 
-	tabulated_deriv(3)
+	adjust_end_age(max_age<0), tabulated_orbit(NUM_EVOL_VAR),
+	tabulated_deriv(NUM_EVOL_VAR)
 {
 	if (end_age > MAX_END_AGE) end_age = MAX_END_AGE;
 }
 
 void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		double planet_formation_age, double planet_formation_semimajor,
-		double start_age, EvolModeType initial_evol_mode,
+		double planet_formation_inclination, double start_age,
+		EvolModeType initial_evol_mode,
 		const SpinOrbitLockInfo &initial_lock,
 		const std::valarray<double> &start_orbit,
 		const std::list<double> &required_ages, bool no_evol_mode_change)
@@ -1332,7 +1346,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		bool stopped_before=!evolve_until(system, start_age, next_stop_age,
 				orbit, stop_condition_value, stop_reason, max_step,
 				evolution_mode, initial_lock, wind_state,
-				*stopping_condition, planet_formation_semimajor);
+				*stopping_condition, planet_formation_semimajor,
+				planet_formation_inclination);
 		last_age=next_stop_age;
 		if(last_age<stop_evol_age) {
 			EvolModeType old_evolution_mode=evolution_mode;
@@ -1350,7 +1365,8 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 				std::valarray<double> new_orbit=transform_orbit(
 						old_evolution_mode, evolution_mode, old_star_lock,
 						star_lock, last_age, orbit,
-						planet_formation_semimajor, system);
+						planet_formation_semimajor,
+						planet_formation_inclination, system);
 #ifdef DEBUG
 				std::cerr << "Transforming orbit from: " << orbit
 					<< " to " << new_orbit << std::endl;

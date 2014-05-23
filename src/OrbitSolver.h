@@ -37,8 +37,11 @@ typedef bool (*STOP_EVOL_TYPE)(double, const double*, void*);
 enum EvolVarType {
 	AGE=-1,		///< The age.
 	SEMIMAJOR, 	///< The semimajor axis.
-	LCONV, 		///< The moment of inertia of the convective envelope.
-	LRAD		///< The moment of inertia of the radiative core.
+	INCLINATION,///< Surface spin to orbital angular momentum angle
+	LCONV, 		///< Angular momentum of the convective envelope.
+	LRAD_PAR,	///< Angular momentum of the core along LCONV
+	LRAD_PERP,	///< Angular momentum of the core perpendicular to LCONV
+	NUM_EVOL_VAR///< The number of evolution variables.
 };
 
 ///More civilized output for EvolVarType variables.
@@ -571,7 +574,10 @@ private:
 			const StellarSystem &system,
 
 			///The semimajor axis at which the planet froms in AU.
-			double planet_formation_semimajor=NaN);
+			double planet_formation_semimajor=NaN,
+			
+			///The inclination with which the planet froms.
+			double planet_formation_inclination=NaN);
 
 	///Clears the current stopping condition history.
 	void clear_history();
@@ -743,7 +749,10 @@ private:
 			const StoppingCondition &stop_cond=NoStopCondition(),
 
 			///The semimajor axis where the planet should first appear.
-			double planet_formation_semimajor=NaN);
+			double planet_formation_semimajor=NaN,
+
+			///The inclination with which the planet should first appear.
+			double planet_formation_inclination=NaN);
 
 	///Returns the stopping conditions which end the given evolution mode.
 	CombinedStoppingCondition *get_stopping_condition(
@@ -841,7 +850,7 @@ private:
 	///to a standard set of parameters.
 	void parse_orbit_or_derivatives(
 			///The mode the input orbit is in. If the mode is such that the
-			///planet is not present a and theta are set to NaN.
+			///planet is not present a and inclination are set to NaN.
 			EvolModeType evolution_mode,
 
 			///Does the input orbit represent spin-orbit locked star.
@@ -865,7 +874,7 @@ private:
 			double &a,
 
 			///On output contains the inclination or its derivative.
-			double &theta,
+			double &inclination,
 
 			///On output contains the stellar convective zone angular
 			///momentum or its derivative.
@@ -892,7 +901,7 @@ private:
 			double a,
 
 			///The inclination or its derivative.
-			double theta,
+			double inclination,
 
 			///The stellar convective zone angular momentum or its
 			///derivative.
@@ -935,6 +944,9 @@ private:
 
 			///The semimajor axis at which the planet first appears in AU.
 			double initial_semimajor,
+
+			///The inclination with which the planet first appears in AU.
+			double initial_inclination,
 			
 			///The stellar system being evolved.
 			const StellarSystem &system) const;
@@ -968,10 +980,7 @@ public:
 			double max_age,
 			
 			///The precision which to require of the solution.
-			double required_precision,
-
-			///The critical stellar surface spin in rad/day.
-			double spin_thres=4*M_PI);
+			double required_precision);
 
 	///\brief Actually solves the given differential equation with the given
 	///boundary conditions.
@@ -992,6 +1001,10 @@ public:
 			///The semimajor axis at which the planet first appears. This
 			///argument is ignored if planet_formation_age<=start_age.
 			double planet_formation_semimajor=NaN,
+
+			///The inclination with which the planet first appears. This
+			///argument is ignored if planet_formation_age<=start_age.
+			double planet_formation_inclination=NaN,
 
 			///The age at which to start the evolution. Use NaN (default) to
 			///start when the radiative core first starts to appear, in

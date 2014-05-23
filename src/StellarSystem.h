@@ -27,7 +27,7 @@
 ///The following variable are referred to throughout:
 /// - age: Gyr
 /// - a: semimajor axis in \f$R_\odot\f$
-/// - theta: angle between surface spin and orbital angular momentum in
+/// - inclination: angle between surface spin and orbital angular momentum in
 ///   radians
 /// - Lconv: Convective zone angular momentum in
 ///   \f$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
@@ -57,9 +57,6 @@ private:
 	///\brief The differential equation governing the rotation of the star's
 	///radiative zone with the convective zone locked to a disk.
 	int locked_conv_differential_equations(
-			///The system age.		
-			double age,
-
 			///A pointer to Lrad_parallel (Lrad_perpendicular assumed 0).
 			const double *parameters,
 			
@@ -69,9 +66,6 @@ private:
 	///\brief The differential equation governing the evolution of the
 	///stellar rotation if no planet or disk is present.
 	int no_planet_differential_equations(
-			///The system age.		
-			double age,
-
 			///Should contain in the following order:
 			/// -# Lconv
 			/// -# Lrad_parallel
@@ -89,12 +83,9 @@ private:
 	///\brief The differential equation for the evolution while the
 	///planet is still present and locked to the stellar spin.
 	int locked_to_orbit_differential_equations(
-			///The system age in Gyr.		
-			double age,
-
 			///Should contain in the following order:
 			/// -# a
-			/// -# theta
+			/// -# inclination
 			/// -# Lrad_parallel
 			/// -# Lrad_perpendicular
 			const double *parameters,
@@ -116,12 +107,9 @@ private:
 	///\brief The differential equation for the evolution while the
 	///planet is still present and not locked to the stellar spin.
 	int not_locked_differential_equations(
-			///The system age in Gyr.
-			double age, 
-
 			///The orbital parameters. Should be:
 			/// -# a^6.5
-			/// -# theta
+			/// -# inclination
 			/// -# Lconv
 			/// -# Lrad_parallel
 			/// -# Lrad_perpendicular
@@ -189,13 +177,13 @@ public:
 			///
 			///If star_lock converts to true (i.e. some lock is held):
 			/// -# a
-			/// -# theta
+			/// -# inclination
 			/// -# Lrad_parallel
 			/// -# Lrad_perpendicular
 			///
 			///If star is not locked
 			/// -# a^6.5
-			/// -# theta
+			/// -# inclination
 			/// -# Lconv
 			/// -# Lrad_parallel
 			/// -# Lrad_perpendicular

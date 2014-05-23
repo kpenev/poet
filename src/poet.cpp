@@ -27,6 +27,7 @@ void CommandLineOptions::init_input_column_names()
 	__input_column_names[InCol::TDISK]="tdisk";
 	__input_column_names[InCol::A_FORMATION]="aform";
 	__input_column_names[InCol::P_FORMATION]="pform";
+	__input_column_names[InCol::INCLINATION_FORMATION]="thetaform";
 	__input_column_names[InCol::TSTART]="t0";
 	__input_column_names[InCol::TEND]="tmax";
 	__input_column_names[InCol::START_WRAD]="wrad0";
@@ -49,6 +50,8 @@ void CommandLineOptions::init_output_column_descriptions()
 	__output_column_descr.resize(OutCol::NUM_OUTPUT_QUANTITIES);
 	__output_column_descr[OutCol::AGE]="Age in Gyr";
 	__output_column_descr[OutCol::SEMIMAJOR]="Semimajor axis in AU";
+	__output_column_descr[OutCol::INCLINATION]="The stellar spin-orbit "
+		"inclination";
 	__output_column_descr[OutCol::WORB]="Orbital frequency in rad/day";
 	__output_column_descr[OutCol::PORB]="Orbital period in days";
 	__output_column_descr[OutCol::LCONV]=
@@ -57,6 +60,14 @@ void CommandLineOptions::init_output_column_descriptions()
 	__output_column_descr[OutCol::LRAD]=
 		"Radiative zone angular momentum in Msun Rsun^2 rad/day "
 		"(low mass stars only else NaN).";
+	__output_column_descr[OutCol::LRAD_PAR]=
+		"Radiative zone angular momentum component along the rotation axis "
+		"of the convective zone in Msun Rsun^2 rad/day (low mass stars only "
+		"else NaN).";
+	__output_column_descr[OutCol::LRAD_PERP]=
+		"Radiative zone angular momentum component perpendicular to the "
+		"rotation axis of the convective zone in Msun Rsun^2 rad/day (low "
+		"mass stars only else NaN).";
 	__output_column_descr[OutCol::LTOT]=
 		"Total angular momentum of the star in Msun Rsun^2 rad/day.";
 	__output_column_descr[OutCol::ICONV]=
@@ -173,6 +184,7 @@ void CommandLineOptions::init_defaults()
 	__defaults[InCol::TDISK]=5;
 	__defaults[InCol::A_FORMATION]=0.05;
 	__defaults[InCol::P_FORMATION]=NaN;
+	__defaults[InCol::INCLINATION_FORMATION]=0.0;
 	__defaults[InCol::TSTART]=NaN;
 	__defaults[InCol::TEND]=-Inf;
 	__defaults[InCol::START_WRAD]=NaN;
@@ -233,10 +245,13 @@ void init_output_column_names()
 {
 	OUTPUT_COLUMN_NAMES[OutCol::AGE]="t";
 	OUTPUT_COLUMN_NAMES[OutCol::SEMIMAJOR]="a";
+	OUTPUT_COLUMN_NAMES[OutCol::INCLINATION]="theta";
 	OUTPUT_COLUMN_NAMES[OutCol::WORB]="Worb";
 	OUTPUT_COLUMN_NAMES[OutCol::PORB]="Porb";
 	OUTPUT_COLUMN_NAMES[OutCol::LCONV]="Lconv";
 	OUTPUT_COLUMN_NAMES[OutCol::LRAD]="Lrad";
+	OUTPUT_COLUMN_NAMES[OutCol::LRAD_PAR]="Lradpar";
+	OUTPUT_COLUMN_NAMES[OutCol::LRAD_PERP]="Lradperp";
 	OUTPUT_COLUMN_NAMES[OutCol::LTOT]="L";
 	OUTPUT_COLUMN_NAMES[OutCol::ICONV]="Iconv";
 	OUTPUT_COLUMN_NAMES[OutCol::IRAD]="Irad";
@@ -289,7 +304,7 @@ void init_track_column_names()
 const std::string CommandLineOptions::__default_outfname="poet.evol",
 	  CommandLineOptions::__default_serialized_evol="serialized_evolution",
 	  CommandLineOptions::__default_output_columns=
-	  	"t,a,Lconv,Lrad,L,Iconv,Irad,I,mode",
+	  	"t,a,theta,Lconv,Lradpar,Lradperp,L,Iconv,Irad,I,mode",
 	  CommandLineOptions::__default_track_columns="t,R,Iconv,Irad,Rrad,Mrad";
 
 char *CommandLineOptions::cstr_copy(const std::string &str)
@@ -453,6 +468,15 @@ void CommandLineOptions::define_options()
 			<< __input_column_names[InCol::P_FORMATION] << "'.";
 	__direct_value_options[InCol::P_FORMATION]=arg_dbl0("p",
 			"init-orbit-period", "<double>", cstr_copy(option_help));
+
+	option_help.str("");
+	option_help << "The inclination which the planet first "
+			"appears. In --input-columns identified by '"
+			<< __input_column_names[InCol::INCLINATION_FORMATION]
+			<< "'. Default: " << __defaults[InCol::INCLINATION_FORMATION]
+			<< ".";
+	__direct_value_options[InCol::INCLINATION_FORMATION]=arg_dbl0("a",
+			"init-semimajor", "<double>", cstr_copy(option_help));
 
 	option_help.str("");
 	option_help << "The starting age for the evolution in Gyr. If this "
@@ -881,8 +905,10 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 	std::list<double>::const_iterator
 		age_i=solver.get_tabulated_var(AGE)->begin(),
 		a_i=solver.get_tabulated_var(SEMIMAJOR)->begin(),
+		inclination_i=solver.get_tabulated_var(INCLINATION)->begin(),
 		Lconv_i=solver.get_tabulated_var(LCONV)->begin(),
-		Lrad_i=solver.get_tabulated_var(LRAD)->begin();
+		Lrad_parallel_i=solver.get_tabulated_var(LRAD_PAR)->begin(),
+		Lrad_perpendicular_i=solver.get_tabulated_var(LRAD_PERP)->begin();
 	const Star &star=system.get_star();
 	const Planet &planet=system.get_planet();
 	std::list<double>::const_iterator
@@ -924,7 +950,11 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 					   star.moment_of_inertia_deriv(*age_i, convective, 2),
 				   d2Irad_dt2=
 					   star.moment_of_inertia_deriv(*age_i, radiative, 2),
-				   Rstar=star.radius(*age_i);
+				   Rstar=star.radius(*age_i),
+				   Lrad=std::sqrt(std::pow(*Lrad_parallel_i, 2) +
+						   std::pow(*Lrad_perpendicular_i, 2)),
+				   Ltot=std::sqrt(std::pow(*Lconv_i + *Lrad_parallel_i, 2) +
+						   std::pow(*Lrad_perpendicular_i, 2));
 			outf << std::setw(25);
 			double semimajor=(*a_i)/AU_Rsun,
 				   worb=planet.orbital_angular_velocity_semimajor(semimajor);
@@ -933,17 +963,21 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 				case OutCol::SEMIMAJOR : outf << semimajor; break;
 				case OutCol::WORB : outf << worb; break;
 				case OutCol::PORB : outf << 2.0*M_PI/worb; break;
+				case OutCol::INCLINATION : outf << *inclination_i; break;
 				case OutCol::LCONV : outf << *Lconv_i; break;
-				case OutCol::LRAD : outf << *Lrad_i; break;
-				case OutCol::LTOT : outf << *Lconv_i + *Lrad_i; break;
+				case OutCol::LRAD : outf << Lrad; break;
+				case OutCol::LRAD_PAR : outf << *Lrad_parallel_i; break;
+				case OutCol::LRAD_PERP : outf << *Lrad_perpendicular_i;
+										 break;
+				case OutCol::LTOT : outf << Ltot; break;
 				case OutCol::ICONV : outf << Iconv; break;
 				case OutCol::IRAD : outf << Irad; break;
 				case OutCol::ITOT : outf << Iconv+Irad; break;
 				case OutCol::WSURF : outf << (*Lconv_i)/Iconv; break;
-				case OutCol::WRAD : outf << (*Lrad_i)/Irad; break;
+				case OutCol::WRAD : outf << Lrad/Irad; break;
 				case OutCol::PSURF : outf << 2.0*M_PI*Iconv/(*Lconv_i);
 									 break;
-				case OutCol::PRAD : outf << 2.0*M_PI*Irad/(*Lrad_i); break;
+				case OutCol::PRAD : outf << 2.0*M_PI*Irad/Lrad; break;
 				case OutCol::EVOL_MODE : outf << *mode_i; break;
 				case OutCol::WIND_STATE : outf << *wind_i; break;
 				case OutCol::RSTAR : outf << Rstar; break;
@@ -980,7 +1014,8 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 			}
 		}
 		outf << std::endl;
-		++age_i; ++a_i; ++Lconv_i; ++Lrad_i; ++mode_i; ++wind_i;
+		++age_i; ++a_i; ++inclination_i, ++Lconv_i; ++Lrad_parallel_i;
+		++Lrad_perpendicular_i; ++mode_i; ++wind_i;
 	}
 	outf.close();
 }
@@ -1040,21 +1075,24 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				real_parameters[InCol::START_WSURF])
 			start_evol_mode=BINARY;
 		else start_evol_mode=BINARY;
-		start_orbit.resize(3);
+		start_orbit.resize(5);
 		start_orbit[0]=
 			std::pow(real_parameters[InCol::A_FORMATION]*AU_Rsun, 6.5);
-		start_orbit[1]=real_parameters[InCol::START_WSURF]*
+		start_orbit[1]=real_parameters[InCol::INCLINATION_FORMATION];
+		start_orbit[2]=real_parameters[InCol::START_WSURF]*
 			star.moment_of_inertia(tstart, convective);
-		start_orbit[2]=(star.is_low_mass() ?
+		start_orbit[3]=(star.is_low_mass() ?
 				real_parameters[InCol::START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);
+		start_orbit[4]=0.0; //Start the core aligned with the surface.
 	}
-	OrbitSolver solver(tstart, real_parameters[InCol::TEND],
+	OrbitSolver solver(real_parameters[InCol::TEND],
 			std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	if(need_orbit)
 		solver(system, real_parameters[InCol::MAX_STEP],
 				real_parameters[InCol::PLANET_FORMATION_AGE],
-				real_parameters[InCol::A_FORMATION], tstart,
+				real_parameters[InCol::A_FORMATION], 
+				real_parameters[InCol::INCLINATION_FORMATION], tstart,
 				start_evol_mode, start_star_lock, start_orbit,
 				required_ages);
     double tend=(real_parameters[InCol::TEND]>0 ? 

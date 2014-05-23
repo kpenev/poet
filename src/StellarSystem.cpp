@@ -13,33 +13,33 @@
 
 #include <gsl/gsl_matrix.h>
 
-int StellarSystem::locked_conv_differential_equations(double age,
+int StellarSystem::locked_conv_differential_equations(
 		const double *parameters, double *evolution_rates)
 {
-	evolution_rates[0]=-__star.differential_rotation_torque_angmom(age,
+	evolution_rates[0]=-__star.differential_rotation_torque_angmom(
 			__star.disk_lock_frequency()*
-			__star.moment_of_inertia(age, convective), parameters[0]).real();
+			__star.moment_of_inertia(convective), parameters[0]).real();
 	return GSL_SUCCESS;
 }
 
-int StellarSystem::no_planet_differential_equations(double age,
-		const double *parameters, WindSaturationState assume_wind_saturation,
-		double *evolution_rates) const
+int StellarSystem::no_planet_differential_equations(const double *parameters,
+		WindSaturationState assume_wind_saturation, double *evolution_rates)
+	const
 {
 	double Lconv=parameters[0], 
-		   wconv=__star.spin_frequency(age, convective, Lconv);
+		   wconv=__star.spin_frequency(convective, Lconv);
 	std::complex<double> Lrad(parameters[1], parameters[2]),
-		coupling_torque=__star.differential_rotation_torque_angmom(age,
-				Lconv, Lrad);
+		coupling_torque=__star.differential_rotation_torque_angmom(Lconv,
+				Lrad);
 	double rotation=coupling_torque.imag()/Lconv;
 	evolution_rates[0]=coupling_torque.real() -
-		__star.wind_torque(age, wconv, assume_wind_saturation);
+		__star.wind_torque(wconv, assume_wind_saturation);
 	evolution_rates[1]=-coupling_torque.real()+rotation*Lrad.imag();
 	evolution_rates[2]=-coupling_torque.imag()-rotation*Lrad.real();
 	return GSL_SUCCESS;
 }
 
-int StellarSystem::locked_to_orbit_differential_equations(double age,
+int StellarSystem::locked_to_orbit_differential_equations(
 		const double *parameters, WindSaturationState assume_wind_saturation,
 		const SpinOrbitLockInfo &star_lock,
 		const TidalDissipation &dissipation, double *evolution_rates) const
@@ -50,14 +50,13 @@ int StellarSystem::locked_to_orbit_differential_equations(double age,
 
 	std::complex<double> Lrad(parameters[2], parameters[3]);
 	double wconv=dissipation.orbital_frequency(),
-		   Iconv=__star.moment_of_inertia(age, convective),
+		   Iconv=__star.moment_of_inertia(convective),
 		   Lconv=wconv*Iconv,
-		   dIconv_dt=__star.moment_of_inertia_deriv(age, convective),
-		   wind_torque=__star.wind_torque(age, wconv,
-				   assume_wind_saturation);
+		   dIconv_dt=__star.moment_of_inertia_deriv(convective),
+		   wind_torque=__star.wind_torque(wconv, assume_wind_saturation);
 	std::complex<double>
-		coupling_torque=__star.differential_rotation_torque_angmom(age,
-				Lconv, Lrad);
+		coupling_torque=__star.differential_rotation_torque_angmom(Lconv,
+				Lrad);
 	throw Error::NotImplemented("Locked orbital evolution");
 
 /*
@@ -78,7 +77,6 @@ int StellarSystem::locked_to_orbit_differential_equations(double age,
 }
 
 int StellarSystem::not_locked_differential_equations(
-		double age,
 		const double *parameters,
 		WindSaturationState assume_wind_saturation,
 		const TidalDissipation &dissipation,
@@ -87,7 +85,7 @@ int StellarSystem::not_locked_differential_equations(
 	double da_dt=-dissipation(0, Dissipation::SEMIMAJOR_DECAY)*Rsun_AU;
 	evolution_rates[0]=6.5*std::pow(parameters[0], 11.0/13.0)*da_dt;
 	evolution_rates[1]=-dissipation(0, Dissipation::INCLINATION_DECAY);
-	no_planet_differential_equations(age, parameters, assume_wind_saturation,
+	no_planet_differential_equations(parameters, assume_wind_saturation,
 		evolution_rates+2);
 	evolution_rates[2]+=dissipation(0, Dissipation::TORQUEZ);
 	return GSL_SUCCESS;
@@ -107,18 +105,39 @@ int StellarSystem::differential_equations(
 		const TidalDissipation &dissipation,
 		double *evolution_rates)
 {
+	double Lconv, inclination;
+	switch(evolution_mode) {
+		case LOCKED_TO_DISK :
+			Lconv=__star.disk_lock_frequency()*
+				__star.moment_of_inertia(age, convective);
+			inclination=0;
+			break;
+		case NO_PLANET : Lconv=parameters[0]; inclination=0; break;
+		case BINARY :
+			Lconv=(star_lock ? dissipation.orbital_frequency()*
+					__star.moment_of_inertia(age, convective) :
+					parameters[2]);
+			inclination=parameters[1];
+			break;
+		default :
+#ifdef DEBUG
+			assert(false)
+#endif
+				;
+	}
+	if(__star.age()!=age) __star(age, Lconv, inclination);
 	if(evolution_mode==LOCKED_TO_DISK)
-		return locked_conv_differential_equations(age, parameters,
+		return locked_conv_differential_equations(parameters,
 				evolution_rates);
 	else if(evolution_mode==NO_PLANET)
-		return no_planet_differential_equations(age, parameters, 
+		return no_planet_differential_equations(parameters, 
 				assume_wind_saturation, evolution_rates);
 	else if(evolution_mode==BINARY) {
 		if(star_lock) 
-			return locked_to_orbit_differential_equations(age, parameters,
+			return locked_to_orbit_differential_equations(parameters,
 					assume_wind_saturation, star_lock, dissipation,
 					evolution_rates);
-		else return not_locked_differential_equations(age, parameters,
+		else return not_locked_differential_equations(parameters,
 				assume_wind_saturation, dissipation, evolution_rates);
 	} else
 		throw Error::BadFunctionArguments("Unrecognized evolution mode in "

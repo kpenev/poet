@@ -64,6 +64,7 @@ namespace InCol {
 		TDISK, ///< Age in Myr when disk dissipates.
 		A_FORMATION, ///< Semimajor axis at which the planet forms in AU.
 		P_FORMATION, ///< Orbital period in days at which the planet forms.
+		INCLINATION_FORMATION, ///< Inclination with which the planet forms.
 		TSTART, ///< The minimum age to start evolution at in Gyr.
 		TEND, ///< The maximum age to stop the evolution at in Gyr.
 
@@ -171,6 +172,10 @@ namespace OutCol {
 		WORB,///< The orbital frequency in rad/day.
 		PORB,///< The orbital period days.
 
+		///The angle between the surface spin and orbital angular momentum in
+		///radians
+		INCLINATION,
+
 		///\brief Angular momentum of the convective zone of the star in
 		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
 		///stars only)
@@ -180,6 +185,14 @@ namespace OutCol {
 		// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
 		///stars only)
 		LRAD,
+
+		///\brief The component of #LRAD along the spin direction of the
+		///convective zone.
+		LRAD_PAR,
+
+		///\brief The component of #LRAD along \f$90^o\$ counter-clockwise
+		///from the spin direction of the convective zone.
+		LRAD_PERP,
 
 		///\brief Total angular momentum of the star in 
 		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$.

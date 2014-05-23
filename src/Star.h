@@ -122,6 +122,60 @@ private:
 		   ///\brief The current radiative core angular momentum in 
 		   /// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 		   __current_rad_angular_momentum;
+
+	///\brief Identifiers for the various age dependent values which are only
+	///computed once per fixed age.
+	///
+	///All quantities also refer to their derivatives.
+	enum CurrentAgeQuantities {
+		///The radius
+		RADIUS,
+
+		///The luminosity
+		LUMINOSITY,
+
+		///The radiative core radius
+		RRAD,
+
+		///The convective envelope mass
+		MCONV,
+
+		///The radiative core mass
+		MRAD,
+
+		///The convective zone moment of inertia
+		ICONV,
+
+		///The radiative zone moment of inertia
+		IRAD,
+
+		///The total moment of inertia of the star.
+		ITOT,
+
+		///\brief Rate of transfer of moment of inertia from the convective
+		///to the radiative zone.
+		CORE_INERTIA_GAIN,
+
+		///\brief The total number of quantities with fixed values at the
+		///current age
+		NUM_CURRENT_AGE_QUANTITIES
+	};
+
+	///\brief Pre-computed values and derivatives for quantities which only
+	///depend on age at the current age.
+	mutable std::vector< const FunctionDerivatives* >
+		__current_age_quantities;
+
+	///Deletes any allocated entry in __current_age_qunatities;
+	void delete_current_age_quantities();
+
+	///\brief The current age value of the given quantity (or its 
+	///derivative).
+	///
+	///Computes the value if necessary or retrieves it from
+	//__current_age_values if already present.
+	double current_age_quantity(CurrentAgeQuantities quantity,
+			unsigned deriv_order=0) const;
 public:
 	///Create a star with the given properties.
 	StarBase(
@@ -168,7 +222,7 @@ public:
 
 	///\brief Returns a reference to this object properly set-up as a
 	///DissipatingBody.
-	StarBase &operator()(
+	const StarBase &operator()(
 			///The age to set the star to.
 			double age,
 
@@ -177,8 +231,9 @@ public:
 			double Lconv,
 
 			///The inclination in rad.
-			double theta)
-	{__age=age; angular_momentum(Lconv); inclination(theta); return *this;}
+			double inclin)
+	{__age=age; angular_momentum(Lconv); inclination(inclin); 
+		delete_current_age_quantities(); return *this;}
 	
 	///The current age of the star in Gyrs.
 	double age() const {return __age;}
@@ -193,13 +248,13 @@ public:
 	double radius(double age) const {return (*__radius)(age);}
 
 	///The radius of the star (in \f$R_\odot\f$) for the current age.
-	double radius() const {return radius(__age);}
+	double radius() const {return current_age_quantity(RADIUS);}
 
 	///The luminosity of the star in \f$L_\odot\f$ at the given age in (Gyr).
 	double luminosity(double age) const;
 
 	///The luminosity of the star in \f$L_\odot\f$ for the current age.
-	double luminosity() const {return luminosity(__age);}
+	double luminosity() const {return current_age_quantity(LUMINOSITY);}
 
 	///The age at which the radiative core first forms in Gyr.
 	double core_formation_age() const {return __core_formation;}
@@ -219,13 +274,13 @@ public:
 	double rad_radius(double age) const;
 
 	///The radius of the radiative zone at the current age.
-	double rad_radius() const {return rad_radius(__age);}
+	double rad_radius() const {return current_age_quantity(RRAD);}
 
 	///The mass of the radiative core at the given age.
 	double rad_mass(double age) const;
 
 	///The mass of the radiative core at the current age.
-	double rad_mass() const {return rad_mass(__age);}
+	double rad_mass() const {return current_age_quantity(MRAD);}
 
 	///\brief The moment of inertia of a stellar zone at the given age
 	///(in Gyr).
@@ -236,8 +291,7 @@ public:
 	///\brief The moment of inertia of a stellar zone at the current age.
 	///
 	///Units: \f$M_\odot \cdot R_\odot^2\f$
-	double moment_of_inertia(StellarZone zone) const
-	{return moment_of_inertia(__age, zone);}
+	double moment_of_inertia(StellarZone zone) const;
 
 	///\brief The moment of inertia of the convective zone at the current
 	///age.
@@ -246,7 +300,7 @@ public:
 	///
 	///Required by DissipatingBody.
 	double moment_of_inertia() const
-	{return moment_of_inertia(__age, convective);}
+	{return moment_of_inertia(convective);}
 
 	///\brief The age derivative of the log(radius) of the star (in
 	/// \f$\mathrm{Gyr}^{-1}\f$) for the given age (in Gyr).
@@ -254,20 +308,21 @@ public:
 
 	///\brief The age derivative of the log(radius) of the star (in
 	/// \f$\mathrm{Gyr}^{-1}\f$) for the current age.
-	double logradius_deriv() const {return logradius_deriv(__age);}
+	double logradius_deriv() const
+	{return current_age_quantity(RADIUS, 1)/current_age_quantity(RADIUS, 0);}
 
 	///The derivative of the radiative zone radius at the given age.
 	double rad_radius_deriv(double age, unsigned order=1) const;
 
 	///The derivative of the radiative zone radius at the current age.
 	double rad_radius_deriv(unsigned order=1) const
-	{return rad_radius_deriv(__age, order);}
+	{return current_age_quantity(RRAD, order);}
 
 	///The derivative of the radiative core mass at the given age.
 	double rad_mass_deriv(double age) const;
 
 	///The derivative of the radiative core mass at the current age.
-	double rad_mass_deriv() const {return rad_mass_deriv(__age);}
+	double rad_mass_deriv() const {return current_age_quantity(MRAD, 1);}
 
 	///\brief The age derivative of the moment of inertia of a stellar zone
 	///at the given age (in Gyr).
@@ -292,8 +347,7 @@ public:
 			StellarZone zone,
 
 			///The order of the derivative desired (if >2 result is zero).
-			int order=1) const
-	{return moment_of_inertia_deriv(__age, zone, order);}
+			int order=1) const;
 
 	///\brief The angular momentum of a stellar zone at the given age 
 	///(in Gyrs).
@@ -357,7 +411,7 @@ public:
 			///The angular momentum of the zone in
 			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double angular_momentum) const
-	{return spin_frequency(__age, zone, angular_momentum);}
+	{return angular_momentum/moment_of_inertia(zone);}
 
 	///\brief The partial age derivative of the spin frequency of a stellar
 	///zone for a specified angular momentum at the given age.
@@ -386,7 +440,8 @@ public:
 			///The angular momentum of the zone in
 			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			double angular_momentum) const
-	{return spin_frequency_age_deriv(__age, zone, angular_momentum);}
+	{return -angular_momentum/std::pow(moment_of_inertia(zone),2)*
+			moment_of_inertia_deriv(zone,1);}
 
 	///\brief The partial angular momentum derivative of the spin frequency
 	///of a stellar zone for a given age.
@@ -416,8 +471,8 @@ public:
 
 			///The angular momentum of the zone in
 			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
-			double angular_momentum) const
-	{return spin_frequency_angmom_deriv(__age, zone, angular_momentum);}
+			double) const
+	{return 1.0/moment_of_inertia(zone);}
 
 	///\brief The spin period of the specified zone of the star at the given
 	///age.
@@ -456,7 +511,7 @@ public:
 
 	///\brief Returns the mass of the specified zone (in \f$M_\odot\f$) at
 	///the current age.
-	double zone_mass(StellarZone zone) const {return zone_mass(__age, zone);}
+	double zone_mass(StellarZone zone) const;
 
 	///Retruns the timescale for core-envelope coupling in Gyrs.
 	double core_env_coupling_timescale() const
@@ -481,6 +536,20 @@ public:
 			///The age of the star in Gyr.
 			double age,
 			
+			///The convective zone spin frequency in rad/day.
+			double conv_frequency,
+
+			///The saturation state of the wind to assume. Could be UNKNOWN
+			///(default), in which case it is determined by comparing the
+			///convective spin frequency to the saturation frequency.
+			WindSaturationState assume_wind_saturation=UNKNOWN) const;
+
+	///\brief Returns the torque on the stellar envelope due to the stellar 
+	///magnetic wind for the given age.
+	///
+	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
+	/// {\mathrm{day} \cdot \mathrm{Gyr}}\f$
+	double wind_torque(
 			///The convective zone spin frequency in rad/day.
 			double conv_frequency,
 
@@ -516,9 +585,7 @@ public:
 			///The saturation state of the wind to assume. Could be UNKNOWN
 			///(default), in which case it is determined by comparing the
 			///convective spin frequency to the saturation frequency.
-			WindSaturationState assume_wind_saturation=UNKNOWN) const
-	{return wind_torque_freq_deriv(__age, conv_frequency,
-			assume_wind_saturation);}
+			WindSaturationState assume_wind_saturation=UNKNOWN) const;
 
 	/*
 	///\brief Derivative of the wind torque on the stellar envelope with 
@@ -532,7 +599,6 @@ public:
 	///
 	///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$
 	double wind_torque_age_deriv(double conv_frequency) const
-	{return wind_torque_age_deriv(__age, conv_frequency);}
 	*/
 
 	///\brief Partial derivative of the wind torque with respect to the
@@ -576,30 +642,7 @@ public:
 			///The saturation state of the wind to assume. Could be UNKNOWN
 			///(default), in which case it is determined by comparing the
 			///convective spin frequency to the saturation frequency.
-			WindSaturationState assume_wind_saturation=UNKNOWN) const
-	{return wind_torque_age_deriv(__age, angular_momentum,
-			const_angular_momentum, assume_wind_saturation);}
-
-	///\brief The wind torque at the given age in Gyrs.
-	///
-	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
-	/// {\mathrm{day} \cdot \mathrm{Gyr}}\f$
-	///
-	///The angular momentum evolution for the convective zone should already
-	///be specified by calling the set_angular_momentum_evolutio method with
-	///zone=convective
-	double wind_torque(double age) const
-	{return wind_torque(age, spin_frequency(age, envelope));}
-
-	///\brief The wind torque at the current age.
-	///
-	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
-	/// {\mathrm{day} \cdot \mathrm{Gyr}}\f$
-	///
-	///The angular momentum evolution for the convective zone should already
-	///be specified by calling the set_angular_momentum_evolutio method with
-	///zone=convective
-	double wind_torque() const {return wind_torque(__age);}
+			WindSaturationState assume_wind_saturation=UNKNOWN) const;
 
 	///\brief The torque on the stellar envelope due to the core-envelope
 	///coupling at the given age.
@@ -640,8 +683,7 @@ public:
 			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 			///The convention for the real and imaginary part is just like
 			///for the return value.
-			std::complex<double> Lrad) const
-	{return differential_rotation_torque_angmom(__age, Lconv, Lrad);}
+			std::complex<double> Lrad) const;
 
 	///\brief The partial derivative of the differential rotation torque at
 	///the given age.
@@ -685,9 +727,7 @@ public:
 			///taking the pratial derivaite with respect to, if it is
 			//(convective or radiative) or that it should be taken with
 			///respect to the stellar age if with_respect_to is total.
-			StellarZone with_respect_to=total) const
-	{return differential_rotation_torque_deriv(__age, Lconv, Lrad,
-			with_respect_to);}
+			StellarZone with_respect_to=total) const;
 
 	///\brief The differential rotation torque on the stellar envelope for
 	///the given amount of differential rotation at the given age.
@@ -719,9 +759,7 @@ public:
 			std::complex<double> differential_rotation_amount, 
 
 			///The spin frequency of the convective zone in rad/day.
-			double conv_frequency) const
-	{return differential_rotation_torque(__age, differential_rotation_amount,
-			conv_frequency);}
+			double conv_frequency) const;
 
 	///\brief The partial derivative of the differential rotation torque on
 	///the stellar envelope with respect to whatever the derivatives of the
@@ -780,10 +818,7 @@ public:
 			///Set to true if the derivatives of the differential rotation
 			///and the convective zone frequency are with respect to age.
 			bool with_respect_to_age=false)
-		const
-	{return differential_rotation_torque_deriv(__age,
-			differential_rotation_amount, differential_rotation_deriv,
-			conv_frequency, conv_frequency_deriv, with_respect_to_age);}
+		const;
 
 	///\brief The torque on the stellar envelope due to the core-envelope
 	///coupling for the given age.
@@ -833,8 +868,7 @@ public:
 
 			///Radiative core angular momentum in 
 			/// \f$M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$		
-			std::complex<double> Lrad)  const
-	{return differential_rotation(__age, Lconv, Lrad);}
+			std::complex<double> Lrad)  const;
 
 	///\brief The partial derivative of the differential rotation between
 	///the convective envelope and the radiative core at the given age.
@@ -881,8 +915,7 @@ public:
 			///taking the pratial derivaite with respect to, if it is
 			//(convective or radiative) or that it should be taken with
 			///respect to the stellar age if with_respect_to is total.
-			StellarZone with_respect_to=total) const
-	{return differential_rotation_deriv(__age, Lconv, Lrad,with_respect_to);}
+			StellarZone with_respect_to=total) const;
 
 	///\brief The amount of differential rotation between the convective
 	///envelope and the radiative core at the given age.
@@ -914,7 +947,8 @@ public:
 	///
 	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
 	/// {\mathrm{day} \cdot \mathrm{Gyr}}\f$
-	double core_inertia_gain() const {return core_inertia_gain(__age);}
+	double core_inertia_gain() const
+	{return current_age_quantity(CORE_INERTIA_GAIN);}
 
 	///\brief The age derivative of the rate of moment of inertia transfer
 	///from the envolope to the core due to the convective-radiative boundary
@@ -931,7 +965,7 @@ public:
 	///Units: \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{rad}}
 	/// {\mathrm{day} \cdot \mathrm{Gyr}^2}\f$
 	double core_inertia_gain_deriv() const
-	{return core_inertia_gain_deriv(__age);}
+	{return current_age_quantity(CORE_INERTIA_GAIN, 1);}
 
 	///The age at which the star leaves the main sequence in Gyr.
 	double lifetime() const {return __lifetime;}
