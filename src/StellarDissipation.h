@@ -70,7 +70,7 @@ public:
 						coupling_timescale, disk_lock_ang_vel,
 						disk_lock_time, evolution, age,
 						conv_spin, rad_spin),
-				__mod_phase_lag(15.0/(16.0*M_PI*tidal_quality)) {}
+				__mod_phase_lag(30.0/(16.0*M_PI*tidal_quality)) {}
 
 	///\brief A function defining the dissipation efficiency of the body.
 	///
