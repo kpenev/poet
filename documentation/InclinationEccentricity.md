@@ -254,11 +254,81 @@ Finally, we use the orbital energy and angular momentum:
 	E_{orb}&=&-\frac{GMM'}{2a}\\
 	L_{orb}&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2}=GMM'\sqrt{\frac{(1-e^2)MM'}{2E(M+M')}}
 \f}
-To derive the rate of change of the orbit and spin of \f$M\f$:
+To derive the rate of change of the orbit and the angular momenta of the
+convective (\f$S^{conv}\hat{z}\f$) and radiative
+(\f$S^{rad}_x\hat{x}+S^{rad}_z\hat{z}\f$) zones of \f$M\f$ with the wind and
+core-envelope coupling included:
 \f{eqnarray*}{
-	\dot{S}&=&T_z\\
 	\dot{a}&=&-\frac{GMM'}{2E^2}\dot{E}\\
-	\dot{\Theta}&=&-\frac{T_x}{S} - \frac{T_x\cos\Theta}{L} +
+	\dot{\Theta}&=&-\frac{T_x+T_x^{coup}}{S} - \frac{T_x\cos\Theta}{L} +
 					\frac{T_z\sin\Theta}{L}\\
-	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}
+	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\
+	\dot{S}^{conv}&=&T_z+T_z^{coup}+T^{wind}\\
+	\dot{S}^{rad}_x&=&-T_x^{coup}\\
+	\dot{S}^{rad}_z&=&-T_z^{coup}
+\f}
+where \f$T_z^{coup}\f$ and \f$T_x^{coup}\f$ are the x and z components of the
+core-envelope coupling torque, and \f$T^{wind}\f$ is the torque due to the
+wind. These expressions are valid if only one of the bodies contributes to
+the evolution. If both bodies have significant tidal dissipation to affect
+the orbit, the problem becomes three dimensional.
+
+If the system ever gets in a state where the forcing frequency
+\f$\tilde{\omega}\equiv m'\Omega-mS^{conv}/I_{conv}\f$ for some (m,m')
+combination from the expansion of the potential (see above), and the
+corresponding \f$\sin(\Delta_{m,m'}(\tilde{\omega})\kappa_{m,m'}\f$ is
+discontinuous at zero, it is possible that a lock between the spin of the
+body and the orbit will be established. In that case let us split the tidal
+dissipation torque and power into not-locked components \f$T_x^0\f$,
+\f$T_z^0\f$ and \f$\dot{E}^0\f$ which only include terms with non-zero
+forcing frequency and two sets of locked components \f$T_x^\pm\f$,
+\f$T_z^\pm\f$ and \f$\dot{E}^\pm\f$ which only include the terms for which
+the forcing frequency is zero, where it is assumed to approach zero from
+above(+)/below(-). We can imagine taking an infinitesimally small timestep,
+during which thet not-locked components will contribute as usual, but over a
+fraction (\f$\lambda\f$) the timestep the (+) locked components contribute
+and over the remaining fraction (\f$1-\lambda\f$) the (-) locked components
+contribute.
+
+In order to maintain the lock, we must have:
+\f{eqnarray*}{
+	&&m'\frac{\partial}{\partial t}\sqrt{\frac{G(M+M')}{a^3}}=
+		m\frac{\partial}{\partial t}\frac{S^{conv}}{I_{conv}}\\
+	\Rightarrow && -\frac{3m'}{2}\sqrt{\frac{G(M+M')}{a^5}}\dot{a}=
+		m\frac{\dot{S}^{conv}}{I_{conv}}
+		-
+		m\frac{S^{conv}\dot{I}_{conv}}{I_{conv}^2}\\
+	\Rightarrow && -\frac{3 m S_{conv}}{2 I_{conv}}\frac{\dot{a}}{a} =
+		m\frac{\dot{S}^{conv}}{I^{conv}}
+		-
+		m\frac{S^{conv}\dot{I}_{conv}}{I_{conv}^2}\\
+	\Rightarrow && -\frac{3}{2}\frac{\dot{a}}{a}=
+		\frac{\dot{S}^{conv}}{S^{conv}}
+		-
+		\frac{\dot{I}_{conv}}{I_{conv}}\\
+	\Rightarrow && -\frac{3}{2}\frac{\dot{E}^0 + \lambda\dot{E}^+ +
+									 (1-\lambda)\dot{E}^-}
+								{E_{orb}}
+				   =
+				   \frac{\dot{I}_{conv}}{I_{conv}}
+				   +
+				   \frac{T_z^{coup} + T^{wind} + T_z^0 + \lambda T_z^+ +
+				   		 (1-\lambda)T_z^-}
+				   {S^{conv}}\\
+	\Rightarrow && \lambda\left(\frac{T_z^- - T_z^+}{S^{conv}}
+								+
+								1.5\frac{\dot{E}^- - \dot{E}^+}{E_{orb}}
+						  \right)
+					=\frac{\dot{I}_{conv}}{I_{conv}}
+				   +
+				   \frac{T_z^{coup} + T^{wind} + T_z^0 + T_z^-}{S^{conv}}
+				   +\frac{3}{2}\frac{\dot{E}^0+\dot{E}^-}{E_{orb}}
+\f}
+And the lock is maintained as long as \f$0<\lambda<1\f$.
+
+The resulting evolution equations are then the same as before, but with:
+\f{eqnarray*}{
+	T_x&=&T_x^0 + \lambda T_x^+ + (1-\lambda)T_x^-\\
+	T_z&=&T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\
+	\dot{E}&=&\dot{E}^0 + \lambda\dot{E}^+ + (1-\lambda)\dot{E}^-
 \f}
