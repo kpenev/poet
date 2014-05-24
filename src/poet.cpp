@@ -1047,7 +1047,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				real_parameters[InCol::START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);
 	}
-	OrbitSolver solver(tstart, real_parameters[InCol::TEND],
+	OrbitSolver solver(real_parameters[InCol::TEND],
 			std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	if(need_orbit)
 		solver(system, real_parameters[InCol::MAX_STEP],
