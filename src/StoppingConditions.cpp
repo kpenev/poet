@@ -52,7 +52,7 @@ std::valarray<double> SynchronizedCondition::operator()(double age,
 				 __spin_freq_mult)/__orbital_freq_mult);
 	} else stop_deriv.resize(1, NaN);
 	return std::valarray<double>(
-			(worb - (wspin*__spin_freq_mult)/__orbital_freq_mult)/worb, 1);
+			(__orbital_freq_mult*worb - wspin*__spin_freq_mult)/worb, 1);
 }
 
 std::valarray<double> BreakLockCondition::operator()(double,

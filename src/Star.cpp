@@ -24,7 +24,6 @@ void StarBase::delete_current_age_quantities()
 {
 	for(unsigned i=0; i<__current_age_quantities.size(); ++i)
 		if(__current_age_quantities[i]) {
-			std::cout << "Deleting quantity #" << i << std::endl;
 			delete __current_age_quantities[i];
 			__current_age_quantities[i]=NULL;
 		}
@@ -38,14 +37,6 @@ double StarBase::current_age_quantity(CurrentAgeQuantities quantity,
 #endif
 
 	if(__current_age_quantities[quantity]==NULL) {
-		if(quantity==MCONV || quantity==MRAD) 
-			std::cout << "Creating quantity #" << MCONV << std::endl
-				<< "Creating quantity #" << MRAD << std::endl;
-		else if(quantity==ICONV || quantity==IRAD || quantity==ITOT)
-			std::cout << "Creating quantity #" << ICONV << std::endl
-				<< "Creating quantity #" << IRAD << std::endl
-				<< "Creating quantity #" << ITOT << std::endl;
-		else std::cout << "Creating quantity #" << quantity << std::endl;
 		switch(quantity) {
 			case RADIUS :
 				__current_age_quantities[RADIUS]=__radius->deriv(__age);

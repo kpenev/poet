@@ -257,8 +257,8 @@ void TidalDissipation::init(const DissipatingBody &body1,
 	__orbital_angular_momentum=orbital_angular_momentum(body1.mass(),
 			body2.mass(), semimajor, eccentricity);
 	__Umm.resize(5, std::valarray<double>(3));
-	__dissipation_rate.resize(NaN, 
-			6*Dissipation::NUM_QUANTITIES*Dissipation::NUM_DERIVATIVES);
+	__dissipation_rate.resize(
+			6*Dissipation::NUM_QUANTITIES*Dissipation::NUM_DERIVATIVES, NaN);
 	__spin_angular_momentum.resize(2);
 	__inclination.resize(2);
 #ifdef DEBUG

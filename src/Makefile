@@ -101,7 +101,7 @@ CFLAGS_COMMON   = -W -Wall $(INCLUDES) \
 				  -D'REVISION="$(shell git log --pretty=format:\%H -n 1)"' \
 				  -D'DATADIR="$(DATADIR)"'
 
-CFLAGS_DEBUG   = -ggdb -DDEBUG $(CFLAGS_COMMON)
+CFLAGS_DEBUG   = -ggdb -pg -DDEBUG $(CFLAGS_COMMON)
 CFLAGS_RELEASE = -O3 $(CFLAGS_COMMON)
 CFLAGS_PROFILE = -g -pg $(CFLAGS_RELEASE)
 
