@@ -82,10 +82,10 @@ int StellarSystem::not_locked_differential_equations(
 		const TidalDissipation &dissipation,
 		double *evolution_rates) const
 {
-	double da_dt=-dissipation(0, Dissipation::SEMIMAJOR_DECAY)*Rsun_AU;
+	double da_dt=-dissipation(0, Dissipation::SEMIMAJOR_DECAY)/Rsun_AU;
 	evolution_rates[0]=6.5*std::pow(parameters[0], 11.0/13.0)*da_dt;
 	evolution_rates[1]=-dissipation(0, Dissipation::INCLINATION_DECAY);
-	no_planet_differential_equations(parameters, assume_wind_saturation,
+	no_planet_differential_equations(parameters+2, assume_wind_saturation,
 		evolution_rates+2);
 	evolution_rates[2]+=dissipation(0, Dissipation::TORQUEZ);
 	return GSL_SUCCESS;

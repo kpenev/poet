@@ -40,6 +40,49 @@ const double TidalDissipation::__torque_x_minus_coef[]={0.0,
 													    std::sqrt(1.5),
 													    1.0};
 
+std::ostream &operator<<(std::ostream &os, 
+		const Dissipation::Quantity &quantity)
+{
+	switch(quantity) {
+		case Dissipation::POWER : os << "POWER"; break;
+		case Dissipation::TORQUEX : os << "TORQUEX"; break;
+		case Dissipation::TORQUEZ : os << "TORQUEZ"; break;
+		case Dissipation::SEMIMAJOR_DECAY : os << "SEMIMAJOR_DECAY"; break;
+		case Dissipation::ORBIT_SPINUP : os << "ORBIT_SPINUP"; break;
+		case Dissipation::INCLINATION_DECAY : os << "INCLINATION_DECAY";
+											  break;
+		default :
+#ifdef DEBUG
+				  assert(false)
+#endif
+					  ;
+	};
+	return os;
+}
+
+///More civilized output for Dissipation::Derivative variables.
+std::ostream &operator<<(std::ostream &os,
+		const Dissipation::Derivative &deriv)
+{
+	switch(deriv) {
+		case Dissipation::NO_DERIV : std::cout << "NO_DERIV"; break;
+		case Dissipation::AGE : std::cout << "AGE"; break;
+		case Dissipation::RADIUS : std::cout << "RADIUS"; break;
+		case Dissipation::MOMENT_OF_INERTIA :
+								   std::cout << "MOMENT_OF_INERTIA";
+								   break;
+		case Dissipation::SPIN_ANGMOM : std::cout << "SPIN_ANGMOM"; break;
+		case Dissipation::SEMIMAJOR : std::cout << "SEMIMAJOR"; break;
+		case Dissipation::INCLINATION : std::cout << "INCLINATION"; break;
+		default :
+#ifdef DEBUG
+				  assert(false)
+#endif
+					  ;
+	};
+	return os;
+}
+
 void TidalDissipation::fill_Umm(double inclination, bool deriv)
 {
 	double c=std::cos(inclination), s=std::sin(inclination),
@@ -256,6 +299,7 @@ void TidalDissipation::init(const DissipatingBody &body1,
 	__orbital_energy=orbital_energy(body1.mass(), body2.mass(), semimajor);
 	__orbital_angular_momentum=orbital_angular_momentum(body1.mass(),
 			body2.mass(), semimajor, eccentricity);
+	__semimajor=semimajor;
 	__Umm.resize(5, std::valarray<double>(3));
 	__dissipation_rate.resize(
 			6*Dissipation::NUM_QUANTITIES*Dissipation::NUM_DERIVATIVES, NaN);

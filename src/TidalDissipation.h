@@ -86,6 +86,14 @@ namespace Dissipation {
 		NUM_DERIVATIVES};
 };
 
+///More civilized output for Dissipation::Quantity variables.
+std::ostream &operator<<(std::ostream &os,
+		const Dissipation::Quantity &quantity);
+
+///More civilized output for Dissipation::Derivative variables.
+std::ostream &operator<<(std::ostream &os,
+		const Dissipation::Derivative &deriv);
+
 ///\brief The rates of change of various quantities due to tidal dissipation.
 ///
 ///\ingroup StellarSystem_group
@@ -313,7 +321,7 @@ public:
 
 	///\brief The semimajor axis used when creating this tidal dissipation
 	///object in AU.
-	double semimajor() const {return __semimajor*Rsun_AU;}
+	double semimajor() const {return __semimajor;}
 
 	///\brief The orbital frequency corresponding to the semimajor axis in
 	///rad/day.

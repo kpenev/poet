@@ -800,7 +800,9 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		std::cerr << "extremum: age=" << extremum.x() << ", value="
 			<< extremum.y() << std::endl;
 #endif
-		double extremum_precision=std::min(
+		double extremum_precision;
+		if(std::isnan(extremum.y())) extremum_precision=NaN;
+		else extremum_precision=std::min(
 				std::abs(extremum.y()-stop_cond_value),
 				std::abs(extremum.y()-
 					stop_cond_history.back()[cond_ind]))/
