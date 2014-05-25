@@ -54,9 +54,8 @@ void get_tidal_dissipation(StellarSystem &system,
 			std::pow(parameters[0], 1.0/6.5))*Rsun_AU;
 	SpinOrbitLockInfo planet_lock(1, 1, 1);
 	dissipation.init(
-			system.get_star()(age, (star_lock ? NaN : parameters[2]),
-				parameters[1]),
-			system.get_planet(), semimajor, 0, star_lock, planet_lock);
+			system.get_star(), system.get_planet(), semimajor, 0, star_lock,
+			planet_lock);
 }
 
 int stellar_system_diff_eq(double age, const double *parameters,
@@ -73,10 +72,28 @@ int stellar_system_diff_eq(double age, const double *parameters,
 			input_params[3]);
 	TidalDissipation &dissipation=*static_cast<TidalDissipation*>(
 			input_params[4]);
+	const Star &star=system.get_star();
+	const Planet &planet=system.get_planet();
+	double Lconv, inclination; 
+	if(evol_mode==BINARY) {
+		inclination=parameters[1];
+		Lconv=(star_lock 
+				? orbital_angular_velocity(star.mass(), planet.mass(),
+					parameters[0]*Rsun_AU)*
+				  star.moment_of_inertia(age, convective)
+				: parameters[2]);
+	} else {
+		inclination=NaN;
+		Lconv=(evol_mode==LOCKED_TO_DISK
+				? star.disk_lock_frequency()*
+				  star.moment_of_inertia(age, convective)
+				: parameters[0]);
+	}
+	system(age, Lconv, inclination);
 	if(evol_mode==BINARY) get_tidal_dissipation(system, age, &parameters[0],
 											    star_lock, dissipation);
-	int result=system.differential_equations(age, parameters,
-			evol_mode, wind_state, star_lock, dissipation, derivatives);
+	int result=system.differential_equations(parameters, evol_mode,
+			wind_state, star_lock, dissipation, derivatives);
 	return result;
 }
 
@@ -776,7 +793,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 {
 	std::valarray<double> current_stop_cond(stop_cond.num_subconditions()),
 		current_stop_deriv;
-	current_stop_cond=stop_cond(age, orbit, derivatives, dissipation, system,
+	current_stop_cond=stop_cond(orbit, derivatives, dissipation, system,
 			current_stop_deriv, evolution_mode);
 
 	if(stop_history_ages.size()==0)
@@ -810,7 +827,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		bool is_crossing=crossing_age<=extremum.x();
 		StopInformation stop_info(std::min(crossing_age, extremum.x()),
 				(is_crossing ? stop_cond_value : extremum_precision),
-				stop_cond_type, is_crossing, cond_ind);
+				stop_cond_type, is_crossing, true, cond_ind);
 
 		if((!acceptable_step(age, stop_info) || is_crossing) &&
 				stop_info.stop_age()<result.stop_age()) result=stop_info;
@@ -836,12 +853,11 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 	return result;
 }
 
-bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
-		double &max_age, std::valarray<double> &orbit,
-		double &stop_condition_value, StoppingConditionType &stop_reason,
-		double max_step, EvolModeType evolution_mode,
-		const SpinOrbitLockInfo &star_lock, WindSaturationState wind_state,
-		const StoppingCondition &stop_cond,
+StopInformation OrbitSolver::evolve_until(StellarSystem &system,
+		double start_age, double &max_age, std::valarray<double> &orbit,
+		StoppingConditionType &stop_reason, double max_step,
+		EvolModeType evolution_mode, const SpinOrbitLockInfo &star_lock,
+		WindSaturationState wind_state, const StoppingCondition &stop_cond,
 		double planet_formation_semimajor,
 		double planet_formation_inclination)
 {
@@ -877,11 +893,10 @@ bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
 	double step_size=0.01*(max_age-start_age);
 
 	stop_reason=NO_STOP;
-	bool result=false;
+	StopInformation stop;
 	while(t<max_age) {
 		double max_next_t=std::min(t + max_step, max_age); 
 		int status=GSL_SUCCESS;
-		StopInformation stop;
 		bool step_rejected=false;
 		do {
 			status=gsl_odeiv2_evolve_apply(
@@ -901,8 +916,6 @@ bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
 				max_next_t=stop.stop_age();
 				step_rejected=true;
 			} else step_rejected=false;
-			if(stop.is_crossing())
-				stop_condition_value=stop.stop_condition_precision();
 		} while(step_rejected &&
 				std::abs(stop.stop_condition_precision())>precision);
 		if (status != GSL_SUCCESS) {
@@ -917,7 +930,7 @@ bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
                 planet_formation_semimajor, planet_formation_inclination);
 		if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
 			stop_reason=stop.stop_reason();
-			result=(t>stop.stop_age());
+			stop.crossed_zero()=(t>stop.stop_age());
 			break;
 		}
 	}
@@ -927,7 +940,7 @@ bool OrbitSolver::evolve_until(StellarSystem &system, double start_age,
 	gsl_odeiv2_evolve_free(evolve);
 	gsl_odeiv2_control_free(step_control);
 	gsl_odeiv2_step_free(step);
-	return result;
+	return stop;
 }
 
 CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
@@ -955,7 +968,6 @@ CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
 		*result|=new SynchronizedCondition(2, 1, 0);
 		*result|=new SynchronizedCondition(2, -1, 0);
 		*result|=new SynchronizedCondition(1, -1, 0);
-		*result|=new SynchronizedCondition(0, 1, 0);
 	}
 	return result;
 }
@@ -1017,36 +1029,38 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 }
 
 EvolModeType OrbitSolver::next_evol_mode(double age,
-		const std::valarray<double> &orbit,
-		double initial_semimajor, const StellarSystem &system,
+		const std::valarray<double> &parameters,
+		double initial_semimajor, StellarSystem &system,
 		EvolModeType evolution_mode,
-		const SpinOrbitLockInfo &star_lock,
+		SpinOrbitLockInfo &star_lock, WindSaturationState wind_state,
 		StoppingConditionType condition_type,
 		double condition_value, bool stopped_before,
 		double planet_formation_age) const
 {
 	if(stopped_before) condition_value*=-1;
-	if(condition_type==NO_STOP) return critical_age_evol_mode(age, orbit,
-			initial_semimajor, system, evolution_mode, star_lock, 
+	if(condition_type==NO_STOP) return critical_age_evol_mode(age,
+			parameters, initial_semimajor, system, evolution_mode, star_lock,
 			planet_formation_age);
 	if(condition_type==SYNCHRONIZED) {
-		throw Error::NotImplemented("Locked spin-orbit evolution");
-/*		std::valarray<double> locked_orbit=transform_orbit(evolution_mode,
-				LOCKED_TO_PLANET, age, orbit, initial_semimajor, system);
-		std::valarray<double> locked_orbit_diff_eq(2), stop_deriv;
-		WindSaturationState wind_sat=UNKNOWN;
-		EvolModeType locked_mode=LOCKED_TO_PLANET;
-		void *diff_eq_params[]={
-			static_cast<void*>(const_cast<StellarSystem*>(&system)),
-			static_cast<void*>(&locked_mode),
-			static_cast<void*>(&wind_sat)};
-		stellar_system_diff_eq(age, &locked_orbit[0], &locked_orbit_diff_eq[0],
-				static_cast<void*>(diff_eq_params));
-		if(BreakLockCondition()(age, locked_orbit, locked_orbit_diff_eq,
-					system, stop_deriv, evolution_mode)[0]>=0)
-			return LOCKED_TO_PLANET;
-		else return (condition_value>0 ? FAST_PLANET : SLOW_PLANET);*/
+#ifdef DEBUG
+		assert(star_lock);
+		assert(evolution_mode==BINARY);
+#endif
+		system(age, parameters[2], parameters[1]);
+		TidalDissipation dissipation;
+		get_tidal_dissipation(system, age, &parameters[0], star_lock,
+				dissipation);
+		std::valarray<double> no_planet_diff_eq(3);
+		system.differential_equations(&parameters[2], BINARY, wind_state,
+				star_lock, dissipation, &no_planet_diff_eq[0]);
+		double above_lock_fraction=system.above_lock_fraction(dissipation, 
+				no_planet_diff_eq[0]);
+
+		star_lock.lock_direction(
+				above_lock_fraction>0 && above_lock_fraction<1 ? 1 : 0);
+		return BINARY;
 	} else if(condition_type==BREAK_LOCK) {
+		star_lock.lock_direction(0);
 		return BINARY;
 	} else if(condition_type==PLANET_DEATH) return NO_PLANET;
 	else if(condition_type==WIND_SATURATION || condition_type==EXTERNAL)
@@ -1344,23 +1358,31 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 				system, planet_formation_age, required_ages), stop_evol_age);
 		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
 				evolution_mode, star_lock);
-		double stop_condition_value=NaN;
-		bool stopped_before=!evolve_until(system, start_age, next_stop_age,
-				orbit, stop_condition_value, stop_reason, max_step,
-				evolution_mode, initial_lock, wind_state,
-				*stopping_condition, planet_formation_semimajor,
-				planet_formation_inclination);
+		StopInformation stop_information=evolve_until(system, start_age,
+				next_stop_age, orbit, stop_reason, max_step, evolution_mode,
+				initial_lock, wind_state, *stopping_condition,
+				planet_formation_semimajor, planet_formation_inclination);
 		last_age=next_stop_age;
 		if(last_age<stop_evol_age) {
 			EvolModeType old_evolution_mode=evolution_mode;
+			if(stop_reason==SYNCHRONIZED) {
+				old_star_lock=star_lock;
+				const SynchronizedCondition &sync_cond=
+					stopping_condition->get_sync_condition(
+							stop_information.stop_condition_index());
+				star_lock.set_lock(sync_cond.orbital_frequency_multiplier(),
+						sync_cond.spin_frequency_multiplier(), 1);
+			}
 			if(!no_evol_mode_change) evolution_mode=next_evol_mode(last_age,
 					orbit, planet_formation_semimajor, system,
-					evolution_mode, star_lock, stop_reason,
-					stop_condition_value, stopped_before,
-					planet_formation_age);
+					evolution_mode, star_lock, wind_state, stop_reason,
+					stop_information.stop_condition_precision(),
+					!stop_information.crossed_zero(), planet_formation_age);
 #ifdef DEBUG
 			std::cerr << "Changing evolution mode from "
-				<< old_evolution_mode << " to " << evolution_mode
+				<< (old_star_lock ? "locked" : "not locked ") 
+				<< old_evolution_mode << " to " 
+				<< (star_lock ? "locked" : "not locked ") << evolution_mode
 				<< std::endl;
 #endif
 			if(old_evolution_mode!=evolution_mode) {

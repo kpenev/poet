@@ -221,7 +221,7 @@ private:
 
 			///Whether to assume that body 1 is in a spin orbit lock and
 			///identify the term that is locked.
-			SpinOrbitLockInfo &lock,
+			SpinOrbitLockInfo lock,
 
 			///Which body's dissipation is needed (shold be 0 or 1).
 			short body_index,
@@ -265,8 +265,8 @@ public:
 			const DissipatingBody &body2,
 			double semimajor,
 			double eccentricity,
-			SpinOrbitLockInfo &lock1,
-			SpinOrbitLockInfo &lock2)
+			const SpinOrbitLockInfo &lock1,
+			const SpinOrbitLockInfo &lock2)
 	{init(body1, body2, semimajor, eccentricity, lock1, lock2);}
 
 	///\brief Calculates the rates of change of various quantities due to
@@ -275,8 +275,8 @@ public:
 	///For now only works for zero eccentricity, throws and ecception
 	///otherwise.
 	///
-	///If some term in the tidal dissipation equations is locked (see the
-	///lock1 and lock2 arguments) the dissipation due to that term is kept
+	///If some terms in the tidal dissipation equations are locked (see the
+	///lock1 and lock2 arguments) the dissipation due to those terms is kept
 	///separate.
 	void init(
 			///The first dissipating body.
@@ -295,16 +295,16 @@ public:
 			///identify the term that is locked. The direction is ignored. If
 			///this variable converts to true, the angular momentum and spin 
 			///frequency of body1 are never used.
-			SpinOrbitLockInfo &lock1,
+			const SpinOrbitLockInfo &lock1,
 
 			///Whether to assume that body 2 is in a spin orbit lock and
 			///identify the term that is locked. The direction is ignored. If
 			///this variable converts to true, the angular momentum and spin 
 			///frequency of body2 are never used.
-			SpinOrbitLockInfo &lock2);
+			const SpinOrbitLockInfo &lock2);
 
-	///\brief Retuns the rate of change of some quantity due to tidal
-	///dissipation.
+	///\brief Rates of change of quantities due to tidal dissipation split
+	///into locked and non-locked terms.
 	double operator()(
 			///Which body's dissipation is needed (shold be 0 or 1).
 			short body_index,
@@ -317,7 +317,23 @@ public:
 			
 			///Whether to return one of the locked rates or the non-locked
 			///rate.
-			short lock_dir=false) const;
+			short lock_dir=0) const;
+
+	///\brief Rates of change of quantities due to tidal dissipation for a 
+	///particular combination of locked and non-locked terms.
+	double operator()(
+			///Which body's dissipation is needed (shold be 0 or 1).
+			short body_index,
+
+			///The quantity needed.
+			Dissipation::Quantity quantity,
+			
+			///The fraction of above the lock terms to use (the below the
+			///lock terms are assigned complimentary fraction).
+			double above_fraction,
+
+			///Return the quantity itself or one of its derivatives.
+			Dissipation::Derivative derivative=Dissipation::NO_DERIV) const;
 
 	///\brief The semimajor axis used when creating this tidal dissipation
 	///object in AU.
@@ -325,11 +341,17 @@ public:
 
 	///\brief The orbital frequency corresponding to the semimajor axis in
 	///rad/day.
-	double orbital_frequency() const {return __orbital_frequency;}
+	double orbit_frequency() const {return __orbital_frequency;}
 
-	///\brief The spin frequency of one of the bodies in rad/day.
+	///The orbital energy in \f$M_\odot R_\odot^2 rad^2/day^2\f$.
+	double orbit_energy() const {return __orbital_energy;}
+
+	///\brief The spin angular momentum of one of the bodies in 
+	/// \f$M_{odot}R_{odot}^2 rad/day\f$.
 	double spin_angular_momentum(short body_index) const
 	{return __spin_angular_momentum[body_index];}
+
+
 };
 
 #endif

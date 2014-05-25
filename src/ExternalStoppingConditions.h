@@ -24,7 +24,7 @@ public:
 
 	///\brief Returns the difference between the convective zone spin and
 	///the threshold divided by the latter.
-	std::valarray<double> operator()(double age,
+	std::valarray<double> operator()(
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const StellarSystem &system,

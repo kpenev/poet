@@ -39,93 +39,75 @@ int StellarSystem::no_planet_differential_equations(const double *parameters,
 	return GSL_SUCCESS;
 }
 
-int StellarSystem::locked_to_orbit_differential_equations(
-		const double *parameters, WindSaturationState assume_wind_saturation,
-		const SpinOrbitLockInfo &star_lock,
-		const TidalDissipation &dissipation, double *evolution_rates) const
-{
-#ifdef DEBUG
-	assert(parameters[0]>0);
-#endif
-
-	std::complex<double> Lrad(parameters[2], parameters[3]);
-	double wconv=dissipation.orbital_frequency(),
-		   Iconv=__star.moment_of_inertia(convective),
-		   Lconv=wconv*Iconv,
-		   dIconv_dt=__star.moment_of_inertia_deriv(convective),
-		   wind_torque=__star.wind_torque(wconv, assume_wind_saturation);
-	std::complex<double>
-		coupling_torque=__star.differential_rotation_torque_angmom(Lconv,
-				Lrad);
-	throw Error::NotImplemented("Locked orbital evolution");
-
-/*
-		   semimajor_rsun=orbital_parameters[0],
-		   semimajor_meters=semimajor_rsun*AstroConst::solar_radius,
-		   semimajor_au=semimajor_rsun*Rsun_AU,
-		   mstar=__star.mass()*AstroConst::solar_mass,
-		   mplanet=__planet.mass()*AstroConst::jupiter_mass,
-		   mtotal=mstar+mplanet,
-		   torque_coef=std::sqrt(semimajor_meters/mtotal/AstroConst::G)*
-			   AstroConst::solar_radius/AstroConst::day;
-	orbital_derivatives[0]=2.0*(torque_coef*(coupling_torque-wind_torque)
-		- dIconv_dt/semimajor_rsun)/
-		(mstar*mplanet/(mtotal*AstroConst::solar_mass) -
-		 3.0*Iconv/std::pow(semimajor_rsun,2));
-	orbital_derivatives[1]=-coupling_torque;*/
-	return GSL_SUCCESS;
-}
-
-int StellarSystem::not_locked_differential_equations(
+int StellarSystem::binary_differential_equations(
 		const double *parameters,
 		WindSaturationState assume_wind_saturation,
+		const SpinOrbitLockInfo &star_lock,
 		const TidalDissipation &dissipation,
 		double *evolution_rates) const
 {
-	double da_dt=-dissipation(0, Dissipation::SEMIMAJOR_DECAY)/Rsun_AU;
-	evolution_rates[0]=6.5*std::pow(parameters[0], 11.0/13.0)*da_dt;
-	evolution_rates[1]=-dissipation(0, Dissipation::INCLINATION_DECAY);
-	no_planet_differential_equations(parameters+2, assume_wind_saturation,
-		evolution_rates+2);
-	evolution_rates[2]+=dissipation(0, Dissipation::TORQUEZ);
+	unsigned Lrad_par_index=(star_lock ? 2 : 3);
+	no_planet_differential_equations(parameters+(Lrad_par_index-1),
+			assume_wind_saturation, evolution_rates+(Lrad_par_index-1));
+	double above_fraction=(star_lock ?
+			above_lock_fraction(dissipation, evolution_rates[1]) : 0);
+	double da_dt=-dissipation(0, Dissipation::SEMIMAJOR_DECAY,
+			above_fraction)/Rsun_AU, Lconv;
+	evolution_rates[1]=-dissipation(0, Dissipation::INCLINATION_DECAY,
+			above_fraction);
+	if(star_lock) {
+		evolution_rates[0]=da_dt;
+		Lconv=orbital_angular_velocity(__star.mass(), __planet.mass(),
+				parameters[0]*Rsun_AU)*__star.moment_of_inertia(convective);
+	} else {
+		evolution_rates[0]=6.5*std::pow(parameters[0], 11.0/13.0)*da_dt;
+		evolution_rates[2]+=dissipation(0, Dissipation::TORQUEZ);
+		Lconv=parameters[2];
+	}
+	//Change of Lrad due to tidal rotation of stellar convective zone spin
+	evolution_rates[Lrad_par_index]+=dissipation(0, Dissipation::TORQUEX)*
+		parameters[Lrad_par_index+1]/Lconv;
+	evolution_rates[Lrad_par_index+1]-=dissipation(0, Dissipation::TORQUEX)*
+		parameters[Lrad_par_index]/Lconv;
 	return GSL_SUCCESS;
 }
 
 StellarSystem::StellarSystem(Star &star, const Planet &planet,
-		double age, const std::string &system_name) :
-	__name(system_name), __age(age), __star(star), __planet(planet)
+		const std::string &system_name) :
+	__name(system_name), __star(star), __planet(planet)
 {
 }
 
-int StellarSystem::differential_equations(
-		double age, const double *parameters,
+double StellarSystem::above_lock_fraction(
+		const TidalDissipation &dissipation, double external_torque) const
+{
+	double numerator=__star.moment_of_inertia(convective)/
+		__star.moment_of_inertia_deriv(convective)
+		+
+		(dissipation(0, Dissipation::TORQUEZ, 0.0)+external_torque)/
+		 dissipation.spin_angular_momentum(0)
+		 +
+		 1.5*dissipation(0, Dissipation::POWER, 0.0)/
+		 dissipation.orbit_energy(),
+		 denominator=
+			 (dissipation(0,Dissipation::TORQUEZ,Dissipation::NO_DERIV,-1)
+			  -
+			  dissipation(0,Dissipation::TORQUEZ,Dissipation::NO_DERIV,1))/
+			 dissipation.spin_angular_momentum(0)
+			 +
+			 1.5*(dissipation(0,Dissipation::POWER,Dissipation::NO_DERIV,-1)
+				 -
+				 dissipation(0,Dissipation::POWER, Dissipation::NO_DERIV,1))
+			 /dissipation.orbit_energy();
+	return numerator/denominator;
+}
+
+int StellarSystem::differential_equations(const double *parameters,
 		EvolModeType evolution_mode, 
 		WindSaturationState assume_wind_saturation,
 		const SpinOrbitLockInfo &star_lock,
-		const TidalDissipation &dissipation,
-		double *evolution_rates)
+		const TidalDissipation &dissipation, double *evolution_rates)
 {
-	double Lconv, inclination;
-	switch(evolution_mode) {
-		case LOCKED_TO_DISK :
-			Lconv=__star.disk_lock_frequency()*
-				__star.moment_of_inertia(age, convective);
-			inclination=0;
-			break;
-		case NO_PLANET : Lconv=parameters[0]; inclination=0; break;
-		case BINARY :
-			Lconv=(star_lock ? dissipation.orbital_frequency()*
-					__star.moment_of_inertia(age, convective) :
-					parameters[2]);
-			inclination=parameters[1];
-			break;
-		default :
-#ifdef DEBUG
-			assert(false)
-#endif
-				;
-	}
-	if(__star.age()!=age) __star(age, Lconv, inclination);
 	if(evolution_mode==LOCKED_TO_DISK)
 		return locked_conv_differential_equations(parameters,
 				evolution_rates);
@@ -133,12 +115,9 @@ int StellarSystem::differential_equations(
 		return no_planet_differential_equations(parameters, 
 				assume_wind_saturation, evolution_rates);
 	else if(evolution_mode==BINARY) {
-		if(star_lock) 
-			return locked_to_orbit_differential_equations(parameters,
-					assume_wind_saturation, star_lock, dissipation,
-					evolution_rates);
-		else return not_locked_differential_equations(parameters,
-				assume_wind_saturation, dissipation, evolution_rates);
+		return binary_differential_equations(parameters,
+				assume_wind_saturation, star_lock, dissipation,
+				evolution_rates);
 	} else
 		throw Error::BadFunctionArguments("Unrecognized evolution mode in "
 				"StellarSystem::differential_equations");

@@ -61,10 +61,9 @@ public:
 
 	///\brief The values of quantities which should cross zero when the
 	///condition(s) is(are) satisfied.
+	///
+	///The input stellar system must already have its age set.
 	virtual std::valarray<double> operator()(
-			///System age in Gyr.
-			double age,
-			
 			///The variables which are currently being evolved. The content
 			///depends on the evol_mode argument.
 			const std::valarray<double> &orbit, 
@@ -123,7 +122,7 @@ public:
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
-	std::valarray<double> operator()(double,
+	std::valarray<double> operator()(
 			const std::valarray<double> &,
 			const std::valarray<double> &,
 			const TidalDissipation &,
@@ -174,7 +173,7 @@ public:
 	///
 	///The evolution mode must be FAST_PLANET, SLOW_PLANET or LOCKED_TO_DISK
 	///or NO_PLANET.
-	std::valarray<double> operator()(double age,
+	std::valarray<double> operator()(
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const TidalDissipation &tidal_dissipation,
@@ -184,6 +183,16 @@ public:
 
 	///Identify this as a SYNCHRONIZED condition.
 	StoppingConditionType type(unsigned =0) const {return SYNCHRONIZED;}
+
+	///The multiplier in front of the orbital frequency in the lock.
+	int orbital_frequency_multiplier() const {return __orbital_freq_mult;}
+
+	///The multiplier in front of the spin frequency in the lock.
+	int spin_frequency_multiplier() const {return __spin_freq_mult;}
+
+	///Which body's spin is checked for locking.
+	short body_index() const {return __body_index;}
+
 };
 
 ///\brief Satisfied when the maximum tidal torque that the planet can exert
@@ -194,13 +203,8 @@ class BreakLockCondition : public StoppingCondition {
 public: 
 	///\brief How far away from breaking the lock the system is.
 	///
-	///Two values are calculated: 
-	/// - The difference between the maximum evolution of the semimajor
-	///	  axis and the evolution required to keep the star synchronized
-	///   divided by the latter.
-	/// - The difference between the evolution required to keep the star
-	///   synchronized and the minimum evolution of the semimajor axis
-	///   divided by the former.
+	///Two values are calculated: the fraction of the above and below the
+	///lock terms which must be included in order to maintain the lock.
 	///
 	///This way both values are positive if the lock is maintained.
 	///
@@ -209,7 +213,6 @@ public:
 	///
 	///The evolution mode must be LOCKED_TO_PLANET.
 	std::valarray<double> operator()(
-			double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const TidalDissipation &tidal_dissipation,
@@ -239,7 +242,6 @@ public:
 	///The evolution mode must be FAST_PLANET, LOCKED_TO_PLANET or
 	///SLOW_PLANET.
 	std::valarray<double> operator()(
-			double age,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const TidalDissipation &tidal_dissipation,
@@ -259,7 +261,7 @@ class WindSaturationCondition : public StoppingCondition {
 public:
 	///\brief The difference between the convective and wind saturation
 	///angular velocities divided by the latter.
-	std::valarray<double> operator()(double age,
+	std::valarray<double> operator()(
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const TidalDissipation &tidal_dissipation,
@@ -286,8 +288,11 @@ public:
 ///\ingroup OrbitSolver_group
 class CombinedStoppingCondition : public StoppingCondition {
 private:
-	///The conditions that are to be combined
-	std::vector<const StoppingCondition *> __sub_conditions;
+	///The non synchronized conditions that are to be combined.
+	std::vector<const StoppingCondition *> __generic_sub_conditions;
+
+	///The synchronized conditions that are to be combined.
+	std::vector<const SynchronizedCondition *> __sync_sub_conditions;
 
 	///\brief The number of subconditinos included, allowing for
 	///subconditions with multiple entries.
@@ -303,10 +308,46 @@ private:
 	///\brief The interpolation ranges of the subconditinos, including
 	///subconditions of subconditions.
 	std::vector<double> __interpolation_ranges;
+
+	///Updates all private methods except the sub_condition lists for adding
+	///rhs.
+	void update_meta_information(const StoppingCondition *rhs);
+
+	///Adds the values of the given sub-condition to the given array.
+	void add_subcondition_values(
+			///The stopping condition to process.
+			const StoppingCondition *cond,
+
+			///See operator()
+			const std::valarray<double> &orbit,
+			
+			///See operator()
+			const std::valarray<double> &derivatives,
+
+			///See operator()
+			const TidalDissipation &tidal_dissipation,
+
+			///See operator()
+			const StellarSystem &system,
+
+			///See operator()
+			EvolModeType evol_mode,
+
+			///The index in the values and derivs arrays where to start
+			///inserting. On output it is updated to the position immediately
+			///after the last insert.
+			size_t &first_index,
+
+			///An array to overwrite with the sub-condition values.
+			std::valarray<double> &values,
+
+			///An array to overwrite with the sub-condition derivatives.
+			std::valarray<double> &derivs) const;
 public:
 	///Create an empty stopping condition (identical to NoStopCondition).
 	CombinedStoppingCondition() :
-		__sub_conditions(), __num_subconditions(0), __delete_subcond(true) {}
+		__generic_sub_conditions(), __sync_sub_conditions(),
+		__num_subconditions(0), __delete_subcond(true) {}
 
 	///Adds the conditions in RHS to the conditions of *this.
 	CombinedStoppingCondition &operator|=(
@@ -315,11 +356,16 @@ public:
 	///Adds  RHS to the conditions of *this.
 	CombinedStoppingCondition &operator|=(const StoppingCondition *rhs);
 
-	///\brief Returns the values of all stopping sub_conditions.
+	///Adds  RHS to the conditions of *this special case for synchronization.
+	CombinedStoppingCondition &operator|=(
+			const SynchronizedCondition *rhs);
+
+	///\brief Returns the values of all stopping sub_conditions, not
+	///necessarily in the order added.
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
-	std::valarray<double> operator()(double age,
+	std::valarray<double> operator()(
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			const TidalDissipation &tidal_dissipation,
@@ -335,6 +381,16 @@ public:
 	StoppingConditionType type(unsigned index=0) const
 	{return __types[index];}
 
+	///Returns the index-th condition if it is of SYNCHRONIZED type.
+	const SynchronizedCondition &get_sync_condition(unsigned index)
+	{
+#ifdef DEBUG
+		assert(index>=__generic_sub_conditions.size() &&
+				index<__num_subconditions);
+#endif
+		return *__sync_sub_conditions[index-__generic_sub_conditions.size()];
+	}
+
 	double interpolation_range(unsigned index=0) const
 	{return __interpolation_ranges[index];}
 
@@ -344,10 +400,9 @@ public:
 };
 
 ///Returns the spin frequency of the stellar convective zone in rad/day.
+///
+///The system age must already be set.
 double convective_frequency(
-		///The system age in Gyr.
-		double age,
-		
 		///The stellar system.
 		const StellarSystem &system, 
 

@@ -21,7 +21,7 @@ std::ostream &operator<<(std::ostream &os,
 	return os;
 }
 
-std::valarray<double> SynchronizedCondition::operator()(double age,
+std::valarray<double> SynchronizedCondition::operator()(
 		const std::valarray<double> &,
 		const std::valarray<double> &derivatives,
 		const TidalDissipation &tidal_dissipation,
@@ -29,21 +29,19 @@ std::valarray<double> SynchronizedCondition::operator()(double age,
 		std::valarray<double> &stop_deriv,
 		EvolModeType) const
 {
-	double worb=tidal_dissipation.orbital_frequency(),
+	const Star &star=system.get_star();
+	const Planet &planet=system.get_planet();
+	double worb=tidal_dissipation.orbit_frequency(),
 		   Lspin=tidal_dissipation.spin_angular_momentum(__body_index),
-		   wspin=(__body_index==0 ? 
-				   system.get_star().spin_frequency(age, envelope, Lspin) :
-				   system.get_planet().spin_frequency(age, Lspin));
+		   wspin=(__body_index==0 ? star.spin_frequency(envelope, Lspin) :
+				   planet.spin_frequency(system.age(), Lspin));
 
 	if(derivatives.size()>0) {
 		double dwspin_dt=
 			tidal_dissipation(__body_index, Dissipation::TORQUEZ)*
 			(__body_index==0
-			 ? 
-			 system.get_star().spin_frequency_angmom_deriv(age, convective,
-				 Lspin) 
-			 :
-			 system.get_planet().spin_frequency_angmom_deriv(age, Lspin)),
+			 ? star.spin_frequency_angmom_deriv(convective, Lspin) 
+			 : planet.spin_frequency_angmom_deriv(system.age(), Lspin)),
 			   dworb_dt=tidal_dissipation(0, Dissipation::ORBIT_SPINUP)
 				   +
 				   tidal_dissipation(1, Dissipation::ORBIT_SPINUP);
@@ -55,11 +53,11 @@ std::valarray<double> SynchronizedCondition::operator()(double age,
 			(__orbital_freq_mult*worb - wspin*__spin_freq_mult)/worb, 1);
 }
 
-std::valarray<double> BreakLockCondition::operator()(double,
-		const std::valarray<double> &,
+std::valarray<double> BreakLockCondition::operator()(
+		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
 		const TidalDissipation &tidal_dissipation,
-		const StellarSystem &, 
+		const StellarSystem &system, 
 		std::valarray<double> &stop_deriv,
 		EvolModeType
 #ifdef DEBUG
@@ -71,29 +69,24 @@ std::valarray<double> BreakLockCondition::operator()(double,
 	assert(evol_mode==BINARY);
 	assert(derivatives.size()==4);
 #endif
-	double below_da_dt=0, above_da_dt=0, da_dt=derivatives[0];
-	for(short body_ind=0; body_ind<=1; ++body_ind) {
-		double non_locked_da_dt=tidal_dissipation(body_ind,
-				Dissipation::SEMIMAJOR_DECAY);
-		below_da_dt+=tidal_dissipation(body_ind,
-				Dissipation::SEMIMAJOR_DECAY, Dissipation::NO_DERIV, -1)
-			+
-			non_locked_da_dt;
-		above_da_dt=tidal_dissipation(body_ind,
-				Dissipation::SEMIMAJOR_DECAY, Dissipation::NO_DERIV,
-				1)
-			+
-			non_locked_da_dt;
-	}
+	const Star &star=system.get_star();
+	double mplanet=system.get_planet().mass(),
+		   wconv=orbital_angular_velocity(star.mass(), mplanet,
+				   orbit[0]*Rsun_AU),
+		   Lconv=wconv*star.moment_of_inertia(convective),
+		   wind_torque=star.wind_torque(wconv, 0),
+		   coupling_z_torque=star.differential_rotation_torque_angmom(Lconv,
+				   std::complex<double>(orbit[2], orbit[3])).real(),
+		   above_fraction=system.above_lock_fraction(tidal_dissipation,
+				   coupling_z_torque - wind_torque);
 	stop_deriv.resize(2, NaN);
-	if(da_dt==0) return std::valarray<double>(Inf, 2);
 	std::valarray<double> result(2);
-	result[0]=(std::max(below_da_dt, above_da_dt)-da_dt)/da_dt;
-	result[1]=(da_dt-std::min(below_da_dt, above_da_dt))/da_dt;
+	result[0]=above_fraction;
+	result[1]=1.0-above_fraction;
 	return result;
 }
 
-std::valarray<double> PlanetDeathCondition::operator()(double age,
+std::valarray<double> PlanetDeathCondition::operator()(
 		const std::valarray<double> &,
 		const std::valarray<double> &,
 		const TidalDissipation &tidal_dissipation,
@@ -109,14 +102,14 @@ std::valarray<double> PlanetDeathCondition::operator()(double age,
 	assert(evol_mode==BINARY);
 #endif
 
-	double min_semimajor=system.get_planet().minimum_semimajor(age);
+	double min_semimajor=system.get_planet().minimum_semimajor(system.age());
 	stop_deriv.resize(1, NaN);
 	if(std::isinf(min_semimajor)) return std::valarray<double>(-1.0, 1);
 	return std::valarray<double>(
 			(tidal_dissipation.semimajor()-min_semimajor)/min_semimajor, 1);
 }
 
-double convective_frequency(double age, const StellarSystem &system, 
+double convective_frequency(const StellarSystem &system, 
 		const std::valarray<double> &orbit, EvolModeType evol_mode)
 {
 	if(evol_mode==BINARY) {
@@ -127,12 +120,10 @@ double convective_frequency(double age, const StellarSystem &system,
 #ifdef DEBUG
 			assert(orbit.size()==5);
 #endif
-			return system.get_star().spin_frequency(age, convective,
-				orbit[2]);
+			return system.get_star().spin_frequency(convective, orbit[2]);
 		}
 	} else if(evol_mode==NO_PLANET)
-		return system.get_star().spin_frequency(age, convective,
-				orbit[0]);
+		return system.get_star().spin_frequency(convective, orbit[0]);
 	else if(evol_mode==LOCKED_TO_DISK)
 		throw Error::BadFunctionArguments("The convective spin frequency"
 				" is not defined for disk locked evolution mode.");
@@ -140,7 +131,7 @@ double convective_frequency(double age, const StellarSystem &system,
 			"argument");
 }
 
-std::valarray<double> WindSaturationCondition::operator()(double age,
+std::valarray<double> WindSaturationCondition::operator()(
 		const std::valarray<double> &orbit,
 		//Accepts but never uses derivatives
 		const std::valarray<double> &,
@@ -151,34 +142,18 @@ std::valarray<double> WindSaturationCondition::operator()(double age,
 		EvolModeType evol_mode) const
 {
 	double wsat=system.get_star().wind_saturation_frequency(),
-		   wconv=convective_frequency(age, system, orbit, evol_mode);
+		   wconv=convective_frequency(system, orbit, evol_mode);
 
 	stop_deriv.resize(1, NaN);
 	if(std::isinf(wsat)) return std::valarray<double>(-1.0, 1);
 	return std::valarray<double>((wconv-wsat)/wsat, 1);
 }
 
-CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
-		const CombinedStoppingCondition &rhs)
-{
-	__sub_conditions.insert(__sub_conditions.end(),
-			rhs.__sub_conditions.begin(), rhs.__sub_conditions.end());
-	__num_subconditions+=rhs.__num_subconditions;
-	if(__delete_subcond)
-		const_cast<CombinedStoppingCondition &>(rhs).__delete_subcond=false;
-	__types.insert(__types.end(), rhs.__types.begin(), rhs.__types.end());
-	__interpolation_ranges.insert(__interpolation_ranges.end(),
-			rhs.__interpolation_ranges.begin(),
-			rhs.__interpolation_ranges.end());
-	return *this;
-}
-
-CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
+void CombinedStoppingCondition::update_meta_information(
 		const StoppingCondition *rhs)
 {
 	size_t num_new_subcond=rhs->num_subconditions();
 	__num_subconditions+=num_new_subcond;
-	__sub_conditions.push_back(rhs);
 	__types.reserve(__types.size()+num_new_subcond);
 	__interpolation_ranges.reserve(
 			__interpolation_ranges.size()+num_new_subcond);
@@ -186,17 +161,78 @@ CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		__types.push_back(rhs->type(i));
 		__interpolation_ranges.push_back(rhs->interpolation_range(i));
 	}
+}
+
+void CombinedStoppingCondition::add_subcondition_values(
+		const StoppingCondition *cond, 
+		const std::valarray<double> &orbit,
+		const std::valarray<double> &derivatives,
+		const TidalDissipation &dissipation,
+		const StellarSystem &system,
+		EvolModeType evol_mode,
+		size_t &first_index,
+		std::valarray<double> &values,
+		std::valarray<double> &derivs) const
+{
+	std::valarray<double> sub_stop_deriv(cond->num_subconditions()),
+		temp_array=(*cond)(orbit, derivatives, dissipation, system,
+				sub_stop_deriv, evol_mode);
+	for(size_t subcond_ind=0; subcond_ind<temp_array.size();
+			subcond_ind++) {
+		values[first_index]=temp_array[subcond_ind];
+		derivs[first_index]=sub_stop_deriv[subcond_ind];
+		++first_index;
+	}
+}
+
+CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
+		const CombinedStoppingCondition &rhs)
+{
+	update_meta_information(&rhs);
+	__generic_sub_conditions.insert(__generic_sub_conditions.end(),
+			rhs.__generic_sub_conditions.begin(),
+			rhs.__generic_sub_conditions.end());
+	__sync_sub_conditions.insert(__sync_sub_conditions.end(),
+			rhs.__sync_sub_conditions.begin(),
+			rhs.__sync_sub_conditions.end());
+	if(__delete_subcond) {
+#ifdef DEBUG
+		assert(rhs.__delete_subcond);
+#endif
+		const_cast<CombinedStoppingCondition &>(rhs).__delete_subcond=false;
+	}
 	return *this;
+}
+
+CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
+		const StoppingCondition *rhs)
+{
+	update_meta_information(rhs);
+	__generic_sub_conditions.push_back(rhs);
+	return *this;
+}
+
+CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
+		const SynchronizedCondition *rhs)
+{
+	update_meta_information(rhs);
+	__sync_sub_conditions.push_back(rhs);
 }
 
 CombinedStoppingCondition::~CombinedStoppingCondition()
 {
+	if(!__delete_subcond) return;
 	for(std::vector<const StoppingCondition *>::const_iterator
-			i=__sub_conditions.begin(); i!=__sub_conditions.end(); i++)
+			i=__generic_sub_conditions.begin();
+			i!=__generic_sub_conditions.end(); ++i)
+		delete *i;
+	for(std::vector<const SynchronizedCondition *>::const_iterator
+			i=__sync_sub_conditions.begin();
+			i!=__sync_sub_conditions.end(); ++i)
 		delete *i;
 }
 
-std::valarray<double> CombinedStoppingCondition::operator()(double age,
+std::valarray<double> CombinedStoppingCondition::operator()(
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
 		const TidalDissipation &dissipation,
@@ -208,17 +244,14 @@ std::valarray<double> CombinedStoppingCondition::operator()(double age,
 	stop_deriv.resize(__num_subconditions, NaN);
 	size_t i=0;
 	for(std::vector<const StoppingCondition *>::const_iterator
-			cond=__sub_conditions.begin(); cond!=__sub_conditions.end();
-			cond++) {
-		std::valarray<double> sub_stop_deriv(1),
-			temp_array=(**cond)(age, orbit, derivatives, dissipation, system,
-					sub_stop_deriv, evol_mode);
-		for(size_t subcond_ind=0; subcond_ind<temp_array.size();
-				subcond_ind++) {
-			result[i]=temp_array[subcond_ind];
-			stop_deriv[i]=sub_stop_deriv[subcond_ind];
-			i++;
-		}
-	}
+			cond=__generic_sub_conditions.begin();
+			cond!=__generic_sub_conditions.end(); ++cond)
+		add_subcondition_values(*cond, orbit, derivatives, dissipation,
+				system, evol_mode, i, result, stop_deriv);
+	for(std::vector<const SynchronizedCondition *>::const_iterator
+			cond=__sync_sub_conditions.begin();
+			cond!=__sync_sub_conditions.end(); ++cond) 
+		add_subcondition_values(*cond, orbit, derivatives, dissipation,
+				system, evol_mode, i, result, stop_deriv);
 	return result;
 }

@@ -190,8 +190,8 @@ namespace OutCol {
 		///convective zone.
 		LRAD_PAR,
 
-		///\brief The component of #LRAD along \f$90^o\$ counter-clockwise
-		///from the spin direction of the convective zone.
+		///\brief The component of #LRAD along the x axis used for orbital
+		///evolution
 		LRAD_PERP,
 
 		///\brief Total angular momentum of the star in 

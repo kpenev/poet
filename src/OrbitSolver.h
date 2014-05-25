@@ -49,7 +49,8 @@ std::ostream &operator<<(std::ostream &os, const EvolVarType &evol_var);
 
 ///\brief (Re-)Initializes the given tidal dissipation.
 ///
-///Must only be called when the planet is present.
+///Must only be called when the planet is present and after the stellar
+///system has been assigned an age.
 void get_tidal_dissipation(
 		///The planet-star system evolving.
 		StellarSystem &system, 
@@ -126,7 +127,7 @@ private:
 	StoppingConditionType __stop_reason;
 
 	///Is the reason for stopping that a condition actually crossed zero?
-	bool __is_crossing;
+	bool __is_crossing, __crossed_zero;
 
 	///The index of the condition which caused us to stop.
 	size_t __stop_condition_index;
@@ -146,6 +147,9 @@ public:
 			///Is the reason for stopping that a condition actually crossed
 			///zero?
 			bool is_crossing=false,
+
+			///Did we stop after a zero-crossing.
+			bool crossed_zero=false,
 			
 			///The index of the condition which caused us to stop.
 			size_t stop_condition_index=0) :
@@ -153,6 +157,7 @@ public:
 		__stop_condition_precision(stop_precision),
 		__stop_reason(stop_reason),
 		__is_crossing(is_crossing),
+		__crossed_zero(crossed_zero),
 		__stop_condition_index(stop_condition_index) {}
 
 	///Copy orig to *this.
@@ -191,6 +196,13 @@ public:
 	size_t stop_condition_index() const {return __stop_condition_index;}
 	///The index of the condition which caused us to stop.
 	size_t &stop_condition_index() {return __stop_condition_index;}
+
+	///\brief Did we stop after the stopping condition crossed zero (always
+	///false for extrema).
+	bool crossed_zero() const {return __crossed_zero;}
+	///\brief Did we stop after the stopping condition crossed zero (always
+	///false for extrema).
+	bool &crossed_zero() {return __crossed_zero;}
 
 	///Copy rhs to *this.
 	StopInformation &operator=(const StopInformation &rhs)
@@ -701,7 +713,7 @@ private:
 	///
 	///The return value is true if the last step finished after the stopping
 	///condition crossed zero and false if it ended before that.
-	bool evolve_until(
+	StopInformation evolve_until(
 			///The planet-star system to evolve.
 			StellarSystem &system,
 			
@@ -720,11 +732,7 @@ private:
 			///On exit, it is overwritten with the orbit of the last
 			///accepted step.
 			std::valarray<double> &orbit,
-
-			///Gets overwritten with the value of the stopping condition
-			///which caused the evolution to stop at the last step.
-			double &stop_condition_value,
-			
+		
 			///On input should be the reason why the last evolution stopped.
 			///It should be NO_STOP if this is the first piece of evolution
 			///being calculated. On exit it is overwritten with the value
@@ -789,7 +797,8 @@ private:
 			///The age at which the planet forms.
 			double planet_formation_age) const;
 
-	///\brief Returns the evolution mode that the system is entering.
+	///\brief Returns the evolution mode that the system is entering and
+	///updates the lock.
 	///
 	///assuming that
 	///the last orbital state is orbit (in the old evolution mode), the
@@ -800,20 +809,23 @@ private:
 			double age, 
 
 			///The values of the old evolution mode variables being evolved.
-			const std::valarray<double> &orbit,
+			const std::valarray<double> &parameters,
 
 			///The semimajor axis at which the planet first appears.
 			double initial_semimajor,
 			
 			///The planet-star system being evolved.
-			const StellarSystem &system, 
+			StellarSystem &system, 
 
 			///The old evolution mode.
 			EvolModeType evolution_mode,
 
 			///Whether the planet is in an orbit which matches the rotation
 			///of the star and which harmonic to which.
-			const SpinOrbitLockInfo &star_lock,
+			SpinOrbitLockInfo &star_lock,
+
+			///The current wind saturation state.
+			WindSaturationState wind_state,
 			
 			///The reason for stopping the evolution.
 			StoppingConditionType condition_type,

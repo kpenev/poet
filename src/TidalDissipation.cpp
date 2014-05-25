@@ -108,7 +108,7 @@ void TidalDissipation::fill_Umm(double inclination, bool deriv)
 }
 
 void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
-		SpinOrbitLockInfo &lock, short body_index,
+		SpinOrbitLockInfo lock, short body_index,
 		Dissipation::Derivative derivative)
 {
 	for(short lock_dir=-1; lock_dir<=1; ++lock_dir)
@@ -290,7 +290,7 @@ void TidalDissipation::calculate_eccentricity_decay(short)
 
 void TidalDissipation::init(const DissipatingBody &body1, 
 		const DissipatingBody &body2, double semimajor, double eccentricity,
-		SpinOrbitLockInfo &lock1, SpinOrbitLockInfo &lock2)
+		const SpinOrbitLockInfo &lock1, const SpinOrbitLockInfo &lock2)
 {
 	__orbital_frequency=orbital_angular_velocity(body1.mass(), body2.mass(),
 			semimajor);
@@ -328,7 +328,7 @@ void TidalDissipation::init(const DissipatingBody &body1,
 #endif
 	for(short body_index=0; body_index<2; ++body_index) {
 		const DissipatingBody &body=(body_index==0 ? body1 : body2);
-		SpinOrbitLockInfo &lock=(body_index==0 ? lock1 : lock2);
+		const SpinOrbitLockInfo &lock=(body_index==0 ? lock1 : lock2);
 		double torque_scale=std::pow(body.radius(),5)*
 			std::pow(other_mass, 2)*torque_common,
 			spin_frequency=(lock ? lock.spin(__orbital_frequency) : 
@@ -409,4 +409,13 @@ double TidalDissipation::operator()(short body_index,
 					;
 		}
 	return rate_entry(body_index, quantity, derivative, lock_dir);
+}
+
+double TidalDissipation::operator()(short body_index, 
+		Dissipation::Quantity quantity, double above_fraction,
+		Dissipation::Derivative derivative) const
+{
+	return (*this)(body_index, quantity, derivative, 0) +
+		above_fraction*(*this)(body_index, quantity, derivative, 1) + 
+		(1.0-above_fraction)*(*this)(body_index, quantity, derivative, -1);
 }

@@ -75,10 +75,25 @@ public:
 
 			///The direction from which the spin frequency is approaching the
 			///lock. See #__lock_direction for the meaning of the values.
-			short lock_direction) : 
-		__orbital_freq_mult(orbital_freq_mult),
-		__spin_freq_mult(spin_freq_mult),
-		__lock_direction(lock_direction) {}
+			short lock_direction)
+	{set_lock(orbital_freq_mult, spin_freq_mult, lock_direction);}
+
+	///\brief Define which tidal dissipation term is in a lock.
+	void set_lock(
+			///The multiple of the orbital frequency at the lock.
+			int orbital_freq_mult,
+
+			///The multiple of the spin frequency at the lock.
+			int spin_freq_mult,
+
+			///The direction from which the spin frequency is approaching the
+			///lock. See #__lock_direction for the meaning of the values.
+			short lock_direction)
+	{
+		__orbital_freq_mult=orbital_freq_mult;
+		__spin_freq_mult=spin_freq_mult;
+		__lock_direction=lock_direction;
+	}	
 
 	///\brief Spin frequency at exactly the lock that corresponds to the
 	///given orbital frequency.
@@ -106,8 +121,13 @@ public:
 
 	///Set the lock direction to the given value.
 	void lock_direction(short value) {__lock_direction=value;}
-};
 
+	///The multiplier in front of the orbital frequency in the lock.
+	int orbital_frequency_multiplier() const {return __orbital_freq_mult;}
+
+	///The multiplier in front of the spin frequency in the lock.
+	int spin_frequency_multiplier() const {return __spin_freq_mult;}
+};
 
 ///\brief A base class for any body contributing to tidal dissipation.
 ///

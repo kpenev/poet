@@ -21,7 +21,6 @@
 #include <limits>
 #include <iostream>
 
-
 ///\brief Describes a planet-star system.
 ///
 ///The following variable are referred to throughout:
@@ -33,9 +32,8 @@
 ///   \f$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
 /// - Lrad_parallel: Radiative zone angular momentum component along Lconv in
 ///   the same units as Lconv
-/// - Lrad_perpendicular: Radiative zone angular momentum component along a
-///   direction rotated from Lconv by 90 degrees counter-clockwise in the 
-///   same units as Lconv.
+/// - Lrad_perpendicular: Radiative zone angular momentum component along the
+///   x axis of the orbital evolution in the same units as Lconv.
 ///
 ///All rates of change are per Gyr
 ///
@@ -56,6 +54,8 @@ private:
 
 	///\brief The differential equation governing the rotation of the star's
 	///radiative zone with the convective zone locked to a disk.
+	///
+	///The age of the system must already be set appropriately by operator().
 	int locked_conv_differential_equations(
 			///A pointer to Lrad_parallel (Lrad_perpendicular assumed 0).
 			const double *parameters,
@@ -65,6 +65,8 @@ private:
 
 	///\brief The differential equation governing the evolution of the
 	///stellar rotation if no planet or disk is present.
+	///
+	///The age of the system must already be set appropriately by operator().
 	int no_planet_differential_equations(
 			///Should contain in the following order:
 			/// -# Lconv
@@ -81,32 +83,10 @@ private:
 		const;
 
 	///\brief The differential equation for the evolution while the
-	///planet is still present and locked to the stellar spin.
-	int locked_to_orbit_differential_equations(
-			///Should contain in the following order:
-			/// -# a
-			/// -# inclination
-			/// -# Lrad_parallel
-			/// -# Lrad_perpendicular
-			const double *parameters,
-
-			///The saturation state to assume for the stellar wind.
-			WindSaturationState assume_wind_saturation,
-
-			///See description in differential_equations method
-			const SpinOrbitLockInfo &star_lock,
-
-			///The evolution rates of various quantities due to tidal
-			///dissipation.
-			const TidalDissipation &dissipation,
-
-			///On outputs is set to the rate of change of the orbital
-			///parameters.
-			double *evolution_rates) const;
-
-	///\brief The differential equation for the evolution while the
 	///planet is still present and not locked to the stellar spin.
-	int not_locked_differential_equations(
+	///
+	///The age of the system must already be set appropriately by operator().
+	int binary_differential_equations(
 			///The orbital parameters. Should be:
 			/// -# a^6.5
 			/// -# inclination
@@ -122,6 +102,9 @@ private:
 			///indicated assumption is used.
 			WindSaturationState assume_wind_saturation,
 
+			///See description in differential_equations method
+			const SpinOrbitLockInfo &star_lock,
+
 			///The evolution rates of various quantities due to tidal
 			///dissipation.
 			const TidalDissipation &dissipation,
@@ -135,15 +118,27 @@ public:
 	StellarSystem(
 			Star &star,///< The star in the system.
 			const Planet &planet,///< The planet in the system.
-			double age=NaN,///< The present age of the system in Gyr.
 			const std::string &system_name=""///< The name of the system.
 			);
 
 	///Returns the name of the system.
 	const std::string get_name() const {return __name;}
 
+	///Sets the current age of the system and returns a reference to it.
+	const StellarSystem &operator()(
+			///The age to set the system to.
+			double age,
+
+			///The stellar convective zone angular momentum in 
+			/// \f$M_\odot R_\odot^2 rad/day\f$.
+			double Lconv,
+
+			///The stellar inclination in rad.
+			double inclination)
+	{__age=age; __star(age, Lconv, inclination); return *this;}
+
 	///Returns the present age of the system in Gyr.
-	double current_age() const {return __age;}
+	double age() const {return __age;}
 
 	///Returns the star in the system (immutable).
 	const Star &get_star() const {return __star;}
@@ -154,12 +149,24 @@ public:
 	///Returns the planet in the system (immutable).
 	const Planet &get_planet() const {return __planet;}
 
+
+	///\brief For a configuration in which a spin-orbit lock is held, 
+	///calculates the fraction the above the lock evolution rates to use.
+	///
+	///The age of the system must already be set appropriately by operator().
+	double above_lock_fraction(
+			///The evolution rates of various quantities due to tidal
+			///dissipation.
+			const TidalDissipation &dissipation,
+			
+			///The external torque applied to the stellar convective zone.
+			double external_torque) const;
+
 	///\brief The differential equation and jacobian for the evolution of the
 	///system.
+	///
+	///The age of the system must already be set appropriately by operator().
 	int differential_equations(
-			///The system age in Gyr.
-			double age, 
-
 			///Contains the variables being evolved. The expected content
 			///depends on the values of evolution_mode and star_lock.
 			///
