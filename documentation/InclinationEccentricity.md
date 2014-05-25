@@ -264,8 +264,10 @@ core-envelope coupling included:
 					\frac{T_z\sin\Theta}{L}\\
 	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\
 	\dot{S}^{conv}&=&T_z+T_z^{coup}+T^{wind}\\
-	\dot{S}^{rad}_x&=&-T_x^{coup}\\
-	\dot{S}^{rad}_z&=&-T_z^{coup}
+	\dot{S}^{rad}_x&=&-T_x^{coup}-
+					  \frac{(T_x^{coup}+T_x)S^{rad}_z}{S^{conv}}\\
+	\dot{S}^{rad}_z&=&-T_z^{coup}+
+					  \frac{(T_x^{coup}+T_x)*S^{rad}_x}{S^{conv}}\\
 \f}
 where \f$T_z^{coup}\f$ and \f$T_x^{coup}\f$ are the x and z components of the
 core-envelope coupling torque, and \f$T^{wind}\f$ is the torque due to the
