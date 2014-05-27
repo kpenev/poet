@@ -61,9 +61,6 @@ void get_tidal_dissipation(
 		///The current values of the parameters being evolved.
 		const double *parameters,
 
-		///The current lock state of the star.
-		SpinOrbitLockInfo &star_lock,
-
 		///The tidal dissipation variable to (re-)initialize.
 		TidalDissipation &dissipation);
 
@@ -495,19 +492,21 @@ private:
 	bool adjust_end_age;
 
 	///The ages at which solution is tabulated
-	std::list<double> tabulated_ages;
+	std::list<double> __tabulated_ages;
 
 	///The evolution mode corresponding to the matching tabulated age.
-	std::list<EvolModeType> tabulated_evolution_mode;
+	std::list<EvolModeType> __tabulated_evolution_mode;
 
     ///The wind saturation state corresponding to the matching tabulated age.
-    std::list<WindSaturationState> tabulated_wind_saturation;
+    std::list<WindSaturationState> __tabulated_wind_saturation;
 
 	///The orbital ODE variables at the tabulated ages
-	std::vector< std::list<double> > tabulated_orbit, 
+	std::vector< std::list<double> > __tabulated_orbit, 
 
-	///The derivatives of the orbital ODE variables
-	tabulated_deriv;
+		///The derivatives of the orbital ODE variables
+		__tabulated_deriv;
+
+	std::list< SpinOrbitLockInfo > __tabulated_lock;
 
 	///\brief The number of points at the start of the history to skip when
 	///lookng for a zero crossing for each condition
@@ -538,6 +537,9 @@ private:
 		///
 		///Useful for interpolating to zeroes and extrema.
 		stop_deriv_discarded;
+
+	///The tidal dissipation with suitable locks for the current evolution.
+	TidalDissipation __dissipation;
 
 #ifdef DEBUG
 	///\brief Generates a nicely formatted table of the contents of the
@@ -685,10 +687,6 @@ private:
 			///The rates of change of the evolution variables per Gyr.
 			const std::valarray<double> &derivatives,
 
-			///The rates of evolution of various quantities due to tidal
-			///dissipation.
-			const TidalDissipation &dissipation,
-
 			///The stellar system being evolved.
 			const StellarSystem &system,
 			
@@ -792,10 +790,10 @@ private:
 
 			///Whether the planet is in an orbit which matches the rotation
 			///of the star and which harmonic to which.
-			const SpinOrbitLockInfo &star_lock,
+			SpinOrbitLockInfo &star_lock,
 			
 			///The age at which the planet forms.
-			double planet_formation_age) const;
+			double planet_formation_age);
 
 	///\brief Returns the evolution mode that the system is entering and
 	///updates the lock.
@@ -838,7 +836,7 @@ private:
 			bool stopped_before,
 			
 			///The age at which the planet suddenly appears in Gyr.
-			double planet_formation_age) const;
+			double planet_formation_age);
 
 	///\brief The age at which the evolution should stop next if no other
 	///stopping condition occurs.
@@ -1056,11 +1054,16 @@ public:
 
 	///Returns a list of the evolution modes.
 	const std::list<EvolModeType> *get_tabulated_evolution_mode() const
-	{return &tabulated_evolution_mode;}
+	{return &__tabulated_evolution_mode;}
 
 	///Returns a list of the wind saturation states.
 	const std::list<WindSaturationState> *get_tabulated_wind_state() const
-	{return &tabulated_wind_saturation;}
+	{return &__tabulated_wind_saturation;}
+
+	///Returns a list of the lock states the system evolved through.
+	const std::list<SpinOrbitLockInfo> *get_locks() const
+	{return &__tabulated_lock;}
+	
 };
 
 ///\brief Converts a semimajor axis given in AU to the variable used in

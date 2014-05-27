@@ -203,10 +203,13 @@ class BreakLockCondition : public StoppingCondition {
 public: 
 	///\brief How far away from breaking the lock the system is.
 	///
-	///Two values are calculated: the fraction of the above and below the
-	///lock terms which must be included in order to maintain the lock.
+	///Two values are calculated: the fraction of the above the
+	///lock terms which must be included in order to maintain the lock and
+	///that minus 1.
 	///
-	///This way both values are positive if the lock is maintained.
+	///This way, if the lock is broken with a positive/negative value, the
+	///future evolution is expected to proceed with positive/negative forcing
+	///frequency.
 	///
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.

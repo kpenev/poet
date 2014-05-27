@@ -65,15 +65,15 @@ std::ostream &operator<<(std::ostream &os,
 		const Dissipation::Derivative &deriv)
 {
 	switch(deriv) {
-		case Dissipation::NO_DERIV : std::cout << "NO_DERIV"; break;
-		case Dissipation::AGE : std::cout << "AGE"; break;
-		case Dissipation::RADIUS : std::cout << "RADIUS"; break;
+		case Dissipation::NO_DERIV : os << "NO_DERIV"; break;
+		case Dissipation::AGE : os << "AGE"; break;
+		case Dissipation::RADIUS : os << "RADIUS"; break;
 		case Dissipation::MOMENT_OF_INERTIA :
-								   std::cout << "MOMENT_OF_INERTIA";
+								   os << "MOMENT_OF_INERTIA";
 								   break;
-		case Dissipation::SPIN_ANGMOM : std::cout << "SPIN_ANGMOM"; break;
-		case Dissipation::SEMIMAJOR : std::cout << "SEMIMAJOR"; break;
-		case Dissipation::INCLINATION : std::cout << "INCLINATION"; break;
+		case Dissipation::SPIN_ANGMOM : os << "SPIN_ANGMOM"; break;
+		case Dissipation::SEMIMAJOR : os << "SEMIMAJOR"; break;
+		case Dissipation::INCLINATION : os << "INCLINATION"; break;
 		default :
 #ifdef DEBUG
 				  assert(false)
@@ -108,8 +108,7 @@ void TidalDissipation::fill_Umm(double inclination, bool deriv)
 }
 
 void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
-		SpinOrbitLockInfo lock, short body_index,
-		Dissipation::Derivative derivative)
+		short body_index, Dissipation::Derivative derivative)
 {
 	for(short lock_dir=-1; lock_dir<=1; ++lock_dir)
 		rate_entry(body_index, Dissipation::POWER, derivative, lock_dir)=
@@ -117,12 +116,23 @@ void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 					lock_dir)=
 			rate_entry(body_index, Dissipation::TORQUEZ, derivative,
 					lock_dir)=0;
-	double spin_frequency=(lock ? lock.spin(__orbital_frequency) :
-			body.spin());
+	SpinOrbitLockInfo lock;
+	double spin_frequency=body.spin();
+	for(std::vector<SpinOrbitLockInfo>::const_iterator lock_i=
+			__spin_orbit_harmonics[body_index].begin();
+			lock_i!=__spin_orbit_harmonics[body_index].end();
+			++lock_i)
+		if((*lock_i)) {
+			lock=*lock_i;
+			spin_frequency=lock.spin(__orbital_frequency);
+			break;
+		}
+	SpinOrbitLockInfo temp_lock=lock;
 	if(body.moment_of_inertia()==0) return;
 	for(int m=-2; m<=2; ++m) {
 		double m_spin_freq=m*spin_frequency;
 		for(int mp=-2; mp<=2; mp+=2) {
+			if(m==0 && mp==0) continue;
 			bool locked_term=lock(mp, m);
 			PhaseLag::Derivative phase_lag_deriv=PhaseLag::NO_DERIV;
 			switch(derivative) {
@@ -148,15 +158,15 @@ void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 			for(short lock_dir=(locked_term ? -1 : 0);
 					lock_dir<=(locked_term ? 1 : 0);
 					lock_dir+=2) {
-				lock.lock_direction(lock_dir);
+				temp_lock.lock_direction(lock_dir);
 				double mod_phase_lag=body.modified_phase_lag(m, 
-						forcing_freq, lock, phase_lag_deriv);
+						forcing_freq, temp_lock, phase_lag_deriv);
 				if(derivative==Dissipation::MOMENT_OF_INERTIA || 
 						derivative==Dissipation::SPIN_ANGMOM)
 					mod_phase_lag=
 						-m*mod_phase_lag
 						+
-						body.modified_phase_lag(m, forcing_freq, lock,
+						body.modified_phase_lag(m, forcing_freq, temp_lock,
 								PhaseLag::SPIN_FREQUENCY);
 				else if(derivative==Dissipation::SEMIMAJOR)
 					mod_phase_lag*=mp;
@@ -288,6 +298,18 @@ void TidalDissipation::calculate_eccentricity_decay(short)
 	throw Error::NotImplemented("Eccentric orbits");
 }
 
+void TidalDissipation::fill_spin_orbit_harmonics()
+{
+	__spin_orbit_harmonics.resize(2);
+	for(short body_ind=0; body_ind<=1; ++body_ind) {
+		__spin_orbit_harmonics[body_ind].resize(4);
+		__spin_orbit_harmonics[body_ind][0].set_lock(1, -1, 0);
+		__spin_orbit_harmonics[body_ind][0].set_lock(2, -1, 0);
+		__spin_orbit_harmonics[body_ind][0].set_lock(2, 1, 0);
+		__spin_orbit_harmonics[body_ind][0].set_lock(1, 1, 0);
+	}
+}
+
 void TidalDissipation::init(const DissipatingBody &body1, 
 		const DissipatingBody &body2, double semimajor, double eccentricity,
 		const SpinOrbitLockInfo &lock1, const SpinOrbitLockInfo &lock2)
@@ -317,6 +339,8 @@ void TidalDissipation::init(const DissipatingBody &body1,
 			body2.angular_momentum());
 	__inclination[0]=body1.inclination();
 	__inclination[1]=body2.inclination();
+	init_harmonics(0, lock1);
+	init_harmonics(1, lock2);
 
 	double torque_common=AstroConst::G*AstroConst::solar_mass*
 			   			 std::pow(AstroConst::solar_radius/
@@ -354,7 +378,7 @@ void TidalDissipation::init(const DissipatingBody &body1,
 						break;
 				default : ;
 			}
-			calculate_torque_power(body, lock, body_index,
+			calculate_torque_power(body, body_index,
 					derivative);
 			for(short lock_dir=-1; lock_dir<=1; ++lock_dir) {
 				rate_entry(body_index, Dissipation::POWER, derivative,
@@ -377,6 +401,22 @@ void TidalDissipation::init(const DissipatingBody &body1,
 								Dissipation::TORQUEZ, Dissipation::NO_DERIV,
 								lock_dir);
 				}
+#ifdef DEBUG
+				if(body_index==0) {
+					std::ostringstream msg;
+					msg << "NaN result for body: " << body_index << " "
+						<< derivative << " derivative of ";
+					if(std::isnan(rate_entry(body_index, Dissipation::POWER,
+									derivative, lock_dir)))
+						throw Error::Runtime(msg.str()+"POWER");
+					if(std::isnan(rate_entry(body_index,Dissipation::TORQUEX,
+									derivative, lock_dir)))
+						throw Error::Runtime(msg.str()+"TORQUEX");
+					if(std::isnan(rate_entry(body_index,Dissipation::TORQUEZ,
+									derivative, lock_dir)))
+						throw Error::Runtime(msg.str()+"TORQUEZ");
+				}
+#endif
 			}
 		}
 		other_mass=body1.mass();
@@ -391,7 +431,9 @@ double TidalDissipation::operator()(short body_index,
 #ifdef DEBUG
 	assert(__valid);
 #endif
-	if(std::isnan(rate_entry(body_index, quantity, derivative, lock_dir)))
+	if(std::isnan(rate_entry(body_index, quantity, derivative, lock_dir))
+		&& quantity!=Dissipation::POWER && quantity!=Dissipation::TORQUEX &&
+			quantity!=Dissipation::TORQUEZ)
 		switch(quantity) {
 			case Dissipation::SEMIMAJOR_DECAY :
 			case Dissipation::ORBIT_SPINUP : 
@@ -418,4 +460,64 @@ double TidalDissipation::operator()(short body_index,
 	return (*this)(body_index, quantity, derivative, 0) +
 		above_fraction*(*this)(body_index, quantity, derivative, 1) + 
 		(1.0-above_fraction)*(*this)(body_index, quantity, derivative, -1);
+}
+
+void TidalDissipation::init_harmonics(short body_index,
+		const SpinOrbitLockInfo &lock)
+{
+	int orbital_frequency_multiplier=lock.orbital_frequency_multiplier(),
+		spin_frequency_multiplier=lock.spin_frequency_multiplier();
+	if(orbital_frequency_multiplier==-spin_frequency_multiplier)
+		__spin_orbit_harmonics[body_index][0].lock_direction(
+				lock.lock_direction());
+	else __spin_orbit_harmonics[0][body_index].lock_direction(
+			(spin_frequency_multiplier*
+			 (orbital_frequency_multiplier+spin_frequency_multiplier)>0
+			 ? 1 : -1));
+	if(2*spin_frequency_multiplier==-orbital_frequency_multiplier)
+		__spin_orbit_harmonics[body_index][1].lock_direction(
+				lock.lock_direction());
+	else __spin_orbit_harmonics[body_index][1].lock_direction( 
+			(spin_frequency_multiplier*
+			 (2*spin_frequency_multiplier+orbital_frequency_multiplier)>0
+			 ? 1 : -1));
+	if(2*spin_frequency_multiplier==orbital_frequency_multiplier)
+		__spin_orbit_harmonics[body_index][2].lock_direction(
+				lock.lock_direction());
+	else __spin_orbit_harmonics[body_index][2].lock_direction(
+			(spin_frequency_multiplier*
+			 (2*spin_frequency_multiplier-orbital_frequency_multiplier)>0
+			 ? 1 : -1));
+	if(spin_frequency_multiplier==orbital_frequency_multiplier)
+		__spin_orbit_harmonics[body_index][3].lock_direction(
+				lock.lock_direction());
+	else __spin_orbit_harmonics[body_index][3].lock_direction(
+			(spin_frequency_multiplier*
+			 (spin_frequency_multiplier-orbital_frequency_multiplier)>0
+			 ? 1 : -1));
+}
+
+void TidalDissipation::init_harmonics(short body_index,
+		double spin_to_orbital_ratio)
+{
+	for(unsigned i=0; i<__spin_orbit_harmonics.size(); ++i) {
+#ifdef DEBUG
+		assert(__spin_orbit_harmonics[body_index][i].
+				orbital_frequency_multiplier()
+				!=
+				spin_to_orbital_ratio
+				*
+				__spin_orbit_harmonics[i][body_index].
+				spin_frequency_multiplier());
+#endif
+		if(__spin_orbit_harmonics[body_index][i].
+				orbital_frequency_multiplier()
+				>
+				spin_to_orbital_ratio
+				*
+				__spin_orbit_harmonics[body_index][i].
+				spin_frequency_multiplier())
+			__spin_orbit_harmonics[body_index][i].lock_direction(1);
+		else __spin_orbit_harmonics[body_index][i].lock_direction(-1);
+	}
 }

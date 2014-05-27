@@ -47,22 +47,28 @@ int StellarSystem::binary_differential_equations(
 		double *evolution_rates) const
 {
 	unsigned Lrad_par_index=(star_lock ? 2 : 3);
-	no_planet_differential_equations(parameters+(Lrad_par_index-1),
+	std::valarray<double> no_planet_params(3);
+	double Lconv;
+	if(star_lock) Lconv=star_lock.spin(
+			orbital_angular_velocity(__star.mass(), __planet.mass(),
+				parameters[0]*Rsun_AU))*__star.moment_of_inertia(convective);
+	else Lconv=parameters[2];
+	no_planet_params[0]=Lconv;
+	no_planet_params[1]=parameters[Lrad_par_index];
+	no_planet_params[2]=parameters[Lrad_par_index+1];
+
+	no_planet_differential_equations(&no_planet_params[0],
 			assume_wind_saturation, evolution_rates+(Lrad_par_index-1));
 	double above_fraction=(star_lock ?
 			above_lock_fraction(dissipation, evolution_rates[1]) : 0);
 	double da_dt=-dissipation(0, Dissipation::SEMIMAJOR_DECAY,
-			above_fraction)/Rsun_AU, Lconv;
+			above_fraction)/Rsun_AU;
 	evolution_rates[1]=-dissipation(0, Dissipation::INCLINATION_DECAY,
 			above_fraction);
-	if(star_lock) {
-		evolution_rates[0]=da_dt;
-		Lconv=orbital_angular_velocity(__star.mass(), __planet.mass(),
-				parameters[0]*Rsun_AU)*__star.moment_of_inertia(convective);
-	} else {
+	if(star_lock) evolution_rates[0]=da_dt;
+	else {
 		evolution_rates[0]=6.5*std::pow(parameters[0], 11.0/13.0)*da_dt;
 		evolution_rates[2]+=dissipation(0, Dissipation::TORQUEZ);
-		Lconv=parameters[2];
 	}
 	//Change of Lrad due to tidal rotation of stellar convective zone spin
 	evolution_rates[Lrad_par_index]+=dissipation(0, Dissipation::TORQUEX)*
@@ -81,6 +87,9 @@ StellarSystem::StellarSystem(Star &star, const Planet &planet,
 double StellarSystem::above_lock_fraction(
 		const TidalDissipation &dissipation, double external_torque) const
 {
+#ifdef DEBUG
+	assert(!std::isnan(external_torque));
+#endif
 	double numerator=__star.moment_of_inertia(convective)/
 		__star.moment_of_inertia_deriv(convective)
 		+
@@ -99,6 +108,27 @@ double StellarSystem::above_lock_fraction(
 				 -
 				 dissipation(0,Dissipation::POWER, Dissipation::NO_DERIV,1))
 			 /dissipation.orbit_energy();
+#ifdef DEBUG
+	//#BEGIN_DEBUG_CODE#
+	std::cerr << "Iconv=" << __star.moment_of_inertia(convective)
+		<< std::endl
+		<< "dot(Iconv)=" << __star.moment_of_inertia_deriv(convective)
+		<< std::endl
+		<< "T_z=" << dissipation(0, Dissipation::TORQUEZ, 0.0) 
+		<< " ("
+		<< dissipation(0, Dissipation::TORQUEZ, Dissipation::NO_DERIV, 0)
+		<< " + "
+		<< dissipation(0, Dissipation::TORQUEZ, Dissipation::NO_DERIV, -1)
+		<< ")" << std::endl
+		<< "external torque=" << external_torque << std::endl
+		<< "Lconv=" << dissipation.spin_angular_momentum(0) << std::endl
+		<< "dot(E)=" << dissipation(0, Dissipation::POWER, 0.0) << std::endl
+		<< "orbital energy=" << dissipation.orbit_energy() << std::endl;
+	std::cerr << "numerator=" << numerator
+		<< ", denominator=" << denominator
+		<< std::endl;
+	//#END_DEBUG_CODE#
+#endif
 	return numerator/denominator;
 }
 

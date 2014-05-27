@@ -7,6 +7,8 @@
 
 #include "Common.h"
 
+const double NUMERIC_SAFETY=100.0*std::numeric_limits<double>::epsilon();
+
 std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode)
 {
 	switch(evol_mode) {
@@ -60,9 +62,9 @@ double estimate_zerocrossing(double x0, double y0, double x1,
 		linear_solution=x1 - y1*slope_inv;
 	if(std::isnan(dy0) || std::isnan(dy1)) {
 #ifdef DEBUG
-		std::cerr << "Linear zerocrossing between (" << x0 << ", " << y0
+/*		std::cerr << "Linear zerocrossing between (" << x0 << ", " << y0
 			<< ") and (" << x1 << ", " << y1 << ")=" << linear_solution 
-			<< std::endl;
+			<< std::endl;*/
 #endif
 		return linear_solution;
 	} else {
@@ -73,22 +75,22 @@ double estimate_zerocrossing(double x0, double y0, double x1,
 			   d=y0 - a*x0*x0_2 - b*x0_2 - c*x0;
 		std::valarray<double> solutions=solve_cubic(d, c, b, a);
 #ifdef DEBUG
-		std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0
+/*		std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0
 		   << ", " << dy0 << ") and (" << x1 << ", " << y1 << ", " << dy1
 		   << "), coef=(" << a << ", " << b << ", " << c << ", " << d
-		   << "), solutions=(" << solutions << ")";
+		   << "), solutions=(" << solutions << ")";*/
 #endif
 		for(size_t i=0; i<solutions.size(); i++) 
 			if(solutions[i]>=x0 && solutions[i]<=x1) {
 #ifdef DEBUG
-				std::cerr << ", selected: " << solutions[i] << std::endl;
+//				std::cerr << ", selected: " << solutions[i] << std::endl;
 #endif
 				return solutions[i];
 			}
 		if(y0*y1<=0) {
 #ifdef DEBUG
-			std::cerr << ", fallback to linear: " << linear_solution
-				<< std::endl;
+/*			std::cerr << ", fallback to linear: " << linear_solution
+				<< std::endl;*/
 #endif
 			return linear_solution;
 		}
@@ -132,22 +134,22 @@ double quadratic_zerocrossing(double x0, double y0, double x1, double y1,
 		require_range_high=x2;
 	}
 #ifdef DEBUG
-	std::cerr << "Quadratic zerocrossing between (" << x0 << ", " << y0 
+/*	std::cerr << "Quadratic zerocrossing between (" << x0 << ", " << y0 
 		<< "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
 		<< ") in range (" << require_range_low << ", " << require_range_high
 		<< "), coef=(" << a << ", " << b << ", " << c << "), solutions=("
-		<< solutions << ")";
+		<< solutions << ")";*/
 #endif
 	for(size_t i=0; i<solutions.size(); i++) 
 		if(solutions[i]>=require_range_low &&
 				solutions[i]<=require_range_high) {
 #ifdef DEBUG
-			std::cerr << ", selected: " << solutions[i] << std::endl;
+//			std::cerr << ", selected: " << solutions[i] << std::endl;
 #endif
 			return solutions[i];
 		}
 #ifdef DEBUG
-	std::cerr << ", fallback to linear: ";
+//	std::cerr << ", fallback to linear: ";
 #endif
 	return estimate_zerocrossing(xpre, ypre, xpost, ypost);
 }
@@ -181,7 +183,7 @@ double cubic_zerocrossing(double x0, double y0, double x1, double y1,
 		require_range_high=x3;
 	}
 #ifdef DEBUG
-	std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0 
+/*	std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0 
 		<< "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
 		<< "), (" << x3 << ", " << y3 << ") in range ("
 		<< require_range_low << ", " << require_range_high << "), coef=(";
@@ -189,19 +191,19 @@ double cubic_zerocrossing(double x0, double y0, double x1, double y1,
 		std::cerr << gsl_vector_get(cubic_coef, i);
 		if(i>0) std::cerr << ", ";
 	}
-	std::cerr << "), solutions=(" << solutions << ")";
+	std::cerr << "), solutions=(" << solutions << ")";*/
 #endif
 	gsl_vector_free(cubic_coef);
 	for(size_t i=0; i<solutions.size(); i++) 
 		if(solutions[i]>=require_range_low &&
 				solutions[i]<=require_range_high) {
 #ifdef DEBUG
-			std::cerr << ", selected: " << solutions[i] << std::endl;
+//			std::cerr << ", selected: " << solutions[i] << std::endl;
 #endif
 			return solutions[i];
 		}
 #ifdef DEBUG
-	std::cerr << ", fallback to linear: ";
+//	std::cerr << ", fallback to linear: ";
 #endif
 	return estimate_zerocrossing(xpre, ypre, xpost, ypost);
 }
@@ -222,14 +224,18 @@ double estimate_extremum(double x0, double y0, double x1,
 					   y1-dy1*(x1-linear_extremum_x));
 	std::valarray<double> solutions=solve_cubic(c, 2.0*b, 3.0*a, 0);
 #ifdef DEBUG
-	std::cerr << "Cubic extrema between (" << x0 << ", " << y0 << ", " << dy0
+/*	std::cerr << "Cubic extrema between (" << x0 << ", " << y0 << ", " << dy0
 		<< ") and (" << x1 << ", " << y1 << ", " << dy1 << "), coef=("
 		<< a << ", " << b << ", " << c << ", " << d
-		<< "), solutions: (" << solutions[0] << ", "
-		<< a*std::pow(solutions[0], 3) + b*std::pow(solutions[0], 2) + 
-		   c*solutions[0] + d << "), (" << solutions[1] << ", "
-		<< a*std::pow(solutions[1], 3) + b*std::pow(solutions[1], 2) + 
-		   c*solutions[1] + d << ")";
+		<< "), solutions(" << solutions.size() << "): (";
+	if(solutions.size()==0) std::cerr << "no solutions)";
+	else {
+		std::cerr << solutions[0] << ", "
+			<< a*std::pow(solutions[0], 3) + b*std::pow(solutions[0], 2) +
+				c*solutions[0] + d << "), (" << solutions[1] << ", "
+			<< a*std::pow(solutions[1], 3) + b*std::pow(solutions[1], 2) +
+				c*solutions[1] + d << ")";
+	}*/
 #endif
 	for(size_t i=0; i<solutions.size(); i++) {
 		if(solutions[i]>=x0 && solutions[i]<=x1) {
@@ -243,25 +249,46 @@ double estimate_extremum(double x0, double y0, double x1,
 					*extremum_y=linear_extremum_y;
 			}
 #ifdef DEBUG
-			std::cerr << ", selected: (" << x;
+/*			std::cerr << ", selected: (" << x;
 			if(extremum_y) std::cerr << ", " << *extremum_y;
-			std::cerr << ")" << std::endl;
+			std::cerr << ")" << std::endl;*/
 #endif
 			return x;
 		}
 	}
 	if(extremum_y!=NULL) *extremum_y=linear_extremum_y;
 #ifdef DEBUG
-	std::cerr << ", falling back to linear: (" << linear_extremum_x << ", "
-		<< linear_extremum_y << ")" << std::endl;
+/*	std::cerr << ", falling back to linear: (" << linear_extremum_x << ", "
+		<< linear_extremum_y << ")" << std::endl;*/
 #endif
 	return linear_extremum_x;
+}
+
+///Are the two points indistinguishable (up to NUMERIC_SAFETY).
+bool indistinguishable(double x0, double y0, double x1, double y1) 
+{
+	return (std::abs(x1-x0)/std::max(std::abs(x1), std::abs(x0))
+				<NUMERIC_SAFETY
+			&&
+			std::abs(y1-y0)/std::max(std::abs(y1), std::abs(y0))
+				<NUMERIC_SAFETY);
 }
 
 double quadratic_extremum(double x0, double y0, double x1,
 		double y1, double x2, double y2, double *extremum_y)
 {
+#ifdef DEBUG
 	assert((y1-y0)*(y2-y1)<=0);
+#endif
+	if(indistinguishable(x0, y0, x1, y1) ||
+			indistinguishable(x1, y1, x2, y2)) {
+#ifdef DEBUG
+/*		std::cerr << "Quandratic extremum with indistinguisable two points. "
+			"Returing middle point as answer." << std::endl;*/
+#endif
+		if(extremum_y) *extremum_y=y1;
+		return x1;
+	} 
 	double s02=(y0-y2)/(x0-x2), s12=(y1-y2)/(x1-x2), a=(s02 - s12)/(x0-x1),
 		   extremum_x=0.5*(x0 + x2 - s02/a);
 	if(extremum_y)
@@ -269,11 +296,11 @@ double quadratic_extremum(double x0, double y0, double x1,
 			- a*(x0*x0 + x2*x2)/2.0;
 #ifdef DEBUG
 	double b=-2.0*a*extremum_x;
-	std::cerr << "Quadratic extremum between (" << x0 << ", " << y0 << "), ("
+/*	std::cerr << "Quadratic extremum between (" << x0 << ", " << y0 << "), ("
 		<< x1 << ", " << y1 << "), (" << x2 << ", " << y2 << "), coef=("
 		<< a << ", " << b << ", "
 		<< *extremum_y - a*extremum_x*extremum_x - b*extremum_x
-		<< "): (" << extremum_x << ", " << *extremum_y << ")" << std::endl;
+		<< "): (" << extremum_x << ", " << *extremum_y << ")" << std::endl;*/
 #endif
 	return extremum_x;
 }
@@ -283,43 +310,97 @@ double cubic_extremum(double x0, double y0, double x1,
 		double *extremum_y, double require_range_low,
 		double require_range_high)
 {
+#ifdef DEBUG
 	assert((y1-y0)*(y2-y1)<=0 || (y2-y1)*(y3-y2)<=0);
-	gsl_vector *cubic_coef=cubic_coefficients(x0,y0, x1,y1, x2,y2, x3,y3);
-	double a=3.0*gsl_vector_get(cubic_coef, 3),
-		   b=2.0*gsl_vector_get(cubic_coef, 2),
-		   c=gsl_vector_get(cubic_coef, 1), sqrtD=std::sqrt(b*b-4.0*a*c);
-#ifdef DEBUG
-	double extremum_x1=(-b-sqrtD)/(2.0*a), extremum_x2=(-b+sqrtD)/(2.0*a),
-		   d=y0 - a*x0*x0*x0/3.0 - b*x0*x0/2.0 - c*x0;
-	if(std::isnan(require_range_low)) {
-		assert(std::isnan(require_range_high));
-		require_range_low=x0;
-		require_range_high=x3;
-	}
-	std::cerr << "Cubic extrema between (" << x0 << ", " << y0 << "), ("
-		<< x1 << ", " << y1 << "), (" << x2 << ", " << y2 << "), (" 
-		<< x3 << ", " << y3 << ") in range (" << require_range_low << ", "
-		<< require_range_high << "), coef=("
-		<< a/3.0 << ", " << b/2.0 << ", " << c << ", " << d
-		<< "), solutions: (" << extremum_x1 << ", " << 
-		a*std::pow(extremum_x1,3)/3.0 + b*std::pow(extremum_x1,2)/2.0 +
-		c*extremum_x1 + d << ") and (" << extremum_x2 << ", " 
-		<< a*std::pow(extremum_x2,3)/3.0 + b*std::pow(extremum_x2,2)/2.0 +
-		c*extremum_x2 + d << ")";
 #endif
-	if(a<0) {a*=-1; b*=-1; c*=-1;}
-	double extremum_x=(-b-sqrtD)/(2.0*a);
-	if(extremum_x<require_range_low || extremum_x>require_range_high)
-		extremum_x=(-b+sqrtD)/(2.0*a);
-	if(extremum_x<require_range_low || extremum_x>require_range_high) {
+	double extremum_x;
+	if(indistinguishable(x0, y0, x1, y1)) {
 #ifdef DEBUG
-		std::cerr << ", fallback to quadratic: ";
+/*		std::cerr << "Cubic extremum with indistinguishable first two "
+			"points." << std::endl;*/
+#endif
+		if((y2-y1)*(y3-y2)<=0)
+			extremum_x=quadratic_extremum(x1,y1, x2,y2, x3,y3, extremum_y);
+		else {
+			extremum_x=x1;
+			if(extremum_y) *extremum_y=y1;
+		}
+	} else if(indistinguishable(x1, y1, x2, y2)) {
+#ifdef DEBUG
+/*		std::cerr << "Cubic extremum with indistinguishable middle two "
+			"points." << std::endl;*/
+#endif
+		double xmid=0.5*(x1+x2), ymid=0.5*(y1+y2);
+		if((ymid-y0)*(y3-ymid)<=0)
+			extremum_x=quadratic_extremum(x0, y0, xmid, ymid, x3, y3,
+					extremum_y);
+		else if((y1-y0)*(y2-y1)<=0) {
+			extremum_x=x1;
+			if(extremum_y) *extremum_y=y1;
+		} else {
+			extremum_x=x2;
+			if(extremum_y) *extremum_y=y2;
+		}
+	} else if(indistinguishable(x2, y2, x3, y3)) {
+#ifdef DEBUG
+/*		std::cerr << "Cubic extremum with indistinguishable last two "
+			"points." << std::endl;*/
 #endif
 		if((y1-y0)*(y2-y1)<=0)
-			extremum_x=quadratic_extremum(x0, y0, x1, y1, x2, y2,
-					extremum_y);
-		else extremum_x=quadratic_extremum(x1, y1, x2, y2, x3, y3,
-				extremum_y);
+			extremum_x=quadratic_extremum(x0,y0, x1,y1, x2,y2, extremum_y);
+		else {
+			extremum_x=x2;
+			if(extremum_y) *extremum_y=y2;
+		}
+	} else {
+		gsl_vector *cubic_coef=
+			cubic_coefficients(x0,y0, x1,y1, x2,y2, x3,y3);
+		double a=3.0*gsl_vector_get(cubic_coef, 3),
+			   b=2.0*gsl_vector_get(cubic_coef, 2),
+			   c=gsl_vector_get(cubic_coef, 1), sqrtD=std::sqrt(b*b-4.0*a*c);
+#ifdef DEBUG
+		double extremum_x1=(-b-sqrtD)/(2.0*a),
+			   extremum_x2=(-b+sqrtD)/(2.0*a),
+			   d=y0 - a*x0*x0*x0/3.0 - b*x0*x0/2.0 - c*x0;
+		if(std::isnan(require_range_low)) {
+			assert(std::isnan(require_range_high));
+			require_range_low=x0;
+			require_range_high=x3;
+		}
+/*		std::cerr << "Cubic extrema between (" << x0 << ", " << y0 << "), ("
+			<< x1 << ", " << y1 << "), (" << x2 << ", " << y2 << "), (" 
+			<< x3 << ", " << y3 << ") in range (" << require_range_low
+			<< ", " << require_range_high << "), coef=("
+			<< a/3.0 << ", " << b/2.0 << ", " << c << ", " << d
+			<< "), solutions: (" << extremum_x1 << ", " << 
+			a*std::pow(extremum_x1,3)/3.0 + b*std::pow(extremum_x1,2)/2.0 +
+			c*extremum_x1 + d << ") and (" << extremum_x2 << ", " 
+			<< a*std::pow(extremum_x2,3)/3.0 + 
+			b*std::pow(extremum_x2,2)/2.0 + c*extremum_x2 + d << ")";*/
+#endif
+		if(a<0) {a*=-1; b*=-1; c*=-1;}
+		extremum_x=(-b-sqrtD)/(2.0*a);
+		if(extremum_x<require_range_low || extremum_x>require_range_high)
+			extremum_x=(-b+sqrtD)/(2.0*a);
+		if(extremum_y) {
+			*extremum_y=0;
+			double xpow=1.0;
+			for(size_t i=0; i<4; i++) {
+				*extremum_y+=xpow*gsl_vector_get(cubic_coef, i);
+				xpow*=extremum_x;
+			}
+		}
+		gsl_vector_free(cubic_coef);
+	}
+	if(extremum_x<require_range_low || extremum_x>require_range_high) {
+#ifdef DEBUG
+//		std::cerr << ", fallback to quadratic: ";
+#endif
+		if((y1-y0)*(y2-y1)<=0)
+			extremum_x=quadratic_extremum(x0, y0, x1, y1, x2, y2,extremum_y);
+		if((extremum_x<require_range_low || extremum_x>require_range_high) &&
+				(y2-y1)*(y3-y2)<=0)
+			extremum_x=quadratic_extremum(x1, y1, x2, y2, x3, y3,extremum_y);
 		if(extremum_x<require_range_low || extremum_x>require_range_high) {
 			std::ostringstream msg;
 			msg.precision(16);
@@ -332,19 +413,11 @@ double cubic_extremum(double x0, double y0, double x1,
 				<< x3 << ", " << y3 << ")!";
 			throw Error::BadFunctionArguments(msg.str());
 		}
-	} else if(extremum_y) {
-		*extremum_y=0;
-		double xpow=1.0;
-		for(size_t i=0; i<4; i++) {
-			*extremum_y+=xpow*gsl_vector_get(cubic_coef, i);
-			xpow*=extremum_x;
-		}
 	}
-	gsl_vector_free(cubic_coef);
 #ifdef DEBUG
-	std::cerr << ", selected: (" << extremum_x;
+/*	std::cerr << ", selected: (" << extremum_x;
 	if(extremum_y) std::cerr << ", " << *extremum_y;
-	std::cerr << ")" << std::endl;
+	std::cerr << ")" << std::endl;*/
 #endif
 	return extremum_x;
 }

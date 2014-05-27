@@ -1048,7 +1048,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 	StellarSystem system(star, planet);
 	std::valarray<double> start_orbit(0.0, 1);
 	EvolModeType start_evol_mode;
-	SpinOrbitLockInfo start_star_lock(1, 1, 0);
+	SpinOrbitLockInfo start_star_lock;
 	if(std::isnan(tstart) || tstart<star.disk_dissipation_age()) {
 		start_evol_mode=LOCKED_TO_DISK;
 		if(std::isnan(tstart) || tstart<star.core_formation_age()) {

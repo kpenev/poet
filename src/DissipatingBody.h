@@ -21,7 +21,7 @@ namespace PhaseLag {
 	///What derivatives should a dissipating body be able to compute.
 	enum Derivative {
 		///No derivative, calculate the phase lag itself.
-		NO_DERIV,
+		NO_DERIV=0,
 
 		///Derivative w.r.t. age (due to the body evolving) per Gyr.
 		AGE,
@@ -55,28 +55,44 @@ private:
 	///approached?
 	///
 	///The values have the following meanings:
-	/// - <0 	: the spin frequency of the body is slightly smaller than
-	///			  necessary for a lock
+	/// - <0 	: the spin frequency of the body is slightly lagrer than
+	///			  necessary for a lock (or the orbital freqency is slightly
+	///		      smaller).
 	///
-	/// - 0 	: no lock should be assumed
+	/// - 0 	: The spin frequency and the orbital frequency have precisely
+	///			  the values to result in zero forcing frequency for this
+	///			  term.
 	///
-	/// - >0 	: the spin frequency of the body is slightly larger than
-	///			  necessary for the lock
+	/// - >0 	: the spin frequency of the body is slightly smaller than
+	///			  necessary for a lock (or the orbital freqency is slightly
+	///		      larger).
 	short __lock_direction;
 
 public:
 	///\brief Define which tidal dissipation term is in a lock.
 	SpinOrbitLockInfo(
 			///The multiple of the orbital frequency at the lock.
-			int orbital_freq_mult,
+			int orbital_freq_mult=0,
 
 			///The multiple of the spin frequency at the lock.
-			int spin_freq_mult,
+			int spin_freq_mult=0,
 
 			///The direction from which the spin frequency is approaching the
 			///lock. See #__lock_direction for the meaning of the values.
-			short lock_direction)
+			short lock_direction=-1)
 	{set_lock(orbital_freq_mult, spin_freq_mult, lock_direction);}
+
+	///\brief Copy the original to this.
+	SpinOrbitLockInfo(const SpinOrbitLockInfo &orig)
+	{set_lock(orig.orbital_frequency_multiplier(),
+			orig.spin_frequency_multiplier(),
+			orig.lock_direction());}
+
+	///\brief Make this the same lock as RHS.
+	SpinOrbitLockInfo &operator=(const SpinOrbitLockInfo &rhs)
+	{set_lock(rhs.orbital_frequency_multiplier(),
+			rhs.spin_frequency_multiplier(),
+			rhs.lock_direction()); return *this;}
 
 	///\brief Define which tidal dissipation term is in a lock.
 	void set_lock(
@@ -86,14 +102,9 @@ public:
 			///The multiple of the spin frequency at the lock.
 			int spin_freq_mult,
 
-			///The direction from which the spin frequency is approaching the
-			///lock. See #__lock_direction for the meaning of the values.
-			short lock_direction)
-	{
-		__orbital_freq_mult=orbital_freq_mult;
-		__spin_freq_mult=spin_freq_mult;
-		__lock_direction=lock_direction;
-	}	
+			///The sign of the forcing frequency for this term.
+			///See #__lock_direction for the meaning of the values.
+			short lock_direction);
 
 	///\brief Spin frequency at exactly the lock that corresponds to the
 	///given orbital frequency.
@@ -106,17 +117,12 @@ public:
 			int orbital_freq_mult,
 
 			///The multiple of the spin frequency to consider.
-			int spin_freq_mult) const
-	{
-		if(__lock_direction==0) return false;
-		return orbital_freq_mult*__spin_freq_mult==
-			spin_freq_mult*__orbital_freq_mult;
-	}
+			int spin_freq_mult) const;
 
 	///Should this lock be assumed.
-	operator bool() const {return __lock_direction;}
+	operator bool() const {return __lock_direction==0;}
 
-	///The direction from which the spin approaches the lock.
+	///The sign of the forcing frequnecy associated with this component.
 	short lock_direction() const {return __lock_direction;}
 
 	///Set the lock direction to the given value.
@@ -127,7 +133,14 @@ public:
 
 	///The multiplier in front of the spin frequency in the lock.
 	int spin_frequency_multiplier() const {return __spin_freq_mult;}
+
+	///Are the two locks for the same frequency ratio and in the same
+	///enabled/disabled state.
+	bool operator==(const SpinOrbitLockInfo &rhs) const;
 };
+
+///Civilized output for locks.
+std::ostream &operator<<(std::ostream &os, const SpinOrbitLockInfo &lock);
 
 ///\brief A base class for any body contributing to tidal dissipation.
 ///

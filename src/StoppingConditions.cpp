@@ -82,7 +82,7 @@ std::valarray<double> BreakLockCondition::operator()(
 	stop_deriv.resize(2, NaN);
 	std::valarray<double> result(2);
 	result[0]=above_fraction;
-	result[1]=1.0-above_fraction;
+	result[1]=above_fraction-1.0;
 	return result;
 }
 
@@ -217,6 +217,7 @@ CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 {
 	update_meta_information(rhs);
 	__sync_sub_conditions.push_back(rhs);
+	return *this;
 }
 
 CombinedStoppingCondition::~CombinedStoppingCondition()

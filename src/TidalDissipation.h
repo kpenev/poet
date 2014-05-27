@@ -6,6 +6,7 @@
 #include "OrbitalExpressions.h"
 #include "Common.h"
 #include <cmath>
+#include <vector>
 
 /**\file
  *
@@ -155,6 +156,11 @@ private:
 		///The inclinations of the bodies.
 		__inclination;
 
+	///\brief The terms which participate in the evolution and whether to
+	///force them to be below or above synchroneity one set of terms for each
+	///body.
+	std::vector< std::vector< SpinOrbitLockInfo > > __spin_orbit_harmonics;
+
 #ifdef DEBUG
 	///Is this a valid tidal dissipation?
 	bool __valid;
@@ -211,6 +217,9 @@ private:
 			///the values
 			bool deriv);
 
+	///Fills the __spin_orbit_haromincs structure with all terms locked.
+	void fill_spin_orbit_harmonics();
+
 	///\brief Calculates the dimensionless x and y torques and power due to
 	///tidal dissipation.
 	///
@@ -218,10 +227,6 @@ private:
 	void calculate_torque_power(
 			///The body doing the dissipating.
 			const DissipatingBody &body,
-
-			///Whether to assume that body 1 is in a spin orbit lock and
-			///identify the term that is locked.
-			SpinOrbitLockInfo lock,
 
 			///Which body's dissipation is needed (shold be 0 or 1).
 			short body_index,
@@ -257,7 +262,7 @@ public:
 #ifdef DEBUG
 		: __valid(false)
 #endif
-		{}
+		{fill_spin_orbit_harmonics();}
 
 	///See #init().
 	TidalDissipation(
@@ -265,9 +270,12 @@ public:
 			const DissipatingBody &body2,
 			double semimajor,
 			double eccentricity,
-			const SpinOrbitLockInfo &lock1,
-			const SpinOrbitLockInfo &lock2)
-	{init(body1, body2, semimajor, eccentricity, lock1, lock2);}
+			const SpinOrbitLockInfo &lock1=SpinOrbitLockInfo(),
+			const SpinOrbitLockInfo &lock2=SpinOrbitLockInfo())
+	{
+		fill_spin_orbit_harmonics(); 
+		init(body1, body2, semimajor, eccentricity, lock1, lock2);
+	}
 
 	///\brief Calculates the rates of change of various quantities due to
 	///tidal dissipation.
@@ -275,9 +283,8 @@ public:
 	///For now only works for zero eccentricity, throws and ecception
 	///otherwise.
 	///
-	///If some terms in the tidal dissipation equations are locked (see the
-	///lock1 and lock2 arguments) the dissipation due to those terms is kept
-	///separate.
+	///The lock states to assume for the various terms must already be set
+	///correctly by calling one of the init_haromnics methods.
 	void init(
 			///The first dissipating body.
 			const DissipatingBody &body1,
@@ -290,18 +297,17 @@ public:
 
 			///The eccentricity of the orbit.
 			double eccentricity,
-				
+
 			///Whether to assume that body 1 is in a spin orbit lock and
-			///identify the term that is locked. The direction is ignored. If
-			///this variable converts to true, the angular momentum and spin 
-			///frequency of body1 are never used.
-			const SpinOrbitLockInfo &lock1,
+			///identify the term that is locked. Leave at default to use the
+			//currently set locks.
+			const SpinOrbitLockInfo &lock1=SpinOrbitLockInfo(),
 
 			///Whether to assume that body 2 is in a spin orbit lock and
-			///identify the term that is locked. The direction is ignored. If
-			///this variable converts to true, the angular momentum and spin 
-			///frequency of body2 are never used.
-			const SpinOrbitLockInfo &lock2);
+			///identify the term that is locked. Leave at default to use the
+			//currently set locks.
+			const SpinOrbitLockInfo &lock2=SpinOrbitLockInfo()
+			);
 
 	///\brief Rates of change of quantities due to tidal dissipation split
 	///into locked and non-locked terms.
@@ -351,7 +357,53 @@ public:
 	double spin_angular_momentum(short body_index) const
 	{return __spin_angular_momentum[body_index];}
 
+	///\brief Initialize __spin_orbit_harmonics assuming that the given
+	///harmonic is precisely zero.
+	void init_harmonics(
+			///Which body's harmonics are we setting.
+			short body_index,
 
+			///The multiple of the orbital frequency which is in sync.
+			int orbital_frequency_multiplier,
+			
+			///The multiplier of the spin frequency which is in sync.
+			int spin_frequency_multiplier)
+	{init_harmonics(body_index,
+			SpinOrbitLockInfo(orbital_frequency_multiplier,
+				spin_frequency_multiplier, 0));}
+
+	///\brief Initialize __spin_orbit_harmonics. 
+	void init_harmonics(
+			///Which body's harmonics are we setting.
+			short body_index,
+
+			///The harmonic to assume zero. If a term corresponding to the
+			///given multipliers is included in the dissipation, the locked
+			///state of that term is set to whatever lock's is.
+			const SpinOrbitLockInfo &lock);
+
+	///\brief Initialize __spin_orbit_harmonics assuming the given spin to
+	///orbital frequency ratio. 
+	///
+	///The ratio must not precisely match any of the harmonics. Use
+	/// #init_harmonics(int, int) if some terms should have precisely zero
+	///forcing frequency.
+	void init_harmonics(
+			///Which body's harmonics are we setting.
+			short body_index,
+			
+			///The spin frequency is assumed to be this number times the
+			///orbital freqency and the values of the lock are set
+			///accordingly.
+			double spin_to_orbital_ratio);
+
+	///\brief The number of different spin-orbit harmonics contirubuting to
+	///the dissipation.
+	unsigned num_harmonics() const {return 4;}
+
+	///\brief Returns a const reference to given harmonic.
+	const SpinOrbitLockInfo &harmonic(short body_index, unsigned i)
+		 const {return __spin_orbit_harmonics[body_index][i];}
 };
 
 #endif

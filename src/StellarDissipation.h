@@ -86,12 +86,9 @@ public:
 			///in rad/day.
 			double forcing_frequency,
 			
-			///If this function is discontinuous at zero and an exactly zero
-			///forcing frequency is encountered, this argument determines if
-			///the zero should be interpreted as an infinitesimal positive or
-			///negative amount. If this argument evaluates to true, the
-			///pre-set spin should be ignored and the spin at the lock used
-			///instead.
+			///If the value of the forcing frequency is precisely zero, 
+			///assume that it approaches zero from the specified direction
+			///(will always be non-zero).
 			const SpinOrbitLockInfo &lock,
 
 			///Whether to return the phase lag or one of its derivatives.

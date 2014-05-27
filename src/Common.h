@@ -10,6 +10,7 @@
 
 #include "Error.h"
 #include "AstronomicalConstants.h"
+#include "Eigen/Dense"
 #include <list>
 #include <valarray>
 #include <limits>
@@ -180,8 +181,8 @@ double quadratic_extremum(double x0, double y0, double x1,
 ///
 ///The input y values must not be monotonic.
 ///
-///If the optional last argument is not NULL, the location it points to gets
-///overwritten with the value of the function at the extremum.
+///If the optional extremum_y argument is not NULL, the location it points to
+///gets overwritten with the value of the function at the extremum.
 double cubic_extremum(double x0, double y0, double x1,
 		double y1, double x2,double y2, double x3,	double y3,
 		double *extremum_y=NULL, double require_range_low=NaN,
@@ -210,7 +211,29 @@ template<class ITERATOR>
 gsl_vector *polynomial_coefficients(ITERATOR x_i, ITERATOR y_i,
 		size_t num_points)
 {
-	gsl_vector *y_vec=gsl_vector_alloc(num_points);
+	Eigen::VectorXd y_vec(num_points);
+	Eigen::MatrixXd xpowers(num_points, num_points);
+	for(size_t i=0; i<num_points; i++) {
+		double x=*x_i, xpow=1.0;
+		y_vec(i)=*y_i;
+		for(size_t pow=0; pow<num_points; pow++) {
+			xpowers(i,pow)=xpow;
+			xpow*=x;
+		}
+		x_i++; y_i++;
+	}
+	static Eigen::JacobiSVD<Eigen::MatrixXd,
+							Eigen::FullPivHouseholderQRPreconditioner>
+		svd(num_points, num_points,
+				Eigen::ComputeFullU | Eigen::ComputeFullV);
+	svd.compute(xpowers);
+	Eigen::VectorXd solution=svd.solve(y_vec);
+	gsl_vector *result=gsl_vector_alloc(num_points);
+	for(size_t i=0; i<num_points; ++i)
+		gsl_vector_set(result, i, solution(i));
+	return result;
+
+/*	gsl_vector *y_vec=gsl_vector_alloc(num_points);
 	gsl_matrix *xpowers=gsl_matrix_alloc(num_points, num_points);
 	for(size_t i=0; i<num_points; i++) {
 		double x=*x_i, xpow=1.0;
@@ -237,7 +260,7 @@ gsl_vector *polynomial_coefficients(ITERATOR x_i, ITERATOR y_i,
 	gsl_vector_free(residuals);
 	gsl_matrix_free(xpowers);
 	gsl_matrix_free(xpowers_LU);
-	return coefficients;
+	return coefficients;*/
 }
 
 #endif
