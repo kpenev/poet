@@ -12,8 +12,11 @@
 
 class Star : public StarBase {
 private:
-	///The tidal quality factor of the star.
-	double __mod_phase_lag;
+	///The modified phase lag of the star outside the inertial mode range.
+	double __mod_phase_lag,
+		   
+		   ///The modified phase lag of the star in the inertial mode range.
+		   __mod_phase_lag_inertial;
 
 public:
 	///Create a star with the given properties.
@@ -22,7 +25,10 @@ public:
 			double mass,
 
 			///Tidal quality factor
-			double tidal_quality, 
+			double tidal_quality,
+
+			///Tidal quality factor
+			double tidal_quality_inertial,
 
 			///The normalization constant (K) in the magnetic wind equation
 			//in \f$\frac{M_\odot \cdot R_\odot^2 \cdot \mathrm{day}^2}
@@ -70,7 +76,9 @@ public:
 						coupling_timescale, disk_lock_ang_vel,
 						disk_lock_time, evolution, age,
 						conv_spin, rad_spin),
-				__mod_phase_lag(30.0/(16.0*M_PI*tidal_quality)) {}
+				__mod_phase_lag(30.0/(16.0*M_PI*tidal_quality)),
+				__mod_phase_lag_inertial(
+						30.0/(16.0*M_PI*tidal_quality_inertial)) {}
 
 	///\brief A function defining the dissipation efficiency of the body.
 	///

@@ -51,7 +51,8 @@ namespace InCol {
 		///mass stars.
 		CORE_ENV_COUPLING_TIMESCALE,
 
-		LGQ,///< Lg(Q*).
+		LGQ,///< Lg(Q*) outside the inertial mode range.
+		LGQ_INERTIAL,///< Lg(Q*) in the inertial mode range.
 		MSTAR, ///< Mass of the star in \f$M_\odot\f$.
 		MPLANET, ///< Mass of the planet in Jupiter masses.
 		RPLANET, ///< Radius of the planet in Jupiter radii.
@@ -171,6 +172,7 @@ namespace OutCol {
 		SEMIMAJOR,///< Semimajor axis of the orbit in AU.
 		WORB,///< The orbital frequency in rad/day.
 		PORB,///< The orbital period days.
+		LORB,//< The orbital angular momentum
 
 		///The angle between the surface spin and orbital angular momentum in
 		///radians

@@ -18,6 +18,7 @@ void CommandLineOptions::init_input_column_names()
 	__input_column_names[InCol::HIGH_MASS_WIND_SAT_P]="psat";
 	__input_column_names[InCol::CORE_ENV_COUPLING_TIMESCALE]="tcoup";
 	__input_column_names[InCol::LGQ]="lgQ";
+	__input_column_names[InCol::LGQ_INERTIAL]="lgQinr";
 	__input_column_names[InCol::MSTAR]="M";
 	__input_column_names[InCol::MPLANET]="m";
 	__input_column_names[InCol::RPLANET]="r";
@@ -54,6 +55,8 @@ void CommandLineOptions::init_output_column_descriptions()
 		"inclination";
 	__output_column_descr[OutCol::WORB]="Orbital frequency in rad/day";
 	__output_column_descr[OutCol::PORB]="Orbital period in days";
+	__output_column_descr[OutCol::LORB]="Orbital angular momentum in "
+		"Msun Rsun^2 rad/day";
 	__output_column_descr[OutCol::LCONV]=
 		"Convective zone angular momentum in Msun Rsun^2 rad/day "
 		"(low mass stars only else NaN).";
@@ -174,7 +177,8 @@ void CommandLineOptions::init_defaults()
 	__defaults[InCol::LOW_MASS_WIND_SAT_P]=NaN;
 	__defaults[InCol::HIGH_MASS_WIND_SAT_P]=Inf;
 	__defaults[InCol::CORE_ENV_COUPLING_TIMESCALE]=5;
-	__defaults[InCol::LGQ]=6;
+	__defaults[InCol::LGQ]=8;
+	__defaults[InCol::LGQ_INERTIAL]=6;
 	__defaults[InCol::MSTAR]=1;
 	__defaults[InCol::MPLANET]=1;
 	__defaults[InCol::RPLANET]=1;
@@ -248,6 +252,7 @@ void init_output_column_names()
 	OUTPUT_COLUMN_NAMES[OutCol::INCLINATION]="theta";
 	OUTPUT_COLUMN_NAMES[OutCol::WORB]="Worb";
 	OUTPUT_COLUMN_NAMES[OutCol::PORB]="Porb";
+	OUTPUT_COLUMN_NAMES[OutCol::LORB]="Lorb";
 	OUTPUT_COLUMN_NAMES[OutCol::LCONV]="Lconv";
 	OUTPUT_COLUMN_NAMES[OutCol::LRAD]="Lrad";
 	OUTPUT_COLUMN_NAMES[OutCol::LRAD_PAR]="Lradpar";
@@ -389,12 +394,20 @@ void CommandLineOptions::define_options()
 			cstr_copy(option_help));
 
 	option_help.str("");
-	option_help << "Log base 10 of the tidal quality factor of the star. In "
-		"--input-columns identified by "
+	option_help << "Log base 10 of the tidal quality factor of the star "
+		"outside the inertial mode range. In --input-columns identified by "
 		<< __input_column_names[InCol::LGQ] << "'. Default: "
 		<< __defaults[InCol::LGQ] << ".";
 	__direct_value_options[InCol::LGQ]=arg_dbl0(NULL, "lgQ", "<double>",
 			cstr_copy(option_help));
+
+	option_help.str("");
+	option_help << "Log base 10 of the tidal quality factor of the star in "
+		"the inertial mode range. In --input-columns identified by "
+		<< __input_column_names[InCol::LGQ_INERTIAL] << "'. Default: "
+		<< __defaults[InCol::LGQ_INERTIAL] << ".";
+	__direct_value_options[InCol::LGQ_INERTIAL]=arg_dbl0(NULL, "lgQinr",
+			"<double>", cstr_copy(option_help));
 
 	option_help.str("");
 	option_help << "Mass of the star in solar masses. In --input-columns "
@@ -475,8 +488,8 @@ void CommandLineOptions::define_options()
 			<< __input_column_names[InCol::INCLINATION_FORMATION]
 			<< "'. Default: " << __defaults[InCol::INCLINATION_FORMATION]
 			<< ".";
-	__direct_value_options[InCol::INCLINATION_FORMATION]=arg_dbl0("a",
-			"init-semimajor", "<double>", cstr_copy(option_help));
+	__direct_value_options[InCol::INCLINATION_FORMATION]=arg_dbl0("i",
+			"init-inclination", "<double>", cstr_copy(option_help));
 
 	option_help.str("");
 	option_help << "The starting age for the evolution in Gyr. If this "
@@ -911,6 +924,7 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 		Lrad_perpendicular_i=solver.get_tabulated_var(LRAD_PERP)->begin();
 	const Star &star=system.get_star();
 	const Planet &planet=system.get_planet();
+	double mstar=star.mass(), mplanet=planet.mass();
 	std::list<double>::const_iterator
 		last_age=solver.get_tabulated_var(AGE)->end();
 	std::list<double> age_list;
@@ -954,15 +968,18 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 				   Lrad=std::sqrt(std::pow(*Lrad_parallel_i, 2) +
 						   std::pow(*Lrad_perpendicular_i, 2)),
 				   Ltot=std::sqrt(std::pow(*Lconv_i + *Lrad_parallel_i, 2) +
-						   std::pow(*Lrad_perpendicular_i, 2));
+						   std::pow(*Lrad_perpendicular_i, 2)),
+				   semimajor=(*a_i)/AU_Rsun,
+				   worb=planet.orbital_angular_velocity_semimajor(semimajor),
+				   Lorb=orbital_angular_momentum(mstar, mplanet, semimajor,
+						   0);
 			outf << std::setw(25);
-			double semimajor=(*a_i)/AU_Rsun,
-				   worb=planet.orbital_angular_velocity_semimajor(semimajor);
 			switch(output_file_format[i]) {
 				case OutCol::AGE : outf << *age_i; break;
 				case OutCol::SEMIMAJOR : outf << semimajor; break;
 				case OutCol::WORB : outf << worb; break;
 				case OutCol::PORB : outf << 2.0*M_PI/worb; break;
+				case OutCol::LORB : outf << Lorb; break;
 				case OutCol::INCLINATION : outf << *inclination_i; break;
 				case OutCol::LCONV : outf << *Lconv_i; break;
 				case OutCol::LRAD : outf << Lrad; break;
@@ -1029,6 +1046,7 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 {
 	Star star(real_parameters[InCol::MSTAR],
 			std::pow(10.0, real_parameters[InCol::LGQ]),
+			std::pow(10.0, real_parameters[InCol::LGQ_INERTIAL]),
 			real_parameters[InCol::WINDK],
 			real_parameters[InCol::WIND_SAT_W],
 			real_parameters[InCol::CORE_ENV_COUPLING_TIMESCALE]*1e-3,
