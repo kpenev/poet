@@ -13,7 +13,7 @@ const double TidalDissipation::__Umm_coef[][3]={
 	 std::sqrt(3.0*M_PI/10.0)/4.0},
 
 	{-std::sqrt(3.0*M_PI/10.0)/2.0,
-	 std::sqrt(6.0*M_PI/5.0)/2.0,
+	 -std::sqrt(6.0*M_PI/5.0)/2.0,
 	 std::sqrt(3.0*M_PI/10.0)/2.0},
 
 	{3.0*std::sqrt(M_PI/5.0)/4.0,
@@ -34,11 +34,11 @@ const double TidalDissipation::__torque_x_plus_coef[]={1.0,
 													   1.0,
 													   0.0};
 
-const double TidalDissipation::__torque_x_minus_coef[]={0.0, 
-													    1.0,
-													    std::sqrt(1.5),
-													    std::sqrt(1.5),
-													    1.0};
+const double TidalDissipation::__torque_x_minus_coef[]={0.0,           //m=-2
+													    1.0,           //m=-1
+													    std::sqrt(1.5),//m=0
+													    std::sqrt(1.5),//m=1
+													    1.0};          //m=2
 
 std::ostream &operator<<(std::ostream &os, 
 		const Dissipation::Quantity &quantity)
@@ -131,6 +131,7 @@ void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 	if(body.moment_of_inertia()==0) return;
 	for(int m=-2; m<=2; ++m) {
 		double m_spin_freq=m*spin_frequency;
+		int m_ind=m+2;
 		for(int mp=-2; mp<=2; mp+=2) {
 			if(m==0 && mp==0) continue;
 			bool locked_term=lock(mp, m);
@@ -151,7 +152,7 @@ void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 #endif
 						;
 			};
-			int mp_ind=mp/2+1, m_ind=m+2;
+			int mp_ind=mp/2+1;
 			double Umm_squared=std::pow(__Umm[m_ind][mp_ind], 2),
 				   forcing_freq=(locked_term ? 0 :
 						   mp*__orbital_frequency-m_spin_freq);
@@ -177,13 +178,13 @@ void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 				rate_entry(body_index, Dissipation::TORQUEX,
 						derivative, lock_dir)+=__Umm[m_ind][mp_ind]*(
 							(m>-2 ? 
-							 __torque_x_minus_coef[mp_ind]
+							 __torque_x_minus_coef[m_ind]
 							 *
 							 __Umm[m_ind-1][mp_ind] : 0)+
 							(m<2 ? 
-							 __torque_x_plus_coef[mp_ind]
+							 __torque_x_plus_coef[m_ind]
 							 *
-							 __Umm[m_ind+1][mp_ind] : 0));
+							 __Umm[m_ind+1][mp_ind] : 0))*mod_phase_lag;
 			}
 		}
 	}
