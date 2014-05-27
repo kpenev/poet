@@ -9,3 +9,4 @@ poet.tgz
 .*.swp
 *serialized_evolution
 *.evol
+*.track
