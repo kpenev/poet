@@ -63,8 +63,12 @@ int StellarSystem::binary_differential_equations(
 			above_lock_fraction(dissipation, evolution_rates[1]) : 0);
 	double da_dt=-dissipation(0, Dissipation::SEMIMAJOR_DECAY,
 			above_fraction)/Rsun_AU;
+	std::complex<double> Lrad(parameters[Lrad_par_index],
+			parameters[Lrad_par_index+1]),
+		coupling_torque=__star.differential_rotation_torque_angmom(Lconv,
+				Lrad);
 	evolution_rates[1]=-dissipation(0, Dissipation::INCLINATION_DECAY,
-			above_fraction);
+			above_fraction)-coupling_torque.imag()/Lconv;
 	if(star_lock) evolution_rates[0]=da_dt;
 	else {
 		evolution_rates[0]=6.5*std::pow(parameters[0], 11.0/13.0)*da_dt;
