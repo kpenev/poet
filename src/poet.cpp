@@ -388,7 +388,7 @@ void CommandLineOptions::define_options()
 		" in Myr. In --input-columns identified by '"
 		<< __input_column_names[InCol::CORE_ENV_COUPLING_TIMESCALE]
 		<< "'. Default: " << __defaults[InCol::CORE_ENV_COUPLING_TIMESCALE]
-		<< "5.";
+		<< ".";
 	__direct_value_options[InCol::CORE_ENV_COUPLING_TIMESCALE]=arg_dbl0(NULL,
 			"core-env-coupling-timescale", "<double>",
 			cstr_copy(option_help));
