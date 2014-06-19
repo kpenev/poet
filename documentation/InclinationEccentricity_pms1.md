@@ -75,12 +75,12 @@ lower limit on \f$\lambda\f$ gives:
 of \f$c\f$ to not be empty: \f$k-n-s\leq n\Rightarrow k\leq 2n+s\f$. With all
 these we can write:
 \f[
-	p_{0,s}=\sum_{n=0}^\infty \alpha^0_{s,n}e^{s+2n}
+	p_{0,s}=\sum_{n=0}^\infty \alpha_{s,n}(se/2)^{s+2n}
 \f]
 with
 \f[
-	\alpha^0_{s,n}\equiv\frac{2\pi}{\omega}
-		\left(\frac{s}{2}\right)^{s+2n} (-1)^n
+	\alpha_{s,n}\equiv\frac{2\pi}{\omega}
+		(-1)^n
 		\sum_{k=0}^{2n+s} \frac{k+1}{s^k} \sum_{c=max(0,k-n-s)}^{min(n,k)}
 		{k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!}
 \f]
@@ -124,7 +124,7 @@ To solve them we will use
  \f$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\f$ and we will directly
 calculate the following general integral:
 \f{eqnarray*}{
-	I_\lambda&\equiv&
+	\omega I_{\lambda,s}&\equiv&
 	\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\exp(i\lambda u)}
 						{(1-e\cos u)^4} du\\
 	&=&\sum_{k=0}^\infty {{k+3} \choose 3} e^k
@@ -133,17 +133,48 @@ calculate the following general integral:
 	\sum_{c=0}^k {k \choose c} \int_{0}^{2\pi} 
 						\exp[i (s+\lambda+2c-k) u]\exp(-ise\sin u) du\\
 	&=&\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k
-		\sum_{c=0}^k {k \choose c} J_{s+\lambda+2c-k}(es)
+		\sum_{c=0}^k {k \choose c} J_{s+\lambda+2c-k}(es)\\
+	&=&\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k
+		\sum_{c=0}^k {k \choose c} \sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty}
+			\frac{(-1)^\nu (se)^{2\nu+s+\lambda+2c-k}}
+				{2^{2\nu+s+\lambda+2c-k}\nu!(\nu+s+\lambda+2c-k)!}\\
+	&=&2\pi\left(\frac{se}{2}\right)^{s+\lambda}\sum_{k=0}^\infty
+		{{k+3} \choose 3} \sum_{c=0}^k {k \choose c}
+		\sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty}
+			\frac{(-1)^\nu (s^2e^2/4)^{\nu+c}}{\nu!(\nu+s+\lambda+2c-k)!}
 \f}
-In terms of \f$I_\lambda\f$:
+Similarly to before we would like to group by powers of the eccentricity:
+\f$n=\nu+c\f$. This leads to the following constraints:
 \f{eqnarray*}{
-	p_{\pm2,s}&=&\exp(\mp 2i\phi_0)\left\{p_{0,s}
-		-\frac{1-e^2}{\omega}I_0
-		+\frac{1-e^2}{2\omega}(I_2+I_{-2})
-		\mp \frac{\sqrt{1-e^2}}{2\omega}(I_2-I_{-2})
-		\pm \frac{e\sqrt{1-e^2}}{\omega}(I_1-I_{-1})
-	\right\}\\
-	&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty 
+	\nu>=0 & \Rightarrow & c \le n\\
+	\nu>=k-s-\lambda-2c & \Rightarrow & c \ge k-s-\lambda-n\\
+	k-s-\lambda-n \le n & \Rightarrow & k \le 2n+\lambda+s\\
+	k-s-\lambda-n \le k & \Rightarrow & n \ge -s - \lambda
+\f}
+Plugging into the expression above:
+\f[
+	I_{\lambda,s} = \sum_{n=\max{0,-s-\lambda}}^\infty \beta_{s+\lambda,n}
+		(se/2)^{s+\lambda+2n}
+\f]
+
+with
+\f[
+	\beta_{\lambda,n}\equiv \frac{2\pi(-1)^n}{\omega} \sum_{k=0}^{2n+\lambda}
+		{{k+3} \choose 3} \sum_{c=\max(0,k-\lambda-n)}^{\min(n,k)}
+			{k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+c-k)!}
+\f]
+
+In terms of \f$I_{\lambda,s}\f$:
+\f[
+	p_{\pm2,s}=\exp(\mp 2i\phi_0)\left\{p_{0,s}
+		+(1-e^2)\left[(I_{2,s}+I_{-2,s})/2-I_{0,s}\right]
+		\mp \sqrt{1-e^2}(I_{2,s}-I_{-2,s})/2
+		\pm e\sqrt{1-e^2}(I_{1,s}-I_{-1,s})
+	\right\}
+\f]
+Plugging in the bessel function expressions:
+\f{eqnarray*}{
+	p_{\pm2,s}&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty 
 		2\pi \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c}
 		\Bigg\{
 			(k+1)J_{s+2c-k}(es) + \\
