@@ -201,8 +201,8 @@ with a period of \f$2\pi/\Omega\f$, we can expand:
 \f]
 
 Expressions for the \f$p_{m',s}(e)\f$ coefficients are derived 
-(\ref InclinationEccentricity_pms1 "here") or 
-(\ref InclinationEccentricity_pms2 "here").
+[here](@ref InclinationEccentricity_pms1) or 
+[here](@ref InclinationEccentricity_pms2).
 
 Hence, our tidal potential can be written exactly as in Lai (2012), eq. 12,
 except with \f$m'\f$ not limited to only 0 and 2:
@@ -215,8 +215,8 @@ with
 	U_{m,m'} \equiv \frac{GM'}{a^3} \mathcal{U}_{m,m'}\equiv
 		\frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'}
 \f]
-where we have switched the \f$m'\f$ and \f$s\f$ coefficients. Here is a (\ref
-InclinationEccentricity_Ummtable "table") of \f$W_{2,m'}D_{m,m'}\f$.
+where we have switched the \f$m'\f$ and \f$s\f$ coefficients. Here is a
+[table](@ref InclinationEccentricity_Ummtable) of \f$W_{2,m'}D_{m,m'}\f$.
 
 From here we proceed following Lai (2012) again, but we have more than 6
 independent timelags if the orbit is eccentric (for circular orbits,
@@ -237,9 +237,9 @@ with \f$\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})\f$,
 spin angular velocity of \f$M\f$, and \f$\omega_0\equiv\sqrt{GM/R^3}\f$ is the
 dynamical frequency of \f$M\f$.
 
-Here are the detailed devirations of the tidal (\ref
-InclinationEccentricity_torque "torque") and (\ref
-InclinationEccentricity_power "power").
+Here are the detailed devirations of the tidal
+[torque](@ref InclinationEccentricity_torque) and
+[power](@ref InclinationEccentricity_power).
 
 As noted before, for general eccentric orbits, the number of timelags is not
 only six, like in Lai (2012), but could be arbitrarily large, depending on
