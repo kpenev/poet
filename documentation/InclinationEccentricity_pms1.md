@@ -18,6 +18,17 @@ For \f$m=0\f$:
 		\int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du
 \f}
 From \f$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\f$:
+\f[
+	p_{0,s}= \sum_{k=0}^\infty \frac{(k+1)e^k}{\omega}
+		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du
+\f]
+Which for \f$s=0\f$, using 
+ \f$\int_0^{2\pi} \cos^{2k} u du = \frac{2\pi (2k)!}{2^{2k}(k!)^2}\f$ gives:
+\f[
+	p_{0,0}=\frac{2\pi}{\omega}
+		\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k}(k!)^2}e^k
+\f]
+And for \f$s \neq 0\f$:
 \f{eqnarray*}{
 	p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\
@@ -75,15 +86,22 @@ lower limit on \f$\lambda\f$ gives:
 of \f$c\f$ to not be empty: \f$k-n-s\leq n\Rightarrow k\leq 2n+s\f$. With all
 these we can write:
 \f[
-	p_{0,s}=\sum_{n=0}^\infty \alpha_{s,n}(se/2)^{s+2n}
+	p_{0,s}=\sum_{n=0}^\infty \alpha_{s,n}\left\{
+		\begin{array}{l@{,\quad}l}
+			e^{2n} & s=0\\
+			(se/2)^{s+2n} & s \neq 0
+		\end{array}\right.
 \f]
 with
 \f[
-	\alpha_{s,n}\equiv\frac{2\pi}{\omega}
-		(-1)^n
-		\sum_{k=0}^{2n+s} \frac{k+1}{s^k} \sum_{c=max(0,k-n-s)}^{min(n,k)}
-		{k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!}
+	\alpha_{s,n}\equiv\frac{2\pi}{\omega}\left\{\begin{array}{l@{,\quad}l}
+		\frac{(2n+1)!}{2^{2n}(n!)^2} & s=0\\
+		(-1)^n \sum_{k=0}^{2n+s} \frac{k+1}{s^k}
+		\sum_{c=max(0,k-n-s)}^{min(n,k)}
+		{k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!} & s \neq 0
+	\end{array} \right.
 \f]
+Verified using Mathematica.
 
 For \f$m=\pm2\f$ we need:
 \f{eqnarray*}{
@@ -139,7 +157,7 @@ calculate the following general integral:
 			\frac{(-1)^\nu (se)^{2\nu+s+\lambda+2c-k}}
 				{2^{2\nu+s+\lambda+2c-k}\nu!(\nu+s+\lambda+2c-k)!}\\
 	&=&2\pi\left(\frac{se}{2}\right)^{s+\lambda}\sum_{k=0}^\infty
-		{{k+3} \choose 3} \sum_{c=0}^k {k \choose c}
+		{{k+3} \choose 3} s^{-k}\sum_{c=0}^k {k \choose c}
 		\sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty}
 			\frac{(-1)^\nu (s^2e^2/4)^{\nu+c}}{\nu!(\nu+s+\lambda+2c-k)!}
 \f}
@@ -153,15 +171,16 @@ Similarly to before we would like to group by powers of the eccentricity:
 \f}
 Plugging into the expression above:
 \f[
-	I_{\lambda,s} = \sum_{n=\max{0,-s-\lambda}}^\infty \beta_{s+\lambda,n}
+	I_{\lambda,s} = \sum_{n=\max(0,-s-\lambda)}^\infty \beta_{\lambda,s,n}
 		(se/2)^{s+\lambda+2n}
 \f]
 
 with
 \f[
-	\beta_{\lambda,n}\equiv \frac{2\pi(-1)^n}{\omega} \sum_{k=0}^{2n+\lambda}
-		{{k+3} \choose 3} \sum_{c=\max(0,k-\lambda-n)}^{\min(n,k)}
-			{k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+c-k)!}
+	\beta_{\lambda,s,n}\equiv \frac{2\pi(-1)^n}{\omega}
+	\sum_{k=0}^{2n+\lambda+s}
+		{{k+3} \choose 3} s^{-k}\sum_{c=\max(0,k-\lambda-s-n)}^{\min(n,k)}
+			{k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+s+c-k)!}
 \f]
 
 In terms of \f$I_{\lambda,s}\f$:
@@ -172,6 +191,7 @@ In terms of \f$I_{\lambda,s}\f$:
 		\pm e\sqrt{1-e^2}(I_{1,s}-I_{-1,s})
 	\right\}
 \f]
+Verified using Methematica for \f$s\neq0\f$.
 Plugging in the bessel function expressions:
 \f{eqnarray*}{
 	p_{\pm2,s}&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty 
@@ -189,3 +209,76 @@ Plugging in the bessel function expressions:
 		\Bigg]
 		\Bigg\}
 \f}
+For s=0 we need to go back to:
+\f{eqnarray*}{
+	p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
+		\frac{1}{\omega}\left[
+			(1-e^2)\int_{0}^{2\pi} \frac{\cos 2u -1} {(1-e\cos u)^4} du
+			\mp
+			i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\sin 2u} {(1-e\cos u)^4} du
+			\pm
+			i2e\sqrt{1-e^2} \int_{0}^{2\pi} \frac{\sin u} {(1-e\cos u)^4} du
+		\right]\right\}\\
+	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
+		\frac{2}{\omega}\left[
+			(1-e^2)\int_{0}^{2\pi} \frac{\cos^2 u -1} {(1-e\cos u)^4} du
+			\pm
+			i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u
+			\mp
+			ie\sqrt{1-e^2} \int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u
+		\right]\right\} 
+\f}
+\f{eqnarray*}{
+	\int_{0}^{2\pi}\frac{\cos^{2n} u} {(1-e\cos u)^4} du
+	&=&\sum_{k=0}^\infty {2k+3 \choose 3} e^{2k}
+			\int_{0}^{2\pi}\frac{\cos^{2n+2k} u} du\\
+	&=&2\pi\sum_{k=0}^\infty {2k+3 \choose 3}
+			\frac{(2k+2n)!}{2^{2k+2n}[(k+n)!]^2} e^{2k}
+\f}
+\f{eqnarray*}{
+	\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u
+	&=&-\frac{1}{e}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d(1-e\cos u)\\
+	&=&\left.\frac{1}{3e(1-e\cos u)^3}\right|_{0}^{2\pi}\\
+	&=&0
+\f}
+\f{eqnarray*}{
+	\int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u
+	&=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1-e\cos u-1}{(1-e\cos u)^4}
+		d(1-e\cos u)\\
+	&=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^3} d(1-e\cos u)\\
+	&=&-\frac{1}{2e^2(1-e\cos u)^2}\\
+	&=&0
+\f}
+So we are left with:
+\f{eqnarray*}{
+	p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
+		\frac{4\pi(1-e^2)}{\omega}\left\{\sum_{k=0}^\infty {2k+3 \choose 3}
+			\frac{(2k+2)!}{2^{2k+2}[(k+1)!]^2}-
+			\frac{2k!}{2^{2k}(k!)^2}\right\}e^{2k}\right\}\\
+	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+		\frac{4\pi(1-e^2)}{\omega}\sum_{k=0}^\infty {2k+3 \choose 3}
+			\frac{2k!}{2^{2k}(k!)^2(2k+2)}e^{2k}\right\}\\
+	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+		\frac{4\pi}{\omega}\sum_{k=0}^\infty \left[
+			{2k+3 \choose 3} \frac{2k!}{2^{2k}(k!)^2(2k+2)}
+			-
+			{2k+1 \choose 3} \frac{2(k-1)!}{2^{2k-2}[(k-1)!]^2 2k}
+		\right]e^{2k}\right\}\\
+	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+		\frac{4\pi}{\omega}\sum_{k=0}^\infty \left[
+			\frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2}
+			-
+			\frac{4k^2(2k+1)(2k-1)!}{6\,2^2k(k!)^2}
+		\right]e^{2k}\right\}\\
+	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+		\frac{4\pi}{\omega}\sum_{k=0}^\infty \left[
+			\frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2}
+			-
+			\frac{2k(2k+1)!}{6\,2^2k(k!)^2}
+		\right]e^{2k}\right\}\\
+	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+		\frac{4\pi}{\omega}\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k+1}(k!)^2}
+		e^{2k}\right\}\\
+	&=&0
+\f}
+Confirmed by Mathematica.
