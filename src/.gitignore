@@ -10,3 +10,4 @@ poet.tgz
 *serialized_evolution
 *.evol
 *.track
+*.pyc
