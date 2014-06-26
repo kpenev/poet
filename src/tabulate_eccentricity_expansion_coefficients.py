@@ -75,6 +75,10 @@ class ExpansionCoefficients :
         if l is None : return self.__alpha[epower][n]
         else : return self.__beta[l][epower][n]
 
+    def alpha(self, s, n) : return self.alpha_or_beta(s, n)
+
+    def beta(self, l, s, n) : return self.alpha_or_beta(s, n, l)
+
     def __call__(self, m, s, epower) :
         """ The coefficient in front of 2*pi*e^epower/omega in p_{m,s}. 
         
@@ -85,18 +89,61 @@ class ExpansionCoefficients :
             - epower : The power of eccentricity of the term being evaluated.
         Returns: The specified coefficient as an exact rational number. """
 
+        if epower%2!=s%2 : return 0
+        n=(epower-s)//2
         if(m==0) : 
-            if epower%2!=s%2 or abs(s)>epower : return 0
-            n=(epower-s)//2
-            return self.alpha_or_beta(s, n)*(1 if s==0 else 
-                                             Fraction(s,2)**epower)
+            if abs(s)>epower : return 0
+            return self.alpha(s, n)*(1 if s==0 else Fraction(s,2)**epower)
         else :
-            raise Exception("Not implemented yet.")
+            if s==0 : return 0
+            if m==-2 : msign=-1
+            elif m==2 : msign=1
+            else : raise ValueError('Asking for an expansion coefficient for'
+                                    ' p_{m=%d, s=%d, p=%d}. The value of m '
+                                    'must be one of -2, 0, 2!'%
+                                    (m, s, epower))            
+            result=Fraction(0, 1)
+            s2=s**2
+            if n>=-1 :
+                if(msign==1) : result=+self.beta(-2, s, n+1)
+                if n>=0 :
+                    result-=(self.beta(-2, s, n)*Fraction(2+msign, s2)
+                             +
+                             self.beta(0, s, n)
+                             +
+                             msign*self.beta(-1, s, n)*Fraction(2,s))
+                    if n>=1 :
+                        result+=(msign*(self.beta(1, s, n-1)*Fraction(2,s)
+                                        +
+                                        self.beta(-1, s, n-1)*Fraction(4,s*s2))
+                                 + self.beta(0, s, n-1)*Fraction(4,s2))
+                        if msign==-1 : result+=self.beta(2, s, n-1)
+                        if n>=2 : result-=(
+                            self.beta(2, s, n-2)*Fraction(2-msign, s2)
+                            +
+                            msign*self.beta(1, s, n-2)*Fraction(4,s*s2))
+            for k in range(2, n+2) :
+                extra=-self.beta(-2, s, n+1-k)/2
+                if n-k>=0 :
+                    extra+=self.beta(-1, s, n-k)*Fraction(2,s)
+                    if n-k>=1 : extra+=(self.beta(2, s, n-1-k)/2
+                                        -
+                                        self.beta(1, s, n-1-k)*Fraction(2,s))
+                result+=(msign
+                         *
+                         Fraction(4*factorial(2*k-3),
+                                  factorial(k)*factorial(k-2)*s2**k)
+                         *
+                         extra)
+            return self(0, s, epower) + Fraction(s,2)**epower*result
 
 if __name__=='__main__' :
     coef=ExpansionCoefficients(10)
+    print("I_{-2, -6} coef:")
+    for epower in range(0, 11, 2) :
+        print("\t e^%d:"%epower,
+              coef.beta(-2, -6, (epower+8)//2)*(-3)**epower)
     for m in [-2, 0, 2] :
-        if m!=0 : continue
         for s in range(-10, 11) :
             for epower in range(11) :
                 print(m, s, epower, coef(m,s,epower),
