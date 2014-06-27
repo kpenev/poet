@@ -3,6 +3,8 @@
 from fractions import Fraction
 from math import factorial
 from os.path import exists
+from multiprocessing.pool import Pool, cpu_count
+from argparse import ArgumentParser
 
 def choose(a, b) :
     """ Compute a choose b as an exact rational number (Fraction). """
@@ -21,32 +23,40 @@ def parse_fraction(frac_str) :
 
     return Fraction(*map(eval, frac_str.split('/')))
 
+def compute_alpha_beta(task) :
+    """ Computes the alpha} and beta coefficients without the 2pi/omega. 
+    
+    Arguments:
+        - task: a tuple of (s, n[, l]) values. If l is omitted computes
+                alpha_{s,n}/(2*pi), else computes beta_{s,n,l}/(2*pi).
+    Returns: the computed value.
+    """
+
+    if len(task)==2 :
+        s, n=task
+        l=None
+    else : s, n, l=task
+    if s==0 :
+        return Fraction(factorial(2*n+1),
+                        factorial(n)**2*2**(2*n))
+    else :
+        l_use=(0 if l is None else l)
+        assert(n+s+l_use>=0)
+        result=Fraction(0, 1)
+        for k in range(2*n+s+l_use+1) :
+            cmin=max(0,k-n-s-l_use)
+            sign=(-1 if cmin%2 else 1)
+            c_sum=Fraction(0, 1)
+            for c in range(cmin, min(n,k)+1) :
+                c_sum+=(choose(k,c)*sign/factorial(n-c)/
+                        factorial(n+s+l_use+c-k))
+                sign=-sign
+            result+=Fraction((k+1 if l is None else
+                              (k+1)*(k+2)*(k+3)//6), s**k)*c_sum
+        return (-1 if n%2 else 1)*result
+
 class ExpansionCoefficients :
     """ The eccentricity expansion coefficients of the p_{m,s} (see doc). """
-
-    def __compute(self, s, n, l=None) :
-        """ Computes alpha_{s,n} and beta_{s,n} (without the 2pi/omega). 
-        
-        See the documentation of __call__ for more details. """
-
-        if s==0 :
-            return Fraction(factorial(2*n+1),
-                            factorial(n)**2*2**(2*n))
-        else :
-            l_use=(0 if l is None else l)
-            assert(n+s+l_use>=0)
-            result=Fraction(0, 1)
-            for k in range(2*n+s+l_use+1) :
-                cmin=max(0,k-n-s-l_use)
-                sign=(-1 if cmin%2 else 1)
-                c_sum=Fraction(0, 1)
-                for c in range(cmin, min(n,k)+1) :
-                    c_sum+=(choose(k,c)*sign/factorial(n-c)/
-                            factorial(n+s+l_use+c-k))
-                    sign=-sign
-                result+=Fraction((k+1 if l is None else
-                                  (k+1)*(k+2)*(k+3)//6), s**k)*c_sum
-            return (-1 if n%2 else 1)*result
 
     def __read_alpha_beta_file(self, alpha_beta_fname) :
         """ Reads alpha and beta values from the given filename. """
@@ -64,11 +74,11 @@ class ExpansionCoefficients :
             for n in range(epower+1) :
                 s=epower-2*n
                 line=next_line(alpha_beta_f)
-                values=list(map(parse_fraction, line.split()))
-                self.__alpha[-1].append(values[0])
+                values=map(parse_fraction, line.split())
+                self.__alpha[-1].append(next(values))
                 for l in range(-2, 3) :
                     s=epower-2*n-l
-                    self.__beta[l][-1].append(values[l+3])
+                    self.__beta[l][-1].append(next(values))
 
     def __write_alpha_beta_file(self, alpha_beta_fname) :
         """ Writes the current alpha and beta values to the given file. """
@@ -84,7 +94,8 @@ class ExpansionCoefficients :
                 f.write(line+'\n')
         f.close()
 
-    def __init__(self, max_power, alpha_beta_fname='alpha_beta_values') :
+    def __init__(self, max_power, alpha_beta_fname,
+                 num_processes, chunksize=100) :
         """ Create an instance for evaluating alpha values. 
         Arguments:
             - max_power : The maximum power of the eccentricity that will
@@ -97,15 +108,24 @@ class ExpansionCoefficients :
 
         self.max_e_power=-1
         self.__read_alpha_beta_file(alpha_beta_fname)
+        to_compute=[]
+        for epower in range(self.max_e_power+1, max_power+1) :
+            for n in range(epower+1) :
+                s=epower-2*n
+                to_compute.append((s,n))
+                for l in range(-2, 3) :
+                    to_compute.append((s-l, n, l))
+        compute_pool=Pool(processes=num_processes)
+        computed=compute_pool.imap(compute_alpha_beta, to_compute, chunksize)
         for epower in range(self.max_e_power+1, max_power+1) :
             self.__alpha.append([])
             for l in range(-2, 3) : self.__beta[l].append([])
             for n in range(epower+1) :
                 s=epower-2*n
-                self.__alpha[-1].append(self.__compute(s, n))
+                self.__alpha[-1].append(next(computed))
                 for l in range(-2, 3) :
                     s=epower-2*n-l
-                    self.__beta[l][-1].append(self.__compute(s, n, l))
+                    self.__beta[l][-1].append(next(computed))
         self.max_e_power=max_power
         self.__write_alpha_beta_file(alpha_beta_fname)
     
@@ -191,8 +211,40 @@ class ExpansionCoefficients :
                          extra)
             return self(0, s, epower) + Fraction(s,2)**epower*result
 
+def parse_command_line() :
+    """ Parse the command line. """
+
+    parser=ArgumentParser(description='Computes and stores the coefficients '
+                          'defining the eccentricity expansion of the '
+                          'various tidal terms. The coefficients are '
+                          'computed exactly with no numerical roundoff as '
+                          'rational numbers, but converted and stored as '
+                          '16 significant figures floating point numbers. '
+                          'Uses multiple CPUs to carry out the computation '
+                          'and stores enough information to re-use a '
+                          'previous computation to lower order.')
+    parser.add_argument('-o', '--output', type=str,
+                        default='eccentricity_expansion_coefficients',
+                        help='The filename to store the computed expansion '
+                        'coefficients to. The file is overwritten if it '
+                        'exists. Default: "%(default)s".')
+    parser.add_argument('-a', '--ab-file', type=str,
+                        default='alpha_beta_values', help='The filename '
+                        'where to store exact alpha and beta values '
+                        'calculated while calculating the expansion '
+                        'coefficients. Default: "%(default)s"')
+    parser.add_argument('-c', '--cpus', type=int, default=cpu_count(),
+                         help='The number of processes to use for the '
+                         'calculation. Default: %(default)d.')
+    parser.add_argument('-p', '--max-power', type=int, default=100,
+                        help='Expansion is calculated up to this power of '
+                        'the eccentricity. Default: %(default)d.')
+    return parser.parse_args()
+
 if __name__=='__main__' :
-    coef=ExpansionCoefficients(500)
+    options=parse_command_line()
+    coef=ExpansionCoefficients(options.max_power, options.ab_file,
+                               options.cpus)
     print("I_{-2, -6} coef:")
     for epower in range(0, 11, 2) :
         print("\t e^%d:"%epower,
