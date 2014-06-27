@@ -2,11 +2,24 @@
 
 from fractions import Fraction
 from math import factorial
+from os.path import exists
 
 def choose(a, b) :
     """ Compute a choose b as an exact rational number (Fraction). """
 
     return Fraction(factorial(a), factorial(a-b)*factorial(b))
+
+def next_line(f) :
+    """ Returns the next non-comment line from the file. """
+
+    line='#'
+    while line[0]=='#' : line=f.readline()
+    return line
+
+def parse_fraction(frac_str) :
+    """ Parses the given fraction string into a Fraction. """
+
+    return Fraction(*map(eval, frac_str.split('/')))
 
 class ExpansionCoefficients :
     """ The eccentricity expansion coefficients of the p_{m,s} (see doc). """
@@ -35,17 +48,56 @@ class ExpansionCoefficients :
                                   (k+1)*(k+2)*(k+3)//6), s**k)*c_sum
             return (-1 if n%2 else 1)*result
 
-    def __init__(self, max_power) :
-        """ Create an instance for evaluating alpha values. 
-        Arguments:
-            - max_power : The maximum power of the eccentricity that will
-            ever be requested.
-        Returns: None.
-        """
+    def __read_alpha_beta_file(self, alpha_beta_fname) :
+        """ Reads alpha and beta values from the given filename. """
 
         self.__alpha=[]
         self.__beta=[[], [], [], [], []]
-        for epower in range(max_power+1) :
+        if not exists(alpha_beta_fname) : return
+        alpha_beta_f=open(alpha_beta_fname, 'r')
+        line=next_line(alpha_beta_f)
+        assert(line.startswith('max e power='))
+        self.max_e_power=eval(line[len('max e power='):].strip())
+        for epower in range(self.max_e_power+1) :
+            self.__alpha.append([])
+            for l in range(-2, 3) : self.__beta[l].append([])
+            for n in range(epower+1) :
+                s=epower-2*n
+                line=next_line(alpha_beta_f)
+                values=list(map(parse_fraction, line.split()))
+                self.__alpha[-1].append(values[0])
+                for l in range(-2, 3) :
+                    s=epower-2*n-l
+                    self.__beta[l][-1].append(values[l+3])
+
+    def __write_alpha_beta_file(self, alpha_beta_fname) :
+        """ Writes the current alpha and beta values to the given file. """
+
+        f=open(alpha_beta_fname, 'w')
+        f.write('max e power='+str(self.max_e_power)+'\n')
+        for epower in range(self.max_e_power+1) :
+            for n in range(epower+1) :
+                s=epower-2*n
+                line=str(self.__alpha[epower][n])
+                for l in range(-2, 3) :
+                    line+=' '+str(self.__beta[l][epower][n])
+                f.write(line+'\n')
+        f.close()
+
+    def __init__(self, max_power, alpha_beta_fname='alpha_beta_values') :
+        """ Create an instance for evaluating alpha values. 
+        Arguments:
+            - max_power : The maximum power of the eccentricity that will
+                          ever be requested.
+            - alpha_beta_fname : The filename to read previously computed
+                                 alpha/beta values from and store any newly 
+                                 calculated ones into.
+        Returns: None.
+        """
+
+        self.max_e_power=-1
+        self.__read_alpha_beta_file(alpha_beta_fname)
+        for epower in range(self.max_e_power+1, max_power+1) :
             self.__alpha.append([])
             for l in range(-2, 3) : self.__beta[l].append([])
             for n in range(epower+1) :
@@ -54,6 +106,8 @@ class ExpansionCoefficients :
                 for l in range(-2, 3) :
                     s=epower-2*n-l
                     self.__beta[l][-1].append(self.__compute(s, n, l))
+        self.max_e_power=max_power
+        self.__write_alpha_beta_file(alpha_beta_fname)
     
     def alpha_or_beta(self, s, n, l=None) :
         """ Returns the value of alpha or beta for the given indices.
@@ -138,7 +192,7 @@ class ExpansionCoefficients :
             return self(0, s, epower) + Fraction(s,2)**epower*result
 
 if __name__=='__main__' :
-    coef=ExpansionCoefficients(10)
+    coef=ExpansionCoefficients(500)
     print("I_{-2, -6} coef:")
     for epower in range(0, 11, 2) :
         print("\t e^%d:"%epower,
