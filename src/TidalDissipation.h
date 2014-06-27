@@ -220,6 +220,26 @@ private:
 	///Fills the __spin_orbit_haromincs structure with all terms locked.
 	void fill_spin_orbit_harmonics();
 
+	///\brief Returns the forcing frequency that should be used for the given
+	///term.
+	///
+	///Returns zero if the nominal forcing frequency is on the other side of
+	///what is defined by the corresponding __spin_orbit_haromincs entry.
+	double forcing_frequency(
+			///For which body are we constructing the term. 
+			short body_index,
+			
+			///The coefficient in front of the orbital frequency identifying
+			///the tidal term.
+			int orbital_multiplier,
+
+			///The coefficient in front of the spin frequency of the body,
+			///identifying the tidal term.
+			int spin_multiplier,
+			
+			///The spin frequency multiplied by its multiplier.
+			double multiplied_spin);
+
 	///\brief Calculates the dimensionless x and y torques and power due to
 	///tidal dissipation.
 	///
@@ -358,7 +378,7 @@ public:
 	{return __spin_angular_momentum[body_index];}
 
 	///\brief Initialize __spin_orbit_harmonics assuming that the given
-	///harmonic is precisely zero.
+	///harmonic approaches zero from the given direction.
 	void init_harmonics(
 			///Which body's harmonics are we setting.
 			short body_index,
@@ -367,10 +387,14 @@ public:
 			int orbital_frequency_multiplier,
 			
 			///The multiplier of the spin frequency which is in sync.
-			int spin_frequency_multiplier)
+			int spin_frequency_multiplier,
+			
+			///The direction from which the harmonic approaches zero. Set to
+			///zero for a locked term.
+			short direction)
 	{init_harmonics(body_index,
 			SpinOrbitLockInfo(orbital_frequency_multiplier,
-				spin_frequency_multiplier, 0));}
+				spin_frequency_multiplier, direction));}
 
 	///\brief Initialize __spin_orbit_harmonics. 
 	void init_harmonics(

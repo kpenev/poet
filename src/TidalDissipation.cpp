@@ -107,6 +107,47 @@ void TidalDissipation::fill_Umm(double inclination, bool deriv)
 	__Umm[4][2]=__Umm_coef[4][2]*(deriv ? -2.0*cp1*s: std::pow(cp1, 2));
 }
 
+void TidalDissipation::fill_spin_orbit_harmonics()
+{
+	__spin_orbit_harmonics.resize(2);
+	for(short body_ind=0; body_ind<=1; ++body_ind) {
+		__spin_orbit_harmonics[body_ind].resize(4);
+		__spin_orbit_harmonics[body_ind][0].set_lock(1, -1, 0);
+		__spin_orbit_harmonics[body_ind][0].set_lock(2, -1, 0);
+		__spin_orbit_harmonics[body_ind][0].set_lock(2, 1, 0);
+		__spin_orbit_harmonics[body_ind][0].set_lock(1, 1, 0);
+	}
+}
+
+double TidalDissipation::forcing_frequency(short body_index,
+		int orbital_multiplier, int spin_multiplier,
+		double multiplied_spin)
+{
+	double nominal=orbital_multiplier*__orbital_frequency-multiplied_spin;
+	for(std::vector<SpinOrbitLockInfo>::const_iterator
+			harmonic_i=__spin_orbit_harmonics[body_index].begin();
+			harmonic_i!=__spin_orbit_harmonics[body_index].end();
+			++harmonic_i) {
+		if(harmonic_i->term(orbital_multiplier, spin_multiplier)) {
+			switch(harmonic_i->lock_direction()) {
+				case -1 : return std::min(0.0, nominal);
+				case  0 : return 0;
+				case  1 : return std::max(0.0, nominal);
+				default :
+#ifdef DEBUG
+						  assert(false)
+#endif
+							  ;
+			}
+		}
+	}
+	std::ostringstream msg;
+	msg << "Asked for a forcing frequency for a term (m=" << spin_multiplier
+		<< ", mp=" << orbital_multiplier << ") not in the list of tidal "
+		"harmonics in TidalDissipation::forcing_frequency!";
+	throw Error::BadFunctionArguments(msg.str());
+}
+
 void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 		short body_index, Dissipation::Derivative derivative)
 {
@@ -154,8 +195,8 @@ void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 			};
 			int mp_ind=mp/2+1;
 			double Umm_squared=std::pow(__Umm[m_ind][mp_ind], 2),
-				   forcing_freq=(locked_term ? 0 :
-						   mp*__orbital_frequency-m_spin_freq);
+				   forcing_freq=forcing_frequency(body_index, mp, m,
+						   m_spin_freq);
 			for(short lock_dir=(locked_term ? -1 : 0);
 					lock_dir<=(locked_term ? 1 : 0);
 					lock_dir+=2) {
@@ -297,18 +338,6 @@ void TidalDissipation::calculate_inclination_decay(short body_index)
 void TidalDissipation::calculate_eccentricity_decay(short)
 {
 	throw Error::NotImplemented("Eccentric orbits");
-}
-
-void TidalDissipation::fill_spin_orbit_harmonics()
-{
-	__spin_orbit_harmonics.resize(2);
-	for(short body_ind=0; body_ind<=1; ++body_ind) {
-		__spin_orbit_harmonics[body_ind].resize(4);
-		__spin_orbit_harmonics[body_ind][0].set_lock(1, -1, 0);
-		__spin_orbit_harmonics[body_ind][0].set_lock(2, -1, 0);
-		__spin_orbit_harmonics[body_ind][0].set_lock(2, 1, 0);
-		__spin_orbit_harmonics[body_ind][0].set_lock(1, 1, 0);
-	}
 }
 
 void TidalDissipation::init(const DissipatingBody &body1, 
