@@ -109,25 +109,30 @@ class ExpansionCoefficients :
         self.max_e_power=-1
         self.__read_alpha_beta_file(alpha_beta_fname)
         to_compute=[]
-        for epower in range(self.max_e_power+1, max_power+1) :
-            for n in range(epower+1) :
-                s=epower-2*n
-                to_compute.append((s,n))
-                for l in range(-2, 3) :
-                    to_compute.append((s-l, n, l))
-        compute_pool=Pool(processes=num_processes)
-        computed=compute_pool.imap(compute_alpha_beta, to_compute, chunksize)
-        for epower in range(self.max_e_power+1, max_power+1) :
-            self.__alpha.append([])
-            for l in range(-2, 3) : self.__beta[l].append([])
-            for n in range(epower+1) :
-                s=epower-2*n
-                self.__alpha[-1].append(next(computed))
-                for l in range(-2, 3) :
-                    s=epower-2*n-l
-                    self.__beta[l][-1].append(next(computed))
-        self.max_e_power=max_power
-        self.__write_alpha_beta_file(alpha_beta_fname)
+        while True :
+            power_step=min(self.max_e_power+11, max_power+1)
+            for epower in range(self.max_e_power+1, power_step) :
+                for n in range(epower+1) :
+                    s=epower-2*n
+                    to_compute.append((s,n))
+                    for l in range(-2, 3) :
+                        to_compute.append((s-l, n, l))
+            compute_pool=Pool(processes=num_processes)
+            computed=iter(compute_pool.map(compute_alpha_beta, to_compute,
+                                           chunksize))
+            for epower in range(self.max_e_power+1, power_step) :
+                self.__alpha.append([])
+                for l in range(-2, 3) : self.__beta[l].append([])
+                for n in range(epower+1) :
+                    s=epower-2*n
+                    self.__alpha[-1].append(next(computed))
+                    for l in range(-2, 3) :
+                        s=epower-2*n-l
+                        self.__beta[l][-1].append(next(computed))
+            self.max_e_power=power_step-1
+            self.__write_alpha_beta_file(alpha_beta_fname)
+            print('max_e_power=', self.max_e_power)
+            if power_step==max_power+1 : return
     
     def alpha_or_beta(self, s, n, l=None) :
         """ Returns the value of alpha or beta for the given indices.
