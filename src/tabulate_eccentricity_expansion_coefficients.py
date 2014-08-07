@@ -3,6 +3,7 @@
 from fractions import Fraction
 from math import factorial
 from os.path import exists
+from os import rename
 from multiprocessing.pool import Pool, cpu_count
 from argparse import ArgumentParser
 
@@ -41,7 +42,7 @@ def compute_alpha_beta(task) :
                         factorial(n)**2*2**(2*n))
     else :
         l_use=(0 if l is None else l)
-        assert(n+s+l_use>=0)
+        if n+s+l_use<0 : return Fraction(0, 1)
         result=Fraction(0, 1)
         for k in range(2*n+s+l_use+1) :
             cmin=max(0,k-n-s-l_use)
@@ -83,7 +84,7 @@ class ExpansionCoefficients :
     def __write_alpha_beta_file(self, alpha_beta_fname) :
         """ Writes the current alpha and beta values to the given file. """
 
-        f=open(alpha_beta_fname, 'w')
+        f=open(alpha_beta_fname+'.temporary', 'w')
         f.write('max e power='+str(self.max_e_power)+'\n')
         for epower in range(self.max_e_power+1) :
             for n in range(epower+1) :
@@ -93,6 +94,7 @@ class ExpansionCoefficients :
                     line+=' '+str(self.__beta[l][epower][n])
                 f.write(line+'\n')
         f.close()
+        rename(alpha_beta_fname+'.temporary', alpha_beta_fname)
 
     def __init__(self, max_power, alpha_beta_fname,
                  num_processes, chunksize=100) :
@@ -108,15 +110,16 @@ class ExpansionCoefficients :
 
         self.max_e_power=-1
         self.__read_alpha_beta_file(alpha_beta_fname)
-        to_compute=[]
         while True :
             power_step=min(self.max_e_power+11, max_power+1)
+            to_compute=[]
             for epower in range(self.max_e_power+1, power_step) :
                 for n in range(epower+1) :
                     s=epower-2*n
                     to_compute.append((s,n))
                     for l in range(-2, 3) :
                         to_compute.append((s-l, n, l))
+            if not to_compute : return
             compute_pool=Pool(processes=num_processes)
             computed=iter(compute_pool.map(compute_alpha_beta, to_compute,
                                            chunksize))
@@ -174,47 +177,33 @@ class ExpansionCoefficients :
             if abs(s)>epower : return 0
             return self.alpha(s, n)*(1 if s==0 else Fraction(s,2)**epower)
         else :
-            if s==0 : return 0
+            if s==0 or n<-1: return 0
             if m==-2 : msign=-1
             elif m==2 : msign=1
             else : raise ValueError('Asking for an expansion coefficient for'
                                     ' p_{m=%d, s=%d, p=%d}. The value of m '
                                     'must be one of -2, 0, 2!'%
-                                    (m, s, epower))            
-            result=Fraction(0, 1)
+                                    (m, s, epower))
+            result=self.beta(-2, s, n+1)/2
             s2=s**2
-            if n>=-1 :
-                if(msign==1) : result=+self.beta(-2, s, n+1)
-                if n>=0 :
-                    result-=(self.beta(-2, s, n)*Fraction(2+msign, s2)
-                             +
-                             self.beta(0, s, n)
-                             +
-                             msign*self.beta(-1, s, n)*Fraction(2,s))
-                    if n>=1 :
-                        result+=(msign*(self.beta(1, s, n-1)*Fraction(2,s)
-                                        +
-                                        self.beta(-1, s, n-1)*Fraction(4,s*s2))
-                                 + self.beta(0, s, n-1)*Fraction(4,s2))
-                        if msign==-1 : result+=self.beta(2, s, n-1)
-                        if n>=2 : result-=(
-                            self.beta(2, s, n-2)*Fraction(2-msign, s2)
-                            +
-                            msign*self.beta(1, s, n-2)*Fraction(4,s*s2))
-            for k in range(2, n+2) :
-                extra=-self.beta(-2, s, n+1-k)/2
-                if n-k>=0 :
-                    extra+=self.beta(-1, s, n-k)*Fraction(2,s)
-                    if n-k>=1 : extra+=(self.beta(2, s, n-1-k)/2
-                                        -
-                                        self.beta(1, s, n-1-k)*Fraction(2,s))
-                result+=(msign
-                         *
-                         Fraction(4*factorial(2*k-3),
-                                  factorial(k)*factorial(k-2)*s2**k)
-                         *
-                         extra)
-            return self(0, s, epower) + Fraction(s,2)**epower*result
+            if n>=0 :
+                result+=(self.alpha(s, n) - self.beta(0, s, n) - 
+                         Fraction(2, s2)*self.beta(-2, s, n))
+                if n>=1 : 
+                    result+=(self.beta(2, s, n-1)/2 + 
+                             Fraction(4, s2)*self.beta(0, s, n-1))
+                    if n>=2 : result-=Fraction(2, s2)*self.beta(2, s, n-2)
+            for k in range(0, n+2) :
+                betas=-self.beta(-2, s, n-k+1)/2
+                if n-k>=0 : 
+                    betas+=Fraction(2, s)*self.beta(-1, s, n-k)
+                    if n-k>=1 : 
+                        betas+=(self.beta(2, s, n-k-1)/2
+                                -
+                                Fraction(2, s)*self.beta(1, s, n-k-1))
+                result+=msign*Fraction(factorial(2*k),
+                                       s2**k*factorial(k)**2*(2*k-1))*betas
+        return result*Fraction(s, 2)**epower
 
 def parse_command_line() :
     """ Parse the command line. """
@@ -241,7 +230,7 @@ def parse_command_line() :
     parser.add_argument('-c', '--cpus', type=int, default=cpu_count(),
                          help='The number of processes to use for the '
                          'calculation. Default: %(default)d.')
-    parser.add_argument('-p', '--max-power', type=int, default=100,
+    parser.add_argument('-p', '--max-power', type=int, default=50,
                         help='Expansion is calculated up to this power of '
                         'the eccentricity. Default: %(default)d.')
     return parser.parse_args()
@@ -250,13 +239,14 @@ if __name__=='__main__' :
     options=parse_command_line()
     coef=ExpansionCoefficients(options.max_power, options.ab_file,
                                options.cpus)
-    print("I_{-2, -6} coef:")
-    for epower in range(0, 11, 2) :
-        print("\t e^%d:"%epower,
-              coef.beta(-2, -6, (epower+8)//2)*(-3)**epower)
+    print("alpha_{-5} coef:")
+    for n in range(0, 20) :
+        print("\t n=%d:"%n,
+              coef.alpha(-5, n),
+              compute_alpha_beta((-5, n)))
     for m in [-2, 0, 2] :
         for s in range(-10, 11) :
-            for epower in range(11) :
+            for epower in range(13) :
                 print(m, s, epower, coef(m,s,epower),
                       "%25.16e"%coef(m,s,epower))
 
