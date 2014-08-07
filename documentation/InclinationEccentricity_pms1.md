@@ -192,6 +192,32 @@ In terms of \f$I_{\lambda,s}\f$:
 	\right\}
 \f]
 Verified using Methematica for \f$s\neq0\f$.
+
+Using:
+\f[
+	\sqrt{1-e^2}=\sum_{n=0}^\infty \frac{(2n)!}{4^n (n!)^2(1-2n)} e^{2n}
+\f]
+we can rewrite:
+\f[
+	p_{\pm2,s}=\exp(\mp 2i\phi_0)\sum_{n=-1}^\infty 
+		\gamma^\pm_{s,n}\left(\frac{se}{2}\right)^{2n+s}
+\f]
+with:
+\f{eqnarray*}{
+	\gamma^\pm_{s,n} &\equiv &\alpha_{s,n}
+	+
+	\frac{\beta_{2,s,n-1}+\beta_{-2,s,n+1}}{2}
+	-
+	\beta_{0,s,n}+\frac{4}{s^2}\beta_{0,s,n-1}
+	-
+	\frac{2}{s^2}\left(\beta_{2,s,n-2}+\beta_{-2,s,n}\right)\\
+	&&{}\pm
+	\sum_{k=0}^{n+1} \frac{(2k)!}{s^{2k}(k!)^2(2k-1)}
+		\left[\frac{1}{2}\left(\beta_{2,s,n-k-1}-\beta_{-2,s,n-k+1}\right)+
+		\frac{2}{s}\left(\beta_{-1,s,n-k}-\beta_{1,s,n-k-1}\right)\right]
+\f}
+Verified by Mathematica.
+
 Plugging in the bessel function expressions:
 \f{eqnarray*}{
 	p_{\pm2,s}&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty 
