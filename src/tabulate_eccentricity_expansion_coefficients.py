@@ -239,14 +239,10 @@ if __name__=='__main__' :
     options=parse_command_line()
     coef=ExpansionCoefficients(options.max_power, options.ab_file,
                                options.cpus)
-    print("alpha_{-5} coef:")
-    for n in range(0, 20) :
-        print("\t n=%d:"%n,
-              coef.alpha(-5, n),
-              compute_alpha_beta((-5, n)))
-    for m in [-2, 0, 2] :
-        for s in range(-10, 11) :
-            for epower in range(13) :
-                print(m, s, epower, coef(m,s,epower),
-                      "%25.16e"%coef(m,s,epower))
+    for epower in range(options.max_power+1) :
+        for m in [-2, 0, 2] :
+            for s in range(-epower+m, epower+m+1, 2) :
+                if m==0 or s!=0 : 
+                    print("%25.16e"%coef(m,s,epower), end='')
+        print()
 
