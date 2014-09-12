@@ -555,11 +555,20 @@ void OrbitSolver::append_to_orbit(const std::valarray<double> &orbit,
 				star_lock, star_lock, age, orbit, derivatives,
 				planet_formation_semimajor, system);
 	size_t nargs=orbit_to_tabulate.size();
+	static double last_age=0;
+	bool print=age>last_age+1e-3;
+	if(print) {
+		std::cerr << std::setw(25) << age;
+		last_age=age;
+	}
 	__tabulated_ages.push_back(age);
 	for(size_t i=0; i<nargs; i++) {
+		if(print) std::cerr << std::setw(25) << orbit_to_tabulate[i];
 		__tabulated_orbit[i].push_back(orbit_to_tabulate[i]);
 		__tabulated_deriv[i].push_back(deriv_to_tabulate[i]);
 	}
+	if(print) std::cerr << std::setw(25) << evolution_mode
+		<< std::setw(25) << wind_state << std::endl;
 	__tabulated_evolution_mode.push_back(evolution_mode);
     __tabulated_wind_saturation.push_back(wind_state);
 	__tabulated_lock.push_back(star_lock);
@@ -956,10 +965,10 @@ CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
 	if(star_lock)
 		*result|=new BreakLockCondition();
 	else {
-		for(unsigned i=0; i<__dissipation.num_harmonics(); ++i)
+/*		for(unsigned i=0; i<__dissipation.num_harmonics(); ++i)
 			*result|=new SynchronizedCondition(
 				__dissipation.harmonic(0, i).orbital_frequency_multiplier(),
-				__dissipation.harmonic(0, i).spin_frequency_multiplier(), 0);
+				__dissipation.harmonic(0, i).spin_frequency_multiplier(), 0);*/
 	}
 	return result;
 }

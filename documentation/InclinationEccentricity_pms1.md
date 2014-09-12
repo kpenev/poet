@@ -4,7 +4,7 @@ Calculation of the Pm,s Coefficients {#InclinationEccentricity_pms1}
 We need only \f$m=0\f$ and \f$m=\pm2\f$.
 Clearly:
 \f{eqnarray*}{
-	p_{m,s}&=&a^3\int_0^{2\pi/\omega} 
+	p_{m,s}&=&\frac{a^3}{2\pi}\int_0^{2\pi/\omega} 
 		\frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\
 	&=& a^3\int_0^{2\pi/\omega} 
 		e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} 
@@ -12,38 +12,38 @@ Clearly:
 \f}
 For \f$m=0\f$:
 \f{eqnarray*}{
-	p_{0,s}&=& \int_{0}^{2\pi} 
+	p_{0,s}&=& \frac{1}{2\pi}\int_{0}^{2\pi} 
 		\frac{e^{i s (u-e\sin u)}}{\omega (1-e\cos u)^2} du\\
-	&=& \frac{1}{\omega}
+	&=& \frac{1}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du
 \f}
 From \f$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\f$:
 \f[
-	p_{0,s}= \sum_{k=0}^\infty \frac{(k+1)e^k}{\omega}
+	p_{0,s}= \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du
 \f]
 Which for \f$s=0\f$, using 
  \f$\int_0^{2\pi} \cos^{2k} u du = \frac{2\pi (2k)!}{2^{2k}(k!)^2}\f$ gives:
 \f[
-	p_{0,0}=\frac{2\pi}{\omega}
+	p_{0,0}=\frac{1}{\omega}
 		\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k}(k!)^2}e^k
 \f]
 And for \f$s \neq 0\f$:
 \f{eqnarray*}{
-	p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{\omega}
+	p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)}
 			\left(e^{iu}+e^{-iu}\right)^k du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}\sum_{c=0}^k
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
 		{k \choose c} \int_{0}^{2\pi} e^{i s (u-e\sin u)} 
 									e^{icu}e^{-i(k-c)u} du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}\sum_{c=0}^k
+	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
 		{k \choose c} \int_{0}^{2\pi} e^{i (s+2c-k) u} e^{-ies\sin u} du
 \f}
 If we change variable \f$u=u'-\pi/2\Rightarrow \sin u = -\cos u'\f$:
 \f{eqnarray*}{
-	p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
+	2\pi p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} e^{-i (s+2c-k)\pi/2}
 			\int_{\pi/2}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
 	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
@@ -94,7 +94,7 @@ these we can write:
 \f]
 with
 \f[
-	\alpha_{s,n}\equiv\frac{2\pi}{\omega}\left\{\begin{array}{l@{,\quad}l}
+	\alpha_{s,n}\equiv\frac{1}{\omega}\left\{\begin{array}{l@{,\quad}l}
 		\frac{(2n+1)!}{2^{2n}(n!)^2} & s=0\\
 		(-1)^n \sum_{k=0}^{2n+s} \frac{k+1}{s^k}
 		\sum_{c=max(0,k-n-s)}^{min(n,k)}
@@ -113,10 +113,10 @@ For \f$m=\pm2\f$ we need:
 \f}
 Plugging into the expression for \f$p_{\pm2,s}\f$:
 \f{eqnarray*}{
-	p_{\pm2,s}&=& \int_0^{2\pi/\omega} 
+	p_{\pm2,s}&=& \frac{1}{2\pi}\int_0^{2\pi/\omega} 
 		a^3\exp(\mp 2i\phi_0)\frac{\cos(2\phi(t))\mp i\sin(2\phi(t))}{r^3(t)}
 		\exp[i s (u-e\sin u)]dt\\
-	&=& \frac{e^{\mp 2i\phi_0}}{\omega}\int_0^{2\pi} 
+	&=& \frac{e^{\mp 2i\phi_0}}{2\pi\omega}\int_0^{2\pi} 
 		\left[1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2}
 				\mp
 				i\sqrt{1-e^2}\frac{\sin 2u - 2e\sin u}{(1-e\cos u)^2}\right]
@@ -126,15 +126,15 @@ Thus we need to evaluate 5 different integrals, the first of which was
 already done while calculating \f$p_{0,s}\f$:
 \f{eqnarray*}{
 	p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\
-		&&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}
+		&&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\
-		&&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}
+		&&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4}
 		du\mp\\
-		&&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}
+		&&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4}
 		du\pm\\
-		&&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}
+		&&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4}
 		du\\
 \f}
@@ -142,7 +142,7 @@ To solve them we will use
  \f$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\f$ and we will directly
 calculate the following general integral:
 \f{eqnarray*}{
-	\omega I_{\lambda,s}&\equiv&
+	2\pi\omega I_{\lambda,s}&\equiv&
 	\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\exp(i\lambda u)}
 						{(1-e\cos u)^4} du\\
 	&=&\sum_{k=0}^\infty {{k+3} \choose 3} e^k
@@ -177,7 +177,7 @@ Plugging into the expression above:
 
 with
 \f[
-	\beta_{\lambda,s,n}\equiv \frac{2\pi(-1)^n}{\omega}
+	\beta_{\lambda,s,n}\equiv \frac{(-1)^n}{\omega}
 	\sum_{k=0}^{2n+\lambda+s}
 		{{k+3} \choose 3} s^{-k}\sum_{c=\max(0,k-\lambda-s-n)}^{\min(n,k)}
 			{k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+s+c-k)!}
@@ -221,7 +221,7 @@ Verified by Mathematica.
 Plugging in the bessel function expressions:
 \f{eqnarray*}{
 	p_{\pm2,s}&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty 
-		2\pi \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c}
+		\left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c}
 		\Bigg\{
 			(k+1)J_{s+2c-k}(es) + \\
 		&&{}+{{k+3} \choose 3} \Bigg[
@@ -237,7 +237,7 @@ Plugging in the bessel function expressions:
 \f}
 For s=0 we need to go back to:
 \f{eqnarray*}{
-	p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
+	2\pi p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} +
 		\frac{1}{\omega}\left[
 			(1-e^2)\int_{0}^{2\pi} \frac{\cos 2u -1} {(1-e\cos u)^4} du
 			\mp
@@ -245,7 +245,7 @@ For s=0 we need to go back to:
 			\pm
 			i2e\sqrt{1-e^2} \int_{0}^{2\pi} \frac{\sin u} {(1-e\cos u)^4} du
 		\right]\right\}\\
-	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
+	&=&\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} +
 		\frac{2}{\omega}\left[
 			(1-e^2)\int_{0}^{2\pi} \frac{\cos^2 u -1} {(1-e\cos u)^4} du
 			\pm
@@ -278,32 +278,32 @@ For s=0 we need to go back to:
 So we are left with:
 \f{eqnarray*}{
 	p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
-		\frac{4\pi(1-e^2)}{\omega}\left\{\sum_{k=0}^\infty {2k+3 \choose 3}
+		\frac{2(1-e^2)}{\omega}\left\{\sum_{k=0}^\infty {2k+3 \choose 3}
 			\frac{(2k+2)!}{2^{2k+2}[(k+1)!]^2}-
 			\frac{2k!}{2^{2k}(k!)^2}\right\}e^{2k}\right\}\\
 	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
-		\frac{4\pi(1-e^2)}{\omega}\sum_{k=0}^\infty {2k+3 \choose 3}
+		\frac{2(1-e^2)}{\omega}\sum_{k=0}^\infty {2k+3 \choose 3}
 			\frac{2k!}{2^{2k}(k!)^2(2k+2)}e^{2k}\right\}\\
 	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
-		\frac{4\pi}{\omega}\sum_{k=0}^\infty \left[
+		\frac{2}{\omega}\sum_{k=0}^\infty \left[
 			{2k+3 \choose 3} \frac{2k!}{2^{2k}(k!)^2(2k+2)}
 			-
 			{2k+1 \choose 3} \frac{2(k-1)!}{2^{2k-2}[(k-1)!]^2 2k}
 		\right]e^{2k}\right\}\\
 	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
-		\frac{4\pi}{\omega}\sum_{k=0}^\infty \left[
+		\frac{2}{\omega}\sum_{k=0}^\infty \left[
 			\frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2}
 			-
 			\frac{4k^2(2k+1)(2k-1)!}{6\,2^2k(k!)^2}
 		\right]e^{2k}\right\}\\
 	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
-		\frac{4\pi}{\omega}\sum_{k=0}^\infty \left[
+		\frac{2}{\omega}\sum_{k=0}^\infty \left[
 			\frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2}
 			-
 			\frac{2k(2k+1)!}{6\,2^2k(k!)^2}
 		\right]e^{2k}\right\}\\
 	&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
-		\frac{4\pi}{\omega}\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k+1}(k!)^2}
+		\frac{2}{\omega}\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k+1}(k!)^2}
 		e^{2k}\right\}\\
 	&=&0
 \f}

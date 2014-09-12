@@ -6,6 +6,7 @@ from os.path import exists
 from os import rename
 from multiprocessing.pool import Pool, cpu_count
 from argparse import ArgumentParser
+from math import pi
 
 def choose(a, b) :
     """ Compute a choose b as an exact rational number (Fraction). """
@@ -29,7 +30,7 @@ def compute_alpha_beta(task) :
     
     Arguments:
         - task: a tuple of (s, n[, l]) values. If l is omitted computes
-                alpha_{s,n}/(2*pi), else computes beta_{s,n,l}/(2*pi).
+                alpha_{s,n}, else computes beta_{s,n,l}
     Returns: the computed value.
     """
 
@@ -146,7 +147,7 @@ class ExpansionCoefficients :
                        eccentricity is s+2n+l, where l=None is taken to be
                        zero (see documentation).
         Returns:
-            omega/(2pi) (alpha or beta)_{s,n} as an exact rational number.
+            omega (alpha or beta)_{s,n} as an exact rational number.
         """
 
         l_use=(0 if l is None else l)
@@ -162,7 +163,7 @@ class ExpansionCoefficients :
     def beta(self, l, s, n) : return self.alpha_or_beta(s, n, l)
 
     def __call__(self, m, s, epower) :
-        """ The coefficient in front of 2*pi*e^epower/omega in p_{m,s}. 
+        """ The coefficient in front of e^epower/omega in p_{m,s}. 
         
         Arguments:
             - m : The first index of the p_{m,s} being evaluated. Can only be
@@ -239,10 +240,11 @@ if __name__=='__main__' :
     options=parse_command_line()
     coef=ExpansionCoefficients(options.max_power, options.ab_file,
                                options.cpus)
+    print(options.max_power)
     for epower in range(options.max_power+1) :
         for m in [-2, 0, 2] :
             for s in range(-epower+m, epower+m+1, 2) :
                 if m==0 or s!=0 : 
-                    print("%25.16e"%coef(m,s,epower), end='')
+                    print("%25.16e"%(coef(m,s,epower)), end='')
         print()
 

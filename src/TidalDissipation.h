@@ -1,6 +1,7 @@
 #ifndef __TIDAL_DISSIPATION_H
 #define __TIDAL_DISSIPATION_H
 
+#include "DissipationQuantities.h"
 #include "DissipatingBody.h"
 #include "AstronomicalConstants.h"
 #include "OrbitalExpressions.h"
@@ -15,106 +16,11 @@
  * \ingroup StellarSystem_group
  */
 
-///\brief Isolates constants related to the tidal dissipation.
-///
-///\ingroup StellarSystem_group
-namespace Dissipation {
-	///The quantities which evolve due to tidal dissipation
-	enum Quantity {
-		///The rate at which energy is deposited into the body.
-		///Units: \f$\frac{M_\odot R_\odot^2 rad^2}{day^2\,Gyr}\f$
-		POWER, 
-
-		///The torque exerted on the body in the x direction.
-		///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$. 
-		TORQUEX, 
-
-		///The torque exerted on the body in the z direction.
-		///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
-		TORQUEZ,
-
-		///Minus the rate of change of the semimajor axis in AU/Gyr.
-		SEMIMAJOR_DECAY,
-
-		///The rate of change of the orbital frequency in rad/day/Gyr.
-		ORBIT_SPINUP,
-
-		///The rate of decrease of the the angle between the spin angular
-		///momentum of the body and the orbital angular momentum. In units of
-		/// \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
-		INCLINATION_DECAY,
-
-		///The rate at which the eccentricity decays per Gyr.
-//		ECCENTRICITY_DECAY,
-
-		///The total number of dissipation quantitise supported.
-		NUM_QUANTITIES};
-
-	///\brief All evolving quantities also have derivatives.
-	enum Derivative {
-
-		///The quantity itself, undifferentiated.
-		NO_DERIV, 
-
-		///The derivative w.r.t. age, but the only time dependence is through
-		///the modified phase lag function. The full age derivative can be
-		///reconstructed lated by adding the radius derivative times the rate
-		///of change of the radius and similarly for the moment of inertia.
-		AGE,
-
-		///The derivative w.r.t. the radius of the body in \f$R_\odot\f$.
-		RADIUS,
-
-		///The derivative w.r.t. the moment of inertia o the body in
-		/// \f$M_\odot R_\odot^2\f$.
-		MOMENT_OF_INERTIA,
-				
-		///The derivative w.r.t. the spin angular momentum in
-		/// \f$M_\odot R_\odot^2 rad/day\f$.
-		SPIN_ANGMOM,
-		
-		///The derivative w.r.t. the semimajor axis in AU.
-		SEMIMAJOR,
-
-		///The derivative w.r.t. the eccentricity.
-//		ECCENTRICITY,
-
-		///The derivative w.r.t. the angle between the spin angular momentum
-		///of the body and the orbital angular momentum.
-		INCLINATION,
-
-		///The total number of derivatives supported
-		NUM_DERIVATIVES};
-};
-
-///More civilized output for Dissipation::Quantity variables.
-std::ostream &operator<<(std::ostream &os,
-		const Dissipation::Quantity &quantity);
-
-///More civilized output for Dissipation::Derivative variables.
-std::ostream &operator<<(std::ostream &os,
-		const Dissipation::Derivative &deriv);
-
 ///\brief The rates of change of various quantities due to tidal dissipation.
 ///
 ///\ingroup StellarSystem_group
 class TidalDissipation {
 private:
-	///\brief The constant coefficiients in \f$\mathcal{U}_{m,m'}\f$ of Lai
-	///(2012).
-	///
-	///The first index is m+2 (since m starts from -2) and the second index
-	///is m'/2+1 since the only allowed values are -2, 0 and 1.
-	static const double __Umm_coef[][3],
-
-				 ///\brief \f$\kappa_{m,m'}^+/\kappa_{m,m'}\f$ as a function
-				 ///of \f$m=-2 \ldots 2\f$.
-				 __torque_x_plus_coef[],
-
-				 ///\brief \f$\kappa_{m,m'}^-/\kappa_{m,m'}\f$ as a function
-				 ///of \f$m=-2 \ldots 2\f$.
-				 __torque_x_minus_coef[];
-
 	///The orbital frequency in rad/day.
 	double __orbital_frequency,
 		   
@@ -136,18 +42,15 @@ private:
 		   ///The semiamjor axis in units of \f$R_\odot\f$
 		   __semimajor;
 
-	///The \f$\mathcal{U}_{m,m'}\f$ quantities defined in Lai (2012).
-	std::valarray< std::valarray<double> > __Umm;
-
 	///\brief Rates of change of the various quantities and derivatives due
 	///to tidal dissipation for each body. 
 	///
 	///There are three separate entries for quantity:
 	/// - the evolution rate only due to the locked terms, assuming the
-	//    body's spin is approaching the lock from below.
-	//  - the evolution rate due to only non-locked terms
-	//  - the evolution rate only due to the locked terms, assuming the
-	//    body's spin is approaching the lock from above.
+	///   body's spin is approaching the lock from below.
+	/// - the evolution rate due to only non-locked terms
+	/// - the evolution rate only due to the locked terms, assuming the
+	///   body's spin is approaching the lock from above.
 	std::valarray<double> __dissipation_rate,
 
 		///The spin angular momenta of the bodies
@@ -206,16 +109,6 @@ private:
 			)
 		];
 	}
-
-	///Computes the \f$\mathcal{U}_{m,m'}\f$ values. 
-	void fill_Umm(
-			///The angle between the spin angular momentum of the body and
-			///the orbital angular momentum in radians.
-			double inclination,
-			
-			///Whether to use the derivatives w.r.t. \f$\Theta\f$ instead of
-			///the values
-			bool deriv);
 
 	///Fills the __spin_orbit_haromincs structure with all terms locked.
 	void fill_spin_orbit_harmonics();

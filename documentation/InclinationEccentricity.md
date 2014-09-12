@@ -233,9 +233,9 @@ The ansatz:
 	\Delta_{m,s}&=&\tilde{\omega}_{m,s}t_{m,s}
 \f}
 with \f$\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})\f$,
-\f$\tilde{\omega}{m,s}=s\Omega-m\Omega_s\f$, where \f$\Omega_s\f$ is the
-spin angular velocity of \f$M\f$, and \f$\omega_0\equiv\sqrt{GM/R^3}\f$ is the
-dynamical frequency of \f$M\f$.
+\f$\tilde{\omega}_{m,s}=s\Omega-m\Omega_s\f$, where \f$\Omega_s\f$ is the
+spin angular velocity of \f$M\f$, and \f$\omega_0\equiv\sqrt{GM/R^3}\f$ is
+the dynamical frequency of \f$M\f$.
 
 Here are the detailed devirations of the tidal
 [torque](@ref InclinationEccentricity_torque) and

@@ -7,105 +7,6 @@
 
 #include "TidalDissipation.h"
 
-const double TidalDissipation::__Umm_coef[][3]={
-	{std::sqrt(3.0*M_PI/10.0)/4.0,
-	 -std::sqrt(6.0*M_PI/5.0)/4.0,
-	 std::sqrt(3.0*M_PI/10.0)/4.0},
-
-	{-std::sqrt(3.0*M_PI/10.0)/2.0,
-	 -std::sqrt(6.0*M_PI/5.0)/2.0,
-	 std::sqrt(3.0*M_PI/10.0)/2.0},
-
-	{3.0*std::sqrt(M_PI/5.0)/4.0,
-	 -std::sqrt(M_PI/5.0)/2.0,
-	 3.0*std::sqrt(M_PI/5.0)/4.0},
-
-	{-std::sqrt(3.0*M_PI/10.0)/2.0,
-	 std::sqrt(6.0*M_PI/5.0)/2.0,
-	 std::sqrt(3.0*M_PI/10.0)/2.0},
-									   
-	{std::sqrt(3.0*M_PI/10.0)/4.0,
-	 -std::sqrt(6.0*M_PI/5.0)/4.0,
-	 std::sqrt(3.0*M_PI/10.0)/4.0}};
-
-const double TidalDissipation::__torque_x_plus_coef[]={1.0, 
-													   std::sqrt(1.5),
-													   std::sqrt(1.5),
-													   1.0,
-													   0.0};
-
-const double TidalDissipation::__torque_x_minus_coef[]={0.0,           //m=-2
-													    1.0,           //m=-1
-													    std::sqrt(1.5),//m=0
-													    std::sqrt(1.5),//m=1
-													    1.0};          //m=2
-
-std::ostream &operator<<(std::ostream &os, 
-		const Dissipation::Quantity &quantity)
-{
-	switch(quantity) {
-		case Dissipation::POWER : os << "POWER"; break;
-		case Dissipation::TORQUEX : os << "TORQUEX"; break;
-		case Dissipation::TORQUEZ : os << "TORQUEZ"; break;
-		case Dissipation::SEMIMAJOR_DECAY : os << "SEMIMAJOR_DECAY"; break;
-		case Dissipation::ORBIT_SPINUP : os << "ORBIT_SPINUP"; break;
-		case Dissipation::INCLINATION_DECAY : os << "INCLINATION_DECAY";
-											  break;
-		default :
-#ifdef DEBUG
-				  assert(false)
-#endif
-					  ;
-	};
-	return os;
-}
-
-///More civilized output for Dissipation::Derivative variables.
-std::ostream &operator<<(std::ostream &os,
-		const Dissipation::Derivative &deriv)
-{
-	switch(deriv) {
-		case Dissipation::NO_DERIV : os << "NO_DERIV"; break;
-		case Dissipation::AGE : os << "AGE"; break;
-		case Dissipation::RADIUS : os << "RADIUS"; break;
-		case Dissipation::MOMENT_OF_INERTIA :
-								   os << "MOMENT_OF_INERTIA";
-								   break;
-		case Dissipation::SPIN_ANGMOM : os << "SPIN_ANGMOM"; break;
-		case Dissipation::SEMIMAJOR : os << "SEMIMAJOR"; break;
-		case Dissipation::INCLINATION : os << "INCLINATION"; break;
-		default :
-#ifdef DEBUG
-				  assert(false)
-#endif
-					  ;
-	};
-	return os;
-}
-
-void TidalDissipation::fill_Umm(double inclination, bool deriv)
-{
-	double c=std::cos(inclination), s=std::sin(inclination),
-		   s2=std::pow(s, 2), sc=s*c, cp1=c+1.0, cm1=c-1.0;
-
-	__Umm[0][0]=__Umm_coef[0][0]*(deriv ? -2.0*s*cp1 : std::pow(cp1, 2));
-	__Umm[1][0]=__Umm_coef[1][0]*(deriv ? cp1+2.0*s2 : s*cp1);
-	__Umm[2][0]=__Umm_coef[2][0]*(deriv ? 2.0*sc : s2);
-	__Umm[3][0]=-__Umm_coef[3][0]*(deriv ? c*cm1-s2 : s*cm1);
-	__Umm[4][0]=__Umm_coef[4][0]*(deriv ? -2.0*s*cm1 : std::pow(cm1, 2));
-
-	__Umm[0][1]=__Umm_coef[0][1]*(deriv ? 2.0*sc : s2);
-	__Umm[1][1]=__Umm_coef[1][1]*(deriv ? 1.0-2.0*s2 : sc);
-	__Umm[2][1]=__Umm_coef[2][1]*(deriv ? -6.0*sc : 2.0-3.0*s2);
-	__Umm[3][1]=__Umm_coef[3][1]*(deriv ? 1.0-2.0*s2 : sc);
-	__Umm[4][1]=__Umm_coef[4][1]*(deriv ? 2.0*sc : s2);
-
-	__Umm[0][2]=__Umm_coef[0][2]*(deriv ? -2.0*cm1*s : std::pow(cm1, 2));
-	__Umm[1][2]=-__Umm_coef[1][2]*(deriv ? c*cm1-s2 : s*cm1);
-	__Umm[2][2]=__Umm_coef[2][2]*(deriv ? 2.0*sc : s2);
-	__Umm[3][2]=__Umm_coef[3][2]*(deriv ? c*cp1-s2 : s*cp1);
-	__Umm[4][2]=__Umm_coef[4][2]*(deriv ? -2.0*cp1*s: std::pow(cp1, 2));
-}
 
 void TidalDissipation::fill_spin_orbit_harmonics()
 {
@@ -151,84 +52,6 @@ double TidalDissipation::forcing_frequency(short body_index,
 void TidalDissipation::calculate_torque_power(const DissipatingBody &body,
 		short body_index, Dissipation::Derivative derivative)
 {
-	for(short lock_dir=-1; lock_dir<=1; ++lock_dir)
-		rate_entry(body_index, Dissipation::POWER, derivative, lock_dir)=
-			rate_entry(body_index, Dissipation::TORQUEX, derivative,
-					lock_dir)=
-			rate_entry(body_index, Dissipation::TORQUEZ, derivative,
-					lock_dir)=0;
-	SpinOrbitLockInfo lock;
-	double spin_frequency=body.spin();
-	for(std::vector<SpinOrbitLockInfo>::const_iterator lock_i=
-			__spin_orbit_harmonics[body_index].begin();
-			lock_i!=__spin_orbit_harmonics[body_index].end();
-			++lock_i)
-		if((*lock_i)) {
-			lock=*lock_i;
-			spin_frequency=lock.spin(__orbital_frequency);
-			break;
-		}
-	SpinOrbitLockInfo temp_lock=lock;
-	if(body.moment_of_inertia()==0) return;
-	for(int m=-2; m<=2; ++m) {
-		double m_spin_freq=m*spin_frequency;
-		int m_ind=m+2;
-		for(int mp=-2; mp<=2; mp+=2) {
-			if(m==0 && mp==0) continue;
-			bool locked_term=lock(mp, m);
-			PhaseLag::Derivative phase_lag_deriv=PhaseLag::NO_DERIV;
-			switch(derivative) {
-				case Dissipation::NO_DERIV : case Dissipation::RADIUS :
-				case Dissipation::INCLINATION :
-					phase_lag_deriv=PhaseLag::NO_DERIV; break;
-				case Dissipation::AGE : phase_lag_deriv=PhaseLag::AGE; break;
-				case Dissipation::MOMENT_OF_INERTIA : 
-				case Dissipation::SPIN_ANGMOM : 
-				case Dissipation::SEMIMAJOR :
-						   phase_lag_deriv=PhaseLag::FORCING_FREQUENCY;
-						   break;
-				default :
-#ifdef DEBUG
-						   assert(false)
-#endif
-						;
-			};
-			int mp_ind=mp/2+1;
-			double Umm_squared=std::pow(__Umm[m_ind][mp_ind], 2),
-				   forcing_freq=forcing_frequency(body_index, mp, m,
-						   m_spin_freq);
-			for(short lock_dir=(locked_term ? -1 : 0);
-					lock_dir<=(locked_term ? 1 : 0);
-					lock_dir+=2) {
-				temp_lock.lock_direction(lock_dir);
-				double mod_phase_lag=body.modified_phase_lag(m, 
-						forcing_freq, temp_lock, phase_lag_deriv);
-				if(derivative==Dissipation::MOMENT_OF_INERTIA || 
-						derivative==Dissipation::SPIN_ANGMOM)
-					mod_phase_lag=
-						-m*mod_phase_lag
-						+
-						body.modified_phase_lag(m, forcing_freq, temp_lock,
-								PhaseLag::SPIN_FREQUENCY);
-				else if(derivative==Dissipation::SEMIMAJOR)
-					mod_phase_lag*=mp;
-				rate_entry(body_index, Dissipation::TORQUEZ,
-						derivative, lock_dir)+=Umm_squared*m*mod_phase_lag;
-				rate_entry(body_index, Dissipation::POWER,
-						derivative, lock_dir)+=Umm_squared*mp*mod_phase_lag;
-				rate_entry(body_index, Dissipation::TORQUEX,
-						derivative, lock_dir)+=__Umm[m_ind][mp_ind]*(
-							(m>-2 ? 
-							 __torque_x_minus_coef[m_ind]
-							 *
-							 __Umm[m_ind-1][mp_ind] : 0)+
-							(m<2 ? 
-							 __torque_x_plus_coef[m_ind]
-							 *
-							 __Umm[m_ind+1][mp_ind] : 0))*mod_phase_lag;
-			}
-		}
-	}
 }
 
 void TidalDissipation::calculate_semimajor_decay(short body_index)
@@ -344,7 +167,7 @@ void TidalDissipation::init(const DissipatingBody &body1,
 		const DissipatingBody &body2, double semimajor, double eccentricity,
 		const SpinOrbitLockInfo &lock1, const SpinOrbitLockInfo &lock2)
 {
-	__orbital_frequency=orbital_angular_velocity(body1.mass(), body2.mass(),
+/*	__orbital_frequency=orbital_angular_velocity(body1.mass(), body2.mass(),
 			semimajor);
 	__mass_product=body1.mass()*body2.mass();
 	__reduced_mass=__mass_product/(body1.mass()+body2.mass());
@@ -450,7 +273,7 @@ void TidalDissipation::init(const DissipatingBody &body1,
 			}
 		}
 		other_mass=body1.mass();
-	}
+	}*/
 }
 
 double TidalDissipation::operator()(short body_index, 

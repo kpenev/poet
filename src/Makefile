@@ -14,7 +14,7 @@ COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
                   StellarSystem YRECIO MESAIO StoppingConditions \
 				  ExternalStoppingConditions CustomStellarEvolution \
 				  TidalDissipation StellarDissipation OrbitalExpressions \
-				  DissipatingBody
+				  DissipatingBody EccentricityExpansionCoefficients
 
 BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \
