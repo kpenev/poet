@@ -284,6 +284,8 @@ ctags:
 
 doc: CFLAGS_RELEASE+=-D'COLUMN_NAME_EMPHASIS="__"'
 
+doc: export TEXINPUTS=$(shell readlink -e ../documentation):
+
 doc: clean $(POET)
 	@echo "Compilation {#compilation}" > $(DOC_ROOT)/compilation.md
 	@echo "===========" >> $(DOC_ROOT)/compilation.md

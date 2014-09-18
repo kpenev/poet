@@ -243,18 +243,35 @@ Here are the detailed devirations of the tidal
 
 As noted before, for general eccentric orbits, the number of timelags is not
 only six, like in Lai (2012), but could be arbitrarily large, depending on
-the precision required of the expansion and the value of the eccentricity.
+the precision required of the expansion and the value of the eccentricity. In
+order to preserve full generality, we allow the user to specify each tidal
+lag \f$\Delta'_{m,m'}\equiv\kappa_{m,m'}\sin(\Delta_{m,m'})\f$ and each love
+coefficient \f$\kappa'_{m,m'}\equiv\kappa_{m,m'}\cos(\Delta_{m,m'})\f$
+separately.
+
+The variables evolved will be the usual orbital
+elements (the semimajor axis - \f$a\f$ and eccentricity \f$e\f$), and for
+each zone we will use the inclination relative to the orbit - \f$i\f$.
+Finally, one zone will be designated as a reference and for all other zones,
+we will follow the evolution of the difference between their argument of
+periapsis and that of the referenc zone - \f$\Delta\omega\f$. Thus, if the
+two bodies are split into n zones, the evolution of 1+2n variables will be
+followed. The equations for the evolution of these variables are derived 
+[here](@ref EccentricEvolutionEquations).
+
+
+To derive the rates of change of the orbital elements that correspond to the
+tidal torques and dissipation rates derived at each time step. We will
+consider an arbitrary number of zones belonging to either of the two bodies
+in orbit around each other which can be subject to tidal dissipation and/or
+precession. 
+
 Luckily, the fully general solution can be preserved, except we will need to
 specify the dissipation as 3 timelags that are functions of frequency: one
 for each \f$m=0,1,2\f$. The negative \f$m\f$ values can be handled by
 inverting the sign of \f$m'\f$ and the forcing frequency.
 
-Finally, we use the orbital energy and angular momentum:
-\f{eqnarray*}{
-	E_{orb}&=&-\frac{GMM'}{2a}\\
-	L_{orb}&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2}=GMM'\sqrt{\frac{(1-e^2)MM'}{2E(M+M')}}
-\f}
-To derive the rate of change of the orbit and the angular momenta of the
+ and the angular momenta of the
 convective (\f$S^{conv}\hat{z}\f$) and radiative
 (\f$S^{rad}_x\hat{x}+S^{rad}_z\hat{z}\f$) zones of \f$M\f$ with the wind and
 core-envelope coupling included:
