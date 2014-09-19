@@ -27,6 +27,8 @@ following variables:
    course with a negative sign on the orbit).
  - \f$\mathbf{\tilde{T}}\f$: the negative of the tidal torques on the orbit
    due to other zones.
+ - \f$\mathbf{\mathscr{T}}\f$: the torque on this zone due to coupling to other
+   zones (e.g. due to differential rotation coupling or mass exchange).
  - \f$\bhat{p}\f$: a unit vector along the periapsis of the orbit
  - \f$\bhat{z}\f$: a unit vector along \f$\mathbf{S}\f$.
  - \f$\bhat{y}\f$: a unit vector along the ascending node of the orbit.
@@ -43,21 +45,24 @@ projections of quantities alonge \f$\bhat{x}\f$, \f$\bhat{y}\f$ and
 	\bhat{y} &=& \frac{\mathbf{S}\times\mathbf{L}}{LS\sin\theta}\\
 	\bhat{p} &=& - \sin\omega\cos\theta\bhat{x} + \cos\omega\bhat{y}
 				 + \sin\omega\sin\theta\bhat{z}\\
-	\mathbf{S}' &=& T_xdt\bhat{x} + T_ydt\bhat{y} + (S+T_zdt)\bhat{z}\\
+	\mathbf{S}' &=& (T_x+\mathscr{T}_x)dt\bhat{x}
+					+ (T_y+\mathscr{T}_y)dt\bhat{y}
+					+ (S+T_zdt+\mathscr{T}_zdt)\bhat{z}\\
 	\mathbf{L}' &=& (L\sin\theta-T_xdt-\tilde{T}_xdt)\bhat{x}
 					- (T_y+\tilde{T}_y)dt\bhat{y}
 					+ (L\cos\theta-T_zdt-\tilde{T}_zdt)\bhat{z}\\
-	\frac{1}{S'} &=& \frac{1}{S} - \frac{T_z}{S^2}dt\\
+	\frac{1}{S'} &=& \frac{1}{S} - \frac{T_z+\mathscr{T}_z}{S^2}dt\\
 	\frac{1}{L'} &=& \frac{1}{L} 
 					 + \frac{(T_x+\tilde{T}_x)\sin\theta
 							 + (T_z+\tilde{T}_z)\cos\theta}{L^2}dt\\
-	\frac{1}{L'S'} &=& \frac{1}{LS}\left(1 - \frac{T_z}{S}dt
+	\frac{1}{L'S'} &=& \frac{1}{LS}\left(1 - \frac{T_z+\mathscr{T}_z}{S}dt
 					 					+ \frac{(T_x+\tilde{T}_x)\sin\theta
 										+ (T_z+\tilde{T}_z)\cos\theta}{L}dt
 									\right)\\
 	\Rightarrow \frac{d}{dt}\left(\frac{1}{LS}\right) &=&
 		\frac{1}{LS}\left(\frac{(T_x+\tilde{T}_x)\sin\theta
-						  + (T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z}{S}
+						  + (T_z+\tilde{T}_z)\cos\theta}{L}
+						  - \frac{T_z+\mathscr{T}_z}{S}
 					\right)
 \f}
 
@@ -65,24 +70,25 @@ In order to derive the evolution rate for the inclination:
 \f{eqnarray*}{
 	\cos\theta &=& \frac{\mathbf{S}\cdot\mathbf{L}}{LS}\\
 	\cos\theta' &=& \frac{\mathbf{S}'\cdot\mathbf{L}'}{L'S'}\\
-				&=& \frac{L\sin\theta T_xdt + LS\cos\theta
-						  + L\cos\theta T_zdt - S(T_z+\tilde{T}_z)dt}{LS}
-					\left(1 - \frac{T_z}{S}dt
+				&=& \frac{L\sin\theta(T_x+\mathscr{T}_x)dt + LS\cos\theta
+						  + L\cos\theta(T_z+\mathscr{T}_z)dt
+						  - S(T_z+\tilde{T}_z)dt}{LS}
+					\left(1 - \frac{T_z+\mathscr{T}_z}{S}dt
 						  + \frac{(T_x+\tilde{T}_x)\sin\theta
 						  + (T_z+\tilde{T}_z)\cos\theta}{L}dt
 					\right)\\
-				&=& \cos\theta -\frac{\cos\theta T_z}{S}dt
+				&=& \cos\theta -\frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt
 					+ \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta
 							+ (T_z+\tilde{T}_z)\cos^2\theta}{L}dt
-					+\frac{\sin\theta T_x}{S}dt
-					+ \frac{\cos\theta T_z}{S}dt
+					+\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt
+					+ \frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt
 					- \frac{T_z+\tilde{T}_z}{L}dt\\
 				&=& \cos\theta + \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta
 							- (T_z+\tilde{T}_z)\sin^2\theta}{L}dt
-					+\frac{\sin\theta T_x}{S}dt\\
+					+\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt\\
 	\Rightarrow \dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} 
 								 - \frac{(T_x+\tilde{T}_x)\cos\theta}{L}
-								 - \frac{T_x}{S}
+								 - \frac{T_x+\mathscr{T}_x}{S}
 \f}
 
 Now to derive the evolution rate for the argument of periapsis:
@@ -97,21 +103,24 @@ Now to derive the evolution rate for the argument of periapsis:
 \f{eqnarray*}{
 	\frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)
 		&=& - S(T_x+\tilde{T}_x)\bhat{y} + S(T_y+\tilde{T}_y)\bhat{x}
-			- L\cos\theta T_x\bhat{y} + L\cos\theta T_y\bhat{x}
-			- L\sin\theta T_y\bhat{z} + L\sin\theta T_z\bhat{y}\\
+			- L\cos\theta(T_x+\mathscr{T}_x)\bhat{y}
+			+ L\cos\theta(T_y+\mathscr{T}_y)\bhat{x}
+			- L\sin\theta(T_y+\mathscr{T}_y)\bhat{z}
+			+ L\sin\theta(T_z+\mathscr{T}_z)\bhat{y}\\
 
-		&=& \left[S(T_y+\tilde{T}_y) + L\cos\theta T_y\right]\bhat{x}
-			+ \left[L\sin\theta T_z - L\cos\theta T_x
-					-S(T_x+\tilde{T}_x)
+		&=& \left[S(T_y+\tilde{T}_y)
+				  + L\cos\theta(T_y+\mathscr{T}_y)\right]\bhat{x}
+			+ \left[L\sin\theta(T_z+\mathscr{T}_z)
+					- L\cos\theta(T_x+\mathscr{T}_x) - S(T_x+\tilde{T}_x)
 			  \right]\bhat{y}
-			- L\sin\theta T_y\bhat{z}
+			- L\sin\theta(T_y+\mathscr{T}_y)\bhat{z}
 \f}
 
 From \f$\dot{\theta}\f$:
 \f{eqnarray*}{
 	\frac{d}{dt}\left(\frac{1}{\sin\theta}\right) &=&
 		\frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin^2\theta}
-		+ \frac{T_x\cos\theta}{S\sin^2\theta}
+		+ \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin^2\theta}
 		- \frac{(T_z+\tilde{T}_z)\cos\theta}{L\sin\theta} 
 \f}
 
@@ -121,50 +130,58 @@ Combining \f$\frac{d}{dt}\left(\frac{1}{LS}\right)\f$,
 \f{eqnarray*}{
 	\frac{d}{dt}\bhat{y}
 		&=& \left\{\frac{(T_x+\tilde{T}_x)\sin\theta
-				  + (T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z}{S}
+					+ (T_z+\tilde{T}_z)\cos\theta}{L}
+					- \frac{T_z+\mathscr{T}_z}{S}
 			\right\}\bhat{y}\\
 		&& +
 			\frac{1}{LS\sin\theta}\left\{
-				\left[S(T_y+\tilde{T}_y) + L\cos\theta T_y\right]\bhat{x}
-				+ \left[L\sin\theta T_z - L\cos\theta T_x
+				\left[S(T_y+\tilde{T}_y)
+					  + L\cos\theta(T_y+\mathscr{T}_y)\right]\bhat{x}
+				+ \left[L\sin\theta(T_z+\mathscr{T}_z)
+						- L\cos\theta(T_x+\mathscr{T}_x)
 						- S(T_x+\tilde{T}_x)
 				  \right]\bhat{y}
-				- L\sin\theta T_y\bhat{z}
+				- L\sin\theta(T_y+\mathscr{T}_y)\bhat{z}
 			\right\}\\
 		&& + 
 			\left\{\frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta}
-				+ \frac{T_x\cos\theta}{S\sin\theta}
+				+ \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta}
 				- \frac{(T_z+\tilde{T}_z)\cos\theta}{L}
 			\right\}\bhat{y}\\
 		&=& \left[\frac{T_y+\tilde{T}_y}{L\sin\theta} + 
-				  \frac{\cos\theta T_y}{S\sin\theta}\right]\bhat{x}\\
+				  \frac{\cos\theta(T_y+\mathscr{T}_y)}{S\sin\theta}
+			\right]\bhat{x}\\
 		&& +
 			\left[\frac{(T_x+\tilde{T}_x)\sin\theta}{L}
 				  + \frac{(T_z+\tilde{T}_z)\cos\theta}{L} 
-				  - \frac{T_z}{S} - \frac{\cos\theta T_x}{S\sin\theta}
-				  + \frac{T_z}{S} - \frac{T_x+\tilde{T}_x}{L\sin\theta}
+				  - \frac{T_z+\mathscr{T}_z}{S}
+				  - \frac{\cos\theta(T_x+\mathscr{T}_x)}{S\sin\theta}
+				  + \frac{T_z+\mathscr{T}_z}{S}
+				  - \frac{T_x+\tilde{T}_x}{L\sin\theta}
 				  + \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta}
-				  + \frac{T_x\cos\theta}{S\sin\theta}
+				  + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta}
 				  - \frac{(T_z+\tilde{T}_z)\cos\theta}{L}
 			\right]\bhat{y}\\
-		&& - \frac{T_y}{S}\bhat{z}\\
+		&& - \frac{T_y+\mathscr{T}_y}{S}\bhat{z}\\
 		&=& \left[\frac{T_y+\tilde{T}_y}{L\sin\theta} + 
-				  \frac{T_y\cos\theta}{S\sin\theta}\right]\bhat{x}
-			- \frac{T_y}{S}\bhat{z}\\
+				  \frac{(T_y+\mathscr{T}_y)\cos\theta}{S\sin\theta}
+			\right]\bhat{x} - \frac{T_y+\mathscr{T}_y}{S}\bhat{z}\\
 	\Rightarrow -\frac{\bhat{p}}{\sin\omega}\cdot\frac{d}{dt}\bhat{y}
 		&=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
-			+ \frac{T_y\cos^2\theta}{S\sin\theta}
-			+ \frac{T_y\sin\theta}{S}\\
+			+ \frac{(T_y+\mathscr{T}_y)\cos^2\theta}{S\sin\theta}
+			+ \frac{(T_y+\mathscr{T}_y)\sin\theta}{S}\\
 		&=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
-			+ \frac{T_y}{S\sin\theta}
+			+ \frac{T_y+\mathscr{T}_y}{S\sin\theta}
 \f}
 
 The evolution of the direction of periapsis:
 \f{eqnarray*}{
-	\frac{d}{dt}\bhat{p} &=& -\mathbf{T}\cdot\bhat{p}\frac{\mathbf{L}}{L^2}\\
-		&=& \left(\frac{T_x\sin\omega\cos\theta}{L}
-				  - \frac{T_y\cos\omega}{L}
-				  - \frac{T_z\sin\omega\sin\theta}{L}
+	\frac{d}{dt}\bhat{p}
+		&=& -(\mathbf{T}+\mathbf{\tilde{T}})
+			\cdot\bhat{p}\frac{\mathbf{L}}{L^2}\\
+		&=& \left(\frac{(T_x+\tilde{T}_x)\sin\omega\cos\theta}{L}
+				  - \frac{(T_y+\tilde{T}_y)\cos\omega}{L}
+				  - \frac{(T_z+\tilde{T}_z)\sin\omega\sin\theta}{L}
 			\right)
 			\left(\sin\theta\bhat{x}+\cos\theta\bhat{z}\right)\\
 	\Rightarrow -\frac{\bhat{y}}{\sin\omega}\cdot\frac{d}{dt}\bhat{p} &=& 0
@@ -173,12 +190,12 @@ The evolution of the direction of periapsis:
 So we get:
 \f[
 	\dot{\omega} = \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
-				   + \frac{T_y}{S\sin\theta}
+				   + \frac{T_y+\mathscr{T}_y}{S\sin\theta}
 \f]
 
 Finally:
 \f{eqnarray*}{
-	\dot{S} &=& T_z\\
+	\dot{S} &=& T_z+\mathscr{T}_z\\
 	\dot{L} &=& -T_x\sin\theta - T_z\cos\theta
 \f}
 

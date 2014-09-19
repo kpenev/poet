@@ -259,38 +259,41 @@ two bodies are split into n zones, the evolution of 1+2n variables will be
 followed. The equations for the evolution of these variables are derived 
 [here](@ref EccentricEvolutionEquations).
 
-
-To derive the rates of change of the orbital elements that correspond to the
-tidal torques and dissipation rates derived at each time step. We will
-consider an arbitrary number of zones belonging to either of the two bodies
-in orbit around each other which can be subject to tidal dissipation and/or
-precession. 
-
-Luckily, the fully general solution can be preserved, except we will need to
-specify the dissipation as 3 timelags that are functions of frequency: one
-for each \f$m=0,1,2\f$. The negative \f$m\f$ values can be handled by
-inverting the sign of \f$m'\f$ and the forcing frequency.
-
- and the angular momenta of the
-convective (\f$S^{conv}\hat{z}\f$) and radiative
-(\f$S^{rad}_x\hat{x}+S^{rad}_z\hat{z}\f$) zones of \f$M\f$ with the wind and
-core-envelope coupling included:
+The collected equations are:
 \f{eqnarray*}{
+
 	\dot{a}&=&-\frac{GMM'}{2E^2}\dot{E}\\
-	\dot{\Theta}&=&-\frac{T_x+T_x^{coup}}{S} - \frac{T_x\cos\Theta}{L} +
-					\frac{T_z\sin\Theta}{L}\\
+
 	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\
-	\dot{S}^{conv}&=&T_z+T_z^{coup}+T^{wind}\\
-	\dot{S}^{rad}_x&=&-T_x^{coup}-
-					  \frac{(T_x^{coup}+T_x)S^{rad}_z}{S^{conv}}\\
-	\dot{S}^{rad}_z&=&-T_z^{coup}+
-					  \frac{(T_x^{coup}+T_x)*S^{rad}_x}{S^{conv}}\\
+
+	\dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} 
+					 - \frac{(T_x+\tilde{T}_x)\cos\theta}{L}
+					 - \frac{T_x+\mathscr{T}_x}{S}\\
+	\dot{\omega} &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
+				     + \frac{T_y+\mathscr{T}_y}{S\sin\theta}\\
+
+	\bhat{\tilde{x}}&=& \left(\sin\theta\sin\tilde{\theta}
+							  + \cos\theta\cos\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{x}
+						+ \cos\tilde{\theta}\sin\Delta\omega\bhat{y}
+						+ \left(\cos\theta\sin\tilde{\theta}
+								-
+								\sin\theta\cos\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{z}\\
+
+	\bhat{\tilde{y}}&=& -\cos\theta\sin\Delta\omega\bhat{x}
+					    + \cos\Delta\omega\bhat{y}
+					    + \sin\theta\sin\Delta\omega\bhat{z}\\
+
+	\bhat{\tilde{z}}&=& \left(\sin\theta\cos\tilde{\theta}
+							  - \cos\theta\sin\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{x}
+						- \sin\tilde{\theta}\sin\Delta\omega\bhat{y}
+						+ \left(\cos\theta\cos\tilde{\theta}
+								+
+								\sin\theta\sin\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{z}
 \f}
-where \f$T_z^{coup}\f$ and \f$T_x^{coup}\f$ are the x and z components of the
-core-envelope coupling torque, and \f$T^{wind}\f$ is the torque due to the
-wind. These expressions are valid if only one of the bodies contributes to
-the evolution. If both bodies have significant tidal dissipation to affect
-the orbit, the problem becomes three dimensional.
 
 If the system ever gets in a state where the forcing frequency
 \f$\tilde{\omega}\equiv m'\Omega-mS^{conv}/I_{conv}\f$ for some (m,m')
