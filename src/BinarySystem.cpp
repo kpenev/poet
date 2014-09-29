@@ -51,7 +51,7 @@ int StellarSystem::binary_differential_equations(
 	double Lconv;
 	if(star_lock) Lconv=star_lock.spin(
 			orbital_angular_velocity(__star.mass(), __planet.mass(),
-				parameters[0]*Rsun_AU))*__star.moment_of_inertia(convective);
+				parameters[0])*__star.moment_of_inertia(convective);
 	else Lconv=parameters[2];
 	no_planet_params[0]=Lconv;
 	no_planet_params[1]=parameters[Lrad_par_index];

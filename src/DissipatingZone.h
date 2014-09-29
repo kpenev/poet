@@ -34,7 +34,13 @@ private:
 	static EccentricityExpansionCoefficients __pms;
 
 	///The inclination with which __Ummp was last filled.
-	double __Ummp_inclination;
+	double __Ummp_inclination,
+		   
+		   ///The spin frequency of the zone.
+		   __spin_frequency,
+		   
+		   ///The absolute value of the angular momentum of the orbit
+		   __orbital_angmom;
 
 	///The \f$\mathcal{U}_{m,m'}\f$ quantities defined in Lai (2012).
 	std::valarray< std::valarray<double> > __Ummp,
@@ -122,11 +128,92 @@ public:
 			double orbital_frequency,
 
 			///The eccentricity of the orbit
-			double eccentricity);
+			double eccentricity,
+			
+			///The absolute value of the angular momentum of the orbit.
+			double orbital_angmom);
 
-	///\brief Last setting for the angle between the angular momenta of the
-	///zone and the orbit.
+
+	///The angle between the angular momenta of the zone and the orbit.
 	virtual double inclination() const =0;
+
+	///The argument of periapsis of this zone minus the reference zone's
+	virtual double periapsis() const =0;
+
+	///\brief The rate at which the periapsis of the orbit in this zone's
+	///equatorial plane is changing.
+	///
+	///set_orbit() mest already have been called, and inclination() and
+	///spin_frequency() must be current.
+	double periapsis_evolution(
+			///The torque on the orbit due to all other zones in this zone's
+			///coordinate system.
+			const Eigen::Vector3d &orbit_torque,
+
+			///All non-tidal torques acting on this zone (i.e. angular
+			///momentum loss due to wind for the surface zone and coupling to
+			///neightboring zones due to differential rotation).
+			const Eigen::Vector3d &external_torque,
+
+			///If not Dissipation::NO_DERIV, the derivative of the rate with
+			///respect to the given quantity is returned. For zone-specific
+			///quantities, derivative with respect to this zone's quantity is
+			///computed. If derivatives with respect to other zone's
+			///quantities are required, those only come in through the orbit
+			///torque and external torque, so pass the corresponding
+			///derivative instead of the actual torques, and ignore this and
+			///subsequent arguments.
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+			
+			///This argument is required if dervi is neither NO_DERIV nor
+			///PERIAPSIS, and should contain the derivative of the orbital
+			///torque relative to the quantity identified by deriv.
+			const Eigen::Vector3d &orbit_torque_deriv=
+				Eigen::Vector3d(),
+
+			///This argument is required if dervi is neither NO_DERIV nor
+			///PERIAPSIS, and shoul contain the derivative of the external
+			///torque relative to the quantity identified by deriv.
+			const Eigen::Vector3d &external_torque_deriv=
+				Eigen::Vector3d());
+
+	///\brief The rate at which the inclination between this zone and the 
+	///orbit is changing.
+	///
+	///set_orbit() mest already have been called, and inclination() and
+	///spin_frequency() must be current.
+	double inclination_evolution(
+			///The torque on the orbit due to all other zones in this zone's
+			///coordinate system.
+			const Eigen::Vector3d &orbit_torque,
+
+			///All non-tidal torques acting on this zone (i.e. angular
+			///momentum loss due to wind for the surface zone and coupling to
+			///neightboring zones due to differential rotation).
+			const Eigen::Vector3d &external_torque,
+			
+			///If not Dissipation::NO_DERIV, the derivative of the rate with
+			///respect to the given quantity is returned. For zone-specific
+			///quantities, derivative with respect to this zone's quantity is
+			///computed. If derivatives with respect to other zone's
+			///quantities are required, those only come in through the orbit
+			///torque and external torque, so pass the corresponding
+			///derivative instead of the actual torques, and ignore this and
+			///subsequent arguments.
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+			
+			///This argument is required if dervi is neither NO_DERIV nor
+			///PERIAPSIS, and shoul contain the derivative of the orbital
+			///torque relative to the quantity identified by deriv.
+			const Eigen::Vector3d &orbit_torque_deriv=
+				Eigen::Vector3d(),
+
+			///This argument is required if dervi is neither NO_DERIV nor
+			///PERIAPSIS, and shoul contain the derivative of the external
+			///torque relative to the quantity identified by deriv.
+			const Eigen::Vector3d &external_torque_deriv=
+				Eigen::Vector3d());
+
 
 	///\brief Should return true iff the given term is presently locked.
 	virtual bool locked(int orbital_frequency_multiplier,
@@ -149,7 +236,7 @@ public:
 			///expression for the forcing frequency.
 			int spin_frequency_multiplier,
 			
-			///The current orbital spin frequency in rad/day
+			///The current orbital frequency in rad/day
 			double orbital_frequency,
 
 			///The return value should be either the phase lag itself
@@ -175,6 +262,26 @@ public:
 			///The return value should be either the phase lag itself
 			///(NO_DERIV) or its derivative w.r.t. the specified quantity.
 			Dissipation::Derivative deriv) const =0;
+
+	///The moment of inertia of the zone or its age derivative.
+	virtual double moment_of_inertia(
+			///What to return:
+			/// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
+			/// - 1 The rate of change of the moment of inertia in 
+			///     \f$M_\odot R_\odot^2/Gyr\f$
+			/// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
+			int deriv_order=0);
+
+	///\brief The spin frequency of the given zone.
+	double spin_frequency() const {return __spin_frequency;}
+
+	///The angular momentum of the given zone in \f$M_\odot R_\odot^2\f$.
+	double angular_momentum() const 
+	{return __spin_frequency*moment_of_inertia();}
+
+	///\brief Set the spin frequency of the given zone.
+	void set_spin_frequency(double spin_frequency)
+	{__spin_frequency=spin_frequency;}
 
 	///\brief The dimensionless tidal power or one of its derivatives.
 	double tidal_power(
@@ -218,6 +325,53 @@ public:
 	///tabulate_eccentricity_expansion_coefficients.py.
 	static void read_eccentricity_expansion(const std::string &fname)
 	{__pms.read(fname);}
+
+	///\brief Current outer radius of the zone or its derivative.
+	///
+	///The outermost zone's outer radius is considered to be the radius of
+	///the body.
+	virtual double outer_radius(
+			///What to return:
+			/// - 0 The boundary in \f$R_\odot\f$
+			/// - 1 The rate of change of the boundary in \f$R_\odot/Gyr\f$
+			/// - 2 The second derivative in \f$R_\odot/Gyr^2\f$
+			int deriv_order=0) const =0;
+
+	///\brief Mass coordinate of the zone's outer ouboundary or its
+	///derivative.
+	///
+	///The outermost zone's boundary is considered to be the mass of the
+	///body and should be constant.
+	virtual double outer_mass(
+			///What to return:
+			/// - 0 The boundary in \f$M_\odot\f$
+			/// - 1 The rate of change of the boundary in \f$M_\odot/Gyr\f$
+			/// - 2 The second derivative in \f$M_\odot/Gyr^2\f$
+			int deriv_order=0) const =0;
+
 };
+
+///Transforms a vector betwen the coordinates systems of two zones.
+Eigen::Vector3D zone_to_zone_transform(
+		///The zone whose coordinate system the vectors are currently in.
+		const DissipatingZone &from_zone,
+
+		///The zone whose coordinate system we want to transform the vectors
+		///to.
+		const DissipationgZone &to_zone, 
+		
+		///The vector to transform.
+		const Eigen::Vector3d &vector
+
+		///Derivatives with respect to inclination and periapsis can be
+		///computed (assuming vector does not depend on these), in addition
+		///to the regular transform. It is an error to request another
+		///derivative.
+		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+
+		///If deriv is not NO_DERIV, derivatives can be computed with respect
+		///to quantities of the from_zone (if this argument is true) or the
+		///to_zone (if false).
+		bool with_respect_to_from=false);
 
 #endif

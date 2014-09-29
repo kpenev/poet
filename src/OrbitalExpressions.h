@@ -19,7 +19,7 @@ double orbital_angular_velocity(
 		///The mass of the second body in \f$M_\odot\f$.
 		double m2,
 		
-		///The semimajor axis in AU
+		///The semimajor axis in \f$R_\odot\f$
 		double semimajor,
 		
 		///Whether to return the derivative with respect to the semimajor

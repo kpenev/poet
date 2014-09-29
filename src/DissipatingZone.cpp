@@ -120,8 +120,9 @@ DissipatingZone::DissipatingZone()
 }
 
 void DissipatingZone::set_orbit(double orbital_frequency,
-		double eccentricity)
+		double eccentricity, double orbital_angmom)
 {
+	__orbital_angmom=orbital_angom
 	fill_Umm();
 	__power=0;
 	__torque_x=0;
@@ -195,4 +196,78 @@ void DissipatingZone::set_orbit(double orbital_frequency,
 			U_mm1mp_e_deriv=U_mmp_e_deriv;
 		}
 	}
+}
+
+double DissipatingZone::periapsis_evolution(
+		const Eigen::Vector3d &orbit_torque,
+		const Eigen::Vector3d &external_torque,
+		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+		const Eigen::Vector3d &orbit_torque_deriv,
+		const Eigen::Vector3d &external_torque_deriv)
+{
+	double sin_inc=std::sin(inclination()),
+		   cos_inc=std::cos(inclination()),
+	if(deriv==Dissipation::NO_DERIV || deriv==Dissipation::AGE) {
+		double zone_y_torque=tidal_torque_y(deriv),
+			   orbit_y_torque=-zone_y_torque;
+		if(deriv==Dissipation::NO_DERIV) {
+			orbit_y_torque+=+orbit_torque[2];
+			zone_y_torque+=external_torque[2];
+		} else {
+			orbit_y_torque+=orbit_torque_deriv[2];
+			zone_y_torque+=external_torque_deriv[2];
+		}
+		return -orbit_y_torque*cos_inc/(__orbital_angmom*sin_inc)
+			   +
+			   zone_y_torque/(angular_momentum()*sin_inc);
+	}
+}
+
+Eigen::Vector3D zone_to_zone_transform(const DissipatingZone &from_zone,
+		const DissipationgZone &to_zone, const Eigen::Vector3D &vector,
+		Dissipation::Derivative deriv, bool with_respect_to_from)
+{
+#ifdef DEBUG
+	assert(deriv==Dissipation::NO_DERIV || deriv==Dissipation::INCLINATION
+			|| deriv==Dissipation::PERIAPSIS);
+#endif
+	double cos_dw=std::cos(to_zone.periapsis()-from_zone.periapsis()),
+		   sin_dw=std::sin(to_zone.periapsis()-from_zone.periapsis()),
+		   sin_from=std::sin(from_zone.inclination()),
+		   cos_from=std::cos(from_zone.inclination()),
+		   sin_to=std::sin(to_zone.inclination()),
+		   cos_to=std::cos(to_zone.inclination()),
+		   sin_sin, cos_cos, sin_cos, cos_sin;
+	if(deriv==Dissipation::PERIAPSIS) {
+		double buffer=cos_dw;
+		if(with_respect_to_from) {cos_dw=sin_dw; sin_dw=-buffer;}
+		else {cos_dw=-sin_dw; sin_dw=buffer;}
+	} else if(deriv==Dissipation::INCLINATION) {
+		if(with_respect_to_from) {
+			sin_sin=sin_to*cos_from;
+			cos_cos=-cos_to*sin_from;
+			sin_cos=-sin_to*sin_from;
+			cos_sin=cos_to*cos_from;
+		} else {
+			sin_sin=cos_to*sin_from;
+			cos_cos=-sin_to*cos_from;
+			sin_cos=cos_to*cos_from;
+			cos_sin=-sin_to*sin_from;
+		}
+	} else {
+		sin_sin=sin_to*sin_from;
+		cos_cos=cos_to*cos_from;
+		sin_cos=sin_to*cos_from;
+		cos_sin=cos_to*sin_from;
+	}
+	return Eigen::Vector3D(
+			(sin_sin+cos_cos*cos_dw)*vector[0] - cos_to*sin_dw*vector[1]
+			+ (sin_cos-cos_sin*cos_dw)*vector[2],
+
+
+			cos_from*sin_dw*vector[0] + cos_dw*vector[1]
+			- sin_from*sin_dw*vector[2],
+
+			(cos_sin-sin_cos*cos_dw)*vector[0] + sin_to*sin_dw*vector[1]
+			+ (cos_cos+sin_sin*cos_dw)*vector[2]);
 }

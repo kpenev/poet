@@ -10,7 +10,7 @@ double orbital_angular_velocity(double m1, double m2, double semimajor,
 {
 	return (deriv ? -1.5 : 1.0)*std::sqrt(
 				AstroConst::G*(m1+m2)*AstroConst::solar_mass/
-				std::pow(semimajor*AstroConst::AU, (deriv ? 5 :3))
+				std::pow(semimajor*AstroConst::solar_radius, (deriv ? 5 :3))
 			)*AstroConst::day;
 }
 

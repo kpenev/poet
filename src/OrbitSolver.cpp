@@ -80,7 +80,7 @@ int stellar_system_diff_eq(double age, const double *parameters,
 		inclination=parameters[1];
 		Lconv=(star_lock 
 				? orbital_angular_velocity(star.mass(), planet.mass(),
-					parameters[0]*Rsun_AU)*
+					parameters[0])*
 				  star.moment_of_inertia(age, convective)
 				: parameters[2]);
 		if(std::isnan(inclination) || std::isnan(Lconv) || 
@@ -990,7 +990,8 @@ EvolModeType OrbitSolver::critical_age_evol_mode(double age,
 	if(star_lock) in_sync=0;
 	else {
 		double wconv, worb=orbital_angular_velocity(
-				system.get_planet().mass(), star.mass(), initial_semimajor);
+				system.get_planet().mass(), star.mass(),
+				initial_semimajor/Rsun_AU);
 		if(evolution_mode==LOCKED_TO_DISK) {
 			wconv=star.disk_lock_frequency();
 		} else if(evolution_mode==NO_PLANET) {
@@ -1139,14 +1140,14 @@ void OrbitSolver::parse_orbit_or_derivatives(EvolModeType evolution_mode,
 				   mstar=star.mass(),
 				   wconv=star_lock.spin(orbital_angular_velocity(mstar,
 							   mplanet,
-							   (evolution ? a : orbit_deriv[0])*Rsun_AU)),
+							   (evolution ? a : orbit_deriv[0]))),
 				   Iconv=star.moment_of_inertia(age, convective);
 			if(evolution) {
 				double dIconv_dt=star.moment_of_inertia_deriv(age,
 															  convective),
 					   dwconv_da=star_lock.spin(orbital_angular_velocity(
-								   mstar, mplanet, a*Rsun_AU, true));
-				Lconv=dwconv_da*Iconv*orbit_deriv[0]*Rsun_AU+wconv*dIconv_dt;
+								   mstar, mplanet, a, true));
+				Lconv=dwconv_da*Iconv*orbit_deriv[0]+wconv*dIconv_dt;
 			} else {
 				Lconv=wconv*Iconv;
 			}
@@ -1336,7 +1337,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 					? 
 					initial_lock.spin(
 						orbital_angular_velocity(planet.mass(), star.mass(),
-							start_orbit[0]*Rsun_AU))
+							start_orbit[0]))
 					:
 					star.spin_frequency(start_age, convective,
 						start_orbit[1])

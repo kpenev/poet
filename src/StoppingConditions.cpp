@@ -72,7 +72,7 @@ std::valarray<double> BreakLockCondition::operator()(
 	const Star &star=system.get_star();
 	double mplanet=system.get_planet().mass(),
 		   wconv=orbital_angular_velocity(star.mass(), mplanet,
-				   orbit[0]*Rsun_AU),
+				   orbit[0]),
 		   Lconv=wconv*star.moment_of_inertia(convective),
 		   wind_torque=star.wind_torque(wconv, 0),
 		   coupling_z_torque=star.differential_rotation_torque_angmom(Lconv,
@@ -115,7 +115,7 @@ double convective_frequency(const StellarSystem &system,
 	if(evol_mode==BINARY) {
 		if(orbit.size()==4)
 			return orbital_angular_velocity(system.get_star().mass(),
-					system.get_planet().mass(), orbit[0]*Rsun_AU);
+					system.get_planet().mass(), orbit[0]);
 		else {
 #ifdef DEBUG
 			assert(orbit.size()==5);

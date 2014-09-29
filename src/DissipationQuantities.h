@@ -48,13 +48,19 @@ namespace Dissipation {
 		///The quantity itself, undifferentiated.
 		NO_DERIV, 
 
-		///The derivative w.r.t. age, but the only time dependence is through
-		///the modified phase lag function. The full age derivative can be
-		///reconstructed lated by adding the radius derivative times the rate
-		///of change of the radius and similarly for the moment of inertia.
+		///\brief The derivative w.r.t. age, excluding the dependence through
+		///the body's radius and the moments of inertia, but including all
+		///else.
+		///
+		///The full age derivative can be reconstructed later by adding the
+		///radius derivative times the rate of change of the radius and
+		///similarly for the moments of inertia of the zones involved.
 		AGE,
 
-		///The derivative w.r.t. the spin frequency of a dissipating zone.
+		///\brief The derivative w.r.t. the spin frequency of a dissipating
+		///zone.
+		///
+		///Holding the moment of inertia constant.
 		SPIN_FREQUENCY,
 
 		///The derivative w.r.t. the orbital frequency.
@@ -74,15 +80,23 @@ namespace Dissipation {
 		///torques and those below are not.
 		END_DIMENSIONLESS_DERIV,
 
-		///The derivative w.r.t. the radius of the body in \f$R_\odot\f$.
-		RADIUS=END_DIMENSIONLESS_DERIV,
+		///The derivative w.r.t. the argument of periapsis of the orbit in
+		///the equatorial plane a given zone.
+		PERIAPSIS=END_DIMENSIONLESS_DERIV,
 
-		///The derivative w.r.t. the moment of inertia o the body in
+		///The derivative w.r.t. the radius of the body in \f$R_\odot\f$.
+		RADIUS,
+
+		///The derivative w.r.t. the moment of inertia of the zone in
 		/// \f$M_\odot R_\odot^2\f$.
+		///
+		///Holding the angular momentum constant.
 		MOMENT_OF_INERTIA,
 				
-		///The derivative w.r.t. the spin angular momentum in
+		///\brief The derivative w.r.t. the spin angular momentum in
 		/// \f$M_\odot R_\odot^2 rad/day\f$.
+		///
+		///Holding the moment of inertia constant but not the spin frequency.
 		SPIN_ANGMOM,
 		
 		///The derivative w.r.t. the semimajor axis in AU.
@@ -91,6 +105,14 @@ namespace Dissipation {
 		///The total number of derivatives supported
 		NUM_DERIVATIVES};
 };
+
+bool zone_specific(Dissipation::Derivative deriv)
+{
+	return (deriv==Dissipation::SPIN_FREQUENCY ||
+			deriv==Dissipation::INCLINATION ||
+			deriv==Dissipation::PERIAPSIS ||
+			deriv==Dissipation::MOMENT_OF_INERTIA ||
+			deriv==Dissipation::SPIN_ANGMOM);
 
 ///More civilized output for Dissipation::Quantity variables.
 std::ostream &operator<<(std::ostream &os,

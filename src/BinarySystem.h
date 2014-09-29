@@ -1,12 +1,12 @@
 /**\file
  *
- * \brief Defines the StellarSystem class.
+ * \brief Defines the BinarySystem class.
  * 
  * \ingroup StellarSystem_group
  */
 
-#ifndef __STELLAR_SYSTEM_H
-#define __STELLAR_SYSTEM_H
+#ifndef __BINARY_SYSTEM_H
+#define __BINARY_SYSTEM_H
 
 #include "StellarDissipation.h"
 #include "Planet.h"
@@ -21,24 +21,29 @@
 #include <limits>
 #include <iostream>
 
-///\brief Describes a planet-star system.
+///\brief Describes a system of two bodies orbiting each other.
 ///
 ///The following variable are referred to throughout:
 /// - age: Gyr
-/// - a: semimajor axis in \f$R_\odot\f$
-/// - inclination: angle between surface spin and orbital angular momentum in
-///   radians
-/// - Lconv: Convective zone angular momentum in
-///   \f$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
-/// - Lrad_parallel: Radiative zone angular momentum component along Lconv in
-///   the same units as Lconv
-/// - Lrad_perpendicular: Radiative zone angular momentum component along the
-///   x axis of the orbital evolution in the same units as Lconv.
+/// - a: semimajor axis in \f$R_\odot\f$ (average distance between the
+///      bodies)
+/// - eccentricity: the eccentricity of the orbit 
+/// - Eorb: the energy of the orbit (potential + kinetic) treating the two
+///         bodies as point masses in \f$GM_\odot^2/R_\odot\f$.
+/// - Lorb: the angular momentum of the orbit treating the two bodies as
+///         point masses in
+///         \f$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$
+/// - inclination_i: The inclination of a single zone of a single body
+///					 relative to the orbit in radians.
+/// - w_i: argument of periapsis of the orbit for a single zone of a single
+///        body with a plane of reference perpendicular to that zone's spin.
+/// - S_i: spin angular momentum of a single zone of a single body in 
+///        \f$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$.
 ///
 ///All rates of change are per Gyr
 ///
-///\ingroup StellarSystem_group
-class StellarSystem {
+///\ingroup BinarySystem_group
+class BinarySystem {
 private:
 	///The name of the stellar system (e.g. "HAT-P-20")
 	std::string __name;
