@@ -200,27 +200,98 @@ void DissipatingZone::set_orbit(double orbital_frequency,
 
 double DissipatingZone::periapsis_evolution(
 		const Eigen::Vector3d &orbit_torque,
-		const Eigen::Vector3d &external_torque,
+		const Eigen::Vector3d &zone_torque,
 		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 		const Eigen::Vector3d &orbit_torque_deriv,
-		const Eigen::Vector3d &external_torque_deriv)
+		const Eigen::Vector3d &zone_torque_deriv)
 {
 	double sin_inc=std::sin(inclination()),
 		   cos_inc=std::cos(inclination()),
-	if(deriv==Dissipation::NO_DERIV || deriv==Dissipation::AGE) {
-		double zone_y_torque=tidal_torque_y(deriv),
-			   orbit_y_torque=-zone_y_torque;
-		if(deriv==Dissipation::NO_DERIV) {
-			orbit_y_torque+=+orbit_torque[2];
-			zone_y_torque+=external_torque[2];
-		} else {
-			orbit_y_torque+=orbit_torque_deriv[2];
-			zone_y_torque+=external_torque_deriv[2];
-		}
-		return -orbit_y_torque*cos_inc/(__orbital_angmom*sin_inc)
-			   +
-			   zone_y_torque/(angular_momentum()*sin_inc);
+		   zone_y_torque, orbit_y_torque;
+	if(deriv==Dissipation::NO_DERIV) {
+		orbit_y_torque=orbit_torque[2];
+		zone_y_torque=zone_torque[2];
+	} else {
+		orbit_y_torque=orbit_torque_deriv[2];
+		zone_y_torque=zone_torque_deriv[2];
 	}
+	double result=-orbit_y_torque*cos_inc/(__orbital_angmom*sin_inc)
+				  +
+				  zone_y_torque/(angular_momentum()*sin_inc);
+	if(		deriv==Dissipation::NO_DERIV 
+			|| deriv==Dissipation::AGE 
+			|| deriv==Dissipation::ECCENTRICITY
+			|| deriv==Dissipation::PERIAPSIS
+			|| deriv==Dissipation::RADIUS
+			|| deriv==Dissipation::MOMENT_OF_INERTIA
+			|| deriv==Dissipation::SEMIMAJOR)
+		return result;
+	else if(deriv==Dissipation::SPIN_FREQUENCY ||
+			deriv==Dissipation::SPIN_ANGMOM)
+		return result
+			   -
+			   zone_torque[2]/(std::pow(angular_momentum(), 2)*sin_inc)
+			   *(deriv==Dissipation::SPIN_FREQUENCY ? moment_of_inertia():1);
+	else if(deriv==INCLINATION) 
+		return result
+			   -
+			   (
+					orbit_torque[2]/__orbital_angmom
+					+
+					zone_torque[2]*cos_inc/angular_momentum()
+			   )/std::pow(sin_inc, 2);
+#ifdef DEBUG
+	else assert(false);
+#endif
+}
+
+double DissipatingZone::inclination_evolution(
+		const Eigen::Vector3d &orbit_torque,
+		const Eigen::Vector3d &zone_torque,
+		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+		const Eigen::Vector3d &orbit_torque_deriv,
+		const Eigen::Vector3d &zone_torque_deriv)
+{
+	double sin_inc=std::sin(inclination()),
+		   cos_inc=std::cos(inclination()),
+		   zone_x_torque,
+		   orbit_x_torque,
+		   orbit_z_torque;
+	if(deriv==Dissipation::NO_DERIV) {
+		orbit_x_torque=orbit_torque[1];
+		orbit_z_torque=orbit_torque[3]
+		zone_x_torque=zone_torque[1];
+	} else {
+		orbit_x_torque=orbit_torque_deriv[1];
+		orbit_z_torque=orbit_torque_deriv[3];
+		zone_x_torque=zone_torque_deriv[1];
+	}
+	double result=(orbit_x_torque*cos_inc-orbit_z_torque*sin_inc)
+			      /__orbital_angmom
+				  -
+				  zone_x_torque/angular_momentum();
+	if(		deriv==Dissipation::NO_DERIV 
+			|| deriv==Dissipation::AGE 
+			|| deriv==Dissipation::ECCENTRICITY
+			|| deriv==Dissipation::PERIAPSIS
+			|| deriv==Dissipation::RADIUS
+			|| deriv==Dissipation::MOMENT_OF_INERTIA
+			|| deriv==Dissipation::SEMIMAJOR)
+		return result;
+	else if(deriv==Dissipation::SPIN_FREQUENCY ||
+			deriv==Dissipation::SPIN_ANGMOM)
+		return result
+			   +
+			   zone_torque[1]/std::pow(angular_momentum(), 2)
+			   *(deriv==Dissipation::SPIN_FREQUENCY ? moment_of_inertia():1);
+	else if(deriv==INCLINATION)
+		return result
+			   +
+			   (orbit_torque[3]*cos_inc + orbit_torque[1]*sin_inc)
+			   /angular_momentum();
+#ifdef DEBUG
+	else assert(false);
+#endif
 }
 
 Eigen::Vector3D zone_to_zone_transform(const DissipatingZone &from_zone,

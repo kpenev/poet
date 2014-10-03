@@ -150,10 +150,10 @@ public:
 			///coordinate system.
 			const Eigen::Vector3d &orbit_torque,
 
-			///All non-tidal torques acting on this zone (i.e. angular
+			///All torques acting on this zone (i.e. tidale, angular
 			///momentum loss due to wind for the surface zone and coupling to
 			///neightboring zones due to differential rotation).
-			const Eigen::Vector3d &external_torque,
+			const Eigen::Vector3d &zone_torque,
 
 			///If not Dissipation::NO_DERIV, the derivative of the rate with
 			///respect to the given quantity is returned. For zone-specific
@@ -171,10 +171,10 @@ public:
 			const Eigen::Vector3d &orbit_torque_deriv=
 				Eigen::Vector3d(),
 
-			///This argument is required if dervi is neither NO_DERIV nor
-			///PERIAPSIS, and shoul contain the derivative of the external
+			///This argument is required if deriv is neither NO_DERIV nor
+			///PERIAPSIS, and shoul contain the derivative of the zone
 			///torque relative to the quantity identified by deriv.
-			const Eigen::Vector3d &external_torque_deriv=
+			const Eigen::Vector3d &zone_torque_deriv=
 				Eigen::Vector3d());
 
 	///\brief The rate at which the inclination between this zone and the 
@@ -187,10 +187,10 @@ public:
 			///coordinate system.
 			const Eigen::Vector3d &orbit_torque,
 
-			///All non-tidal torques acting on this zone (i.e. angular
+			///All torques acting on this zone (i.e. tidal, angular
 			///momentum loss due to wind for the surface zone and coupling to
 			///neightboring zones due to differential rotation).
-			const Eigen::Vector3d &external_torque,
+			const Eigen::Vector3d &zone_torque,
 			
 			///If not Dissipation::NO_DERIV, the derivative of the rate with
 			///respect to the given quantity is returned. For zone-specific
@@ -209,9 +209,9 @@ public:
 				Eigen::Vector3d(),
 
 			///This argument is required if dervi is neither NO_DERIV nor
-			///PERIAPSIS, and shoul contain the derivative of the external
+			///PERIAPSIS, and shoul contain the derivative of the zone
 			///torque relative to the quantity identified by deriv.
-			const Eigen::Vector3d &external_torque_deriv=
+			const Eigen::Vector3d &zone_torque_deriv=
 				Eigen::Vector3d());
 
 
