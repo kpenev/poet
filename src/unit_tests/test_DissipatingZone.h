@@ -169,6 +169,10 @@ public:
 	///\brief Tests the tidal torque and power against Eq. (27), (28) and
 	///(35) in Lai 2012.
 	void test_Lai();
+
+	///\brief Tests the derivatives of the periapsis and inclination 
+	///evolution rates.
+	void test_inclination_periapsis_evol_deriv();
 };
 
 #endif

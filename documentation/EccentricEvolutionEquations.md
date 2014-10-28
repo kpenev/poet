@@ -5,11 +5,11 @@ The orbital energy and angular momentum are:
 \f{eqnarray*}{
 	E&=&-\frac{GMM'}{2a}\\
 	L&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2}
-			=GMM'\sqrt{\frac{(1-e^2)MM'}{2E(M+M')}}
+			=GMM'\sqrt{\frac{(1-e^2)MM'}{(-2E)(M+M')}}
 \f}
 Hence:
 \f{eqnarray*}{
-	\dot{a}&=&-\frac{GMM'}{2E^2}\dot{E}\\
+	\dot{a}&=&a\frac{-\dot{E}}{E}\\
 	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\
 \f}
 

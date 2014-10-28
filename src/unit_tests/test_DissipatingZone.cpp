@@ -100,6 +100,7 @@ test_DissipatingZone::test_DissipatingZone(
 {
 	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
 	TEST_ADD(test_DissipatingZone::test_Lai);
+	TEST_ADD(test_DissipatingZone::test_inclination_periapsis_evol_deriv);
 }
 
 ///Tests the torque expression agains Eq. (27) in Lai 2012.
@@ -137,6 +138,10 @@ void test_DissipatingZone::test_Lai()
 			}
 		}
 	}
+}
+
+void test_DissipatingZone::test_inclination_periapsis_evol_deriv()
+{
 }
 
 #ifdef STANDALONE

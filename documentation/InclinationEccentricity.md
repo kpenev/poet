@@ -262,7 +262,7 @@ followed. The equations for the evolution of these variables are derived
 The collected equations are:
 \f{eqnarray*}{
 
-	\dot{a}&=&-\frac{GMM'}{2E^2}\dot{E}\\
+	\dot{a}&=&a\frac{-\dot{E}}{E}\\
 
 	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\
 
@@ -299,52 +299,52 @@ If the system ever gets in a state where the forcing frequency
 \f$\tilde{\omega}\equiv m'\Omega-mS^{conv}/I_{conv}\f$ for some (m,m')
 combination from the expansion of the potential (see above), and the
 corresponding \f$\sin(\Delta_{m,m'}(\tilde{\omega})\kappa_{m,m'}\f$ is
-discontinuous at zero, it is possible that a lock between the spin of the
-body and the orbit will be established. In that case let us split the tidal
-dissipation torque and power into not-locked components \f$T_x^0\f$,
-\f$T_z^0\f$ and \f$\dot{E}^0\f$ which only include terms with non-zero
-forcing frequency and two sets of locked components \f$T_x^\pm\f$,
-\f$T_z^\pm\f$ and \f$\dot{E}^\pm\f$ which only include the terms for which
-the forcing frequency is zero, where it is assumed to approach zero from
-above(+)/below(-). We can imagine taking an infinitesimally small timestep,
-during which thet not-locked components will contribute as usual, but over a
+discontinuous at zero, it is possible that locks between the spin of some
+zones of the bodies and the orbit will be established. In that case, for each
+locked zone, let us  split the tidal dissipation torque and power into 
+components \f$T_x^\pm\f$, \f$T_z^\pm\f$ and \f$\dot{E}^\pm\f$ with the (+) 
+terms assuming that the spin frequency is just above the lock and the (-)
+terms assuming it is just below. Further, let \f$T_x^0\f$, \f$T_z^0\f$ and
+\f$\dot{E}^0\f$ be the tidal torques and power due to all other zones. We can
+imagine taking an infinitesimally small timestep, during which the 
+not-locked components will contribute as usual, but over a
 fraction (\f$\lambda\f$) the timestep the (+) locked components contribute
 and over the remaining fraction (\f$1-\lambda\f$) the (-) locked components
 contribute.
 
-In order to maintain the lock, we must have:
+In order to maintain the lock, we must have for each locked zone (denoted by
+index i):
 \f{eqnarray*}{
 	&&m'\frac{\partial}{\partial t}\sqrt{\frac{G(M+M')}{a^3}}=
-		m\frac{\partial}{\partial t}\frac{S^{conv}}{I_{conv}}\\
+		m\frac{\partial}{\partial t}\frac{S_i}{I_i}\\
 	\Rightarrow && -\frac{3m'}{2}\sqrt{\frac{G(M+M')}{a^5}}\dot{a}=
-		m\frac{\dot{S}^{conv}}{I_{conv}}
+		m\frac{\dot{S}_i}{I_i}
 		-
-		m\frac{S^{conv}\dot{I}_{conv}}{I_{conv}^2}\\
-	\Rightarrow && -\frac{3 m S_{conv}}{2 I_{conv}}\frac{\dot{a}}{a} =
-		m\frac{\dot{S}^{conv}}{I^{conv}}
+		m\frac{S_i\dot{I}_i}{I_i^2}\\
+	\Rightarrow && -\frac{3 m S_i}{2 I_i}\frac{\dot{a}}{a} =
+		m\frac{\dot{S}_i}{I_i}
 		-
-		m\frac{S^{conv}\dot{I}_{conv}}{I_{conv}^2}\\
+		m\frac{S_i\dot{I}_i}{I_i^2}\\
 	\Rightarrow && -\frac{3}{2}\frac{\dot{a}}{a}=
-		\frac{\dot{S}^{conv}}{S^{conv}}
-		-
-		\frac{\dot{I}_{conv}}{I_{conv}}\\
-	\Rightarrow && -\frac{3}{2}\frac{\dot{E}^0 + \lambda\dot{E}^+ +
-									 (1-\lambda)\dot{E}^-}
-								{E_{orb}}
+		\frac{\dot{S}_i}{S_i} - \frac{\dot{I}_i}{I}\\
+	\Rightarrow && -\frac{3}{2}\frac{\dot{E}^0 + 
+									 \sum_k\left[\lambda_k\dot{E}_k^+ +
+									 (1-\lambda_k)\dot{E}_k^-\right]}{E}
 				   =
-				   \frac{\dot{I}_{conv}}{I_{conv}}
-				   +
-				   \frac{T_z^{coup} + T^{wind} + T_z^0 + \lambda T_z^+ +
-				   		 (1-\lambda)T_z^-}
-				   {S^{conv}}\\
-	\Rightarrow && \lambda\left(\frac{T_z^- - T_z^+}{S^{conv}}
-								+
-								1.5\frac{\dot{E}^- - \dot{E}^+}{E_{orb}}
-						  \right)
-					=\frac{\dot{I}_{conv}}{I_{conv}}
-				   +
-				   \frac{T_z^{coup} + T^{wind} + T_z^0 + T_z^-}{S^{conv}}
-				   +\frac{3}{2}\frac{\dot{E}^0+\dot{E}^-}{E_{orb}}
+				   \frac{\dot{I_i}}{I_i}
+				   -
+				   \frac{\dot{S}_i^0 + \lambda_i\dot{S}_i^+ 
+						 + (1-\lambda_i)\dot{S}_i^-}{S_i}\\
+	\Rightarrow && \lambda_i\left(\frac{\dot{S}_i^+ 
+								  -
+							      \dot{S}_i^-}{S_i}\right)
+								-\sum_k \lambda_k
+								\left(1.5\frac{\dot{E}_k^+ - \dot{E}_k^-}{E}
+								\right)
+					=\frac{\dot{I_i}}{I_i}
+				   -
+				   \frac{\dot{S}_i^0 + \dot{S}_i^-}{S_i}
+				   +\frac{3}{2}\frac{\dot{E}^0+\sum_k\dot{E}_k^-}{E}
 \f}
 And the lock is maintained as long as \f$0<\lambda<1\f$.
 
