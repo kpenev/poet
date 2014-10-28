@@ -22,131 +22,160 @@ std::ostream &operator<<(std::ostream &os,
 }
 
 std::valarray<double> SynchronizedCondition::operator()(
-		const std::valarray<double> &,
-		const std::valarray<double> &derivatives,
-		const TidalDissipation &tidal_dissipation,
-		const StellarSystem &system,
-		std::valarray<double> &stop_deriv,
-		EvolModeType) const
+		EvolModeType, const double *orbit, const double *derivatives,
+		std::valarray<double> &stop_deriv) const
 {
-	const Star &star=system.get_star();
-	const Planet &planet=system.get_planet();
-	double worb=tidal_dissipation.orbit_frequency(),
-		   Lspin=tidal_dissipation.spin_angular_momentum(__body_index),
-		   wspin=(__body_index==0 ? star.spin_frequency(envelope, Lspin) :
-				   planet.spin_frequency(system.age(), Lspin));
+#ifdef DEBUG
+	if(__system.number_locked_zones())
+		assert(orbit[0]==__system.semimajor());
+	else assert(std::pow(orbit[0], 1.0/6.5)==__system.semimajor());
+#endif
+	double m1=__system.primary().mass(), 
+		   m2=__system.secondary().mass(),
+		   semimajor=__system.semimajor(),
+		   worb=orbital_angular_velocity(m1, m2, semimajor),
+		   wspin=__zone.spin_frequency(),
+		   dworb_dt=orbital_angular_velocity(m1, m2, semimajor, true)
+			   *
+			   derivatives[0];
 
-	if(derivatives.size()>0) {
-		double dwspin_dt=
-			tidal_dissipation(__body_index, Dissipation::TORQUEZ)*
-			(__body_index==0
-			 ? star.spin_frequency_angmom_deriv(convective, Lspin) 
-			 : planet.spin_frequency_angmom_deriv(system.age(), Lspin)),
-			   dworb_dt=tidal_dissipation(0, Dissipation::ORBIT_SPINUP)
-				   +
-				   tidal_dissipation(1, Dissipation::ORBIT_SPINUP);
-		stop_deriv.resize(1, 
-				((wspin*dworb_dt-dwspin_dt*worb)/std::pow(worb, 2)*
-				 __spin_freq_mult)/__orbital_freq_mult);
-	} else stop_deriv.resize(1, NaN);
+	unsigned angmom_ind=1+2*__system.number_zones();
+	if(!__primary) angmom_ind+=__system.primary().number_zones()
+		-
+			__system.primary.number_locked_zones();
+	for(unsigned i=0; i<__zone_index; ++i)
+		if(!__system.secondary().zone(i).locked()) ++angmom_ind;
+
+	double dwspin_dt=(derivatives[angmom_ind]
+					  -
+					  __zone.moment_of_inertia(1)*wspin)
+					/__zone.moment_of_inertia();
+	if(__system.number_locked_zones()) 
+		dworb_dt/=(6.5*orbit[0]/semimajor);
+	stop_deriv.resize(1, 
+			((wspin*dworb_dt-dwspin_dt*worb)/std::pow(worb, 2)*
+			 __spin_freq_mult)/__orbital_freq_mult);
 	return std::valarray<double>(
 			(__orbital_freq_mult*worb - wspin*__spin_freq_mult)/worb, 1);
 }
 
 std::valarray<double> BreakLockCondition::operator()(
-		const std::valarray<double> &orbit,
-		const std::valarray<double> &derivatives,
-		const TidalDissipation &tidal_dissipation,
-		const StellarSystem &system, 
-		std::valarray<double> &stop_deriv,
 		EvolModeType
 #ifdef DEBUG
 		evol_mode
 #endif
-		) const
+		,
+		const double *orbit,
+		const double *derivatives,
+		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
 	assert(evol_mode==BINARY);
-	assert(derivatives.size()==4);
 #endif
-	const Star &star=system.get_star();
-	double mplanet=system.get_planet().mass(),
-		   wconv=orbital_angular_velocity(star.mass(), mplanet,
-				   orbit[0]),
-		   Lconv=wconv*star.moment_of_inertia(convective),
-		   wind_torque=star.wind_torque(wconv, 0),
-		   coupling_z_torque=star.differential_rotation_torque_angmom(Lconv,
-				   std::complex<double>(orbit[2], orbit[3])).real(),
-		   above_fraction=system.above_lock_fraction(tidal_dissipation,
-				   coupling_z_torque - wind_torque);
-	stop_deriv.resize(2, NaN);
+	double frac=__system.above_lock_fraction(__locked_zone_index),
+		   dfrac_dt=__system.above_lock_fraction(__locked_zone_index,
+				   								 Dissipation::AGE)
+			   		+
+					__system.above_lock_fraction(__locked_zone_index,
+												 Dissipation::RADIUS, 0,
+												 false)
+					*__system.primary().radius(1)
+					+
+					__system.above_lock_fraction(__locked_zone_index,
+												 Dissipation::RADIUS, 0,
+												 true)
+					*__system.secondary().radius(1);
+	unsigned deriv_zone_ind=0, unlocked_zone_ind=0;
+	double *inclination_rate=derivatives+2,
+		   *periapsis_rate=inclination_rate+__system.number_zones(),
+		   *angmom_rate=periapsis_rate+__system.number_zones()-1;
+	for(int i=0; i<2; ++i) {
+		DissipatingBody &body=(i==0 ? __system.primary()
+									: __system.secondary());
+		for(unsigned zone_ind=0; zone_ind<body.number_zones(); ++i) {
+			double dangmom_dt;
+			DissipatingZone &zone=body.zone(zone_ind);
+			if(!zone.locked()) dangmom_dt=angmom_rate[unlocked_zone_ind++];
+			else {
+				double dworb_dt=orbital_angular_velocity(m1, m2, semimajor,
+														 true)
+								*derivatives[0];
+				dangmom_dt=zone.moment_of_inertia(1)*zone.spin_frequency()
+						   +
+						   zone.moment_of_inertia()
+						   *zone.lock_held().spin(dworb_dt);
+			}
+			dfrac_dt+=__system.above_lock_fraction(
+					__locked_zone_index, Dissipation::MOMENT_OF_INERTIA,
+					deriv_zone_ind)*zone.moment_of_inertia(1)
+				+
+				__system.above_lock_fraction(
+						__locked_zone_index, Dissipation::INCLINATION,
+						deriv_zone_ind)*inclination_rate[deriv_zone_ind];
+				+
+				__system.above_lock_fraction(
+						__locked_zone_index, Dissipation::SPIN_ANGMOM,
+						deriv_zone_ind)*inclination_rate[deriv_zone_ind]
+				*dangmom_dt;
+			if(deriv_zone_ind) dfract_dt+=__system.above_lock_fraction(
+					__locked_zone_index, Dissipation::PERIAPSIS,
+					deriv_zone_ind)*periapsis_rate[deriv_zone_ind-1];
+			++deriv_zone_ind;
+		}
+
+	}
+	stop_deriv.resize(2, dfrac_dt);
 	std::valarray<double> result(2);
-	result[0]=above_fraction;
-	result[1]=above_fraction-1.0;
+	result[0]=frac;
+	result[1]=frac-1.0;
 	return result;
 }
 
-std::valarray<double> PlanetDeathCondition::operator()(
-		const std::valarray<double> &,
-		const std::valarray<double> &,
-		const TidalDissipation &tidal_dissipation,
-		const StellarSystem &system,
-		std::valarray<double> &stop_deriv,
+std::valarray<double> SecondaryDeathCondition::operator()(
 		EvolModeType
 #ifdef DEBUG
 		evol_mode
 #endif
-		) const
+		,
+		const double *orbit, const double *derivatives,
+		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
 	assert(evol_mode==BINARY);
 #endif
-
-	double min_semimajor=system.get_planet().minimum_semimajor(system.age());
-	stop_deriv.resize(1, NaN);
-	if(std::isinf(min_semimajor)) return std::valarray<double>(-1.0, 1);
+	double min_semimajor=__system.minimum_semimajor(),
+		   semimajor=__system.semimajor(),
+		   dsemimajor_dt=derivatives[0];
+	if(__system.number_locked_zones()==0) 
+		dsemimajor_dt*=semimajor/(6.5*orbit[0]);
+	stop_deriv.resize(1,(dsemimajor_dt*min_semimajor
+						  -semimajor*__system.minimum_semimajor(true))
+						/std::pow(min_semimajor, 2));
 	return std::valarray<double>(
-			(tidal_dissipation.semimajor()-min_semimajor)/min_semimajor, 1);
-}
-
-double convective_frequency(const StellarSystem &system, 
-		const std::valarray<double> &orbit, EvolModeType evol_mode)
-{
-	if(evol_mode==BINARY) {
-		if(orbit.size()==4)
-			return orbital_angular_velocity(system.get_star().mass(),
-					system.get_planet().mass(), orbit[0]);
-		else {
-#ifdef DEBUG
-			assert(orbit.size()==5);
-#endif
-			return system.get_star().spin_frequency(convective, orbit[2]);
-		}
-	} else if(evol_mode==NO_PLANET)
-		return system.get_star().spin_frequency(convective, orbit[0]);
-	else if(evol_mode==LOCKED_TO_DISK)
-		throw Error::BadFunctionArguments("The convective spin frequency"
-				" is not defined for disk locked evolution mode.");
-	else throw Error::BadFunctionArguments("Unrecognized wind saturation "
-			"argument");
+			(semimajor-min_semimajor)/min_semimajor, 1);
 }
 
 std::valarray<double> WindSaturationCondition::operator()(
-		const std::valarray<double> &orbit,
-		//Accepts but never uses derivatives
-		const std::valarray<double> &,
-		//Accepts but never uses tidal dissipation
-		const TidalDissipation &,
-		const StellarSystem &system,
-		std::valarray<double> &stop_deriv,
+		const double *orbit,
+		const double *derivatives,
+		std::valarray<double> &stop_deriv
 		EvolModeType evol_mode) const
 {
-	double wsat=system.get_star().wind_saturation_frequency(),
-		   wconv=convective_frequency(system, orbit, evol_mode);
+	unsigned num_zones=__body.number_zones()+__other_body.number_zones();
+	double wsurf=__body.spin_frequency(),
+		   surf_angmom_deriv=stop_deriv[1 + 2*num_zones
+			   							+
+			   							(primary
+										 ? 0
+										 : __other_body.number_zones()
+										 -__other_body.number_locked_zones()
+										)];
 
-	stop_deriv.resize(1, NaN);
+	stop_deriv.resize(1,
+		   	(surf_angmom_deriv - __body.zone(0).moment_of_inertia(1)*wsurf)
+			/(__body.zone(0).moment_of_inertia()*wsat));
 	if(std::isinf(wsat)) return std::valarray<double>(-1.0, 1);
-	return std::valarray<double>((wconv-wsat)/wsat, 1);
+	return std::valarray<double>((wsurf-wsat)/wsat, 1);
 }
 
 void CombinedStoppingCondition::update_meta_information(
@@ -234,12 +263,10 @@ CombinedStoppingCondition::~CombinedStoppingCondition()
 }
 
 std::valarray<double> CombinedStoppingCondition::operator()(
+		EvolModeType evol_mode,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
-		const TidalDissipation &dissipation,
-		const StellarSystem &system,
-		std::valarray<double> &stop_deriv,
-		EvolModeType evol_mode) const
+		std::valarray<double> &stop_deriv) const
 {
 	std::valarray<double> result(__num_subconditions);
 	stop_deriv.resize(__num_subconditions, NaN);
@@ -255,4 +282,27 @@ std::valarray<double> CombinedStoppingCondition::operator()(
 		add_subcondition_values(*cond, orbit, derivatives, dissipation,
 				system, evol_mode, i, result, stop_deriv);
 	return result;
+}
+
+void CombinedStoppingCondition::reached(unsigned index, short deriv_sign)
+{
+	num_nonsync_subcond=__num_subconditions-sync_sub_conditions.size();
+	if(index<num_nonsync_subcond) {
+		std::vector<const StoppingCondition *>::iterator 
+			sc_iter=__generic_sub_conditions.begin();
+		while(index>=sc_iter->num_subconditions()) {
+#ifdef DEBUG
+			assert(sc_iter!=__generic_sub_conditions.end());
+#endif
+			index-=sc_iter->num_subconditions();
+			++sc_iter;
+		}
+		sc_iter->reached(index, deriv_sign);
+	} else {
+#ifdef DEBUG
+		assert(index-num_nonsync_subcond<__sync_sub_conditions.size());
+#endif
+		__sync_sub_conditions[index-num_nonsync_subcond].reached(
+				0, deriv_sign);
+	}
 }

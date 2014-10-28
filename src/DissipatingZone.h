@@ -1,4 +1,5 @@
 #ifndef __DISSIPATING_ZONE_H
+#define __DISSIPATING_ZONE_H
 
 /**\file
  *
@@ -15,6 +16,9 @@
 ///in phase with the tidal potential.
 class DissipatingZone {
 private:
+	///The expansion order in eccentricity to use.
+	unsigned __e_order;
+
 	///\brief The constant coefficiients in \f$\mathcal{U}_{m,m'}\f$ of Lai
 	///(2012).
 	///
@@ -35,9 +39,21 @@ private:
 
 	///The inclination with which __Ummp was last filled.
 	double __Ummp_inclination,
+
+		   ///The inclination of the zone relative to the orbit.
+		   __inclination,
+
+		   ///The periapsis of the orbit in the equatorial frame of the zone.
+		   __periapsis,
+
+		   ///The current angular momentum of the zone.
+		   __angular_momentum,
 		   
-		   ///The spin frequency of the zone.
+		   ///The current spin frequency of the zone.
 		   __spin_frequency,
+
+		   ///The orbital frequency (rad/day).
+		   __orbital_frequency,
 		   
 		   ///The absolute value of the angular momentum of the orbit
 		   __orbital_angmom;
@@ -83,6 +99,16 @@ private:
 		///See description of __power for details on the content.
 		__torque_z;
 
+	///\brief The lock the zone is currently held at (disabled if not locked).
+	///
+	///If the zone is not locked, this is one of the two terms closest to the
+	///current spin-orbit ratio and its sign is correct.
+	SpinOrbitLockInfo __lock,
+
+					  ///\brief The term closest matched by the current 
+					  ///spin-orbit ratio in the other direction from __lock.
+					  __other_lock;
+
 	///Computes the \f$\mathcal{U}_{m,m'}\f$ values and their derivatives. 
 	void fill_Umm();
 
@@ -113,17 +139,57 @@ private:
 			///Set to the eccentricity_derivative.
 			double &eccentricity_deriv);
 
-protected:
-	///To what order should eccentricity expansion be performed for the given
-	///value of the eccentricity.
-	virtual unsigned eccentricity_order(double e) const =0;
+	///\brief Ensure the forcing frequency has the correct sign per the given
+	///constraint.
+	///
+	///If the forcing frequency has the opposite sign of what is expected
+	///based on the given lock information it is set to the smallest possible
+	///value with the correct sign.
+	void fix_forcing_frequency(
+			///A tidal term for which the sign is known.
+			const SpinOrbitLockInfo &limit, 
+
+			///The multiplier of the orbital frequency in the
+			///expression for the forcing frequency.
+			int orbital_frequency_multiplier,
+
+			///The multiplier of the spin frequency in the
+			///expression for the forcing frequency.
+			int spin_frequency_multiplier,
+
+			///The current forcing frequency to be updated if it violates the
+			///limit.
+			double &forcing_frequency);
+
+	///\brief The tidal forcing frequency for the given term and orbital
+	///frequency.
+	///
+	///Makes sure the forcing frequency has the correct sign regardless of
+	///numerical round-off.
+	double forcing_frequency(
+			///The multiplier of the orbital frequency in the
+			///expression for the forcing frequency.
+			int orbital_frequency_multiplier,
+
+			///The multiplier of the spin frequency in the
+			///expression for the forcing frequency.
+			int spin_frequency_multiplier);
+
+	///\brief Updates a SpinOrbitLockInfo variable as appropriate when 
+	///decreasing the eccentricity expansion order.
+	///
+	///__e_order must already be updated to the new value.
+	void update_lock_to_lower_e_order(SpinOrbitLockInfo &lock);
 
 public:
 	DissipatingZone();
 
 	///\brief Defines the current orbit, triggering re-calculation of all
 	///quantities.
-	void set_orbit(
+	virtual void configure(
+			///The age to set the zone to.
+			double age,
+
 			///The angular velocity of the orbit in rad/day.
 			double orbital_frequency,
 
@@ -131,20 +197,35 @@ public:
 			double eccentricity,
 			
 			///The absolute value of the angular momentum of the orbit.
-			double orbital_angmom);
+			double orbital_angmom,
 
+			///The angular momentum of the spin of the zone if the zone is
+			///not locked (ignored it if is).
+			double spin_angmom,
+			
+			///The inclination of the zone relative to the orbit.
+			double inclination,
+			
+			///The argument of periapsis of the orbit in the equatorial
+			///planet of the zone.
+			double periapsis);
+
+	///\brief Defines the angular momentum of the reference zone for single
+	///body evolution.
+	void set_reference_zone_angmom(double reference_angmom)
+	{__orbital_angmom=reference_angmom;}
 
 	///The angle between the angular momenta of the zone and the orbit.
-	virtual double inclination() const =0;
+	double inclination() const {return __inclination;}
 
 	///The argument of periapsis of this zone minus the reference zone's
-	virtual double periapsis() const =0;
+	double periapsis() const {return __periapsis;}
 
-	///\brief The rate at which the periapsis of the orbit in this zone's
-	///equatorial plane is changing.
+	///\brief The rate at which the periapsis of the orbit/reference zone in
+	///this zone's equatorial plane is changing.
 	///
-	///set_orbit() mest already have been called, and inclination() and
-	///spin_frequency() must be current.
+	///Either configure() or set_reference_zone_angmom() must already have
+	///been called, and inclination() and spin_frequency() must be current.
 	double periapsis_evolution(
 			///The torque on the orbit due to all other zones in this zone's
 			///coordinate system.
@@ -180,11 +261,11 @@ public:
 	///\brief The rate at which the inclination between this zone and the 
 	///orbit is changing.
 	///
-	///set_orbit() mest already have been called, and inclination() and
+	///configure() must already have been called, and inclination() and
 	///spin_frequency() must be current.
 	double inclination_evolution(
-			///The torque on the orbit due to all other zones in this zone's
-			///coordinate system.
+			///The torque on the orbit or reference zone due all
+			///zones (including this one) in this zone's coordinate system.
 			const Eigen::Vector3d &orbit_torque,
 
 			///All torques acting on this zone (i.e. tidal, angular
@@ -197,13 +278,13 @@ public:
 			///quantities, derivative with respect to this zone's quantity is
 			///computed. If derivatives with respect to other zone's
 			///quantities are required, those only come in through the orbit
-			///torque and external torque, so pass the corresponding
-			///derivative instead of the actual torques, and ignore this and
-			///subsequent arguments.
+			///torque and zone torque, so pass the corresponding derivative
+			///instead of the actual torques, and ignore this and subsequent
+			///arguments.
 			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 			
-			///This argument is required if dervi is neither NO_DERIV nor
-			///PERIAPSIS, and shoul contain the derivative of the orbital
+			///This argument is required if deriv is neither NO_DERIV nor
+			///PERIAPSIS, and should contain the derivative of the orbital
 			///torque relative to the quantity identified by deriv.
 			const Eigen::Vector3d &orbit_torque_deriv=
 				Eigen::Vector3d(),
@@ -217,15 +298,43 @@ public:
 
 	///\brief Should return true iff the given term is presently locked.
 	virtual bool locked(int orbital_frequency_multiplier,
-			int spin_frequency_multiplier) const =0;
+			int spin_frequency_multiplier) const
+	{return __lock(orbital_frequency_multiplier, spin_frequency_multiplier);}
+
+	///Should return true iff any tidal term is locked.
+	virtual bool locked() const
+	{return __lock;}
+
+	///The currntly held lock.
+	const SpinOrbitLockInfo &lock_held() {return __lock;}
+
+	///\brief Update the zone as necessary when the held lock disappears from
+	///the expansion.
+	void release_lock();
+
+	///Update the zone as necessary when the held lock is broken.
+	void release_lock(
+			///The direction that the spin will evolve toward in the future.
+			short direction);
+
+	///Locks the zone spin to the orbit in the given ratio.
+	void set_lock(int orbital_frequency_multiplier,
+			int spin_frequency_multiplier)
+	{
+#ifdef DEBUG
+		assert(!__lock);
+#endif
+		__lock.set_lock(orbital_frequency_multiplier,
+				spin_frequency_multiplier);
+	}
 
 	///\brief Should return the tidal phase lag time the love number for the
 	///given tidal term (or one of its derivatives).
 	///
-	///In case the specified term is in a lock, it should return the phase
-	///lag for the case of the spin frequency approaching the lock from
+	///In case the forcing frequency is exactly zero, it should return the
+	///phase lag for the case of the spin frequency approaching the term from
 	///below. The lag for spin frequency approaching from above should be
-	///written to above_lock_value. If the term is not locked 
+	///written to above_lock_value. If the forcing frequency is non-zero, 
 	///leave above_lock_value untouched.
 	virtual double modified_phase_lag(
 			///The multiplier of the orbital frequency in the
@@ -236,8 +345,8 @@ public:
 			///expression for the forcing frequency.
 			int spin_frequency_multiplier,
 			
-			///The current orbital frequency in rad/day
-			double orbital_frequency,
+			///The current forcing frequency in rad/day.
+			double forcing_frequency,
 
 			///The return value should be either the phase lag itself
 			///(NO_DERIV) or its derivative w.r.t. the specified quantity.
@@ -270,54 +379,122 @@ public:
 			/// - 1 The rate of change of the moment of inertia in 
 			///     \f$M_\odot R_\odot^2/Gyr\f$
 			/// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
-			int deriv_order=0);
+			int deriv_order=0) const =0;
 
 	///\brief The spin frequency of the given zone.
 	double spin_frequency() const {return __spin_frequency;}
 
 	///The angular momentum of the given zone in \f$M_\odot R_\odot^2\f$.
-	double angular_momentum() const 
-	{return __spin_frequency*moment_of_inertia();}
-
-	///\brief Set the spin frequency of the given zone.
-	void set_spin_frequency(double spin_frequency)
-	{__spin_frequency=spin_frequency;}
+	double angular_momentum() const {return __angular_momentum;}
 
 	///\brief The dimensionless tidal power or one of its derivatives.
 	double tidal_power(
-			///What to return
-			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-
 			///If a spin-orbit lock is in effect and the time-lag is
 			///discontinuous near zero forcing frequency, two possible values
 			///can be calculated, assuming that the zone spin frequency
-			///approaches the lock from below (default) or from above.
-			bool above=false) const
+			///approaches the lock from below (false) or from above (true).
+			bool above,
+
+			///What to return
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
 	{return __power[2*deriv+(above? 1 : 0)];}
+
+	///\brief Same as tidal_power(bool, Dissipation::Derivative), but using
+	///the predefined mixe of below/above contributions.
+	double tidal_power(
+			///The fraction of the timestep to assume to have spin above the
+			///lock.
+			double above_fraction,
+
+			///The derivative required (ignores the derivative of
+			///above_fraction).
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+	{
+#ifdef DEBUG
+		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+#endif
+		return above_fraction*__power[2*deriv+1]
+			   +
+			   (1.0-above_fraction)*__power[2*deriv];
+	}
 
 	///\brief The dimensionless tidal torque along x.
 	///
 	///See tidal_power() for a description of the arguments.
-	double tidal_torque_x(
-			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-			bool above=false) const
+	double tidal_torque_x(bool above,
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
 	{return __torque_x[2*deriv+(above? 1 : 0)];}
+
+	///\brief Same as tidal_torque_x(bool, Dissipation::Derivative) but
+	//below and above contributions mixed.
+	double tidal_torque_x(
+			///The fraction of the timestep to assume to have spin above the
+			///lock.
+			double above_fraction,
+
+			///The derivative required (ignores the derivative of
+			///above_fraction).
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+	{
+#ifdef DEBUG
+		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+#endif
+		return above_fraction*__torque_x[2*deriv+1]
+			   +
+			   (1.0-above_fraction)*__torquex[2*deriv];
+	}
 
 	///\brief The dimensionless torque along y.
 	///
 	///See tidal_power() for a description of the arguments.
-	double tidal_torque_y(
-			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-			bool above=false) const
+	double tidal_torque_y(bool above,
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
 	{return __torque_y[2*deriv+(above? 1 : 0)];}
+
+	///\brief Same as tidal_torque_y(bool, Dissipation::Derivative) but
+	//below and above contributions mixed.
+	double tidal_torque_y(
+			///The fraction of the timestep to assume to have spin above the
+			///lock.
+			double above_fraction,
+
+			///The derivative required (ignores the derivative of
+			///above_fraction).
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+	{
+#ifdef DEBUG
+		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+#endif
+		return above_fraction*__torque_y[2*deriv+1]
+			   +
+			   (1.0-above_fraction)*__torquey[2*deriv];
+	}
 
 	///\brief The dimensionless tidal torque along z.
 	///
 	///See tidal_power() for a description of the arguments.
-	double tidal_torque_z(
-			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-			bool above=false) const
+	double tidal_torque_z(bool above,
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
 	{return __torque_z[2*deriv+(above? 1 : 0)];}
+
+	///\brief Same as tidal_torque_z(bool, Dissipation::Derivative) but
+	//below and above contributions mixed.
+	double tidal_torque_z(
+			///The fraction of the timestep to assume to have spin above the
+			///lock.
+			double above_fraction,
+
+			///The derivative required (ignores the derivative of
+			///above_fraction).
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+	{
+#ifdef DEBUG
+		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+#endif
+		return above_fraction*__torque_z[2*deriv+1]
+			   +
+			   (1.0-above_fraction)*__torquez[2*deriv];
+	}
 
 	///\brief Reads the eccentricity expansion coefficients of \f$p_{m,s}\f$.
 	///
@@ -349,6 +526,12 @@ public:
 			/// - 2 The second derivative in \f$M_\odot/Gyr^2\f$
 			int deriv_order=0) const =0;
 
+	///To what order should eccentricity expansion be performed for the given
+	///value of the eccentricity.
+	virtual unsigned eccentricity_order() const {return __e_order;}
+
+	///Changes the order of the eccentricity expansion performed.
+	void change_e_order(unsigned new_e_order);
 };
 
 ///Transforms a vector betwen the coordinates systems of two zones.
@@ -358,7 +541,7 @@ Eigen::Vector3D zone_to_zone_transform(
 
 		///The zone whose coordinate system we want to transform the vectors
 		///to.
-		const DissipationgZone &to_zone, 
+		const DissipatingZone &to_zone, 
 		
 		///The vector to transform.
 		const Eigen::Vector3d &vector

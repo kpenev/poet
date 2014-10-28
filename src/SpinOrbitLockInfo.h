@@ -80,7 +80,7 @@ public:
 
 			///The sign of the forcing frequency for this term.
 			///See #__lock_direction for the meaning of the values.
-			short lock_direction);
+			short lock_direction=0);
 
 	///\brief Spin frequency at exactly the lock that corresponds to the
 	///given orbital frequency.
@@ -111,7 +111,8 @@ public:
 	///Should this lock be assumed.
 	operator bool() const {return __lock_direction==0;}
 
-	///The sign of the forcing frequnecy associated with this component.
+	///\rbief The opposite of the sign of the forcing frequnecy associated
+	///with this component.
 	short lock_direction() const {return __lock_direction;}
 
 	///Set the lock direction to the given value.

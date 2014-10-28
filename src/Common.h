@@ -49,14 +49,15 @@ const double Rsun_AU=AstroConst::solar_radius/AstroConst::AU;
 ///Each corresponds to a different system of differential equations with
 ///different variables.
 enum EvolModeType {
-	///The stellar surface rotation is locked to a protoplanetary disk.
-	LOCKED_TO_DISK,
+	///\brief The surface rotation of one of the bodies is locked to a
+	///prescribed value.
+	LOCKED_SURFACE_SPIN,
 	
-	///The orbital period is shorter than the stellar spin period.
+	///Two bodies orbiting each other.
 	BINARY,
 	
-	///There is no planet in the system (only the stellar rotation evolves).
-	NO_PLANET,
+	///There is only one body in the system (only its rotation evolves).
+	SINGLE,
 
 	///Used as the mode to transform to from all other modes when storing the
 	///computed evolution.

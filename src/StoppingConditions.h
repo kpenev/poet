@@ -50,47 +50,37 @@ std::ostream &operator<<(std::ostream &os,
 ///\ingroup OrbitSolver_group
 class StoppingCondition {
 private:
-	///Not used for now.
-	double __interpolation_range;
+	///\brief The sign of the first derivative at the last zero-crossing of
+	///this condition.
+	short __last_crossing_deriv_sign;
 public:
 	///Create a generic stopping condition.
 	StoppingCondition(
 			///Not used for now.
 			double interp_range=Inf) :
-		__interpolation_range(interp_range) {}
+		__last_crossing_deriv_sign(0) {}
 
 	///\brief The values of quantities which should cross zero when the
 	///condition(s) is(are) satisfied.
 	///
 	///The input stellar system must already have its age set.
 	virtual std::valarray<double> operator()(
-			///The variables which are currently being evolved. The content
-			///depends on the evol_mode argument.
-			const std::valarray<double> &orbit, 
-
-			///The rate of change of the entries in orbit per the relevant
-			///system of differential equations.
-			const std::valarray<double> &derivatives,
-
-			///The rates of change of various quantities at the last step,
-			///split into locked and not locked components and per body.
-			///The convention to follow is that the planet should always be
-			///body2. This argument bust be ignored by all stopping
-			///conditions evaluated at evolution modes where the planet is
-			///not present.
-			const TidalDissipation &tidal_dissipation,
-
-			///The planet-star system being evolved.
-			const StellarSystem &system,
-
-			///On output contains the rate of change of the stopping
-			///sub-conditions if known, or NaN if not.
-			std::valarray<double> &stop_deriv,
-
 			///The evolution mode for which the orbit and derivatives are
 			///given. For some conditions some EvolModeType values will not
 			///make sense and will result in an exception.
-			EvolModeType evol_mode) const=0;
+			EvolModeType evol_mode,
+
+			///The variables which are currently being evolved. The content
+			///depends on the evol_mode argument.
+			const double *orbit, 
+
+			///The rate of change of the entries in orbit per the relevant
+			///system of differential equations.
+			const double *derivatives,
+
+			///On output contains the rate of change of the stopping
+			///sub-conditions if known, or NaN if not.
+			std::valarray<double> &stop_deriv) const=0;
 
 	///The number of subconditions in the current condition.
 	virtual size_t num_subconditions() const {return 1;}
@@ -110,6 +100,31 @@ public:
 	virtual double interpolation_range(unsigned =0) const
 	{return __interpolation_range;}
 
+	///\brief Called when a stopping condition has been reached by the
+	///evolution.
+	///
+	///Should perform any necessary changes to the further evolution (e.g.
+	///switch wind saturatino state or check if a spin-orbit lock can be held
+	///and lock it if so etc.).
+	virtual void reached(
+			///The sub-condition reached for composite conditions.
+			unsigned index=0,
+			
+			///The sign of the first derivative when the condition was
+			///reached.
+			short deriv_sign)
+	{
+#ifdef DEBUG
+		assert(index==0);
+#endif
+		__last_crossing_deriv_sign=deriv_sign;
+	}
+
+	///\brief The sign of the derivative at the last zero-crossing.
+	///
+	///Zero if no crossings have occurred yet.
+	short last_crossing_deriv_sign() {return __last_crossing_deriv_sign;}
+
     virtual ~StoppingCondition() {}
 };
 
@@ -123,16 +138,20 @@ public:
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
 	std::valarray<double> operator()(
-			const std::valarray<double> &,
-			const std::valarray<double> &,
-			const TidalDissipation &,
-			const StellarSystem&,
-			std::valarray<double> &stop_deriv,
-			EvolModeType) const
+			EvolModeType, const double *, const double *, 
+			std::valarray<double> &stop_deriv) const
 	{stop_deriv.resize(1, NaN); return std::valarray<double>(1, 1);}
 
 	///Identifies the condition as NO_STOP.
 	StoppingConditionType type(unsigned =0) const {return NO_STOP;}
+
+	///See StoppingCondition::reached().
+	void reached(unsigned index=0, short deriv_sign)
+	{
+#ifdef DEBUG
+		assert(false);
+#endif
+	}
 };
 
 ///\brief Satisfied when some multiples of the orbit and stellar rotation are
@@ -148,8 +167,16 @@ private:
 		__spin_freq_mult;
 
 	///Which body's spin is checked for locking.
-	short __body_index;
+	bool primary;
 
+	///Which zone is checked for locking.
+	unsigned __zone_index;
+
+	///The zone whose spin is monitored.
+	DissipatingZone &__zone;
+
+	///The binary system this locking condition is attached to.
+	BinarySystem &__system;
 public:
 	///Create the synchronization condition for the given planet.
 	SynchronizedCondition(
@@ -160,9 +187,19 @@ public:
 			int spin_freq_mult,
 
 			///Which body's spin is checked for locking.
-			short body_index) :
+			bool primary,
+			
+			///Which zone's spin is checked for locking.
+			unsigned zone_index,
+			
+			///The binary system this locking condition is attached to
+			BinarySystem &system) :
 		__orbital_freq_mult(orbital_freq_mult),
-		__spin_freq_mult(spin_freq_mult), __body_index(body_index) {}
+		__spin_freq_mult(spin_freq_mult), __primary(primary),
+		__zone_index(zone_index), 
+		__zone(primary 
+				? system.primary() : system.secondary()).zone(zone_index),
+		__system(system) {}
 
 	///\brief Returns the difference between the orbital and multiplier
 	///scaled stellar spin angular velocities divided by the orbital angular
@@ -173,13 +210,9 @@ public:
 	///
 	///The evolution mode must be FAST_PLANET, SLOW_PLANET or LOCKED_TO_DISK
 	///or NO_PLANET.
-	std::valarray<double> operator()(
-			const std::valarray<double> &orbit,
-			const std::valarray<double> &derivatives,
-			const TidalDissipation &tidal_dissipation,
-			const StellarSystem &system,
-			std::valarray<double> &stop_deriv,
-			EvolModeType evol_mode) const;
+	std::valarray<double> operator()(EvolModeType evol_mode,
+			const double *orbit, const double *derivatives,
+			std::valarray<double> &stop_deriv) const;
 
 	///Identify this as a SYNCHRONIZED condition.
 	StoppingConditionType type(unsigned =0) const {return SYNCHRONIZED;}
@@ -193,6 +226,13 @@ public:
 	///Which body's spin is checked for locking.
 	short body_index() const {return __body_index;}
 
+	///See StoppingCondition::reached().
+	void reached(unsigned index=0, short deriv_sign)
+	{
+		StoppingCondition::reached(index, deriv_sign);
+		__system.check_for_lock(__orbital_freq_mult, __spin_freq_mult,
+								__body_index, __zone_index);
+	}
 };
 
 ///\brief Satisfied when the maximum tidal torque that the planet can exert
@@ -200,7 +240,22 @@ public:
 ///
 ///\ingroup OrbitSolver_group
 class BreakLockCondition : public StoppingCondition {
+private:
+	///The binary system this condition is attached to.
+	BinarySystem &__system;
+
+	///The index within the list of locked zones of the checked zone.
+	unsigned __locked_zone_index;
 public: 
+	///Create a condition monitoring for a lock breaking.
+	BreakLockCondition(
+			///The binary system this locking condition is attached to
+			BinarySystem &system,
+
+			///Index within the list of locked zones of the checked zone.
+			unsigned locked_zone_index) :
+		__system(system), __locked_zone_index(locked_zone_index) {}
+
 	///\brief How far away from breaking the lock the system is.
 	///
 	///Two values are calculated: the fraction of the above the
@@ -215,27 +270,37 @@ public:
 	///arguments.
 	///
 	///The evolution mode must be LOCKED_TO_PLANET.
-	std::valarray<double> operator()(
-			const std::valarray<double> &orbit,
-			const std::valarray<double> &derivatives,
-			const TidalDissipation &tidal_dissipation,
-			const StellarSystem &system,
-			std::valarray<double> &stop_deriv,
-			EvolModeType evol_mode) const;
+	std::valarray<double> operator()(EvolModeType evol_mode, 
+			const double *orbit, const double *derivatives,
+			std::valarray<double> &stop_deriv) const;
 
 	///The number of subconditions in the current condition.
 	virtual size_t num_subconditions() const {return 2;}
 
 	///Identify this as a BREAK_LOCK condition.
 	StoppingConditionType type(unsigned =0) const {return BREAK_LOCK;}
+
+	///See StoppingCondition::reached().
+	void reached(unsigned index=0, short deriv_sign)
+	{
+		StoppingCondition::reached(index, deriv_sign);
+		__system.release_lock(__locked_zone_index);
+	}
 };
 
 ///\brief Satisfied when the planet enters below either the roche sphere or
 ///the stellar photosphere.
 ///
 ///\ingroup OrbitSolver_group
-class PlanetDeathCondition : public StoppingCondition {
+class SecondaryDeathCondition : public StoppingCondition {
+private:
+	///The system this condition is attached to.
+	BinarySystem __system;
 public:
+	///\brief Create a condition watching for the death of the secondary body
+	///in a system due to tidal disruption of engulfment.
+	SecondaryDeathCondition(BinarySystem &system) : __system(system) {}
+
 	///\brief The difference between the semimajor axis and the larger of
 	///the roche radius and the stellar radius divided by the latter.
 	///
@@ -245,36 +310,67 @@ public:
 	///The evolution mode must be FAST_PLANET, LOCKED_TO_PLANET or
 	///SLOW_PLANET.
 	std::valarray<double> operator()(
+			EvolModeType evol_mode,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
-			const TidalDissipation &tidal_dissipation,
-			const StellarSystem &system,
-			std::valarray<double> &stop_deriv,
-			EvolModeType evol_mode) const;
+			std::valarray<double> &stop_deriv) const;
 
 	///Identify this as a PLANET_DEATH condition.
 	StoppingConditionType type(unsigned =0) const {return PLANET_DEATH;}
+
+	///See StoppingCondition::reached().
+	void reached(unsigned index=0, short deriv_sign)
+	{__system.secondary_died();}
 };
 
-///\brief Satisfied when the stellar convective zone is spinning at exactly
+///\brief Satisfied when the surface zone of a body is spinning at exactly
 ///the wind saturation frequency.
 ///
 ///\ingroup OrbitSolver_group
 class WindSaturationCondition : public StoppingCondition {
+private:
+	///The frequency at which the wind saturates.
+	double __saturation_freq;
+
+	///The body this condition is monitoring.
+	SaturatingSkumanichWindBody &__body;
+
+	///The primary body in the system if not __body.
+	DissipatingBody &__other_body;
+
+	///Is __body we are the primary in the system?
+	bool __primary;
 public:
+	WindSaturationCondition(
+			///The body whose wind saturation we are monitoring.
+			SaturatingSkumanichWindBody &body,
+
+			///The other body in the system.
+			DissipatingBody &other_body,
+			
+			///Is the body we are monitoring the primary?
+			bool primary) :
+		__saturation_freq(body.saturation_frequency()), __body(body),
+		__other_body(other_body), __primary(primary) {}
+
 	///\brief The difference between the convective and wind saturation
 	///angular velocities divided by the latter.
 	std::valarray<double> operator()(
-			const std::valarray<double> &orbit,
-			const std::valarray<double> &derivatives,
-			const TidalDissipation &tidal_dissipation,
-			const StellarSystem &system,
-			std::valarray<double> &stop_deriv,
-			EvolModeType evol_mode) const;
+			EvolModeType evol_mode,
+			const double *orbit,
+			const double *derivatives,
+			std::valarray<double> &stop_deriv) const;
 
 	///Identify this as a WIND_SATURATION condition.
 	StoppingConditionType type(unsigned =0) const
 	{return WIND_SATURATION;}
+
+	///See StoppingCondition::reached().
+	void reached(unsigned index=0, short deriv_sign)
+	{
+		StoppingCondition::reached(index, deriv_sign);
+		__body.saturation_freq_crossed(deriv_sign);
+	}
 };
 
 ///\brief A base class for all external stopping conditions.
@@ -369,12 +465,10 @@ public:
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
 	std::valarray<double> operator()(
+			EvolModeType evol_mode,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
-			const TidalDissipation &tidal_dissipation,
-			const StellarSystem &system,
-			std::valarray<double> &stop_deriv,
-			EvolModeType evol_mode) const;
+			std::valarray<double> &stop_deriv) const;
 
 	///Disables the destruction of the subconditions when *this is destroyed.
 	void no_delete_subcond() {__delete_subcond=false;}
@@ -397,22 +491,17 @@ public:
 	double interpolation_range(unsigned index=0) const
 	{return __interpolation_ranges[index];}
 
+	virtual void reached(
+			///The sub-condition reached for composite conditions.
+			unsigned index=0,
+			
+			///The sign of the first derivative when the condition was
+			///reached.
+			short deriv_sign);
+
 	///\brief Deletes all subconditions, unless no_delete_subcond has been
 	///previously called.
 	~CombinedStoppingCondition();
 };
-
-///Returns the spin frequency of the stellar convective zone in rad/day.
-///
-///The system age must already be set.
-double convective_frequency(
-		///The stellar system.
-		const StellarSystem &system, 
-
-		///The present orbit as appropriate for the evol_mode parameter.
-		const std::valarray<double> &orbit,
-		
-		///The present evolution mode.
-		EvolModeType evol_mode);
 
 #endif

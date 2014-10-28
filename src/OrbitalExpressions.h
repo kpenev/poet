@@ -36,7 +36,10 @@ double orbital_energy(
 		double m2,
 		
 		///The semimajor axis in AU
-		double semimajor);
+		double semimajor,
+		
+		///The order of the derivative w.r.t. a required.
+		unsigned deriv_order=0);
 
 ///\brief The angular momentum of the orbit in 
 /// \f$\frac{M_\odot R_\odot^2 rad}{day}\f$.
