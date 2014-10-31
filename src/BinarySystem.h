@@ -53,6 +53,14 @@ class BinarySystem {
 private:
 	///The name of the binary system (e.g. "HAT-P-20")
 	std::string __name;
+
+	///\brief The evolution of the semimajor axis recorded by
+	///add_to_evolution() so far.
+	std::list<double> __semimajor_evolution,
+
+		///\brief The evolution of the eccentricity recorded by
+		///add_to_evolution() so far
+		__eccentricity_evolution;
 	
 	///The present age of the stellar system in Gyrs.
 	double __age,
@@ -75,6 +83,9 @@ private:
 		   ///\brief The rate at which the orbit gains angular momentum due
 		   ///to tides.
 		   __orbit_angmom_gain;
+
+	///The evolution mode from the last call to configure();
+	EvolModyType __evolution_mode;
 
 	///A list of locked zones.
 	std::list<const DissipatingZone*> __locked_zones;
@@ -136,13 +147,6 @@ private:
 	///The age of the system must already be set appropriately by
 	///configure().
 	void locked_surface_differential_equations(
-			///The present age in Gyr.
-			double age,
-			
-			///A pointer to \f$S^0_i,\ i=1\ldots\f$. All zones' spin axes are
-			///assumed aligned.
-			const double *parameters,
-			
 			///On output is set to the rates of change of \f$S^0_i\f$.
 			double *differential_equations) const;
 
@@ -162,18 +166,8 @@ private:
 	///\brief Differential equations for the rotation of the zones of body 0
 	///if no other body is present.
 	///
-	///The age of the system must already be set appropriately by
-	///configure().
-	void single_body_differential_equations(
-			///The present age in Gyr.
-			double age,
-
-			///Should contain in the following order:
-			/// -# \f$theta^0_i,\ i=1\ldots\f$ (\f$\theta^0_0\equiv0\f$)
-			/// -# \f$\omega^0_i,\ i=1\ldots\f$ (\f$\omega^0_0\equiv0\f$)
-			/// -# \f$S^0_i,\ i=0,1,\ldots\f$
-			const double *parameters,
-			
+	///configure() must already have been called.
+	void single_body_differential_equations(			
 			///On outputs is set to the rate of change of the orbital
 			///parameters.
 			double *evolution_rates) const;
@@ -181,8 +175,7 @@ private:
 	///\brief The part of the Jacobian that corresponds to the inclination
 	///evolution for single body systems.
 	///
-	///The age of the system must already be set appropriately by
-	///configure().
+	///configure() must already have been called.
 	void single_body_inclination_periapsis_jacobian(
 			///On output is set to the inclination part of the Jacobian.
 			double *inclination_param_derivs,
@@ -229,10 +222,6 @@ private:
 	///The age of the system must already be set appropriately by
 	///configure().
 	void single_body_jacobian(
-			///See same name argument to 
-			///single_body_differential_equations().
-			const double *parameters,
-			
 			///On output is set to the Jacobian.
 			double *param_derivs,
 			
@@ -365,20 +354,8 @@ private:
 			
 	///The differential equations for a system with both bodies present.
 	void binary_differential_equations(
-		///The present age in Gyr.
-		double age,
-		
-		/// -# a^6.5 if no zones are locked, a otherwise
-		/// -# e
-		/// -# \f$\theta^0_i,\ i=0,\ldots\f$
-		/// -# \f$\theta^1_i,\ i=0,\ldots\f$
-		/// -# \f$\omega^0_i,\ i=1,\ldots\f$ (\f$\omega^0_0\equiv0\f$)
-		/// -# \f$\omega^1_i,\ i=0,\ldots\f$
-		/// -# \f$S^0_i,\ i=0\ldots\f$ with zones in spin-orbit lock omitted
-		/// -# \f$S^1_i,\ i=0\ldots\f$ with zones in spin-orbit lock omitted
-		const double *parameters,
-
-		///On output is set to the rates of change of \f$S^0_i\f$.
+		///On output is set to the rates of change of the evolution
+		///variables. See differintal_equations() for details.
 		double *differential_equations);
 
 
@@ -634,6 +611,15 @@ private:
 			///evolution equations.
 			double *age_derivs) const;
 
+	///Implements fill_orbit() for LOCKED_SURFACE_SPIN evolution mode.
+	void fill_locked_surface_orbit(std::valarray<double> &orbit);
+
+	///Implements fill_orbit() for BINARY evolution mode.
+	void fill_binary_orbit(std::valarray<double> &orbit);
+
+	///Implements fill_orbit() for SINGLE evolution mode.
+	void fill_single_orbit(std::valarray<double> &orbit);
+
 public:
 	///Construct a binary system.
 	BinarySystem(
@@ -654,7 +640,7 @@ public:
 	const std::string get_name() const {return __name;}
 
 	///Sets the current state of the system.
-	void configure(
+	virtual void configure(
 			///The age to set the system to.
 			double age,
 
@@ -676,7 +662,10 @@ public:
 			///The arguments of periapsis of the zones of the bodies (same
 			///order as spin_angmom, but not including the surface zone of
 			///the first body).
-			const double *periapsis);
+			const double *periapsis,
+			
+			///The evolution mode to assume.
+			EvolModyType evolution_mode);
 
 	///Sets the current state of the system directly from the evolutino
 	///variables.
@@ -701,11 +690,13 @@ public:
 
 	///The total number of zones in both system bodies.
 	unsigned number_zones() const
-	{return __body.number_zones() + __body.number_zones();}
+	{return (__evolution_mode==BINARY
+			 ? __body1.number_zones() + __body2.number_zones()
+			 : __body1.number_zones());}
 
 	///How many zones on either body are currently locked.
 	unsigned number_locked_zones() const
-	{return __body1.number_lockde_zones() + __body2.number_locked_zones();}
+	{return __body1.number_locked_zones() + __body2.number_locked_zones();}
 
 	///The current semimajor axis of the system.
 	double semimajor() const {return __semimajor;}
@@ -767,7 +758,7 @@ public:
 			const double *parameters,
 
 			///The evolution mode to assume for the system.
-			EvolModeType evolution_mode, 
+			EvolModeType evolution_mode,
 
 			///On outputs gets filled  with the rates at which the entries in
 			///parameters evolve. It is assumed that sufficient space has
@@ -783,6 +774,9 @@ public:
 
 			///See differential_equations()
 			double *parameters, 
+
+			///The evolution mode to assume for the system.
+			EvolModeType evolution_mode,
 			
 			///The matrix of partial derivatives of the evolution rates for
 			///the parameters w.r.t. each of the parameters.
@@ -791,6 +785,14 @@ public:
 			///The partialderivatives of the evolution rates for the
 			///parameters w.r.t. age.
 			double *age_derivs);
+	
+	///\brief Fills an array with the parameters expected by 
+	///differential_equations() and jacobian(), returning the evolution mode.
+	///
+	///The system must be appropriately configure() -ed already.
+	EvolModeType fill_orbit(
+			///The orbit to fill (resized as necessary).
+			std::valarray<double> &orbit);
 
 	///\brief Check if a spin-orbit lock can be held and updates the system
 	///as necessary to calculate subsequent evolution.
@@ -818,11 +820,48 @@ public:
 			///If true the rate of change (per Gyr) is returned.
 			bool deriv) const;
 
+	///The evolution mode of last call to configure().
+	EvolModeType evolution_mode() {return __evolution_mode;}
+
 	///\brief Update the system to account for the death of the secondary.
 	///
 	///Adds the entire orbital angular momentum to the surface zone of the
 	///primary and enters single body evolution mode.
 	virtual void secondary_died();
+
+	///Appends the state defined by last configure(), to the evolution.
+	virtual void add_to_evolution();
+
+	///Resets the evolution of the system.
+	virtual void reset_evolution();
+
+	///Discards the last steps from the evolution.
+	virtual void rewind_evolution(
+			///How many steps of evolution to discard.
+			unsigned nsteps);
+
+	///\brief Conditions detecting the next possible doscontinuity in the
+	///evolution.
+	///
+	///Must be deleted when no longer necessary.
+	virtual CombinedStoppingCondition *stopping_conditions();
+
+	///\brief Change the system as necessary at the given age.
+	///
+	///Handles things like the disk dissipating and the planet forming. 
+	virtual void reached_critical_age(double age) =0;
+
+	///\brief The next age when the evolution needs to be stopped for a
+	///system change
+	virtual double next_stop_age() =0;
+
+	///The tabulated evolution of the semimajor axis so far.
+	const std::list<double> &semimajor_evolution() const
+	{return __semimajor_evolution;}
+
+	///The tabulated evolution of the eccentricity so far.
+	const std::list<double> &eccentricity_evolution() const
+	{return __eccentricity_evolution;}
 };
 
 #endif

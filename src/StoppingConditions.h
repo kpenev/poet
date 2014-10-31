@@ -50,15 +50,15 @@ std::ostream &operator<<(std::ostream &os,
 ///\ingroup OrbitSolver_group
 class StoppingCondition {
 private:
-	///\brief The sign of the first derivative at the last zero-crossing of
+	///\brief The sign of the first derivative at the next zero-crossing of
 	///this condition.
-	short __last_crossing_deriv_sign;
+	short __expected_crossing_deriv_sign;
 public:
 	///Create a generic stopping condition.
 	StoppingCondition(
 			///Not used for now.
 			double interp_range=Inf) :
-		__last_crossing_deriv_sign(0) {}
+		__expected_crossing_deriv_sign(0) {}
 
 	///\brief The values of quantities which should cross zero when the
 	///condition(s) is(are) satisfied.
@@ -72,11 +72,11 @@ public:
 
 			///The variables which are currently being evolved. The content
 			///depends on the evol_mode argument.
-			const double *orbit, 
+			const std::valarray<double> &orbit, 
 
 			///The rate of change of the entries in orbit per the relevant
 			///system of differential equations.
-			const double *derivatives,
+			const std::valarray<double> &derivatives,
 
 			///On output contains the rate of change of the stopping
 			///sub-conditions if known, or NaN if not.
@@ -87,18 +87,6 @@ public:
 
 	///What event is the index-th stopping sub-condition associated with.
 	virtual StoppingConditionType type(unsigned index=0) const=0;
-
-	///\brief Not used for now.
-	///
-	///The idea was that if a zero crossing is found only points within
-	///__interpolation_range*(t_after-t_before) should be considered, where
-	///t_after is tha age of the first point found after the zero crossing
-	///and t_before is the age of the last point before the zero crossing.
-	///In addition the interpolation should only include monotonic points, in
-	///addition if derivatives are provided, no points other than the ones at
-	///t_before and t_after should be considered.
-	virtual double interpolation_range(unsigned =0) const
-	{return __interpolation_range;}
 
 	///\brief Called when a stopping condition has been reached by the
 	///evolution.
@@ -117,13 +105,21 @@ public:
 #ifdef DEBUG
 		assert(index==0);
 #endif
-		__last_crossing_deriv_sign=deriv_sign;
+		__expected_crossing_deriv_sign=-deriv_sign;
 	}
 
-	///\brief The sign of the derivative at the last zero-crossing.
+	///\brief The expected sign of the derivative at the next zero-crossing.
 	///
-	///Zero if no crossings have occurred yet.
-	short last_crossing_deriv_sign() {return __last_crossing_deriv_sign;}
+	///Zero if unknown.
+	virtual short expected_crossing_deriv_sign(
+			///Which sub-condition.
+			unsigned index=0)
+	{
+#ifdef DEBUG
+		assert(index==0);
+#endif
+		return __expected_crossing_deriv_sign;
+	}
 
     virtual ~StoppingCondition() {}
 };
@@ -138,7 +134,8 @@ public:
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
 	std::valarray<double> operator()(
-			EvolModeType, const double *, const double *, 
+			EvolModeType, const std::valarray<double> &, 
+			const std::valarray<double> &, 
 			std::valarray<double> &stop_deriv) const
 	{stop_deriv.resize(1, NaN); return std::valarray<double>(1, 1);}
 
@@ -167,10 +164,13 @@ private:
 		__spin_freq_mult;
 
 	///Which body's spin is checked for locking.
-	bool primary;
+	bool __primary;
 
 	///Which zone is checked for locking.
 	unsigned __zone_index;
+
+	///The sign of the derivative expected at zerocrossing.
+	short __expected_crossing_deriv_sign;
 
 	///The zone whose spin is monitored.
 	DissipatingZone &__zone;
@@ -185,6 +185,10 @@ public:
 
 			///The multiplier in front of the spin frequency in the lock.
 			int spin_freq_mult,
+
+			///The sign the first derivative should have if a crossing
+			///occurs.
+			short deriv_sign,
 
 			///Which body's spin is checked for locking.
 			bool primary,
@@ -211,7 +215,8 @@ public:
 	///The evolution mode must be FAST_PLANET, SLOW_PLANET or LOCKED_TO_DISK
 	///or NO_PLANET.
 	std::valarray<double> operator()(EvolModeType evol_mode,
-			const double *orbit, const double *derivatives,
+			const std::valarray<double> &orbit,
+			const std::valarray<double> &derivatives,
 			std::valarray<double> &stop_deriv) const;
 
 	///Identify this as a SYNCHRONIZED condition.
@@ -229,9 +234,25 @@ public:
 	///See StoppingCondition::reached().
 	void reached(unsigned index=0, short deriv_sign)
 	{
+#ifdef DEBUG
+		assert(deriv_sign==__expected_crossing_deriv_sign);
+#endif
 		StoppingCondition::reached(index, deriv_sign);
 		__system.check_for_lock(__orbital_freq_mult, __spin_freq_mult,
 								__body_index, __zone_index);
+	}
+
+	///\brief The expected sign of the derivative at the next zero-crossing.
+	///
+	///Zero if unknown.
+	virtual short expected_crossing_deriv_sign(
+			///Which sub-condition.
+			unsigned index=0)
+	{
+#ifdef DEBUG
+		assert(index==0);
+#endif
+		return __expected_crossing_deriv_sign;
 	}
 };
 
@@ -271,7 +292,8 @@ public:
 	///
 	///The evolution mode must be LOCKED_TO_PLANET.
 	std::valarray<double> operator()(EvolModeType evol_mode, 
-			const double *orbit, const double *derivatives,
+			const std::valarray<double> &orbit,
+			const std::valarray<double> &derivatives,
 			std::valarray<double> &stop_deriv) const;
 
 	///The number of subconditions in the current condition.
@@ -285,6 +307,17 @@ public:
 	{
 		StoppingCondition::reached(index, deriv_sign);
 		__system.release_lock(__locked_zone_index);
+	}
+
+	///\brief See StoppingCondition::expected_crossing_deriv_sign().
+	virtual short expected_crossing_deriv_sign(
+			///Which sub-condition.
+			unsigned index=0)
+	{
+#ifdef DEBUG
+		assert(index<=1);
+#endif
+		return (index==0 ? -1 : 1);
 	}
 };
 
@@ -357,8 +390,8 @@ public:
 	///angular velocities divided by the latter.
 	std::valarray<double> operator()(
 			EvolModeType evol_mode,
-			const double *orbit,
-			const double *derivatives,
+			const std::valarray<double> &orbit,
+			const std::valarray<double> &derivatives,
 			std::valarray<double> &stop_deriv) const;
 
 	///Identify this as a WIND_SATURATION condition.
@@ -387,11 +420,8 @@ public:
 ///\ingroup OrbitSolver_group
 class CombinedStoppingCondition : public StoppingCondition {
 private:
-	///The non synchronized conditions that are to be combined.
-	std::vector<const StoppingCondition *> __generic_sub_conditions;
-
-	///The synchronized conditions that are to be combined.
-	std::vector<const SynchronizedCondition *> __sync_sub_conditions;
+	///The conditions that are combined.
+	std::vector<const StoppingCondition *> __sub_conditions;
 
 	///\brief The number of subconditinos included, allowing for
 	///subconditions with multiple entries.
@@ -403,10 +433,6 @@ private:
 	///\brief The types of the subconditinos, including subconditions of
 	///subconditions.
 	std::vector<StoppingConditionType> __types;
-
-	///\brief The interpolation ranges of the subconditinos, including
-	///subconditions of subconditions.
-	std::vector<double> __interpolation_ranges;
 
 	///Updates all private methods except the sub_condition lists for adding
 	///rhs.
@@ -455,10 +481,6 @@ public:
 	///Adds  RHS to the conditions of *this.
 	CombinedStoppingCondition &operator|=(const StoppingCondition *rhs);
 
-	///Adds  RHS to the conditions of *this special case for synchronization.
-	CombinedStoppingCondition &operator|=(
-			const SynchronizedCondition *rhs);
-
 	///\brief Returns the values of all stopping sub_conditions, not
 	///necessarily in the order added.
 	///
@@ -488,16 +510,11 @@ public:
 		return *__sync_sub_conditions[index-__generic_sub_conditions.size()];
 	}
 
-	double interpolation_range(unsigned index=0) const
-	{return __interpolation_ranges[index];}
+	///See StoppingCondition::reached().
+	virtual void reached(unsigned index=0, short deriv_sign);
 
-	virtual void reached(
-			///The sub-condition reached for composite conditions.
-			unsigned index=0,
-			
-			///The sign of the first derivative when the condition was
-			///reached.
-			short deriv_sign);
+	///See StoppingCondition::expected_crossing_deriv_sign().
+	short expected_crossing_deriv_sign(unsigned index=0);
 
 	///\brief Deletes all subconditions, unless no_delete_subcond has been
 	///previously called.

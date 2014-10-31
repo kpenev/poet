@@ -30,7 +30,13 @@
 class DissipatingBody {
 private:
 	///The coefficient used to normalize tidal power.
-	double __power_norm, __dorbital_frequency_da;
+	double __power_norm, 
+
+		   ///The derivative of the orbital frequency w.r.t. semimajor axis 
+		   __dorbital_frequency_da,
+		   
+		   ///The frequency at which the surface is locked (if any).
+		   __surface_lock_frequency;
 
 	std::valarray< std::valarray<Eigen::Vector3d> > 
 		///\brief The rate of angular momentum transfer between two
@@ -486,9 +492,33 @@ public:
 	///
 	///For example this could be the frequency of the stellar convective 
 	///zone when locked to the disk.
-	virtual double surface_lock_frequency()
-	{throw Error::Runtime("Requesting lock frequency for a body that does "
-			"not support surface locks.");}
+	double surface_lock_frequency() const {return __surface_lock_frequency;}
+
+	///\brief Sets the frequency at which the surface is locked (if any).
+	void set_surface_lock_frequency(double frequency)
+	{__surface_lock_frequency=frequency;}
+
+	///Appends the state defined by last configure(), to the evolution.
+	virtual void add_to_evolution();
+
+	///Discards the last steps from the evolution.
+	virtual void rewind_evolution(
+			///How many steps of evolution to discard.
+			unsigned nsteps);
+
+	///Discards all evolution.
+	virtual void reset_evolution();
+
+	///\brief Conditions detecting the next possible discontinuities in the
+	///evolution due to this body.
+	///
+	///Must be deleted when no longer necessary.
+	virtual CombinedStoppingCondition *stopping_conditions(
+			///The system being evolved.
+			BinarySystem &system, 
+
+			///Is the body the primary in the system.
+			bool primary);
 
 	///Virtual destructor.
 	~DissipatingBody() {}

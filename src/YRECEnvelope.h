@@ -7,11 +7,11 @@
  * stars or the whole star for high mass stars.
  */
 
-#include "DissipatingZone.h"
+#include "TwoPhaseLagZone.h"
 
 ///\brief Surface convective zone for low mass YREC stars or the entire star
 ///for high mass stars.
-class YRECEnvelope : public DissipatingZone {
+class YRECEnvelope : public TwoPhaseLagZone {
 private:
 	///The age for the last configure() call.
 	double __current_age, __stellar_mass;
@@ -99,6 +99,10 @@ public:
 			///The argument of periapsis of the orbit in the equatorial
 			///planet of the zone.
 			double periapsis);
+
+	///The moment of inertia at a given age (no configure() necessary).
+	double moment_of_inertia(double age) const;
+	{return __moment_of_inertia(age);}
 
 	///See DissipatingZone::moment_of_inertia.
 	double moment_of_inertia(int deriv_order=0) const

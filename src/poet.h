@@ -65,6 +65,7 @@ namespace InCol {
 		TDISK, ///< Age in Myr when disk dissipates.
 		A_FORMATION, ///< Semimajor axis at which the planet forms in AU.
 		P_FORMATION, ///< Orbital period in days at which the planet forms.
+		E_FORMATION, ///< Eccentricity at which the planet forms.
 		INCLINATION_FORMATION, ///< Inclination with which the planet forms.
 		TSTART, ///< The minimum age to start evolution at in Gyr.
 		TEND, ///< The maximum age to stop the evolution at in Gyr.
@@ -150,22 +151,6 @@ namespace OutCol {
 		/// \f$M_\odot/Gyr\f$.
 		MRAD_DERIV,
 
-		///Secord age derivative of the convective moment of inertia in
-		/// \f$M_\odot R_\odot^2/Gyr^2\f$.
-		ICONV_SECOND_DERIV,
-
-		///Second age derivative of the radiative moment of inertia in
-		/// \f$M_\odot R_\odot^2/Gyr^2\f$.
-		IRAD_SECOND_DERIV,
-
-		///Second age derivative of the moment of inertia of the entire star
-		///in \f$M_\odot R_\odot^2/Gyr^2\f$.
-		ITOT_SECOND_DERIV,
-
-		///Second age derivative of the radius of the radiative core in
-		/// \f$R_\odot/Gyr^2\f$.
-		RRAD_SECOND_DERIV,
-
 		///The index of the last quantity requiring no orbital evolution.
 		LAST_NO_ORBIT=RRAD_SECOND_DERIV,
 
@@ -174,9 +159,21 @@ namespace OutCol {
 		PORB,///< The orbital period days.
 		LORB,//< The orbital angular momentum
 
-		///The angle between the surface spin and orbital angular momentum in
-		///radians
-		INCLINATION,
+		///The angle between the stellar surface spin and orbital angular
+		///momentum in radians
+		CONV_INCLINATION,
+
+		///The angle between the stellar core spin and orbital angular
+		///momentum in radians
+		RAD_INCLINATION,
+
+		///The orbital periapsis in the reference frame of the stellar
+		///convective zone in radians
+		CONV_PERIAPSIS,
+
+		///The orbital periapsis in the reference frame of the stellar
+		///radiative zone in radians
+		RAD_PERIAPSIS,
 
 		///\brief Angular momentum of the convective zone of the star in
 		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
@@ -187,18 +184,6 @@ namespace OutCol {
 		// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
 		///stars only)
 		LRAD,
-
-		///\brief The component of #LRAD along the spin direction of the
-		///convective zone.
-		LRAD_PAR,
-
-		///\brief The component of #LRAD along the x axis used for orbital
-		///evolution
-		LRAD_PERP,
-
-		///\brief Total angular momentum of the star in 
-		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$.
-		LTOT,
 
 		WSURF, ///< Angular velocity of the stellar surface in rad/day.
 

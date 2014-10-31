@@ -1,10 +1,10 @@
 #ifndef __YREC_CORE_H
 #define __YREC_CORE_H
 
-#include "DissipatingZone.h"
+#include "TwoPhaseLagZone.h"
 
 ///\brief Radiative core for low mass YREC stars.
-class YRECCore : public DissipatingZone {
+class YRECCore : public TwoPhaseLagZone {
 private:
 	///The age for the last configure() call.
 	double __current_age,

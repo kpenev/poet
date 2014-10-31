@@ -6,9 +6,10 @@
  * \brief Declares the class for stars that user the YREC tracks.
  */
 
-#include "DissipatingBody.h"
+#include "SaturatingSkumanichWindBody.h"
 
-class YRECStar : public DissipatingBody {
+class YRECStar : public SaturatingSkumanichWindBody,
+				 public ExponentialDecayDiffRotBody {
 private:
 	///\brief Is this a low mass star according to the stellar evolution with
 	///which it was constructed?
@@ -40,8 +41,20 @@ public:
 			///Mass of the star
 			double mass,
 
+			///The strength of the wind.
+			double wind_strength,
+
+			///The frequency at which the wind loss saturates in rad/day.
+			double wind_saturation_frequency
+
+			///The timescale for differential rotation coupling.
+			double diff_rot_coupling_timescale	
+
 			///A StellarEvolution interpolator.
 			const StellarEvolution &evolution) :
+		SaturatingSkumanichWindBody(wind_strength,
+									wind_saturation_frequency),
+		ExponentialDecayDiffRotBody(diff_rot_coupling_timescale),
 		__low_mass(mass<evolution.get_mass_break()),
 		__luminosity(evolution.interpolate_luminosity(mass)),
 		__lifetime(9*std::pow(mass, -3)),
@@ -73,6 +86,12 @@ public:
 #endif
 		return (zone_index ? __core : __envelope);
 	}
+
+	///The lifetime of the star (where tracks end).
+	double lifetime() {return __lifetime;}
+
+	///The luminosity of the star at the given age.
+	double luminosity(double age) {return __luminosity(age);}
 
 	///Cleanup after the star.
 	~YRECStar() {delete __luminosity;}

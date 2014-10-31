@@ -111,7 +111,7 @@ public:
 	///Should this lock be assumed.
 	operator bool() const {return __lock_direction==0;}
 
-	///\rbief The opposite of the sign of the forcing frequnecy associated
+	///\rbief The opposite of the sign of the forcing frequency associated
 	///with this component.
 	short lock_direction() const {return __lock_direction;}
 

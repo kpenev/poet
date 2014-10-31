@@ -166,7 +166,9 @@ DissipatingZone::DissipatingZone()
 	__power(2*Dissipation::END_DIMENSIONLESS_DERIV),
 	__torque_x(2*Dissipation::END_DIMENSIONLESS_DERIV),
 	__torque_y(2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__torque_z(2*Dissipation::END_DIMENSIONLESS_DERIV)
+	__torque_z(2*Dissipation::END_DIMENSIONLESS_DERIV),
+	__evolution_real(NUM_REAL_QUANTITIES),
+	__evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_QUANTITIES)
 {
 	for(int i=0; i<5; ++i) {
 		__Ummp[i].resize(3);
@@ -513,3 +515,76 @@ void change_e_order(unsigned new_e_order)
 	}
 }
 
+void DissipatingZone::add_to_evolution()
+{
+	__evolution_real[ANGULAR_MOMENTUM].push_back(__angular_momentum);
+	__evolution_real[INCLINATION].push_back(__inclination);
+	__evolution_real[PERIAPSIS].push_back(__periapsis);
+	__evolution_real[MOMENT_OF_INERTIA].push_back(moment_of_inertia());
+	__evolution_real[OUTER_RADIUS].push_back(outer_radius());
+	__evolution_real[OUTER_MASS].push_back(outer_mass());
+	__evolution_integer[E_ORDER-NUM_REAL_EVOL_QUANTITIES].push_back(
+			__e_order);
+	if(__lock) {
+		__evolution_integer[ORBITAL_FREQ_MULTIPLIER-NUM_REAL_EVOL_QUANTITIES]
+			.push_back(__lock.orbital_frequency_multiplier());
+		__evolution_integer[SPIN_FREQ_MULTIPLIER-NUM_REAL_EVOL_QUANTITIES]
+			.push_back(__lock.spin_frequency_multiplier());
+	} else {
+		__evolution_integer[ORBITAL_FREQ_MULTIPLIER-NUM_REAL_EVOL_QUANTITIES]
+			.push_back(0);
+		__evolution_integer[SPIN_FREQ_MULTIPLIER-NUM_REAL_EVOL_QUANTITIES]
+			.push_back(0);
+	}
+}
+
+void DissipatingZone::reset_evolution()
+{
+	for(unsigned i=0; i<__evolution_real.size(); ++i)
+		__evolution_real[i].clear();
+	for(unsigned i=0; i<__evolution_integer.size(); ++i)
+		__evolution_integer[i].clear();
+}
+
+void DissipatingZone::rewind_evolution(unsigned nsteps)
+{
+	for(unsigned i=0; i<nsteps; ++i) {
+		for(unsigned i=0; i<__evolution_real.size(); ++i)
+			__evolution_real[i].pop_back();
+		for(unsigned i=0; i<__evolution_integer.size(); ++i)
+			__evolution_integer[i].pop_back();
+	}
+}
+
+virtual CombinedStoppingCondition *DissipatingZone::stopping_conditions(
+			BinarySystem &system,  bool primary, unsigned zone_index)
+{
+	CombinedStoppingCondition *result=new CombinedStoppingCondition();
+	if(__lock) 
+		(*result)|=BreakLockCondition(system, __locked_zone_index);
+	else {
+		(*result)|=SynchronizedCondition(
+				__lock.orbital_frequency_multiplier(),
+				__lock.spin_frequency_multiplier(),
+				__lock.lock_direction(),
+				primary, zone_index, system);
+		(*result)|=SynchronizedCondition(
+				__other_lock.orbital_frequency_multiplier(),
+				__other_lock.spin_frequency_multiplier(),
+				__other_lock.lock_direction(),
+				primary, zone_index, system);
+	}
+}
+
+void transform_zone_orientation(DissipatingZone &zone,
+		DissipatingZone &reference, double &inclination, double &periapsis)
+{
+	Eigen::Vector3d zone_z_dir=zone_to_zone_transform(zone,
+			reference, Eigen::Vector3d(0, 0, 1));
+	inclination=std::atan2(-zone_z_dir[0], zone_z_dir[3]);
+	periapsis=M_PI/2+std::atan2(zone_z_dir[1], -zone_z_dir[0]);
+#ifdef DEBUG
+	assert(inclination>0);
+	assert(inclination<M_PI);
+#endif
+}

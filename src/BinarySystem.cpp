@@ -13,10 +13,9 @@
 
 #include <gsl/gsl_matrix.h>
 
-int BinarySystem::locked_surface_differential_equations(double age,
-		const double *parameters, double *evolution_rates) const
+int BinarySystem::locked_surface_differential_equations(
+		double *evolution_rates) const
 {
-	__body1.configure(age, NaN, NaN, NaN, parameters);
 	for(unsigned zone_index=1; zone_index<__body1.number_zones();
 			++zone_index) {
 		evolution_rates[zone_index-1]=__body1.nontidal_torque(zone_index)[2];
@@ -84,19 +83,14 @@ void BinarySystem::locked_surface_jacobian(double *param_derivs,
 	}
 }
 
-int BinarySystem::single_body_differential_equations(double age,
-		const double *parameters,
+int BinarySystem::single_body_differential_equations(
 		double *evolution_rates) const
 {
 	unsigned nzones=__body1.number_zones();
-	double *inclinations=parameters,
-		   *periapses=parameters+nzones-1,
-		   *angmom=parameters+(2*nzones-2),
+	double ref_angmom=__body1.zone(0).angular_momentum(),
 		   *inclination_evol=evolution_rates,
 		   *periapsis_evol=evolution_rate+(nzones-1);
 		   *angmom_evol=periapsis_evol+(nzones-1);
-	__body1.configure(age, NaN, NaN, NaN, angmom, inclinations, periapses, 
-			true, true);
 	Eigen::Vector3d reference_torque;
 	for(unsigned zone_index=0; zone_index<nzones; ++zone_index) {
 		if(zone_index!=nzones-1)
@@ -105,7 +99,7 @@ int BinarySystem::single_body_differential_equations(double age,
 		angmom_evol[zone_index]=torque[2];
 		if(zone_index) {
 			DissipatingZone &zone=__body1.zone(zone_index);
-			zone.set_reference_zone_angmom(angmom[0]);
+			zone.set_reference_zone_angmom(ref_angmom);
 			inclination_evol[zone_index-1]=zone.inclination_evolution(
 					zone_to_zone_transform(__body1.zone(0), __zone,
 										   reference_torque),
@@ -207,8 +201,8 @@ void BinarySystem::fill_single_body_jacobian(
 	}
 }
 
-void BinarySystem::single_body_jacobian(const double *parameters,
-		double *param_derivs, double *age_derivs) const
+void BinarySystem::single_body_jacobian(double *param_derivs,
+		double *age_derivs) const
 {
 	unsigned nzones=__body1.number_zones(), nparams=3*nzones-2;
 	fill_single_body_jacobian(param_derivs, 
@@ -484,25 +478,11 @@ void BinarySystem::fill_binary_evolution_rates(
 			__orbit_angmom_gain);
 }
 
-void BinarySystem::binary_differential_equations(double age,
-		const double *parameters, double *differential_equations)
+void BinarySystem::binary_differential_equations(
+		double *differential_equations)
 {
 	unsigned body1_nzones=__body1.number_zones(),
 			 body2_nzones=__body2.number_zones();
-	double *body1_inclinations=parameters+2,
-		   *body2_inclinations=body1_inclinations+body1_nzones,
-		   *body1_periapses=body2_inclinations+body2_nzones,
-		   *body2_periapses=body1_periapses+body1_nzones-1,
-		   *body1_angmom=body2_periapses+body2_nzones,
-		   *body2_angmom=body1_angmom+body1_nzones-
-			   __body1.number_locked_zones(),
-		   semimajor=parameters[0],
-		   eccentricity=parameters[1];
-	__body1.configure(age, __body2.mass(), semimajor, eccentricity,
-			body1_angmom, body1_inclinations, body1_periapses, false, false,
-			true);
-	__body2.configure(age, __body1.mass(), semimajor, eccentricity,
-			body2_angmom, body2_inclinations, body2_periapses);
 	std::valarray<Eigen::VectorXd> 
 		body2_above_lock_fractions(Dissipation::NUM_DERIVATIVES);
 	for(int deriv=Dissipation::NO_DERIV; deriv<Dissipation::NUM_DERIVATIVES;
@@ -1018,8 +998,8 @@ void BinarySystem::spin_angmom_evolution_zone_derivs(
 	}
 }
 
-void BinarySystem::binary_jacobian(const double *parameters,
-		double *param_derivs, double *age_derivs) const
+void BinarySystem::binary_jacobian(double *param_derivs, double *age_derivs)
+	const
 {
 	unsigned body1_zones=__body1.number_zones();
 	unsigned num_zones=body1_zones+__body2.number_zones(),
@@ -1125,10 +1105,88 @@ void BinarySystem::binary_jacobian(const double *parameters,
 
 }
 
+void BinarySystem::fill_locked_surface_orbit(std::valarray<double> &orbit)
+{
+#ifdef DEBUG
+	assert(__evolution_mode==LOCKED_SURFACE_SPIN);
+	assert(std::isnan(__semimajor));
+	assert(std::isnan(__eccentricity));
+#endif
+	orbit.resize(__body1.number_zones());
+	for(unsigned i=1; i<__body1.number_zones(); ++i) {
+		orbit[i-1]=__body1.zone(i).angular_momentum();
+#ifdef DEBUG
+		assert(__body1.zone(i).inclination()==0);
+		assert(__body1.zone(i).periapsis()==0);
+#endif
+	}
+}
+
+EvolModeType BinarySystem::fill_binary_orbit(std::valarray<double> &orbit)
+{
+#ifdef DEBUG
+	assert(__evolution_mode==BINARY);
+	assert(!std::isnan(__semimajor));
+	assert(!std::isnan(__eccentricity));
+	assert(__body1.zone(0).periapsis()==0);
+#endif
+	orbit.resize(1+3*number_zones()-number_locked_zones());
+	if(number_locked_zones()==0) orbit[0]=std::pow(__semimajor, 6.5);
+	else orbit[0]=__semimajor;
+	orbit[1]=__eccentricity;
+	unsigned inclination_ind=1, periapsis_ind=1+number_zones(), 
+			 angmom_ind=periapsis_ind+number_zones()-1;
+	for(short body_ind=0; body_ind<2; ++body_ind) {
+		DissipatingBody &body=(body_ind==0 ? __body1 : __body2);
+		for(unsigned zone_ind=0; zone_ind<body.number_zones(); ++zone_ind) {
+			DissipatingZone &zone=body.zone(zone_ind);
+			orbit[inclination_ind++]=zone.inclination();
+			if(body_ind || zone_ind) orbit[periapsis_ind++]=zone.periapsis();
+			if(!zone.locked()) orbit[angmom_ind++]=zone.angular_momentum();
+		}
+	}
+}
+
+EvolModeType BinarySystem::fill_single_orbit(std::valarray<double> &orbit)
+{
+#ifdef DEBUG
+	assert(__evolution_mode==SINGLE);
+	assert(std::isnan(__semimajor));
+	assert(std::isnan(__eccentricity));
+	assert(__body1.zone(0).periapsis()==0);
+	assert(__body1.zone(0).inclination()==0);
+	assert(__body1.number_locked_zones()==0);
+#endif
+	orbit.resize(3*__body1.number_zones()-2);
+	unsigned inclination_ind=0, periapsis_ind=__body1.number_zones()-1, 
+			 angmom_ind=periapsis_ind+__body1.number_zones()-1;
+	for(unsigned zone_ind=0; zone_ind<__body1.number_zones(); ++zone_ind) {
+		DissipatingZone &zone=__body1.zone(zone_ind);
+		if(zone_ind) orbit[inclination_ind++]=zone.inclination();
+		if(zone_ind) orbit[periapsis_ind++]=zone.periapsis();
+#ifdef DEBUG
+		assert(!zone.locked());
+#endif
+		orbit[angmom_ind++]=zone.angular_momentum();
+	}
+}
+
 void BinarySystem::configure(double age, double semimajor,
 		double eccentricity, const double *spin_angmom,
-		const double *inclination, const double *periapsis)
+		const double *inclination, const double *periapsis,
+		EvolModyType evolution_mode)
 {
+#ifdef DEBUG
+	if(evolution_mode!=BINARY) {
+		assert(std::isnan(semimajor));
+		assert(std::isnan(eccentricity));
+	}
+	if(evolution_mode==LOCKED_SURFACE_SPIN) {
+		assert(inclination==NULL);
+		assert(periapsis==NULL);
+	}
+#endif
+	__evolution_mode=evolution_mode;
 	double m1=__body1.mass(), m2=__body2.mass();
 	__age=age;
 	__semimajor=semimajor;
@@ -1137,20 +1195,24 @@ void BinarySystem::configure(double age, double semimajor,
 	__orbital_angmom=orbital_angular_momentum(m1, m2, semimajor,
 			eccentricity);
 	__body1.configure(age, m2, semimajor, eccentricity, spin_angmom,
-			inclination, periapsis, std::isnan(semimajor), true);
-	if(!std::isnan(semimajor)) {
+			inclination, periapsis, evolution_mode==LOCKED_SURFACE_SPIN,
+			std::isnan(semimajor), true);
+	if(evolution_mode==BINARY) {
 		unsigned offset=__body1.number_zones();
 		__body2.configure(age, m1, semimajor, eccentricity,
 				spin_angmom+offset, inclination+offset, periapsis+offset-1);
 		fill_above_lock_fractions_deriv();
 	}
+#ifdef DEBUG
+	assert(__semimajor>minimum_semimajor());
+#endif
 }
 
 BinarySystem::configure(double age, const double *parameters, 
 		EvolModeType evolution_mode)
 {
 	double semimajor, eccentricity, *spin_angmom, *inclination, *periapsis;
-	unsigned num_zones=__body1.number_zones()+__body2.number_zones();
+	unsigned num_zones=number_zones();
 	if(evolution_mode==BINARY) {
 		semimajor=(__body1.number_locked_zones() ||
 				   __body2.number_locked_zones()
@@ -1170,7 +1232,15 @@ BinarySystem::configure(double age, const double *parameters,
 		spin_angmom=periapsis+number_zones-1;
 	}
 	configure(age, semimajor, eccentricity, spin_angmom, inclination,
-			  periapsis);
+			  periapsis, evolution_mode);
+}
+
+EvolModeType BinarySystem::fill_orbit(std::valarray<double> &orbit)
+{
+	if(evolution_mode==LOCKED_SURFACE_SPIN) fill_locked_surface_orbit(orbit);
+	else if(evolution_mode==BINARY) fill_binary_orbit(orbit);
+	else fill_single_orbit(orbit);
+	return __evolution_mode;
 }
 
 double BinarySystem::above_lock_fraction(unsigned locked_zone_index,
@@ -1210,21 +1280,37 @@ int BinarySystem::differential_equations(double age,
 	configure(age, parameters, evolution_mode);
 	switch(evolution_mode) {
 		case LOCKED_SURFACE_SPIN : 
-			locked_surface_differential_equations(age, parameters,
-												  differential_equations);
+			locked_surface_differential_equations(differential_equations);
 			return 0;
 		case SINGLE :
-			single_body_differential_equations(age, parameters,
-											   differential_equations);
+			single_body_differential_equations(differential_equations);
 			return 0;
 		case BINARY :
-			binary_differential_equations(age, parameters,
-										  differential_equations);
+			binary_differential_equations(differential_equations);
 			return 0;
 		default :
 			throw Error::BadFunctionArguments("Evolution mode other than "
 					"LOCKED_SURFACE_SPIN, SINGLE or BINARY encountered in "
 					"BinarySystem::differential_equations!");
+	}
+}
+
+int BinarySystem::jacobian(double age, double *parameters, 
+		EvolModeType evolution_mode, double *param_derivs,
+		double *age_derivs)
+{
+	configure(age, parameters, evolution_mode);
+	switch(evolution_mode) {
+		case LOCKED_SURFACE_SPIN : locked_surface_jacobian(param_derivs,
+										   				   age_derivs);
+								   return 0;
+		case SINGLE : single_body_jacobian(param_derivs, age_derivs);
+					  return 0;
+		case BINARY : binary_jacobian(param_derivs, age_derivs);
+					  return 0;
+		default : throw Error::BadFunctionArguments("Evolution mode other "
+						  "than LOCKED_SURFACE_SPIN, SINGLE or BINARY "
+						  "encountered in BinarySystem::jacobian!");
 	}
 }
 
@@ -1266,7 +1352,10 @@ void BinarySystem::check_for_lock(int orbital_freq_mult, int spin_freq_mult,
 			&(inclinations[0]), &(periapses[0]));
 	double above_lock_fraction=
 		__above_lock_fractions[Dissipation::NO_DERIV][locked_zone_ind];
-	if(above_lock_fraction>0 && above_lock_fraction<1) return;
+	if(above_lock_fraction>0 && above_lock_fraction<1) {
+		body.zone(zone_index).locked_zone_index()=locked_zone_ind;
+		return;
+	}
 	spin_angmom.insert(spin_angmom.begin()+zone_index-locked_zone_ind,
 					   body.zone(zone_index).angular_momentum());
 	if(above_lock_fraction<0) body.unlock_zone_spin(zone_index, -1);
@@ -1302,19 +1391,53 @@ void BinarySystem::secondary_died()
 				   std::pow(__orbital_angmom*sin_inc, 2)),
 		   inclination=std::asin(old_surface_angmom*sin_inc/angmom);
 	if(old_surface_angmom*cos_inc<-__orbital_angmom)
-		surface_inclination=M_PI-surface_inclination;
+		inclination=M_PI-inclination;
 	surface_zone.configure(__age, NaN, NaN, NaN, angmom, inclination, 0);
 	spin_angmom[0]=angmom;
 	for(unsigned zone_ind=1; zone_ind<num_zones; ++zone_ind) {
 		DissipatingZone &zone=__body1.zone(zone_ind);
 		spin_angmom[zone_ind]=zone.angular_momentum();
-		Eigen::Vector3d zone_spin_dir=zone_to_zone_transform(zone,
-				surface_zone, Eigen::Vector3d(0, 0, 1));
-		inclination[zone_ind-1]=
-			std::atan2(-zone_spin_dir[0], zone_spin_dir[3]);
-		periapsis[zone_ind-1]=
-			M_PI/2+std::atan2(zone_spin_dir[1], -zone_spin_dir[0]);
+		transform_zone_orientation(zone, surface_zone, 
+				inclination[zone_ind-1], periapsis[zone_ind-1]);
 	}
 	configure(__age, NaN, NaN, &spin_angmom[0], &inclination[0],
-			&periapsis[0]);
+			&periapsis[0], SINGLE);
+}
+
+void BinarySystem::add_to_evolution()
+{
+	__semimajor_evolution.push_back(__semimajor);
+	__eccentricity_evolution.push_back(__eccentricity);
+	__body1.add_to_evolution();
+	__body2.add_to_evolution();
+}
+
+void BinarySystem::reset_evolution()
+{
+	__semimajor_evolution.clear();
+	__eccentricity_evolution.clear();
+	__body1.reset_evolution();
+	__body2.reset_evolution();
+}
+
+void BinarySystem::rewind_evolution(unsigned nsteps)
+{
+	for(unsigned i=0; i<nsteps; ++i) {
+		__semimajor_evolution.pop_back();
+		__eccentricity_evolution.pop_back();
+	}
+	__body1.rewind_evolution(nsteps);
+	__body2.rewind_evolution(nsteps);
+}
+
+virtual StoppingCondition *BinarySystem::stopping_conditions()
+{
+	CombinedStoppingCondition *result=new CombinedStoppingCondition();
+	(*result)|=SecondaryDeathCondition(*this);
+	unsigned locked_zone_index=0;
+	for(unsigned body_ind=0; body_ind<2; ++body_ind) {
+		DissipatingBody &body=(body_ind==0 ? __body1 : __body2);
+			(*result)|=body.stopping_conditions(*this);
+	}
+	return result;
 }

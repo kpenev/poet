@@ -22,13 +22,22 @@ std::ostream &operator<<(std::ostream &os,
 }
 
 std::valarray<double> SynchronizedCondition::operator()(
-		EvolModeType, const double *orbit, const double *derivatives,
+		EvolModeType
+#ifdef DEBUG
+		evol_mode
+#endif
+		, const std::valarray<double> &orbit,
+		const std::valarray<double> &derivatives,
 		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
+	assert(evol_mode==BINARY);
 	if(__system.number_locked_zones())
 		assert(orbit[0]==__system.semimajor());
 	else assert(std::pow(orbit[0], 1.0/6.5)==__system.semimajor());
+	assert(orbit.size()==1 + 3*__system.number_zones() -
+						 __system.number_locked_zones());
+	assert(orbit.size()==derivatives.size());
 #endif
 	double m1=__system.primary().mass(), 
 		   m2=__system.secondary().mass(),
@@ -65,12 +74,15 @@ std::valarray<double> BreakLockCondition::operator()(
 		evol_mode
 #endif
 		,
-		const double *orbit,
-		const double *derivatives,
+		const std::valarray<double> &orbit,
+		const std::valarray<double> &derivatives,
 		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
 	assert(evol_mode==BINARY);
+	assert(orbit.size()==1 + 3*__system.number_zones() -
+						 __system.number_locked_zones());
+	assert(orbit.size()==derivatives.size());
 #endif
 	double frac=__system.above_lock_fraction(__locked_zone_index),
 		   dfrac_dt=__system.above_lock_fraction(__locked_zone_index,
@@ -137,11 +149,15 @@ std::valarray<double> SecondaryDeathCondition::operator()(
 		evol_mode
 #endif
 		,
-		const double *orbit, const double *derivatives,
+		const std::valarray<double> &orbit, 
+		const std::valarray<double> &derivatives,
 		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
 	assert(evol_mode==BINARY);
+	assert(orbit.size()==1 + 3*__system.number_zones() -
+						 __system.number_locked_zones());
+	assert(orbit.size()==derivatives.size());
 #endif
 	double min_semimajor=__system.minimum_semimajor(),
 		   semimajor=__system.semimajor(),
@@ -156,21 +172,25 @@ std::valarray<double> SecondaryDeathCondition::operator()(
 }
 
 std::valarray<double> WindSaturationCondition::operator()(
-		const double *orbit,
-		const double *derivatives,
-		std::valarray<double> &stop_deriv
-		EvolModeType evol_mode) const
+		EvolModeType evol_mode,
+		const std::valarray<double> &orbit,
+		const std::valarray<double> &derivatives,
+		std::valarray<double> &stop_deriv) const
 {
-	unsigned num_zones=__body.number_zones()+__other_body.number_zones();
+#ifdef DEBUG
+	assert(evol_mode!=LOCKED_SURFACE_SPIN);
+	if(evole_mode!=BINARY) assert(__primary);
+#endif 
+	unsigned num_zones=__body.number_zones();
+	if(evol_mode==BINARY) num_zones+=__other_body.number_zones();
 	double wsurf=__body.spin_frequency(),
-		   surf_angmom_deriv=stop_deriv[1 + 2*num_zones
-			   							+
-			   							(primary
-										 ? 0
-										 : __other_body.number_zones()
-										 -__other_body.number_locked_zones()
-										)];
-
+		   surf_angmom_deriv=
+			   stop_deriv[1 + 2*num_zones
+			   			  +
+						  (__primary ? 0
+						   			 : __other_body.number_zones()
+									   -__other_body.number_locked_zones())
+						 ];
 	stop_deriv.resize(1,
 		   	(surf_angmom_deriv - __body.zone(0).moment_of_inertia(1)*wsurf)
 			/(__body.zone(0).moment_of_inertia()*wsat));
@@ -184,12 +204,7 @@ void CombinedStoppingCondition::update_meta_information(
 	size_t num_new_subcond=rhs->num_subconditions();
 	__num_subconditions+=num_new_subcond;
 	__types.reserve(__types.size()+num_new_subcond);
-	__interpolation_ranges.reserve(
-			__interpolation_ranges.size()+num_new_subcond);
-	for(size_t i=0; i<num_new_subcond; i++) {
-		__types.push_back(rhs->type(i));
-		__interpolation_ranges.push_back(rhs->interpolation_range(i));
-	}
+	for(size_t i=0; i<num_new_subcond; i++) __types.push_back(rhs->type(i));
 }
 
 void CombinedStoppingCondition::add_subcondition_values(
@@ -218,12 +233,8 @@ CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		const CombinedStoppingCondition &rhs)
 {
 	update_meta_information(&rhs);
-	__generic_sub_conditions.insert(__generic_sub_conditions.end(),
-			rhs.__generic_sub_conditions.begin(),
-			rhs.__generic_sub_conditions.end());
-	__sync_sub_conditions.insert(__sync_sub_conditions.end(),
-			rhs.__sync_sub_conditions.begin(),
-			rhs.__sync_sub_conditions.end());
+	__sub_conditions.insert(__sub_conditions.end(),
+			rhs.__sub_conditions.begin(), rhs.__sub_conditions.end());
 	if(__delete_subcond) {
 #ifdef DEBUG
 		assert(rhs.__delete_subcond);
@@ -237,29 +248,8 @@ CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		const StoppingCondition *rhs)
 {
 	update_meta_information(rhs);
-	__generic_sub_conditions.push_back(rhs);
+	__sub_conditions.push_back(rhs);
 	return *this;
-}
-
-CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
-		const SynchronizedCondition *rhs)
-{
-	update_meta_information(rhs);
-	__sync_sub_conditions.push_back(rhs);
-	return *this;
-}
-
-CombinedStoppingCondition::~CombinedStoppingCondition()
-{
-	if(!__delete_subcond) return;
-	for(std::vector<const StoppingCondition *>::const_iterator
-			i=__generic_sub_conditions.begin();
-			i!=__generic_sub_conditions.end(); ++i)
-		delete *i;
-	for(std::vector<const SynchronizedCondition *>::const_iterator
-			i=__sync_sub_conditions.begin();
-			i!=__sync_sub_conditions.end(); ++i)
-		delete *i;
 }
 
 std::valarray<double> CombinedStoppingCondition::operator()(
@@ -272,13 +262,8 @@ std::valarray<double> CombinedStoppingCondition::operator()(
 	stop_deriv.resize(__num_subconditions, NaN);
 	size_t i=0;
 	for(std::vector<const StoppingCondition *>::const_iterator
-			cond=__generic_sub_conditions.begin();
-			cond!=__generic_sub_conditions.end(); ++cond)
-		add_subcondition_values(*cond, orbit, derivatives, dissipation,
-				system, evol_mode, i, result, stop_deriv);
-	for(std::vector<const SynchronizedCondition *>::const_iterator
-			cond=__sync_sub_conditions.begin();
-			cond!=__sync_sub_conditions.end(); ++cond) 
+			cond=__sub_conditions.begin(); cond!=__sub_conditions.end();
+			++cond)
 		add_subcondition_values(*cond, orbit, derivatives, dissipation,
 				system, evol_mode, i, result, stop_deriv);
 	return result;
@@ -286,23 +271,24 @@ std::valarray<double> CombinedStoppingCondition::operator()(
 
 void CombinedStoppingCondition::reached(unsigned index, short deriv_sign)
 {
-	num_nonsync_subcond=__num_subconditions-sync_sub_conditions.size();
-	if(index<num_nonsync_subcond) {
-		std::vector<const StoppingCondition *>::iterator 
-			sc_iter=__generic_sub_conditions.begin();
-		while(index>=sc_iter->num_subconditions()) {
+	std::vector<const StoppingCondition *>::iterator sc_iter=
+		__sub_conditions.begin();
+	while(index>=sc_iter->num_subconditions()) {
 #ifdef DEBUG
-			assert(sc_iter!=__generic_sub_conditions.end());
+		assert(sc_iter!=__sub_conditions.end());
 #endif
-			index-=sc_iter->num_subconditions();
-			++sc_iter;
-		}
-		sc_iter->reached(index, deriv_sign);
-	} else {
-#ifdef DEBUG
-		assert(index-num_nonsync_subcond<__sync_sub_conditions.size());
-#endif
-		__sync_sub_conditions[index-num_nonsync_subcond].reached(
-				0, deriv_sign);
+		index-=sc_iter->num_subconditions();
+		++sc_iter;
 	}
+	sc_iter->reached(index, deriv_sign);
 }
+
+CombinedStoppingCondition::~CombinedStoppingCondition()
+{
+	if(!__delete_subcond) return;
+	for(std::vector<const StoppingCondition *>::const_iterator
+			i=__sub_conditions.begin(); i!=__sub_conditions.end(); ++i)
+		delete *i;
+}
+
+

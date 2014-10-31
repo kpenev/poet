@@ -571,3 +571,30 @@ const Eigen::Vector3d &DissipatingBody::tidal_orbit_torque(
 	} 
 	return result;
 }
+
+void DissipatingBody::add_to_evolution()
+{
+	for(unsigned zone_ind=0; zone_ind<number_zones(); ++zone_ind)
+		zone(zone_ind).add_to_evolution();
+}
+
+void DissipatingBody::rewind_evolution(unsigned nsteps)
+{
+	for(unsigned zone_ind=0; zone_ind<number_zones(); ++zone_ind)
+		zone(zone_ind).rewind_evolution(nsteps);
+}
+
+void DissipatingBody::reset_evolution()
+{
+	for(unsigned zone_ind=0; zone_ind<number_zones(); ++zone_ind)
+		zone(zone_ind).reset_evolution();
+}
+
+virtual CombinedStoppingCondition *DissipatingBody::stopping_conditions(
+		BinarySystem &system, bool primary)
+{
+	CombinedStoppingCondition *result=new CombinedStoppingCondition();
+	for(unsigned zone_ind=0; zone_ind<number_zones(); ++zone_ind)
+		(*result)|=zone.stopping_conditions(system, primary, zone_ind);
+	return result
+}

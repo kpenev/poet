@@ -12,6 +12,30 @@
 #include "Common.h"
 #include <valarray>
 
+///IDs for quantities saved as part of the evolution.
+enum ZoneEvolutionQuantities {
+	ANGULAR_MOMENTUM,		 ///< Angular momentum of the zone.
+	INCLINATION,			 ///< Inclination of the zone.
+	PERIAPSIS,				 ///< Periapsis of the zone.
+	MOMENT_OF_INERTIA,		 ///< Moment of inertia of the zone
+	OUTER_RADIUS,			 ///< Outer radius boundary of the zone
+	OUTER_MASS,				 ///< Outer mass boundary of the zone.
+	NUM_REAL_EVOL_QUANTITIES,///< Number of real values evolution quantities.
+	E_ORDER=NUM_REAL_EVOL_QUANTITIES,///< Eccentricity expansion order.
+
+	///For locked zones this is the orbital frequency multiple of the lock.
+	ORBITAL_FREQ_MULTIPLIER, 
+
+	///\brief For locked zones this is the spin frequency multiple of the
+	///lock.
+	///
+	///A value of zero indicates no lock was held.
+	SPIN_FREQ_MULTIPLIER,
+
+	///The total number of quantities whose evolution is tracked.
+	NUM_EVOL_QUANTITIES
+};
+
 ///\brief A layer of a system body for which the tidal bulge is not exactly
 ///in phase with the tidal potential.
 class DissipatingZone {
@@ -108,6 +132,16 @@ private:
 					  ///\brief The term closest matched by the current 
 					  ///spin-orbit ratio in the other direction from __lock.
 					  __other_lock;
+
+	///The floating point quantities whose evolution is tracked.
+	std::vector< std::list<double> > __evolution_real;
+
+	///The integer quantities whose evolution is tracked.
+	std::vector< std::list<int> > __evolution_integer;
+
+	///\brief If this zone is locked, this is its index in the list of locked
+	///zones in the system.
+	unsigned __locked_zone_index;
 
 	///Computes the \f$\mathcal{U}_{m,m'}\f$ values and their derivatives. 
 	void fill_Umm();
@@ -532,6 +566,58 @@ public:
 
 	///Changes the order of the eccentricity expansion performed.
 	void change_e_order(unsigned new_e_order);
+
+	///Appends the state defined by last configure(), to the evolution.
+	virtual void add_to_evolution();
+
+	///Discards the last steps from the evolution.
+	virtual void rewind_evolution(
+			///How many steps of evolution to discard.
+			unsigned nsteps);
+
+	///Discards all evolution.
+	virtual void reset_evolution();
+
+	///The tabulated evolution of the given quantity so far.
+	const std::list<double> &get_evolution(ZoneEvolutionQuantities quantity)
+		const
+	{
+		if(quantity<NUM_REAL_QUANTITIES) return __evolution_real[quantity];
+		else return __evolution_integer[quantity];
+	}
+
+	///\brief The index of this zone in the list of locked zones (valid only
+	///if locked).
+	unsigned locked_zone_index() const
+	{
+#ifdef DEBUG
+		assert(__lock);
+#endif
+		return __locked_zone_index;
+	}
+
+	///\brief Reference to the locked_zone_index() of this zone.
+	unsigned &locked_zone_index()
+	{
+#ifdef DEBUG
+		assert(__lock);
+#endif
+		return __locked_zone_index;
+	}
+
+	///\brief Conditions detecting the next possible discontinuities in the
+	///evolution due to this zone.
+	///
+	///Must be deleted when no longer necessary.
+	virtual CombinedStoppingCondition *stopping_conditions(
+			///The system being evolved.
+			BinarySystem &system, 
+
+			///Is the body this zone is part of, the primary in the system.
+			bool primary,
+			
+			///The index of the zone in the body.
+			unsigned zone_index);
 };
 
 ///Transforms a vector betwen the coordinates systems of two zones.
@@ -556,5 +642,20 @@ Eigen::Vector3D zone_to_zone_transform(
 		///to quantities of the from_zone (if this argument is true) or the
 		///to_zone (if false).
 		bool with_respect_to_from=false);
+
+///Transforms the inclination and periapsis of a zone between references.
+void transform_zone_orientation(
+		///The zone whose orientation we wish to transform
+		DissipatingZone &zone,
+
+		///The reference frame in which we want to express the zone's
+		///orientation in in the old reference frame.
+		DissipatingZone &reference,
+
+		///Overwritten by the inclination of zone in the new reference frame.
+		double &inclination,
+
+		///Overwritten by the periapsis of zone in the new reference frame.
+		double &periapsis);
 
 #endif
