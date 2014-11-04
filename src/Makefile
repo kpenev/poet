@@ -18,11 +18,10 @@ COMMON_MODULES  = BinarySystem BreakLockCondition CombinedStoppingCondition \
 				  ExponentialDecayDiffRotBody ExternalStoppingConditions \
 				  Functions MESAIO OrbitalExpressions OrbitSolver \
 				  SaturatingSkumanichWindBody SecondaryDeathCondition \
-				  SinCosIntegrals SpinOrbitLockInfo StellarEvolution \
-				  StopHistoryInterval StoppingConditions \
-				  SynchronizedCondition TwoPhaseLagZone \
-				  WindSaturationCondition YRECCore YRECEnvelope YRECIO \
-				  ZoneOrientation
+				  SpinOrbitLockInfo StellarEvolution StopHistoryInterval \
+				  StopInformation StoppingCondition SynchronizedCondition \
+				  TwoPhaseLagZone WindSaturationCondition YRECCore \
+				  YRECEnvelope YRECIO ZoneOrientation
 
 BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \

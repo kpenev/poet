@@ -1,6 +1,6 @@
 #include "YRECCore.h"
 
-void YRECEnvelope::reset_current_quantities()
+void YRECCore::reset_current_quantities()
 {
 	for(size_t i=0; i<__current_age_quantities.size(); ++i)
 		if(__current_age_quantities[i]) {
@@ -9,7 +9,7 @@ void YRECEnvelope::reset_current_quantities()
 		}
 }
 
-YRECEnvelope::reset()
+void YRECCore::reset()
 {
 	reset_current_quantities();
 	if(__mass) {
@@ -34,15 +34,15 @@ double YRECCore::current_age_quantity(CurrentAgeQuantities quantity,
 		switch(quantity) {
 			case MASS :
 				__current_age_quantities[MASS]=
-					__mass->deriv(__age);
+					__mass->deriv(__current_age);
 				break;
 			case RADIUS :
 				__current_age_quantities[RADIUS]=
-					__radius->deriv(__age);
+					__radius->deriv(__current_age);
 				break;
 			case INERTIA :
 				__current_age_quantities[INERTIA]=
-					__moment_of_inertia->deriv(__age);
+					__moment_of_inertia->deriv(__current_age);
 				break;
 			default :
 #ifdef DEBUG

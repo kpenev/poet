@@ -8,6 +8,8 @@
  */
 
 #include "TwoPhaseLagZone.h"
+#include "Functions.h"
+#include "StellarEvolution.h"
 
 ///\brief Surface convective zone for low mass YREC stars or the entire star
 ///for high mass stars.

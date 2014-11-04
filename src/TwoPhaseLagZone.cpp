@@ -1,7 +1,7 @@
 #include "TwoPhaseLagZone.h"
 
 double TwoPhaseLagZone::modified_phase_lag(
-		int orbital_frequency_multiplier, int spin_frequency_multiplier,
+		int , int spin_frequency_multiplier,
 		double forcing_frequency, Dissipation::Derivative deriv,
 		double &above_lock_value) const
 {

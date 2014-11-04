@@ -4,6 +4,7 @@
 #include "StoppingCondition.h"
 
 class DissipatingZone;
+class BinarySystem;
 
 ///\brief Satisfied when some multiples of the orbit and stellar rotation are
 ///synchronized.
@@ -27,7 +28,7 @@ private:
 	short __expected_crossing_deriv_sign;
 
 	///The zone whose spin is monitored.
-	DissipatingZone &__zone;
+	const DissipatingZone &__zone;
 
 	///The binary system this locking condition is attached to.
 	BinarySystem &__system;

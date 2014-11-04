@@ -2,6 +2,7 @@
 #define __EXPONENTIAL_DECAY_DIFF_ROT_COUPLING_BODY_H
 
 #include "DissipatingBody.h"
+#include "ZoneOrientation.h"
 
 /**\file
  *
@@ -38,7 +39,7 @@ private:
 	///
 	///See DissipatingBody::angular_momentum_coupling() for a description of
 	///the arguments.
-	double &torque_entry(unsigned top_zone_index, 
+	Eigen::Vector3d &torque_entry(unsigned top_zone_index, 
 			Dissipation::Derivative deriv, bool wih_respect_to_top) const;
 public:
 	///Construct a body with default differential rotatino torque.

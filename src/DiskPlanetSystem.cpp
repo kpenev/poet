@@ -85,7 +85,7 @@ void DiskPlanetSystem::reached_critical_age(double age)
 	if(age==__secondary_formation_age) add_secondary();
 }
 
-double DiskPlanetSystem::next_stop_age()
+double DiskPlanetSystem::next_stop_age() const
 {
 	if(age()<__disk_dissipation_age) 
 		return __disk_dissipation_age;

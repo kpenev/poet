@@ -2,8 +2,8 @@
 
 std::valarray<double> WindSaturationCondition::operator()(
 		EvolModeType evol_mode,
-		const std::valarray<double> &orbit,
-		const std::valarray<double> &derivatives,
+		const std::valarray<double> &,
+		const std::valarray<double> &,
 		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
@@ -22,7 +22,8 @@ std::valarray<double> WindSaturationCondition::operator()(
 						 ];
 	stop_deriv.resize(1,
 		   	(surf_angmom_deriv - __body.zone(0).moment_of_inertia(1)*wsurf)
-			/(__body.zone(0).moment_of_inertia()*wsat));
-	if(std::isinf(wsat)) return std::valarray<double>(-1.0, 1);
-	return std::valarray<double>((wsurf-wsat)/wsat, 1);
+			/(__body.zone(0).moment_of_inertia()*__saturation_freq));
+	if(std::isinf(__saturation_freq)) return std::valarray<double>(-1.0, 1);
+	return std::valarray<double>((wsurf-__saturation_freq)/__saturation_freq,
+								 1);
 }

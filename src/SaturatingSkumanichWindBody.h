@@ -2,6 +2,7 @@
 #define __SATURATING_SKUMANICH_WIND_BODY_H
 
 #include "DissipatingBody.h"
+#include "BinarySystem.h"
 
 /**\file
  *

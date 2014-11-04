@@ -1,4 +1,5 @@
 #include "SecondaryDeathCondition.h"
+#include "BinarySystem.h"
 
 std::valarray<double> SecondaryDeathCondition::operator()(
 		EvolModeType
@@ -28,7 +29,17 @@ std::valarray<double> SecondaryDeathCondition::operator()(
 			(semimajor-min_semimajor)/min_semimajor, 1);
 }
 
-void reached(short deriv_sign, unsigned index=0)
+void SecondaryDeathCondition::reached(
+#ifdef DEBUG
+		short deriv_sign, unsigned index
+#else 
+		short, unsigned
+#endif
+		)
 {
+#ifdef DEBUG
+	assert(index==0);
+	assert(deriv_sign==-1);
+#endif
 	__system.secondary_died();
 }

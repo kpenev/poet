@@ -1,3 +1,5 @@
+#include "YRECEnvelope.h"
+
 void YRECEnvelope::reset_current_quantities()
 {
 	for(size_t i=0; i<__current_age_quantities.size(); ++i)
@@ -7,7 +9,7 @@ void YRECEnvelope::reset_current_quantities()
 		}
 }
 
-YRECEnvelope::reset()
+void YRECEnvelope::reset()
 {
 	reset_current_quantities();
 	if(__outer_radius) {
@@ -27,11 +29,11 @@ double YRECEnvelope::current_age_quantity(CurrentAgeQuantities quantity,
 		switch(quantity) {
 			case RADIUS :
 				__current_age_quantities[RADIUS]=
-					__outer_radius->deriv(__age);
+					__outer_radius->deriv(__current_age);
 				break;
 			case INERTIA :
 				__current_age_quantities[INERTIA]=
-					__moment_of_inertia->deriv(__age);
+					__moment_of_inertia->deriv(__current_age);
 				break;
 			default :
 #ifdef DEBUG

@@ -1,4 +1,5 @@
 #include "SynchronizedCondition.h"
+#include "BinarySystem.h"
 #include "DissipatingZone.h"
 
 SynchronizedCondition::SynchronizedCondition(int orbital_freq_mult,
@@ -7,8 +8,9 @@ SynchronizedCondition::SynchronizedCondition(int orbital_freq_mult,
 		__orbital_freq_mult(orbital_freq_mult),
 		__spin_freq_mult(spin_freq_mult), __primary(primary),
 		__zone_index(zone_index), 
-		__zone(primary 
-				? system.primary() : system.secondary()).zone(zone_index),
+		__expected_crossing_deriv_sign(deriv_sign),
+		__zone((primary 
+				? system.primary() : system.secondary()).zone(zone_index)),
 		__system(system)
 {}
 
@@ -42,7 +44,7 @@ std::valarray<double> SynchronizedCondition::operator()(
 	unsigned angmom_ind=1+2*__system.number_zones();
 	if(!__primary) angmom_ind+=__system.primary().number_zones()
 		-
-			__system.primary.number_locked_zones();
+			__system.primary().number_locked_zones();
 	for(unsigned i=0; i<__zone_index; ++i)
 		if(!__system.secondary().zone(i).locked()) ++angmom_ind;
 
@@ -66,5 +68,5 @@ void SynchronizedCondition::reached(short deriv_sign, unsigned index)
 #endif
 	StoppingCondition::reached(deriv_sign, index);
 	__system.check_for_lock(__orbital_freq_mult, __spin_freq_mult,
-			__body_index, __zone_index);
+							(__primary ? 0 : 1), __zone_index);
 }

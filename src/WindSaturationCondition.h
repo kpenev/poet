@@ -2,6 +2,7 @@
 #define __WIND_SATURATION_CONDITION_H
 
 #include "StoppingCondition.h"
+#include "SaturatingSkumanichWindBody.h"
 
 ///\brief Satisfied when the surface zone of a body is spinning at exactly
 ///the wind saturation frequency.
@@ -16,7 +17,7 @@ private:
 	SaturatingSkumanichWindBody &__body;
 
 	///The primary body in the system if not __body.
-	DissipatingBody &__other_body;
+	const DissipatingBody &__other_body;
 
 	///Is __body we are the primary in the system?
 	bool __primary;
@@ -26,7 +27,7 @@ public:
 			SaturatingSkumanichWindBody &body,
 
 			///The other body in the system.
-			DissipatingBody &other_body,
+			const DissipatingBody &other_body,
 			
 			///Is the body we are monitoring the primary?
 			bool primary) :

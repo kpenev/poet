@@ -8,6 +8,13 @@
 #ifndef __STOP_HISTORY_INTERVAL_H
 #define __STOP_HISTORY_INTERVAL_H
 
+#include "Error.h"
+#include <valarray>
+#include <list>
+#include <ostream>
+#include <cassert>
+#include <iomanip>
+
 ///\brief A collection of accepted and discarded evolution steps which
 ///contain some reason to stop.
 ///

@@ -23,8 +23,7 @@ std::ostream &operator<<(std::ostream &os, const std::list<double> &l)
 int stellar_system_diff_eq(double age, const double *parameters,
 		double *derivatives, void *system_mode)
 {
-	void **input_params=static_cast<void **>(
-			system_mode_windstate_lock_dissipation);
+	void **input_params=static_cast<void **>(system_mode);
 	BinarySystem &system=*static_cast< BinarySystem* >(input_params[0]);
 	EvolModeType evol_mode=*static_cast< EvolModeType* >(input_params[1]);
 	return system.differential_equations(age, parameters, evol_mode,
@@ -34,11 +33,10 @@ int stellar_system_diff_eq(double age, const double *parameters,
 int stellar_system_jacobian(double age, const double *orbital_parameters,
 		double *param_derivs, double *age_derivs,void *system_mode)
 {
-	void **input_params=static_cast<void **>(
-			system_mode_windstate_lock_dissipation);
+	void **input_params=static_cast<void **>(system_mode);
 	BinarySystem &system=*static_cast< BinarySystem* >(input_params[0]);
 	EvolModeType evol_mode=*static_cast< EvolModeType* >(input_params[1]);
-	return system.jacobian(age, parameters, evol_mode, param_derivs,
+	return system.jacobian(age, orbital_parameters, evol_mode, param_derivs,
 						   age_derivs);
 }
 
@@ -331,7 +329,7 @@ double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 		   c2=stop_interval.stop_condition_value(condition_index);
 	double range_low=NaN, range_high=NaN;
 	short crossing_sign=
-		__stopping_conditions.expected_crossing_deriv_sign(condition_index);
+		__stopping_conditions->expected_crossing_deriv_sign(condition_index);
 	if(c0*c1<=0 && c1*crossing_sign>0) {range_low=t0; range_high=t1;}
 	else if(c1*c2<=0 && c1*crossing_sign>0) {range_low=t1; range_high=t2;}
 	if(stop_interval.num_points()==3) {
@@ -424,13 +422,13 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		EvolModeType evolution_mode, StoppingConditionType stop_reason)
 {
 	std::valarray<double> current_stop_cond(
-			__stopping_conditions.num_subconditions()),
+			__stopping_conditions->num_subconditions()),
 						  current_stop_deriv;
-	current_stop_cond=__stopping_conditions(evolution_mode, orbit,
+	current_stop_cond=(*__stopping_conditions)(evolution_mode, orbit,
 			derivatives, current_stop_deriv);
 
 	if(__stop_history_ages.size()==0)
-		initialize_skip_history(__stopping_conditions, stop_reason);
+		initialize_skip_history(*__stopping_conditions, stop_reason);
 	StopInformation result;
 	insert_discarded(age, current_stop_cond, current_stop_deriv);
 #ifdef DEBUG
@@ -439,7 +437,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 #endif
 	for(size_t cond_ind=0; cond_ind<current_stop_cond.size(); cond_ind++) {
 		StoppingConditionType
-			stop_cond_type=__stopping_conditions.type(cond_ind);
+			stop_cond_type=__stopping_conditions->type(cond_ind);
 		double stop_cond_value=current_stop_cond[cond_ind],
 			   crossing_age=crossing_from_history(cond_ind);
 		ExtremumInformation extremum=extremum_from_history(cond_ind);
@@ -461,7 +459,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 				stop_info.stop_age()<result.stop_age()) result=stop_info;
 	}
 	if(acceptable_step(age, result)) {
-		update_skip_history(current_stop_cond, result);
+//		update_skip_history(current_stop_cond, result);
 		__stop_history_ages.push_back(age);
 		__stop_cond_history.push_back(current_stop_cond);
 		__stop_deriv_history.push_back(current_stop_deriv);
@@ -497,7 +495,7 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			__precision, __precision, 1, 0);
 	gsl_odeiv2_evolve *evolve=gsl_odeiv2_evolve_alloc(nargs);
 
-	void *sys_mode[5]={&system, &evolution_mode};
+	void *sys_mode[2]={&system, &evolution_mode};
 	gsl_odeiv2_system ode_system={stellar_system_diff_eq,
 		stellar_system_jacobian, nargs, sys_mode};
 	double t=system.age(); 
@@ -507,8 +505,8 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			sys_mode);
 	add_to_evolution(t, evolution_mode, system);
 
-	update_stop_condition_history(t, orbit, derivatives, system,
-			evolution_mode, stop_reason);
+	update_stop_condition_history(t, orbit, derivatives, evolution_mode,
+								  stop_reason);
 	clear_discarded();
 	double step_size=0.01*(max_age-t);
 
@@ -530,8 +528,8 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			}
 			stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
 					sys_mode);
-			stop=update_stop_condition_history(t, orbit, derivatives, system,
-					evolution_mode, stop_reason);
+			stop=update_stop_condition_history(t, orbit, derivatives,
+											   evolution_mode, stop_reason);
 			if(!acceptable_step(t, stop)) {
 				t=go_back(stop.stop_age(), system, orbit, derivatives);
 				if(stop.is_crossing())
@@ -595,7 +593,7 @@ void OrbitSolver::reset(BinarySystem &system)
 }
 
 OrbitSolver::OrbitSolver(double max_age, double required_precision) :
-	__end_age(max_age), __precision(required_precision), 
+	__end_age(max_age), __precision(required_precision)
 {
 #ifdef DEBUG
 	assert(max_age>0);
@@ -617,8 +615,7 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 	while(last_age<stop_evol_age) {
 		double next_stop_age=std::min(stopping_age(last_age, system,
 					required_ages), stop_evol_age);
-		CombinedStoppingCondition *stopping_condition=get_stopping_condition(
-				system);
+		__stopping_conditions=get_stopping_condition(system);
 		StopInformation stop_information=evolve_until(system, next_stop_age,
 				orbit, stop_reason, max_step, evolution_mode);
 #ifdef DEBUG
@@ -628,12 +625,11 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 		last_age=next_stop_age;
 		if(last_age<stop_evol_age) {
 			if(stop_reason==NO_STOP) 
-				system.reached_critical_age(double last_age);
+				system.reached_critical_age(last_age);
 			else 
-				stopping_condition.reached(
+				__stopping_conditions->reached(
 						stop_information.deriv_sign_at_crossing(),
 						stop_information.stop_condition_index());
-			start_age=last_age;
 		}
 #ifdef DEBUG 
 		std::cerr << "Changing evolution mode from " << old_evolution_mode 
@@ -643,6 +639,6 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 			<< "Transforming orbit from: " << old_orbit << " to " << orbit
 			<< std::endl;
 #endif
-		delete stopping_condition;
+		delete __stopping_conditions;
 	}
 }

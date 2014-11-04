@@ -281,9 +281,6 @@ private:
 			///The current evolution mode.
 			EvolModeType evolution_mode,
 
-			///The conditions indicating where evolution should stop.
-			const StoppingCondition &stop_cond,
-
 			///For the first call of this function for an evolution stretch,
 			///this should indicate the reason why the previous stretch was
 			///stopped. For subsequent calls during the same evolution

@@ -2,6 +2,7 @@
 #define __EXTERNAL_STOPPING_CONDITIONS_H
 
 #include "StoppingCondition.h"
+#include "DissipatingZone.h"
 
 /**\file
  *

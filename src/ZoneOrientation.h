@@ -1,3 +1,6 @@
+#ifndef __ZONE_ORIENTATION_H
+#define __ZONE_ORIENTATION_H
+
 /**\file
  * 
  * \brief Declares a class for orientations of zones of DissipatingBody
@@ -76,4 +79,4 @@ void transform_zone_orientation(
 		///Overwritten by the periapsis of zone in the new reference frame.
 		double &periapsis);
 
-
+#endif

@@ -1,7 +1,7 @@
 #include "ZoneOrientation.h"
 
-Eigen::Vector3D zone_to_zone_transform(const DissipatingZone &from_zone,
-		const DissipationgZone &to_zone, const Eigen::Vector3D &vector,
+Eigen::Vector3d zone_to_zone_transform(const ZoneOrientation &from_zone,
+		const ZoneOrientation &to_zone, const Eigen::Vector3d &vector,
 		Dissipation::Derivative deriv, bool with_respect_to_from)
 {
 #ifdef DEBUG
@@ -19,7 +19,8 @@ Eigen::Vector3D zone_to_zone_transform(const DissipatingZone &from_zone,
 		double buffer=cos_dw;
 		if(with_respect_to_from) {cos_dw=sin_dw; sin_dw=-buffer;}
 		else {cos_dw=-sin_dw; sin_dw=buffer;}
-	} else if(deriv==Dissipation::INCLINATION) {
+	}
+	if(deriv==Dissipation::INCLINATION) {
 		if(with_respect_to_from) {
 			sin_sin=sin_to*cos_from;
 			cos_cos=-cos_to*sin_from;
@@ -37,7 +38,7 @@ Eigen::Vector3D zone_to_zone_transform(const DissipatingZone &from_zone,
 		sin_cos=sin_to*cos_from;
 		cos_sin=cos_to*sin_from;
 	}
-	return Eigen::Vector3D(
+	return Eigen::Vector3d(
 			(sin_sin+cos_cos*cos_dw)*vector[0] - cos_to*sin_dw*vector[1]
 			+ (sin_cos-cos_sin*cos_dw)*vector[2],
 
@@ -49,8 +50,8 @@ Eigen::Vector3D zone_to_zone_transform(const DissipatingZone &from_zone,
 			+ (cos_cos+sin_sin*cos_dw)*vector[2]);
 }
 
-void transform_zone_orientation(const DissipatingZone &zone,
-		const DissipatingZone &reference, double &inclination,
+void transform_zone_orientation(const ZoneOrientation &zone,
+		const ZoneOrientation &reference, double &inclination,
 		double &periapsis)
 {
 	Eigen::Vector3d zone_z_dir=zone_to_zone_transform(zone,

@@ -5,7 +5,7 @@
  * \ingroup OrbitSolver_group
  */
 
-#include "StoppingConditions.h"
+#include "StoppingCondition.h"
 
 std::ostream &operator<<(std::ostream &os,
 		const StoppingConditionType &stop_cond_type)

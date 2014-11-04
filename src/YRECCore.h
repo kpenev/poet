@@ -2,6 +2,8 @@
 #define __YREC_CORE_H
 
 #include "TwoPhaseLagZone.h"
+#include "Functions.h"
+#include "StellarEvolution.h"
 
 ///\brief Radiative core for low mass YREC stars.
 class YRECCore : virtual public TwoPhaseLagZone {

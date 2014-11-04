@@ -28,6 +28,21 @@ void CombinedStoppingCondition::add_subcondition_values(
 	}
 }
 
+std::vector<StoppingCondition *>::iterator 
+CombinedStoppingCondition::find_condition(unsigned &index)
+{
+	std::vector<StoppingCondition *>::iterator sc_iter=
+		__sub_conditions.begin();
+	while(index>=(*sc_iter)->num_subconditions()) {
+#ifdef DEBUG
+		assert(sc_iter!=__sub_conditions.end());
+#endif
+		index-=(*sc_iter)->num_subconditions();
+		++sc_iter;
+	}
+	return sc_iter;
+}
+
 CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 		CombinedStoppingCondition &rhs)
 {
@@ -70,16 +85,15 @@ std::valarray<double> CombinedStoppingCondition::operator()(
 
 void CombinedStoppingCondition::reached(short deriv_sign, unsigned index)
 {
-	std::vector<StoppingCondition *>::iterator sc_iter=
-		__sub_conditions.begin();
-	while(index>=(*sc_iter)->num_subconditions()) {
-#ifdef DEBUG
-		assert(sc_iter!=__sub_conditions.end());
-#endif
-		index-=(*sc_iter)->num_subconditions();
-		++sc_iter;
-	}
+	
+	std::vector<StoppingCondition *>::iterator sc_iter=find_condition(index);
 	(*sc_iter)->reached(deriv_sign, index);
+}
+
+short CombinedStoppingCondition::expected_crossing_deriv_sign(unsigned index)
+{
+	std::vector<StoppingCondition *>::iterator sc_iter=find_condition(index);
+	return (*sc_iter)->expected_crossing_deriv_sign(index);
 }
 
 CombinedStoppingCondition::~CombinedStoppingCondition()

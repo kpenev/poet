@@ -832,7 +832,7 @@ public:
 			double age, 
 
 			///See differential_equations()
-			double *parameters, 
+			const double *parameters, 
 
 			///The evolution mode to assume for the system.
 			EvolModeType evolution_mode,
@@ -869,7 +869,7 @@ public:
 	/// - 2.44*(secondary radius)*((primary mass)/(secondary mass))^(1/3)
 	virtual double minimum_semimajor(
 			///If true the rate of change (per Gyr) is returned.
-			bool deriv) const;
+			bool deriv=false) const;
 
 	///The evolution mode of last call to configure().
 	EvolModeType evolution_mode() {return __evolution_mode;}
@@ -914,7 +914,7 @@ public:
 
 	///\brief The next age when the evolution needs to be stopped for a
 	///system change
-	virtual double next_stop_age() =0;
+	virtual double next_stop_age() const =0;
 
 	///The tabulated evolution of the semimajor axis so far.
 	const std::list<double> &semimajor_evolution() const

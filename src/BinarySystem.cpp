@@ -1344,7 +1344,7 @@ int BinarySystem::differential_equations(double age,
 	}
 }
 
-int BinarySystem::jacobian(double age, double *parameters, 
+int BinarySystem::jacobian(double age, const double *parameters, 
 		EvolModeType evolution_mode, double *param_derivs,
 		double *age_derivs)
 {

@@ -9,6 +9,9 @@
 #ifndef __SIN_COS_INTEGRALS_H
 #define __SIN_COS_INTEGRALS_H
 
+#include <vector>
+#include <cmath>
+
 ///\brief Calculates \f$\int_0^{2\pi} \sin^{2m} u \cos^{2n} u du\f$.
 ///
 ///\ingroup Utilities

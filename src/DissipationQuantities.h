@@ -106,7 +106,7 @@ namespace Dissipation {
 		NUM_DERIVATIVES};
 };
 
-bool zone_specific(Dissipation::Derivative deriv)
+inline bool zone_specific(Dissipation::Derivative deriv)
 {
 	return (deriv==Dissipation::SPIN_FREQUENCY ||
 			deriv==Dissipation::INCLINATION ||

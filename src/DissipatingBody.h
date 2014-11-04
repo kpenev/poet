@@ -498,7 +498,7 @@ public:
 	double mass() const {return zone(0).outer_mass(Dissipation::NO_DERIV);}
 
 	///The surface spin freuqency of the body.
-	double spin_frequency() {return zone(0).spin_frequency();}
+	double spin_frequency() const {return zone(0).spin_frequency();}
 
 	///\brief Angular velocity of the surface zone when locked (assumed
 	///constant).

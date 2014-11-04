@@ -4,11 +4,13 @@ void ExponentialDecayDiffRotBody::reset_torque()
 {
 	if(__torque.size()!=number_zones()-1)
 		__torque.resize(number_zones()-1);
-	__torque=Eigen::Vector3d(NaN, NaN, NaN);
+	for(unsigned i=0; i<number_zones()-1; ++i)
+		__torque[i].resize(11, Eigen::Vector3d(NaN, NaN, NaN));
 }
 
-double &ExponentialDecayDiffRotBody::torque_entry(unsigned top_zone_index, 
-		Dissipation::Derivative deriv, bool wih_respect_to_top)
+Eigen::Vector3d &ExponentialDecayDiffRotBody::torque_entry(
+		unsigned top_zone_index, Dissipation::Derivative deriv,
+		bool with_respect_to_top) const
 {
 #ifdef DEBUG
 	assert(deriv!=ORBITAL_FREQUENCY);
@@ -16,7 +18,7 @@ double &ExponentialDecayDiffRotBody::torque_entry(unsigned top_zone_index,
 	assert(deriv!=SEMIMAJOR);
 	assert(top_zone_index<number_zones()-1);
 #endif
-	std::valarray<double> &zone_torque=__torque[top_zone_index];
+	std::valarray<Eigen::Vector3d> &zone_torque=__torque[top_zone_index];
 	switch(deriv) {
 		case Dissipation::NO_DERIV : return zone_torque[0];
 		case Dissipation::SPIN_FREQUENCY : 
@@ -29,6 +31,8 @@ double &ExponentialDecayDiffRotBody::torque_entry(unsigned top_zone_index,
 				   return zone_torque[(with_respect_to_top ? 7 : 8)];
 		case Dissipation::SPIN_ANGMOM :
 				   return zone_torque[(with_respect_to_top ? 9 : 10)];
+		default: throw Error::BadFunctionArguments("Unsupported derivative "
+						 "in ExponentialDecayDiffRotBody::torque_entry");
 	}
 }
 
@@ -48,19 +52,21 @@ void ExponentialDecayDiffRotBody::configure(double age,
 }
 
 Eigen::Vector3d ExponentialDecayDiffRotBody::angular_momentum_coupling(
-		unsigned top_zone_index,
-		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-		bool with_respect_to_top=false) const
+		unsigned top_zone_index, Dissipation::Derivative deriv,
+		bool with_respect_to_top) const
 {
 #ifdef DEBUG
 	assert(top_zone_index<number_zones()-1);
 #endif
-	if(deriv==ORBITAL_FREQUENCY || deriv==ECCENTRICITY || deriv==SEMIMAJOR)
+	if(deriv==Dissipation::ORBITAL_FREQUENCY
+			|| deriv==Dissipation::ECCENTRICITY
+			|| deriv==Dissipation::SEMIMAJOR)
 		return Eigen::Vector3d(0, 0, 0);
-	double &result=torque_entry(top_zoneindex, deriv, with_respect_to_top);
+	Eigen::Vector3d &result=torque_entry(top_zone_index, deriv,
+										 with_respect_to_top);
 	if(!std::isnan(result[0])) return result;
-	DissipatingZone &zone1=zone(top_zone_index),
-					&zone2=zone(top_zone_index+1);
+	const DissipatingZone &zone1=zone(top_zone_index),
+						  &zone2=zone(top_zone_index+1);
 	double i1=zone1.moment_of_inertia(), i2=zone2.moment_of_inertia();
 	if(deriv==Dissipation::INCLINATION || deriv==Dissipation::PERIAPSIS)
 		result=zone_to_zone_transform(
@@ -72,7 +78,8 @@ Eigen::Vector3d ExponentialDecayDiffRotBody::angular_momentum_coupling(
 		result=Eigen::Vector3d(0, 0, -(deriv==Dissipation::SPIN_ANGMOM
 									   ? 1.0/i1 : 1.0));
 	else {
-		result=zone_to_zone_trasform(zone2, zone1, Eigen::Vector3d(0, 0, 1));
+		result=zone_to_zone_transform(zone2, zone1,
+									  Eigen::Vector3d(0, 0, 1));
 		if(deriv==Dissipation::SPIN_ANGMOM) result/=i2;
 		else if(deriv!=Dissipation::SPIN_FREQUENCY)
 			result*=zone2.spin_frequency();

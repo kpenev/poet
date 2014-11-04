@@ -51,6 +51,11 @@ private:
 
 			///An array to overwrite with the sub-condition derivatives.
 			std::valarray<double> &derivs) const;
+
+	///\brief Finds the condition corresponding to the given index and 
+	///modifies the index to be the index within the given condition.
+	std::vector<StoppingCondition *>::iterator 
+		find_condition(unsigned &index);
 public:
 	///Create an empty stopping condition (identical to NoStopCondition).
 	CombinedStoppingCondition() :
