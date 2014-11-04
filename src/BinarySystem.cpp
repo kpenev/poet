@@ -342,7 +342,7 @@ void BinarySystem::calculate_above_lock_fractions(Eigen::VectorXd &fractions,
 {
 	unsigned num_locked_zones=__locked_zones.size();
 #ifdef DEBUG
-	assert(num_lockde_zones==__body1.number_locked_zones()
+	assert(num_locked_zones==__body1.number_locked_zones()
 				 			 +
 							 __body2.number_locked_zones());
 #endif

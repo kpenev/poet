@@ -99,7 +99,7 @@ public:
 	const YRECCore &core() const
 	{
 #ifdef DEBUG
-		assert(__is_low_mass);
+		assert(__low_mass);
 #endif
 		return __core;
 	}

@@ -145,13 +145,7 @@ public:
 	StoppingConditionType type(unsigned =0) const {return NO_STOP;}
 
 	///See StoppingCondition::reached().
-	void reached(
-#ifdef DEBUG
-			short deriv_sign, unsigned index=0
-#else
-			short, unsigned=0
-#endif
-			)
+	void reached(short, unsigned=0)
 	{
 #ifdef DEBUG
 		assert(false);

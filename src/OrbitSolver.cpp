@@ -334,7 +334,7 @@ double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 	else if(c1*c2<=0 && c1*crossing_sign>0) {range_low=t1; range_high=t2;}
 	if(stop_interval.num_points()==3) {
 #ifdef DEBUG
-		else assert(!std::isnan(range_low) && !std::isnan(range_high));
+		assert(!std::isnan(range_low) && !std::isnan(range_high));
 #endif
 		return quadratic_zerocrossing(t0, c0, t1, c1, t2, c2,
 				range_low, range_high);
@@ -476,10 +476,8 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 {
 	size_t nargs=orbit.size();
 #ifdef DEBUG
-	std::cerr << "Starting evolution leg in "
-		<< (star_lock ? "locked " : "not locked ") << evolution_mode
-		<< " mode with " << wind_state << " wind from t=" << system.age()
-		<< " initial orbit=";
+	std::cerr << "Starting evolution leg in " << evolution_mode
+		<< " from t=" << system.age() << " with initial orbit=";
 	for(size_t i=0; i<nargs; ++i) {
 		if(i) std::cerr << ", ";
 		std::cerr << orbit[i];
@@ -636,8 +634,11 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 			<< " with " << old_locked_zones << " zones locked to "
 			<< evolution_mode << " with " << system.number_locked_zones()
 			<< " zones locked." << std::endl
-			<< "Transforming orbit from: " << old_orbit << " to " << orbit
-			<< std::endl;
+			<< "Transforming orbit from: " << orbit;
+#endif
+		system.fill_orbit(orbit);
+#ifdef DEBUG
+		std::cerr << " to " << orbit << std::endl;
 #endif
 		delete __stopping_conditions;
 	}

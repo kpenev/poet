@@ -241,7 +241,7 @@ Eigen::Vector3d DissipatingBody::angular_momentum_transfer_from_bottom(
 		}
 	}
 #ifdef DEBUG
-	else assert(false)
+	else assert(false);
 #endif
 	return scaling*__angular_momentum_transfer[zone_index][0];
 }
@@ -448,7 +448,9 @@ Eigen::Vector3d DissipatingBody::nontidal_torque(unsigned zone_index,
 #ifdef DEBUG
 	assert(zone_index<number_zones());
 	assert(static_cast<int>(zone_index)+deriv_zone>0);
-	assert(static_cast<int>(zone_index)+deriv_zone<number_zones());
+	assert(static_cast<int>(zone_index)+deriv_zone
+		   <
+		   static_cast<int>(number_zones()));
 #endif
 	const DissipatingZone &this_zone=zone(zone_index);
 	Eigen::Vector3d result(0, 0, 0);
@@ -544,7 +546,8 @@ double DissipatingBody::tidal_orbit_energy_gain(
 			   *tidal_power(deriv_zone_index, false, deriv);
 	}
 #ifdef DEBUG
-	assert(above_lock_fraction_deriv.size()==__above_locke_fractions.size());
+	assert(above_lock_fraction_deriv.size()==
+			__above_lock_fractions[Dissipation::NO_DERIV].size());
 #endif
 	for(unsigned i=0; i<above_lock_fraction_deriv.size(); ++i)
 		result+=

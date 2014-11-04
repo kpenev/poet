@@ -13,9 +13,9 @@ Eigen::Vector3d &ExponentialDecayDiffRotBody::torque_entry(
 		bool with_respect_to_top) const
 {
 #ifdef DEBUG
-	assert(deriv!=ORBITAL_FREQUENCY);
-	assert(deriv!=ECCENTRICITY);
-	assert(deriv!=SEMIMAJOR);
+	assert(deriv!=Dissipation::ORBITAL_FREQUENCY);
+	assert(deriv!=Dissipation::ECCENTRICITY);
+	assert(deriv!=Dissipation::SEMIMAJOR);
 	assert(top_zone_index<number_zones()-1);
 #endif
 	std::valarray<Eigen::Vector3d> &zone_torque=__torque[top_zone_index];

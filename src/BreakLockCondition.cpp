@@ -17,8 +17,8 @@ std::valarray<double> BreakLockCondition::operator()(
 						 __system.number_locked_zones());
 	assert(orbit.size()==derivatives.size());
 	if(__system.number_locked_zones()==0)
-		assert(std::pow(__system.semiamjor(), 6.5)==orbit[0]);
-	else assert(__system.semiamjor()==orbit[0]);
+		assert(std::pow(__system.semimajor(), 6.5)==orbit[0]);
+	else assert(__system.semimajor()==orbit[0]);
 #endif
 	double frac=__system.above_lock_fraction(__locked_zone_index),
 		   dfrac_dt=__system.above_lock_fraction(__locked_zone_index,

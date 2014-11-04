@@ -295,8 +295,8 @@ double quadratic_extremum(double x0, double y0, double x1,
 		*extremum_y=y0 - s02*s02/(2.0*a) + s02*x2 
 			- a*(x0*x0 + x2*x2)/2.0;
 #ifdef DEBUG
-	double b=-2.0*a*extremum_x;
-/*	std::cerr << "Quadratic extremum between (" << x0 << ", " << y0 << "), ("
+/*	double b=-2.0*a*extremum_x;
+	std::cerr << "Quadratic extremum between (" << x0 << ", " << y0 << "), ("
 		<< x1 << ", " << y1 << "), (" << x2 << ", " << y2 << "), coef=("
 		<< a << ", " << b << ", "
 		<< *extremum_y - a*extremum_x*extremum_x - b*extremum_x
@@ -359,9 +359,9 @@ double cubic_extremum(double x0, double y0, double x1,
 			   b=2.0*gsl_vector_get(cubic_coef, 2),
 			   c=gsl_vector_get(cubic_coef, 1), sqrtD=std::sqrt(b*b-4.0*a*c);
 #ifdef DEBUG
-		double extremum_x1=(-b-sqrtD)/(2.0*a),
+/*		double extremum_x1=(-b-sqrtD)/(2.0*a),
 			   extremum_x2=(-b+sqrtD)/(2.0*a),
-			   d=y0 - a*x0*x0*x0/3.0 - b*x0*x0/2.0 - c*x0;
+			   d=y0 - a*x0*x0*x0/3.0 - b*x0*x0/2.0 - c*x0;*/
 		if(std::isnan(require_range_low)) {
 			assert(std::isnan(require_range_high));
 			require_range_low=x0;

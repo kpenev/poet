@@ -8,7 +8,7 @@ std::valarray<double> WindSaturationCondition::operator()(
 {
 #ifdef DEBUG
 	assert(evol_mode!=LOCKED_SURFACE_SPIN);
-	if(evole_mode!=BINARY) assert(__primary);
+	if(evol_mode!=BINARY) assert(__primary);
 #endif 
 	unsigned num_zones=__body.number_zones();
 	if(evol_mode==BINARY) num_zones+=__other_body.number_zones();

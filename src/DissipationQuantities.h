@@ -2,6 +2,7 @@
 #define __DISSIPATION_QUANTITIES_H
 
 #include <ostream>
+#include <cassert>
 
 ///\brief Isolates constants related to the tidal dissipation.
 ///
