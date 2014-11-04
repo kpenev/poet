@@ -13,24 +13,6 @@
 
 const double OrbitSolver::MAX_END_AGE = 10;
 
-std::ostream &operator<<(std::ostream &os, const EvolVarType &evol_var)
-{
-	switch(evol_var) {
-		case AGE : os << "AGE"; break;
-		case SEMIMAJOR : os << "SEMIMAJOR"; break;
-		case INCLINATION : os << "INCLINATION"; break;
-		case LCONV : os << "LCONV"; break;
-		case LRAD_PAR : os << "LRAD_PAR";
-		case LRAD_PERP : os << "LRAD_PERP";
-		default :
-#ifdef DEBUG
-						 assert(false)
-#endif
-							 ;
-	};
-	return os;
-}
-
 std::ostream &operator<<(std::ostream &os, const std::list<double> &l)
 {
 	for(std::list<double>::const_iterator i=l.begin();
@@ -439,15 +421,13 @@ bool OrbitSolver::acceptable_step(double age,
 StopInformation OrbitSolver::update_stop_condition_history(double age,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
-		const StellarSystem &system, EvolModeType evolution_mode,
-		StoppingConditionType stop_reason)
+		EvolModeType evolution_mode, StoppingConditionType stop_reason)
 {
 	std::valarray<double> current_stop_cond(
 			__stopping_conditions.num_subconditions()),
 						  current_stop_deriv;
-	current_stop_cond=__stopping_conditions(
-			orbit, derivatives, __dissipation, system, current_stop_deriv,
-			evolution_mode);
+	current_stop_cond=__stopping_conditions(evolution_mode, orbit,
+			derivatives, current_stop_deriv);
 
 	if(__stop_history_ages.size()==0)
 		initialize_skip_history(__stopping_conditions, stop_reason);
@@ -471,9 +451,11 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 					__stop_cond_history.back()[cond_ind]))/
 			std::abs(extremum.y());
 		bool is_crossing=crossing_age<=extremum.x();
+		short deriv_sign=0;
+		if(is_crossing) deriv_sign=(stop_cond_value>0 ? 1 : -1);
 		StopInformation stop_info(std::min(crossing_age, extremum.x()),
 				(is_crossing ? stop_cond_value : extremum_precision),
-				stop_cond_type, is_crossing, true, cond_ind);
+				stop_cond_type, is_crossing, true, cond_ind, deriv_sign);
 
 		if((!acceptable_step(age, stop_info) || is_crossing) &&
 				stop_info.stop_age()<result.stop_age()) result=stop_info;
@@ -489,7 +471,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 	return result;
 }
 
-StopInformation OrbitSolver::evolve_until(StellarSystem &system,
+StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 		double &max_age, std::valarray<double> &orbit,
 		StoppingConditionType &stop_reason, double max_step,
 		EvolModeType evolution_mode)
@@ -588,7 +570,7 @@ CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
 	return result;
 }
 
-double OrbitSolver::stopping_age(double age, const StellarSystem &system, 
+double OrbitSolver::stopping_age(double age, const BinarySystem &system, 
 		const std::list<double> &required_ages)
 {
 	double result=system.next_stop_age();
@@ -621,7 +603,7 @@ OrbitSolver::OrbitSolver(double max_age, double required_precision) :
 	if (__end_age > MAX_END_AGE) __end_age = MAX_END_AGE;
 }
 
-void OrbitSolver::operator()(StellarSystem &system, double max_step,
+void OrbitSolver::operator()(BinarySystem &system, double max_step,
 		const std::list<double> &required_ages)
 {
 	double stop_evol_age=__end_age;
@@ -640,7 +622,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 		StopInformation stop_information=evolve_until(system, next_stop_age,
 				orbit, stop_reason, max_step, evolution_mode);
 #ifdef DEBUG
-		EvolModyType old_evolution_mode=evolution_mode;
+		EvolModeType old_evolution_mode=evolution_mode;
 		unsigned old_locked_zones=system.number_locked_zones();
 #endif
 		last_age=next_stop_age;
@@ -649,6 +631,7 @@ void OrbitSolver::operator()(StellarSystem &system, double max_step,
 				system.reached_critical_age(double last_age);
 			else 
 				stopping_condition.reached(
+						stop_information.deriv_sign_at_crossing(),
 						stop_information.stop_condition_index());
 			start_age=last_age;
 		}

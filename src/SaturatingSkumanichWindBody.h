@@ -15,7 +15,7 @@
 /// \f$\propt\omega\min(\omega, \omega_{sat})^2\f$
 ///
 ///\ingroup StellarSystem_group
-class SaturatingSkumanichWindBody : public DissipatingBody {
+class SaturatingSkumanichWindBody : virtual public DissipatingBody {
 private:
 	///The strength of the magnetic wind
 	double __wind_strength,
@@ -56,7 +56,11 @@ public:
 	void saturation_freq_crossed(
 			///The sign of the rate of change of the spin frequency when it
 			///was equal to the saturation frequency.
-			short deriv_sign)
+			short
+#ifdef DEBUG
+			deriv_sign
+#endif
+			)
 	{
 #ifdef DEBUG
 		assert(deriv_sign==(__saturated ? -1 : 1));
@@ -101,6 +105,6 @@ public:
 	///The tabulated wind saturation states so far.
 	const std::list<bool> &wind_saturation_evolution() const
 	{return __saturation_evolution;}
-}
+};
 
 #endif

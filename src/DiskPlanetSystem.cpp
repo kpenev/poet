@@ -3,7 +3,7 @@
 void DiskPlanetSystem::release_surface_spin()
 {
 	unsigned nzones=primary().number_zones();
-	std::valarray<double> angmom(nzones), zeros(0.0, nzones-1),
+	std::valarray<double> angmom(nzones), zeros(0.0, nzones-1);
 	for(unsigned zone_ind=0; zone_ind<nzones; ++zone_ind)
 		angmom[zone_ind]=primary().zone(zone_ind).angular_momentum();
 	configure(age(), NaN, NaN, &(angmom[0]), &(zeros[0]), &(zeros[0]),
@@ -12,18 +12,17 @@ void DiskPlanetSystem::release_surface_spin()
 
 void DiskPlanetSystem::add_secondary()
 {
-	DissipatingZone orbit_zone;
-	orbit_zone.configure(age(), NaN, NaN, NaN, 1, __initial_inclination, 0);
+	ZoneOrientation orbit_zone(__initial_inclination, 0);
 	unsigned nzones=primary().number_zones()+secondary().number_zones();
 	std::valarray<double> angmom(nzones), inclination(nzones), 
 		periapsis(nzones-1);
 	unsigned zone_ind=0;
 	double must_be_zero;
 	for(short body_ind=0; body_ind<2; ++body_ind) {
-		DissipatingBody &body=(body_ind==0 ? primary() : secondary());
+		const DissipatingBody &body=(body_ind==0 ? primary() : secondary());
 		for(unsigned body_zone_ind=0; body_zone_ind<body.number_zones();
 				++body_zone_ind) {
-			DissipatingZone &zone=body.zone(body_zone_ind);
+			const DissipatingZone &zone=body.zone(body_zone_ind);
 			angmom[zone_ind]=zone.angular_momentum();
 			if(body_ind==0) {
 				transform_zone_orientation(
@@ -35,7 +34,7 @@ void DiskPlanetSystem::add_secondary()
 #endif
 			} else {
 				inclination[zone_ind]=zone.inclination();
-				periapsis[zone_ind]==zone.periapsis();
+				periapsis[zone_ind]=zone.periapsis();
 			}
 			++zone_ind;
 		}
@@ -57,7 +56,7 @@ DiskPlanetSystem::DiskPlanetSystem(DissipatingBody &body1,
 	__disk_dissipation_age(disk_dissipation_age),
 	__secondary_formation_age(secondary_formation_age)
 {
-	if(initial_eccentricity<0 || initial_eccentiricyt>1) {
+	if(initial_eccentricity<0 || initial_eccentricity>1) {
 		std::ostringstream msg;
 		msg << "Invalid initial eccentricity: " << initial_eccentricity
 			<< " encountered in DiskPlanetSystem constructor!";
@@ -77,7 +76,7 @@ DiskPlanetSystem::DiskPlanetSystem(DissipatingBody &body1,
 			<< disk_dissipation_age << ") is not supported at this time.";
 		throw Error::BadFunctionArguments(msg.str());
 	}
-	__body1.set_surface_lock_frequency(__disk_lock_frequency);
+	body1.set_surface_lock_frequency(__disk_lock_frequency);
 }
 
 void DiskPlanetSystem::reached_critical_age(double age)

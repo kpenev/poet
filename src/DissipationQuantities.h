@@ -113,6 +113,7 @@ bool zone_specific(Dissipation::Derivative deriv)
 			deriv==Dissipation::PERIAPSIS ||
 			deriv==Dissipation::MOMENT_OF_INERTIA ||
 			deriv==Dissipation::SPIN_ANGMOM);
+}
 
 ///More civilized output for Dissipation::Quantity variables.
 std::ostream &operator<<(std::ostream &os,

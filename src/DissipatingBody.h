@@ -2,9 +2,12 @@
 #define __DISSIPATING_BODY_H
 
 #include "DissipatingZone.h"
+#include "OrbitalExpressions.h"
 #include "AstronomicalConstants.h"
 #include <valarray>
 #include <cassert>
+
+class BinarySystem;
 
 /**\file 
  *
@@ -31,6 +34,9 @@ class DissipatingBody {
 private:
 	///The coefficient used to normalize tidal power.
 	double __power_norm, 
+
+		   ///The mean angular velocity with which the orbit is traversed.
+		   __orbital_frequency,
 
 		   ///The derivative of the orbital frequency w.r.t. semimajor axis 
 		   __dorbital_frequency_da,
@@ -96,8 +102,8 @@ private:
 	unsigned __num_locked_zones;
 
 	///\brief The fractional contribution of the above the lock rates for
-	///locked zones.
-	Eigen::VectorXd __above_lock_fractions;
+	///locked zones and their derivatives.
+	std::valarray<Eigen::VectorXd> __above_lock_fractions;
 
 	///\brief Scales the dimensionless torques as appropriate and corrects
 	///the relevant derivatives returning the normalization used.
@@ -139,11 +145,11 @@ private:
 
 			///The angular momentum change for the outer zone in the outer
 			///zone's coordinate system.
-			Eigen::Vector3D &outer_angmom_gain,
+			Eigen::Vector3d &outer_angmom_gain,
 
 			///The angular momentum change for the inner zone in the inner
 			///zone's coordinate system.
-			Eigen::Vector3D &inner_angmom_gain,
+			Eigen::Vector3d &inner_angmom_gain,
 
 			///Derivatives with respect to inclination and periapsis can be
 			///computed, in addition to the actual transfer. It is an error
@@ -153,7 +159,7 @@ private:
 			///If deriv is not NO_DERIV, derivatives can be computed with 
 			///respect to quantities of the outer zone (if this argument is 
 			///true) or the inner zone (if false).
-			bool with_respect_to_outer=false);
+			bool with_respect_to_outer=false) const;
 
 	///\brief Rate of angular momentum transfer (or its derivatives) to a
 	///zone due to its top boundary moving.
@@ -173,7 +179,7 @@ private:
 			///If deriv is a zone specific quantity this argument determines
 			///if derivative with respect to the quantity of the zone above
 			///(true) or this zone (false) should be calculated.
-			bool with_respect_to_outer=false);
+			bool with_respect_to_outer=false) const;
 
 	///\brief Rate of angular momentum transfer (or its derivatives) to a
 	///zone due to its bottom boundary moving.
@@ -192,7 +198,7 @@ private:
 			///If deriv is a zone specific quantity this argument determines
 			///if derivative with respect to the quantity of the zone below
 			///(true) or this zone (false) should be calculated.
-			bool with_respect_to_inner=false);
+			bool with_respect_to_inner=false) const;
 
 	///\brief Rate of angular momentum transfer (or its derivatives) to a
 	///zone due to moving zone boundaries.
@@ -208,7 +214,7 @@ private:
 			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 
 			///See matching argument of external_torque() for description.
-			int deriv_zone=0);
+			int deriv_zone=0) const;
 
 	///\brief Calculates the non-tidal torques on all zones.
 	void calculate_nontidal_torques();
@@ -318,7 +324,7 @@ public:
 	///For each zone the torques are in a coordinate system with
 	/// \f$\hat{x}\f$ along the ascending node of the orbit in the zone's
 	///equatorial plane, and \f$\hat{z}\f$ along the zone's angular momentum.
-	const Eigen::Vector3D &nontidal_torque(
+	Eigen::Vector3d nontidal_torque(
 			///The index of the zone whose torque is needed.
 			unsigned zone_index,
 
@@ -336,7 +342,7 @@ public:
 			///   zone.
 			/// - 1 Return the derivative with respect to the quantity for
 			///   the zone below.
-			int deriv_zone=0);
+			int deriv_zone=0) const;
 
 	///\brief Tidal torque acting on the given zone (last 
 	///calculate_torques_power()).
@@ -352,7 +358,7 @@ public:
 			bool above,
 
 			///Which derivative of the tidal torque is required.
-			Dissipation::Derivative deriv=Dissipation::NO_DERIV)
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
 	{
 #ifdef DEBUG
 		assert(zone_index<number_zones());
@@ -422,7 +428,7 @@ public:
 	///\brief Same as tidal_orbit_torque(Dissipation::Derivative, unsigned,
 	///const Eigen::VectorXd &) but allow specifying the zone whose
 	///coordinate system to use.
-	const Eigen::Vector3d &tidal_orbit_torque(
+	Eigen::Vector3d tidal_orbit_torque(
 			///The zone whose coordinate system to express the result.
 			const DissipatingZone &reference_zone,
 
@@ -440,6 +446,13 @@ public:
 
 	///The number of zones the body consists of.
 	virtual unsigned number_zones() const =0;
+
+	///A modifiable reference to one of the body's zones.
+	virtual const DissipatingZone &zone(
+			///The index of the zone within the body. Sequential zones are
+			///ordered from outside to inside (0 is the surface zone,
+			///number_zones()-1 is the core).
+			unsigned zone_index) const=0;
 
 	///A modifiable reference to one of the body's zones.
 	virtual DissipatingZone &zone(
@@ -478,11 +491,11 @@ public:
 	///\brief The current radius or its derivative with age of the body.
 	double radius(
 			///The order of the derivative to return.
-			int deriv_order=0)
+			int deriv_order=0) const
 	{return zone(0).outer_radius(deriv_order);}
 
 	///The mass of the body (constant with age).
-	double mass() {return zone(0).outer_mass(Dissipation::NO_DERIV);}
+	double mass() const {return zone(0).outer_mass(Dissipation::NO_DERIV);}
 
 	///The surface spin freuqency of the body.
 	double spin_frequency() {return zone(0).spin_frequency();}

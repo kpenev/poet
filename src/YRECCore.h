@@ -4,7 +4,7 @@
 #include "TwoPhaseLagZone.h"
 
 ///\brief Radiative core for low mass YREC stars.
-class YRECCore : public TwoPhaseLagZone {
+class YRECCore : virtual public TwoPhaseLagZone {
 private:
 	///The age for the last configure() call.
 	double __current_age,

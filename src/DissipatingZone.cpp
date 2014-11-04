@@ -2,6 +2,31 @@
 
 EccentricityExpansionCoefficients DissipatingZone::__pms;
 
+std::ostream &operator<<(std::ostream &os,
+						 const ZoneEvolutionQuantities &evol_var)
+{
+	switch(evol_var) {
+		case ANGULAR_MOMENTUM : os << "AGE"; break;
+		case INCLINATION : os << "INCLINATION"; break;
+		case PERIAPSIS : os << "PERIAPSIS"; break;
+		case MOMENT_OF_INERTIA : os << "MOMENT_OF_INERTIA"; break;
+		case OUTER_RADIUS : os << "OUTER_RADIUS"; break;
+		case OUTER_MASS : os << "OUTER_MASS"; break;
+		case E_ORDER : os << "E_ORDER"; break;
+		case ORBITAL_FREQ_MULTIPLIER : os << "ORBITAL_FREQ_MULTIPLIER";
+									   break;
+		case SPIN_FREQ_MULTIPLIER : os << "SPIN_FREQ_MULTIPLIER"; break;
+		default :
+#ifdef DEBUG
+						 assert(false)
+#endif
+							 ;
+	};
+	return os;
+}
+
+
+
 const double DissipatingZone::__Umm_coef[][3]={
 	{std::sqrt(3.0*M_PI/10.0)/4.0,
 	 -std::sqrt(6.0*M_PI/5.0)/4.0,
@@ -37,8 +62,8 @@ const double DissipatingZone::__torque_x_minus_coef[]={0.0,           //m=-2
 
 void DissipatingZone::fill_Umm()
 {
-	if(__Ummp_inclination==__inclination) return;
-	__Ummp_inclination=__inclination;
+	if(__Ummp_inclination==inclination()) return;
+	__Ummp_inclination=inclination();
 	double c=std::cos(__Ummp_inclination), s=std::sin(__Ummp_inclination),
 		   s2=std::pow(s, 2), sc=s*c, cp1=c+1.0, cm1=c-1.0;
 
@@ -107,7 +132,7 @@ void DissipatingZone::potential_term(double e, int m, int mp,
 }
 
 void DissipatingZone::fix_forcing_frequency(const SpinOrbitLockInfo &limit, 
-		int orbital_frequency_multiplier, int spin_frequency_multiplier
+		int orbital_frequency_multiplier, int spin_frequency_multiplier,
 		double &forcing_frequency)
 {
 #ifdef DEBUG
@@ -120,8 +145,8 @@ void DissipatingZone::fix_forcing_frequency(const SpinOrbitLockInfo &limit,
 	if(expected_sign*forcing_frequency>0) return;
 	if(limit.lock_direction()*spin_frequency_multiplier*expected_sign<0)
 		forcing_frequency=(expected_sign>0
-						   ? std::numeric_limits::epsilon()
-						   : -std::numeric_limits::epsilon());
+						   ? std::numeric_limits<double>::epsilon()
+						   : -std::numeric_limits<double>::epsilon());
 }
 
 double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
@@ -135,29 +160,33 @@ double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
 		return 0;
 	double forcing_freq=orbital_frequency_multiplier*orbital_frequency
 						-
-						spin_frequnecy_multiplier*spin_frequency;
-	fix_forcing_frequency(__lock, forcing_freq);
-	fix_forcing_frequency(__other_lock, forcing_freq);
+						spin_frequency_multiplier*spin_frequency();
+	fix_forcing_frequency(__lock, orbital_frequency_multiplier,
+						  spin_frequency_multiplier, forcing_freq);
+	fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
+						  spin_frequency_multiplier, forcing_freq);
+	return forcing_freq;
 }
 
-void update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
+void DissipatingZone::update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
 {
 #ifdef DEBUG
 	assert(lock.lock_direction());
 #endif
 	if(std::abs(lock.orbital_frequency_multiplier())>__e_order+2
-			&& lock.spin_frequency_multiplier==2)
+			&& lock.spin_frequency_multiplier()==2)
 		lock.set_lock((lock.orbital_frequency_multiplier()
 					   -
 					   lock.lock_direction())/2,
 					  1, lock.lock_direction());
-	if(lock.orbital_frequency_multiplier()>__e_order+2) {
+	if(lock.orbital_frequency_multiplier()>static_cast<int>(__e_order+2)) {
 		if(lock.lock_direction()>0)
 			lock.set_lock(__e_order+2, 1, 1);
 		else lock.set_lock(1, 0, 1);
-	} else if(lock.orbital_frequency_multiplier()<-__e_order-2) {
-		if(lock.lock_direction()>0) lock.set_lock(1, 0, 1)
-		else lock.set_lock(-__e_order-2, 1, -1);
+	} else if(lock.orbital_frequency_multiplier()<
+			-static_cast<int>(__e_order)-2) {
+		if(lock.lock_direction()>0) lock.set_lock(1, 0, 1);
+		else lock.set_lock(-static_cast<int>(__e_order)-2, 1, -1);
 	}
 }
 
@@ -167,8 +196,8 @@ DissipatingZone::DissipatingZone()
 	__torque_x(2*Dissipation::END_DIMENSIONLESS_DERIV),
 	__torque_y(2*Dissipation::END_DIMENSIONLESS_DERIV),
 	__torque_z(2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__evolution_real(NUM_REAL_QUANTITIES),
-	__evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_QUANTITIES)
+	__evolution_real(NUM_REAL_EVOL_QUANTITIES),
+	__evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES)
 {
 	for(int i=0; i<5; ++i) {
 		__Ummp[i].resize(3);
@@ -176,12 +205,13 @@ DissipatingZone::DissipatingZone()
 	}
 }
 
-void DissipatingZone::configure(double age, double orbital_frequency,
+void DissipatingZone::configure(double, double orbital_frequency,
 		double eccentricity, double orbital_angmom, double spin_angmom,
 		double inclination, double periapsis)
 {
-	__orbital_angmom=orbital_angom;
-	__orbital_frequnecy=orbital_frequency;
+	ZoneOrientation::configure(inclination, periapsis);
+	__orbital_angmom=orbital_angmom;
+	__orbital_frequency=orbital_frequency;
 	if(__lock) {
 		__spin_frequency=__lock.spin(orbital_frequency);
 		__angular_momentum=__spin_frequency*moment_of_inertia();
@@ -189,8 +219,6 @@ void DissipatingZone::configure(double age, double orbital_frequency,
 		__angular_momentum=spin_angmom; 
 		__spin_frequency=spin_angmom/moment_of_inertia();
 	}
-	__inclination=inclination;
-	__periapsis=periapsis;
 	if(std::isnan(orbital_frequency)) return;
 
 	fill_Umm();
@@ -199,7 +227,8 @@ void DissipatingZone::configure(double age, double orbital_frequency,
 	__torque_y=0;
 	__torque_z=0;
 
-	for(int mp=-__e_order-2; mp<=__e_order+2; ++mp) {
+	for(int mp=-static_cast<int>(__e_order)-2;
+			mp<=static_cast<int>(__e_order)+2; ++mp) {
 		double U_mm1mp_value=0, U_mm1mp_i_deriv=0, U_mm1mp_e_deriv=0,
 			   U_mp1mp_value, U_mp1mp_i_deriv, U_mp1mp_e_deriv;
 		potential_term(eccentricity, -2, mp, U_mp1mp_value, U_mp1mp_i_deriv,
@@ -222,14 +251,15 @@ void DissipatingZone::configure(double age, double orbital_frequency,
 					(deriv<Dissipation::END_PHASE_LAG_DERIV
 					 ? static_cast<Dissipation::Derivative>(deriv)
 					 : Dissipation::NO_DERIV);
-				double tidal_frequency=forcing_frequency(mp, m),
+				double tidal_frequency=forcing_frequency(mp, m,
+														 orbital_frequency),
 					   mod_phase_lag_above,
 					   mod_phase_lag_below=modified_phase_lag(mp, m,
 							   tidal_frequency, phase_lag_deriv,
 							   mod_phase_lag_above),
 					   love_coef=love_coefficient(mp, m,
-							   (phase_lag_deriv==Derivative::AGE
-								? Derivative::age : Derivative::NO_DERIV));
+							   (phase_lag_deriv==Dissipation::AGE
+								? Dissipation::AGE : Dissipation::NO_DERIV)),
 					   U_mmp, U_mp1mp, U_mm1mp; 
 				if(deriv<Dissipation::END_PHASE_LAG_DERIV) {
 					U_mmp=U_mmp_value;
@@ -276,12 +306,12 @@ void DissipatingZone::configure(double age, double orbital_frequency,
 double DissipatingZone::periapsis_evolution(
 		const Eigen::Vector3d &orbit_torque,
 		const Eigen::Vector3d &zone_torque,
-		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+		Dissipation::Derivative deriv,
 		const Eigen::Vector3d &orbit_torque_deriv,
 		const Eigen::Vector3d &zone_torque_deriv)
 {
-	double sin_inc=std::sin(__inclination),
-		   cos_inc=std::cos(__inclination),
+	double sin_inc=std::sin(inclination()),
+		   cos_inc=std::cos(inclination()),
 		   zone_y_torque, orbit_y_torque;
 	if(deriv==Dissipation::NO_DERIV) {
 		orbit_y_torque=orbit_torque[2];
@@ -307,7 +337,7 @@ double DissipatingZone::periapsis_evolution(
 			   -
 			   zone_torque[2]/(std::pow(angular_momentum(), 2)*sin_inc)
 			   *(deriv==Dissipation::SPIN_FREQUENCY ? moment_of_inertia():1);
-	else if(deriv==INCLINATION) 
+	else if(deriv==Dissipation::INCLINATION) 
 		return result
 			   -
 			   (
@@ -318,23 +348,24 @@ double DissipatingZone::periapsis_evolution(
 #ifdef DEBUG
 	else assert(false);
 #endif
+	return NaN;
 }
 
 double DissipatingZone::inclination_evolution(
 		const Eigen::Vector3d &orbit_torque,
 		const Eigen::Vector3d &zone_torque,
-		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+		Dissipation::Derivative deriv,
 		const Eigen::Vector3d &orbit_torque_deriv,
 		const Eigen::Vector3d &zone_torque_deriv)
 {
-	double sin_inc=std::sin(__inclination),
-		   cos_inc=std::cos(__inclination),
+	double sin_inc=std::sin(inclination()),
+		   cos_inc=std::cos(inclination()),
 		   zone_x_torque,
 		   orbit_x_torque,
 		   orbit_z_torque;
 	if(deriv==Dissipation::NO_DERIV) {
 		orbit_x_torque=orbit_torque[1];
-		orbit_z_torque=orbit_torque[3]
+		orbit_z_torque=orbit_torque[3];
 		zone_x_torque=zone_torque[1];
 	} else {
 		orbit_x_torque=orbit_torque_deriv[1];
@@ -359,7 +390,7 @@ double DissipatingZone::inclination_evolution(
 			   +
 			   zone_torque[1]/std::pow(angular_momentum(), 2)
 			   *(deriv==Dissipation::SPIN_FREQUENCY ? moment_of_inertia():1);
-	else if(deriv==INCLINATION)
+	else if(deriv==Dissipation::INCLINATION)
 		return result
 			   +
 			   (orbit_torque[3]*cos_inc + orbit_torque[1]*sin_inc)
@@ -367,6 +398,7 @@ double DissipatingZone::inclination_evolution(
 #ifdef DEBUG
 	else assert(false);
 #endif
+	return NaN;
 }
 
 void DissipatingZone::release_lock()
@@ -400,59 +432,11 @@ void DissipatingZone::release_lock(short direction)
 	update_lock_to_lower_e_order(__other_lock);
 }
 
-Eigen::Vector3D zone_to_zone_transform(const DissipatingZone &from_zone,
-		const DissipationgZone &to_zone, const Eigen::Vector3D &vector,
-		Dissipation::Derivative deriv, bool with_respect_to_from)
-{
-#ifdef DEBUG
-	assert(deriv==Dissipation::NO_DERIV || deriv==Dissipation::INCLINATION
-			|| deriv==Dissipation::PERIAPSIS);
-#endif
-	double cos_dw=std::cos(to_zone.periapsis()-from_zone.periapsis()),
-		   sin_dw=std::sin(to_zone.periapsis()-from_zone.periapsis()),
-		   sin_from=std::sin(from_zone.inclination()),
-		   cos_from=std::cos(from_zone.inclination()),
-		   sin_to=std::sin(to_zone.inclination()),
-		   cos_to=std::cos(to_zone.inclination()),
-		   sin_sin, cos_cos, sin_cos, cos_sin;
-	if(deriv==Dissipation::PERIAPSIS) {
-		double buffer=cos_dw;
-		if(with_respect_to_from) {cos_dw=sin_dw; sin_dw=-buffer;}
-		else {cos_dw=-sin_dw; sin_dw=buffer;}
-	} else if(deriv==Dissipation::INCLINATION) {
-		if(with_respect_to_from) {
-			sin_sin=sin_to*cos_from;
-			cos_cos=-cos_to*sin_from;
-			sin_cos=-sin_to*sin_from;
-			cos_sin=cos_to*cos_from;
-		} else {
-			sin_sin=cos_to*sin_from;
-			cos_cos=-sin_to*cos_from;
-			sin_cos=cos_to*cos_from;
-			cos_sin=-sin_to*sin_from;
-		}
-	} else {
-		sin_sin=sin_to*sin_from;
-		cos_cos=cos_to*cos_from;
-		sin_cos=sin_to*cos_from;
-		cos_sin=cos_to*sin_from;
-	}
-	return Eigen::Vector3D(
-			(sin_sin+cos_cos*cos_dw)*vector[0] - cos_to*sin_dw*vector[1]
-			+ (sin_cos-cos_sin*cos_dw)*vector[2],
-
-
-			cos_from*sin_dw*vector[0] + cos_dw*vector[1]
-			- sin_from*sin_dw*vector[2],
-
-			(cos_sin-sin_cos*cos_dw)*vector[0] + sin_to*sin_dw*vector[1]
-			+ (cos_cos+sin_sin*cos_dw)*vector[2]);
-}
-
-void change_e_order(unsigned new_e_order)
+void DissipatingZone::change_e_order(unsigned new_e_order)
 {
 	if(__lock) {
-	   if(__lock.orbital_frequency_multiplier()>__e_order+2) release_lock();
+	   if(__lock.orbital_frequency_multiplier()>
+			   static_cast<int>(__e_order)+2) release_lock();
 	   __e_order=new_e_order;
 	   return;
 	}
@@ -480,20 +464,22 @@ void change_e_order(unsigned new_e_order)
 				>0);
 #endif
 	if(new_e_order>__e_order) {
-		if(__other_lock.spin_frequency_miltiplier()==0) {
+		if(__other_lock.spin_frequency_multiplier()==0) {
 			int orb_mult=std::ceil(std::abs(2*spin_frequency())
 								/__orbital_frequency);
-			if(orb_mult%2==1 && new_e_order+2>=orb_mult)
+			if(orb_mult%2==1 && static_cast<int>(new_e_order)+2>=orb_mult)
 				__other_lock.set_lock(__lock.lock_direction()*orb_mult, 2,
 									  -__lock.lock_direction());
-			else if(new_e_order+2>=orb_mult/2)
+			else if(static_cast<int>(new_e_order)+2>=orb_mult/2)
 				__other_lock.set_lock(__lock.lock_direction()*orb_mult/2, 1,
 									  -__lock.lock_direction());
 		} else if(__lock.spin_frequency_multiplier()==1
 				&& __other_lock.spin_frequency_multiplier()==1
 				&& __lock.orbital_frequency_multiplier()
 			   +
-			   __other_lock.orbital_frequency_multiplier()<=new_e_order+2) {
+			   __other_lock.orbital_frequency_multiplier()
+			   <=
+			   static_cast<int>(new_e_order)+2) {
 			int mid_mult=__lock.orbital_frequency_multiplier()
 				+
 				__other_lock.orbital_frequency_multiplier();
@@ -518,8 +504,8 @@ void change_e_order(unsigned new_e_order)
 void DissipatingZone::add_to_evolution()
 {
 	__evolution_real[ANGULAR_MOMENTUM].push_back(__angular_momentum);
-	__evolution_real[INCLINATION].push_back(__inclination);
-	__evolution_real[PERIAPSIS].push_back(__periapsis);
+	__evolution_real[INCLINATION].push_back(inclination());
+	__evolution_real[PERIAPSIS].push_back(periapsis());
 	__evolution_real[MOMENT_OF_INERTIA].push_back(moment_of_inertia());
 	__evolution_real[OUTER_RADIUS].push_back(outer_radius());
 	__evolution_real[OUTER_MASS].push_back(outer_mass());
@@ -556,35 +542,23 @@ void DissipatingZone::rewind_evolution(unsigned nsteps)
 	}
 }
 
-virtual CombinedStoppingCondition *DissipatingZone::stopping_conditions(
+CombinedStoppingCondition *DissipatingZone::stopping_conditions(
 			BinarySystem &system,  bool primary, unsigned zone_index)
 {
 	CombinedStoppingCondition *result=new CombinedStoppingCondition();
 	if(__lock) 
-		(*result)|=BreakLockCondition(system, __locked_zone_index);
+		(*result)|=new BreakLockCondition(system, __locked_zone_index);
 	else {
-		(*result)|=SynchronizedCondition(
+		(*result)|=new SynchronizedCondition(
 				__lock.orbital_frequency_multiplier(),
 				__lock.spin_frequency_multiplier(),
 				__lock.lock_direction(),
 				primary, zone_index, system);
-		(*result)|=SynchronizedCondition(
+		(*result)|=new SynchronizedCondition(
 				__other_lock.orbital_frequency_multiplier(),
 				__other_lock.spin_frequency_multiplier(),
 				__other_lock.lock_direction(),
 				primary, zone_index, system);
 	}
-}
-
-void transform_zone_orientation(DissipatingZone &zone,
-		DissipatingZone &reference, double &inclination, double &periapsis)
-{
-	Eigen::Vector3d zone_z_dir=zone_to_zone_transform(zone,
-			reference, Eigen::Vector3d(0, 0, 1));
-	inclination=std::atan2(-zone_z_dir[0], zone_z_dir[3]);
-	periapsis=M_PI/2+std::atan2(zone_z_dir[1], -zone_z_dir[0]);
-#ifdef DEBUG
-	assert(inclination>0);
-	assert(inclination<M_PI);
-#endif
+	return result;
 }

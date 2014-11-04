@@ -13,7 +13,7 @@
 
 ///\brief A body with differential rotation torque between two zones given
 ///by: \f$\dot{L}_1=\frac{I_1 L_2 - I_2 L_1}{\tau_c(I_1+I_2)}\f$.
-class ExponentialDecayDiffRotBody : public DissipatingBody {
+class ExponentialDecayDiffRotBody : virtual public DissipatingBody {
 private:
 	///The age for which the last conigure() was called.
 	double __current_age,

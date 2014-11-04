@@ -8,11 +8,12 @@
 #ifndef __BINARY_SYSTEM_H
 #define __BINARY_SYSTEM_H
 
-#include "StellarDissipation.h"
-#include "Planet.h"
+#include "DissipatingBody.h"
 #include "AstronomicalConstants.h"
-#include "TidalDissipation.h"
+#include "CombinedStoppingCondition.h"
+#include "SecondaryDeathCondition.h"
 #include "Common.h"
+#include "OrbitalExpressions.h"
 #include "Error.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_odeiv2.h>
@@ -85,10 +86,10 @@ private:
 		   __orbit_angmom_gain;
 
 	///The evolution mode from the last call to configure();
-	EvolModyType __evolution_mode;
+	EvolModeType __evolution_mode;
 
-	///A list of locked zones.
-	std::list<const DissipatingZone*> __locked_zones;
+	///A list of indices of locked zones.
+	std::list<unsigned> __locked_zones;
 
 	///\brief The above lock fractinos for the locked zones and their
 	///derivatives.
@@ -141,6 +142,9 @@ private:
 		///its surface rotation locked.
 		&__body2;
 
+	///Fills the __locked_zones list.
+	void find_locked_zones();
+
 	///\brief Differential equations for the rotation of the zones of body 0
 	///with the topmost zone rotating with a fixed frequency.
 	///
@@ -148,7 +152,7 @@ private:
 	///configure().
 	void locked_surface_differential_equations(
 			///On output is set to the rates of change of \f$S^0_i\f$.
-			double *differential_equations) const;
+			double *evolution_rates) const;
 
 	///\brief Jacobian for the evolution of the rotation of the zones of 
 	///body 0 with the topmost zone rotating with a fixed frequency.
@@ -171,25 +175,6 @@ private:
 			///On outputs is set to the rate of change of the orbital
 			///parameters.
 			double *evolution_rates) const;
-
-	///\brief The part of the Jacobian that corresponds to the inclination
-	///evolution for single body systems.
-	///
-	///configure() must already have been called.
-	void single_body_inclination_periapsis_jacobian(
-			///On output is set to the inclination part of the Jacobian.
-			double *inclination_param_derivs,
-
-			///On output is set to the periapsis part of the Jacobian.
-			double *periapsis_param_derivs,
-			
-			///On output is set to the partial age derivatives of the
-			///inclination evolution equations.
-			double *inclination_age_derivs,
-			
-			///On output is set to the partial age derivatives of the
-			///periapsis evolution equations.
-			double *periapsis_age_derivs) const;
 
 	///Fills the jacobian for a system consisting of one isolated body.
 	void fill_single_body_jacobian(
@@ -214,7 +199,7 @@ private:
 
 			///The part of the age derivatives array corresponding to the
 			///zone angular momenta.
-			double *angmom_age_derivs) const
+			double *angmom_age_derivs) const;
 
 	///\brief Jacobian for the evolution of the rotation of the zones of 
 	///body 0 if no other body is present.
@@ -248,7 +233,7 @@ private:
 			///If not NaN, the derivative with respect to the semimajoir axis
 			///is returned, assuming that this is the derivative of
 			///orbit_energy_gain with respect to the semimajor axis.
-			double orbit_energy_gain_deriv=NaN);
+			double orbit_energy_gain_deriv=NaN) const;
 
 	///\brief Returns the rate of evolution of the eccentricity or one of its
 	///derivatives.
@@ -283,19 +268,23 @@ private:
 			
 			///If true the derivative calculated is assumed to be w.r.t. the
 			///semimajor axis.
-			bool semimajor_deriv=true);
+			bool semimajor_deriv=true) const;
 
 	///\brief Makes corrections to the matrix and RHS to accomodate the given
 	///derivative for the linear problem that defines the above fractions.
 	void above_lock_problem_deriv_correction(
 			///The derivative being calculated
 			Dissipation::Derivative deriv,
+
+			///For zone-specific quantities, are we differentiating w.r.t. a
+			///zone part of body1?
+			bool body1_deriv,
 			
 			///The matrix to update.
 			Eigen::MatrixXd &matrix, 
 
 			///The RHS vector to update.
-			Eigen::VectorXd &rhs);
+			Eigen::VectorXd &rhs) const;
 
 	///\brief Calculates the fraction of a timestep above spin-orbit lock for
 	///all locked zones.
@@ -311,12 +300,12 @@ private:
 			///The derivative of the above lock fractions to calculate. For
 			///zone-dependent quantities the derivatives are w.r.t. the
 			///surface zone quantity.
-			Eigen::Derivative deriv=Dissipation::NO_DERIV,
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 
 			///Only used if deriv indicates a zone-dependent quantity. In
 			///that case, it specifies the body whose surface zone we are
 			///differentiating against.
-			bool body1_deriv=true) const;
+			bool body1_deriv=true);
 
 
 	///\brief Calculates derivatives of the above lock fractions w.r.t.
@@ -365,14 +354,16 @@ private:
 	///With the appropriate arguments this can either add the rate of change
 	///of the orbital energy or the torque on the orbit due to the tides on
 	///one body to the given array.
-	template<typename VALUE_TYPE, typename FUNC_TYPE>
+	template<typename VALUE_TYPE>
 	void add_body_rate_deriv(
 			///The body whose contribution we wish to add.
 			const DissipatingBody &body,
 
 			///The quantity we are collecting. Should be either
 			///body.tidal_orbit_energy_gain or body.tidal_orbit_torque.
-			FUNC_TYPE &func,
+			VALUE_TYPE (DissipatingBody::*func)(Dissipation::Derivative,
+											unsigned,
+											const Eigen::VectorXd &) const,
 			
 			///The array to add to. The indices match the parameters being
 			///evolved.
@@ -380,25 +371,25 @@ private:
 
 			///If body is __body1 this should be zero, if it is __body2, it
 			///should be the number of zones in __body1.
-			unsigned offset);
+			unsigned offset) const;
 
 	///\brief Computes the derivatives w.r.t. the evolution quantities of the
 	///orbit energy gain.
-	void BinarySystem::fill_orbit_energy_gain_deriv(
+	void fill_orbit_energy_gain_deriv(
 			///Location to fill.
-			std::valarray<double> &orbit_energy_gain_deriv);
+			std::valarray<double> &orbit_energy_gain_deriv) const;
 
 	///\brief Computes the derivatives w.r.t. the evolution quantities of the
 	///orbit angular momentum gain.
-	void BinarySystem::fill_orbit_angmom_gain_deriv(
+	void fill_orbit_angmom_gain_deriv(
 			///Location to fill.
-			std::valarray<double> &orbit_angmom_gain_deriv);
+			std::valarray<double> &orbit_angmom_gain_deriv) const;
 
 	///Computes the row of the jacobian corresponding to the semimajor axis.
-	void BinarySystem::semimajor_jacobian(
+	void semimajor_jacobian(
 			///The derivatives of the orbit energy gain w.r.t. the evolution
 			///variables and age (last entry).
-			const std::valarrray<double> &orbit_energy_gain_deriv,
+			const std::valarray<double> &orbit_energy_gain_deriv,
 
 			///Is the first variable \f$a^{6.5}\f$ instead of a?
 			bool a6p5,
@@ -409,25 +400,17 @@ private:
 			
 			///The location to set to the age derivative of the semimajor
 			///evolution equation.
-			double &age_deriv);
+			double &age_deriv) const;
 
 	///Computes the row of the jacobian corresponding to the eccentricity.
-	void BinarySystem::eccentricity_jacobian(
-			///The derivative of the orbital angular momentum w.r.t. to the
-			///semimajor axis.
-			double dangmom_da, 
-			
-			///The derivative of the orbital angular momentum w.r.t. to the
-			///eccentricity.
-			double dangmom_de,
-
+	void eccentricity_jacobian(
 			///The derivatives of the orbit energy gain w.r.t. the evolution
 			///variables and age (last entry).
-			const std::valarrray<double> &orbit_energy_gain_deriv,
+			const std::valarray<double> &orbit_energy_gain_deriv,
 
 			///The derivatives of the orbit angular momentum gain w.r.t. the
 			///evolution variables and age (last entry).
-			const std::valarrray<double> &orbit_angmom_gain_deriv,
+			const std::valarray<double> &orbit_angmom_gain_deriv,
 
 			///Is the first variable \f$a^{6.5}\f$ instead of a?
 			bool a6p5,
@@ -438,13 +421,17 @@ private:
 			
 			///The location to set to the age derivative of the eccentricity
 			///evolution equation.
-			double &age_deriv);
+			double &age_deriv) const;
 
 	///\brief Computes the partial age derivatives of the inclination or
 	///periapsis evolutiono equations.
-	double angle_evolution_age_deriv(
-			///The zone to calculate the age derivative for.
-			DissipatingZone &zone,
+	void angle_evolution_age_deriv(
+			///The body whose zone to calculate the age derivative for.
+			DissipatingBody &body,
+
+			///The index of the zone in body to calculate the age derivative
+			///for.
+			unsigned zone_ind,
 
 			///The sin of the inclination between the zone and the orbit.
 			double sin_inc, 
@@ -456,13 +443,17 @@ private:
 			///(used only if zone is locked, ignored otherwise)
 			unsigned locked_zone_ind,
 			
-			///If true the periapsis evolution equations are differentiated,
-			///otherwise the inclinations ones are.
-			bool periapsis=false);
+			///Destination overwritten by the age derivative of the
+			///inclination evolution rate.
+			double &inclination,
+			
+			///Destination overwritten by the age derivative of the periapsis
+			///evolution rate.
+			double &periapsis) const;
 
 	///\brief Computes the partial derivatives w.r.t. semimamjor axis or
-	///eccentricity of the inclination evolution equations.
-	double inclination_evolution_orbit_deriv(
+	///eccentricity of the inclination and periapsis evolution equations.
+	void angle_evolution_orbit_deriv(
 			///The derivative to compute, should be either
 			///Dissipation::SEMIMAJOR or Dissipation::ECCENTRICITY
 			Dissipation::Derivative deriv, 
@@ -484,33 +475,14 @@ private:
 
 			///The index of the current zone in the list of locked zones
 			///(used only if zone is locked, ignored otherwise)
-			unsigned locked_zone_ind);
-
-	///\brief Computes the partial derivatives w.r.t. semimamjor axis or
-	///eccentricity of the periapsis evolution equations.
-	double periapsis_evolution_orbit_deriv(
-			///The derivative to compute, should be either
-			///Dissipation::SEMIMAJOR or Dissipation::ECCENTRICITY
-			Dissipation::Derivative deriv, 
-
-			///The derivative of the orbital angular momentum w.r.t. deriv.
-			double angmom_deriv,
-
-			///The body whose zone's evolution we are differentiating.
-			DissipatingBody &body,
-
-			///The index of the zone whose evolution we are differentiating.
-			unsigned zone_ind,
-
-			///The sin of the inclination between the zone and the orbit.
-			double sin_inc, 
+			unsigned locked_zone_ind,
 			
-			///The cos of the inclination between the zone and the orbit.
-			double cos_inc, 
-
-			///The index of the current zone in the list of locked zones
-			///(used only if zone is locked, ignored otherwise)
-			unsigned locked_zone_ind);
+			///Overwritten by the derivative of the inclination evolution
+			///rate.
+			double &inclination,
+			
+			///Overwritten by the derivative of the periapsis evolution rate.
+			double &periapsis) const;
 
 	void fill_orbit_torque_deriv(
 			///The derivatives to compute. Sholud be one of:
@@ -522,14 +494,15 @@ private:
 			///torque in.
 			DissipatingBody &body,
 
-			///The index of the zone whose evolution we are differentiating.
+			///The index of the zone whose coordinate system we are
+			///expressing the torque in.
 			unsigned zone_ind,
 
 			///On output gets filled with the derivatives of the torque on
 			///the orbit in the coordinate system of the zone identified by
 			///body and zone_ind w.r.t. deriv. Should be indexed by zone,
 			///with __body1 zones first.
-			const std::valarray<Eigen::Vector3d> &orbit_torque_deriv);
+			std::valarray<Eigen::Vector3d> &orbit_torque_deriv) const;
 
 	///\brief Calculates the derivatives of the torque on a zone w.r.t. a
 	///zone-specific quantity.
@@ -552,11 +525,11 @@ private:
 			///an additional quantity is added at the end givin the derivative
 			///of the torque above the lock w.r.t. to the quantity of this
 			///zone.
-			std::valarray<Eigen::Vector3d> &zone_torque_deriv);
+			std::valarray<Eigen::Vector3d> &zone_torque_deriv) const;
 
 	///\brief Calculates the derivatives of an inclination evolution equation
 	///w.r.t. a zone specific quentity.
-	void BinarySystem::inclination_evolution_zone_deriv(
+	void inclination_evolution_zone_derivs(
 			///The derivatives to compute. Sholud be one of:
 			///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
 			///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
@@ -586,6 +559,9 @@ private:
 			///The result of fill_orbit_torque_deriv.
 			const std::valarray<Eigen::Vector3d> &orbit_torque_deriv,
 
+			///The derivatives of the above_lock fractions.
+			const std::valarray<Eigen::VectorXd> &above_frac_deriv,
+
 			///The sin of the inclination between the zone and the orbit.
 			double sin_inc, 
 			
@@ -597,13 +573,86 @@ private:
 			unsigned locked_zone_ind,
 
 			///Overwritten by the result.
-			double *result);
+			double *result) const;
+
+	///\brief Computes the derivatives of the periapsis evolution w.r.t. a
+	///zone specific quantity for all zones.
+	void periapsis_evolution_zone_derivs(
+			///The derivative to compute.
+			Dissipation::Derivative deriv, 
+
+			///The body whose zone's periapsis evolution to differentiate.
+			DissipatingBody &body,
+
+			///The zone whose periapsis evolution to differentiate.
+			unsigned zone_ind, 
+
+			///The y component of the torque on the zone above a lock if
+			///locked.
+			double zone_y_torque_above, 
+
+			///The y component of the torque on the zone (assuming below a
+			///lock if locked).
+			double zone_y_torque_below,
+
+			///The derivative of the zone torque.
+			const std::valarray<Eigen::Vector3d> &zone_torque_deriv,
+
+			///The y torque on the orbit.
+			double orbit_y_torque,
+
+			///The derivative of the orbit torque.
+			const std::valarray<Eigen::Vector3d> &orbit_torque_deriv,
+
+			///The derivatives of the above lock fractions
+			const std::valarray<Eigen::VectorXd> &above_frac_deriv,
+
+			///The sin of the inclination between the zone and the orbit.
+			double sin_inc, 
+
+			///The cos of the inclination between the zone and the orbit.
+			double cos_inc,
+
+			///The index in the list of locked zones of this zone if it is
+			///locked.
+			unsigned locked_zone_ind, 
+
+			///Overwritten by the result. Should have the correct size.
+			double *result) const;
+
+	void spin_angmom_evolution_zone_derivs(
+			///The derivative to compute.
+			Dissipation::Derivative deriv,
+
+			///The body whose zone's periapsis evolution to differentiate.
+			DissipatingBody &body,
+
+			///The zone whose periapsis evolution to differentiate.
+			unsigned zone_ind,
+
+			///The z component of the torque on the zone above a lock if
+			///locked.
+			double zone_z_torque_above,
+
+			///The z component of the torque on the zone (assuming below a
+			///lock if locked).
+			double zone_z_torque_below,
+
+			///The derivative of the zone torque.
+			const std::valarray<Eigen::Vector3d> &zone_torque_deriv,
+
+			///The derivatives of the above lock fractions
+			const std::valarray<Eigen::VectorXd> &above_frac_deriv,
+
+			///The index in the list of locked zones of this zone if it is
+			///locked.
+			unsigned locked_zone_ind,
+
+			///Overwritten by the result. Should have the correct size.
+			double *result) const;
 			
 	///Calculates the jacobian for the evolution of a system of two bodies.
 	void binary_jacobian(
-			///See same name argument to binary_differential_equations().
-			const double *parameters,
-			
 			///On output is set to the Jacobian.
 			double *param_derivs,
 			
@@ -633,8 +682,9 @@ public:
 
 			///The name of the system.
 			const std::string &system_name="")
-		: __name(system_name), __body1(body1), __body2(body2),
-		__above_lock_fractions(Dissipation::NUM_DERIVATIVES) {}
+		: __name(system_name),
+		__above_lock_fractions(Dissipation::NUM_DERIVATIVES), __body1(body1),
+		__body2(body2) {}
 
 	///Returns the name of the system.
 	const std::string get_name() const {return __name;}
@@ -665,7 +715,7 @@ public:
 			const double *periapsis,
 			
 			///The evolution mode to assume.
-			EvolModyType evolution_mode);
+			EvolModeType evolution_mode);
 
 	///Sets the current state of the system directly from the evolutino
 	///variables.
@@ -701,6 +751,15 @@ public:
 	///The current semimajor axis of the system.
 	double semimajor() const {return __semimajor;}
 
+	///\brief Fills an array with the parameters expected by 
+	///differential_equations() and jacobian(), returning the evolution mode.
+	///
+	///The system must be appropriately configure() -ed already.
+	EvolModeType fill_orbit(
+			///The orbit to fill (resized as necessary).
+			std::valarray<double> &orbit);
+
+
 	///\brief The fraction of an infinitesimal timestep that a zone spends
 	///spinning faster than the lock it is in.
 	double above_lock_fraction(
@@ -711,7 +770,7 @@ public:
 			///and, Dissipation::INCLINATION, Dissipation::PERIAPSIS,
 			///Dissipation::SPIN_ANGMOM and Dissipation::MOMENT_OF_INERTIA
 			///are allowed.
-			Dissipation::Deriavtive deriv=Dissipation::NO_DERIV,
+			Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 
 			///The index of the zone whose quantity we want the derivative
 			///w.r.t. for zone specific quantities.
@@ -786,23 +845,15 @@ public:
 			///parameters w.r.t. age.
 			double *age_derivs);
 	
-	///\brief Fills an array with the parameters expected by 
-	///differential_equations() and jacobian(), returning the evolution mode.
-	///
-	///The system must be appropriately configure() -ed already.
-	EvolModeType fill_orbit(
-			///The orbit to fill (resized as necessary).
-			std::valarray<double> &orbit);
-
 	///\brief Check if a spin-orbit lock can be held and updates the system
 	///as necessary to calculate subsequent evolution.
 	void check_for_lock(
 			///The multiplier of the orbital frequency at the lock
-			double orbital_freq_mult, 
+			int orbital_freq_mult, 
 			
 			///The multiplier of the spin frequency of the potentially locked
 			///zone at the lock.
-			double spin_freq_mult,
+			int spin_freq_mult,
 
 			///The body whose zone is being locked.
 			unsigned short body_index,
@@ -828,6 +879,16 @@ public:
 	///Adds the entire orbital angular momentum to the surface zone of the
 	///primary and enters single body evolution mode.
 	virtual void secondary_died();
+
+	///Releases the lock to one of the locked zones.
+	virtual void release_lock(
+			///The index within the list of locked zones of the zone to
+			///unlock.
+			unsigned locked_zone_index,
+			
+			///The direction in which the zone's spin will evolve in the
+			///future relative to the lock.
+			short direction);
 
 	///Appends the state defined by last configure(), to the evolution.
 	virtual void add_to_evolution();
@@ -862,6 +923,7 @@ public:
 	///The tabulated evolution of the eccentricity so far.
 	const std::list<double> &eccentricity_evolution() const
 	{return __eccentricity_evolution;}
+
 };
 
 #endif

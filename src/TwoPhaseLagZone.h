@@ -12,7 +12,7 @@
 #include "DissipatingZone.h"
 
 ///A class that only defines the phase lag function for zones.
-class TwoPhaseLagZone : public DissipatingZone {
+class TwoPhaseLagZone : virtual public DissipatingZone {
 private:
 	///The modified pase lag outside the inertia wave frequency range.
 	double __equilibrium_modified_lag,
@@ -28,16 +28,16 @@ public:
 
 			///The modified phase lag in the inertial wave frequency range.
 			double inertial_modified_lag=0) :
-		__equilibrium_modfied_lag(equilibrium_modified_lag),
+		__equilibrium_modified_lag(equilibrium_modified_lag),
 		__inertial_modified_lag(inertial_modified_lag) {}
 
 	///Set the modified pase lag outside the inertia wave frequency range.
 	void set_equilibrium_modified_lag(double lag)
-	{__equilibrium_modfied_lag=lag;}
+	{__equilibrium_modified_lag=lag;}
 
 	///Set the modified pase lag in the inertia wave frequency range.
 	void set_inertial_modified_lag(double lag)
-	{__inertial_modfied_lag=lag;}
+	{__inertial_modified_lag=lag;}
 
 	///\brief Should return the tidal phase lag time the love number for the
 	///given tidal term (or one of its derivatives).
@@ -73,15 +73,15 @@ public:
 	virtual double love_coefficient(
 			///The multiplier of the orbital frequency in the
 			///expression for the forcing frequency.
-			int orbital_frequency_multiplier,
+			int,
 
 			///The multiplier of the spin frequency in the
 			///expression for the forcing frequency.
-			int spin_frequency_multiplier,
+			int,
 
 			///The return value should be either the phase lag itself
 			///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-			Dissipation::Derivative deriv) const {return 0};
+			Dissipation::Derivative) const {return 0;}
 };
 
 #endif

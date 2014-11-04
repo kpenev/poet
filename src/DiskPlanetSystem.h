@@ -3,7 +3,7 @@
 
 #include "BinarySystem.h"
 #include "Error.h"
-#include <ostringstream>
+#include <sstream>
 
 /**\file
  *
@@ -19,7 +19,7 @@
  *
  * \ingroup StellarSystem_group
  */
-class DiskPlanetSystem : public BinarySystem {
+class DiskPlanetSystem : virtual public BinarySystem {
 private:
 	///The semimajor axis of the orbit at which the secondary forms.
 	double __initial_semimajor,
@@ -74,6 +74,9 @@ public:
 
 			///\brief Age when the secondary forms.
 			double secondary_formation_age);
+
+	///The age when the disk dissipates.
+	double disk_dissipation_age() {return __disk_dissipation_age;}
 
 	///\brief Change the system as necessary at the given age.
 	///

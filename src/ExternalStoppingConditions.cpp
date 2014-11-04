@@ -9,7 +9,7 @@ std::valarray<double> RotFastCondition::operator()(
 		EvolModeType evol_mode) const
 {
 	if(!std::isfinite(spin_thres)) return std::valarray<double>(-1, 1);
-	double wconv=convective_frequency(system, orbit, evol_mode);
+	double spin_freq=__zone.spin_frequency();
 	stop_deriv.resize(1, NaN);
-	return std::valarray<double>((wconv-spin_thres)/spin_thres, 1);
+	return std::valarray<double>((spin_freq-spin_thres)/spin_thres, 1);
 }

@@ -11,7 +11,7 @@
 
 ///\brief Surface convective zone for low mass YREC stars or the entire star
 ///for high mass stars.
-class YRECEnvelope : public TwoPhaseLagZone {
+class YRECEnvelope : virtual public TwoPhaseLagZone {
 private:
 	///The age for the last configure() call.
 	double __current_age, __stellar_mass;
@@ -101,8 +101,8 @@ public:
 			double periapsis);
 
 	///The moment of inertia at a given age (no configure() necessary).
-	double moment_of_inertia(double age) const;
-	{return __moment_of_inertia(age);}
+	double moment_of_inertia(double age) const
+	{return (*__moment_of_inertia)(age);}
 
 	///See DissipatingZone::moment_of_inertia.
 	double moment_of_inertia(int deriv_order=0) const
@@ -114,7 +114,7 @@ public:
 
 	///See DissipatingZone::outer_mass.
 	double outer_mass(int deriv_order=0) const
-	{return (deriv_order ? 0 : stellar_mass);}
+	{return (deriv_order ? 0 : __stellar_mass);}
 
 	~YRECEnvelope() {reset();}
 };

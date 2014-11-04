@@ -8,7 +8,7 @@
 #ifndef __STOP_INFORMATION_H
 #define __STOP_INFORMATION_H
 
-#include "StoppingConditions.h"
+#include "StoppingCondition.h"
 
 ///\brief The information about why and where the evolution should stop.
 ///
@@ -35,6 +35,9 @@ private:
 
 	///The index of the condition which caused us to stop.
 	size_t __stop_condition_index;
+
+	///The sign of the derivative at zero-crossing.
+	short __deriv_sign_at_crossing;
 public:
 	///\brief Create an object with the information about why we evolution
 	///should be stopped.
@@ -56,13 +59,18 @@ public:
 			bool crossed_zero=false,
 			
 			///The index of the condition which caused us to stop.
-			size_t stop_condition_index=0) :
+			size_t stop_condition_index=0,
+			
+			///The sign of the derivative of the condition at zero-crossing
+			///(undefined for extrema.
+			short deriv_sign_at_crossing=0) :
 		__stop_age(stop_age),
 		__stop_condition_precision(stop_precision),
 		__stop_reason(stop_reason),
 		__is_crossing(is_crossing),
 		__crossed_zero(crossed_zero),
-		__stop_condition_index(stop_condition_index) {}
+		__stop_condition_index(stop_condition_index),
+		__deriv_sign_at_crossing(is_crossing ? deriv_sign_at_crossing : 0) {}
 
 	///Copy orig to *this.
 	StopInformation(const StopInformation &orig) :
@@ -116,7 +124,17 @@ public:
 		__stop_reason=rhs.__stop_reason;
 		__is_crossing=rhs.__is_crossing;
 		__stop_condition_index=rhs.__stop_condition_index;
+		__deriv_sign_at_crossing=rhs.__deriv_sign_at_crossing;
 		return *this;
+	}
+
+	///The sign of the derivative at zero-crossing.
+	short deriv_sign_at_crossing() const
+	{
+#ifdef DEBUG
+		assert(__is_crossing);
+#endif
+		return __deriv_sign_at_crossing;
 	}
 };
 

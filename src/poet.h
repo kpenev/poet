@@ -13,7 +13,10 @@
 #include "AstronomicalConstants.h"
 #include "OrbitSolver.h"
 #include "YRECIO.h"
+#include "YRECStar.h"
+#include "LockedPlanet.h"
 #include "CustomStellarEvolution.h"
+#include "DiskPlanetSystem.h"
 #include <argtable2.h>
 #include <iostream>
 #include <fstream>
@@ -132,12 +135,12 @@ namespace OutCol {
 		/// \f$M_\odot R_\odot^2/Gyr\f$.
 		ICONV_DERIV,
 
-		///Age derivative of the radiative moment of inertia in
+		///\brief Age derivative of the radiative moment of inertia in
 		/// \f$M_\odot R_\odot^2/Gyr\f$.
 		IRAD_DERIV,
 
-		///Age derivative of the moment of inertia of the entire star in
-		/// \f$M_\odot R_\odot^2/Gyr\f$.
+		///\brief Age derivative of the moment of inertia of the entire star
+		///in \f$M_\odot R_\odot^2/Gyr\f$.
 		ITOT_DERIV,
 
 		///Age derivative of the stellar radius in \f$R_\odot/Gyr\f$.
@@ -147,9 +150,21 @@ namespace OutCol {
 		/// \f$R_\odot/Gyr\f$.
 		RRAD_DERIV,
 
-		///Age derivative of the mass of the radiative core in
+		///\brief Age derivative of the mass of the radiative core in
 		/// \f$M_\odot/Gyr\f$.
 		MRAD_DERIV,
+
+		///Second derivative of the moment of ivertia of the convective zone.
+		ICONV_SECOND_DERIV,
+
+		///Second derivative of the moment of ivertia of the radiative zone.
+		IRAD_SECOND_DERIV,
+
+		///Second derivative of the moment of inertia of the entire star.
+		ITOT_SECOND_DERIV,
+
+		///Second derivative of the core-envelope boundary.
+		RRAD_SECOND_DERIV,
 
 		///The index of the last quantity requiring no orbital evolution.
 		LAST_NO_ORBIT=RRAD_SECOND_DERIV,
@@ -159,19 +174,19 @@ namespace OutCol {
 		PORB,///< The orbital period days.
 		LORB,//< The orbital angular momentum
 
-		///The angle between the stellar surface spin and orbital angular
-		///momentum in radians
+		///\brief The angle between the stellar surface spin and orbital
+		///angular momentum in radians
 		CONV_INCLINATION,
 
-		///The angle between the stellar core spin and orbital angular
+		///\brief The angle between the stellar core spin and orbital angular
 		///momentum in radians
 		RAD_INCLINATION,
 
-		///The orbital periapsis in the reference frame of the stellar
+		///\brief The orbital periapsis in the reference frame of the stellar
 		///convective zone in radians
 		CONV_PERIAPSIS,
 
-		///The orbital periapsis in the reference frame of the stellar
+		///\brief The orbital periapsis in the reference frame of the stellar
 		///radiative zone in radians
 		RAD_PERIAPSIS,
 
@@ -181,9 +196,13 @@ namespace OutCol {
 		LCONV,
 
 		///\brief Angular momentum of the radiative zone of the star in
-		// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
+		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$ (low mass
 		///stars only)
 		LRAD,
+
+		///\brief Angular momentum of the entire star in
+		/// \f$ M_\odot R_\odot^2 \mathrm{rad}/\mathrm{day}\f$
+		LTOT,
 
 		WSURF, ///< Angular velocity of the stellar surface in rad/day.
 
@@ -509,7 +528,7 @@ void output_solution(
 		const OrbitSolver &solver,
 		
 		///The planet-star system for which solution was derived.
-		const StellarSystem &system,
+		const BinarySystem &system,
 
 		///The name of the file to output the solution to.
 		const std::string &filename,

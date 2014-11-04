@@ -52,8 +52,18 @@ void CommandLineOptions::init_output_column_descriptions()
 	__output_column_descr.resize(OutCol::NUM_OUTPUT_QUANTITIES);
 	__output_column_descr[OutCol::AGE]="Age in Gyr";
 	__output_column_descr[OutCol::SEMIMAJOR]="Semimajor axis in AU";
-	__output_column_descr[OutCol::INCLINATION]="The stellar spin-orbit "
-		"inclination";
+	__output_column_descr[OutCol::CONV_INCLINATION]=
+		"The angle between the stellar convective envelope and the orbital "
+		"angular momenta";
+	__output_column_descr[OutCol::RAD_INCLINATION]=
+		"The angle between the stellar radiative core and the orbital "
+		"angular momenta";
+	__output_column_descr[OutCol::CONV_PERIAPSIS]=
+		"The periapsis of the orbit in the equatorial plane of the stellar "
+		"convective envelope";
+	__output_column_descr[OutCol::RAD_PERIAPSIS]=
+		"The periapsis of the orbit in the equatorial plane of the stellar "
+		"radiative core";
 	__output_column_descr[OutCol::WORB]="Orbital frequency in rad/day";
 	__output_column_descr[OutCol::PORB]="Orbital period in days";
 	__output_column_descr[OutCol::LORB]="Orbital angular momentum in "
@@ -64,14 +74,6 @@ void CommandLineOptions::init_output_column_descriptions()
 	__output_column_descr[OutCol::LRAD]=
 		"Radiative zone angular momentum in Msun Rsun^2 rad/day "
 		"(low mass stars only else NaN).";
-	__output_column_descr[OutCol::LRAD_PAR]=
-		"Radiative zone angular momentum component along the rotation axis "
-		"of the convective zone in Msun Rsun^2 rad/day (low mass stars only "
-		"else NaN).";
-	__output_column_descr[OutCol::LRAD_PERP]=
-		"Radiative zone angular momentum component perpendicular to the "
-		"rotation axis of the convective zone in Msun Rsun^2 rad/day (low "
-		"mass stars only else NaN).";
 	__output_column_descr[OutCol::LTOT]=
 		"Total angular momentum of the star in Msun Rsun^2 rad/day.";
 	__output_column_descr[OutCol::ICONV]=
@@ -251,14 +253,15 @@ void init_output_column_names()
 {
 	OUTPUT_COLUMN_NAMES[OutCol::AGE]="t";
 	OUTPUT_COLUMN_NAMES[OutCol::SEMIMAJOR]="a";
-	OUTPUT_COLUMN_NAMES[OutCol::INCLINATION]="theta";
+	OUTPUT_COLUMN_NAMES[OutCol::CONV_INCLINATION]="convincl";
+	OUTPUT_COLUMN_NAMES[OutCol::CONV_PERIAPSIS]="convperi";
+	OUTPUT_COLUMN_NAMES[OutCol::RAD_INCLINATION]="radincl";
+	OUTPUT_COLUMN_NAMES[OutCol::RAD_PERIAPSIS]="radperi";
 	OUTPUT_COLUMN_NAMES[OutCol::WORB]="Worb";
 	OUTPUT_COLUMN_NAMES[OutCol::PORB]="Porb";
 	OUTPUT_COLUMN_NAMES[OutCol::LORB]="Lorb";
 	OUTPUT_COLUMN_NAMES[OutCol::LCONV]="Lconv";
 	OUTPUT_COLUMN_NAMES[OutCol::LRAD]="Lrad";
-	OUTPUT_COLUMN_NAMES[OutCol::LRAD_PAR]="Lradpar";
-	OUTPUT_COLUMN_NAMES[OutCol::LRAD_PERP]="Lradperp";
 	OUTPUT_COLUMN_NAMES[OutCol::LTOT]="L";
 	OUTPUT_COLUMN_NAMES[OutCol::ICONV]="Iconv";
 	OUTPUT_COLUMN_NAMES[OutCol::IRAD]="Irad";
@@ -919,29 +922,33 @@ int CommandLineOptions::custom_track_nodes(
 ///AU/\f$\mathrm{R}_\odot\f$.
 const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
 
-void output_solution(const OrbitSolver &solver, const StellarSystem &system,
+void output_solution(const OrbitSolver &solver, const BinarySystem &system,
 		const YRECStar &star, const std::string &filename,
 		const std::vector<OutCol::OutputColumns> &output_file_format,
 		double start_age, double end_age, double timestep,
 		const std::list<double> &required_ages)
 {
-	DissipatingZone &convective=star.zone(0),
-					&radiative=star.zone(1);
+	const DissipatingZone &convective=star.zone(0),
+		  				  &radiative=star.zone(1);
 	std::list<double>::const_iterator
 		age_i=solver.evolution_ages().begin(),
 		a_i=system.semimajor_evolution().begin(),
 		e_i=system.eccentricity_evolution().begin(),
-		conv_inclination_i=convective.get_evolution(INCLINATION).begin(),
-		conv_periapsis_i=convective.get_evolution(PERIAPSIS).begin(),
-		conv_angmom_i=convective.get_evolution(ANGULAR_MOMENTUM).begin(),
-		conv_inertia_i=convective.get_evolution(MOMENT_OF_INERTIA).begin(),
-		rad_inclination_i=radiative.get_evolution(INCLINATION).begin(),
-		rad_periapsis_i=radiative.get_evolution(PERIAPSIS).begin(),
-		rad_angmom_i=radiative.get_evolution(ANGULAR_MOMENTUM).begin(),
-		rad_inertia_i=radiative.get_evolution(MOMENT_OF_INERTIA).begin(),
-		rstar_i=convective.get_evolution(OUTER_RADIUS).begin(),
-		rcore_i=radiative.get_evolution(OUTER_RADIUS).begin(),
-		mcore_i=radiative.get_evolution(OUTER_MASS).begin();
+		conv_inclination_i=
+			convective.get_evolution_real(INCLINATION).begin(),
+		conv_periapsis_i=convective.get_evolution_real(PERIAPSIS).begin(),
+		conv_angmom_i=
+			convective.get_evolution_real(ANGULAR_MOMENTUM).begin(),
+		conv_inertia_i=
+			convective.get_evolution_real(MOMENT_OF_INERTIA).begin(),
+		rad_inclination_i=radiative.get_evolution_real(INCLINATION).begin(),
+		rad_periapsis_i=radiative.get_evolution_real(PERIAPSIS).begin(),
+		rad_angmom_i=radiative.get_evolution_real(ANGULAR_MOMENTUM).begin(),
+		rad_inertia_i=
+			radiative.get_evolution_real(MOMENT_OF_INERTIA).begin(),
+		rstar_i=convective.get_evolution_real(OUTER_RADIUS).begin(),
+		rcore_i=radiative.get_evolution_real(OUTER_RADIUS).begin(),
+		mcore_i=radiative.get_evolution_real(OUTER_MASS).begin();
 	std::list<EvolModeType>::const_iterator
 		mode_i=solver.mode_evolution().begin();
 	std::list<bool>::const_iterator 
@@ -978,7 +985,7 @@ void output_solution(const OrbitSolver &solver, const StellarSystem &system,
 					star.zone(1), star.zone(0),
 					Eigen::Vector3d(0, 0, *rad_angmom_i));
 			Ltot[2]+=*conv_angmom_i;
-			double worb=orbital_angular_velocity_semimajor(*a_i),
+			double worb=orbital_angular_velocity(mstar, mplanet, *a_i),
 				   Lorb=orbital_angular_momentum(mstar, mplanet, *a_i, *e_i),
 				   wconv=(*conv_angmom_i)/(*conv_inertia_i),
 				   wrad=(*rad_angmom_i)/(*rad_inertia_i);
@@ -1065,14 +1072,12 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 
 	double tstart=real_parameters[InCol::TSTART];
 	if(star.is_low_mass() && 
-			star.core_formation_age()>star.disk_dissipation_age() &&
+			star.core_formation_age()>system.disk_dissipation_age() &&
 			tstart<star.core_formation_age() && need_orbit)
 		throw Error::Runtime("At present the case when the disk dissipates "
 				"before the stellar core starts to form is not supported.");
 
-	EvolModeType start_evol_mode;
 	if(std::isnan(tstart) || tstart<real_parameters[InCol::TDISK]*1e-3) {
-		start_evol_mode=LOCKED_SURFACE_SPIN;
 		if(std::isnan(tstart) || tstart<star.core_formation_age())
 			tstart=star.core_formation_age();
 		system.configure(tstart, NaN, NaN, &zero, NULL, NULL,
@@ -1086,10 +1091,9 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				real_parameters[InCol::START_WRAD]*
 				star.moment_of_inertia(tstart, radiative) : 0);*/
 	} else {
-		start_evol_mode=BINARY;
 		std::valarray<double> angmom(3), inclination(3), periapsis(0.0, 3);
 		angmom[0]=real_parameters[InCol::START_WRAD]
-				  *star.moment_of_inertia(tstart);
+				  *star.envelope().moment_of_inertia(tstart);
 		angmom[1]=angmom[2]=0;
 		inclination[0]=real_parameters[InCol::INCLINATION_FORMATION];
 		inclination[1]=inclination[0];

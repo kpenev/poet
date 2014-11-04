@@ -10,12 +10,19 @@ BINDIR = ../bin/
 
 # modules
 #
-COMMON_MODULES  = Common Functions OrbitSolver Planet Star StellarEvolution \
-                  StellarSystem YRECIO MESAIO StoppingConditions \
-				  ExternalStoppingConditions CustomStellarEvolution \
-				  TidalDissipation StellarDissipation OrbitalExpressions \
-				  DissipatingBody EccentricityExpansionCoefficients \
-				  StopHistoryInterval
+
+COMMON_MODULES  = BinarySystem BreakLockCondition CombinedStoppingCondition \
+				  Common CustomStellarEvolution DiskPlanetSystem \
+				  DissipatingBody DissipatingZone DissipationQuantities \
+				  EccentricityExpansionCoefficients \
+				  ExponentialDecayDiffRotBody ExternalStoppingConditions \
+				  Functions MESAIO OrbitalExpressions OrbitSolver \
+				  SaturatingSkumanichWindBody SecondaryDeathCondition \
+				  SinCosIntegrals SpinOrbitLockInfo StellarEvolution \
+				  StopHistoryInterval StoppingConditions \
+				  SynchronizedCondition TwoPhaseLagZone \
+				  WindSaturationCondition YRECCore YRECEnvelope YRECIO \
+				  ZoneOrientation
 
 BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \
@@ -31,16 +38,6 @@ POET_OBJECTS    = $(addsuffix .o, $(POET_MODULES))
 POET_DEPS       = $(addsuffix .d, $(POET_MODULES)) \
 				  $(addsuffix .d-e, $(POET_MODULES))
 
-#NOT IN RELEASE
-#SimOne
-SIMONE          = SimOne
-COMPILE_SIMONE	= compile_SimOne
-
-SIMONE_MODULES  = $(SIMONE) $(COMMON_MODULES)
-SIMONE_OBJECTS  = $(addsuffix .o, $(SIMONE_MODULES))
-SIMONE_DEPS     = $(addsuffix .d, $(SIMONE_MODULES)) \
-				  $(addsuffix .d-e, $(SIMONE_MODULES))
-
 #MESAIO
 MESAIO          = debug_mesaio
 COMPILE_MESAIO	= compile_MESAIO
@@ -54,11 +51,11 @@ MESAIO_DEPS     = $(addsuffix .d, $(MESAIO_MODULES)) \
 #list of executables
 EXECUTABLES     = $(POET) 
 #NOT IN RELEASE
-EXECUTABLE		+= $(MESAIO) $(SIMONE)
+EXECUTABLE		+= $(MESAIO)
 #NOT IN RELEASE
 COMPILES        = $(COMPILE_POET) 
 #NOT IN RELEASE
-COMPILES		+= $(COMPILE_MESAIO) $(COMPILE_SIMONE)
+COMPILES		+= $(COMPILE_MESAIO)
 #NOT IN RELEASE
 
 ###############################################################################
@@ -151,18 +148,6 @@ $(COMPILE_POET): $(POET_OBJECTS) $(ALGLIB)
 	@echo "$(POET) compiled successfully!"
 
 #NOT IN RELEASE
-#############################################################################
-# SimOne
-.PHONY: $(SIMONE)
-
-$(SIMONE): override CFLAGS = $(CFLAGS_RELEASE)
-$(SIMONE): override LFLAGS = $(LFLAGS_RELEASE)
-$(SIMONE): $(COMPILE_SIMONE)
-
-$(COMPILE_SIMONE): $(SIMONE_OBJECTS) $(ALGLIB)
-	@$(COMPILER) -o $(SIMONE) $(SIMONE_OBJECTS) $(ALGLIB_OBJECTS) $(LFLAGS) \
-		|| [ $$? -eq 0 ]
-	@echo "$(SIMONE) compiled successfully!"
 
 #############################################################################
 # MESAIO

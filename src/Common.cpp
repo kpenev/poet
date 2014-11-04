@@ -13,8 +13,8 @@ std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode)
 {
 	switch(evol_mode) {
 		case BINARY: os << "BINARY"; break;
-		case NO_PLANET: os << "NO_PLANET"; break;
-		case LOCKED_TO_DISK: os << "LOCKED_TO_DISK"; break;
+		case SINGLE: os << "SINGLE"; break;
+		case LOCKED_SURFACE_SPIN : os << "LOCKED_SURFACE_SPIN"; break;
 		case TABULATION : os << "TABULATION";
 	}
 	return os;

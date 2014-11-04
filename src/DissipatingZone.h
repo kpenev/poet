@@ -7,8 +7,13 @@
  * tidal distortions.
  */
 
+#include "ZoneOrientation.h"
 #include "EccentricityExpansionCoefficients.h"
 #include "DissipationQuantities.h"
+#include "SpinOrbitLockInfo.h"
+#include "CombinedStoppingCondition.h"
+#include "BreakLockCondition.h"
+#include "SynchronizedCondition.h"
 #include "Common.h"
 #include <valarray>
 
@@ -36,9 +41,16 @@ enum ZoneEvolutionQuantities {
 	NUM_EVOL_QUANTITIES
 };
 
+///More civilized output for EvolVarType variables.
+std::ostream &operator<<(std::ostream &os,
+						 const ZoneEvolutionQuantities &evol_var);
+
+///Needed to break circular dependency.
+class BinarySystem;
+
 ///\brief A layer of a system body for which the tidal bulge is not exactly
 ///in phase with the tidal potential.
-class DissipatingZone {
+class DissipatingZone : public ZoneOrientation {
 private:
 	///The expansion order in eccentricity to use.
 	unsigned __e_order;
@@ -63,12 +75,6 @@ private:
 
 	///The inclination with which __Ummp was last filled.
 	double __Ummp_inclination,
-
-		   ///The inclination of the zone relative to the orbit.
-		   __inclination,
-
-		   ///The periapsis of the orbit in the equatorial frame of the zone.
-		   __periapsis,
 
 		   ///The current angular momentum of the zone.
 		   __angular_momentum,
@@ -104,12 +110,6 @@ private:
 		///
 		///See description of __power for details on the content.
 		__torque_x,
-
-		///\brief The dimensionless tidal torque in the y direction and its
-		///derivatives.
-		///
-		///See description of __power for details on the content.
-		__torque_y,
 
 		///\brief The dimensionless tidal torque in the y direction and its
 		///derivatives.
@@ -161,9 +161,6 @@ private:
 			///The m' index.
 			int mp,
 			
-			///The highest order of the eccentricity to include.
-			unsigned e_order,
-
 			///Set to the undifferentiated value.
 			double &no_deriv,
 
@@ -207,7 +204,10 @@ private:
 
 			///The multiplier of the spin frequency in the
 			///expression for the forcing frequency.
-			int spin_frequency_multiplier);
+			int spin_frequency_multiplier,
+			
+			///The orbital frequency.
+			double orbital_frequency);
 
 	///\brief Updates a SpinOrbitLockInfo variable as appropriate when 
 	///decreasing the eccentricity expansion order.
@@ -248,12 +248,6 @@ public:
 	///body evolution.
 	void set_reference_zone_angmom(double reference_angmom)
 	{__orbital_angmom=reference_angmom;}
-
-	///The angle between the angular momenta of the zone and the orbit.
-	double inclination() const {return __inclination;}
-
-	///The argument of periapsis of this zone minus the reference zone's
-	double periapsis() const {return __periapsis;}
 
 	///\brief The rate at which the periapsis of the orbit/reference zone in
 	///this zone's equatorial plane is changing.
@@ -340,7 +334,7 @@ public:
 	{return __lock;}
 
 	///The currntly held lock.
-	const SpinOrbitLockInfo &lock_held() {return __lock;}
+	const SpinOrbitLockInfo &lock_held() const {return __lock;}
 
 	///\brief Update the zone as necessary when the held lock disappears from
 	///the expansion.
@@ -475,7 +469,7 @@ public:
 #endif
 		return above_fraction*__torque_x[2*deriv+1]
 			   +
-			   (1.0-above_fraction)*__torquex[2*deriv];
+			   (1.0-above_fraction)*__torque_x[2*deriv];
 	}
 
 	///\brief The dimensionless torque along y.
@@ -501,7 +495,7 @@ public:
 #endif
 		return above_fraction*__torque_y[2*deriv+1]
 			   +
-			   (1.0-above_fraction)*__torquey[2*deriv];
+			   (1.0-above_fraction)*__torque_y[2*deriv];
 	}
 
 	///\brief The dimensionless tidal torque along z.
@@ -527,7 +521,7 @@ public:
 #endif
 		return above_fraction*__torque_z[2*deriv+1]
 			   +
-			   (1.0-above_fraction)*__torquez[2*deriv];
+			   (1.0-above_fraction)*__torque_z[2*deriv];
 	}
 
 	///\brief Reads the eccentricity expansion coefficients of \f$p_{m,s}\f$.
@@ -578,13 +572,26 @@ public:
 	///Discards all evolution.
 	virtual void reset_evolution();
 
-	///The tabulated evolution of the given quantity so far.
-	const std::list<double> &get_evolution(ZoneEvolutionQuantities quantity)
-		const
+	///The tabulated evolution of a real valued quantity so far.
+	const std::list<double> &get_evolution_real(
+			ZoneEvolutionQuantities quantity) const
 	{
-		if(quantity<NUM_REAL_QUANTITIES) return __evolution_real[quantity];
-		else return __evolution_integer[quantity];
+#ifdef DEBUG
+		assert(quantity<NUM_REAL_EVOL_QUANTITIES);
+#endif
+		return __evolution_real[quantity];
 	}
+
+	///The tabulated evolution of an integer quantity so far.
+	const std::list<int> &get_evolution_integer(
+			ZoneEvolutionQuantities quantity) const
+	{
+#ifdef DEBUG
+		assert(quantity>=NUM_REAL_EVOL_QUANTITIES);
+#endif
+		return __evolution_integer[quantity-NUM_REAL_EVOL_QUANTITIES];
+	}
+
 
 	///\brief The index of this zone in the list of locked zones (valid only
 	///if locked).
@@ -619,43 +626,5 @@ public:
 			///The index of the zone in the body.
 			unsigned zone_index);
 };
-
-///Transforms a vector betwen the coordinates systems of two zones.
-Eigen::Vector3D zone_to_zone_transform(
-		///The zone whose coordinate system the vectors are currently in.
-		const DissipatingZone &from_zone,
-
-		///The zone whose coordinate system we want to transform the vectors
-		///to.
-		const DissipatingZone &to_zone, 
-		
-		///The vector to transform.
-		const Eigen::Vector3d &vector
-
-		///Derivatives with respect to inclination and periapsis can be
-		///computed (assuming vector does not depend on these), in addition
-		///to the regular transform. It is an error to request another
-		///derivative.
-		Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-
-		///If deriv is not NO_DERIV, derivatives can be computed with respect
-		///to quantities of the from_zone (if this argument is true) or the
-		///to_zone (if false).
-		bool with_respect_to_from=false);
-
-///Transforms the inclination and periapsis of a zone between references.
-void transform_zone_orientation(
-		///The zone whose orientation we wish to transform
-		DissipatingZone &zone,
-
-		///The reference frame in which we want to express the zone's
-		///orientation in in the old reference frame.
-		DissipatingZone &reference,
-
-		///Overwritten by the inclination of zone in the new reference frame.
-		double &inclination,
-
-		///Overwritten by the periapsis of zone in the new reference frame.
-		double &periapsis);
 
 #endif

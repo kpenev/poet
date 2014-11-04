@@ -11,10 +11,9 @@
 
 #include "AstronomicalConstants.h"
 #include "Common.h"
-#include "StellarSystem.h"
-#include "StoppingConditions.h"
+#include "BinarySystem.h"
+#include "CombinedStoppingCondition.h"
 #include "ExternalStoppingConditions.h"
-#include "TidalDissipation.h"
 #include "OrbitalExpressions.h"
 #include "StopInformation.h"
 #include "StopHistoryInterval.h"
@@ -33,21 +32,6 @@
 typedef int (*GSL_ODE_TYPE)(double, const double*, double*, void*);
 typedef int (*GSL_JAC_TYPE)(double, const double*, double*, double*, void*);
 typedef bool (*STOP_EVOL_TYPE)(double, const double*, void*);
-
-
-///Tags for the variables being evolved.
-enum EvolVarType {
-	AGE=-1,		///< The age.
-	SEMIMAJOR, 	///< The semimajor axis.
-	INCLINATION,///< Surface spin to orbital angular momentum angle
-	LCONV, 		///< Angular momentum of the convective envelope.
-	LRAD_PAR,	///< Angular momentum of the core along LCONV
-	LRAD_PERP,	///< Angular momentum of the core perpendicular to LCONV
-	NUM_EVOL_VAR///< The number of evolution variables.
-};
-
-///More civilized output for EvolVarType variables.
-std::ostream &operator<<(std::ostream &os, const EvolVarType &evol_var);
 
 ///\brief A wrapper tha allows the stellar system differential equation to be
 ///passed to the GSL ODE solver.
@@ -294,9 +278,6 @@ private:
 			///The rates of change of the evolution variables per Gyr.
 			const std::valarray<double> &derivatives,
 
-			///The stellar system being evolved.
-			const StellarSystem &system,
-			
 			///The current evolution mode.
 			EvolModeType evolution_mode,
 
@@ -320,7 +301,7 @@ private:
 	///condition crossed zero and false if it ended before that.
 	StopInformation evolve_until(
 			///The planet-star system to evolve.
-			StellarSystem &system,
+			BinarySystem &system,
 			
 			///The age at which to stop this part of the evolution. On
 			///exit, it is overwritten with the age of the last accepted
@@ -328,7 +309,7 @@ private:
 			double &max_age,
 			
 			///The initial conditions. The contents depends on the value of
-			///evolution_mode. See #StellarSystem.differential equations for
+			///evolution_mode. See #BinarySystem.differential equations for
 			///details.			
 			///
 			///On exit, it is overwritten with the orbit of the last
@@ -352,75 +333,6 @@ private:
 			///The system being evolved.
 			BinarySystem &system) const;
 
-	///\brief Returns the evolution mode that the system is entering,
-	///assuming that some critical age is reached (e.g. the disk dissipated).
-	EvolModeType critical_age_evol_mode(
-			///The critical age in Gyr when something happens.
-			double age, 
-
-			///The last orbital state in the old evolution mode.
-			const std::valarray<double> &orbit,
-			
-			///The semimajor at which the planet starts when
-			///planet_formation_age is reached.
-			double initial_semimajor,
-			
-			///The planet-star system being evolved.
-			const StellarSystem &system, 
-
-			///The old evolution mode.
-			EvolModeType evolution_mode,
-
-			///Whether the planet is in an orbit which matches the rotation
-			///of the star and which harmonic to which.
-			SpinOrbitLockInfo &star_lock,
-			
-			///The age at which the planet forms.
-			double planet_formation_age);
-
-	///\brief Returns the evolution mode that the system is entering and
-	///updates the lock.
-	///
-	///assuming that
-	///the last orbital state is orbit (in the old evolution mode), the
-	///semimajor at which the planet starts after the disk dissipates is
-	///initial_semimajor (in AU) and the previous mode was evolution_mode.
-	EvolModeType next_evol_mode(
-			///The age of the last step in the old mode in Gyr.
-			double age, 
-
-			///The values of the old evolution mode variables being evolved.
-			const std::valarray<double> &parameters,
-
-			///The semimajor axis at which the planet first appears.
-			double initial_semimajor,
-			
-			///The planet-star system being evolved.
-			StellarSystem &system, 
-
-			///The old evolution mode.
-			EvolModeType evolution_mode,
-
-			///Whether the planet is in an orbit which matches the rotation
-			///of the star and which harmonic to which.
-			SpinOrbitLockInfo &star_lock,
-
-			///The current wind saturation state.
-			WindSaturationState wind_state,
-			
-			///The reason for stopping the evolution.
-			StoppingConditionType condition_type,
-
-			///The value of the condition which caused the stop at the last
-			///step in the old mode.
-			double condition_value,
-			
-			///Was the last step before the condition actually crossed zero.
-			bool stopped_before,
-			
-			///The age at which the planet suddenly appears in Gyr.
-			double planet_formation_age);
-
 	///\brief The age at which the evolution should stop next if no other
 	///stopping condition occurs.
 	double stopping_age(
@@ -428,135 +340,10 @@ private:
 			double age, 
 
 			///The stellar system being evolved.
-			const StellarSystem &system,
+			const BinarySystem &system,
 
 			///A sorted list of ages which must be stopped at.
 			const std::list<double> &required_ages);
-
-	///\brief Converts the entries in an input orbit or its rate of evolution
-	///to a standard set of parameters.
-	void parse_orbit_or_derivatives(
-			///The mode the input orbit is in. If the mode is such that the
-			///planet is not present a and inclination are set to NaN.
-			EvolModeType evolution_mode,
-
-			///Does the input orbit represent spin-orbit locked star.
-			const SpinOrbitLockInfo &star_lock,
-
-			///The age at which both the input and output orbits apply
-			double age,
-
-			///The current orbit or derivatives
-			const std::valarray<double> &orbit_deriv,
-			
-			///The stellar system being evolved.
-			const StellarSystem &system,
-
-			///Are we transforming an orbit or its evolution rates.
-			bool evolution,
-			
-			///If transforming derivatives on input should contain the
-			///semimajor axis to assume.
-			///On output contains the semimajor axis or its derivative.
-			double &a,
-
-			///On output contains the inclination or its derivative.
-			double &inclination,
-
-			///On output contains the stellar convective zone angular
-			///momentum or its derivative.
-			double &Lconv,
-
-			///On output contains the stellar radiative zone angular
-			///momentum component along Lconv or its derivative.
-			double &Lrad_parallel,
-
-			///On output contains the stellar radiative zone angular
-			///momentum component perpendicular to Lconv or its derivative.
-			double &Lrad_perpendicular) const;
-
-	///\brief Generates an orbit array with the appropriate content for
-	///running evolution calculations.
-	void collect_orbit_or_derivatives(
-			///The evolution mode of the desired orbit.
-			EvolModeType evolution_mode,
-
-			///Should the output orbit represent spin-orbit locked star.
-			const SpinOrbitLockInfo &star_lock,
-
-			///The semimajor axis or its derivative.
-			double a,
-
-			///The inclination or its derivative.
-			double inclination,
-
-			///The stellar convective zone angular momentum or its
-			///derivative.
-			double Lconv,
-
-			///The stellar radiative zone angular momentum component along
-			///Lconv or its derivative.
-			double Lrad_parallel,
-
-			///The stellar radiative zone angular momentum component
-			///perpendicular to Lconv or its derivative.
-			double Lrad_perpendicular,
-
-			///The array to fill with the orbit. Resized as necessary.
-			std::valarray<double> &result,
-
-			///If we are collecitng derivatives, this should be the value of
-			///the semimajor axis. Othrewise it should be NaN.
-			double semimajor=NaN) const;
-
-	///Transforms orbital parameters from one evolution mode to another.
-	std::valarray<double> transform_orbit(
-			///The mode the input orbit is in.
-			EvolModeType from_mode,
-
-			///The mode to transform to.
-			EvolModeType to_mode, 
-			
-			///Does the input orbit represent spin-orbit locked star.
-			const SpinOrbitLockInfo &from_star_lock,
-
-			///Should the output orbit represent spin-orbit locked star.
-			const SpinOrbitLockInfo &to_star_lock,
-			
-			///The age at which both the input and output orbits apply
-			double age,
-
-			///The current orbit
-			const std::valarray<double> &from_orbit,
-
-			///The semimajor axis at which the planet first appears in AU.
-			double initial_semimajor,
-
-			///The inclination with which the planet first appears in AU.
-			double initial_inclination,
-			
-			///The stellar system being evolved.
-			const StellarSystem &system) const;
-
-	///\brief Transforms the deriatives of the orbital parameters from one
-	///evolution mode to another.
-	std::valarray<double> transform_derivatives(
-			///The mode in which the input orbit and derivatives are.
-			EvolModeType from_mode,
-
-			///The mode which we need the output derivatives to be in.
-			EvolModeType to_mode, 
-			
-			///Does the input orbit represent spin-orbit locked star.
-			const SpinOrbitLockInfo &from_star_lock,
-
-			///Should the output orbit represent spin-orbit locked star.
-			const SpinOrbitLockInfo &to_star_lock,
-			
-			double age,
-			const std::valarray<double> &from_orbit, 
-			const std::valarray<double> &from_deriv,
-			double initial_semimajor, const StellarSystem &system);
 
 	///Clears any previously calculated evolution.
 	void reset(BinarySystem &system);
@@ -573,7 +360,7 @@ public:
 	///boundary conditions.
 	void operator()(
 			///The stellar system to calculate the evolution for
-			StellarSystem &system,
+			BinarySystem &system,
 
 			///The maximum size of the time steps allowed (useful if finer
 			///sampling of the output than default is necessary).
@@ -587,7 +374,7 @@ public:
 	{return __tabulated_ages;}
 
 	///The tabulated evolution modes so far.
-	const std::list<EvolModyType> &mode_evolution() const
+	const std::list<EvolModeType> &mode_evolution() const
 	{return __tabulated_evolution_modes;}
 };
 

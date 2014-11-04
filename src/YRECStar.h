@@ -7,6 +7,10 @@
  */
 
 #include "SaturatingSkumanichWindBody.h"
+#include "ExponentialDecayDiffRotBody.h"
+#include "StellarEvolution.h"
+#include "YRECCore.h"
+#include "YRECEnvelope.h"
 
 class YRECStar : public SaturatingSkumanichWindBody,
 				 public ExponentialDecayDiffRotBody {
@@ -45,10 +49,10 @@ public:
 			double wind_strength,
 
 			///The frequency at which the wind loss saturates in rad/day.
-			double wind_saturation_frequency
+			double wind_saturation_frequency,
 
 			///The timescale for differential rotation coupling.
-			double diff_rot_coupling_timescale	
+			double diff_rot_coupling_timescale,
 
 			///A StellarEvolution interpolator.
 			const StellarEvolution &evolution) :
@@ -58,8 +62,8 @@ public:
 		__low_mass(mass<evolution.get_mass_break()),
 		__luminosity(evolution.interpolate_luminosity(mass)),
 		__lifetime(9*std::pow(mass, -3)),
-		__core_formation(evolution.core_formation_age())
-		__envelope(mass, evolution.interpolate_radius(mass)
+		__core_formation(evolution.core_formation_age()),
+		__envelope(mass, evolution.interpolate_radius(mass),
 				(__low_mass
 				 ? evolution.interpolate_moment_of_inertia(mass, convective)
 				 : evolution.interpolate_moment_of_inertia(mass, total))),
@@ -84,17 +88,46 @@ public:
 #ifdef DEBUG
 		assert(zone_index<=1);
 #endif
-		return (zone_index ? __core : __envelope);
+		if(zone_index==0) return __envelope;
+		else return __core;
+	}
+
+	///The envelope of the star.
+	const YRECEnvelope &envelope() const {return __envelope;}
+
+	///The core of the star.
+	const YRECCore &core() const
+	{
+#ifdef DEBUG
+		assert(__is_low_mass);
+#endif
+		return __core;
+	}
+
+	///See DissipatingBody::zone().
+	const DissipatingZone &zone(unsigned zone_index) const
+	{
+#ifdef DEBUG
+		assert(zone_index<=1);
+#endif
+		if(zone_index==0) return __envelope;
+		else return __core;
 	}
 
 	///The lifetime of the star (where tracks end).
 	double lifetime() {return __lifetime;}
 
 	///The luminosity of the star at the given age.
-	double luminosity(double age) {return __luminosity(age);}
+	double luminosity(double age) const {return (*__luminosity)(age);}
 
 	///Cleanup after the star.
 	~YRECStar() {delete __luminosity;}
+
+	///Is this a low mass star?
+	bool is_low_mass() {return __low_mass;}
+
+	///The age when the core forms.
+	double core_formation_age() {return __core_formation;}
 };
 
 #endif

@@ -24,25 +24,11 @@
 #include "gsl/gsl_poly.h"
 #include <cassert>
 
-///Has no business being here.
-///TODO: move it to a more appropriate file.
-struct RotationScenario {
-	double initSpin;
-	double K;
-	double Tc;
-	double Tdisk;
-	RotationScenario(double initSpin, double K, double Tc, double Tdisk):
-		initSpin(initSpin), K(K), Tc(Tc), Tdisk(Tdisk) {}
-};
-
 ///Not a number.
 const double NaN=std::numeric_limits<double>::quiet_NaN();
 
 ///Infinity
 const double Inf=std::numeric_limits<double>::infinity();
-
-///A shortcut for the solar radius in astronomical units.
-const double Rsun_AU=AstroConst::solar_radius/AstroConst::AU;
 
 ///\brief The various evolution modes.
 ///
