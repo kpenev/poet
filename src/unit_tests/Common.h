@@ -8,6 +8,7 @@
 #ifndef __UNITTEST_COMMON_H
 #define __UNITTEST_COMMON_H
 
+#include "../AstronomicalConstants.h"
 #include <cpptest.h>
 #include <valarray>
 #include <sstream>
@@ -32,6 +33,9 @@ double getError(double predicted, double actual);
 
 ///\todo Get rid of this function and use check_diff instead.
 bool approxEqual(double predicted, double actual, double thres=0.02);
+
+///The orbital angular momentum corresponding to the given frequency.
+double orbital_angmom_from_freq(double m1, double m2, double freq, double e);
 
 ///The lowest stellar mass to use in tests in \f$M_\odot\f$.
 const double min_stellar_mass=0.4,

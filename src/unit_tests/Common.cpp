@@ -41,3 +41,12 @@ bool approxEqual(double predicted, double actual, double thres) {
 	if (isEqual(predicted, actual)) return true;
 	return getError(predicted, actual) < 0.02;
 }
+
+double orbital_angmom_from_freq(double m1, double m2, double freq, double e)
+{
+	return m1*m2*AstroConst::day
+		   /std::pow(AstroConst::solar_radius, 2)
+		   *std::pow(std::pow(AstroConst::G*AstroConst::solar_mass, 2)
+				   	 *AstroConst::day/((m1+m2)*freq), 1.0/3.0)
+		   *std::sqrt(1.0-e*e);
+}

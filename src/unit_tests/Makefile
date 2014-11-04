@@ -9,7 +9,11 @@ ALGLIB_OBJ=../alglib/src/interpolation.o ../alglib/src/ap.o \
 				../StellarSystem.o ../Common.o ../StoppingConditions.o \
 				Common.o
 COMBINED_CODE = ../EccentricityExpansionCoefficients.o ../DissipatingZone.o \
-				Common.o
+				../CombinedStoppingCondition.o ../SynchronizedCondition.o \
+				../BreakLockCondition.o ../SpinOrbitLockInfo.o \
+				../OrbitalExpressions.o ../BinarySystem.o \
+				../DissipatingBody.o ../SecondaryDeathCondition.o \
+				../ZoneOrientation.o Common.o
 TEST_LIB = -lcpptest -lgsl -lblas -lboost_serialization-mt
 ALL_EXEC=test_InterpolatingFunctionALGLIB test_EvolvingStellarQuantity \
 		 test_Star test_Planet test_StellarEvolution test_StellarSystem \

@@ -10,6 +10,7 @@
 
 #include "Common.h"
 #include "../DissipatingZone.h"
+#include "../OrbitalExpressions.h"
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -43,21 +44,14 @@ public:
 
 class ConstPhaseLagDissipatingZone : public TestingDissipatingZone {
 private:
-	double __inclination; 
-	unsigned __e_order;
 	Lags __lags;
-protected:
-	///To what order should eccentricity expansion be performed for the given
-	///value of the eccentricity.
-	unsigned eccentricity_order(double e) const {return __e_order;}
-public:
-	ConstPhaseLagDissipatingZone(double inclination, unsigned e_order,
-			const Lags &lags) :
-		__inclination(inclination), __e_order(e_order), __lags(lags) {}
 
-	///\brief Last setting for the angle between the angular momenta of the
-	///zone and the orbit.
-	virtual double inclination() const {return __inclination;}
+	double __moment_of_inertia, __radius, __mass;
+public:
+	ConstPhaseLagDissipatingZone(const Lags &lags, double moment_of_inertia,
+			double radius, double mass)
+		: __lags(lags), __moment_of_inertia(moment_of_inertia),
+		__radius(radius), __mass(mass) {}
 
 	///\brief Should return true iff the given term is presently locked.
 	virtual bool locked(int orbital_frequency_multiplier,
@@ -96,6 +90,15 @@ public:
 				: __lags(spin_frequency_multiplier,
 					orbital_frequency_multiplier));
 	}
+
+	double moment_of_inertia(int deriv) const
+	{return (deriv ? 0 : __moment_of_inertia);}
+
+	double love_coefficient(int, int, Dissipation::Derivative) const
+	{return 0;}
+
+	double outer_radius(int deriv) const {return (deriv ? 0 : __radius);}
+	double outer_mass(int deriv) const {return (deriv ? 0 : __mass);}
 
 	void describe(std::ostream &os) const;
 };
@@ -143,6 +146,21 @@ private:
 
 			///The eccentricity of the orbit
 			double eccentricity,
+
+			///The mass of the primary.
+			double m1,
+
+			///The mass of the secondary.
+			double m2,
+
+			///The spin angular momentum of the zone.
+			double spin_angmom,
+
+			///The inclination to assume for the zone.
+			double inclination,
+
+			///The periapsis to assume for the zone.
+			double periapsis,
 			
 			///The expected tidal torque in the z direction
 			double torque_z,
