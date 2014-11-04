@@ -7,13 +7,13 @@
 /**\file
  *
  * \brief Decrales a body subject to angular momentum loss 
- * \f$\propt\omega\min(\omega, \omega_{sat})^2\f$.
+ * \f$\propto\omega\min(\omega, \omega_{sat})^2\f$.
  *
  * \ingroup StellarSystem_group
  */
 
 ///\brief A DissipatingBody which loses angular momentum at a rate
-/// \f$\propt\omega\min(\omega, \omega_{sat})^2\f$
+/// \f$\propto\omega\min(\omega, \omega_{sat})^2\f$
 ///
 ///\ingroup StellarSystem_group
 class SaturatingSkumanichWindBody : virtual public DissipatingBody {
