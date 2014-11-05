@@ -13,7 +13,10 @@ COMBINED_CODE = ../EccentricityExpansionCoefficients.o ../DissipatingZone.o \
 				../BreakLockCondition.o ../SpinOrbitLockInfo.o \
 				../OrbitalExpressions.o ../BinarySystem.o \
 				../DissipatingBody.o ../SecondaryDeathCondition.o \
-				../ZoneOrientation.o Common.o
+				../ZoneOrientation.o ../ExponentialDecayDiffRotBody.o \
+				../SaturatingSkumanichWindBody.o \
+				../WindSaturationCondition.o Common.o \
+				ConstPhaseLagDissipatingZone.o LaiExpressions.o
 TEST_LIB = -lcpptest -lgsl -lblas -lboost_serialization-mt
 ALL_EXEC=test_InterpolatingFunctionALGLIB test_EvolvingStellarQuantity \
 		 test_Star test_Planet test_StellarEvolution test_StellarSystem \
@@ -23,7 +26,13 @@ CPPFLAGS = -g -Wall -I../ -I/opt/local/include -L/opt/local/lib -D STANDALONE
 default: all
 Common.o: Common.h ../*.h
 
-%: %.cpp %.h Common.o ../*.cpp ../*.h ../*.o ../alglib/src/*.cpp ../alglib/src/*.h
+ConstPhaseLagDissipatingZone.o: ConstPhaseLagDissipatingZone.h \
+	ConstPhaseLagDissipatingZone.cpp Common.h ../*.h
+	
+LaiExpressions.o: LaiExpressions.h
+
+%: %.cpp %.h $(COMBINED_CODE) 
+	#Common.o ConstPhaseLagDissipatingZone.o LaiExpressions.o ../*.cpp ../*.h ../*.o ../alglib/src/*.cpp ../alglib/src/*.h
 #	make -C ../
 	$(CPP) $(CPPFLAGS) $< -c -o $@.o
 	$(CPP) $(CPPFLAGS) $(COMBINED_CODE) $(ALGLIB_OBJ) $@.o -o $@ $(TEST_LIB)

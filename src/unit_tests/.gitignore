@@ -1,4 +1,5 @@
 test_DissipatingZone
 test_EccentricityExpansionCoefficients
+test_DissipatingBody
 EccentricityExpansionCoefficientsTest.txt
 EccentricityExpansionDerivativesTest.txt

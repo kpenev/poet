@@ -12,6 +12,7 @@
 #include <cpptest.h>
 #include <valarray>
 #include <sstream>
+#include <cstdlib>
 
 ///\brief Returns true iff \f$|x-y|\leq\mathrm{abs\_tolerance} +
 /// \mathrm{frac\_tolerance}\cdot\max(|x|,|y|)\f$.
@@ -68,5 +69,10 @@ const double min_planet_mass=10,
 ///given stream.
 std::ostream &operator<<(std::ostream &os,
 		const std::valarray<double> &array);
+
+///\brief Generates a uniformly distributed random number.
+///
+///Seeding the random number generator is the caller's responsibility.
+double uniform_rand(double min, double max);
 
 #endif

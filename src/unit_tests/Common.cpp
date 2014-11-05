@@ -50,3 +50,8 @@ double orbital_angmom_from_freq(double m1, double m2, double freq, double e)
 				   	 *AstroConst::day/((m1+m2)*freq), 1.0/3.0)
 		   *std::sqrt(1.0-e*e);
 }
+
+double uniform_rand(double min, double max)
+{
+	return (max-min)*static_cast<double>(std::rand())/RAND_MAX+min;
+}

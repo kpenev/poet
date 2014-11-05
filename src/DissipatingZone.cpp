@@ -153,8 +153,7 @@ double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
 		int spin_frequency_multiplier, double orbital_frequency)
 {
 #ifdef DEBUG
-	assert(__lock || 
-			(__lock.lock_direction()*__other_lock.lock_direction()==-1));
+	check_locks_consistency();
 #endif
 	if(__lock(orbital_frequency_multiplier, spin_frequency_multiplier))
 		return 0;
@@ -168,10 +167,46 @@ double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
 	return forcing_freq;
 }
 
+#ifdef DEBUG
+void DissipatingZone::check_locks_consistency()
+{
+	int max_abs_orb_mult=static_cast<int>(__e_order+2);
+	assert(__lock || 
+			(__lock.lock_direction()*__other_lock.lock_direction()==-1) ||
+			(__lock.spin_frequency_multiplier()==1 && 
+			 __lock.orbital_frequency_multiplier()==
+			 __lock.lock_direction()*max_abs_orb_mult &&
+			 __other_lock.orbital_frequency_multiplier()==1 && 
+			 __other_lock.spin_frequency_multiplier()==0 &&
+			 __other_lock.lock_direction()==1));
+	assert((__lock.spin_frequency_multiplier()==1 ||
+				__lock.spin_frequency_multiplier()==2));
+	assert((__other_lock.spin_frequency_multiplier()>=0 && 
+				__other_lock.spin_frequency_multiplier()<=2));
+	assert(__lock.lock_direction()*__lock.spin_frequency_multiplier()
+			*spin_frequency()
+			>
+			__lock.lock_direction()*__lock.orbital_frequency_multiplier()*
+			__orbital_frequency);
+	if(__other_lock.spin_frequency_multiplier())
+		assert(__other_lock.lock_direction()
+				*__other_lock.spin_frequency_multiplier()
+				*spin_frequency()
+				>
+				__other_lock.lock_direction()
+				*__other_lock.orbital_frequency_multiplier()
+				*__orbital_frequency);
+	else assert(__lock.lock_direction()
+				*__lock.orbital_frequency_multiplier()
+				>0);
+}
+#endif
+
 void DissipatingZone::update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
 {
 #ifdef DEBUG
 	assert(lock.lock_direction());
+	check_locks_consistency();
 #endif
 	if(std::abs(lock.orbital_frequency_multiplier())>__e_order+2
 			&& lock.spin_frequency_multiplier()==2)
@@ -188,6 +223,73 @@ void DissipatingZone::update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
 		if(lock.lock_direction()>0) lock.set_lock(1, 0, 1);
 		else lock.set_lock(-static_cast<int>(__e_order)-2, 1, -1);
 	}
+#ifdef DEBUG
+	check_locks_consistency();
+#endif
+}
+
+void DissipatingZone::update_locks_to_higher_e_order(unsigned new_e_order)
+{
+	if(__other_lock.spin_frequency_multiplier()==0) {
+		int orb_mult=std::ceil(std::abs(2*spin_frequency())
+				/__orbital_frequency);
+		if(orb_mult%2==1 && static_cast<int>(new_e_order)+2>=orb_mult)
+			__other_lock.set_lock(__lock.lock_direction()*orb_mult, 2,
+					-__lock.lock_direction());
+		else if(static_cast<int>(new_e_order)+2>=orb_mult/2)
+			__other_lock.set_lock(__lock.lock_direction()*orb_mult/2, 1,
+					-__lock.lock_direction());
+	} else if(__lock.spin_frequency_multiplier()==1
+			&& __other_lock.spin_frequency_multiplier()==1
+			&& __lock.orbital_frequency_multiplier()
+			+
+			__other_lock.orbital_frequency_multiplier()
+			<=
+			static_cast<int>(new_e_order)+2) {
+		int mid_mult=__lock.orbital_frequency_multiplier()
+			+
+			__other_lock.orbital_frequency_multiplier();
+		if(2*spin_frequency()<mid_mult*__orbital_frequency)
+			(__lock.lock_direction()>0 ? __other_lock : __lock)
+				.set_lock(mid_mult, 2, -1);
+		else (__lock.lock_direction()>0 ? __lock : __other_lock)
+			.set_lock(mid_mult, 2, 1);
+	}
+}
+
+void DissipatingZone::initialize_locks()
+{
+	int below_orb_mult=std::floor(2.0*__spin_frequency/__orbital_frequency),
+		max_abs_orb_mult=static_cast<int>(__e_order+2);
+	if(below_orb_mult%2) {
+		if(std::abs(below_orb_mult)<=__e_order+2) {
+			__lock.set_lock(below_orb_mult, 2, 1);
+			__other_lock.set_lock((below_orb_mult+1)/2, 1, -1);
+		} else if(std::abs((below_orb_mult-1)/2)<=__e_order+2) {
+			__lock.set_lock((below_orb_mult-1)/2, 1, 1);
+			if((below_orb_mult+1)/2>max_abs_orb_mult)
+				__other_lock.set_lock(1, 0, 1);
+			else __other_lock.set_lock((below_orb_mult+1)/2, 1, -1);
+		} else {
+			if(__spin_frequency>0) __lock.set_lock(max_abs_orb_mult, 1, 1);
+			else __lock.set_lock(-max_abs_orb_mult, 1, -1);
+			__other_lock.set_lock(1, 0, 1);
+		}
+	} else if(std::abs(below_orb_mult/2)<=max_abs_orb_mult) {
+		__lock.set_lock(below_orb_mult/2, 1, 1);
+		if(std::abs(below_orb_mult+1)<=max_abs_orb_mult)
+			__other_lock.set_lock(below_orb_mult+1, 2, -1);
+		else if(std::abs(below_orb_mult/2+1)<=max_abs_orb_mult)
+			__other_lock.set_lock(below_orb_mult/2+1, 1, -1);
+		else __other_lock.set_lock(1, 0, 1);
+	} else {
+		if(__spin_frequency>0) __lock.set_lock(max_abs_orb_mult, 1, 1);
+		else __lock.set_lock(-max_abs_orb_mult, 1, -1);
+		__other_lock.set_lock(1, 0, 1);
+	}
+#ifdef DEBUG
+	check_locks_consistency();
+#endif
 }
 
 DissipatingZone::DissipatingZone()
@@ -220,6 +322,7 @@ void DissipatingZone::configure(double, double orbital_frequency,
 		__spin_frequency=spin_angmom/moment_of_inertia();
 	}
 	if(std::isnan(orbital_frequency)) return;
+	if(__lock.spin_frequency_multiplier()==0) initialize_locks();
 
 	fill_Umm();
 	__power=0;
@@ -435,60 +538,16 @@ void DissipatingZone::release_lock(short direction)
 void DissipatingZone::change_e_order(unsigned new_e_order)
 {
 	if(__lock) {
+	   __e_order=new_e_order;
 	   if(__lock.orbital_frequency_multiplier()>
 			   static_cast<int>(__e_order)+2) release_lock();
-	   __e_order=new_e_order;
 	   return;
 	}
 #ifdef DEBUG
-	assert(__lock.lock_direction()*__other_lock.lock_direction()<0);
-	assert((__lock.spin_frequency_multiplier()==1 ||
-				__lock.spin_frequency_multiplier()==2));
-	assert((__other_lock.spin_frequency_multiplier()>=0 && 
-				__other_lock.spin_frequency_multiplier()<=2));
-	assert(__lock.lock_direction()*__lock.spin_frequency_multiplier()
-			*spin_frequency()
-			>
-			__lock.lock_direction()*__lock.orbital_frequency_multiplier()*
-			__orbital_frequency);
-	if(__other_lock.spin_frequency_multiplier())
-		assert(__other_lock.lock_direction()
-				*__other_lock.spin_frequency_multiplier()
-				*spin_frequency()
-				>
-				__other_lock.lock_direction()
-				*__other_lock.orbital_frequency_multiplier()
-				*__orbital_frequency);
-	else assert(__lock.lock_direction()
-				*__lock.orbital_frequency_multiplier()
-				>0);
+	check_locks_consistency();
 #endif
 	if(new_e_order>__e_order) {
-		if(__other_lock.spin_frequency_multiplier()==0) {
-			int orb_mult=std::ceil(std::abs(2*spin_frequency())
-								/__orbital_frequency);
-			if(orb_mult%2==1 && static_cast<int>(new_e_order)+2>=orb_mult)
-				__other_lock.set_lock(__lock.lock_direction()*orb_mult, 2,
-									  -__lock.lock_direction());
-			else if(static_cast<int>(new_e_order)+2>=orb_mult/2)
-				__other_lock.set_lock(__lock.lock_direction()*orb_mult/2, 1,
-									  -__lock.lock_direction());
-		} else if(__lock.spin_frequency_multiplier()==1
-				&& __other_lock.spin_frequency_multiplier()==1
-				&& __lock.orbital_frequency_multiplier()
-			   +
-			   __other_lock.orbital_frequency_multiplier()
-			   <=
-			   static_cast<int>(new_e_order)+2) {
-			int mid_mult=__lock.orbital_frequency_multiplier()
-				+
-				__other_lock.orbital_frequency_multiplier();
-			if(2*spin_frequency()<mid_mult*__orbital_frequency)
-				(__lock.lock_direction()>0 ? __other_lock : __lock)
-					.set_lock(mid_mult, 2, -1);
-			else (__lock.lock_direction()>0 ? __lock : __other_lock)
-				.set_lock(mid_mult, 2, 1);
-		}
+		update_locks_to_higher_e_order(new_e_order);
 		__e_order=new_e_order;
 	} else {
 		__e_order=new_e_order;
@@ -499,6 +558,9 @@ void DissipatingZone::change_e_order(unsigned new_e_order)
 			__other_lock.set_lock(1, 0, 1);
 		}
 	}
+#ifdef DEBUG
+	check_locks_consistency();
+#endif
 }
 
 void DissipatingZone::add_to_evolution()

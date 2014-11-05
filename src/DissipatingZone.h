@@ -209,11 +209,26 @@ private:
 			///The orbital frequency.
 			double orbital_frequency);
 
+#ifdef DEBUG
+	///\brief Runs a bunch of asserts to check the consistency of __lock and
+	///__other_lock.
+	void check_locks_consistency();
+#endif
+
 	///\brief Updates a SpinOrbitLockInfo variable as appropriate when 
 	///decreasing the eccentricity expansion order.
 	///
 	///__e_order must already be updated to the new value.
 	void update_lock_to_lower_e_order(SpinOrbitLockInfo &lock);
+
+	///Updates __lock and __other_lock to accomodate increasing __e_order.
+	void update_locks_to_higher_e_order(unsigned new_e_order);
+
+	///\brief Initializes the locks the first time the zone is
+	///configure() -ed.
+	///
+	///The spin frequency and orbital frequency must already be set.
+	void initialize_locks();
 
 public:
 	DissipatingZone();
