@@ -1,7 +1,7 @@
 #include "test_DissipatingBody.h"
 
 TwoZoneBody *test_DissipatingBody::random_body(double &other_mass, double &a,
-		Lags &lags_env, Lags &lags_core) const
+		Lags &lags_env, Lags &lags_core, bool no_periapsis) const
 {
 	other_mass=std::pow(10.0, uniform_rand(-2.0, 1.0));
 	a=uniform_rand(3, 30);
@@ -21,6 +21,7 @@ TwoZoneBody *test_DissipatingBody::random_body(double &other_mass, double &a,
 		   wind_strength=uniform_rand(0, 100),
 		   wind_sat_freq=std::pow(10.0, uniform_rand(-2, 2))*orbit_freq,
 		   age=uniform_rand(0, 100);
+	if(no_periapsis) periapsis_core=0;
 	for(int m=-2; m<=2; ++m)
 		for(int mp=-2; mp<=0; ++mp) {
 			lags_env(m, mp)=(uniform_rand(0, 1)<0.2 ? 0
@@ -53,6 +54,7 @@ test_DissipatingBody::test_DissipatingBody(unsigned ntests,
 {
 	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
 	TEST_ADD(test_DissipatingBody::test_Lai_torque_power);
+	TEST_ADD(test_DissipatingBody::test_orbit_rates_two_zones);
 }
 
 void test_DissipatingBody::test_Lai_torque_power()
@@ -74,9 +76,7 @@ void test_DissipatingBody::test_Lai_torque_power()
 			double inclination=body->zone(zone_ind).inclination(),
 				   expected_power=power_norm
 				   				  *
-								  dimensionless_power_Lai(
-										  body->zone(zone_ind).inclination(),
-										  lags),
+								  dimensionless_power_Lai(inclination, lags),
 				   power_above=body->tidal_power(zone_ind, true),
 				   power_below=body->tidal_power(zone_ind, false);
 			Eigen::Vector3d 
@@ -111,6 +111,76 @@ void test_DissipatingBody::test_Lai_torque_power()
 
 void test_DissipatingBody::test_orbit_rates_two_zones()
 {
+	for(unsigned test_ind=0; test_ind<__ntests; ++test_ind) {
+		double other_mass, a;
+		Lags lags_env, lags_core;
+		TwoZoneBody *body=random_body(other_mass, a, lags_env, lags_core,
+									  true);
+		double power_norm=power_norm_Lai(body->mass(), other_mass,
+				body->radius(), a),
+			   torque_norm=torque_norm_Lai(other_mass, body->radius(), a);
+		double energy_gain=0;
+		Eigen::Vector3d orbit_torque_env(0, 0, 0),
+						orbit_torque_core(0, 0, 0);
+		for(unsigned zone_ind=0; zone_ind<2; ++zone_ind) {
+			const Lags &lags=(zone_ind==0 ? lags_env : lags_core);
+			double this_inclination=body->zone(zone_ind).inclination(),
+				   other_inclination=body->zone(1-zone_ind).inclination(),
+				   sin_inc_diff=std::sin(this_inclination-other_inclination),
+				   cos_inc_diff=std::cos(this_inclination-other_inclination);
+			Eigen::Vector3d &this_orbit_torque(zone_ind==0
+											   ? orbit_torque_env
+											   : orbit_torque_core),
+							&other_orbit_torque(zone_ind==0
+												? orbit_torque_core
+												: orbit_torque_env);
+			energy_gain-=power_norm*dimensionless_power_Lai(this_inclination,
+															lags);
+			Eigen::Vector3d 
+				zone_torque(dimensionless_torque_x_Lai(this_inclination,
+													   lags),
+							0,
+							dimensionless_torque_z_Lai(this_inclination,
+						   							   lags));
+			zone_torque*=torque_norm;
+			this_orbit_torque-=zone_torque;
+			other_orbit_torque[0]-=zone_torque[0]*cos_inc_diff
+								   -
+								   zone_torque[2]*sin_inc_diff;
+			other_orbit_torque[2]-=zone_torque[0]*sin_inc_diff
+								   +
+								   zone_torque[2]*cos_inc_diff;
+		}
+		double value=body->tidal_orbit_energy_gain();
+		std::ostringstream msg;
+		msg << "Expected orbit energy gain: " 
+			<< energy_gain << " got: " << value << ", difference: " 
+			<< energy_gain-value;
+		TEST_ASSERT_MSG(check_diff(value, energy_gain, 1e-10, 1e-15),
+						msg.str().c_str());
+		for(unsigned zone_ind=0; zone_ind<2; ++zone_ind) {
+			const Eigen::Vector3d &expected_torque=(zone_ind==0
+													? orbit_torque_env
+													: orbit_torque_core);
+			for(unsigned method=0; method<2-zone_ind; ++method) {
+				const Eigen::Vector3d &got_torque=
+					(method==0
+					 ? body->tidal_orbit_torque(body->zone(zone_ind))
+					 :body->tidal_orbit_torque());
+				for(int i=0; i<3; ++i) {
+					msg.str("");
+					msg << "Expected orbit torque(" << i << ") for zone"
+						<< zone_ind << ": " << expected_torque(i) << ", got: "
+						<< got_torque(i) << ", difference: "
+						<< got_torque(i)-expected_torque(i);
+					TEST_ASSERT_MSG(check_diff(got_torque(i),
+											   expected_torque(i), 1e-10,
+											   1e-15),
+									msg.str().c_str());
+				}
+			}
+		}
+	}
 }
 
 #ifdef STANDALONE

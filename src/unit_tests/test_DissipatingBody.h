@@ -31,7 +31,7 @@ private:
 
 	///Generates a randomly configured body.
 	TwoZoneBody *random_body(double &other_mass, double &a, Lags &lags_env,
-							 Lags &lags_core) const;
+							 Lags &lags_core, bool no_periapsis=false) const;
 protected:
 	///No fixtures at this time
 	void setup() {};
@@ -54,8 +54,8 @@ public:
 	///(27), (28) and (35) in Lai 2012.
 	void test_Lai_torque_power();
 
-	///\brief Tests the energy and angular momentum rates of change of the
-	///orbit due to tides for a 2-zone body.
+	///\brief Tests the energy and angular momentum rates of change
+	///of the orbit due to tides for a 2-zone body.
 	void test_orbit_rates_two_zones();
 };
 
