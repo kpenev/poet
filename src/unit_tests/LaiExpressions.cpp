@@ -41,6 +41,7 @@ double torque_norm_Lai(double perturber_mass, double dissipator_radius,
 {
 	return AstroConst::G*std::pow(perturber_mass/std::pow(semimajor, 3), 2)
 		   *std::pow(dissipator_radius, 5)*AstroConst::solar_mass
+		   /std::pow(AstroConst::solar_radius, 3)
 		   *AstroConst::day*AstroConst::Gyr;
 }
 

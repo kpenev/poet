@@ -19,6 +19,7 @@
 #include <cmath>
 #include <cassert>
 #include <functional>
+#include <ctime>
 
 /**\brief The test suite for the DissipatingZone class.
  *
@@ -32,8 +33,12 @@ private:
 	///Performs a single check of the expected values of the tidal torques
 	///and power.
 	void single_test(
-			///The zone to test. Modified because of set_orbit.
-			TestingDissipatingZone &zone,
+			///The eccentricity expansion order to use for the test (if
+			///non-zero, eccentricity itself must be zero).
+			int e_order,
+
+			///The tidal lags to assume for the test.
+			const Lags &lags,
 
 			///The orbital freuqency in rad/day
 			double orbital_frequency,

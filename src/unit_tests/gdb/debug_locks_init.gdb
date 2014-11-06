@@ -1,24 +1,10 @@
-break DissipatingZone.cpp:291
+break DissipatingZone.cpp:173
 commands 1
 print __spin_frequency/__orbital_frequency
 print __lock
 print __other_lock
-c
-end
-
-break test_DissipatingBody.cpp:23
-commands 2
-print a
-print m_env
-print m_core
-print r_env
-print r_core
-print m_other
-print inertia_env
-print inertia_core
-print spin_freq_env
-print spin_freq_core
-print orbit_freq
+print __other_lock.lock_direction()*__other_lock.spin_frequency_multiplier()*spin_frequency()
+print __other_lock.lock_direction()*__other_lock.orbital_frequency_multiplier()*__orbital_frequency
 c
 end
 

@@ -11,6 +11,7 @@
 #include "TwoZoneBody.h"
 #include "Common.h"
 #include "ConstPhaseLagDissipatingZone.h"
+#include "LaiExpressions.h"
 #include "../DissipatingBody.h"
 #include "../OrbitalExpressions.h"
 #include <iostream>
@@ -29,7 +30,8 @@ private:
 	unsigned __ntests;
 
 	///Generates a randomly configured body.
-	TwoZoneBody *random_body();
+	TwoZoneBody *random_body(double &other_mass, double &a, Lags &lags_env,
+							 Lags &lags_core) const;
 protected:
 	///No fixtures at this time
 	void setup() {};

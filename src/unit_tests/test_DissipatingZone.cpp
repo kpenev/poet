@@ -1,10 +1,13 @@
 #include "test_DissipatingZone.h"
 
-void test_DissipatingZone::single_test(TestingDissipatingZone &zone,
-	   	double orbital_frequency, double eccentricity, double m1, double m2,
+void test_DissipatingZone::single_test(int e_order, const Lags &lags,
+		double orbital_frequency, double eccentricity, double m1, double m2,
 		double spin_angmom, double inclination, double periapsis,
 		double torque_z, double torque_x, double power)
 {
+	ConstPhaseLagDissipatingZone zone(lags, 1.0, 1.0, 1.0);
+	zone.change_e_order(e_order);
+	if(e_order!=0) assert(eccentricity==0);
 	__current_failed=true;
 	std::ostringstream msg_start;
 	zone.describe(msg_start);
@@ -72,27 +75,28 @@ void test_DissipatingZone::test_Lai()
 				int enabled_terms_mask=i;
 				for(int m=-2; m<=2; ++m) {
 					for(int mp=-2-e_order; mp<=0; ++mp) {
-						lags(m, mp)=enabled_terms_mask%2;
-						lags(-m, -mp)=-enabled_terms_mask%2;
+						double this_lag=uniform_rand(0.1, 1.0)
+										*(enabled_terms_mask%2);
+						lags(m, mp)=this_lag;
+						lags(-m, -mp)=-this_lag;
 						enabled_terms_mask/=2;
 					}
 				}
-				ConstPhaseLagDissipatingZone zone(lags, 1.0, 1.0, 1.0);
-				zone.change_e_order(e_order);
 				if(i%1000==0) 
 					std::cerr << "Lai test " << i << "\r";
-				single_test(zone, 1.0, 0, 1.0, 1e-3, 1.0, inclination, 0.0, 
-						dimensionless_torque_z_Lai(inclination, lags), 
-						dimensionless_torque_x_Lai(inclination, lags), 
-						dimensionless_power_Lai(inclination, lags));
+				single_test(e_order, lags, 1.0, 0, 1.0, 1e-3, M_PI/2.0,
+							inclination, 0.0, 
+							dimensionless_torque_z_Lai(inclination, lags), 
+							dimensionless_torque_x_Lai(inclination, lags), 
+							dimensionless_power_Lai(inclination, lags));
 				if(e_order==0) {
-					single_test(zone, 1.0, 0.5, 1.0, 1e-3, 0.5, inclination,
-						   		M_PI/3,
+					single_test(e_order, lags, 1.0, 0.5, 1.0, 1e-3, M_PI/20.0,
+								inclination, M_PI/3,
 								dimensionless_torque_z_Lai(inclination,lags),
 								dimensionless_torque_x_Lai(inclination,lags),
 								dimensionless_power_Lai(inclination, lags));
-					single_test(zone, 10.0, 0.5, 1.0, 1e-3, 0.5, inclination,
-						   		M_PI/3,
+					single_test(e_order, lags, 10.0, 0.5, 1.0, 1e-3, M_PI,
+								inclination, M_PI/3,
 								dimensionless_torque_z_Lai(inclination,lags),
 								dimensionless_torque_x_Lai(inclination,lags),
 								dimensionless_power_Lai(inclination, lags));
@@ -114,6 +118,7 @@ int main()
 	std::cout.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
 	test_DissipatingZone tests;
+	std::srand(std::time(NULL));
 	return (tests.run(output, false) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #endif

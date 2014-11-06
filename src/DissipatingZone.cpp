@@ -188,7 +188,7 @@ void DissipatingZone::check_locks_consistency()
 			>
 			__lock.lock_direction()*__lock.orbital_frequency_multiplier()*
 			__orbital_frequency);
-	if(__other_lock.spin_frequency_multiplier())
+	if(__other_lock.spin_frequency_multiplier()) {
 		assert(__other_lock.lock_direction()
 				*__other_lock.spin_frequency_multiplier()
 				*spin_frequency()
@@ -196,7 +196,7 @@ void DissipatingZone::check_locks_consistency()
 				__other_lock.lock_direction()
 				*__other_lock.orbital_frequency_multiplier()
 				*__orbital_frequency);
-	else assert(__lock.lock_direction()
+	} else assert(__lock.lock_direction()
 				*__lock.orbital_frequency_multiplier()
 				>0);
 }
@@ -537,6 +537,10 @@ void DissipatingZone::release_lock(short direction)
 
 void DissipatingZone::change_e_order(unsigned new_e_order)
 {
+	if(__lock.spin_frequency_multiplier()==0) {
+		__e_order=new_e_order;
+		return;
+	}
 	if(__lock) {
 	   __e_order=new_e_order;
 	   if(__lock.orbital_frequency_multiplier()>
