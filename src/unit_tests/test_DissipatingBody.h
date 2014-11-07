@@ -31,7 +31,8 @@ private:
 
 	///Generates a randomly configured body.
 	TwoZoneBody *random_body(double &other_mass, double &a, Lags &lags_env,
-							 Lags &lags_core, bool no_periapsis=false) const;
+							 Lags &lags_core, bool no_periapsis=false,
+							 bool same_inclination=false) const;
 protected:
 	///No fixtures at this time
 	void setup() {};
@@ -55,8 +56,9 @@ public:
 	void test_Lai_torque_power();
 
 	///\brief Tests the energy and angular momentum rates of change
-	///of the orbit due to tides for a 2-zone body.
-	void test_orbit_rates_two_zones();
+	///of the orbit due to tides for a 2-zone body with no periapsis
+	///difference.
+	void test_orbit_rates_same_periapsis();
 };
 
 #endif

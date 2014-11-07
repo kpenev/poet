@@ -1105,8 +1105,10 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 	OrbitSolver solver(std::min(real_parameters[InCol::TEND], 
 								star.lifetime()),
 					   std::pow(10.0, -real_parameters[InCol::PRECISION]));
-	if(need_orbit)
+	if(need_orbit) {
+		star.detect_saturation();
 		solver(system, real_parameters[InCol::MAX_STEP], required_ages);
+	}
     double tend=(real_parameters[InCol::TEND]>0 ? 
 					real_parameters[InCol::TEND] :
 					std::min(-real_parameters[InCol::TEND], 

@@ -1,7 +1,8 @@
 #include "test_DissipatingBody.h"
 
 TwoZoneBody *test_DissipatingBody::random_body(double &other_mass, double &a,
-		Lags &lags_env, Lags &lags_core, bool no_periapsis) const
+		Lags &lags_env, Lags &lags_core, bool no_periapsis,
+		bool same_inclination) const
 {
 	other_mass=std::pow(10.0, uniform_rand(-2.0, 1.0));
 	a=uniform_rand(3, 30);
@@ -42,19 +43,12 @@ TwoZoneBody *test_DissipatingBody::random_body(double &other_mass, double &a,
 	angmom[0]=spin_freq_env*inertia_env;
 	angmom[1]=spin_freq_core*inertia_core;
 	inclination[0]=uniform_rand(0, M_PI);
-	inclination[1]=uniform_rand(0, M_PI);
+	inclination[1]=(same_inclination ? inclination[0]
+									 : uniform_rand(0, M_PI));
 
 	result->configure(age, other_mass, a, 0, &(angmom[0]), &(inclination[0]),
 					  &periapsis_core, false, false, true);
 	return result;
-}
-
-test_DissipatingBody::test_DissipatingBody(unsigned ntests,
-			const std::string &eccentricity_expansion) : __ntests(ntests)
-{
-	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
-	TEST_ADD(test_DissipatingBody::test_Lai_torque_power);
-	TEST_ADD(test_DissipatingBody::test_orbit_rates_two_zones);
 }
 
 void test_DissipatingBody::test_Lai_torque_power()
@@ -109,7 +103,7 @@ void test_DissipatingBody::test_Lai_torque_power()
 	}
 }
 
-void test_DissipatingBody::test_orbit_rates_two_zones()
+void test_DissipatingBody::test_orbit_rates_same_periapsis()
 {
 	for(unsigned test_ind=0; test_ind<__ntests; ++test_ind) {
 		double other_mass, a;
@@ -181,6 +175,14 @@ void test_DissipatingBody::test_orbit_rates_two_zones()
 			}
 		}
 	}
+}
+
+test_DissipatingBody::test_DissipatingBody(unsigned ntests,
+			const std::string &eccentricity_expansion) : __ntests(ntests)
+{
+	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
+	TEST_ADD(test_DissipatingBody::test_Lai_torque_power);
+	TEST_ADD(test_DissipatingBody::test_orbit_rates_two_zones);
 }
 
 #ifdef STANDALONE

@@ -5,7 +5,7 @@ bool check_diff(double x, double y, double frac_tolerance,
 {
 	if(std::isnan(x)) return std::isnan(y);
 	return std::abs(x-y)<=(abs_tolerance+
-		frac_tolerance*std::max(std::abs(x), std::abs(y)));
+		frac_tolerance*std::min(std::abs(x), std::abs(y)));
 }
 
 bool check_diff(std::valarray<double> x, std::valarray<double> y,
@@ -16,7 +16,7 @@ bool check_diff(std::valarray<double> x, std::valarray<double> y,
 	for(size_t i=0; i<x.size(); i++)
 		result=result && (std::abs(x[i]-y[i])<=
 				(abs_tolerance[i]+
-				frac_tolerance[i]*std::max(std::abs(x[i]), std::abs(y[i]))));
+				frac_tolerance[i]*std::min(std::abs(x[i]), std::abs(y[i]))));
 	return result;
 }
 

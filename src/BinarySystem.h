@@ -661,13 +661,13 @@ private:
 			double *age_derivs) const;
 
 	///Implements fill_orbit() for LOCKED_SURFACE_SPIN evolution mode.
-	void fill_locked_surface_orbit(std::valarray<double> &orbit);
+	void fill_locked_surface_orbit(std::valarray<double> &orbit) const;
 
 	///Implements fill_orbit() for BINARY evolution mode.
-	void fill_binary_orbit(std::valarray<double> &orbit);
+	void fill_binary_orbit(std::valarray<double> &orbit) const;
 
 	///Implements fill_orbit() for SINGLE evolution mode.
-	void fill_single_orbit(std::valarray<double> &orbit);
+	void fill_single_orbit(std::valarray<double> &orbit) const;
 
 public:
 	///Construct a binary system.
@@ -757,7 +757,7 @@ public:
 	///The system must be appropriately configure() -ed already.
 	EvolModeType fill_orbit(
 			///The orbit to fill (resized as necessary).
-			std::valarray<double> &orbit);
+			std::valarray<double> &orbit) const;
 
 
 	///\brief The fraction of an infinitesimal timestep that a zone spends

@@ -410,11 +410,13 @@ Eigen::VectorXd BinarySystem::above_lock_fractions_deriv(
 			|| deriv==Dissipation::PERIAPSIS
 			|| deriv==Dissipation::MOMENT_OF_INERTIA
 			|| deriv==Dissipation::SPIN_ANGMOM);
-	assert(zone_index>0);
+	assert(zone_index>0 || &body==&__body2);
 	assert(body.number_zones()>zone_index);
+	assert(number_locked_zones()==
+			__above_lock_fractions[Dissipation::NO_DERIV].size());
 #endif
-	unsigned num_locked_zones=
-		__above_lock_fractions[Dissipation::NO_DERIV].size();
+	unsigned num_locked_zones=number_locked_zones();
+	if(num_locked_zones==0) return Eigen::VectorXd();
 	DissipatingZone &deriv_zone=body.zone(zone_index);
 	unsigned locked_zone_index=(&body==&__body1 
 								? 0
@@ -462,26 +464,34 @@ Eigen::VectorXd BinarySystem::above_lock_fractions_deriv(
 
 void BinarySystem::fill_above_lock_fractions_deriv()
 {
-	unsigned body_zone_ind=0,
+	unsigned body_zone_ind=1,
 			 num_zones=__body1.number_zones()+__body2.number_zones();
 	DissipatingBody *body=&__body1;
 	__above_lock_fractions_inclination_deriv.resize(num_zones);
 	__above_lock_fractions_periapsis_deriv.resize(num_zones);
 	__above_lock_fractions_inertia_deriv.resize(num_zones);
 	__above_lock_fractions_angmom_deriv.resize(num_zones);
-	for(unsigned zone_ind=0; zone_ind<num_zones; ++zone_ind) {
+	__above_lock_fractions_inclination_deriv[0]=
+		__above_lock_fractions[Dissipation::INCLINATION];
+	__above_lock_fractions_periapsis_deriv[0]=
+		__above_lock_fractions[Dissipation::PERIAPSIS];
+	__above_lock_fractions_inertia_deriv[0]=
+		__above_lock_fractions[Dissipation::MOMENT_OF_INERTIA];
+	__above_lock_fractions_angmom_deriv[0]=
+		__above_lock_fractions[Dissipation::SPIN_ANGMOM];
+	for(unsigned zone_ind=1; zone_ind<num_zones; ++zone_ind) {
 		__above_lock_fractions_inclination_deriv[zone_ind]=
 			above_lock_fractions_deriv(Dissipation::INCLINATION, *body,
-									   zone_ind);
+									   body_zone_ind);
 		__above_lock_fractions_periapsis_deriv[zone_ind]=
 			above_lock_fractions_deriv(Dissipation::PERIAPSIS, *body,
-									   zone_ind);
+									   body_zone_ind);
 		__above_lock_fractions_inertia_deriv[zone_ind]=
 			above_lock_fractions_deriv(Dissipation::MOMENT_OF_INERTIA, *body,
-									   zone_ind);
+									   body_zone_ind);
 		__above_lock_fractions_angmom_deriv[zone_ind]=
 			above_lock_fractions_deriv(Dissipation::SPIN_ANGMOM, *body,
-									   zone_ind);
+									   body_zone_ind);
 		++body_zone_ind;
 		if(body_zone_ind==body->number_zones()) {
 			body_zone_ind=0; 
@@ -1149,13 +1159,14 @@ void BinarySystem::binary_jacobian(double *param_derivs, double *age_derivs)
 }
 
 void BinarySystem::fill_locked_surface_orbit(std::valarray<double> &orbit)
+	const
 {
 #ifdef DEBUG
 	assert(__evolution_mode==LOCKED_SURFACE_SPIN);
 	assert(std::isnan(__semimajor));
 	assert(std::isnan(__eccentricity));
 #endif
-	orbit.resize(__body1.number_zones());
+	orbit.resize(__body1.number_zones()-1);
 	for(unsigned i=1; i<__body1.number_zones(); ++i) {
 		orbit[i-1]=__body1.zone(i).angular_momentum();
 #ifdef DEBUG
@@ -1165,7 +1176,7 @@ void BinarySystem::fill_locked_surface_orbit(std::valarray<double> &orbit)
 	}
 }
 
-void BinarySystem::fill_binary_orbit(std::valarray<double> &orbit)
+void BinarySystem::fill_binary_orbit(std::valarray<double> &orbit) const
 {
 #ifdef DEBUG
 	assert(__evolution_mode==BINARY);
@@ -1177,7 +1188,7 @@ void BinarySystem::fill_binary_orbit(std::valarray<double> &orbit)
 	if(number_locked_zones()==0) orbit[0]=std::pow(__semimajor, 6.5);
 	else orbit[0]=__semimajor;
 	orbit[1]=__eccentricity;
-	unsigned inclination_ind=1, periapsis_ind=1+number_zones(), 
+	unsigned inclination_ind=2, periapsis_ind=2+number_zones(), 
 			 angmom_ind=periapsis_ind+number_zones()-1;
 	for(short body_ind=0; body_ind<2; ++body_ind) {
 		DissipatingBody &body=(body_ind==0 ? __body1 : __body2);
@@ -1190,7 +1201,7 @@ void BinarySystem::fill_binary_orbit(std::valarray<double> &orbit)
 	}
 }
 
-void BinarySystem::fill_single_orbit(std::valarray<double> &orbit)
+void BinarySystem::fill_single_orbit(std::valarray<double> &orbit) const
 {
 #ifdef DEBUG
 	assert(__evolution_mode==SINGLE);
@@ -1247,7 +1258,8 @@ void BinarySystem::configure(double age, double semimajor,
 		fill_above_lock_fractions_deriv();
 	}
 #ifdef DEBUG
-	assert(__semimajor>minimum_semimajor());
+	if(evolution_mode==BINARY)
+		assert(__semimajor>minimum_semimajor());
 #endif
 }
 
@@ -1277,13 +1289,14 @@ void BinarySystem::configure(double age, const double *parameters,
 		assert(inclination!=NULL);
 #endif
 		periapsis=inclination+num_zones;
+		if(evolution_mode==SINGLE) --periapsis;
 		spin_angmom=periapsis+num_zones-1;
 	}
 	configure(age, semimajor, eccentricity, spin_angmom, inclination,
 			  periapsis, evolution_mode);
 }
 
-EvolModeType BinarySystem::fill_orbit(std::valarray<double> &orbit)
+EvolModeType BinarySystem::fill_orbit(std::valarray<double> &orbit) const
 {
 	if(__evolution_mode==LOCKED_SURFACE_SPIN)
 		fill_locked_surface_orbit(orbit);

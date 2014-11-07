@@ -167,7 +167,8 @@ Eigen::Vector3d DissipatingBody::angular_momentum_transfer_from_top(
 	const DissipatingZone &this_zone=zone(zone_index),
 		  				  &zone_above=zone(zone_index-1);
 	double scaling=NaN, dm_dt=this_zone.outer_mass(1);
-	if(deriv==Dissipation::AGE) {
+	if(deriv==Dissipation::NO_DERIV) scaling=1;
+	else if(deriv==Dissipation::AGE) {
 		scaling=2.0*this_zone.outer_radius(1)/this_zone.outer_radius(0)
 			    + this_zone.outer_mass(2)/dm_dt;
 	} else if(deriv==Dissipation::SPIN_FREQUENCY || 
@@ -212,7 +213,8 @@ Eigen::Vector3d DissipatingBody::angular_momentum_transfer_from_bottom(
 	const DissipatingZone &this_zone=zone(zone_index),
 						  &zone_below=zone(zone_index+1);
 	double scaling=NaN, dm_dt=zone_below.outer_mass(1);
-	if(deriv==Dissipation::AGE) {
+	if(deriv==Dissipation::NO_DERIV) scaling=1;
+	else if(deriv==Dissipation::AGE) {
 		scaling=2.0*zone_below.outer_radius(1)/zone_below.outer_radius(0)
 			    + zone_below.outer_mass(2)/dm_dt;
 	} else if(deriv==Dissipation::SPIN_FREQUENCY || 
@@ -447,7 +449,7 @@ Eigen::Vector3d DissipatingBody::nontidal_torque(unsigned zone_index,
 {
 #ifdef DEBUG
 	assert(zone_index<number_zones());
-	assert(static_cast<int>(zone_index)+deriv_zone>0);
+	assert(static_cast<int>(zone_index)+deriv_zone>=0);
 	assert(static_cast<int>(zone_index)+deriv_zone
 		   <
 		   static_cast<int>(number_zones()));
@@ -455,18 +457,18 @@ Eigen::Vector3d DissipatingBody::nontidal_torque(unsigned zone_index,
 	const DissipatingZone &this_zone=zone(zone_index);
 	Eigen::Vector3d result(0, 0, 0);
 	if(zone_index==0 && deriv_zone==0)
-		result[2]=angular_momentum_loss(deriv);
+		result[2]=-angular_momentum_loss(deriv);
 	result+=angular_momentum_transfer_to_zone(zone_index, deriv, deriv_zone);
 	if(zone_index<number_zones()-1 && 
 			(!zone_specific(deriv) || deriv_zone>=0))
 		result+=angular_momentum_coupling(zone_index, deriv, deriv_zone==0);
 	if(zone_index>0 && (!zone_specific(deriv) || deriv_zone<=0)) {
-		result+=zone_to_zone_transform(
+		result-=zone_to_zone_transform(
 				zone(zone_index-1), this_zone,
 				angular_momentum_coupling(zone_index-1, deriv,
 					                      deriv_zone<0));
 		if(deriv==Dissipation::INCLINATION || deriv==Dissipation::PERIAPSIS)
-			result+=zone_to_zone_transform(
+			result-=zone_to_zone_transform(
 					zone(zone_index-1), this_zone,
 					angular_momentum_coupling(zone_index-1), deriv, 
 					deriv_zone<0);
