@@ -11,13 +11,14 @@ COMBINED_CODE = ../EccentricityExpansionCoefficients.o ../DissipatingZone.o \
 				../DissipatingBody.o ../SecondaryDeathCondition.o \
 				../ZoneOrientation.o ../ExponentialDecayDiffRotBody.o \
 				../SaturatingSkumanichWindBody.o \
-				../WindSaturationCondition.o Common.o \
-				ConstPhaseLagDissipatingZone.o LaiExpressions.o
+				../WindSaturationCondition.o ../DiskPlanetSystem.o Common.o \
+				ConstPhaseLagDissipatingZone.o LaiExpressions.o \
+				RandomDiskPlanetSystem.o
 TEST_LIB = -lcpptest -lgsl -lblas -lboost_serialization-mt
 ALL_EXEC=test_InterpolatingFunctionALGLIB test_EvolvingStellarQuantity \
 		 test_Star test_Planet test_StellarEvolution test_StellarSystem \
 		 test_EccentricityExpansionCoefficients test_DissipatingZone \
-		 test_DissipatingBody
+		 test_DissipatingBody test_BinarySystem
 CPPFLAGS = -g -Wall -I../ -I/opt/local/include -L/opt/local/lib -D STANDALONE 
 
 default: all
@@ -27,6 +28,8 @@ Common.o: Common.h ../*.h
 LaiExpressions.o: LaiExpressions.h
 
 ConstPhaseLagDissipatingZone.o: ConstPhaseLagDissipatingZone.h ConstPhaseLagDissipatingZone.cpp Common.h ../*.h
+
+RandomDiskPlanetSystem.o: RandomDiskPlanetSystem.h RandomDiskPlanetSystem.cpp ../*.h
 
 %: %.cpp %.h $(COMBINED_CODE) 
 	$(CPP) $(CPPFLAGS) $< -c -o $@.o
