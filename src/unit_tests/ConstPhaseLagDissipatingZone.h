@@ -40,12 +40,20 @@ class ConstPhaseLagDissipatingZone : public TestingDissipatingZone {
 private:
 	Lags __lags;
 
-	double __moment_of_inertia, __radius, __mass;
+	std::vector<double> __moment_of_inertia, __radius, __mass;
 public:
 	ConstPhaseLagDissipatingZone(const Lags &lags, double moment_of_inertia,
-			double radius, double mass)
-		: __lags(lags), __moment_of_inertia(moment_of_inertia),
-		__radius(radius), __mass(mass) {}
+			double radius, double mass, double moment_of_inertia_deriv=0,
+			double radius_deriv=0, double mass_deriv=0)
+		: __lags(lags), __moment_of_inertia(2), __radius(2), __mass(2)
+	{
+		__moment_of_inertia[0]=moment_of_inertia; 
+		__moment_of_inertia[1]=moment_of_inertia_deriv;
+		__radius[0]=radius;
+		__radius[1]=radius_deriv;
+		__mass[0]=mass;
+		__mass[1]=mass_deriv;
+	}
 
 	///\brief Should return true iff the given term is presently locked.
 	virtual bool locked(int orbital_frequency_multiplier,
@@ -86,13 +94,14 @@ public:
 	}
 
 	double moment_of_inertia(int deriv) const
-	{return (deriv ? 0 : __moment_of_inertia);}
+	{return __moment_of_inertia.at(deriv);}
 
 	double love_coefficient(int, int, Dissipation::Derivative) const
 	{return 0;}
 
-	double outer_radius(int deriv) const {return (deriv ? 0 : __radius);}
-	double outer_mass(int deriv) const {return (deriv ? 0 : __mass);}
+	double outer_radius(int deriv) const {return __radius.at(deriv);}
+
+	double outer_mass(int deriv) const {return __mass.at(deriv);}
 
 	void describe(std::ostream &os) const;
 };

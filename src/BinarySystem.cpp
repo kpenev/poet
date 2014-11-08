@@ -254,10 +254,11 @@ double BinarySystem::eccentricity_evolution(double orbit_energy_gain,
 		double orbit_angmom_gain, double orbit_energy_gain_deriv, 
 		double orbit_angmom_gain_deriv, bool semimajor_deriv) const
 {
+	if(__eccentricity==0) return 0;
 	double e2=std::pow(__eccentricity, 2),
 		factor=(std::isnan(orbit_energy_gain_deriv) || semimajor_deriv 
-				? (e2-1.0)/(8.0*__eccentricity)
-				: (1.0+e2)/(8.0*e2));
+				? (e2-1.0)/(2.0*__eccentricity)
+				: (1.0+e2)/(2.0*e2));
 	if(std::isnan(orbit_energy_gain_deriv))
 		return factor*(
 					   orbit_energy_gain/__orbital_energy
@@ -346,6 +347,7 @@ void BinarySystem::calculate_above_lock_fractions(Eigen::VectorXd &fractions,
 				 			 +
 							 __body2.number_locked_zones());
 #endif
+	if(num_locked_zones==0) return;
 	std::valarray<double> nontidal_torque(num_locked_zones),
 						  tidal_torque_z_above(num_locked_zones),
 						  tidal_torque_z_below(num_locked_zones),
@@ -516,7 +518,7 @@ void BinarySystem::fill_binary_evolution_rates(
 		DissipatingBody &body=(zone_index<num_body1_zones ? __body1
 														  : __body2);
 		unsigned body_zone_index=zone_index;
-		if(zone_index>num_body1_zones) body_zone_index-=num_body1_zones;
+		if(zone_index>=num_body1_zones) body_zone_index-=num_body1_zones;
 		DissipatingZone &zone=body.zone(body_zone_index);
 		Eigen::Vector3d 
 			zone_orbit_torque=(zone_index
@@ -532,10 +534,8 @@ void BinarySystem::fill_binary_evolution_rates(
 							   +
 							   (1.0-above_frac)
 							   *body.tidal_torque(body_zone_index, false);
-		} else {
-			total_zone_torque+=body.tidal_torque(body_zone_index, false);
 			++angmom_skipped;
-		}
+		} else total_zone_torque+=body.tidal_torque(body_zone_index, false);
 		inclination_rates[zone_index]=zone.inclination_evolution(
 				zone_orbit_torque, total_zone_torque);
 		if(zone_index)

@@ -79,8 +79,14 @@ public:
 	///single body with all periapses=0.
 	void test_single_zero_periapsis_diff_eq();
 
-	///Tests the differential equations for a banary with no locked zones.
-	void test_binary_no_locks_diff_eq();
+	///\brief Tests the differential equations for a binary with no locked 
+	///zones, no eccentricity and all zones aligned with the orbit.
+	void test_binary_no_locks_circular_aligned_diff_eq();
+
+	///\brief Tests the differential equations for a banary with no locked
+	///zones, no eccentricity but arbitrarily inclined zones with zero
+	///periapsis.
+	void test_binary_no_locks_circular_inclined_diff_eq();
 
 	///Tests the differential equations for a banary with locked zones.
 	void test_binary_locks_diff_eq();

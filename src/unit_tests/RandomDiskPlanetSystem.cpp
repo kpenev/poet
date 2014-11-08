@@ -8,7 +8,10 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 		__zones[i]=new ConstPhaseLagDissipatingZone(__lags[i],
 				__parameters[FIRST_ZONE_INERTIA+i],
 				__parameters[FIRST_ZONE_RADIUS+i],
-				__parameters[FIRST_ZONE_MASS+i]);
+				__parameters[FIRST_ZONE_MASS+i],
+				__parameters[FIRST_ZONE_INERTIA_DERIV+i],
+				__parameters[FIRST_ZONE_RADIUS_DERIV+i],
+				(i%2==0 ? 0 : __parameters[FIRST_CORE_MASS_DERIV+i/2]));
 		angmom[i]=__parameters[FIRST_ZONE_INERTIA+i]
 				  *__parameters[FIRST_ZONE_ANGVEL+i];
 	}
@@ -66,8 +69,9 @@ void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 
 RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 		unsigned min_locked_zones, unsigned max_locked_zones, bool circular,
-		bool match_primary_inclinations, bool match_primary_periapses, 
-		bool match_secondary_inclinations, bool match_secondary_periapses,
+		bool match_primary_inclinations, bool zero_primary_inclinations,
+		bool match_primary_periapses, bool match_secondary_inclinations, 
+		bool zero_secondary_inclinations, bool match_secondary_periapses,
 		bool zero_secondary_periapses)
 	: __parameters(SystemParameters::NUM_QUANTITIES), __lags(4),
 	__locks(4), __zones(4, NULL), __bodies(2, NULL), __system(NULL)
@@ -80,42 +84,66 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 	__parameters[SECONDARY_MASS]=std::pow(10.0, uniform_rand(-3.0, 0.0))
 								 *__parameters[PRIMARY_MASS];
 	__parameters[PRIMARY_RADIUS]=uniform_rand(0, 1)*__parameters[SEMIMAJOR];
+	__parameters[PRIMARY_RADIUS_DERIV]=
+		uniform_rand(0, 100)*__parameters[PRIMARY_RADIUS];
 	__parameters[SECONDARY_RADIUS]=
 		uniform_rand(0, __parameters[SEMIMAJOR]/2.44
 						*std::pow(__parameters[SECONDARY_MASS]
 								  /__parameters[PRIMARY_MASS], 1.0/3.0));
+	__parameters[SECONDARY_RADIUS_DERIV]=
+		uniform_rand(0, 100)*__parameters[SECONDARY_RADIUS];
 	__parameters[PRIMARY_CORE_RADIUS]=uniform_rand(0, 1)
 									  *__parameters[PRIMARY_RADIUS];
+	__parameters[PRIMARY_CORE_RADIUS_DERIV]=
+		uniform_rand(0, 100)*__parameters[PRIMARY_CORE_RADIUS];
 	__parameters[SECONDARY_CORE_RADIUS]=uniform_rand(0, 1)
 									  *__parameters[SECONDARY_RADIUS];
+	__parameters[SECONDARY_CORE_RADIUS_DERIV]=
+		uniform_rand(0, 100)*__parameters[SECONDARY_CORE_RADIUS];
 	__parameters[PRIMARY_CORE_MASS]=uniform_rand(0, 1)
 									*__parameters[PRIMARY_MASS];
+	__parameters[PRIMARY_CORE_MASS_DERIV]=
+		uniform_rand(0, 100)*__parameters[PRIMARY_CORE_MASS];
 	__parameters[SECONDARY_CORE_MASS]=uniform_rand(0, 1)
 									  *__parameters[SECONDARY_MASS];
+	__parameters[SECONDARY_CORE_MASS_DERIV]=
+		uniform_rand(0, 100)*__parameters[SECONDARY_CORE_MASS];
 	__parameters[PRIMARY_ENV_INERTIA]=
 		std::pow(10.0, uniform_rand(-5, 0))
 		*(__parameters[PRIMARY_MASS]-__parameters[PRIMARY_CORE_MASS])
 		*std::pow(__parameters[PRIMARY_RADIUS], 2);
+	__parameters[PRIMARY_ENV_INERTIA_DERIV]=
+		uniform_rand(0, 100)*__parameters[PRIMARY_ENV_INERTIA];
 	__parameters[PRIMARY_CORE_INERTIA]=
 		std::pow(10.0, uniform_rand(-5, 0))
 		*__parameters[PRIMARY_CORE_MASS]
 		*std::pow(__parameters[PRIMARY_CORE_RADIUS], 2);
+	__parameters[PRIMARY_CORE_INERTIA_DERIV]=
+		uniform_rand(0, 100)*__parameters[PRIMARY_CORE_INERTIA];
 	__parameters[SECONDARY_ENV_INERTIA]=
 		std::pow(10.0, uniform_rand(-5, 0))
 		*(__parameters[SECONDARY_MASS]-__parameters[SECONDARY_CORE_MASS])
 		*std::pow(__parameters[SECONDARY_RADIUS], 2);
+	__parameters[SECONDARY_ENV_INERTIA_DERIV]=
+		uniform_rand(0, 100)*__parameters[SECONDARY_ENV_INERTIA];
 	__parameters[SECONDARY_CORE_INERTIA]=
 		std::pow(10.0, uniform_rand(-5, 0))
 		*__parameters[SECONDARY_CORE_MASS]
 		*std::pow(__parameters[SECONDARY_CORE_RADIUS], 2);
+	__parameters[SECONDARY_CORE_INERTIA_DERIV]=
+		uniform_rand(0, 100)*__parameters[SECONDARY_CORE_INERTIA];
 	__parameters[PRIMARY_INCLINATION_ENV]=
-		(evol_mode==BINARY ? uniform_rand(0, M_PI) : 0);
+		(evol_mode==BINARY && !zero_primary_inclinations
+		 ? uniform_rand(0, M_PI)
+		 : 0);
 	__parameters[PRIMARY_INCLINATION_CORE]=
-		(match_primary_inclinations ? __parameters[PRIMARY_INCLINATION_ENV]
-		 							: uniform_rand(0, M_PI));
-	__parameters[SECONDARY_INCLINATION_ENV]=uniform_rand(0, M_PI);
+		(match_primary_inclinations || zero_primary_inclinations
+		 ? __parameters[PRIMARY_INCLINATION_ENV]
+		 : uniform_rand(0, M_PI));
+	__parameters[SECONDARY_INCLINATION_ENV]=
+		(zero_secondary_inclinations ? 0 : uniform_rand(0, M_PI));
 	__parameters[SECONDARY_INCLINATION_CORE]=
-		(match_secondary_inclinations
+		(match_secondary_inclinations || zero_secondary_inclinations
 		 ? __parameters[SECONDARY_INCLINATION_ENV]
 		 : uniform_rand(0, M_PI));
 	__parameters[PRIMARY_PERIAPSIS_CORE]=(match_primary_periapses
