@@ -919,9 +919,6 @@ int CommandLineOptions::custom_track_nodes(
 	else return __custom_track_nodes[column]->ival[0];
 }
 
-///AU/\f$\mathrm{R}_\odot\f$.
-const double AU_Rsun = AstroConst::AU/AstroConst::solar_radius;
-
 void output_solution(const OrbitSolver &solver, const BinarySystem &system,
 		const YRECStar &star, const std::string &filename,
 		const std::vector<OutCol::OutputColumns> &output_file_format,

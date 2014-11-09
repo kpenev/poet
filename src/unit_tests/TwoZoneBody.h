@@ -56,6 +56,8 @@ public:
 		assert(zone_index<=1);
 		return (zone_index==0 ? __envelope : __core);
 	}
+
+	virtual ~TwoZoneBody() {}
 };
 
 #endif

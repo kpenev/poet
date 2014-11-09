@@ -49,7 +49,7 @@ public:
 			///The name of the file containing eccentricity expansion
 			///coefficiets.
 			const std::string &eccentricity_expansion=
-			"eccentricity_expansion_coef.txt");
+			"../eccentricity_expansion_coef.txt");
 
 	///\brief Tests that the fill_orbit function works for single body with
 	///locked surface rotation.

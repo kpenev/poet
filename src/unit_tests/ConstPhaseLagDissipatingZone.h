@@ -104,6 +104,8 @@ public:
 	double outer_mass(int deriv) const {return __mass.at(deriv);}
 
 	void describe(std::ostream &os) const;
+
+	virtual ~ConstPhaseLagDissipatingZone() {}
 };
 
 

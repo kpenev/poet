@@ -212,7 +212,7 @@ void BinarySystem::fill_single_body_jacobian(
 						zone_torque, with_respect_to, ref_torque_deriv,
 						zone_torque_deriv);
 			} else {
-				if(std::abs(quantity_zone-zone_ind)==1) {
+				if(std::abs(static_cast<int>(quantity_zone-zone_ind))==1) {
 					zone_torque_deriv=__body1.nontidal_torque(
 							zone_ind, with_respect_to, 
 							quantity_zone-zone_ind);
@@ -929,7 +929,7 @@ void BinarySystem::inclination_evolution_zone_derivs(
 			dest-=above_frac_deriv[deriv_zone_ind][locked_zone_ind]
 				  *(zone_x_torque_above - zone_x_torque_below)
 				  /zone.angular_momentum();
-		if(std::abs(deriv_zone_ind-global_zone_ind)<=1) {
+		if(std::abs(static_cast<int>(deriv_zone_ind-global_zone_ind))<=1) {
 			double torque_deriv=
 				zone_torque_deriv[deriv_zone_ind+1-global_zone_ind][0];
 			if(zone.locked() && deriv_zone_ind==global_zone_ind) {
@@ -992,7 +992,7 @@ void BinarySystem::periapsis_evolution_zone_derivs(
 			dest+=above_frac_deriv[deriv_zone_ind][locked_zone_ind]
 				  *(zone_y_torque_above - zone_y_torque_below)
 				  /(sin_inc*zone.angular_momentum());
-		if(std::abs(deriv_zone_ind-global_zone_ind)<=1) {
+		if(std::abs(static_cast<int>(deriv_zone_ind-global_zone_ind))<=1) {
 			double torque_deriv=
 				zone_torque_deriv[deriv_zone_ind+1-global_zone_ind][1];
 			if(zone.locked() && deriv_zone_ind==global_zone_ind) {
@@ -1041,7 +1041,7 @@ void BinarySystem::spin_angmom_evolution_zone_derivs(
 			dest=above_frac_deriv[deriv_zone_ind][locked_zone_ind]
 				 *(zone_z_torque_above - zone_z_torque_below);
 		else dest=0;
-		if(std::abs(deriv_zone_ind-global_zone_ind)<=1) {
+		if(std::abs(static_cast<int>(deriv_zone_ind-global_zone_ind))<=1) {
 			double torque_deriv=
 				zone_torque_deriv[deriv_zone_ind+1-global_zone_ind][2];
 			if(zone_is_locked) dest+=above_frac*zone_torque_deriv[3][2]

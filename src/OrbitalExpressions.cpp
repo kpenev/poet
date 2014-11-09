@@ -25,7 +25,7 @@ double orbital_energy(double m1, double m2, double semimajor, unsigned deriv_ord
 {
 	return (deriv_order%2 ? -1 : 1)*m1*m2*factorial(deriv_order)
 		   /
-		   (2.0*std::pow(semimajor, deriv_order+1))
+		   (2.0*std::pow(semimajor, static_cast<int>(deriv_order+1)))
 		   *
 		   AstroConst::G*AstroConst::solar_mass
 		   *

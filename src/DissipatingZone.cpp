@@ -208,8 +208,10 @@ void DissipatingZone::update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
 	assert(lock.lock_direction());
 	check_locks_consistency();
 #endif
-	if(std::abs(lock.orbital_frequency_multiplier())>__e_order+2
-			&& lock.spin_frequency_multiplier()==2)
+	if(static_cast<unsigned>(std::abs(lock.orbital_frequency_multiplier()))
+			>__e_order+2
+			&& 
+			lock.spin_frequency_multiplier()==2)
 		lock.set_lock((lock.orbital_frequency_multiplier()
 					   -
 					   lock.lock_direction())/2,
@@ -262,10 +264,11 @@ void DissipatingZone::initialize_locks()
 	int below_orb_mult=std::floor(2.0*__spin_frequency/__orbital_frequency),
 		max_abs_orb_mult=static_cast<int>(__e_order+2);
 	if(below_orb_mult%2) {
-		if(std::abs(below_orb_mult)<=__e_order+2) {
+		if(static_cast<unsigned>(std::abs(below_orb_mult))<=__e_order+2) {
 			__lock.set_lock(below_orb_mult, 2, 1);
 			__other_lock.set_lock((below_orb_mult+1)/2, 1, -1);
-		} else if(std::abs((below_orb_mult-1)/2)<=__e_order+2) {
+		} else if(static_cast<unsigned>(std::abs((below_orb_mult-1)/2))
+				  <=__e_order+2) {
 			__lock.set_lock((below_orb_mult-1)/2, 1, 1);
 			if((below_orb_mult+1)/2>max_abs_orb_mult)
 				__other_lock.set_lock(1, 0, 1);

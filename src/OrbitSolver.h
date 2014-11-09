@@ -115,8 +115,6 @@ private:
 	double __end_age, ///< The last  age for which evolution is required.
 	       __precision;///< The precision required of the solution
 
-	bool __adjust_end_age;
-
 	///The ages at which solution is tabulated
 	std::list<double> __tabulated_ages;
 

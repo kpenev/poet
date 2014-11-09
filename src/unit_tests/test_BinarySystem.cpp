@@ -252,12 +252,7 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 			expected_diff_eq[9+zone_ind]=
 				torque_norm*dimensionless_torque_z_Lai(0, lag);
 		}
-		double orbit_energy=m1*m2/(2.0*a)*AstroConst::G
-							*AstroConst::solar_mass
-							*std::pow(AstroConst::day, 2) 
-							/std::pow(AstroConst::solar_radius,3),
-			   a_rate=-a*orbit_power/orbit_energy,
-			   w1=system_maker.quantity(PRIMARY_ANGVEL_ENV),
+		double w1=system_maker.quantity(PRIMARY_ANGVEL_ENV),
 			   w2=system_maker.quantity(PRIMARY_ANGVEL_CORE),
 			   w3=system_maker.quantity(SECONDARY_ANGVEL_ENV),
 			   w4=system_maker.quantity(SECONDARY_ANGVEL_CORE),

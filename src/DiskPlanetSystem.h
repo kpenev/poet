@@ -86,6 +86,8 @@ public:
 	///\brief The next age when the evolution needs to be stopped for a
 	///system change
 	virtual double next_stop_age() const;
+
+	virtual ~DiskPlanetSystem() {}
 };
 
 #endif

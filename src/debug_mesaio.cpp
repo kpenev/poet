@@ -1,6 +1,6 @@
 #include "MESAIO.h"
 
-int main(int, char **argv)
+int main(int, char **)
 {
 	try {
 		std::cout << "Generating MESA evolution." << std::endl;
