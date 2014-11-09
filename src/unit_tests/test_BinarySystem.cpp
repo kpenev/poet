@@ -1,13 +1,13 @@
 #include "test_BinarySystem.h"
 
-void test_BinarySystem::test_orbit_diff_eq(BinarySystem &system,
+void test_BinarySystem::test_orbit_diff_eq(RandomDiskPlanetSystem &system,
 		const std::valarray<double> &expected, bool diff_eq)
 {
 	std::valarray<double> returned_orbit, *to_compare;
-	EvolModeType evol_mode=system.fill_orbit(returned_orbit);
+	EvolModeType evol_mode=system().fill_orbit(returned_orbit);
 	if(diff_eq) {
 		to_compare=new std::valarray<double>(expected.size());
-		system.differential_equations(system.age(), &(returned_orbit[0]),
+		system().differential_equations(system().age(), &(returned_orbit[0]),
 				evol_mode, &((*to_compare)[0]));
 	} else to_compare=&returned_orbit;
 	std::ostringstream msg;
@@ -18,12 +18,13 @@ void test_BinarySystem::test_orbit_diff_eq(BinarySystem &system,
 	TEST_ASSERT_MSG(to_compare->size()==expected.size(), msg.str().c_str());
 	for(unsigned i=0; i<expected.size(); ++i) {
 		msg.str("");
-		msg << "Expected " << (diff_eq ? "differential equation[" : "orbit[")
+		msg << "System:" << std::endl
+			<< system << "Expected "
+			<< (diff_eq ? "differential equation[" : "orbit[")
 			<< i << "]=" << expected[i] << ", got: " << (*to_compare)[i]
 			<< ", difference: " << (*to_compare)[i] - expected[i];
-		std::cerr << msg.str() << std::endl;
-/*		TEST_ASSERT_MSG(check_diff((*to_compare)[i], expected[i],
-								   1e-10,1e-15), msg.str().c_str());*/
+		TEST_ASSERT_MSG(check_diff((*to_compare)[i], expected[i],
+								   1e-10,1e-15), msg.str().c_str());
 	}
 	if(diff_eq) delete to_compare;
 }
@@ -36,7 +37,7 @@ void test_BinarySystem::test_fill_orbit_locked_surface()
 		std::valarray<double> expected_orbit(1);
 		expected_orbit[0]=system_maker.quantity(PRIMARY_CORE_INERTIA)
 						  *system_maker.quantity(PRIMARY_ANGVEL_CORE);
-		test_orbit_diff_eq(system_maker(), expected_orbit);
+		test_orbit_diff_eq(system_maker, expected_orbit);
 	}
 }
 
@@ -52,7 +53,7 @@ void test_BinarySystem::test_fill_orbit_single()
 						  *system_maker.quantity(PRIMARY_ANGVEL_ENV);
 		expected_orbit[3]=system_maker.quantity(PRIMARY_CORE_INERTIA)
 						  *system_maker.quantity(PRIMARY_ANGVEL_CORE);
-		test_orbit_diff_eq(system_maker(), expected_orbit);
+		test_orbit_diff_eq(system_maker, expected_orbit);
 	}
 }
 
@@ -79,7 +80,7 @@ void test_BinarySystem::test_fill_orbit_binary_no_locks()
 						  *system_maker.quantity(SECONDARY_ANGVEL_ENV);
 		expected_orbit[12]=system_maker.quantity(SECONDARY_CORE_INERTIA)
 						   *system_maker.quantity(SECONDARY_ANGVEL_CORE);
-		test_orbit_diff_eq(system_maker(), expected_orbit);
+		test_orbit_diff_eq(system_maker, expected_orbit);
 	}
 }
 
@@ -118,7 +119,7 @@ void test_BinarySystem::test_fill_orbit_binary_locks()
 			expected_orbit[ind++]=
 				system_maker.quantity(SECONDARY_CORE_INERTIA)
 				*system_maker.quantity(SECONDARY_ANGVEL_CORE);
-		test_orbit_diff_eq(system_maker(), expected_orbit);
+		test_orbit_diff_eq(system_maker, expected_orbit);
 	}
 }
 
@@ -140,7 +141,7 @@ void test_BinarySystem::test_locked_surface_diff_eq()
 			2.0/3.0*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)*
 			std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2)*
 			system_maker.quantity(DISK_LOCK_FREQ);
-		test_orbit_diff_eq(system_maker(), expected_diff_eq, true);
+		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
 	}
 }
 
@@ -174,7 +175,7 @@ void test_BinarySystem::test_single_aligned_diff_eq()
 			*system_maker.quantity(PRIMARY_ANGVEL_ENV);
 		expected_diff_eq[2]=-expected_diff_eq[3]-angmom_loss;
 
-		test_orbit_diff_eq(system_maker(), expected_diff_eq, true);
+		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
 	}
 }
 
@@ -220,7 +221,7 @@ void test_BinarySystem::test_single_zero_periapsis_diff_eq()
 		expected_diff_eq[3]=
 			-coup_rot.dot(Eigen::RowVector2d(sin_inc, cos_inc));
 
-		test_orbit_diff_eq(system_maker(), expected_diff_eq, true);
+		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
 	}
 }
 
@@ -278,14 +279,26 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 			   i4=system_maker.quantity(SECONDARY_CORE_INERTIA),
 			   primary_coupling_torque=
 				   (i1*i2)/(i1+i2)*(w2-w1)
-				   -
-				   2.0/3.0*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)*
-				   std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2),
+				   /system_maker.quantity(PRIMARY_COUPLING_TIMESCALE),
 			   secondary_coupling_torque=
 				   (i3*i4)/(i3+i4)*(w4-w3)
-				   -
-				   2.0/3.0*system_maker.quantity(SECONDARY_CORE_MASS_DERIV)*
-				   std::pow(system_maker.quantity(SECONDARY_CORE_RADIUS), 2);
+				   /system_maker.quantity(SECONDARY_COUPLING_TIMESCALE);
+		if(system_maker.quantity(PRIMARY_CORE_MASS_DERIV)>0)
+			primary_coupling_torque-=
+				2.0/3.0*w1*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)*
+				std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2);
+		else 
+			primary_coupling_torque+=
+				2.0/3.0*w2*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)*
+				std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2);
+		if(system_maker.quantity(SECONDARY_CORE_MASS_DERIV)>0)
+			secondary_coupling_torque-=
+				2.0/3.0*w3*system_maker.quantity(SECONDARY_CORE_MASS_DERIV)*
+				std::pow(system_maker.quantity(SECONDARY_CORE_RADIUS), 2);
+		else
+			secondary_coupling_torque+=
+				2.0/3.0*w4*system_maker.quantity(SECONDARY_CORE_MASS_DERIV)*
+				std::pow(system_maker.quantity(SECONDARY_CORE_RADIUS), 2);
 		expected_diff_eq[0]=-13.0*std::pow(a, 7.5)*orbit_power/(m1*m2)
 							*std::pow(AstroConst::solar_radius, 3)
 							/AstroConst::G/AstroConst::solar_mass
@@ -294,7 +307,7 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 		expected_diff_eq[10]-=primary_coupling_torque;
 		expected_diff_eq[11]+=secondary_coupling_torque-secondary_wind_loss;
 		expected_diff_eq[12]-=secondary_coupling_torque;
-		test_orbit_diff_eq(system_maker(), expected_diff_eq, true);
+		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
 	}
 }
 
@@ -331,7 +344,7 @@ int main()
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
-	test_BinarySystem tests(1);
+	test_BinarySystem tests(10000);
 	return (tests.run(output, false) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #endif

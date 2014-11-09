@@ -30,7 +30,7 @@ private:
 
 	///\brief Tests if the orbit or differential equations returned by a 
 	///system matches what is expected.
-	void test_orbit_diff_eq(BinarySystem &system,
+	void test_orbit_diff_eq(RandomDiskPlanetSystem &system,
 			const std::valarray<double> &expected,
 			bool diff_eq=false);
 protected:

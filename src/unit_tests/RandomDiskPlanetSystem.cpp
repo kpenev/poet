@@ -212,4 +212,12 @@ RandomDiskPlanetSystem::~RandomDiskPlanetSystem()
 	if(__system) delete __system;
 }
 
-
+std::ostream &operator<<(std::ostream &os,
+		const RandomDiskPlanetSystem &system)
+{
+	using namespace SystemParameters;
+	os << "\tt=" << system.quantity(AGE) << std::endl
+	   << "\tWdisk=" << system.quantity(DISK_LOCK_FREQ) << std::endl
+	   << "\tTdisk=" << system.quantity(DISK_DISSIPATION_AGE);
+	return os;
+}

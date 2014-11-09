@@ -120,7 +120,7 @@ public:
 			bool zero_secondary_periapses=false);
 
 	///Returns the random value chosen for a quantity.
-	double quantity(SystemParameters::Quantity q)
+	double quantity(SystemParameters::Quantity q) const
 	{return __parameters[q];}
 
 	///The lag assigned to a zone.
@@ -145,5 +145,9 @@ public:
 	///Cleans up.
 	~RandomDiskPlanetSystem();
 };
+
+///Describe the system on the given stream.
+std::ostream &operator<<(std::ostream &os,
+		const RandomDiskPlanetSystem &system);
 
 #endif
