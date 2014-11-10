@@ -150,8 +150,8 @@ void DissipatingBody::angular_momentum_transfer(
 	} else {
 		inner_angmom_gain[0]=inner_angmom_gain[1]=0;
 		inner_angmom_gain[2]=
-			(deriv==Dissipation::NO_DERIV ? angmom_transfer : 0);
-		inner_angmom_gain=-zone_to_zone_transform(inner_zone, outer_zone,
+			(deriv==Dissipation::NO_DERIV ? -angmom_transfer : 0);
+		outer_angmom_gain=zone_to_zone_transform(inner_zone, outer_zone,
 				Eigen::Vector3d(0, 0, angmom_transfer), deriv, 
 				!with_respect_to_outer);
 	}

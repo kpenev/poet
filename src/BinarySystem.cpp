@@ -243,7 +243,7 @@ double BinarySystem::semimajor_evolution(double orbit_energy_gain,
 		double orbit_energy_gain_deriv) const
 {
 	if(std::isnan(orbit_energy_gain_deriv))
-		return -__semimajor*__orbit_energy_gain/__orbital_energy;
+		return -__semimajor*orbit_energy_gain/__orbital_energy;
 	else return -(2.0*orbit_energy_gain
 			      +
 				  __semimajor*orbit_energy_gain_deriv

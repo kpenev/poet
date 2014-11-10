@@ -426,17 +426,17 @@ double DissipatingZone::periapsis_evolution(
 		orbit_y_torque=orbit_torque_deriv[1];
 		zone_y_torque=zone_torque_deriv[1];
 	}
-	double result=(sin_inc==0
-				   ? 0
-				   : -orbit_y_torque*cos_inc/(__orbital_angmom*sin_inc)
-				     +
-					 zone_y_torque/(angular_momentum()*sin_inc));
 #ifdef DEBUG
 	if(sin_inc==0) {
 		assert(orbit_y_torque==0);
 		assert(zone_y_torque==0);
 	}
 #endif
+	double result=(sin_inc==0
+				   ? 0
+				   : -orbit_y_torque*cos_inc/(__orbital_angmom*sin_inc)
+				     +
+					 zone_y_torque/(angular_momentum()*sin_inc));
 	if(		deriv==Dissipation::NO_DERIV 
 			|| deriv==Dissipation::AGE 
 			|| deriv==Dissipation::ECCENTRICITY
@@ -489,7 +489,7 @@ double DissipatingZone::inclination_evolution(
 	double result=(orbit_x_torque*cos_inc-orbit_z_torque*sin_inc)
 			      /__orbital_angmom
 				  -
-				  zone_x_torque/angular_momentum();
+				  zone_x_torque/__angular_momentum;
 	if(		deriv==Dissipation::NO_DERIV 
 			|| deriv==Dissipation::AGE 
 			|| deriv==Dissipation::ECCENTRICITY

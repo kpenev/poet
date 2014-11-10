@@ -130,7 +130,8 @@ void test_BinarySystem::test_locked_surface_diff_eq()
 		RandomDiskPlanetSystem system_maker(LOCKED_SURFACE_SPIN);
 		std::valarray<double> expected_diff_eq(1);
 		double Icore=system_maker.quantity(PRIMARY_CORE_INERTIA),
-			   Ienv=system_maker.quantity(PRIMARY_ENV_INERTIA);
+			   Ienv=system_maker.quantity(PRIMARY_ENV_INERTIA),
+			   core_growth=system_maker.quantity(PRIMARY_CORE_MASS_DERIV);
 		expected_diff_eq[0]=
 			Icore*Ienv/(Icore+Ienv)
 			/system_maker.quantity(PRIMARY_COUPLING_TIMESCALE)
@@ -138,9 +139,10 @@ void test_BinarySystem::test_locked_surface_diff_eq()
 			  -
 			  system_maker.quantity(PRIMARY_ANGVEL_CORE))
 			+
-			2.0/3.0*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)*
+			2.0/3.0*core_growth*
 			std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2)*
-			system_maker.quantity(DISK_LOCK_FREQ);
+			(core_growth>0 ? system_maker.quantity(DISK_LOCK_FREQ)
+			 			   : system_maker.quantity(PRIMARY_ANGVEL_CORE));
 		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
 	}
 }
@@ -172,7 +174,9 @@ void test_BinarySystem::test_single_aligned_diff_eq()
 			+
 			2.0/3.0*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)
 			*std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2)
-			*system_maker.quantity(PRIMARY_ANGVEL_ENV);
+			*(system_maker.quantity(PRIMARY_CORE_MASS_DERIV)>0
+			  ? system_maker.quantity(PRIMARY_ANGVEL_ENV)
+			  : system_maker.quantity(PRIMARY_ANGVEL_CORE));
 		expected_diff_eq[2]=-expected_diff_eq[3]-angmom_loss;
 
 		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
@@ -212,7 +216,9 @@ void test_BinarySystem::test_single_zero_periapsis_diff_eq()
 					 -
 					 2.0/3.0*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)
 					 *std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2)
-					 *angmom_env/Ienv;
+					 *(system_maker.quantity(PRIMARY_CORE_MASS_DERIV)>0
+					   ? angmom_env/Ienv
+					   : angmom_core/Icore);
 		expected_diff_eq[0]=-coup_rot(0)*(1.0/abs_angmom_env
 										  +
 										  cos_inc/abs_angmom_core)
@@ -229,8 +235,8 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 {
 	using namespace SystemParameters;
 	for(unsigned i=0; i<__ntests; ++i) {
-		RandomDiskPlanetSystem system_maker(BINARY, 0, 0, true, true, true,
-											true, true, true);
+		RandomDiskPlanetSystem system_maker(BINARY, 0, 0, true, false, false,
+											true, false, false, true, true);
 		std::valarray<double> expected_diff_eq(0.0, 13);
 		double orbit_power=0,
 			   m1=system_maker.quantity(PRIMARY_MASS),
@@ -283,7 +289,7 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 				2.0/3.0*w1*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)*
 				std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2);
 		else 
-			primary_coupling_torque+=
+			primary_coupling_torque-=
 				2.0/3.0*w2*system_maker.quantity(PRIMARY_CORE_MASS_DERIV)*
 				std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2);
 		if(system_maker.quantity(SECONDARY_CORE_MASS_DERIV)>0)
@@ -291,7 +297,7 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 				2.0/3.0*w3*system_maker.quantity(SECONDARY_CORE_MASS_DERIV)*
 				std::pow(system_maker.quantity(SECONDARY_CORE_RADIUS), 2);
 		else
-			secondary_coupling_torque+=
+			secondary_coupling_torque-=
 				2.0/3.0*w4*system_maker.quantity(SECONDARY_CORE_MASS_DERIV)*
 				std::pow(system_maker.quantity(SECONDARY_CORE_RADIUS), 2);
 		expected_diff_eq[0]=-13.0*std::pow(a, 7.5)*orbit_power/(m1*m2)
@@ -308,6 +314,153 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 
 void test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq()
 {
+	using namespace SystemParameters;
+	for(unsigned i=0; i<__ntests; ++i) {
+		RandomDiskPlanetSystem system_maker(BINARY, 0, 0, true, false, false,
+											true, false, false, true, true);
+		std::valarray<double> expected_diff_eq(0.0, 13);
+		double orbit_power=0,
+			   m1=system_maker.quantity(PRIMARY_MASS),
+			   m2=system_maker.quantity(SECONDARY_MASS),
+			   r1=system_maker.quantity(PRIMARY_RADIUS),
+			   r2=system_maker.quantity(SECONDARY_RADIUS),
+			   a=system_maker.quantity(SEMIMAJOR),
+			   orbital_energy=-(m1*m2)/(2.0*a)
+							  *AstroConst::G*AstroConst::solar_mass
+							  *std::pow(AstroConst::day, 2)
+				   			  /std::pow(AstroConst::solar_radius, 3),
+			   worb=std::sqrt(AstroConst::G*(m1+m2)*AstroConst::solar_mass
+					   		  *std::pow(AstroConst::day, 2)
+							  /std::pow(a*AstroConst::solar_radius, 3)),
+			   orbital_angmom=(m1*m2)/(m1+m2)*std::pow(a,2)*worb,
+			   orbit_rotation=0;
+		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind) {
+			const Lags &lag=system_maker.lags(zone_ind);
+			double power_norm, torque_norm,
+				   inclination=system_maker.quantity(
+						  static_cast<Quantity>(FIRST_INCLINATION+zone_ind)),
+				   sin_inc=std::sin(inclination),
+				   cos_inc=std::cos(inclination);
+			if(zone_ind<2) {
+				power_norm=power_norm_Lai(m1, m2, r1, a);
+				torque_norm=torque_norm_Lai(m2, r1, a);
+			} else {
+				power_norm=power_norm_Lai(m2, m1, r2, a);
+				torque_norm=torque_norm_Lai(m1, r2, a);
+			}
+			double x_torque=torque_norm
+							*dimensionless_torque_x_Lai(inclination, lag),
+				   z_torque=torque_norm
+							*dimensionless_torque_z_Lai(inclination, lag);
+			orbit_power-=power_norm*dimensionless_power_Lai(inclination,lag);
+			orbit_rotation+=z_torque*sin_inc-x_torque*cos_inc;
+			expected_diff_eq[9+zone_ind]=
+				torque_norm*dimensionless_torque_z_Lai(inclination, lag);
+			double zone_rotation=
+				-x_torque/system_maker.quantity(
+						static_cast<Quantity>(FIRST_ZONE_ANGVEL+zone_ind))
+				/system_maker.quantity(
+						static_cast<Quantity>(FIRST_ZONE_INERTIA+zone_ind));
+			expected_diff_eq[2+zone_ind]=zone_rotation;
+		}
+		orbit_rotation/=orbital_angmom;
+		double i1=system_maker.quantity(PRIMARY_ENV_INERTIA),
+			   i2=system_maker.quantity(PRIMARY_CORE_INERTIA),
+			   i3=system_maker.quantity(SECONDARY_ENV_INERTIA),
+			   i4=system_maker.quantity(SECONDARY_CORE_INERTIA),
+			   wsat1=system_maker.quantity(PRIMARY_WIND_SAT_FREQ),
+			   wsat2=system_maker.quantity(SECONDARY_WIND_SAT_FREQ),
+			   w1=system_maker.quantity(PRIMARY_ANGVEL_ENV),
+			   w2=system_maker.quantity(PRIMARY_ANGVEL_CORE),
+			   w3=system_maker.quantity(SECONDARY_ANGVEL_ENV),
+			   w4=system_maker.quantity(SECONDARY_ANGVEL_CORE),
+			   core_growth1=system_maker.quantity(PRIMARY_CORE_MASS_DERIV),
+			   core_growth2=system_maker.quantity(SECONDARY_CORE_MASS_DERIV);
+		expected_diff_eq[9]-=system_maker.quantity(PRIMARY_WIND_STRENGTH)
+							 *w1*std::pow(std::min(w1, wsat1), 2)
+							 *std::sqrt(r1/m1);
+		expected_diff_eq[11]-=system_maker.quantity(SECONDARY_WIND_STRENGTH)
+							  *w3*std::pow(std::min(w3, wsat2), 2)
+							  *std::sqrt(r2/m2);
+		Eigen::Vector2d 
+			w1_vec=w1*Eigen::Vector2d(
+				std::sin(system_maker.quantity(PRIMARY_INCLINATION_ENV)),
+				std::cos(system_maker.quantity(PRIMARY_INCLINATION_ENV))),
+			w2_vec=w2*Eigen::Vector2d(
+				std::sin(system_maker.quantity(PRIMARY_INCLINATION_CORE)),
+				std::cos(system_maker.quantity(PRIMARY_INCLINATION_CORE))),
+			w3_vec=w3*Eigen::Vector2d(
+				std::sin(system_maker.quantity(SECONDARY_INCLINATION_ENV)),
+				std::cos(system_maker.quantity(SECONDARY_INCLINATION_ENV))),
+			w4_vec=w4*Eigen::Vector2d(
+				std::sin(system_maker.quantity(SECONDARY_INCLINATION_CORE)),
+				std::cos(system_maker.quantity(SECONDARY_INCLINATION_CORE))),
+			primary_coupling_torque=
+				(i1*i2)/(i1+i2)*(w2_vec-w1_vec)
+				/system_maker.quantity(PRIMARY_COUPLING_TIMESCALE),
+			secondary_coupling_torque=
+				(i3*i4)/(i3+i4)*(w4_vec-w3_vec)
+				/system_maker.quantity(SECONDARY_COUPLING_TIMESCALE);
+		primary_coupling_torque-=2.0/3.0*core_growth1
+			*std::pow(system_maker.quantity(PRIMARY_CORE_RADIUS), 2)
+			*(core_growth1>0 ? w1_vec : w2_vec);
+		secondary_coupling_torque-=2.0/3.0*core_growth2
+			*std::pow(system_maker.quantity(SECONDARY_CORE_RADIUS), 2)
+			*(core_growth2>0 ? w3_vec : w4_vec);
+		expected_diff_eq[9]+=primary_coupling_torque.dot(w1_vec)/w1;
+		expected_diff_eq[10]-=primary_coupling_torque.dot(w2_vec)/w2;
+		expected_diff_eq[11]+=secondary_coupling_torque.dot(w3_vec)/w3;
+		expected_diff_eq[12]-=secondary_coupling_torque.dot(w4_vec)/w4;
+		expected_diff_eq[2]+=
+			(primary_coupling_torque(0)*std::cos(
+					system_maker.quantity(PRIMARY_INCLINATION_ENV))
+			 -
+			 primary_coupling_torque(1)*std::sin(
+					system_maker.quantity(PRIMARY_INCLINATION_ENV)))
+			/system_maker.quantity(static_cast<Quantity>(PRIMARY_ANGVEL_ENV))
+			/system_maker.quantity(
+					static_cast<Quantity>(PRIMARY_ENV_INERTIA))
+			+
+			orbit_rotation;
+		expected_diff_eq[3]+=
+			(-primary_coupling_torque(0)*std::cos(
+					system_maker.quantity(PRIMARY_INCLINATION_CORE))
+			 +
+			 primary_coupling_torque(1)*std::sin(
+					system_maker.quantity(PRIMARY_INCLINATION_CORE)))
+			/system_maker.quantity(
+					static_cast<Quantity>(PRIMARY_ANGVEL_CORE))
+			/system_maker.quantity(
+					static_cast<Quantity>(PRIMARY_CORE_INERTIA))
+			+
+			orbit_rotation;
+		expected_diff_eq[4]+=
+			(secondary_coupling_torque(0)*std::cos(
+					system_maker.quantity(SECONDARY_INCLINATION_ENV))
+			 -
+			 secondary_coupling_torque(1)*std::sin(
+					system_maker.quantity(SECONDARY_INCLINATION_ENV)))
+			/system_maker.quantity(
+					static_cast<Quantity>(SECONDARY_ANGVEL_ENV))
+			/system_maker.quantity(
+					static_cast<Quantity>(SECONDARY_ENV_INERTIA))
+			+
+			orbit_rotation;
+		expected_diff_eq[5]+=
+			(-secondary_coupling_torque(0)*std::cos(
+					system_maker.quantity(SECONDARY_INCLINATION_CORE))
+			 +
+			 secondary_coupling_torque(1)*std::sin(
+					system_maker.quantity(SECONDARY_INCLINATION_CORE)))
+			/system_maker.quantity(
+					static_cast<Quantity>(SECONDARY_ANGVEL_CORE))
+			/system_maker.quantity(
+					static_cast<Quantity>(SECONDARY_CORE_INERTIA))
+			+
+			orbit_rotation;
+		expected_diff_eq[0]=6.5*orbit_power*std::pow(a, 6.5)/orbital_energy;
+		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
+	}
 }
 
 void test_BinarySystem::test_binary_locks_diff_eq()
@@ -318,13 +471,13 @@ test_BinarySystem::test_BinarySystem(unsigned ntests,
 			const std::string &eccentricity_expansion) : __ntests(ntests)
 {
 	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
-/*	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
+	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_single);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_no_locks);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_locks);
 	TEST_ADD(test_BinarySystem::test_locked_surface_diff_eq);
 	TEST_ADD(test_BinarySystem::test_single_aligned_diff_eq);
-	TEST_ADD(test_BinarySystem::test_single_zero_periapsis_diff_eq);*/
+	TEST_ADD(test_BinarySystem::test_single_zero_periapsis_diff_eq);
 	TEST_ADD(
 		test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq);
 	TEST_ADD(
@@ -340,6 +493,6 @@ int main()
 	std::cout.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
 	test_BinarySystem tests(10000);
-	return (tests.run(output, false) ? EXIT_SUCCESS : EXIT_FAILURE);
+	return (tests.run(output, true) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #endif

@@ -103,11 +103,11 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 	__parameters[PRIMARY_CORE_MASS]=uniform_rand(0, 1)
 									*__parameters[PRIMARY_MASS];
 	__parameters[PRIMARY_CORE_MASS_DERIV]=
-		uniform_rand(0, 100)*__parameters[PRIMARY_CORE_MASS];
+		uniform_rand(-100, 100)*__parameters[PRIMARY_CORE_MASS];
 	__parameters[SECONDARY_CORE_MASS]=uniform_rand(0, 1)
 									  *__parameters[SECONDARY_MASS];
 	__parameters[SECONDARY_CORE_MASS_DERIV]=
-		uniform_rand(0, 100)*__parameters[SECONDARY_CORE_MASS];
+		uniform_rand(-100, 100)*__parameters[SECONDARY_CORE_MASS];
 	__parameters[PRIMARY_ENV_INERTIA]=
 		std::pow(10.0, uniform_rand(-5, 0))
 		*(__parameters[PRIMARY_MASS]-__parameters[PRIMARY_CORE_MASS])
@@ -188,7 +188,8 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 		for(int m=-2; m<=2; ++m)
 			for(int mp=-2; mp<=0; ++mp) {
 				__lags[i](m, mp)=
-					(uniform_rand(0, 1)<0.2 ? 0 : uniform_rand(0, 10));
+					(uniform_rand(0, 1)<0.2 ? 0 : 
+					 std::pow(10.0, uniform_rand(-6, 0)));
 				__lags[i](-m, -mp)=-__lags[i](m, mp);
 			}
 	}
@@ -212,12 +213,57 @@ RandomDiskPlanetSystem::~RandomDiskPlanetSystem()
 	if(__system) delete __system;
 }
 
+void add_zone_quantity(std::ostream &os, const std::string &name,
+		const RandomDiskPlanetSystem &system, unsigned first_ind)
+{
+	os << "\t" << name << "=(";
+	for(unsigned quant_ind=0; quant_ind<4; ++quant_ind) {
+		os << system.quantity(
+			static_cast<SystemParameters::Quantity>(first_ind+quant_ind));
+		if(quant_ind==0 || quant_ind==2)
+			os << ", ";
+		else if(quant_ind==1) os << "), (";
+	}
+	os << ")" << std::endl;
+}
+
+void add_body_quantity(std::ostream &os, const std::string &name,
+		const RandomDiskPlanetSystem &system, unsigned first_ind)
+{
+	os << "\t" << name << "=("
+		<< system.quantity(
+				static_cast<SystemParameters::Quantity>(first_ind))
+		<< ", " << system.quantity(
+				static_cast<SystemParameters::Quantity>(first_ind+1))
+		<< ")" << std::endl;
+}
+
 std::ostream &operator<<(std::ostream &os,
 		const RandomDiskPlanetSystem &system)
 {
 	using namespace SystemParameters;
 	os << "\tt=" << system.quantity(AGE) << std::endl
 	   << "\tWdisk=" << system.quantity(DISK_LOCK_FREQ) << std::endl
-	   << "\tTdisk=" << system.quantity(DISK_DISSIPATION_AGE);
+	   << "\tTdisk=" << system.quantity(DISK_DISSIPATION_AGE) << std::endl
+	   << "\tTplanet=" << system.quantity(SECONDARY_FORMATION_AGE)
+	   << std::endl
+	   << "\ta=" << system.quantity(SEMIMAJOR) << std::endl
+	   << "\te=" << system.quantity(ECCENTRICITY) << std::endl;
+	add_zone_quantity(os, "zone masses", system, FIRST_ZONE_MASS);
+	add_body_quantity(os, "core mass derivs", system, FIRST_CORE_MASS_DERIV);
+	add_zone_quantity(os, "zone radii", system, FIRST_ZONE_RADIUS);
+	add_zone_quantity(os, "zone radii derivs", system,
+			FIRST_ZONE_RADIUS_DERIV);
+	add_zone_quantity(os, "moments of inertia", system, FIRST_ZONE_INERTIA);
+	add_zone_quantity(os, "moment of inertia derivs", system,
+			FIRST_ZONE_INERTIA_DERIV);
+	add_zone_quantity(os, "inclinations", system, FIRST_INCLINATION);
+	add_zone_quantity(os, "periapses", system, FIRST_PERIAPSIS);
+	add_zone_quantity(os, "angular velocities", system, FIRST_ZONE_ANGVEL);
+	add_body_quantity(os, "wind strengths", system, FIRST_WIND_STRENGTH);
+	add_body_quantity(os, "wind saturation freq.", system,
+			FIRST_WIND_SAT_FREQ);
+	add_body_quantity(os, "coupling timescales", system,
+			FIRST_COUPLING_TIMESCALE);
 	return os;
 }
