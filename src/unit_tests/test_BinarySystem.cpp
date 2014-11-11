@@ -235,8 +235,8 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 {
 	using namespace SystemParameters;
 	for(unsigned i=0; i<__ntests; ++i) {
-		RandomDiskPlanetSystem system_maker(BINARY, 0, 0, true, false, false,
-											true, false, false, true, true);
+		RandomDiskPlanetSystem system_maker(BINARY, 0, 0, true, true, true,
+											true, true, true, true, true);
 		std::valarray<double> expected_diff_eq(0.0, 13);
 		double orbit_power=0,
 			   m1=system_maker.quantity(PRIMARY_MASS),
