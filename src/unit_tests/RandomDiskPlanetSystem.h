@@ -96,7 +96,7 @@ private:
 	double __worb;
 
 	///Uses the contents of __parameters to configure the system.
-	void create_system(EvolModeType evol_mode, bool lags_flip_sign);
+	void create_system(EvolModeType evol_mode);
 
 	///Locks a random number of zones in random ratios with the orbit.
 	void lock_zones(
@@ -117,8 +117,7 @@ public:
 			bool match_secondary_inclinations=false,
 			bool zero_secondary_inclinations=false,
 			bool match_secondary_periapses=false,
-			bool zero_secondary_periapses=false,
-			bool lags_flip_sign=false);
+			bool zero_secondary_periapses=false);
 
 	///Returns the random value chosen for a quantity.
 	double quantity(SystemParameters::Quantity q) const

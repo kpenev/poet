@@ -1,7 +1,6 @@
 #include "RandomDiskPlanetSystem.h"
 
-void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode,
-		bool lags_flip_sign)
+void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 {
 	using namespace SystemParameters;
 	std::valarray<double> angmom(__zones.size());
@@ -10,7 +9,7 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode,
 				__parameters[FIRST_ZONE_INERTIA+i],
 				__parameters[FIRST_ZONE_RADIUS+i],
 				__parameters[FIRST_ZONE_MASS+i],
-				lags_flip_sign,
+				true,
 				__parameters[FIRST_ZONE_INERTIA_DERIV+i],
 				__parameters[FIRST_ZONE_RADIUS_DERIV+i],
 				(i%2==0 ? 0 : __parameters[FIRST_CORE_MASS_DERIV+i/2]));
@@ -59,12 +58,19 @@ void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 		for(unsigned to_lock=std::rand()%still_unlocked.size(); to_lock>0;
 				--to_lock) ++unlocked_i;
 		int orb_freq_mult=rand()%5-3, spin_freq_mult=rand()%2+1;
-		__bodies[*unlocked_i/2]->lock_zone_spin(*unlocked_i%2, orb_freq_mult,
-												spin_freq_mult);
+		__system->check_for_lock(orb_freq_mult, spin_freq_mult,
+								 *unlocked_i/2, *unlocked_i%2);
+		while(__system->number_locked_zones()!=4-still_unlocked.size()) {
+			__system->check_for_lock(orb_freq_mult, spin_freq_mult,
+								     *unlocked_i/2, *unlocked_i%2);
+			__zones[*unlocked_i]->lags()(spin_freq_mult, orb_freq_mult)*=2;
+			__zones[*unlocked_i]->lags()(-spin_freq_mult, -orb_freq_mult)*=2;
+		}
 		__parameters[SystemParameters::FIRST_ZONE_ANGVEL+*unlocked_i]=
 			__worb*static_cast<double>(orb_freq_mult)
 			/static_cast<double>(spin_freq_mult);
 		__locks[*unlocked_i].set_lock(orb_freq_mult, spin_freq_mult);
+		__lags[*unlocked_i]=__zones[*unlocked_i]->lags();
 		still_unlocked.erase(unlocked_i);
 	}
 }
@@ -74,7 +80,7 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 		bool match_primary_inclinations, bool zero_primary_inclinations,
 		bool match_primary_periapses, bool match_secondary_inclinations, 
 		bool zero_secondary_inclinations, bool match_secondary_periapses,
-		bool zero_secondary_periapses, bool lags_flip_sign)
+		bool zero_secondary_periapses)
 	: __parameters(SystemParameters::NUM_QUANTITIES), __lags(4),
 	__locks(4), __zones(4, NULL), __bodies(2, NULL), __system(NULL)
 {
@@ -202,7 +208,7 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 		__parameters[FIRST_COUPLING_TIMESCALE+i]=
 			std::pow(10.0, uniform_rand(-6,1));
 	}
-	create_system(evol_mode, lags_flip_sign);
+	create_system(evol_mode);
 	if(evol_mode==BINARY) lock_zones(min_locked_zones, max_locked_zones);
 }
 

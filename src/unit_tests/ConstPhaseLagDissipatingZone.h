@@ -98,6 +98,8 @@ public:
 					  orbital_frequency_multiplier);
 	}
 
+	Lags &lags() {return __lags;}
+
 	double moment_of_inertia(int deriv) const
 	{return __moment_of_inertia.at(deriv);}
 
