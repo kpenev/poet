@@ -33,6 +33,42 @@ private:
 	void test_orbit_diff_eq(RandomDiskPlanetSystem &system,
 			const std::valarray<double> &expected,
 			bool diff_eq=false);
+
+	///\brief Returns the same lags as on input, but with the signs of those
+	///with negative forcing frequency flipped.
+	Lags signed_lags(const RandomDiskPlanetSystem &system, unsigned zone_ind)
+		const;
+
+	///Fill tidal torques and zone angular velocities in a coordinate
+	///system with y the along orbital angular momentum and x such that
+	///positive inclination zones have positive x angmom.
+	void fill_torques_angvel_in_orbit_coord(
+			const RandomDiskPlanetSystem &system,
+			std::vector<Eigen::Vector2d> &tidal_torques,
+			std::vector<Eigen::Vector2d> &angular_velocities) const;
+
+	///Fill non-tidal torques acting on each zone in the same coordinate
+	///system as fill_torques_angmom_in_orbit_coord()
+	void fill_nontidal_torques_in_orbit_coord(
+			const RandomDiskPlanetSystem &system,
+			const std::vector<Eigen::Vector2d> &angular_momenta,
+			std::vector<Eigen::Vector2d> &nontidal_torques) const;
+
+	///Fills the differential equations for a zero-periapsis system.
+	void fill_diff_eq(
+			///The system.
+			const RandomDiskPlanetSystem &system,
+
+			///The torque on the orbit in the coordinate system of 
+			///fill_torques_angvel_in_orbit_coord()
+			const Eigen::Vector2d &orbit_torque,
+
+			///The total torques on all zones in the same coordinate system.
+			const std::vector<Eigen::Vector2d> &zone_torques,
+			
+			///The destinatino to fill with the differential equations.
+			std::valarray<double> &expected_diff_eq);
+
 protected:
 	///No fixtures at this time
 	void setup() {};
@@ -89,7 +125,7 @@ public:
 	void test_binary_no_locks_circular_inclined_diff_eq();
 
 	///Tests the differential equations for a banary with locked zones.
-	void test_binary_locks_diff_eq();
+	void test_binary_1lock_diff_eq();
 };
 
 #endif

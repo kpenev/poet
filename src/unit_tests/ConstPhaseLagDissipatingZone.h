@@ -41,11 +41,15 @@ private:
 	Lags __lags;
 
 	std::vector<double> __moment_of_inertia, __radius, __mass;
+
+	bool __flip_sign;
 public:
 	ConstPhaseLagDissipatingZone(const Lags &lags, double moment_of_inertia,
-			double radius, double mass, double moment_of_inertia_deriv=0,
+			double radius, double mass, bool flip_sign=false,
+			double moment_of_inertia_deriv=0,
 			double radius_deriv=0, double mass_deriv=0)
-		: __lags(lags), __moment_of_inertia(2), __radius(2), __mass(2)
+		: __lags(lags), __moment_of_inertia(2), __radius(2), __mass(2),
+		__flip_sign(flip_sign)
 	{
 		__moment_of_inertia[0]=moment_of_inertia; 
 		__moment_of_inertia[1]=moment_of_inertia_deriv;
@@ -76,8 +80,8 @@ public:
 			///expression for the forcing frequency.
 			int spin_frequency_multiplier,
 			
-			///The current orbital spin frequency in rad/day
-			double orbital_frequency,
+			///The current forcinc frequency in rad/day
+			double forcing_frequency,
 
 			///The return value should be either the phase lag itself
 			///(NO_DERIV) or its derivative w.r.t. the specified quantity.
@@ -88,9 +92,10 @@ public:
 			///Otherwise, leave untouched.
 			double &above_lock_value) const
 	{
-		return (deriv!=Dissipation::NO_DERIV ? 0
-				: __lags(spin_frequency_multiplier,
-					orbital_frequency_multiplier));
+		if(deriv!=Dissipation::NO_DERIV) return 0;
+		return (__flip_sign && forcing_frequency<0 ? -1 : 1)*
+			   __lags(spin_frequency_multiplier,
+					  orbital_frequency_multiplier);
 	}
 
 	double moment_of_inertia(int deriv) const

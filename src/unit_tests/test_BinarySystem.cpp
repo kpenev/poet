@@ -1,6 +1,7 @@
 #include "test_BinarySystem.h"
 
-void test_BinarySystem::test_orbit_diff_eq(RandomDiskPlanetSystem &system,
+void test_BinarySystem::test_orbit_diff_eq(
+		RandomDiskPlanetSystem &system,
 		const std::valarray<double> &expected, bool diff_eq)
 {
 	std::valarray<double> returned_orbit, *to_compare;
@@ -27,6 +28,153 @@ void test_BinarySystem::test_orbit_diff_eq(RandomDiskPlanetSystem &system,
 								   1e-10,1e-15), msg.str().c_str());
 	}
 	if(diff_eq) delete to_compare;
+}
+
+Lags test_BinarySystem::signed_lags(const RandomDiskPlanetSystem &system,
+		unsigned zone_ind) const
+{
+	using namespace SystemParameters;
+	Lags result;
+	for(int m=-2; m<=2; ++m)
+		for(int mp=-2; mp<=2; ++mp) {
+			double forcing_freq=
+				system.orbital_frequency()*mp
+				-
+				system.quantity(
+						static_cast<Quantity>(FIRST_ZONE_ANGVEL+zone_ind))*m;
+			result(m, mp)=(forcing_freq<0 ? -1.0 : 1.0)
+						  *system.lags(zone_ind)(m, mp);
+		}
+	return result;
+}
+
+void test_BinarySystem::fill_torques_angvel_in_orbit_coord(
+		const RandomDiskPlanetSystem &system,
+		std::vector<Eigen::Vector2d> &tidal_torques,
+		std::vector<Eigen::Vector2d> &angular_velocities) const
+{
+	using namespace SystemParameters;
+	for(unsigned zone_ind=0; zone_ind<4; ++zone_ind) {
+		Lags lags=signed_lags(system, zone_ind);
+		double inclination=system.quantity(
+						static_cast<Quantity>(FIRST_INCLINATION+zone_ind)),
+			   x_torque=dimensionless_torque_x_Lai(inclination, lags),
+			   z_torque=dimensionless_torque_z_Lai(inclination, lags),
+			torque_norm;
+		if(zone_ind<2)
+			torque_norm=torque_norm_Lai(
+					system.quantity(SECONDARY_MASS), 
+					system.quantity(PRIMARY_RADIUS),
+					system.quantity(SEMIMAJOR));
+		else 
+			torque_norm=torque_norm_Lai(
+					system.quantity(PRIMARY_MASS), 
+					system.quantity(SECONDARY_RADIUS),
+					system.quantity(SEMIMAJOR));
+		double sin_inc=std::sin(inclination),
+			   cos_inc=std::cos(inclination);
+		x_torque*=torque_norm;
+		z_torque*=torque_norm;
+		tidal_torques[zone_ind](0)=-x_torque*cos_inc+z_torque*sin_inc;
+		tidal_torques[zone_ind](1)=x_torque*sin_inc+z_torque*cos_inc;
+		angular_velocities[zone_ind]=
+			system.quantity(
+					static_cast<Quantity>(FIRST_ZONE_ANGVEL+zone_ind))
+			*
+			system.quantity(
+					static_cast<Quantity>(FIRST_ZONE_INERTIA+zone_ind))
+			*
+			Eigen::Vector2d(sin_inc, cos_inc);
+	}
+}
+
+void test_BinarySystem::fill_nontidal_torques_in_orbit_coord(
+		const RandomDiskPlanetSystem &system,
+		const std::vector<Eigen::Vector2d> &angular_velocities,
+		std::vector<Eigen::Vector2d> &nontidal_torques) const
+{
+	using namespace SystemParameters;
+	for(unsigned body_ind=0; body_ind<2; ++body_ind) {
+		//Wind
+		nontidal_torques[2*body_ind]=-system.quantity(PRIMARY_WIND_STRENGTH)
+			*angular_velocities[2*body_ind]
+			*std::pow(std::min(
+						system.quantity(
+							static_cast<Quantity>(FIRST_ZONE_ANGVEL
+												  +2*body_ind)),
+						system.quantity(
+							static_cast<Quantity>(FIRST_WIND_SAT_FREQ
+												  +body_ind))
+						),
+					2);
+
+		//Core growth
+		double core_growth=system.quantity(
+				static_cast<Quantity>(FIRST_CORE_MASS_DERIV+body_ind));
+		nontidal_torques[2*body_ind+1]=
+			core_growth
+			*std::pow(system.quantity(
+				static_cast<Quantity>(FIRST_ZONE_RADIUS+2*body_ind+1)), 2)
+			*angular_velocities[2*body_ind+(core_growth>0 ? 0 : 1)];
+
+		//Differential rotation torque
+		double 
+			inertia1=system.quantity(
+					static_cast<Quantity>(FIRST_ZONE_INERTIA+2*body_ind)),
+			inertia2=system.quantity(
+					static_cast<Quantity>(FIRST_ZONE_INERTIA+2*body_ind+1));
+		nontidal_torques[2*body_ind+1]+=
+			(inertia1*inertia2)/(inertia1+inertia2)
+			*(
+					angular_velocities[2*body_ind]
+					-
+					angular_velocities[2*body_ind+1]
+			 );
+
+		//Add core growth and differential rotation torque to envelopes
+		nontidal_torques[2*body_ind]-=nontidal_torques[2*body_ind+1];
+	}
+}
+
+void test_BinarySystem::fill_diff_eq(const RandomDiskPlanetSystem &system,
+		const Eigen::Vector2d &orbit_torque,
+		const std::vector<Eigen::Vector2d> &zone_torques,
+		std::valarray<double> &expected_diff_eq)
+{
+	using namespace SystemParameters;
+	double m1=system.quantity(PRIMARY_MASS),
+		   m2=system.quantity(SECONDARY_MASS),
+		   a=system.quantity(SEMIMAJOR),
+		   worb=system.orbital_frequency(),
+		   orbital_angmom=(m1*m2)/(m1+m2)*std::pow(a,2)*worb,
+		   orbit_rotation=orbit_torque(0)/orbital_angmom;
+	expected_diff_eq[0]=2.0*(m1+m2)*orbit_torque(1)/(a*worb*m1*m2);
+	unsigned locked_found=0;
+	for(unsigned zone_ind=0; zone_ind<4; ++zone_ind) {
+		double sin_inc=std::sin(system.quantity(
+					static_cast<Quantity>(FIRST_INCLINATION+zone_ind))),
+			   cos_inc=std::sin(system.quantity(
+					static_cast<Quantity>(FIRST_INCLINATION+zone_ind)));
+		expected_diff_eq[2+zone_ind]=
+			(
+			 zone_torques[zone_ind](0)*cos_inc
+			 -
+			 zone_torques[zone_ind](1)*sin_inc
+			)
+			/system.quantity(static_cast<Quantity>(FIRST_ZONE_ANGVEL
+					 							   +zone_ind))
+			/system.quantity(static_cast<Quantity>(FIRST_ZONE_INERTIA
+												   +zone_ind))
+			-
+			orbit_rotation;
+		if(system.lock(zone_ind)) ++locked_found;
+		else {
+			expected_diff_eq[9+zone_ind-locked_found]=
+				zone_torques[zone_ind](0)*sin_inc
+				+
+				zone_torques[zone_ind](1)*cos_inc;
+		}
+	}
 }
 
 void test_BinarySystem::test_fill_orbit_locked_surface()
@@ -463,8 +611,61 @@ void test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq()
 	}
 }
 
-void test_BinarySystem::test_binary_locks_diff_eq()
+void test_BinarySystem::test_binary_1lock_diff_eq()
 {
+	using namespace SystemParameters;
+	for(unsigned i=0; i<__ntests; ++i) {
+		RandomDiskPlanetSystem system_maker(BINARY, 0, 0, true, false, false,
+											true, false, false, true, true,
+											true);
+		std::valarray<double> expected_diff_eq(0.0, 12);
+		std::vector<Eigen::Vector2d> tidal_torques(4), nontidal_torques(4),
+			angular_velocities(4);
+		fill_torques_angvel_in_orbit_coord(system_maker, tidal_torques,
+										   angular_velocities);
+		fill_nontidal_torques_in_orbit_coord(system_maker,angular_velocities,
+											 nontidal_torques);
+		Eigen::Vector2d orbit_torque(0, 0);
+		unsigned locked_zone_ind;
+		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind)
+			if(!system_maker.lock(zone_ind))
+				orbit_torque-=tidal_torques[zone_ind];
+			else locked_zone_ind=zone_ind;
+		Eigen::Vector2d locked_spin_dir=
+			angular_velocities[locked_zone_ind]
+			/angular_velocities[locked_zone_ind].norm();
+		double m1=system_maker.quantity(PRIMARY_MASS),
+			   m2=system_maker.quantity(SECONDARY_MASS),
+			   a=system_maker.quantity(SEMIMAJOR),
+			   locked_inertia=system_maker.quantity(
+					   static_cast<Quantity>(FIRST_ZONE_INERTIA
+						   					 +locked_zone_ind)),
+			   orbit_coef=3.0*(m1+m2)/(m1*m2*std::pow(a, 2)),
+			   lock_coef=-
+				   (
+					nontidal_torques[locked_zone_ind].dot(locked_spin_dir)
+					/locked_inertia
+					+
+					orbit_coef*orbit_torque(1)
+				   )
+				   /
+				   (
+					tidal_torques[locked_zone_ind].dot(locked_spin_dir)
+					/locked_inertia
+					+
+					orbit_coef*tidal_torques[locked_zone_ind](1)
+				   );
+		tidal_torques[locked_zone_ind]*=lock_coef;
+		orbit_torque-=tidal_torques[locked_zone_ind];
+		std::vector<Eigen::Vector2d> zone_torques;
+		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind)
+			zone_torques[zone_ind]=tidal_torques[zone_ind]
+								   +
+								   nontidal_torques[zone_ind];
+		fill_diff_eq(system_maker, orbit_torque, zone_torques,
+					 expected_diff_eq);
+		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
+	}
 }
 
 test_BinarySystem::test_BinarySystem(unsigned ntests,
@@ -482,7 +683,7 @@ test_BinarySystem::test_BinarySystem(unsigned ntests,
 		test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq);
 	TEST_ADD(
 		test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq);
-	TEST_ADD(test_BinarySystem::test_binary_locks_diff_eq);
+	TEST_ADD(test_BinarySystem::test_binary_1lock_diff_eq);
 }
 
 #ifdef STANDALONE

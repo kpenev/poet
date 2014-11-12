@@ -1,6 +1,7 @@
 #include "RandomDiskPlanetSystem.h"
 
-void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
+void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode,
+		bool lags_flip_sign)
 {
 	using namespace SystemParameters;
 	std::valarray<double> angmom(__zones.size());
@@ -9,6 +10,7 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 				__parameters[FIRST_ZONE_INERTIA+i],
 				__parameters[FIRST_ZONE_RADIUS+i],
 				__parameters[FIRST_ZONE_MASS+i],
+				lags_flip_sign,
 				__parameters[FIRST_ZONE_INERTIA_DERIV+i],
 				__parameters[FIRST_ZONE_RADIUS_DERIV+i],
 				(i%2==0 ? 0 : __parameters[FIRST_CORE_MASS_DERIV+i/2]));
@@ -72,7 +74,7 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 		bool match_primary_inclinations, bool zero_primary_inclinations,
 		bool match_primary_periapses, bool match_secondary_inclinations, 
 		bool zero_secondary_inclinations, bool match_secondary_periapses,
-		bool zero_secondary_periapses)
+		bool zero_secondary_periapses, bool lags_flip_sign)
 	: __parameters(SystemParameters::NUM_QUANTITIES), __lags(4),
 	__locks(4), __zones(4, NULL), __bodies(2, NULL), __system(NULL)
 {
@@ -200,7 +202,7 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 		__parameters[FIRST_COUPLING_TIMESCALE+i]=
 			std::pow(10.0, uniform_rand(-6,1));
 	}
-	create_system(evol_mode);
+	create_system(evol_mode, lags_flip_sign);
 	if(evol_mode==BINARY) lock_zones(min_locked_zones, max_locked_zones);
 }
 

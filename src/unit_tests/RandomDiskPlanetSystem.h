@@ -96,7 +96,7 @@ private:
 	double __worb;
 
 	///Uses the contents of __parameters to configure the system.
-	void create_system(EvolModeType evol_mode);
+	void create_system(EvolModeType evol_mode, bool lags_flip_sign);
 
 	///Locks a random number of zones in random ratios with the orbit.
 	void lock_zones(
@@ -117,7 +117,8 @@ public:
 			bool match_secondary_inclinations=false,
 			bool zero_secondary_inclinations=false,
 			bool match_secondary_periapses=false,
-			bool zero_secondary_periapses=false);
+			bool zero_secondary_periapses=false,
+			bool lags_flip_sign=false);
 
 	///Returns the random value chosen for a quantity.
 	double quantity(SystemParameters::Quantity q) const
@@ -127,7 +128,7 @@ public:
 	const Lags &lags(
 			///Which zone's lag? Indices go from primary envelope to
 			///secondary core.
-			unsigned zone_ind) {return __lags[zone_ind];}
+			unsigned zone_ind) const {return __lags[zone_ind];}
 
 	///Returns a reference to a locally held system.
 	DiskPlanetSystem &operator()() {return *__system;}
@@ -141,6 +142,9 @@ public:
 
 	///The number of locked zones.
 	unsigned num_locked_zones() const {return __num_locked_zones;}
+
+	///Returns the orbital frequency of the generated system.
+	double orbital_frequency() const {return __worb;}
 
 	///Cleans up.
 	~RandomDiskPlanetSystem();
