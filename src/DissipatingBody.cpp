@@ -107,17 +107,16 @@ void DissipatingBody::collect_orbit_rates(double orbital_frequency,
 
 void DissipatingBody::calculate_orbit_rate_corrections()
 {
-	unsigned locked_zone_index=0;
 	__orbit_energy_gain_correction.resize(__num_locked_zones);
 	__orbit_torque_correction.resize(__num_locked_zones);
 	for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index)
 		if(zone(zone_index).locked()) {
 			DissipatingZone &this_zone=zone(zone_index);
-			__orbit_energy_gain_correction[locked_zone_index]=
+			__orbit_energy_gain_correction[this_zone.locked_zone_index()]=
 				tidal_power(zone_index, false)
 				-
 				tidal_power(zone_index, true);
-			__orbit_torque_correction[locked_zone_index]=
+			__orbit_torque_correction[this_zone.locked_zone_index()]=
 				zone_to_zone_transform(this_zone, zone(0),
 						tidal_torque(zone_index, false)
 						-
@@ -287,9 +286,9 @@ void DissipatingBody::correct_orbit_energy_gain(
 		Eigen::VectorXd &above_lock_fractions_eccentricity_deriv,
 		Eigen::VectorXd &above_lock_fractions_radius_deriv)
 {
-	unsigned locked_zone_index=0;
 	for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
 		if(zone(zone_index).locked()) {
+			unsigned locked_zone_index=zone(zone_index).locked_zone_index();
 			__orbit_energy_gain_correction[locked_zone_index]=
 				tidal_power(zone_index, false)
 				-
@@ -325,7 +324,6 @@ void DissipatingBody::correct_orbit_energy_gain(
 						__orbit_energy_gain_correction[locked_zone_index];
 				}
 			}
-			++locked_zone_index;
 		}
 	}
 }
@@ -333,10 +331,10 @@ void DissipatingBody::correct_orbit_energy_gain(
 void DissipatingBody::correct_orbit_torque(
 			std::valarray<Eigen::VectorXd> &above_lock_fractions)
 {
-	unsigned locked_zone_index=0;
 	DissipatingZone &surface_zone=zone(0);
 	for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
 		if(zone(zone_index).locked()) {
+			unsigned locked_zone_index=zone(zone_index).locked_zone_index();
 			DissipatingZone &this_zone=zone(zone_index);
 			for(int deriv=Dissipation::NO_DERIV;
 					deriv<Dissipation::NUM_DERIVATIVES; ++deriv) {
@@ -368,7 +366,6 @@ void DissipatingBody::correct_orbit_torque(
 					*__orbit_torque_correction[locked_zone_index];
 
 			}
-			++locked_zone_index;
 		}
 	}
 
@@ -505,9 +502,9 @@ void DissipatingBody::set_above_lock_fractions(
 	__above_lock_fractions.resize(Dissipation::NUM_DERIVATIVES);
 	for(unsigned i=0; i<Dissipation::NUM_DERIVATIVES; ++i) {
 #ifdef DEBUG
-		assert(above_lock_fractions[i].size()==__num_locked_zones);
+		assert(above_lock_fractions[i].size()>=__num_locked_zones);
 #endif
-		__above_lock_fractions[i].resize(__num_locked_zones);
+		__above_lock_fractions[i].resize(above_lock_fractions[i].size());
 	}
 	__above_lock_fractions=above_lock_fractions;
 	correct_orbit_energy_gain(above_lock_fractions[Dissipation::AGE],
@@ -535,12 +532,11 @@ double DissipatingBody::tidal_orbit_energy_gain(
 			assert(false);
 #endif
 		}
+		if(__above_lock_fractions.size()==0) return result;
 	} else {
-		unsigned locked_zone_index=0;
-		for(unsigned zone_ind=0; zone_ind<deriv_zone_index; ++zone_ind)
-			if(zone(zone_ind).locked()) ++locked_zone_index;
 		double above_frac=
-			__above_lock_fractions[Dissipation::NO_DERIV][locked_zone_index];
+			__above_lock_fractions[Dissipation::NO_DERIV]
+								[zone(deriv_zone_index).locked_zone_index()];
 		result=above_frac
 			   *tidal_power(deriv_zone_index, true, deriv)
 			   +
@@ -561,13 +557,11 @@ Eigen::Vector3d DissipatingBody::tidal_orbit_torque(
 		Dissipation::Derivative deriv, unsigned deriv_zone_index,
 		const Eigen::VectorXd &above_lock_fraction_deriv) const
 {
-	unsigned locked_zone_index=0;
-	for(unsigned zone_ind=0; zone_ind<deriv_zone_index; ++zone_ind)
-		if(zone(zone_ind).locked()) ++locked_zone_index;
 	if(zone_specific(deriv) && deriv_zone_index!=0) {
 		const DissipatingZone &deriv_zone=zone(deriv_zone_index);
 		double above_frac=
-			__above_lock_fractions[Dissipation::NO_DERIV][locked_zone_index];
+			__above_lock_fractions[Dissipation::NO_DERIV]
+											[deriv_zone.locked_zone_index()];
 		Eigen::Vector3d result=zone_to_zone_transform(deriv_zone, zone(0),
 				(above_frac-1.0)
 				*__tidal_torques_below[deriv_zone_index][deriv]

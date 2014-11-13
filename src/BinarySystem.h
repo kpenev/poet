@@ -326,6 +326,14 @@ private:
 	///Fills the __above_lock_fractinos_*_deriv members.
 	void fill_above_lock_fractions_deriv();
 
+	///\brief Solves for and sets the above lock fractions and their
+	///derivatives.
+	///
+	///
+	///The system must already be configure() -ed in in BINARY evolution
+	///mode.
+	void update_above_lock_fractions();
+
 	///\brief Fills an array with the evolution rates for the quantities
 	///describing a binary.
 	///

@@ -16,6 +16,7 @@ void test_BinarySystem::test_orbit_diff_eq(
 		<< " created by the binary system " << (diff_eq ? "have" : "has")
 		<< " a different size (" << to_compare->size() << ") than expected (" 
 		<< expected.size() << ")";
+	std::cerr << msg.str() << std::endl;
 	TEST_ASSERT_MSG(to_compare->size()==expected.size(), msg.str().c_str());
 	for(unsigned i=0; i<expected.size(); ++i) {
 		msg.str("");
@@ -24,8 +25,9 @@ void test_BinarySystem::test_orbit_diff_eq(
 			<< (diff_eq ? "differential equation[" : "orbit[")
 			<< i << "]=" << expected[i] << ", got: " << (*to_compare)[i]
 			<< ", difference: " << (*to_compare)[i] - expected[i];
+		std::cerr << msg.str() << std::endl;
 		TEST_ASSERT_MSG(check_diff((*to_compare)[i], expected[i],
-								   1e-10,1e-15), msg.str().c_str());
+								   1e-10, 1e-15), msg.str().c_str());
 	}
 	if(diff_eq) delete to_compare;
 }
@@ -236,14 +238,15 @@ void test_BinarySystem::test_fill_orbit_binary_locks()
 {
 	using namespace SystemParameters;
 	for(unsigned i=0; i<__ntests; ++i) {
-		RandomDiskPlanetSystem system_maker(BINARY, 1, 4);
+		RandomDiskPlanetSystem system_maker(BINARY, 1, 1);
 		std::valarray<double> 
 			expected_orbit(13-system_maker.num_locked_zones());
 		unsigned ind=0;
 		expected_orbit[ind++]=system_maker.quantity(SEMIMAJOR);
 		expected_orbit[ind++]=system_maker.quantity(ECCENTRICITY);
 		expected_orbit[ind++]=system_maker.quantity(PRIMARY_INCLINATION_ENV);
-		expected_orbit[ind++]=system_maker.quantity(PRIMARY_INCLINATION_CORE);
+		expected_orbit[ind++]=system_maker.quantity(
+				PRIMARY_INCLINATION_CORE);
 		expected_orbit[ind++]=
 			system_maker.quantity(SECONDARY_INCLINATION_ENV);
 		expected_orbit[ind++]=
@@ -671,17 +674,17 @@ test_BinarySystem::test_BinarySystem(unsigned ntests,
 			const std::string &eccentricity_expansion) : __ntests(ntests)
 {
 	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
-	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
-	TEST_ADD(test_BinarySystem::test_fill_orbit_single);
-	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_no_locks);
+//	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
+//	TEST_ADD(test_BinarySystem::test_fill_orbit_single);
+//	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_no_locks);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_locks);
-	TEST_ADD(test_BinarySystem::test_locked_surface_diff_eq);
-	TEST_ADD(test_BinarySystem::test_single_aligned_diff_eq);
-	TEST_ADD(test_BinarySystem::test_single_zero_periapsis_diff_eq);
-	TEST_ADD(
-		test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq);
-	TEST_ADD(
-		test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq);
+//	TEST_ADD(test_BinarySystem::test_locked_surface_diff_eq);
+//	TEST_ADD(test_BinarySystem::test_single_aligned_diff_eq);
+//	TEST_ADD(test_BinarySystem::test_single_zero_periapsis_diff_eq);
+//	TEST_ADD(
+//		test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq);
+//	TEST_ADD(
+//		test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq);
 //	TEST_ADD(test_BinarySystem::test_binary_1lock_diff_eq);
 }
 

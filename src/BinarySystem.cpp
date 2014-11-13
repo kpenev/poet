@@ -13,8 +13,11 @@ void BinarySystem::find_locked_zones()
 	for(short body_ind=0; body_ind<2; ++body_ind) {
 		DissipatingBody &body=(body_ind==0 ? __body1 : __body2);
 		for(unsigned zone_ind=0; zone_ind<body.number_zones(); ++zone_ind)
-			if(body.zone(zone_ind).locked())
+			if(body.zone(zone_ind).locked()) {
+				body.zone(zone_ind).locked_zone_index()=
+					__locked_zones.size();
 				__locked_zones.push_back(zone_ind);
+			}
 	}
 }
 
@@ -306,16 +309,19 @@ void BinarySystem::above_lock_problem_deriv_correction(
 		for(DissipatingBody *body=&__body1; !done; body=&__body2) {
 			for(unsigned zone_ind=0; zone_ind<body->number_zones();
 					++zone_ind) {
-				matrix.col(locked_ind).array()+=
-					1.5*(body->tidal_power(locked_ind, true)
-						 -
-						 body->tidal_power(locked_ind, false))
-					/__orbital_energy/__semimajor*coef;
 				rhs.array()+=1.5*(__body1.tidal_orbit_energy_gain()
 								  +
 								  __body2.tidal_orbit_energy_gain())
 						   /__orbital_energy/__semimajor*coef;
-				++locked_ind;
+				if(body->zone(zone_ind).locked()) {
+					matrix.col(locked_ind).array()+=
+						1.5*(body->tidal_power(locked_ind, true)
+								-
+								body->tidal_power(locked_ind, false))
+						/__orbital_energy/__semimajor*coef;
+
+					++locked_ind;
+				}
 			}
 			done=(body==&__body2);
 		}
@@ -347,7 +353,10 @@ void BinarySystem::calculate_above_lock_fractions(Eigen::VectorXd &fractions,
 				 			 +
 							 __body2.number_locked_zones());
 #endif
-	if(num_locked_zones==0) return;
+	if(num_locked_zones==0) {
+		fractions.resize(0);
+		return;
+	}
 	std::valarray<double> nontidal_torque(num_locked_zones),
 						  tidal_torque_z_above(num_locked_zones),
 						  tidal_torque_z_below(num_locked_zones),
@@ -397,10 +406,13 @@ void BinarySystem::calculate_above_lock_fractions(Eigen::VectorXd &fractions,
 		++i;
 	}
 	above_lock_problem_deriv_correction(deriv, body1_deriv, matrix, rhs);
-	if(deriv==Dissipation::NO_DERIV)
+	if(deriv==Dissipation::NO_DERIV) {
 		__above_lock_fractions_decomp.compute(matrix);
-	fractions=__above_lock_fractions_decomp.solve(
-			rhs-matrix*__above_lock_fractions[Dissipation::NO_DERIV]);
+		fractions=__above_lock_fractions_decomp.solve(rhs);
+	} else {
+		fractions=__above_lock_fractions_decomp.solve(
+				rhs-matrix*__above_lock_fractions[Dissipation::NO_DERIV]);
+	}
 }
 
 Eigen::VectorXd BinarySystem::above_lock_fractions_deriv(
@@ -456,10 +468,10 @@ Eigen::VectorXd BinarySystem::above_lock_fractions_deriv(
 						-1.5*body.tidal_power(zone_index, false, deriv));
 	}
 	if(zone_index>0 && body.zone(zone_index-1).locked()) 
-		rhs(locked_zone_index-(deriv_zone.locked() ? 1 : 0))-=
+		rhs(body.zone(zone_index-1).locked_zone_index())-=
 			body.nontidal_torque(zone_index-1, deriv, 1)[2];
-	if(zone_index<body.number_zones() && body.zone(zone_index+1).locked())
-		rhs(locked_zone_index+1)-=
+	if(zone_index+1<body.number_zones() && body.zone(zone_index+1).locked())
+		rhs(body.zone(zone_index+1).locked_zone_index())-=
 			body.nontidal_torque(zone_index+1, deriv, -1)[2];
 	return __above_lock_fractions_decomp.solve(rhs);
 }
@@ -500,6 +512,27 @@ void BinarySystem::fill_above_lock_fractions_deriv()
 			body=&__body2;
 		}
 	}
+}
+
+void BinarySystem::update_above_lock_fractions()
+{
+	std::valarray<Eigen::VectorXd> 
+		body2_above_lock_fractions(Dissipation::NUM_DERIVATIVES);
+	for(int deriv=Dissipation::NO_DERIV; deriv<Dissipation::NUM_DERIVATIVES;
+			++deriv) {
+		calculate_above_lock_fractions(__above_lock_fractions[deriv],
+				static_cast<Dissipation::Derivative>(deriv));
+		if(!zone_specific(static_cast<Dissipation::Derivative>(deriv))) 
+			body2_above_lock_fractions[deriv]=__above_lock_fractions[deriv];
+		else calculate_above_lock_fractions(
+				body2_above_lock_fractions[deriv],
+				static_cast<Dissipation::Derivative>(deriv), false);
+	}
+	__above_lock_fractions_body2_radius_deriv=
+		body2_above_lock_fractions[Dissipation::RADIUS];
+	__body1.set_above_lock_fractions(__above_lock_fractions);
+	__body2.set_above_lock_fractions(body2_above_lock_fractions);
+	fill_above_lock_fractions_deriv();
 }
 
 void BinarySystem::fill_binary_evolution_rates(
@@ -556,23 +589,6 @@ void BinarySystem::fill_binary_evolution_rates(
 void BinarySystem::binary_differential_equations(
 		double *differential_equations)
 {
-	std::valarray<Eigen::VectorXd> 
-		body2_above_lock_fractions(Dissipation::NUM_DERIVATIVES);
-	find_locked_zones();
-	for(int deriv=Dissipation::NO_DERIV; deriv<Dissipation::NUM_DERIVATIVES;
-			++deriv) {
-		calculate_above_lock_fractions(__above_lock_fractions[deriv],
-				static_cast<Dissipation::Derivative>(deriv));
-		if(!zone_specific(static_cast<Dissipation::Derivative>(deriv))) 
-			body2_above_lock_fractions[deriv]=__above_lock_fractions[deriv];
-		else calculate_above_lock_fractions(
-				body2_above_lock_fractions[deriv],
-				static_cast<Dissipation::Derivative>(deriv), false);
-	}
-	__above_lock_fractions_body2_radius_deriv=
-		body2_above_lock_fractions[Dissipation::RADIUS];
-	__body1.set_above_lock_fractions(__above_lock_fractions);
-	__body2.set_above_lock_fractions(body2_above_lock_fractions);
 	Eigen::Vector3d global_orbit_torque=__body1.tidal_orbit_torque()+
 		zone_to_zone_transform(__body2.zone(0), __body1.zone(0),
 				__body2.tidal_orbit_torque());
@@ -1248,14 +1264,16 @@ void BinarySystem::configure(double age, double semimajor,
 	__orbital_energy=orbital_energy(m1, m2, semimajor);
 	__orbital_angmom=orbital_angular_momentum(m1, m2, semimajor,
 			eccentricity);
+	find_locked_zones();
 	__body1.configure(age, m2, semimajor, eccentricity, spin_angmom,
 			inclination, periapsis, evolution_mode==LOCKED_SURFACE_SPIN,
 			std::isnan(semimajor), true);
 	if(evolution_mode==BINARY) {
 		unsigned offset=__body1.number_zones();
 		__body2.configure(age, m1, semimajor, eccentricity,
-				spin_angmom+offset, inclination+offset, periapsis+offset-1);
-		fill_above_lock_fractions_deriv();
+				spin_angmom+offset-__body1.number_locked_zones(),
+				inclination+offset, periapsis+offset-1);
+		update_above_lock_fractions();
 	}
 #ifdef DEBUG
 	if(evolution_mode==BINARY)
@@ -1385,38 +1403,36 @@ void BinarySystem::check_for_lock(int orbital_freq_mult, int spin_freq_mult,
 	assert(zone_index<body.number_zones());
 	assert(spin_freq_mult);
 #endif
+	double original_angmom=body.zone(zone_index).angular_momentum();
 	body.lock_zone_spin(zone_index, orbital_freq_mult, spin_freq_mult);
 	unsigned num_zones=number_zones(),
 			 num_locked_zones=number_locked_zones(),
 			 locked_zone_ind=0;
-	std::vector<double> spin_angmom(num_zones-num_locked_zones-1),
+	std::vector<double> spin_angmom(num_zones-num_locked_zones),
 		inclinations(num_zones), periapses(num_zones);
-	bool found_zone=false;
 	for(unsigned zone_ind=0; zone_ind<num_zones; ++zone_ind) {
 		DissipatingZone &zone=(zone_ind<__body1.number_zones()
 							   ? __body1.zone(zone_ind)
 							   : __body2.zone(zone_ind-__body1.number_zones()
 								   			 )
 							  );
-		if(zone_ind==zone_index+(body_index ? __body1.number_zones() : 0))
-			found_zone=true;
-		else if(!zone.locked())
-			spin_angmom[zone_ind-locked_zone_ind-(found_zone ? 1 : 0)]=
-				zone.angular_momentum();
-		if(!found_zone && zone.locked()) ++locked_zone_ind;
+		if(zone.locked()) ++locked_zone_ind;
+		else spin_angmom[zone_ind-locked_zone_ind]=zone.angular_momentum();
 		inclinations[zone_ind]=zone.inclination();
 		if(zone_ind) periapses[zone_ind-1]=zone.periapsis();
 	}
 	configure(__age, __semimajor, __eccentricity, &(spin_angmom[0]),
 			&(inclinations[0]), &(periapses[0]), BINARY);
-	double above_lock_fraction=
-		__above_lock_fractions[Dissipation::NO_DERIV][locked_zone_ind];
-	if(above_lock_fraction>0 && above_lock_fraction<1) {
-		body.zone(zone_index).locked_zone_index()=locked_zone_ind;
-		return;
-	}
-	spin_angmom.insert(spin_angmom.begin()+zone_index-locked_zone_ind,
-					   body.zone(zone_index).angular_momentum());
+	DissipatingZone &locked_zone=body.zone(zone_index);
+	double above_lock_fraction=__above_lock_fractions[Dissipation::NO_DERIV]
+										[locked_zone.locked_zone_index()];
+	if(above_lock_fraction>0 && above_lock_fraction<1) return;
+	std::vector<double>::iterator check_zone_dest=
+		spin_angmom.begin()+zone_index-locked_zone.locked_zone_index();
+	if(body_index) check_zone_dest+=__body1.number_zones()
+									-
+									__body1.number_locked_zones();
+	spin_angmom.insert(check_zone_dest, original_angmom);
 	if(above_lock_fraction<0) body.unlock_zone_spin(zone_index, -1);
 	else body.unlock_zone_spin(zone_index, 1);
 	configure(__age, __semimajor, __eccentricity, &(spin_angmom[0]),

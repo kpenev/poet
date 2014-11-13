@@ -105,6 +105,13 @@ private:
 
 			///The maximum number of zones to lock.
 			unsigned max_locked_zones);
+
+	///Double the lag of all terms which match the given term, if any terms
+	///are zero, random values are set.
+	void double_lags(int orb_freq_mult, int spin_freq_mult, Lags &lags);
+
+	///Removes anything dynamically allocated.
+	void cleanup();
 public:
 	///Generates and configures a system randomly.
 	RandomDiskPlanetSystem(EvolModeType evol_mode,
@@ -146,7 +153,7 @@ public:
 	double orbital_frequency() const {return __worb;}
 
 	///Cleans up.
-	~RandomDiskPlanetSystem();
+	~RandomDiskPlanetSystem() {cleanup();}
 };
 
 ///Describe the system on the given stream.

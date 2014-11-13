@@ -48,15 +48,18 @@ public:
 			double radius, double mass, bool flip_sign=false,
 			double moment_of_inertia_deriv=0,
 			double radius_deriv=0, double mass_deriv=0)
-		: __lags(lags), __moment_of_inertia(2), __radius(2), __mass(2),
+		: __lags(lags), __moment_of_inertia(3), __radius(3), __mass(3),
 		__flip_sign(flip_sign)
 	{
 		__moment_of_inertia[0]=moment_of_inertia; 
 		__moment_of_inertia[1]=moment_of_inertia_deriv;
+		__moment_of_inertia[2]=0;
 		__radius[0]=radius;
 		__radius[1]=radius_deriv;
+		__radius[2]=0;
 		__mass[0]=mass;
 		__mass[1]=mass_deriv;
+		__mass[2]=0;
 	}
 
 	///\brief Should return true iff the given term is presently locked.
@@ -93,6 +96,12 @@ public:
 			double &above_lock_value) const
 	{
 		if(deriv!=Dissipation::NO_DERIV) return 0;
+		if(lock_held()(orbital_frequency_multiplier,
+					   spin_frequency_multiplier)) {
+			above_lock_value=-__lags(spin_frequency_multiplier,
+									 orbital_frequency_multiplier);
+			return -above_lock_value;
+		}
 		return (__flip_sign && forcing_frequency<0 ? -1 : 1)*
 			   __lags(spin_frequency_multiplier,
 					  orbital_frequency_multiplier);
@@ -106,9 +115,15 @@ public:
 	double love_coefficient(int, int, Dissipation::Derivative) const
 	{return 0;}
 
-	double outer_radius(int deriv) const {return __radius.at(deriv);}
+	double outer_radius(int deriv) const
+	{
+		return __radius.at(deriv);
+	}
 
-	double outer_mass(int deriv) const {return __mass.at(deriv);}
+	double outer_mass(int deriv) const 
+	{
+		return __mass.at(deriv);
+	}
 
 	void describe(std::ostream &os) const;
 

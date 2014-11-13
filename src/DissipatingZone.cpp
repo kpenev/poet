@@ -135,15 +135,15 @@ void DissipatingZone::fix_forcing_frequency(const SpinOrbitLockInfo &limit,
 		int orbital_frequency_multiplier, int spin_frequency_multiplier,
 		double &forcing_frequency)
 {
-#ifdef DEBUG
-	assert(limit.lock_direction());
-#endif
 	int expected_sign=limit.spin_frequency_multiplier()*
 		(orbital_frequency_multiplier*limit.spin_frequency_multiplier()
 		 -
 		 limit.orbital_frequency_multiplier()*spin_frequency_multiplier);
 	if(expected_sign*forcing_frequency>0) return;
-	if(limit.lock_direction()*spin_frequency_multiplier*expected_sign<0)
+#ifdef DEBUG
+	assert(limit.lock_direction());
+#endif
+	if(limit.lock_direction()*spin_frequency_multiplier*expected_sign<=0)
 		forcing_frequency=(expected_sign>0
 						   ? std::numeric_limits<double>::epsilon()
 						   : -std::numeric_limits<double>::epsilon());
@@ -162,8 +162,9 @@ double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
 						spin_frequency_multiplier*spin_frequency();
 	fix_forcing_frequency(__lock, orbital_frequency_multiplier,
 						  spin_frequency_multiplier, forcing_freq);
-	fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
-						  spin_frequency_multiplier, forcing_freq);
+	if(!__lock)
+		fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
+				spin_frequency_multiplier, forcing_freq);
 	return forcing_freq;
 }
 
@@ -183,9 +184,10 @@ void DissipatingZone::check_locks_consistency()
 				__lock.spin_frequency_multiplier()==2));
 	assert((__other_lock.spin_frequency_multiplier()>=0 && 
 				__other_lock.spin_frequency_multiplier()<=2));
+	if(__lock) return;
 	assert(__lock.lock_direction()*__lock.spin_frequency_multiplier()
-			*spin_frequency()
-			>
+			*spin_frequency()+1.0e-5*__orbital_frequency
+			>=
 			__lock.lock_direction()*__lock.orbital_frequency_multiplier()*
 			__orbital_frequency);
 	if(__other_lock.spin_frequency_multiplier()) {
@@ -540,7 +542,8 @@ void DissipatingZone::release_lock(short direction)
 	assert(direction==1 || direction==-1);
 #endif
 	__lock.lock_direction(direction);
-	int orbit_mult=2*__lock.orbital_frequency_multiplier()+direction;
+	int orbit_mult=(__lock.spin_frequency_multiplier()==2 ? 1 : 2)
+				   *__lock.orbital_frequency_multiplier()+direction;
 	if(orbit_mult%2) __other_lock.set_lock(orbit_mult, 2, -direction);
 	else __other_lock.set_lock(orbit_mult/2, 1, -direction);
 	update_lock_to_lower_e_order(__other_lock);

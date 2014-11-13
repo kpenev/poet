@@ -4,6 +4,7 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 {
 	using namespace SystemParameters;
 	std::valarray<double> angmom(__zones.size());
+	unsigned angmom_ind=0;
 	for(unsigned i=0; i<__zones.size(); ++i) {
 		__zones[i]=new ConstPhaseLagDissipatingZone(__lags[i],
 				__parameters[FIRST_ZONE_INERTIA+i],
@@ -13,8 +14,8 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 				__parameters[FIRST_ZONE_INERTIA_DERIV+i],
 				__parameters[FIRST_ZONE_RADIUS_DERIV+i],
 				(i%2==0 ? 0 : __parameters[FIRST_CORE_MASS_DERIV+i/2]));
-		angmom[i]=__parameters[FIRST_ZONE_INERTIA+i]
-				  *__parameters[FIRST_ZONE_ANGVEL+i];
+		angmom[angmom_ind++]=__parameters[FIRST_ZONE_INERTIA+i]
+							 *__parameters[FIRST_ZONE_ANGVEL+i];
 	}
 	for(unsigned i=0; i<__bodies.size(); ++i)
 		__bodies[i]=new TwoZoneBody(*__zones[2*i], *__zones[2*i+1],
@@ -45,34 +46,79 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 	__bodies[1]->detect_saturation();
 }
 
+void RandomDiskPlanetSystem::double_lags(int orb_freq_mult,
+										 int spin_freq_mult, Lags &lags)
+{
+	SpinOrbitLockInfo term(orb_freq_mult, spin_freq_mult);
+	for(int m=-2; m<=2; ++m)
+		for(int mp=-2; mp<=0; ++mp) 
+			if(term.term(mp, m)) {
+				lags(m, mp)*=2.0;
+				if(lags(m, mp)==0) 
+					lags(m, mp)=std::pow(10.0, uniform_rand(-6, 0));
+				lags(-m, -mp)=-lags(m, mp);
+			}
+	lags(0,0)=0;
+}
+
 void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 		unsigned max_locked_zones)
 {
-	__num_locked_zones=std::rand()%(max_locked_zones + 1 - min_locked_zones)
-					   +
-					   min_locked_zones;
+	unsigned num_to_lock=
+		std::rand()%(max_locked_zones + 1 - min_locked_zones)
+		+
+		min_locked_zones;
 	std::list<unsigned> still_unlocked;
 	for(unsigned i=0; i<4; ++i) still_unlocked.push_back(i);
-	for(unsigned i=0; i<__num_locked_zones; ++i) {
+	for(__num_locked_zones=0;
+			__num_locked_zones<num_to_lock && still_unlocked.size()>0;
+			__num_locked_zones=__system->number_locked_zones()) {
 		std::list<unsigned>::iterator unlocked_i=still_unlocked.begin();
 		for(unsigned to_lock=std::rand()%still_unlocked.size(); to_lock>0;
 				--to_lock) ++unlocked_i;
-		int orb_freq_mult=rand()%5-3, spin_freq_mult=rand()%2+1;
-		__system->check_for_lock(orb_freq_mult, spin_freq_mult,
-								 *unlocked_i/2, *unlocked_i%2);
-		while(__system->number_locked_zones()!=4-still_unlocked.size()) {
-			__system->check_for_lock(orb_freq_mult, spin_freq_mult,
-								     *unlocked_i/2, *unlocked_i%2);
-			__zones[*unlocked_i]->lags()(spin_freq_mult, orb_freq_mult)*=2;
-			__zones[*unlocked_i]->lags()(-spin_freq_mult, -orb_freq_mult)*=2;
+		int orb_freq_mult=rand()%4-2, spin_freq_mult=rand()%2+1;
+		if(orb_freq_mult==0) orb_freq_mult=2;
+		if(spin_freq_mult==2 && orb_freq_mult%2==0) {
+			spin_freq_mult=1;
+			orb_freq_mult/=2;
 		}
 		__parameters[SystemParameters::FIRST_ZONE_ANGVEL+*unlocked_i]=
 			__worb*static_cast<double>(orb_freq_mult)
 			/static_cast<double>(spin_freq_mult);
+		cleanup();
+		create_system(BINARY);
+		for(unsigned zone_ind=0; zone_ind<__locks.size(); ++zone_ind) {
+			if(__locks[zone_ind])
+				__system->check_for_lock(
+						__locks[zone_ind].orbital_frequency_multiplier(),
+						__locks[zone_ind].spin_frequency_multiplier(),
+						zone_ind/2, zone_ind%2);
+		}
+		assert(__system->number_locked_zones()==__num_locked_zones);
+
+		__system->check_for_lock(orb_freq_mult, spin_freq_mult,
+								 *unlocked_i/2, *unlocked_i%2);
+		while(__system->number_locked_zones()!=__num_locked_zones+1) {
+			__zones[*unlocked_i]->describe(std::cerr);
+			std::cerr << std::endl;
+			double_lags(orb_freq_mult, spin_freq_mult,
+						__zones[*unlocked_i]->lags());
+			__system->check_for_lock(orb_freq_mult, spin_freq_mult,
+								     *unlocked_i/2, *unlocked_i%2);
+		}
 		__locks[*unlocked_i].set_lock(orb_freq_mult, spin_freq_mult);
 		__lags[*unlocked_i]=__zones[*unlocked_i]->lags();
 		still_unlocked.erase(unlocked_i);
 	}
+}
+
+void RandomDiskPlanetSystem::cleanup()
+{
+	for(unsigned i=0; i<__zones.size(); ++i)
+		if(__zones[i]) {delete __zones[i]; __zones[i]=NULL;}
+	for(unsigned i=0; i<__bodies.size(); ++i)
+		if(__bodies[i]) {delete __bodies[i]; __bodies[i]=NULL;}
+	if(__system) {delete __system; __system=NULL;}
 }
 
 RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
@@ -82,143 +128,141 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 		bool zero_secondary_inclinations, bool match_secondary_periapses,
 		bool zero_secondary_periapses)
 	: __parameters(SystemParameters::NUM_QUANTITIES), __lags(4),
-	__locks(4), __zones(4, NULL), __bodies(2, NULL), __system(NULL)
+	__locks(4), __num_locked_zones(0), __zones(4, NULL), __bodies(2, NULL),
+	__system(NULL)
 {
 	using namespace SystemParameters;
-	__parameters[AGE]=uniform_rand(0, 10);
-	__parameters[SEMIMAJOR]=uniform_rand(3, 30);
-	__parameters[ECCENTRICITY]=(circular ? 0 : uniform_rand(0, 1));
-	__parameters[PRIMARY_MASS]=std::pow(10.0, uniform_rand(-3.0, 2.0));
-	__parameters[SECONDARY_MASS]=std::pow(10.0, uniform_rand(-3.0, 0.0))
-								 *__parameters[PRIMARY_MASS];
-	__parameters[PRIMARY_RADIUS]=uniform_rand(0, 1)*__parameters[SEMIMAJOR];
-	__parameters[PRIMARY_RADIUS_DERIV]=
-		uniform_rand(0, 100)*__parameters[PRIMARY_RADIUS];
-	__parameters[SECONDARY_RADIUS]=
-		uniform_rand(0, __parameters[SEMIMAJOR]/2.44
-						*std::pow(__parameters[SECONDARY_MASS]
-								  /__parameters[PRIMARY_MASS], 1.0/3.0));
-	__parameters[SECONDARY_RADIUS_DERIV]=
-		uniform_rand(0, 100)*__parameters[SECONDARY_RADIUS];
-	__parameters[PRIMARY_CORE_RADIUS]=uniform_rand(0, 1)
-									  *__parameters[PRIMARY_RADIUS];
-	__parameters[PRIMARY_CORE_RADIUS_DERIV]=
-		uniform_rand(0, 100)*__parameters[PRIMARY_CORE_RADIUS];
-	__parameters[SECONDARY_CORE_RADIUS]=uniform_rand(0, 1)
-									  *__parameters[SECONDARY_RADIUS];
-	__parameters[SECONDARY_CORE_RADIUS_DERIV]=
-		uniform_rand(0, 100)*__parameters[SECONDARY_CORE_RADIUS];
-	__parameters[PRIMARY_CORE_MASS]=uniform_rand(0, 1)
-									*__parameters[PRIMARY_MASS];
-	__parameters[PRIMARY_CORE_MASS_DERIV]=
-		uniform_rand(-100, 100)*__parameters[PRIMARY_CORE_MASS];
-	__parameters[SECONDARY_CORE_MASS]=uniform_rand(0, 1)
-									  *__parameters[SECONDARY_MASS];
-	__parameters[SECONDARY_CORE_MASS_DERIV]=
-		uniform_rand(-100, 100)*__parameters[SECONDARY_CORE_MASS];
-	__parameters[PRIMARY_ENV_INERTIA]=
-		std::pow(10.0, uniform_rand(-5, 0))
-		*(__parameters[PRIMARY_MASS]-__parameters[PRIMARY_CORE_MASS])
-		*std::pow(__parameters[PRIMARY_RADIUS], 2);
-	__parameters[PRIMARY_ENV_INERTIA_DERIV]=
-		uniform_rand(0, 100)*__parameters[PRIMARY_ENV_INERTIA];
-	__parameters[PRIMARY_CORE_INERTIA]=
-		std::pow(10.0, uniform_rand(-5, 0))
-		*__parameters[PRIMARY_CORE_MASS]
-		*std::pow(__parameters[PRIMARY_CORE_RADIUS], 2);
-	__parameters[PRIMARY_CORE_INERTIA_DERIV]=
-		uniform_rand(0, 100)*__parameters[PRIMARY_CORE_INERTIA];
-	__parameters[SECONDARY_ENV_INERTIA]=
-		std::pow(10.0, uniform_rand(-5, 0))
-		*(__parameters[SECONDARY_MASS]-__parameters[SECONDARY_CORE_MASS])
-		*std::pow(__parameters[SECONDARY_RADIUS], 2);
-	__parameters[SECONDARY_ENV_INERTIA_DERIV]=
-		uniform_rand(0, 100)*__parameters[SECONDARY_ENV_INERTIA];
-	__parameters[SECONDARY_CORE_INERTIA]=
-		std::pow(10.0, uniform_rand(-5, 0))
-		*__parameters[SECONDARY_CORE_MASS]
-		*std::pow(__parameters[SECONDARY_CORE_RADIUS], 2);
-	__parameters[SECONDARY_CORE_INERTIA_DERIV]=
-		uniform_rand(0, 100)*__parameters[SECONDARY_CORE_INERTIA];
-	__parameters[PRIMARY_INCLINATION_ENV]=
-		(evol_mode==BINARY && !zero_primary_inclinations
-		 ? uniform_rand(0, M_PI)
-		 : 0);
-	__parameters[PRIMARY_INCLINATION_CORE]=
-		(match_primary_inclinations || zero_primary_inclinations
-		 ? __parameters[PRIMARY_INCLINATION_ENV]
-		 : uniform_rand(0, M_PI));
-	__parameters[SECONDARY_INCLINATION_ENV]=
-		(zero_secondary_inclinations ? 0 : uniform_rand(0, M_PI));
-	__parameters[SECONDARY_INCLINATION_CORE]=
-		(match_secondary_inclinations || zero_secondary_inclinations
-		 ? __parameters[SECONDARY_INCLINATION_ENV]
-		 : uniform_rand(0, M_PI));
-	__parameters[PRIMARY_PERIAPSIS_CORE]=(match_primary_periapses
-										  ? 0
-										  : uniform_rand(0, 2.0*M_PI));
-	__parameters[SECONDARY_PERIAPSIS_ENV]=(zero_secondary_periapses
-										   ? 0
-										   : uniform_rand(0, 2.0*M_PI));
-	__parameters[SECONDARY_PERIAPSIS_CORE]=
-		(zero_secondary_periapses || match_secondary_periapses
-		 ? __parameters[SECONDARY_PERIAPSIS_ENV]
-		 : uniform_rand(0, 2.0*M_PI));
-	double __worb=orbital_angular_velocity(__parameters[PRIMARY_MASS],
-										   __parameters[SECONDARY_MASS],
-										   __parameters[SEMIMAJOR]);
-	__parameters[DISK_LOCK_FREQ]=std::pow(10.0, uniform_rand(-1, 1))*__worb;
-	switch(evol_mode) {
-		case LOCKED_SURFACE_SPIN :
-			__parameters[DISK_DISSIPATION_AGE]=
-				uniform_rand(__parameters[AGE], 10);
-			__parameters[SECONDARY_FORMATION_AGE]=
-				uniform_rand(__parameters[DISK_DISSIPATION_AGE], 10);
-			break;
-		case BINARY :
-			__parameters[DISK_DISSIPATION_AGE]=
-				uniform_rand(0, __parameters[AGE]);
-			__parameters[SECONDARY_FORMATION_AGE]=
-				uniform_rand(__parameters[DISK_DISSIPATION_AGE],
-							 __parameters[AGE]);
-			break;
-		case SINGLE :
-			__parameters[DISK_DISSIPATION_AGE]=
-				uniform_rand(0, __parameters[AGE]);
-			__parameters[SECONDARY_FORMATION_AGE]=
-				uniform_rand(__parameters[AGE], 10);
-			break;
-		default : assert(false);
-	}
-	for(unsigned i=0; i<__zones.size(); ++i) {
-		__parameters[FIRST_ZONE_ANGVEL+i]=
-			std::pow(10.0, uniform_rand(-1, 1))*__worb;
-		for(int m=-2; m<=2; ++m)
-			for(int mp=-2; mp<=0; ++mp) {
-				__lags[i](m, mp)=
-					(uniform_rand(0, 1)<0.2 ? 0 : 
-					 std::pow(10.0, uniform_rand(-6, 0)));
-				__lags[i](-m, -mp)=-__lags[i](m, mp);
-			}
-	}
-	for(unsigned i=0; i<__bodies.size(); ++i) {
-		__parameters[FIRST_WIND_STRENGTH+i]=uniform_rand(0,1);
-		__parameters[FIRST_WIND_SAT_FREQ+i]=
-			std::pow(10.0, uniform_rand(-1, 1))*__worb;
-		__parameters[FIRST_COUPLING_TIMESCALE+i]=
-			std::pow(10.0, uniform_rand(-6,1));
-	}
-	create_system(evol_mode);
-	if(evol_mode==BINARY) lock_zones(min_locked_zones, max_locked_zones);
-}
-
-RandomDiskPlanetSystem::~RandomDiskPlanetSystem()
-{
-	for(unsigned i=0; i<__zones.size(); ++i)
-		if(__zones[i]) delete __zones[i];
-	for(unsigned i=0; i<__bodies.size(); ++i)
-		if(__bodies[i]) delete __bodies[i];
-	if(__system) delete __system;
+	do {
+		cleanup();
+		__parameters[AGE]=uniform_rand(0, 10);
+		__parameters[SEMIMAJOR]=uniform_rand(3, 30);
+		__parameters[ECCENTRICITY]=(circular ? 0 : uniform_rand(0, 1));
+		__parameters[PRIMARY_MASS]=std::pow(10.0, uniform_rand(-3.0, 2.0));
+		__parameters[SECONDARY_MASS]=std::pow(10.0, uniform_rand(-3.0, 0.0))
+									 *__parameters[PRIMARY_MASS];
+		__parameters[PRIMARY_RADIUS]=uniform_rand(0, 1)
+									 *__parameters[SEMIMAJOR];
+		__parameters[PRIMARY_RADIUS_DERIV]=
+			uniform_rand(0, 100)*__parameters[PRIMARY_RADIUS];
+		__parameters[SECONDARY_RADIUS]=
+			uniform_rand(0, __parameters[SEMIMAJOR]/2.44
+							*std::pow(__parameters[SECONDARY_MASS]
+									  /__parameters[PRIMARY_MASS], 1.0/3.0));
+		__parameters[SECONDARY_RADIUS_DERIV]=
+			uniform_rand(0, 100)*__parameters[SECONDARY_RADIUS];
+		__parameters[PRIMARY_CORE_RADIUS]=uniform_rand(0, 1)
+										  *__parameters[PRIMARY_RADIUS];
+		__parameters[PRIMARY_CORE_RADIUS_DERIV]=
+			uniform_rand(0, 100)*__parameters[PRIMARY_CORE_RADIUS];
+		__parameters[SECONDARY_CORE_RADIUS]=uniform_rand(0, 1)
+										  *__parameters[SECONDARY_RADIUS];
+		__parameters[SECONDARY_CORE_RADIUS_DERIV]=
+			uniform_rand(0, 100)*__parameters[SECONDARY_CORE_RADIUS];
+		__parameters[PRIMARY_CORE_MASS]=uniform_rand(0, 1)
+										*__parameters[PRIMARY_MASS];
+		__parameters[PRIMARY_CORE_MASS_DERIV]=
+			uniform_rand(-100, 100)*__parameters[PRIMARY_CORE_MASS];
+		__parameters[SECONDARY_CORE_MASS]=uniform_rand(0, 1)
+										  *__parameters[SECONDARY_MASS];
+		__parameters[SECONDARY_CORE_MASS_DERIV]=
+			uniform_rand(-100, 100)*__parameters[SECONDARY_CORE_MASS];
+		__parameters[PRIMARY_ENV_INERTIA]=
+			std::pow(10.0, uniform_rand(-5, 0))
+			*(__parameters[PRIMARY_MASS]-__parameters[PRIMARY_CORE_MASS])
+			*std::pow(__parameters[PRIMARY_RADIUS], 2);
+		__parameters[PRIMARY_ENV_INERTIA_DERIV]=
+			uniform_rand(0, 100)*__parameters[PRIMARY_ENV_INERTIA];
+		__parameters[PRIMARY_CORE_INERTIA]=
+			std::pow(10.0, uniform_rand(-5, 0))
+			*__parameters[PRIMARY_CORE_MASS]
+			*std::pow(__parameters[PRIMARY_CORE_RADIUS], 2);
+		__parameters[PRIMARY_CORE_INERTIA_DERIV]=
+			uniform_rand(0, 100)*__parameters[PRIMARY_CORE_INERTIA];
+		__parameters[SECONDARY_ENV_INERTIA]=
+			std::pow(10.0, uniform_rand(-5, 0))
+			*(__parameters[SECONDARY_MASS]-__parameters[SECONDARY_CORE_MASS])
+			*std::pow(__parameters[SECONDARY_RADIUS], 2);
+		__parameters[SECONDARY_ENV_INERTIA_DERIV]=
+			uniform_rand(0, 100)*__parameters[SECONDARY_ENV_INERTIA];
+		__parameters[SECONDARY_CORE_INERTIA]=
+			std::pow(10.0, uniform_rand(-5, 0))
+			*__parameters[SECONDARY_CORE_MASS]
+			*std::pow(__parameters[SECONDARY_CORE_RADIUS], 2);
+		__parameters[SECONDARY_CORE_INERTIA_DERIV]=
+			uniform_rand(0, 100)*__parameters[SECONDARY_CORE_INERTIA];
+		__parameters[PRIMARY_INCLINATION_ENV]=
+			(evol_mode==BINARY && !zero_primary_inclinations
+			 ? uniform_rand(0, M_PI)
+			 : 0);
+		__parameters[PRIMARY_INCLINATION_CORE]=
+			(match_primary_inclinations || zero_primary_inclinations
+			 ? __parameters[PRIMARY_INCLINATION_ENV]
+			 : uniform_rand(0, M_PI));
+		__parameters[SECONDARY_INCLINATION_ENV]=
+			(zero_secondary_inclinations ? 0 : uniform_rand(0, M_PI));
+		__parameters[SECONDARY_INCLINATION_CORE]=
+			(match_secondary_inclinations || zero_secondary_inclinations
+			 ? __parameters[SECONDARY_INCLINATION_ENV]
+			 : uniform_rand(0, M_PI));
+		__parameters[PRIMARY_PERIAPSIS_CORE]=(match_primary_periapses
+											  ? 0
+											  : uniform_rand(0, 2.0*M_PI));
+		__parameters[SECONDARY_PERIAPSIS_ENV]=(zero_secondary_periapses
+											   ? 0
+											   : uniform_rand(0, 2.0*M_PI));
+		__parameters[SECONDARY_PERIAPSIS_CORE]=
+			(zero_secondary_periapses || match_secondary_periapses
+			 ? __parameters[SECONDARY_PERIAPSIS_ENV]
+			 : uniform_rand(0, 2.0*M_PI));
+		__worb=orbital_angular_velocity(__parameters[PRIMARY_MASS],
+										__parameters[SECONDARY_MASS],
+										__parameters[SEMIMAJOR]);
+		__parameters[DISK_LOCK_FREQ]=std::pow(10.0, uniform_rand(-1, 1))
+									 *__worb;
+		switch(evol_mode) {
+			case LOCKED_SURFACE_SPIN :
+				__parameters[DISK_DISSIPATION_AGE]=
+					uniform_rand(__parameters[AGE], 10);
+				__parameters[SECONDARY_FORMATION_AGE]=
+					uniform_rand(__parameters[DISK_DISSIPATION_AGE], 10);
+				break;
+			case BINARY :
+				__parameters[DISK_DISSIPATION_AGE]=
+					uniform_rand(0, __parameters[AGE]);
+				__parameters[SECONDARY_FORMATION_AGE]=
+					uniform_rand(__parameters[DISK_DISSIPATION_AGE],
+								 __parameters[AGE]);
+				break;
+			case SINGLE :
+				__parameters[DISK_DISSIPATION_AGE]=
+					uniform_rand(0, __parameters[AGE]);
+				__parameters[SECONDARY_FORMATION_AGE]=
+					uniform_rand(__parameters[AGE], 10);
+				break;
+			default : assert(false);
+		}
+		for(unsigned i=0; i<__zones.size(); ++i) {
+			__parameters[FIRST_ZONE_ANGVEL+i]=
+				std::pow(10.0, uniform_rand(-1, 1))*__worb;
+			for(int m=-2; m<=2; ++m)
+				for(int mp=-2; mp<=0; ++mp) {
+					__lags[i](m, mp)=
+						(uniform_rand(0, 1)<0.2 ? 0 : 
+						 std::pow(10.0, uniform_rand(-6, 0)));
+					__lags[i](-m, -mp)=-__lags[i](m, mp);
+				}
+			__lags[i](0,0)=0;
+		}
+		for(unsigned i=0; i<__bodies.size(); ++i) {
+			__parameters[FIRST_WIND_STRENGTH+i]=uniform_rand(0,1);
+			__parameters[FIRST_WIND_SAT_FREQ+i]=
+				std::pow(10.0, uniform_rand(-1, 1))*__worb;
+			__parameters[FIRST_COUPLING_TIMESCALE+i]=
+				std::pow(10.0, uniform_rand(-6,1));
+		}
+		create_system(evol_mode);
+		if(evol_mode==BINARY) lock_zones(min_locked_zones, max_locked_zones);
+	} while(__num_locked_zones<min_locked_zones);
 }
 
 void add_zone_quantity(std::ostream &os, const std::string &name,

@@ -60,7 +60,9 @@ Eigen::Vector3d ExponentialDecayDiffRotBody::angular_momentum_coupling(
 #endif
 	if(deriv==Dissipation::ORBITAL_FREQUENCY
 			|| deriv==Dissipation::ECCENTRICITY
-			|| deriv==Dissipation::SEMIMAJOR)
+			|| deriv==Dissipation::SEMIMAJOR
+			|| deriv==Dissipation::AGE
+			|| deriv==Dissipation::RADIUS)
 		return Eigen::Vector3d(0, 0, 0);
 	Eigen::Vector3d &result=torque_entry(top_zone_index, deriv,
 										 with_respect_to_top);
