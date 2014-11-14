@@ -19,7 +19,7 @@ ALL_EXEC=test_InterpolatingFunctionALGLIB test_EvolvingStellarQuantity \
 		 test_Star test_Planet test_StellarEvolution test_StellarSystem \
 		 test_EccentricityExpansionCoefficients test_DissipatingZone \
 		 test_DissipatingBody test_BinarySystem
-CPPFLAGS = -g -Wall -I../ -I/opt/local/include -L/opt/local/lib -D STANDALONE 
+CPPFLAGS = -g -Wall -O0 -I../ -I/opt/local/include -L/opt/local/lib -D STANDALONE 
 
 default: all
 	

@@ -80,6 +80,8 @@ void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 			spin_freq_mult=1;
 			orb_freq_mult/=2;
 		}
+		if(__parameters[SystemParameters::FIRST_INCLINATION+*unlocked_i]==0)
+			spin_freq_mult=orb_freq_mult=1;
 		__parameters[SystemParameters::FIRST_ZONE_ANGVEL+*unlocked_i]=
 			__worb*static_cast<double>(orb_freq_mult)
 			/static_cast<double>(spin_freq_mult);
