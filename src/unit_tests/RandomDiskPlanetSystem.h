@@ -108,7 +108,7 @@ private:
 
 	///Double the lag of all terms which match the given term, if any terms
 	///are zero, random values are set.
-	void double_lags(int orb_freq_mult, int spin_freq_mult, Lags &lags);
+	void increase_lags(int orb_freq_mult, int spin_freq_mult, Lags &lags);
 
 	///Removes anything dynamically allocated.
 	void cleanup();

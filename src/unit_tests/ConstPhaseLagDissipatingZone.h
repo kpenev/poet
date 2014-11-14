@@ -98,7 +98,8 @@ public:
 		if(deriv!=Dissipation::NO_DERIV) return 0;
 		if(lock_held()(orbital_frequency_multiplier,
 					   spin_frequency_multiplier)) {
-			above_lock_value=-__lags(spin_frequency_multiplier,
+			above_lock_value=(spin_frequency_multiplier>0 ? -1 : 1)
+							 *__lags(spin_frequency_multiplier,
 									 orbital_frequency_multiplier);
 			return -above_lock_value;
 		}

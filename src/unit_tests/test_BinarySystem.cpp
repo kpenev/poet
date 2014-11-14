@@ -16,7 +16,6 @@ void test_BinarySystem::test_orbit_diff_eq(
 		<< " created by the binary system " << (diff_eq ? "have" : "has")
 		<< " a different size (" << to_compare->size() << ") than expected (" 
 		<< expected.size() << ")";
-	std::cerr << msg.str() << std::endl;
 	TEST_ASSERT_MSG(to_compare->size()==expected.size(), msg.str().c_str());
 	for(unsigned i=0; i<expected.size(); ++i) {
 		msg.str("");
@@ -25,7 +24,6 @@ void test_BinarySystem::test_orbit_diff_eq(
 			<< (diff_eq ? "differential equation[" : "orbit[")
 			<< i << "]=" << expected[i] << ", got: " << (*to_compare)[i]
 			<< ", difference: " << (*to_compare)[i] - expected[i];
-		std::cerr << msg.str() << std::endl;
 		TEST_ASSERT_MSG(check_diff((*to_compare)[i], expected[i],
 								   1e-10, 1e-15), msg.str().c_str());
 	}
@@ -37,8 +35,8 @@ Lags test_BinarySystem::signed_lags(const RandomDiskPlanetSystem &system,
 {
 	using namespace SystemParameters;
 	Lags result;
-	for(int m=-2; m<=2; ++m)
-		for(int mp=-2; mp<=2; ++mp) {
+	for(int mp=-2; mp<=2; ++mp) 
+		for(int m=-2; m<=2; ++m) {
 			double forcing_freq=
 				system.orbital_frequency()*mp
 				-
@@ -238,6 +236,8 @@ void test_BinarySystem::test_fill_orbit_binary_locks()
 {
 	using namespace SystemParameters;
 	for(unsigned i=0; i<__ntests; ++i) {
+		std::cerr << "\rStarting test#" << i;
+		std::cerr.flush();
 		RandomDiskPlanetSystem system_maker(BINARY, 1, 1);
 		std::valarray<double> 
 			expected_orbit(13-system_maker.num_locked_zones());
@@ -272,6 +272,7 @@ void test_BinarySystem::test_fill_orbit_binary_locks()
 				*system_maker.quantity(SECONDARY_ANGVEL_CORE);
 		test_orbit_diff_eq(system_maker, expected_orbit);
 	}
+	std::cerr << std::endl;
 }
 
 void test_BinarySystem::test_locked_surface_diff_eq()
@@ -396,7 +397,6 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 			   r2=system_maker.quantity(SECONDARY_RADIUS),
 			   a=system_maker.quantity(SEMIMAJOR);
 		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind) {
-			const Lags &lag=system_maker.lags(zone_ind);
 			double power_norm, torque_norm;
 			if(zone_ind<2) {
 				power_norm=power_norm_Lai(m1, m2, r1, a);
@@ -405,9 +405,10 @@ void test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq()
 				power_norm=power_norm_Lai(m2, m1, r2, a);
 				torque_norm=torque_norm_Lai(m1, r2, a);
 			}
-			orbit_power-=power_norm*dimensionless_power_Lai(0, lag);
+			Lags zone_lags=signed_lags(system_maker, zone_ind);
+			orbit_power-=power_norm*dimensionless_power_Lai(0, zone_lags);
 			expected_diff_eq[9+zone_ind]=
-				torque_norm*dimensionless_torque_z_Lai(0, lag);
+				torque_norm*dimensionless_torque_z_Lai(0, zone_lags);
 		}
 		double w1=system_maker.quantity(PRIMARY_ANGVEL_ENV),
 			   w2=system_maker.quantity(PRIMARY_ANGVEL_CORE),
@@ -486,7 +487,7 @@ void test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq()
 			   orbital_angmom=(m1*m2)/(m1+m2)*std::pow(a,2)*worb,
 			   orbit_rotation=0;
 		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind) {
-			const Lags &lag=system_maker.lags(zone_ind);
+			const Lags &lag=signed_lags(system_maker, zone_ind);
 			double power_norm, torque_norm,
 				   inclination=system_maker.quantity(
 						  static_cast<Quantity>(FIRST_INCLINATION+zone_ind)),
@@ -674,17 +675,17 @@ test_BinarySystem::test_BinarySystem(unsigned ntests,
 			const std::string &eccentricity_expansion) : __ntests(ntests)
 {
 	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
-//	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
-//	TEST_ADD(test_BinarySystem::test_fill_orbit_single);
-//	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_no_locks);
+	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
+	TEST_ADD(test_BinarySystem::test_fill_orbit_single);
+	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_no_locks);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_locks);
-//	TEST_ADD(test_BinarySystem::test_locked_surface_diff_eq);
-//	TEST_ADD(test_BinarySystem::test_single_aligned_diff_eq);
-//	TEST_ADD(test_BinarySystem::test_single_zero_periapsis_diff_eq);
-//	TEST_ADD(
-//		test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq);
-//	TEST_ADD(
-//		test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq);
+	TEST_ADD(test_BinarySystem::test_locked_surface_diff_eq);
+	TEST_ADD(test_BinarySystem::test_single_aligned_diff_eq);
+	TEST_ADD(test_BinarySystem::test_single_zero_periapsis_diff_eq);
+	TEST_ADD(
+		test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq);
+	TEST_ADD(
+		test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq);
 //	TEST_ADD(test_BinarySystem::test_binary_1lock_diff_eq);
 }
 
@@ -695,7 +696,7 @@ int main()
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
-	test_BinarySystem tests(1);
+	test_BinarySystem tests(10000);
 	return (tests.run(output, true) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #endif

@@ -135,18 +135,29 @@ void DissipatingZone::fix_forcing_frequency(const SpinOrbitLockInfo &limit,
 		int orbital_frequency_multiplier, int spin_frequency_multiplier,
 		double &forcing_frequency)
 {
+#ifdef DEBUG
+	assert(limit.spin_frequency_multiplier()==1 ||
+			limit.spin_frequency_multiplier()==2);
+#endif
+	if(limit.term(orbital_frequency_multiplier, spin_frequency_multiplier)) {
+		if(spin_frequency_multiplier*limit.lock_direction()
+		   *forcing_frequency>0) 
+			forcing_frequency=
+				(spin_frequency_multiplier*limit.lock_direction()>0 ? -1 : 1)
+				*std::numeric_limits<double>::epsilon();
+		return;
+	}
 	int expected_sign=limit.spin_frequency_multiplier()*
 		(orbital_frequency_multiplier*limit.spin_frequency_multiplier()
 		 -
 		 limit.orbital_frequency_multiplier()*spin_frequency_multiplier);
-	if(expected_sign*forcing_frequency>0) return;
+	if(expected_sign*limit.lock_direction()>0) return;
+	if(forcing_frequency*expected_sign>0) return;
 #ifdef DEBUG
 	assert(limit.lock_direction());
 #endif
-	if(limit.lock_direction()*spin_frequency_multiplier*expected_sign<=0)
-		forcing_frequency=(expected_sign>0
-						   ? std::numeric_limits<double>::epsilon()
-						   : -std::numeric_limits<double>::epsilon());
+	forcing_frequency=std::numeric_limits<double>::epsilon()
+		*limit.lock_direction();
 }
 
 double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
@@ -162,7 +173,7 @@ double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
 						spin_frequency_multiplier*spin_frequency();
 	fix_forcing_frequency(__lock, orbital_frequency_multiplier,
 						  spin_frequency_multiplier, forcing_freq);
-	if(!__lock)
+	if(!__lock && __other_lock.spin_frequency_multiplier()!=0)
 		fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
 				spin_frequency_multiplier, forcing_freq);
 	return forcing_freq;

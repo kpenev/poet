@@ -1,4 +1,4 @@
-break BinarySystem.cpp:1407
+break BinarySystem.cpp:1424
 commands 1
 bt
 print "check for lock"
@@ -7,49 +7,22 @@ print spin_freq_mult
 print body_index
 print zone_index
 print original_angmom
-c
-end
-
-break BinarySystem.cpp:1419
-commands 2
-print "angular momentum"
-print zone_ind
-print zone.angular_momentum()
+print body.zone(zone_index).__lock
+print __semimajor
+print __body1.mass()
+print __body2.mass()
 c
 end
 
 break BinarySystem.cpp:1429
-commands 3
+commands 2
 print "above lock fraction"
 print above_lock_fraction
 c
 end
 
-break BinarySystem.cpp:1436
-commands 4
-print spin_angmom.size()
-print inclinations.size()
-print periapses.size()
-print spin_angmom[0]
-print spin_angmom[1]
-print spin_angmom[2]
-print spin_angmom[3]
-c
-end
-
-break RandomDiskPlanetSystem.cpp:84
-commands 5
-print "num locked; num_to_lock; to_lock_zone_ind; orb_mult; spin_mult"
-print __num_locked_zones
-print num_to_lock
-print *unlocked_i
-print orb_freq_mult
-print spin_freq_mult
-c
-end
-
-break RandomDiskPlanetSystem.cpp:103
-commands 6
+break RandomDiskPlanetSystem.cpp:100
+commands 3
 print "Increasing dissipation"
 print __num_locked_zones
 print __system->number_locked_zones()
@@ -57,28 +30,34 @@ print num_to_lock
 c
 end
 
-break BinarySystem.cpp:398
-commands 7
-print deriv
-print "matrix(0,0)="
-print matrix.operator()(0,0)
-print "tidal_torque_z_above[0]="
-print tidal_torque_z_above[0]
-print "tidal_torque_z_below[0]="
-print tidal_torque_z_below[0]
+break DissipatingZone.cpp:328 if this->__lock.__lock_direction==0
+commands 4
+print "Configuring locked zone"
+print orbital_frequency
+print eccentricity
+print orbital_angmom
+print spin_angmom
+print inclination
+print periapsis
+print __orbital_angmom
+print __orbital_frequency
+print __spin_frequency
+print __angular_momentum
 c
 end
 
-break ConstPhaseLagDissipatingZone.h:103
-commands 8
-print "phase_lag("
-print orbital_frequency_multiplier
-print spin_frequency_multiplier
-print forcing_frequency
-print above_lock_value
+break DissipatingZone.cpp:404 if deriv_ind==0 && mp==-2 && m==1 && __lock.__lock_direction==0
+commands 5
+print __lock
+print mp
+print m
+print term_torque_z
+print mod_phase_lag_below
+print mod_phase_lag_above
+print __torque_z[deriv_ind]
+print __torque_z[deriv_ind+1]
 c
 end
-
 
 run
 bt

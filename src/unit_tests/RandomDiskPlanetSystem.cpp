@@ -4,7 +4,6 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 {
 	using namespace SystemParameters;
 	std::valarray<double> angmom(__zones.size());
-	unsigned angmom_ind=0;
 	for(unsigned i=0; i<__zones.size(); ++i) {
 		__zones[i]=new ConstPhaseLagDissipatingZone(__lags[i],
 				__parameters[FIRST_ZONE_INERTIA+i],
@@ -14,8 +13,8 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 				__parameters[FIRST_ZONE_INERTIA_DERIV+i],
 				__parameters[FIRST_ZONE_RADIUS_DERIV+i],
 				(i%2==0 ? 0 : __parameters[FIRST_CORE_MASS_DERIV+i/2]));
-		angmom[angmom_ind++]=__parameters[FIRST_ZONE_INERTIA+i]
-							 *__parameters[FIRST_ZONE_ANGVEL+i];
+		angmom[i]=__parameters[FIRST_ZONE_INERTIA+i]
+				  *__parameters[FIRST_ZONE_ANGVEL+i];
 	}
 	for(unsigned i=0; i<__bodies.size(); ++i)
 		__bodies[i]=new TwoZoneBody(*__zones[2*i], *__zones[2*i+1],
@@ -46,17 +45,17 @@ void RandomDiskPlanetSystem::create_system(EvolModeType evol_mode)
 	__bodies[1]->detect_saturation();
 }
 
-void RandomDiskPlanetSystem::double_lags(int orb_freq_mult,
+void RandomDiskPlanetSystem::increase_lags(int orb_freq_mult,
 										 int spin_freq_mult, Lags &lags)
 {
 	SpinOrbitLockInfo term(orb_freq_mult, spin_freq_mult);
 	for(int m=-2; m<=2; ++m)
 		for(int mp=-2; mp<=0; ++mp) 
 			if(term.term(mp, m)) {
-				lags(m, mp)*=2.0;
+				lags(m, mp)*=10.0;
 				if(lags(m, mp)==0) 
 					lags(m, mp)=std::pow(10.0, uniform_rand(-6, 0));
-				lags(-m, -mp)=-lags(m, mp);
+				lags(-m, -mp)=lags(m, mp);
 			}
 	lags(0,0)=0;
 }
@@ -76,9 +75,8 @@ void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 		std::list<unsigned>::iterator unlocked_i=still_unlocked.begin();
 		for(unsigned to_lock=std::rand()%still_unlocked.size(); to_lock>0;
 				--to_lock) ++unlocked_i;
-		int orb_freq_mult=rand()%4-2, spin_freq_mult=rand()%2+1;
-		if(orb_freq_mult==0) orb_freq_mult=2;
-		if(spin_freq_mult==2 && orb_freq_mult%2==0) {
+		int orb_freq_mult=4*(rand()%2)-2, spin_freq_mult=rand()%2+1;
+		if(spin_freq_mult==2) {
 			spin_freq_mult=1;
 			orb_freq_mult/=2;
 		}
@@ -99,9 +97,7 @@ void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 		__system->check_for_lock(orb_freq_mult, spin_freq_mult,
 								 *unlocked_i/2, *unlocked_i%2);
 		while(__system->number_locked_zones()!=__num_locked_zones+1) {
-			__zones[*unlocked_i]->describe(std::cerr);
-			std::cerr << std::endl;
-			double_lags(orb_freq_mult, spin_freq_mult,
+			increase_lags(orb_freq_mult, spin_freq_mult,
 						__zones[*unlocked_i]->lags());
 			__system->check_for_lock(orb_freq_mult, spin_freq_mult,
 								     *unlocked_i/2, *unlocked_i%2);
@@ -249,7 +245,7 @@ RandomDiskPlanetSystem::RandomDiskPlanetSystem(EvolModeType evol_mode,
 					__lags[i](m, mp)=
 						(uniform_rand(0, 1)<0.2 ? 0 : 
 						 std::pow(10.0, uniform_rand(-6, 0)));
-					__lags[i](-m, -mp)=-__lags[i](m, mp);
+					__lags[i](-m, -mp)=__lags[i](m, mp);
 				}
 			__lags[i](0,0)=0;
 		}
