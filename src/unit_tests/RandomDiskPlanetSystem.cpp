@@ -298,7 +298,8 @@ std::ostream &operator<<(std::ostream &os,
 	   << "\tTplanet=" << system.quantity(SECONDARY_FORMATION_AGE)
 	   << std::endl
 	   << "\ta=" << system.quantity(SEMIMAJOR) << std::endl
-	   << "\te=" << system.quantity(ECCENTRICITY) << std::endl;
+	   << "\te=" << system.quantity(ECCENTRICITY) << std::endl
+	   << "\tworb=" << system.orbital_frequency() << std::endl;
 	add_zone_quantity(os, "zone masses", system, FIRST_ZONE_MASS);
 	add_body_quantity(os, "core mass derivs", system, FIRST_CORE_MASS_DERIV);
 	add_zone_quantity(os, "zone radii", system, FIRST_ZONE_RADIUS);

@@ -35,17 +35,31 @@ private:
 			bool diff_eq=false);
 
 	///\brief Returns the same lags as on input, but with the signs of those
-	///with negative forcing frequency flipped.
+	///with negative forcing frequency flipped, and locked terms zero.
 	Lags signed_lags(const RandomDiskPlanetSystem &system, unsigned zone_ind)
 		const;
+
+	///\brief Returns the same lags as on input for locked terms and zero for
+	///all else.
+	Lags locked_lags_below(const RandomDiskPlanetSystem &system,
+						   unsigned zone_ind) const;
 
 	///Fill tidal torques and zone angular velocities in a coordinate
 	///system with y the along orbital angular momentum and x such that
 	///positive inclination zones have positive x angmom.
 	void fill_torques_angvel_in_orbit_coord(
+			///The system whose torque we need.
 			const RandomDiskPlanetSystem &system,
-			std::vector<Eigen::Vector2d> &tidal_torques,
-			std::vector<Eigen::Vector2d> &angular_velocities) const;
+
+			///Tidal torques for all zones excluding locked terms.
+			std::vector<Eigen::Vector2d> &nonlocked_tidal_torques,
+
+			///Angular velocities of all zones.
+			std::vector<Eigen::Vector2d> &angular_velocities,
+			
+			///The tidal torque on the locked zone from the locked terms
+			///only.
+			Eigen::Vector2d &locked_tidal_torque) const;
 
 	///Fill non-tidal torques acting on each zone in the same coordinate
 	///system as fill_torques_angmom_in_orbit_coord()

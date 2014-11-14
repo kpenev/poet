@@ -37,21 +37,39 @@ Lags test_BinarySystem::signed_lags(const RandomDiskPlanetSystem &system,
 	Lags result;
 	for(int mp=-2; mp<=2; ++mp) 
 		for(int m=-2; m<=2; ++m) {
-			double forcing_freq=
-				system.orbital_frequency()*mp
-				-
-				system.quantity(
+			if(system.lock(zone_ind)(mp, m)) result(m, mp)=0;
+			else {
+				double forcing_freq=
+					system.orbital_frequency()*mp
+					-
+					system.quantity(
 						static_cast<Quantity>(FIRST_ZONE_ANGVEL+zone_ind))*m;
-			result(m, mp)=(forcing_freq<0 ? -1.0 : 1.0)
-						  *system.lags(zone_ind)(m, mp);
+				result(m, mp)=(forcing_freq<0 ? -1.0 : 1.0)
+							  *system.lags(zone_ind)(m, mp);
+			}
 		}
+	return result;
+}
+
+Lags test_BinarySystem::locked_lags_below(
+		const RandomDiskPlanetSystem &system, unsigned zone_ind) const
+{
+	using namespace SystemParameters;
+	Lags result;
+	assert(system.lock(zone_ind));
+	for(int mp=-2; mp<=2; ++mp) 
+		for(int m=-2; m<=2; ++m)
+			if(system.lock(zone_ind)(mp, m)) 
+				result(m, mp)=(m<0 ? 1 : -1)*system.lags(zone_ind)(m, mp);
+			else result(m, mp)=0;
 	return result;
 }
 
 void test_BinarySystem::fill_torques_angvel_in_orbit_coord(
 		const RandomDiskPlanetSystem &system,
-		std::vector<Eigen::Vector2d> &tidal_torques,
-		std::vector<Eigen::Vector2d> &angular_velocities) const
+		std::vector<Eigen::Vector2d> &nonlocked_tidal_torques,
+		std::vector<Eigen::Vector2d> &angular_velocities,
+		Eigen::Vector2d &locked_tidal_torque) const
 {
 	using namespace SystemParameters;
 	for(unsigned zone_ind=0; zone_ind<4; ++zone_ind) {
@@ -75,8 +93,19 @@ void test_BinarySystem::fill_torques_angvel_in_orbit_coord(
 			   cos_inc=std::cos(inclination);
 		x_torque*=torque_norm;
 		z_torque*=torque_norm;
-		tidal_torques[zone_ind](0)=-x_torque*cos_inc+z_torque*sin_inc;
-		tidal_torques[zone_ind](1)=x_torque*sin_inc+z_torque*cos_inc;
+		nonlocked_tidal_torques[zone_ind](0)=
+			-x_torque*cos_inc+z_torque*sin_inc;
+		nonlocked_tidal_torques[zone_ind](1)=
+			x_torque*sin_inc+z_torque*cos_inc;
+		if(system.lock(zone_ind)) {
+			lags=locked_lags_below(system, zone_ind);
+			x_torque=
+				torque_norm*dimensionless_torque_x_Lai(inclination, lags);
+			z_torque=
+				torque_norm*dimensionless_torque_z_Lai(inclination, lags);
+			locked_tidal_torque(0)=-x_torque*cos_inc+z_torque*sin_inc;
+			locked_tidal_torque(1)=x_torque*sin_inc+z_torque*cos_inc;
+		}
 		angular_velocities[zone_ind]=
 			system.quantity(
 					static_cast<Quantity>(FIRST_ZONE_ANGVEL+zone_ind))
@@ -628,55 +657,65 @@ void test_BinarySystem::test_binary_1lock_diff_eq()
 		RandomDiskPlanetSystem system_maker(BINARY, 1, 1, true, false, false,
 											true, false, false, true, true);
 		std::valarray<double> expected_diff_eq(0.0, 13);
-		std::vector<Eigen::Vector2d> tidal_torques(4), nontidal_torques(4),
-			angular_velocities(4);
-		fill_torques_angvel_in_orbit_coord(system_maker, tidal_torques,
-										   angular_velocities);
+		std::vector<Eigen::Vector2d> nonlocked_tidal_torques(4),
+									 nontidal_torques(4),
+									 angular_velocities(4);
+		Eigen::Vector2d locked_tidal_torque;
+		fill_torques_angvel_in_orbit_coord(system_maker,
+										   nonlocked_tidal_torques,
+										   angular_velocities,
+										   locked_tidal_torque);
 		fill_nontidal_torques_in_orbit_coord(system_maker,angular_velocities,
 											 nontidal_torques);
 		Eigen::Vector2d orbit_torque(0, 0);
 		int locked_zone_ind=-1;
-		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind)
-			if(!system_maker.lock(zone_ind))
-				orbit_torque-=tidal_torques[zone_ind];
-			else locked_zone_ind=zone_ind;
+		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind) {
+			if(system_maker.lock(zone_ind)) locked_zone_ind=zone_ind;
+			orbit_torque-=nonlocked_tidal_torques[zone_ind];
+		}
 		Eigen::Vector2d locked_spin_dir;
-		if(locked_zone_ind>0)
+		if(locked_zone_ind>=0)
 			locked_spin_dir=angular_velocities[locked_zone_ind]
 							/angular_velocities[locked_zone_ind].norm();
 		double m1=system_maker.quantity(PRIMARY_MASS),
 			   m2=system_maker.quantity(SECONDARY_MASS),
 			   a=system_maker.quantity(SEMIMAJOR),
-			   locked_inertia=(locked_zone_ind>0
+			   locked_inertia=(locked_zone_ind>=0
 					   		   ? system_maker.quantity(
 								   static_cast<Quantity>(FIRST_ZONE_INERTIA
 									   					 +locked_zone_ind))
 							   : NaN),
 			   orbit_coef=3.0*(m1+m2)/(m1*m2*std::pow(a, 2));
-		
-		if(locked_zone_ind>0) {
-			double lock_coef=-
+		std::vector<Eigen::Vector2d> zone_torques(4);
+		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind)
+			zone_torques[zone_ind]=nonlocked_tidal_torques[zone_ind]
+								   +
+								   nontidal_torques[zone_ind];
+		if(locked_zone_ind>=0) {
+			double lock_coef=
 				(
-				 nontidal_torques[locked_zone_ind].dot(locked_spin_dir)
+				 zone_torques[locked_zone_ind].dot(locked_spin_dir)
+				 /locked_inertia
+				 -
+				 system_maker.quantity(
+					 static_cast<Quantity>(FIRST_ZONE_ANGVEL
+						 				   +locked_zone_ind))
+				 *system_maker.quantity(
+					 static_cast<Quantity>(FIRST_ZONE_INERTIA_DERIV
+						 				   +locked_zone_ind))
 				 /locked_inertia
 				 +
 				 orbit_coef*orbit_torque(1)
 				)
 				/
 				(
-				 tidal_torques[locked_zone_ind].dot(locked_spin_dir)
-				 /locked_inertia
-				 +
-				 orbit_coef*tidal_torques[locked_zone_ind](1)
+				 orbit_coef*locked_tidal_torque(1)
+				 -
+				 locked_tidal_torque.dot(locked_spin_dir)/locked_inertia
 				);
-			tidal_torques[locked_zone_ind]*=lock_coef;
-			orbit_torque-=tidal_torques[locked_zone_ind];
+			zone_torques[locked_zone_ind]+=lock_coef*locked_tidal_torque;
+			orbit_torque-=lock_coef*locked_tidal_torque;
 		}
-		std::vector<Eigen::Vector2d> zone_torques(4);
-		for(unsigned zone_ind=0; zone_ind<4; ++zone_ind)
-			zone_torques[zone_ind]=tidal_torques[zone_ind]
-								   +
-								   nontidal_torques[zone_ind];
 		fill_diff_eq(system_maker, orbit_torque, zone_torques,
 					 expected_diff_eq);
 		test_orbit_diff_eq(system_maker, expected_diff_eq, true);
@@ -704,7 +743,7 @@ test_BinarySystem::test_BinarySystem(unsigned ntests,
 #ifdef STANDALONE
 int main()
 {
-	std::srand(0);
+	std::srand(7);
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);

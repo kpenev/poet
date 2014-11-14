@@ -361,10 +361,10 @@ void DissipatingBody::correct_orbit_torque(
 								__orbit_torque_correction[locked_zone_index],
 								static_cast<Dissipation::Derivative>(deriv));
 				} else __orbit_torque[deriv]+=correction;
-				__orbit_torque[deriv]+=
-					above_lock_fractions[deriv][locked_zone_index]
-					*__orbit_torque_correction[locked_zone_index];
-
+				if(deriv!=Dissipation::NO_DERIV)
+					__orbit_torque[deriv]+=
+						above_lock_fractions[deriv][locked_zone_index]
+						*__orbit_torque_correction[locked_zone_index];
 			}
 		}
 	}
