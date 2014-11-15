@@ -112,6 +112,9 @@ public:
 	double outer_mass(int deriv_order=0) const
 	{return current_age_quantity(MASS, deriv_order);}
 
+	///No dissipation in the core.
+	bool dissipative() {return false;} 
+
 	~YRECCore() {reset();}
 };
 

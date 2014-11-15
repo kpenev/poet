@@ -70,6 +70,10 @@ Eigen::Vector3d ExponentialDecayDiffRotBody::angular_momentum_coupling(
 	const DissipatingZone &zone1=zone(top_zone_index),
 						  &zone2=zone(top_zone_index+1);
 	double i1=zone1.moment_of_inertia(), i2=zone2.moment_of_inertia();
+	if(i1==0 || i2==0) {
+		result.setZero();
+		return result;
+	}
 	if(deriv==Dissipation::INCLINATION || deriv==Dissipation::PERIAPSIS)
 		result=zone_to_zone_transform(
 				zone2, zone1, Eigen::Vector3d(0, 0, zone2.spin_frequency()),

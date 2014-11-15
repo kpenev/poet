@@ -28,15 +28,7 @@ public:
 			double forcing_frequency,
 			Dissipation::Derivative deriv,
 			double &above_lock_value) const
-	{
-		if(deriv!=Dissipation::NO_DERIV) return 0;
-		if(forcing_frequency>0) return 1;
-		else if(forcing_frequency<0) return -1;
-		else  {
-			above_lock_value=(spin_frequency_multiplier>0 ? -1 : 1);
-			return -above_lock_value;
-		}
-	}
+	{return 0;}
 
 	///See DissipatingZone::love_coefficient(), always zero.
 	double love_coefficient(int, int, Dissipation::Derivative) const
@@ -59,6 +51,9 @@ public:
 	///The mass of the planet.
 	double outer_mass(int deriv_order=0) const
 	{return (deriv_order==0 ? __mass : 0);}
+
+	///No dissipation.
+	bool dissipative() {return false;}
 };
 
 /**\brief Single zone non-evolving planets with huge dissipation, so they
@@ -91,6 +86,55 @@ public:
 	double angular_momentum_loss(
 			Dissipation::Derivative =Dissipation::NO_DERIV) const
 	{return 0;}
+
+#ifdef DEBUG
+	void configure(
+			///The age to set the body to.
+			double age,
+
+			///The mass of the second body in the system.
+			double companion_mass,
+
+			///The semimajor axis of the orbit in \f$R_\odot\f$.
+			double semimajor,
+
+			///The eccentricity of the orbit
+			double eccentricity,
+
+			///The spin angular momenta of the non-locked zones of the body
+			///(outermost zone to innermost).
+			const double *spin_angmom,
+
+			///The inclinations of the zones of the body (same order as 
+			///spin_angmom). If NULL, all inclinations are assumed zero.
+			const double *inclination=NULL,
+			
+			///The arguments of periapsis of the zones of the bodies (same
+			///order as spin_angmom). If NULL, all periapses are assumed
+			///zero.
+			const double *periapsis=NULL,
+
+			///If true, the outermost zone's spin is assumed locked to a 
+			///disk and spin_angmom is assumed to start from the next zone.
+			bool locked_surface=false,
+			
+			///If true, the outermost zone's inclination is assumed to be
+			///zero and the inclination argument is assumed to start from the
+			///next zone.
+			bool zero_outer_inclination=false,
+			
+			///If true, the outermost zone's periapsis is assumed to be
+			///zero and the inclination argument is assumed to start from the
+			///next zone.
+			bool zero_outer_periapsis=false)
+	{
+		DissipatingBody::configure(age, companion_mass, semimajor,
+								   eccentricity, spin_angmom, inclination,
+								   periapsis, locked_surface,
+								   zero_outer_inclination,
+								   zero_outer_periapsis);
+	}
+#endif
 
 };
 

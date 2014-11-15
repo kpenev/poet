@@ -56,10 +56,11 @@ void transform_zone_orientation(const ZoneOrientation &zone,
 {
 	Eigen::Vector3d zone_z_dir=zone_to_zone_transform(zone,
 			reference, Eigen::Vector3d(0, 0, 1));
-	inclination=std::atan2(-zone_z_dir[0], zone_z_dir[3]);
-	periapsis=M_PI/2+std::atan2(zone_z_dir[1], -zone_z_dir[0]);
+	inclination=std::atan2(-zone_z_dir[0], zone_z_dir[2]);
+	if(zone_z_dir[1]==0 && zone_z_dir[0]==0) periapsis=0;
+	else periapsis=M_PI/2+std::atan2(zone_z_dir[1], -zone_z_dir[0]);
 #ifdef DEBUG
-	assert(inclination>0);
+	assert(inclination>=0);
 	assert(inclination<M_PI);
 #endif
 }

@@ -292,7 +292,9 @@ private:
 		__default_output_columns,
 		
 		///The default columns in a custom stellar evolution track.
-		__default_track_columns;
+		__default_track_columns,
+		
+		__default_eccentricity_expansion;
 
 	///The command line options which directly specify a value.
 	std::vector<arg_dbl*> __direct_value_options;
@@ -332,10 +334,14 @@ private:
 			 *__serialized_stellar_evolution,
 			 
 			 ///The filename of the custom stellar evolution track.
-			 *__custom_stellar_evolution;
+			 *__custom_stellar_evolution,
+			 
+			 ///\brief The name of the file to read eccentricity expansion
+			 ///coefficients from.
+			 *__eccentricity_expansion;
 
 	void *__argtable[InCol::NUM_INPUT_QUANTITIES+
-		2*CustomStellarEvolution::AGE+9];
+		2*CustomStellarEvolution::AGE+10];
 
 	///A list of the columns in the input file.
 	std::vector<InCol::InputColumns> __input_file_format;
@@ -458,6 +464,11 @@ public:
 	///evolution from/to.
 	const char *serialized_stellar_evolution() const
 	{return __serialized_stellar_evolution->filename[0];}
+
+	///\brief The name of the file to read eccentricity expansion
+	///coefficients from.
+	const char *eccentricity_expansion() const
+	{return __eccentricity_expansion->filename[0];}
 
 	///\brief Whether the planet should start locked to the star.
 	///

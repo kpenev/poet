@@ -238,7 +238,7 @@ double estimate_extremum(double x0, double y0, double x1,
 	}*/
 #endif
 	for(size_t i=0; i<solutions.size(); i++) {
-		if(solutions[i]>=x0 && solutions[i]<=x1) {
+		if(solutions[i]>x0 && solutions[i]<x1) {
 			double x=solutions[i];
 			if(extremum_y!=NULL) {
 				double ax3=a*x*x*x, bx2=b*x*x, cx=c*x;

@@ -68,5 +68,6 @@ void SynchronizedCondition::reached(short deriv_sign, unsigned index)
 #endif
 	StoppingCondition::reached(deriv_sign, index);
 	__system.check_for_lock(__orbital_freq_mult, __spin_freq_mult,
-							(__primary ? 0 : 1), __zone_index);
+							(__primary ? 0 : 1), __zone_index, 
+							(__spin_freq_mult>0 ? -deriv_sign : deriv_sign));
 }

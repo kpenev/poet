@@ -136,7 +136,7 @@ void DissipatingBody::angular_momentum_transfer(
 			|| deriv==Dissipation::PERIAPSIS);
 #endif
 	double dm_dt=inner_zone.outer_mass(1),
-		   lost_spin=(dm_dt>0 ? outer_zone : inner_zone).spin_frequency(),
+		   lost_spin=(dm_dt>=0 ? outer_zone : inner_zone).spin_frequency(),
 		   angmom_transfer=-2.0/3.0*std::pow(inner_zone.outer_radius(), 2)*
 			   lost_spin*dm_dt;
 	if(dm_dt>0) {

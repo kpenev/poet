@@ -27,10 +27,15 @@ double SaturatingSkumanichWindBody::angular_momentum_loss(
 CombinedStoppingCondition *SaturatingSkumanichWindBody::stopping_conditions(
 		BinarySystem &system, bool primary)
 {
+#ifdef DEBUG
+	if(primary) assert(this==&(system.primary()));
+	else assert(this==&(system.secondary()));
+#endif
 	CombinedStoppingCondition *result=new CombinedStoppingCondition();
-	(*result)|=new WindSaturationCondition(
-			*this, (primary ? system.primary() : system.secondary()),
-			primary);
+	if(system.evolution_mode()!=LOCKED_SURFACE_SPIN)
+		(*result)|=new WindSaturationCondition(
+				*this, (primary ? system.secondary() : system.primary()),
+				primary);
 	(*result)|=DissipatingBody::stopping_conditions(system, primary);
 	return result;
 }

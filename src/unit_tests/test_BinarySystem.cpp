@@ -656,7 +656,7 @@ void test_BinarySystem::test_binary_1lock_diff_eq()
 	for(unsigned i=0; i<__ntests; ++i) {
 		RandomDiskPlanetSystem system_maker(BINARY, 1, 1, true, false, false,
 											true, false, false, true, true);
-		std::valarray<double> expected_diff_eq(0.0, 13);
+		std::valarray<double> expected_diff_eq(0.0, 12);
 		std::vector<Eigen::Vector2d> nonlocked_tidal_torques(4),
 									 nontidal_torques(4),
 									 angular_velocities(4);
@@ -692,9 +692,32 @@ void test_BinarySystem::test_binary_1lock_diff_eq()
 								   +
 								   nontidal_torques[zone_ind];
 		if(locked_zone_ind>=0) {
+			double spin_mult=system_maker.lock(locked_zone_ind)
+										 .spin_frequency_multiplier();
+			orbit_coef*=system_maker.lock(locked_zone_ind)
+									.orbital_frequency_multiplier();
+			double numer=(
+					zone_torques[locked_zone_ind].dot(locked_spin_dir)
+					/locked_inertia
+					-
+					system_maker.quantity(
+						static_cast<Quantity>(FIRST_ZONE_ANGVEL
+							+locked_zone_ind))
+					*system_maker.quantity(
+						static_cast<Quantity>(FIRST_ZONE_INERTIA_DERIV
+							+locked_zone_ind))
+					/locked_inertia
+					+
+					orbit_coef*orbit_torque(1)
+					)/system_maker.orbital_frequency(),
+				   denom1=orbit_coef*locked_tidal_torque(1)
+					   	  /system_maker.orbital_frequency(),
+				   denom2=-locked_tidal_torque.dot(locked_spin_dir)*spin_mult
+					   	  /locked_inertia/system_maker.orbital_frequency(),
+				   denom=denom1+denom2;
 			double lock_coef=
 				(
-				 zone_torques[locked_zone_ind].dot(locked_spin_dir)
+				 zone_torques[locked_zone_ind].dot(locked_spin_dir)*spin_mult
 				 /locked_inertia
 				 -
 				 system_maker.quantity(
@@ -703,7 +726,7 @@ void test_BinarySystem::test_binary_1lock_diff_eq()
 				 *system_maker.quantity(
 					 static_cast<Quantity>(FIRST_ZONE_INERTIA_DERIV
 						 				   +locked_zone_ind))
-				 /locked_inertia
+				 *spin_mult/locked_inertia
 				 +
 				 orbit_coef*orbit_torque(1)
 				)
@@ -711,7 +734,8 @@ void test_BinarySystem::test_binary_1lock_diff_eq()
 				(
 				 orbit_coef*locked_tidal_torque(1)
 				 -
-				 locked_tidal_torque.dot(locked_spin_dir)/locked_inertia
+				 locked_tidal_torque.dot(locked_spin_dir)*spin_mult
+				 /locked_inertia
 				);
 			zone_torques[locked_zone_ind]+=lock_coef*locked_tidal_torque;
 			orbit_torque-=lock_coef*locked_tidal_torque;
@@ -726,7 +750,7 @@ test_BinarySystem::test_BinarySystem(unsigned ntests,
 			const std::string &eccentricity_expansion) : __ntests(ntests)
 {
 	DissipatingZone::read_eccentricity_expansion(eccentricity_expansion);
-/*	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
+	TEST_ADD(test_BinarySystem::test_fill_orbit_locked_surface);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_single);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_no_locks);
 	TEST_ADD(test_BinarySystem::test_fill_orbit_binary_locks);
@@ -736,18 +760,18 @@ test_BinarySystem::test_BinarySystem(unsigned ntests,
 	TEST_ADD(
 		test_BinarySystem::test_binary_no_locks_circular_aligned_diff_eq);
 	TEST_ADD(
-		test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq);*/
+		test_BinarySystem::test_binary_no_locks_circular_inclined_diff_eq);
 	TEST_ADD(test_BinarySystem::test_binary_1lock_diff_eq);
 }
 
 #ifdef STANDALONE
 int main()
 {
-	std::srand(7);
+	std::srand(std::time(NULL));
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
-	test_BinarySystem tests(1);
+	test_BinarySystem tests(10000);
 	return (tests.run(output, true) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #endif

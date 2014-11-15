@@ -1395,7 +1395,7 @@ int BinarySystem::jacobian(double age, const double *parameters,
 }
 
 void BinarySystem::check_for_lock(int orbital_freq_mult, int spin_freq_mult,
-		unsigned short body_index, unsigned zone_index)
+		unsigned short body_index, unsigned zone_index, short direction)
 {
 	DissipatingBody &body=(body_index ? __body2 : __body1);
 #ifdef DEBUG
@@ -1433,8 +1433,11 @@ void BinarySystem::check_for_lock(int orbital_freq_mult, int spin_freq_mult,
 									-
 									__body1.number_locked_zones();
 	spin_angmom.insert(check_zone_dest, original_angmom);
-	if(above_lock_fraction<0) body.unlock_zone_spin(zone_index, -1);
-	else body.unlock_zone_spin(zone_index, 1);
+	if(std::isfinite(above_lock_fraction)) {
+		if(direction<0) assert(above_lock_fraction<0);
+		else assert(above_lock_fraction>0);
+	}
+	body.unlock_zone_spin(zone_index, direction);
 	configure(__age, __semimajor, __eccentricity, &(spin_angmom[0]),
 			&(inclinations[0]), &(periapses[0]), BINARY);
 }
@@ -1531,7 +1534,8 @@ void BinarySystem::rewind_evolution(unsigned nsteps)
 CombinedStoppingCondition *BinarySystem::stopping_conditions()
 {
 	CombinedStoppingCondition *result=new CombinedStoppingCondition();
-	(*result)|=new SecondaryDeathCondition(*this);
+	if(__evolution_mode==BINARY)
+		(*result)|=new SecondaryDeathCondition(*this);
 	for(unsigned body_ind=0; body_ind<2; ++body_ind) {
 		DissipatingBody &body=(body_ind==0 ? __body1 : __body2);
 			(*result)|=body.stopping_conditions(*this, body_ind==0);

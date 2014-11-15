@@ -29,7 +29,7 @@ void CommandLineOptions::init_input_column_names()
 	__input_column_names[InCol::A_FORMATION]="aform";
 	__input_column_names[InCol::P_FORMATION]="pform";
 	__input_column_names[InCol::E_FORMATION]="eform";
-	__input_column_names[InCol::INCLINATION_FORMATION]="thetaform";
+	__input_column_names[InCol::INCLINATION_FORMATION]="incl";
 	__input_column_names[InCol::TSTART]="t0";
 	__input_column_names[InCol::TEND]="tmax";
 	__input_column_names[InCol::START_WRAD]="wrad0";
@@ -194,7 +194,7 @@ void CommandLineOptions::init_defaults()
 	__defaults[InCol::E_FORMATION]=0.0;
 	__defaults[InCol::INCLINATION_FORMATION]=0.0;
 	__defaults[InCol::TSTART]=NaN;
-	__defaults[InCol::TEND]=-Inf;
+	__defaults[InCol::TEND]=Inf;
 	__defaults[InCol::START_WRAD]=NaN;
 	__defaults[InCol::START_WSURF]=NaN;
 	__defaults[InCol::MAX_STEP]=Inf;
@@ -313,8 +313,10 @@ void init_track_column_names()
 
 const std::string CommandLineOptions::__default_outfname="poet.evol",
 	  CommandLineOptions::__default_serialized_evol="serialized_evolution",
+	  CommandLineOptions::__default_eccentricity_expansion=
+	  	"eccentricity_expansion_coef.txt",
 	  CommandLineOptions::__default_output_columns=
-	  	"t,a,theta,Lconv,Lradpar,Lradperp,L,Iconv,Irad,I,mode",
+	  	"t,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode",
 	  CommandLineOptions::__default_track_columns="t,R,Iconv,Irad,Rrad,Mrad";
 
 char *CommandLineOptions::cstr_copy(const std::string &str)
@@ -519,9 +521,8 @@ void CommandLineOptions::define_options()
 			cstr_copy(option_help));
 
 	option_help.str("");
-	option_help << "The maximum end age for the evolution in Gyr. If a "
-		"negative value is passed, the evolution stops at absolute value "
-		" of this parameter of if the star moves off the main sequence "
+	option_help << "The maximum end age for the evolution in Gyr, truncated "
+		"at the time when the star begins to move off the main sequence. "
 		"In --input-columns identified by '"
 		<< __input_column_names[InCol::TEND] << "'. Default: "
 		<< __defaults[InCol::TEND] << ".";
@@ -627,6 +628,12 @@ void CommandLineOptions::define_options()
 			<< "'.";
 	__serialized_stellar_evolution=arg_file0(NULL, "serialized-stellar-evol",
 			"<file>", cstr_copy(option_help));
+	option_help.str("");
+	option_help << "The file to read eccentricity expansion coefficients "
+		"from. Default: '" << data_directory()
+		<< __default_eccentricity_expansion << "'.";
+	__eccentricity_expansion=arg_file0(NULL, "eccentricity-expansion",
+			"<file>", cstr_copy(option_help));
 
 	__custom_stellar_evolution=arg_file0(NULL, "custom-stellar-evolution",
 			"<file>", "A single stellar evolution track from which to "
@@ -691,10 +698,12 @@ void CommandLineOptions::set_defaults()
 	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; ++i)
 		__direct_value_options[i]->dval[0]=__defaults[i];
 	__output_fname->filename[0]=__default_outfname.c_str();
-	std::ostringstream default_serialized;
-	default_serialized << data_directory() << __default_serialized_evol;
-	__serialized_stellar_evolution->filename[0]=
-		cstr_copy(default_serialized);
+	std::ostringstream default_fname;
+	default_fname << data_directory() << __default_serialized_evol;
+	__serialized_stellar_evolution->filename[0]=cstr_copy(default_fname);
+	default_fname.str("");
+	default_fname << data_directory() << __default_eccentricity_expansion;
+	__eccentricity_expansion->filename[0]=cstr_copy(default_fname);
 	__output_file_columns->sval[0]=__default_output_columns.c_str();
 	__custom_stellar_evolution->filename[0]="";
 	__custom_stellar_evolution_format->sval[0]=
@@ -840,23 +849,23 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv) :
 	__argtable[InCol::NUM_INPUT_QUANTITIES+1]=__output_file_columns;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+2]=__input_fname;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+3]=__serialized_stellar_evolution;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+4]=__custom_stellar_evolution;
-	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=__custom_stellar_evolution_format;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+4]=__eccentricity_expansion;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+5]=__custom_stellar_evolution;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+6]=__custom_stellar_evolution_format;
 	for(int i=0; i<CustomStellarEvolution::AGE; ++i) {
-		__argtable[InCol::NUM_INPUT_QUANTITIES+6+2*i]=
-			__custom_track_smoothing[i];
 		__argtable[InCol::NUM_INPUT_QUANTITIES+7+2*i]=
+			__custom_track_smoothing[i];
+		__argtable[InCol::NUM_INPUT_QUANTITIES+8+2*i]=
 			__custom_track_nodes[i];
 	}
-	__argtable[InCol::NUM_INPUT_QUANTITIES+2*CustomStellarEvolution::AGE+6]=
-		help_option;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+2*CustomStellarEvolution::AGE+7]=
-		doxyhelp_option;
+		help_option;
 	__argtable[InCol::NUM_INPUT_QUANTITIES+2*CustomStellarEvolution::AGE+8]=
+		doxyhelp_option;
+	__argtable[InCol::NUM_INPUT_QUANTITIES+2*CustomStellarEvolution::AGE+9]=
 		end;
 
 	if(arg_nullcheck(__argtable) != 0) {
-		cleanup();
 		throw Error::CommandLine("Failed to allocate argument table.");
 	}
 	set_defaults();
@@ -1051,21 +1060,22 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 	LockedPlanet planet(real_parameters[InCol::MPLANET],
 						real_parameters[InCol::RPLANET]);
 	double zero=0;
+	const double AU_Rsun=
+		AstroConst::AU/AstroConst::solar_radius;
 	planet.configure(real_parameters[InCol::PLANET_FORMATION_AGE],
 					 real_parameters[InCol::MSTAR],
-					 real_parameters[InCol::A_FORMATION],
+					 real_parameters[InCol::A_FORMATION]*AU_Rsun,
 					 real_parameters[InCol::E_FORMATION], &zero, NULL, NULL,
 					 false, true, true);
 	DiskPlanetSystem system(star, planet,
-							real_parameters[InCol::A_FORMATION],
+							real_parameters[InCol::A_FORMATION]*AU_Rsun,
 							real_parameters[InCol::E_FORMATION],
 							real_parameters[InCol::INCLINATION_FORMATION],
 							real_parameters[InCol::WDISK],
 							real_parameters[InCol::TDISK]*1e-3,
-							real_parameters[InCol::PLANET_FORMATION_AGE]);
-
-
-
+							std::max(
+								real_parameters[InCol::PLANET_FORMATION_AGE],
+								real_parameters[InCol::TDISK]*1e-3));
 
 	double tstart=real_parameters[InCol::TSTART];
 	if(star.is_low_mass() && 
@@ -1095,21 +1105,17 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 		inclination[0]=real_parameters[InCol::INCLINATION_FORMATION];
 		inclination[1]=inclination[0];
 		inclination[2]=0;
-		system.configure(tstart, real_parameters[InCol::A_FORMATION],
+		system.configure(tstart, real_parameters[InCol::A_FORMATION]*AU_Rsun,
 						 real_parameters[InCol::E_FORMATION], &(angmom[0]),
 						 &(inclination[0]), &(periapsis[0]), BINARY);
 	}
-	OrbitSolver solver(std::min(real_parameters[InCol::TEND], 
-								star.lifetime()),
+	double tend=std::min(real_parameters[InCol::TEND], star.lifetime());
+	OrbitSolver solver(tend,
 					   std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	if(need_orbit) {
 		star.detect_saturation();
 		solver(system, real_parameters[InCol::MAX_STEP], required_ages);
 	}
-    double tend=(real_parameters[InCol::TEND]>0 ? 
-					real_parameters[InCol::TEND] :
-					std::min(-real_parameters[InCol::TEND], 
-							 star.lifetime()));
 	output_solution(solver, system, star, outfname, output_file_format,
 			tstart, tend, real_parameters[InCol::MAX_STEP], required_ages);
 }
@@ -1279,6 +1285,8 @@ int main(int argc, char **argv)
 		init_output_column_names();
 		init_track_column_names();
 		CommandLineOptions options(argc, argv);
+		DissipatingZone::read_eccentricity_expansion(
+				options.eccentricity_expansion());
 		if(!options) return 1;
 		StellarEvolution *stellar_evolution=get_stellar_evolution(options);
 		run(options, *stellar_evolution, options.input());

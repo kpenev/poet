@@ -867,7 +867,11 @@ public:
 			unsigned short body_index,
 
 			///The zone being unlocked.
-			unsigned zone_index);
+			unsigned zone_index,
+			
+			///The direction in which the lock will be left if it does not
+			///hold.
+			short direction);
 
 	///\brief Smallest semimajor axis at which the secondary can survive for 
 	///the latest system configuration.

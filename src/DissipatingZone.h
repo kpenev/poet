@@ -627,6 +627,9 @@ public:
 		return __locked_zone_index;
 	}
 
+	///\brief Should return true iff the zone has some non-zero dissipation.
+	virtual bool dissipative() =0;
+
 	///\brief Conditions detecting the next possible discontinuities in the
 	///evolution due to this zone.
 	///

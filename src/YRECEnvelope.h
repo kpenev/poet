@@ -117,6 +117,9 @@ public:
 	///See DissipatingZone::outer_mass.
 	double outer_mass(int deriv_order=0) const
 	{return (deriv_order ? 0 : __stellar_mass);}
+	
+	///The envelope dissipates tides.
+	bool dissipative() {return true;}
 
 	~YRECEnvelope() {reset();}
 };

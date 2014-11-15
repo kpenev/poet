@@ -43,7 +43,7 @@ int stellar_system_jacobian(double age, const double *orbital_parameters,
 #ifdef DEBUG
 void OrbitSolver::output_history_and_discarded(std::ostream &os)
 {
-	return;
+//	return;
 	std::streamsize orig_precision=os.precision();
 	os.precision(16);
 	std::ios_base::fmtflags orig_flags=os.flags();
@@ -412,8 +412,8 @@ void OrbitSolver::update_skip_history(
 bool OrbitSolver::acceptable_step(double age,
 		const StopInformation &stop_info)
 {
-	return stop_info.stop_age()>=age;// ||
-//			std::abs(stop_info.stop_condition_precision())<=__precision;
+	return stop_info.stop_age()>=age ||
+			std::abs(stop_info.stop_condition_precision())<=__precision;
 }
 
 StopInformation OrbitSolver::update_stop_condition_history(double age,
@@ -433,7 +433,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 	insert_discarded(age, current_stop_cond, current_stop_deriv);
 #ifdef DEBUG
 //	std::cerr << std::string(77, '@') << std::endl;
-	output_history_and_discarded(std::cerr);
+//	output_history_and_discarded(std::cerr);
 #endif
 	for(size_t cond_ind=0; cond_ind<current_stop_cond.size(); cond_ind++) {
 		StoppingConditionType
@@ -454,7 +454,9 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		StopInformation stop_info(std::min(crossing_age, extremum.x()),
 				(is_crossing ? stop_cond_value : extremum_precision),
 				stop_cond_type, is_crossing, true, cond_ind, deriv_sign);
-
+#ifdef DEBUG
+//		std::cerr << stop_info << std::endl;
+#endif
 		if((!acceptable_step(age, stop_info) || is_crossing) &&
 				stop_info.stop_age()<result.stop_age()) result=stop_info;
 	}
@@ -485,8 +487,8 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 	std::cerr << std::endl;
 #endif
 
-	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
-//	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
+//	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
+	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
 
 	gsl_odeiv2_step *step=gsl_odeiv2_step_alloc(step_type, nargs);
 	gsl_odeiv2_control *step_control=gsl_odeiv2_control_standard_new(
@@ -518,6 +520,9 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			status=gsl_odeiv2_evolve_apply(
 					evolve, step_control, step, &ode_system,
 					&t, max_next_t, &step_size, &(orbit[0]));
+//			std::cerr << "t: " << t << ", orbit="; //<++>
+//			for(unsigned i=0; i<nargs; ++i) std::cerr << orbit[i] << " "; //<++>
+//			std::cerr << std::endl; //<++>
 			if (status != GSL_SUCCESS) {
 				std::ostringstream msg;
 				msg << "GSL signaled failure while evolving (error code " <<
@@ -528,6 +533,10 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 					sys_mode);
 			stop=update_stop_condition_history(t, orbit, derivatives,
 											   evolution_mode, stop_reason);
+//			std::cerr << "t: " << t << ", derivatives="; //<++>
+//			for(unsigned i=0; i<nargs; ++i)  //<++>
+//				std::cerr << derivatives[i] << " "; //<++>
+//			std::cerr << std::endl; //<++>
 			if(!acceptable_step(t, stop)) {
 				t=go_back(stop.stop_age(), system, orbit, derivatives);
 				if(stop.is_crossing())
@@ -631,9 +640,12 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 		}
 #ifdef DEBUG 
 		std::cerr << "Changing evolution mode from " << old_evolution_mode 
-			<< " with " << old_locked_zones << " zones locked to "
-			<< evolution_mode << " with " << system.number_locked_zones()
-			<< " zones locked." << std::endl
+			<< " with " << old_locked_zones << " zones locked to ";
+#endif
+		evolution_mode=system.evolution_mode();
+#ifdef DEBUG
+		std::cerr << evolution_mode << " with "
+			<< system.number_locked_zones() << " zones locked." << std::endl
 			<< "Transforming orbit from: " << orbit;
 #endif
 		system.fill_orbit(orbit);

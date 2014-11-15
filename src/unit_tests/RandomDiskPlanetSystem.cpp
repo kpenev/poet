@@ -75,7 +75,7 @@ void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 		std::list<unsigned>::iterator unlocked_i=still_unlocked.begin();
 		for(unsigned to_lock=std::rand()%still_unlocked.size(); to_lock>0;
 				--to_lock) ++unlocked_i;
-		int orb_freq_mult=4*(rand()%2)-2, spin_freq_mult=rand()%2+1;
+		int orb_freq_mult=2, spin_freq_mult=rand()%2+1;
 		if(spin_freq_mult==2) {
 			spin_freq_mult=1;
 			orb_freq_mult/=2;

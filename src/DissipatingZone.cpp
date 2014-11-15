@@ -1,4 +1,5 @@
 #include "DissipatingZone.h"
+#include "BinarySystem.h"
 
 EccentricityExpansionCoefficients DissipatingZone::__pms;
 
@@ -196,6 +197,7 @@ void DissipatingZone::check_locks_consistency()
 	assert((__other_lock.spin_frequency_multiplier()>=0 && 
 				__other_lock.spin_frequency_multiplier()<=2));
 	if(__lock) return;
+	return;//<++>
 	assert(__lock.lock_direction()*__lock.spin_frequency_multiplier()
 			*spin_frequency()+1.0e-5*__orbital_frequency
 			>=
@@ -310,10 +312,10 @@ void DissipatingZone::initialize_locks()
 
 DissipatingZone::DissipatingZone()
 	: __e_order(0), __Ummp_inclination(NaN), __Ummp(5), __Ummp_deriv(5),
-	__power(2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__torque_x(2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__torque_y(2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__torque_z(2*Dissipation::END_DIMENSIONLESS_DERIV),
+	__power(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
+	__torque_x(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
+	__torque_y(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
+	__torque_z(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
 	__evolution_real(NUM_REAL_EVOL_QUANTITIES),
 	__evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES)
 {
@@ -323,10 +325,17 @@ DissipatingZone::DissipatingZone()
 	}
 }
 
-void DissipatingZone::configure(double, double orbital_frequency,
+void DissipatingZone::configure(double
+#ifdef DEBUG
+		age
+#endif
+		, double orbital_frequency,
 		double eccentricity, double orbital_angmom, double spin_angmom,
 		double inclination, double periapsis)
 {
+#ifdef DEBUG
+	assert(age>=0);
+#endif
 	ZoneOrientation::configure(inclination, periapsis);
 	__orbital_angmom=orbital_angmom;
 	__orbital_frequency=orbital_frequency;
@@ -345,6 +354,8 @@ void DissipatingZone::configure(double, double orbital_frequency,
 	__torque_x=0;
 	__torque_y=0;
 	__torque_z=0;
+
+	if(!dissipative()) return;
 
 	for(int mp=-static_cast<int>(__e_order)-2;
 			mp<=static_cast<int>(__e_order)+2; ++mp) {
@@ -500,9 +511,8 @@ double DissipatingZone::inclination_evolution(
 		zone_x_torque=zone_torque_deriv[0];
 	}
 	double result=(orbit_x_torque*cos_inc-orbit_z_torque*sin_inc)
-			      /__orbital_angmom
-				  -
-				  zone_x_torque/__angular_momentum;
+			      /__orbital_angmom;
+	if(zone_x_torque!=0) result-=zone_x_torque/__angular_momentum;
 	if(		deriv==Dissipation::NO_DERIV 
 			|| deriv==Dissipation::AGE 
 			|| deriv==Dissipation::ECCENTRICITY
@@ -637,9 +647,10 @@ CombinedStoppingCondition *DissipatingZone::stopping_conditions(
 			BinarySystem &system,  bool primary, unsigned zone_index)
 {
 	CombinedStoppingCondition *result=new CombinedStoppingCondition();
+	if(!dissipative()) return result;
 	if(__lock) 
 		(*result)|=new BreakLockCondition(system, __locked_zone_index);
-	else {
+	else if(system.evolution_mode()==BINARY) {
 		(*result)|=new SynchronizedCondition(
 				__lock.orbital_frequency_multiplier(),
 				__lock.spin_frequency_multiplier(),

@@ -17,7 +17,7 @@ void DiskPlanetSystem::add_secondary()
 	std::valarray<double> angmom(nzones), inclination(nzones), 
 		periapsis(nzones-1);
 	unsigned zone_ind=0;
-	double must_be_zero;
+	double must_be_zero=0;
 	for(short body_ind=0; body_ind<2; ++body_ind) {
 		const DissipatingBody &body=(body_ind==0 ? primary() : secondary());
 		for(unsigned body_zone_ind=0; body_zone_ind<body.number_zones();

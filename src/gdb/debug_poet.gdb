@@ -1,35 +1,81 @@
-break poet.cpp:606
+#break YRECEnvelope::configure
+#commands 1
+#print "Configuring YREC envelope"
+#c
+#end
+#
+#break YRECCore::configure
+#commands 2
+#print "Configuring YREC Core"
+#c
+#end
+#
+#break LockedPlanet::configure
+#commands 3
+#print "Configuring locked planet"
+#c
+#end
+#
+#break DissipatingZone.cpp:359
+#commands 4
+#print __spin_frequency
+#print __orbital_frequency
+#print __lock
+#print __other_lock
+#if isnan(inclination)
+#	bt
+#end
+#c
+#end
+#
+#break DissipatingZone.cpp:566
+#commands 5
+#print __lock
+#c
+#end
+
+#break WindSaturationCondition.cpp:25
+#commands 1
+#print evol_mode
+#print __primary
+#print __body.number_zones()
+#print __other_body.number_zones()
+#print angmom_index
+#print surf_angmom_deriv
+#print __body.zone(0).moment_of_inertia(1)
+#print wsurf
+#print __body.zone(0).moment_of_inertia(0)
+#print __saturation_freq
+#c
+#end
+
+break DissipatingBody.cpp:458 if deriv==0 && isnan(result[2])
 commands 1
-	print real_parameters[InCol::MAX_STEP]
-	c
+print result
+print zone_index
+c
 end
 
-break poet.cpp:550
+break DissipatingBody.cpp:459 if deriv==0 && isnan(result[1])
 commands 2
-	print real_parameters[InCol::MAX_STEP]
-	c
+print result
+print zone_index
+c
 end
 
-break poet.cpp:716
+break DissipatingBody.cpp:462 if deriv==0 && isnan(result[1])
 commands 3
-	print real_parameters[InCol::MAX_STEP]
-	c
+print result
+print zone_index
+c
 end
 
-break poet.cpp:686
+break DissipatingBody.cpp:467 if deriv==0 && isnan(result[1])
 commands 4
-	print real_parameters[InCol::MAX_STEP]
-	c
+print result
+print zone_index
+c
 end
-
-break poet.cpp:340
-commands 5
-	print __direct_value_options[InCol::MAX_STEP]->dval[0]
-	print __defaults[InCol::MAX_STEP]
-	c
-end
-
-set args -M 0.9000000000000001 -m 10.00000000000001 -p 4.611111111111112 --p-disk 1.4 -K 0.155 --core-env-coupling-timescale=12 --t-disk 2.5 --low-mass-wind-sat-w=2.454 -r 0.714 --precision 5 --serialized-stellar-evol interp_state_data_phs4 --tmax 10
 
 run
 bt
