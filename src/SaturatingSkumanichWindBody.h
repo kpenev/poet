@@ -106,6 +106,13 @@ public:
 	///The tabulated wind saturation states so far.
 	const std::list<bool> &wind_saturation_evolution() const
 	{return __saturation_evolution;}
+
+	///Resets its saturation state after a discontinous spin jump.
+	void spin_jumped()
+	{
+		detect_saturation();
+		DissipatingBody::spin_jumped();
+	}
 };
 
 #endif

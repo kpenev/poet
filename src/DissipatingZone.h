@@ -440,7 +440,13 @@ public:
 
 			///What to return
 			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
-	{return __power[2*deriv+(above? 1 : 0)];}
+	{
+#ifdef DEBUG
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__power.size()));
+#endif
+		return __power[2*deriv+(above? 1 : 0)];
+	}
 
 	///\brief Same as tidal_power(bool, Dissipation::Derivative), but using
 	///the predefined mixe of below/above contributions.
@@ -455,6 +461,8 @@ public:
 	{
 #ifdef DEBUG
 		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__power.size()));
 #endif
 		return above_fraction*__power[2*deriv+1]
 			   +
@@ -466,7 +474,13 @@ public:
 	///See tidal_power() for a description of the arguments.
 	double tidal_torque_x(bool above,
 			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
-	{return __torque_x[2*deriv+(above? 1 : 0)];}
+	{
+#ifdef DEBUG
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__torque_x.size()));
+#endif
+		return __torque_x[2*deriv+(above? 1 : 0)];
+	}
 
 	///\brief Same as tidal_torque_x(bool, Dissipation::Derivative) but
 	//below and above contributions mixed.
@@ -481,6 +495,8 @@ public:
 	{
 #ifdef DEBUG
 		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__torque_x.size()));
 #endif
 		return above_fraction*__torque_x[2*deriv+1]
 			   +
@@ -492,7 +508,13 @@ public:
 	///See tidal_power() for a description of the arguments.
 	double tidal_torque_y(bool above,
 			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
-	{return __torque_y[2*deriv+(above? 1 : 0)];}
+	{
+#ifdef DEBUG
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__torque_y.size()));
+#endif
+		return __torque_y[2*deriv+(above? 1 : 0)];
+	}
 
 	///\brief Same as tidal_torque_y(bool, Dissipation::Derivative) but
 	//below and above contributions mixed.
@@ -507,6 +529,8 @@ public:
 	{
 #ifdef DEBUG
 		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__torque_y.size()));
 #endif
 		return above_fraction*__torque_y[2*deriv+1]
 			   +
@@ -518,7 +542,13 @@ public:
 	///See tidal_power() for a description of the arguments.
 	double tidal_torque_z(bool above,
 			Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
-	{return __torque_z[2*deriv+(above? 1 : 0)];}
+	{
+#ifdef DEBUG
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__torque_z.size()));
+#endif
+		return __torque_z[2*deriv+(above? 1 : 0)];
+	}
 
 	///\brief Same as tidal_torque_z(bool, Dissipation::Derivative) but
 	//below and above contributions mixed.
@@ -533,6 +563,8 @@ public:
 	{
 #ifdef DEBUG
 		if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+		assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
+		assert(2*deriv+1<static_cast<int>(__torque_z.size()));
 #endif
 		return above_fraction*__torque_z[2*deriv+1]
 			   +
@@ -628,7 +660,7 @@ public:
 	}
 
 	///\brief Should return true iff the zone has some non-zero dissipation.
-	virtual bool dissipative() =0;
+	virtual bool dissipative() const =0;
 
 	///\brief Conditions detecting the next possible discontinuities in the
 	///evolution due to this zone.
@@ -643,6 +675,9 @@ public:
 			
 			///The index of the zone in the body.
 			unsigned zone_index);
+
+	///Notifies the zone that its spin just jumped discontinously.
+	virtual void spin_jumped() {initialize_locks();}
 };
 
 #endif

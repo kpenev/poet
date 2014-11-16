@@ -39,10 +39,10 @@ std::valarray<double> BreakLockCondition::operator()(
 	unsigned inclination_offset=2,
 			   periapsis_offset=inclination_offset+num_zones-1,
 			   angmom_offset=periapsis_offset+num_zones;
-	for(int i=0; i<2; ++i) {
-		const DissipatingBody &body=(i==0 ? __system.primary()
-										  : __system.secondary());
-		for(unsigned zone_ind=0; zone_ind<body.number_zones(); ++i) {
+	for(int body_ind=0; body_ind<2; ++body_ind) {
+		const DissipatingBody &body=(body_ind==0 ? __system.primary()
+												 : __system.secondary());
+		for(unsigned zone_ind=0; zone_ind<body.number_zones(); ++zone_ind) {
 			double dangmom_dt;
 			const DissipatingZone &zone=body.zone(zone_ind);
 			if(!zone.locked())
@@ -81,6 +81,7 @@ std::valarray<double> BreakLockCondition::operator()(
 		}
 
 	}
+	dfrac_dt=NaN;
 	stop_deriv.resize(2, dfrac_dt);
 	std::valarray<double> result(2);
 	result[0]=frac;

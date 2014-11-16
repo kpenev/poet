@@ -1267,7 +1267,7 @@ void BinarySystem::configure(double age, double semimajor,
 	find_locked_zones();
 	__body1.configure(age, m2, semimajor, eccentricity, spin_angmom,
 			inclination, periapsis, evolution_mode==LOCKED_SURFACE_SPIN,
-			std::isnan(semimajor), true);
+			evolution_mode!=BINARY, true);
 	if(evolution_mode==BINARY) {
 		unsigned offset=__body1.number_zones();
 		__body2.configure(age, m1, semimajor, eccentricity,
@@ -1276,8 +1276,8 @@ void BinarySystem::configure(double age, double semimajor,
 		update_above_lock_fractions();
 	}
 #ifdef DEBUG
-	if(evolution_mode==BINARY)
-		assert(__semimajor>minimum_semimajor());
+//	if(evolution_mode==BINARY)
+//		assert(__semimajor>minimum_semimajor());
 #endif
 }
 
@@ -1290,7 +1290,8 @@ void BinarySystem::configure(double age, const double *parameters,
 	if(evolution_mode==BINARY) {
 		semimajor=(__body1.number_locked_zones() ||
 				   __body2.number_locked_zones()
-				   ? parameters[0] : std::pow(parameters[0], 1.0/6.5));
+				   ? parameters[0] : std::pow(std::max(0.0, parameters[0]),
+					   						  1.0/6.5));
 		eccentricity=parameters[1];
 		inclination=parameters+2;
 	} else {
@@ -1367,6 +1368,10 @@ int BinarySystem::differential_equations(double age,
 			return 0;
 		case BINARY :
 			binary_differential_equations(differential_equations);
+//			std::cerr << "t: " << age << ", diff eq=";
+//			for(unsigned i=0; i<10; ++i) //<++>
+//				std::cerr << differential_equations[i] << " "; //<++>
+//			std::cerr << std::endl; //<++>
 			return 0;
 		default :
 			throw Error::BadFunctionArguments("Evolution mode other than "
@@ -1433,10 +1438,14 @@ void BinarySystem::check_for_lock(int orbital_freq_mult, int spin_freq_mult,
 									-
 									__body1.number_locked_zones();
 	spin_angmom.insert(check_zone_dest, original_angmom);
-	if(std::isfinite(above_lock_fraction)) {
-		if(direction<0) assert(above_lock_fraction<0);
-		else assert(above_lock_fraction>0);
+#ifdef DEBUG
+	if(std::isfinite(above_lock_fraction) || direction==0) {
+//		if(direction<0) assert(above_lock_fraction<0);
+//		else if(direction>0) assert(above_lock_fraction>0);
+//		else 
+			direction=(above_lock_fraction<0 ? -1 : 1);
 	}
+#endif
 	body.unlock_zone_spin(zone_index, direction);
 	configure(__age, __semimajor, __eccentricity, &(spin_angmom[0]),
 			&(inclinations[0]), &(periapses[0]), BINARY);
@@ -1481,6 +1490,7 @@ void BinarySystem::secondary_died()
 	}
 	configure(__age, NaN, NaN, &spin_angmom[0], &inclination[0],
 			&periapsis[0], SINGLE);
+	__body1.spin_jumped();
 }
 
 void BinarySystem::release_lock(unsigned locked_zone_index, short direction)

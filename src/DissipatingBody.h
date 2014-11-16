@@ -532,6 +532,9 @@ public:
 
 			///Is the body the primary in the system.
 			bool primary);
+	
+	///Notifies the body that its spin just discontinously jumped.
+	virtual void spin_jumped() {zone(0).spin_jumped();}
 
 	///Virtual destructor.
 	~DissipatingBody() {}

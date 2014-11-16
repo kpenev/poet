@@ -92,17 +92,17 @@ void RandomDiskPlanetSystem::lock_zones(unsigned min_locked_zones,
 				__system->check_for_lock(
 						__locks[zone_ind].orbital_frequency_multiplier(),
 						__locks[zone_ind].spin_frequency_multiplier(),
-						zone_ind/2, zone_ind%2);
+						zone_ind/2, zone_ind%2, 0);
 		}
 		assert(__system->number_locked_zones()==__num_locked_zones);
 
 		__system->check_for_lock(orb_freq_mult, spin_freq_mult,
-								 *unlocked_i/2, *unlocked_i%2);
+								 *unlocked_i/2, *unlocked_i%2, 0);
 		while(__system->number_locked_zones()!=__num_locked_zones+1) {
 			increase_lags(orb_freq_mult, spin_freq_mult,
 						__zones[*unlocked_i]->lags());
 			__system->check_for_lock(orb_freq_mult, spin_freq_mult,
-								     *unlocked_i/2, *unlocked_i%2);
+								     *unlocked_i/2, *unlocked_i%2, 0);
 		}
 		__locks[*unlocked_i].set_lock(orb_freq_mult, spin_freq_mult);
 		__lags[*unlocked_i]=__zones[*unlocked_i]->lags();

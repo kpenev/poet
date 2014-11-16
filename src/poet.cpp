@@ -1045,6 +1045,12 @@ void output_solution(const OrbitSolver &solver, const BinarySystem &system,
 	outf.close();
 }
 
+///Converts lg(Q) to a tidal phase lag.
+double lag_from_lgQ(double lgQ)
+{
+	return 15.0/(16.0*M_PI*std::pow(10.0, lgQ));
+}
+
 void calculate_evolution(const std::vector<double> &real_parameters,
 		bool start_locked, const std::list<double> &required_ages,
 		const StellarEvolution &stellar_evolution,
@@ -1057,6 +1063,10 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				  real_parameters[InCol::WIND_SAT_W],
 				  real_parameters[InCol::CORE_ENV_COUPLING_TIMESCALE]*1e-3,
 				  stellar_evolution);
+	star.envelope().set_equilibrium_modified_lag(
+			lag_from_lgQ(real_parameters[InCol::LGQ]));
+	star.envelope().set_inertial_modified_lag(
+			lag_from_lgQ(real_parameters[InCol::LGQ_INERTIAL]));
 	LockedPlanet planet(real_parameters[InCol::MPLANET],
 						real_parameters[InCol::RPLANET]);
 	double zero=0;

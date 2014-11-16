@@ -126,6 +126,8 @@ public:
 		return __mass.at(deriv);
 	}
 
+	bool dissipative() const {return true;}
+
 	void describe(std::ostream &os) const;
 
 	virtual ~ConstPhaseLagDissipatingZone() {}

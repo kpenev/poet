@@ -1,79 +1,92 @@
-#break YRECEnvelope::configure
-#commands 1
-#print "Configuring YREC envelope"
-#c
-#end
-#
-#break YRECCore::configure
-#commands 2
-#print "Configuring YREC Core"
-#c
-#end
-#
-#break LockedPlanet::configure
-#commands 3
-#print "Configuring locked planet"
-#c
-#end
-#
-#break DissipatingZone.cpp:359
-#commands 4
-#print __spin_frequency
-#print __orbital_frequency
-#print __lock
-#print __other_lock
-#if isnan(inclination)
-#	bt
-#end
-#c
-#end
-#
-#break DissipatingZone.cpp:566
-#commands 5
-#print __lock
-#c
-#end
-
-#break WindSaturationCondition.cpp:25
-#commands 1
-#print evol_mode
-#print __primary
-#print __body.number_zones()
-#print __other_body.number_zones()
-#print angmom_index
-#print surf_angmom_deriv
-#print __body.zone(0).moment_of_inertia(1)
-#print wsurf
-#print __body.zone(0).moment_of_inertia(0)
-#print __saturation_freq
-#c
-#end
-
-break DissipatingBody.cpp:458 if deriv==0 && isnan(result[2])
+break OrbitSolver.cpp:543
 commands 1
-print result
-print zone_index
+print system.__age
+print system.__semimajor
+print system.__eccentricity
+print system.__orbital_energy
+print system.__orbital_angmom
+print system.__evolution_mode
+print system.__above_lock_fractions.size()
+print system.__above_lock_fractions[0]
+print system.__above_lock_fractions_inclination_deriv[0]
+print system.__above_lock_fractions_periapsis_deriv[0]
+print system.__above_lock_fractions_inertia_deriv[0]
+print system.__above_lock_fractions_angmom_deriv[0]
+print system.__above_lock_fractions_body2_radius_deriv
+
+print system.__body1.__power_norm
+print system.__body1.__orbital_frequency
+print system.__body1.__dorbital_frequency_da
+print system.__body1.__surface_lock_frequency
+print system.__body1.__angular_momentum_transfer[0]
+print system.__body1.__tidal_torques_above
+print system.__body1.__tidal_torques_below
+print system.__body1.__orbit_energy_gain[0]
+print system.__body1.__orbit_energy_gain_correction[0]
+print system.__body1.__orbit_torque[0]
+print system.__body1.__orbit_torque_correction[0]
+print system.__body1.__num_locked_zones
+print system.__body1.__above_lock_fractions[0]
+
+print system.__body2.__power_norm
+print system.__body2.__orbital_frequency
+print system.__body2.__dorbital_frequency_da
+print system.__body2.__surface_lock_frequency
+print system.__body2.__angular_momentum_transfer[0]
+print system.__body2.__tidal_torques_above
+print system.__body2.__tidal_torques_below
+print system.__body2.__orbit_energy_gain[0]
+print system.__body2.__orbit_energy_gain_correction[0]
+print system.__body2.__orbit_torque[0]
+print system.__body2.__orbit_torque_correction[0]
+print system.__body2.__num_locked_zones
+print system.__body2.__above_lock_fractions[0]
 c
 end
 
-break DissipatingBody.cpp:459 if deriv==0 && isnan(result[1])
+break OrbitSolver.cpp:549
 commands 2
-print result
-print zone_index
-c
-end
+print system.__age
+print system.__semimajor
+print system.__eccentricity
+print system.__orbital_energy
+print system.__orbital_angmom
+print system.__evolution_mode
+print system.__above_lock_fractions.size()
+print system.__above_lock_fractions[0]
+print system.__above_lock_fractions_inclination_deriv[0]
+print system.__above_lock_fractions_periapsis_deriv[0]
+print system.__above_lock_fractions_inertia_deriv[0]
+print system.__above_lock_fractions_angmom_deriv[0]
+print system.__above_lock_fractions_body2_radius_deriv
 
-break DissipatingBody.cpp:462 if deriv==0 && isnan(result[1])
-commands 3
-print result
-print zone_index
-c
-end
+print system.__body1.__power_norm
+print system.__body1.__orbital_frequency
+print system.__body1.__dorbital_frequency_da
+print system.__body1.__surface_lock_frequency
+print system.__body1.__angular_momentum_transfer[0]
+print system.__body1.__tidal_torques_above
+print system.__body1.__tidal_torques_below
+print system.__body1.__orbit_energy_gain[0]
+print system.__body1.__orbit_energy_gain_correction[0]
+print system.__body1.__orbit_torque[0]
+print system.__body1.__orbit_torque_correction[0]
+print system.__body1.__num_locked_zones
+print system.__body1.__above_lock_fractions[0]
 
-break DissipatingBody.cpp:467 if deriv==0 && isnan(result[1])
-commands 4
-print result
-print zone_index
+print system.__body2.__power_norm
+print system.__body2.__orbital_frequency
+print system.__body2.__dorbital_frequency_da
+print system.__body2.__surface_lock_frequency
+print system.__body2.__angular_momentum_transfer[0]
+print system.__body2.__tidal_torques_above
+print system.__body2.__tidal_torques_below
+print system.__body2.__orbit_energy_gain[0]
+print system.__body2.__orbit_energy_gain_correction[0]
+print system.__body2.__orbit_torque[0]
+print system.__body2.__orbit_torque_correction[0]
+print system.__body2.__num_locked_zones
+print system.__body2.__above_lock_fractions[0]
 c
 end
 

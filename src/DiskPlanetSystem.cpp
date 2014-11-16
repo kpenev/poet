@@ -34,7 +34,7 @@ void DiskPlanetSystem::add_secondary()
 #endif
 			} else {
 				inclination[zone_ind]=zone.inclination();
-				periapsis[zone_ind]=zone.periapsis();
+				if(zone_ind) periapsis[zone_ind-1]=zone.periapsis();
 			}
 			++zone_ind;
 		}

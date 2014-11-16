@@ -27,7 +27,8 @@ std::valarray<double> SynchronizedCondition::operator()(
 	assert(evol_mode==BINARY);
 	if(__system.number_locked_zones())
 		assert(orbit[0]==__system.semimajor());
-	else assert(std::pow(orbit[0], 1.0/6.5)==__system.semimajor());
+	else assert(std::pow(std::max(0.0, orbit[0]), 1.0/6.5)
+				==__system.semimajor());
 	assert(orbit.size()==1 + 3*__system.number_zones() -
 						 __system.number_locked_zones());
 	assert(orbit.size()==derivatives.size());
@@ -64,7 +65,8 @@ std::valarray<double> SynchronizedCondition::operator()(
 void SynchronizedCondition::reached(short deriv_sign, unsigned index)
 {
 #ifdef DEBUG
-	assert(deriv_sign==__expected_crossing_deriv_sign);
+	if(__expected_crossing_deriv_sign)
+		assert(deriv_sign==__expected_crossing_deriv_sign);
 #endif
 	StoppingCondition::reached(deriv_sign, index);
 	__system.check_for_lock(__orbital_freq_mult, __spin_freq_mult,

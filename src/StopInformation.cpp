@@ -10,6 +10,9 @@ std::ostream &operator<<(std::ostream &os, const StopInformation &stop)
 		<< (stop.is_crossing() ? ", crossing" : ", extremum")
 		<< " of " << stop.stop_reason() << ", precision="
 		<< stop.stop_condition_precision(); 
+	if(stop.is_crossing())
+		os << ", " << (stop.crossed_zero() ? "after" : "before")
+			<< " crossing with deriv sign=" << stop.deriv_sign_at_crossing();
 	os.precision(orig_precision);
 	os.flags(orig_flags);
 	return os;

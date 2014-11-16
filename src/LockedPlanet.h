@@ -1,6 +1,8 @@
 #ifndef __LOCKED_PLANET_H
 #define __LOCKED_PLANET_H
 
+#include "AstronomicalConstants.h"
+
 /**\file
  * 
  * \brief Declares a class for planets that are always locked to the orbit.
@@ -18,16 +20,18 @@ private:
 		   __radius;
 public:
 	LockedPlanetZone(double mass, double radius) :
-		__mass(mass), __radius(radius) {}
+		__mass(mass*AstroConst::jupiter_mass/AstroConst::solar_mass),
+		__radius(radius*AstroConst::jupiter_radius/AstroConst::solar_radius)
+	{}
 
 	///See DissipatingZone::modified_phase_lag(), very large constant value.
 	virtual double modified_phase_lag(
 			///orbital_frequency_multiplier
 			int ,
-			int spin_frequency_multiplier,
-			double forcing_frequency,
-			Dissipation::Derivative deriv,
-			double &above_lock_value) const
+			int ,
+			double ,
+			Dissipation::Derivative ,
+			double &) const
 	{return 0;}
 
 	///See DissipatingZone::love_coefficient(), always zero.
@@ -53,7 +57,7 @@ public:
 	{return (deriv_order==0 ? __mass : 0);}
 
 	///No dissipation.
-	bool dissipative() {return false;}
+	bool dissipative() const {return false;}
 };
 
 /**\brief Single zone non-evolving planets with huge dissipation, so they
@@ -86,56 +90,6 @@ public:
 	double angular_momentum_loss(
 			Dissipation::Derivative =Dissipation::NO_DERIV) const
 	{return 0;}
-
-#ifdef DEBUG
-	void configure(
-			///The age to set the body to.
-			double age,
-
-			///The mass of the second body in the system.
-			double companion_mass,
-
-			///The semimajor axis of the orbit in \f$R_\odot\f$.
-			double semimajor,
-
-			///The eccentricity of the orbit
-			double eccentricity,
-
-			///The spin angular momenta of the non-locked zones of the body
-			///(outermost zone to innermost).
-			const double *spin_angmom,
-
-			///The inclinations of the zones of the body (same order as 
-			///spin_angmom). If NULL, all inclinations are assumed zero.
-			const double *inclination=NULL,
-			
-			///The arguments of periapsis of the zones of the bodies (same
-			///order as spin_angmom). If NULL, all periapses are assumed
-			///zero.
-			const double *periapsis=NULL,
-
-			///If true, the outermost zone's spin is assumed locked to a 
-			///disk and spin_angmom is assumed to start from the next zone.
-			bool locked_surface=false,
-			
-			///If true, the outermost zone's inclination is assumed to be
-			///zero and the inclination argument is assumed to start from the
-			///next zone.
-			bool zero_outer_inclination=false,
-			
-			///If true, the outermost zone's periapsis is assumed to be
-			///zero and the inclination argument is assumed to start from the
-			///next zone.
-			bool zero_outer_periapsis=false)
-	{
-		DissipatingBody::configure(age, companion_mass, semimajor,
-								   eccentricity, spin_angmom, inclination,
-								   periapsis, locked_surface,
-								   zero_outer_inclination,
-								   zero_outer_periapsis);
-	}
-#endif
-
 };
 
 #endif

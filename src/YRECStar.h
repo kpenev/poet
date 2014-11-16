@@ -92,8 +92,11 @@ public:
 		else return __core;
 	}
 
-	///The envelope of the star.
+	///The envelope of the star - inmodifiable.
 	const YRECEnvelope &envelope() const {return __envelope;}
+
+	///The envelope of the star - modifiable.
+	YRECEnvelope &envelope() {return __envelope;}
 
 	///The core of the star.
 	const YRECCore &core() const

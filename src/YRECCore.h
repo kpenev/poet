@@ -113,7 +113,7 @@ public:
 	{return current_age_quantity(MASS, deriv_order);}
 
 	///No dissipation in the core.
-	bool dissipative() {return false;} 
+	bool dissipative() const {return false;} 
 
 	~YRECCore() {reset();}
 };

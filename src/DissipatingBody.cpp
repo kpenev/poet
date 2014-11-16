@@ -76,8 +76,9 @@ void DissipatingBody::collect_orbit_rates(double orbital_frequency,
 		for(unsigned deriv_ind=0; deriv_ind<__orbit_deriv.size()-1;
 				++deriv_ind) {
 			Dissipation::Derivative deriv=__orbit_deriv[deriv_ind];
-			__orbit_energy_gain[deriv_ind]-=
-				current_zone.tidal_power(false, deriv);
+			if(deriv<Dissipation::END_DIMENSIONLESS_DERIV)
+				__orbit_energy_gain[deriv_ind]-=
+					current_zone.tidal_power(false, deriv);
 			if(zone_index) {
 				__orbit_torque[deriv]-=
 					zone_to_zone_transform(current_zone, surface_zone,
@@ -408,6 +409,9 @@ void DissipatingBody::configure(double age, double companion_mass,
 		current_zone.configure(age, __orbital_frequency, eccentricity,
 				orbital_angmom, zone_angmom, zone_inclination,
 				zone_periapsis);
+	}
+	for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
+		DissipatingZone &current_zone=zone(zone_index);
 		if(zone_index<number_zones()-1) {
 			__angular_momentum_transfer[zone_index].resize(2);
 			angular_momentum_transfer(current_zone, zone(zone_index+1),
@@ -480,8 +484,9 @@ double DissipatingBody::tidal_power(unsigned zone_index,
 	assert(zone_index<number_zones());
 #endif
 	const DissipatingZone &this_zone=zone(zone_index);
-	double result=
-		__power_norm*this_zone.tidal_power(above, deriv);
+	double result=(deriv<Dissipation::END_DIMENSIONLESS_DERIV
+				   ? __power_norm*this_zone.tidal_power(above, deriv)
+				   : 0.0);
 	if(deriv==Dissipation::ORBITAL_FREQUENCY || 
 			deriv==Dissipation::SEMIMAJOR) {
 		result+=5.0/__orbital_frequency*__power_norm*

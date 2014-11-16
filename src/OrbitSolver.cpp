@@ -331,7 +331,7 @@ double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 	short crossing_sign=
 		__stopping_conditions->expected_crossing_deriv_sign(condition_index);
 	if(c0*c1<=0 && c1*crossing_sign>0) {range_low=t0; range_high=t1;}
-	else if(c1*c2<=0 && c1*crossing_sign>0) {range_low=t1; range_high=t2;}
+	else if(c1*c2<=0 && c2*crossing_sign>0) {range_low=t1; range_high=t2;}
 	if(stop_interval.num_points()==3) {
 #ifdef DEBUG
 		assert(!std::isnan(range_low) && !std::isnan(range_high));
@@ -413,7 +413,9 @@ bool OrbitSolver::acceptable_step(double age,
 		const StopInformation &stop_info)
 {
 	return stop_info.stop_age()>=age ||
-			std::abs(stop_info.stop_condition_precision())<=__precision;
+			(std::abs(stop_info.stop_condition_precision())<=__precision
+			 &&
+			 (stop_info.crossed_zero() || !stop_info.is_crossing()));
 }
 
 StopInformation OrbitSolver::update_stop_condition_history(double age,
@@ -421,6 +423,10 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		const std::valarray<double> &derivatives,
 		EvolModeType evolution_mode, StoppingConditionType stop_reason)
 {
+	for(unsigned i=0; i<orbit.size(); ++i)
+		if(std::isnan(orbit[i]))
+			return StopInformation(0.5*(age+__stop_history_ages.back()),
+								   Inf);
 	std::valarray<double> current_stop_cond(
 			__stopping_conditions->num_subconditions()),
 						  current_stop_deriv;
@@ -439,7 +445,13 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		StoppingConditionType
 			stop_cond_type=__stopping_conditions->type(cond_ind);
 		double stop_cond_value=current_stop_cond[cond_ind],
-			   crossing_age=crossing_from_history(cond_ind);
+			   crossing_age=crossing_from_history(cond_ind),
+			   crossing_precision=__stop_cond_history.back()[cond_ind]; 
+		bool crossed_zero=false;
+		if(std::abs(crossing_precision)>=std::abs(stop_cond_value)) {
+			crossing_precision=stop_cond_value;
+			crossed_zero=true;
+		}
 		ExtremumInformation extremum=extremum_from_history(cond_ind);
 		double extremum_precision;
 		if(std::isnan(extremum.y())) extremum_precision=NaN;
@@ -452,8 +464,9 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		short deriv_sign=0;
 		if(is_crossing) deriv_sign=(stop_cond_value>0 ? 1 : -1);
 		StopInformation stop_info(std::min(crossing_age, extremum.x()),
-				(is_crossing ? stop_cond_value : extremum_precision),
-				stop_cond_type, is_crossing, true, cond_ind, deriv_sign);
+				(is_crossing ? crossing_precision : extremum_precision),
+				stop_cond_type, is_crossing, crossed_zero, cond_ind,
+				deriv_sign);
 #ifdef DEBUG
 //		std::cerr << stop_info << std::endl;
 #endif
@@ -505,10 +518,42 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			sys_mode);
 	add_to_evolution(t, evolution_mode, system);
 
+/*	std::cerr << "Initial state for t=" << t << ": " << std::endl
+		<< "\torbit:";
+	for(unsigned i=0; i<orbit.size(); ++i) 
+		std::cerr << orbit[i] << " ";
+	std::cerr << std::endl << "\tderiv  :";
+	for(unsigned i=0; i<derivatives.size(); ++i) 
+		std::cerr << derivatives[i] << " ";
+	std::cerr << std::endl;
+
+	std::cerr << "Repeating immediately, t=" << t << ": " << std::endl
+		<< "\torbit:";
+	for(unsigned i=0; i<orbit.size(); ++i) 
+		std::cerr << orbit[i] << " ";
+	std::cerr << std::endl << "\tderiv  :";
+	for(unsigned i=0; i<derivatives.size(); ++i) 
+		std::cerr << derivatives[i] << " ";
+	std::cerr << std::endl;*/
+
 	update_stop_condition_history(t, orbit, derivatives, evolution_mode,
 								  stop_reason);
 	clear_discarded();
 	double step_size=0.01*(max_age-t);
+
+	stellar_system_diff_eq(t+1, &(orbit[0]), &(derivatives[0]),
+			sys_mode);
+
+	stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
+			sys_mode);
+/*	std::cerr << "After age change, t=" << t << ": " << std::endl
+		<< "\torbit:";
+	for(unsigned i=0; i<orbit.size(); ++i) 
+		std::cerr << orbit[i] << " ";
+	std::cerr << std::endl << "\tderiv  :";
+	for(unsigned i=0; i<derivatives.size(); ++i) 
+		std::cerr << derivatives[i] << " ";
+	std::cerr << std::endl;*/
 
 	stop_reason=NO_STOP;
 	StopInformation stop;
@@ -520,9 +565,6 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			status=gsl_odeiv2_evolve_apply(
 					evolve, step_control, step, &ode_system,
 					&t, max_next_t, &step_size, &(orbit[0]));
-//			std::cerr << "t: " << t << ", orbit="; //<++>
-//			for(unsigned i=0; i<nargs; ++i) std::cerr << orbit[i] << " "; //<++>
-//			std::cerr << std::endl; //<++>
 			if (status != GSL_SUCCESS) {
 				std::ostringstream msg;
 				msg << "GSL signaled failure while evolving (error code " <<
@@ -531,14 +573,33 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			}
 			stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
 					sys_mode);
+/*			std::cerr << "Could write for t=" << t << ": " << std::endl
+				<< "\torbit:";
+			for(unsigned i=0; i<orbit.size(); ++i) 
+					std::cerr << orbit[i] << " ";
+			std::cerr << std::endl << "\tderiv  :";
+			for(unsigned i=0; i<derivatives.size(); ++i) 
+				std::cerr << derivatives[i] << " ";
+			std::cerr << std::endl;*/
 			stop=update_stop_condition_history(t, orbit, derivatives,
 											   evolution_mode, stop_reason);
-//			std::cerr << "t: " << t << ", derivatives="; //<++>
-//			for(unsigned i=0; i<nargs; ++i)  //<++>
-//				std::cerr << derivatives[i] << " "; //<++>
-//			std::cerr << std::endl; //<++>
 			if(!acceptable_step(t, stop)) {
 				t=go_back(stop.stop_age(), system, orbit, derivatives);
+				//<++>
+/*				std::cerr << "Rewinding to t=" << t << ": " << std::endl
+					<< "\torbit:";
+				for(unsigned i=0; i<orbit.size(); ++i) 
+					std::cerr << orbit[i] << " ";
+				std::cerr << std::endl << "\tderiv  :";
+				for(unsigned i=0; i<derivatives.size(); ++i) 
+					std::cerr << derivatives[i] << " ";
+				std::cerr << std::endl << "\tcompare:";*/
+/*				stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
+									   sys_mode); */
+/*				for(unsigned i=0; i<derivatives.size(); ++i)
+					std::cerr << derivatives[i] << " ";
+				std::cerr << std::endl;*/
+				//<++>
 				if(stop.is_crossing())
 					stop.stop_condition_precision()=
 						__stop_cond_history.back()[
@@ -552,12 +613,13 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			add_to_evolution(t, evolution_mode, system);
 		if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
 			stop_reason=stop.stop_reason();
-			stop.crossed_zero()=(t>stop.stop_age());
 			break;
 		}
 	}
 	max_age=t;
 	clear_history();
+	stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
+			sys_mode); 
 
 	gsl_odeiv2_evolve_free(evolve);
 	gsl_odeiv2_control_free(step_control);

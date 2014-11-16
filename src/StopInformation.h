@@ -78,7 +78,10 @@ public:
 		__stop_condition_precision(orig.__stop_condition_precision),
 		__stop_reason(orig.__stop_reason),
 		__is_crossing(orig.__is_crossing),
-		__stop_condition_index(orig.__stop_condition_index) {}
+		__crossed_zero(orig.__crossed_zero),
+		__stop_condition_index(orig.__stop_condition_index),
+		__deriv_sign_at_crossing(orig.__deriv_sign_at_crossing)
+	{}
 
 	///The target stopping age in Gyr.
 	double stop_age() const {return __stop_age;}
@@ -123,6 +126,7 @@ public:
 		__stop_condition_precision=rhs.__stop_condition_precision;
 		__stop_reason=rhs.__stop_reason;
 		__is_crossing=rhs.__is_crossing;
+		__crossed_zero=rhs.__crossed_zero;
 		__stop_condition_index=rhs.__stop_condition_index;
 		__deriv_sign_at_crossing=rhs.__deriv_sign_at_crossing;
 		return *this;

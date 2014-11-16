@@ -119,7 +119,7 @@ public:
 	{return (deriv_order ? 0 : __stellar_mass);}
 	
 	///The envelope dissipates tides.
-	bool dissipative() {return true;}
+	bool dissipative() const {return true;}
 
 	~YRECEnvelope() {reset();}
 };

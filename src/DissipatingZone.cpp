@@ -452,8 +452,8 @@ double DissipatingZone::periapsis_evolution(
 	}
 #ifdef DEBUG
 	if(sin_inc==0) {
-		assert(orbit_y_torque==0);
-		assert(zone_y_torque==0);
+		assert(orbit_y_torque==0 || std::isnan(orbit_y_torque));
+		assert(zone_y_torque==0 || std::isnan(zone_y_torque));
 	}
 #endif
 	double result=(sin_inc==0
@@ -512,7 +512,8 @@ double DissipatingZone::inclination_evolution(
 	}
 	double result=(orbit_x_torque*cos_inc-orbit_z_torque*sin_inc)
 			      /__orbital_angmom;
-	if(zone_x_torque!=0) result-=zone_x_torque/__angular_momentum;
+	if(zone_x_torque!=0 && moment_of_inertia()!=0)
+		result-=zone_x_torque/__angular_momentum;
 	if(		deriv==Dissipation::NO_DERIV 
 			|| deriv==Dissipation::AGE 
 			|| deriv==Dissipation::ECCENTRICITY

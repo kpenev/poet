@@ -59,10 +59,10 @@ void YRECEnvelope::configure(double age, double orbital_frequency,
 		double eccentricity, double orbital_angmom, double spin_angmom,
 		double inclination, double periapsis)
 {
-	if(__current_age!=age) {
+//	if(__current_age!=age) {
 		__current_age=age;
 		reset_current_quantities();
-	}
+//	}
 	DissipatingZone::configure(age, orbital_frequency, eccentricity,
 							   orbital_angmom, spin_angmom, inclination,
 							   periapsis);
