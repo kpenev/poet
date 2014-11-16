@@ -89,16 +89,19 @@ public:
 			///The absolute value of the angular momentum of the orbit.
 			double orbital_angmom,
 
-			///The angular momentum of the spin of the zone if the zone is
-			///not locked (ignored it if is).
-			double spin_angmom,
+			///The angular (momentum/velocity) of the spin of the zone if the
+			///zone is not in a spin-orbit lock (ignored it if is).
+			double spin,
 			
 			///The inclination of the zone relative to the orbit.
 			double inclination,
 			
 			///The argument of periapsis of the orbit in the equatorial
 			///planet of the zone.
-			double periapsis);
+			double periapsis,
+			
+			///Is spin an angular momentum or velocity?
+			bool spin_is_frequency);
 
 	///See DissipatingZone::moment_of_inertia.
 	double moment_of_inertia(int deriv_order=0) const

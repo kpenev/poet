@@ -248,16 +248,20 @@ public:
 			///The absolute value of the angular momentum of the orbit.
 			double orbital_angmom,
 
-			///The angular momentum of the spin of the zone if the zone is
-			///not locked (ignored it if is).
-			double spin_angmom,
+			///The angular momentum or spin frequency of the spin of the zone
+			///if the zone is not in a spin--orbit lock (ignored it if is).
+			double spin,
 			
 			///The inclination of the zone relative to the orbit.
 			double inclination,
 			
 			///The argument of periapsis of the orbit in the equatorial
 			///planet of the zone.
-			double periapsis);
+			double periapsis,
+			
+			///Should the spin argument be interpreted as an angular momentum
+			///or a spin frequency?
+			bool spin_is_frequency);
 
 	///\brief Defines the angular momentum of the reference zone for single
 	///body evolution.

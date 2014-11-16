@@ -1469,24 +1469,31 @@ void BinarySystem::secondary_died()
 	std::valarray<double> spin_angmom(num_zones), inclination(num_zones-1), 
 						  periapsis(num_zones-1);
 	DissipatingZone &old_surface_zone=__body1.zone(0);
-	double sin_inc=std::sin(old_surface_zone.inclination()),
-		   cos_inc=std::cos(old_surface_zone.inclination()),
+	double old_surface_inclination=old_surface_zone.inclination(),
+		   sin_inc=std::sin(old_surface_inclination),
+		   cos_inc=std::cos(old_surface_inclination),
 		   old_surface_angmom=old_surface_zone.angular_momentum(),
 		   angmom=std::sqrt(
 				   std::pow(old_surface_angmom + __orbital_angmom*cos_inc, 2)
 				   +
 				   std::pow(__orbital_angmom*sin_inc, 2)),
-		   surface_inclination=std::asin(old_surface_angmom*sin_inc/angmom);
-	if(old_surface_angmom*cos_inc<-__orbital_angmom)
-		surface_inclination=M_PI-surface_inclination;
+		   new_surface_inclination=std::atan2(__orbital_angmom*sin_inc,
+				   							  old_surface_angmom
+											  +
+											  __orbital_angmom*cos_inc);
 
-	ZoneOrientation surface_zone_orientation(surface_inclination, 0);
 	spin_angmom[0]=angmom;
+	assert(num_zones==2);
 	for(unsigned zone_ind=1; zone_ind<num_zones; ++zone_ind) {
 		DissipatingZone &zone=__body1.zone(zone_ind);
+		assert(zone.periapsis()==0);
+		inclination[zone_ind-1]=std::abs(zone.inclination()
+										 -
+										 old_surface_inclination
+										 +
+										 new_surface_inclination);
+		periapsis[zone_ind-1]=0;
 		spin_angmom[zone_ind]=zone.angular_momentum();
-		transform_zone_orientation(zone, surface_zone_orientation,
-				inclination[zone_ind-1], periapsis[zone_ind-1]);
 	}
 	configure(__age, NaN, NaN, &spin_angmom[0], &inclination[0],
 			&periapsis[0], SINGLE);

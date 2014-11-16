@@ -565,7 +565,9 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			status=gsl_odeiv2_evolve_apply(
 					evolve, step_control, step, &ode_system,
 					&t, max_next_t, &step_size, &(orbit[0]));
-			if (status != GSL_SUCCESS) {
+			if (status == GSL_FAILURE)
+				throw Error::GSLZeroStep("rfk45");
+			else if (status != GSL_SUCCESS) {
 				std::ostringstream msg;
 				msg << "GSL signaled failure while evolving (error code " <<
 					status << ")";
@@ -607,6 +609,8 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 				max_next_t=stop.stop_age();
 				step_rejected=true;
 			} else step_rejected=false;
+			std::cerr << "t=" << t << "\r";
+			std::cerr.flush();
 		} while(step_rejected &&
 				std::abs(stop.stop_condition_precision())>__precision);
 		if(!step_rejected)

@@ -50,6 +50,7 @@ Eigen::Vector3d zone_to_zone_transform(const ZoneOrientation &from_zone,
 			+ (cos_cos+sin_sin*cos_dw)*vector[2]);
 }
 
+/*
 void transform_zone_orientation(const ZoneOrientation &zone,
 		const ZoneOrientation &reference, double &inclination,
 		double &periapsis)
@@ -64,3 +65,4 @@ void transform_zone_orientation(const ZoneOrientation &zone,
 	assert(inclination<M_PI);
 #endif
 }
+*/

@@ -12,30 +12,20 @@ void DiskPlanetSystem::release_surface_spin()
 
 void DiskPlanetSystem::add_secondary()
 {
-	ZoneOrientation orbit_zone(__initial_inclination, 0);
 	unsigned nzones=primary().number_zones()+secondary().number_zones();
 	std::valarray<double> angmom(nzones), inclination(nzones), 
 		periapsis(nzones-1);
 	unsigned zone_ind=0;
-	double must_be_zero=0;
 	for(short body_ind=0; body_ind<2; ++body_ind) {
 		const DissipatingBody &body=(body_ind==0 ? primary() : secondary());
 		for(unsigned body_zone_ind=0; body_zone_ind<body.number_zones();
 				++body_zone_ind) {
 			const DissipatingZone &zone=body.zone(body_zone_ind);
 			angmom[zone_ind]=zone.angular_momentum();
-			if(body_ind==0) {
-				transform_zone_orientation(
-						zone, orbit_zone, inclination[zone_ind],
-						(zone_ind==0 ? must_be_zero : periapsis[zone_ind-1])
-						);
-#ifdef DEBUG
-				if(zone_ind==0) assert(must_be_zero==0);
-#endif
-			} else {
-				inclination[zone_ind]=zone.inclination();
-				if(zone_ind) periapsis[zone_ind-1]=zone.periapsis();
-			}
+			assert(zone.inclination()==0);
+			assert(zone.periapsis()==0);
+			inclination[zone_ind]=__initial_inclination;
+			if(zone_ind) periapsis[zone_ind-1]=0;
 			++zone_ind;
 		}
 	}

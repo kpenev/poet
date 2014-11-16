@@ -140,6 +140,19 @@ namespace Error {
 		virtual const char *what() const throw()
 		{return "Not implemented";}
 	};
+
+	///GSL step size decreased below machine precision.
+	class GSLZeroStep : public Runtime {
+	public:
+		///Create a too-small GSL step size exception.
+		GSLZeroStep(const std::string &gsl_step_type) :
+			Runtime("GSL "+gsl_step_type+" step size control requires zero "
+					"step size, aborting!") {}
+
+		///Returns "Tiny step" as the error type.
+		virtual const char *what() const throw()
+		{return "Tiny step";}
+	};
 };
 #endif
 

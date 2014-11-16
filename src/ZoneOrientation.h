@@ -64,6 +64,7 @@ Eigen::Vector3d zone_to_zone_transform(
 		///to_zone (if false).
 		bool with_respect_to_from=false);
 
+/*
 ///Transforms the inclination and periapsis of a zone between references.
 void transform_zone_orientation(
 		///The zone whose orientation we wish to transform
@@ -78,5 +79,6 @@ void transform_zone_orientation(
 
 		///Overwritten by the periapsis of zone in the new reference frame.
 		double &periapsis);
+		*/
 
 #endif

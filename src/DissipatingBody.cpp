@@ -391,7 +391,7 @@ void DissipatingBody::configure(double age, double companion_mass,
 	unsigned angmom_offset=(locked_surface ? 1 : 0);
 	for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
 		DissipatingZone &current_zone=zone(zone_index);
-		double zone_inclination, zone_periapsis, zone_angmom;
+		double zone_inclination, zone_periapsis, zone_spin;
 		if(!inclination) zone_inclination=0;
 		else if(zero_outer_inclination) 
 			zone_inclination=(zone_index ? inclination[zone_index-1] : 0);
@@ -401,14 +401,14 @@ void DissipatingBody::configure(double age, double companion_mass,
 			zone_periapsis=(zone_index ? periapsis[zone_index-1] : 0);
 		else zone_periapsis=periapsis[zone_index];
 		if(locked_surface && zone_index==0)
-			zone_angmom=surface_lock_frequency()*zone(0).moment_of_inertia();
+			zone_spin=surface_lock_frequency();
 		else if(current_zone.locked()) {
-			zone_angmom=NaN;
+			zone_spin=NaN;
 			++angmom_offset;
-		} else zone_angmom=spin_angmom[zone_index-angmom_offset];
+		} else zone_spin=spin_angmom[zone_index-angmom_offset];
 		current_zone.configure(age, __orbital_frequency, eccentricity,
-				orbital_angmom, zone_angmom, zone_inclination,
-				zone_periapsis);
+				orbital_angmom, zone_spin, zone_inclination, zone_periapsis,
+				locked_surface && zone_index==0);
 	}
 	for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
 		DissipatingZone &current_zone=zone(zone_index);

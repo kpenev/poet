@@ -91,16 +91,19 @@ public:
 			///The absolute value of the angular momentum of the orbit.
 			double orbital_angmom,
 
-			///The angular momentum of the spin of the zone if the zone is
-			///not locked (ignored it if is).
-			double spin_angmom,
+			///The angular (momentum/velocity) of the spin of the zone if
+			///the zone is not in a spin-orbit lock (ignored it if is).
+			double spin,
 			
 			///The inclination of the zone relative to the orbit.
 			double inclination,
 			
 			///The argument of periapsis of the orbit in the equatorial
 			///planet of the zone.
-			double periapsis);
+			double periapsis,
+			
+			///Is spin an angular velocity instead of angular momentum?
+			bool spin_is_frequency);
 
 	///The moment of inertia at a given age (no configure() necessary).
 	double moment_of_inertia(double age) const

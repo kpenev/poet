@@ -330,8 +330,8 @@ void DissipatingZone::configure(double
 		age
 #endif
 		, double orbital_frequency,
-		double eccentricity, double orbital_angmom, double spin_angmom,
-		double inclination, double periapsis)
+		double eccentricity, double orbital_angmom, double spin,
+		double inclination, double periapsis, bool spin_is_frequency)
 {
 #ifdef DEBUG
 	assert(age>=0);
@@ -343,8 +343,13 @@ void DissipatingZone::configure(double
 		__spin_frequency=__lock.spin(orbital_frequency);
 		__angular_momentum=__spin_frequency*moment_of_inertia();
 	} else {
-		__angular_momentum=spin_angmom; 
-		__spin_frequency=spin_angmom/moment_of_inertia();
+		if(spin_is_frequency) {
+			__angular_momentum=spin*moment_of_inertia(); 
+			__spin_frequency=spin;
+		} else {
+			__angular_momentum=spin; 
+			__spin_frequency=spin/moment_of_inertia();
+		}
 	}
 	if(std::isnan(orbital_frequency)) return;
 	if(__lock.spin_frequency_multiplier()==0) initialize_locks();
