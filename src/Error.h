@@ -153,6 +153,19 @@ namespace Error {
 		virtual const char *what() const throw()
 		{return "Tiny step";}
 	};
+
+	///Maximum allowed step size decreased below machine precision.
+	class NonGSLZeroStep : public Runtime {
+	public:
+		///Create a too-small GSL step size exception.
+		NonGSLZeroStep() :
+			Runtime("Breaking due to condtions or NaNs has decreased "
+					"maximum step size to zero! Aborting") {}
+
+		///Returns "Tiny step" as the error type.
+		virtual const char *what() const throw()
+		{return "Tiny step";}
+	};
 };
 #endif
 

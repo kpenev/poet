@@ -441,7 +441,8 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 //	std::cerr << std::string(77, '@') << std::endl;
 //	output_history_and_discarded(std::cerr);
 #endif
-	for(size_t cond_ind=0; cond_ind<current_stop_cond.size(); cond_ind++) {
+	for(size_t cond_ind=0; __stop_cond_history.size()>0 &&
+						   cond_ind<current_stop_cond.size(); cond_ind++) {
 		StoppingConditionType
 			stop_cond_type=__stopping_conditions->type(cond_ind);
 		double stop_cond_value=current_stop_cond[cond_ind],
@@ -525,35 +526,12 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 	std::cerr << std::endl << "\tderiv  :";
 	for(unsigned i=0; i<derivatives.size(); ++i) 
 		std::cerr << derivatives[i] << " ";
-	std::cerr << std::endl;
-
-	std::cerr << "Repeating immediately, t=" << t << ": " << std::endl
-		<< "\torbit:";
-	for(unsigned i=0; i<orbit.size(); ++i) 
-		std::cerr << orbit[i] << " ";
-	std::cerr << std::endl << "\tderiv  :";
-	for(unsigned i=0; i<derivatives.size(); ++i) 
-		std::cerr << derivatives[i] << " ";
 	std::cerr << std::endl;*/
 
 	update_stop_condition_history(t, orbit, derivatives, evolution_mode,
 								  stop_reason);
 	clear_discarded();
 	double step_size=0.01*(max_age-t);
-
-	stellar_system_diff_eq(t+1, &(orbit[0]), &(derivatives[0]),
-			sys_mode);
-
-	stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
-			sys_mode);
-/*	std::cerr << "After age change, t=" << t << ": " << std::endl
-		<< "\torbit:";
-	for(unsigned i=0; i<orbit.size(); ++i) 
-		std::cerr << orbit[i] << " ";
-	std::cerr << std::endl << "\tderiv  :";
-	for(unsigned i=0; i<derivatives.size(); ++i) 
-		std::cerr << derivatives[i] << " ";
-	std::cerr << std::endl;*/
 
 	stop_reason=NO_STOP;
 	StopInformation stop;
@@ -575,38 +553,23 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 			}
 			stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
 					sys_mode);
-/*			std::cerr << "Could write for t=" << t << ": " << std::endl
-				<< "\torbit:";
-			for(unsigned i=0; i<orbit.size(); ++i) 
-					std::cerr << orbit[i] << " ";
-			std::cerr << std::endl << "\tderiv  :";
-			for(unsigned i=0; i<derivatives.size(); ++i) 
-				std::cerr << derivatives[i] << " ";
-			std::cerr << std::endl;*/
 			stop=update_stop_condition_history(t, orbit, derivatives,
 											   evolution_mode, stop_reason);
 			if(!acceptable_step(t, stop)) {
-				t=go_back(stop.stop_age(), system, orbit, derivatives);
-				//<++>
-/*				std::cerr << "Rewinding to t=" << t << ": " << std::endl
-					<< "\torbit:";
-				for(unsigned i=0; i<orbit.size(); ++i) 
-					std::cerr << orbit[i] << " ";
-				std::cerr << std::endl << "\tderiv  :";
-				for(unsigned i=0; i<derivatives.size(); ++i) 
-					std::cerr << derivatives[i] << " ";
-				std::cerr << std::endl << "\tcompare:";*/
-/*				stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
-									   sys_mode); */
-/*				for(unsigned i=0; i<derivatives.size(); ++i)
-					std::cerr << derivatives[i] << " ";
-				std::cerr << std::endl;*/
-				//<++>
+				double last_good_t=
+					go_back(stop.stop_age(), system, orbit, derivatives);
+				if(t<last_good_t
+					 *(1.0+10.0*std::numeric_limits<double>::epsilon())) {
+					throw Error::NonGSLZeroStep();
+				}
+				t=last_good_t;
 				if(stop.is_crossing())
 					stop.stop_condition_precision()=
 						__stop_cond_history.back()[
 						stop.stop_condition_index()];
 				max_next_t=stop.stop_age();
+				step_size=0.1*(max_next_t-t);
+				gsl_odeiv2_evolve_reset(evolve);
 				step_rejected=true;
 			} else step_rejected=false;
 			std::cerr << "t=" << t << "\r";
