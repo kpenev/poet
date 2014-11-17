@@ -424,7 +424,7 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 		EvolModeType evolution_mode, StoppingConditionType stop_reason)
 {
 	for(unsigned i=0; i<orbit.size(); ++i)
-		if(std::isnan(orbit[i]))
+		if(std::isnan(orbit[i]) || (evolution_mode==BINARY && orbit[0]<=0))
 			return StopInformation(0.5*(age+__stop_history_ages.back()),
 								   Inf);
 	std::valarray<double> current_stop_cond(
@@ -494,6 +494,9 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 #ifdef DEBUG
 	std::cerr << "Starting evolution leg in " << evolution_mode
 		<< " from t=" << system.age() << " with initial orbit=";
+	std::cerr << "Stopping condition types:" << std::endl;
+	for(size_t i=0; i<__stopping_conditions->num_subconditions(); ++i)
+		std::cerr << i << ": " << __stopping_conditions->type(i) << std::endl;
 	for(size_t i=0; i<nargs; ++i) {
 		if(i) std::cerr << ", ";
 		std::cerr << orbit[i];

@@ -58,6 +58,13 @@ std::valarray<double> SynchronizedCondition::operator()(
 	stop_deriv.resize(1, 
 			((wspin*dworb_dt-dwspin_dt*worb)/std::pow(worb, 2)*
 			 __spin_freq_mult)/__orbital_freq_mult);
+#ifdef DEBUG
+	if(std::isnan((__orbital_freq_mult*worb - wspin*__spin_freq_mult)/worb))
+		std::cerr << "Synchronized value(worb=" << worb << ", wspin=" << wspin
+			<< ", m'=" << __orbital_freq_mult << ", m="
+			<< "__spin_freq_mult) is NaN."
+			<< std::endl << ;
+#endif
 	return std::valarray<double>(
 			(__orbital_freq_mult*worb - wspin*__spin_freq_mult)/worb, 1);
 }
