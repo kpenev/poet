@@ -83,25 +83,40 @@ void EccentricityExpansionCoefficients::read(
 	for(int epower=0; epower<=static_cast<int>(__max_e_power); ++epower) {
 		for(int s=-epower-2; s<=epower-2; s+=2) {
 			if(s) {
+				assert(s+__max_e_power+2>=0);
+				assert(s+__max_e_power+2<__gamma_minus.size());
 				std::vector<double> 
 					&destination=__gamma_minus[s+__max_e_power+2];
 				if(destination.size()==0)
 					destination.resize(inner_index(-1, s, __max_e_power)+1);
+				assert(inner_index(-1, s, epower)>=0);
+				assert(inner_index(-1, s, epower)
+						<static_cast<int>(destination.size()));
 				tabulated_coef >> destination[inner_index(-1, s, epower)];
 			}
 		}
 		for(int s=-epower; s<=epower; s+=2) {
+			assert(s+__max_e_power>=0);
+			assert(s+__max_e_power<__alpha.size());
 			std::vector<double> &destination=__alpha[s+__max_e_power];
 			if(destination.size()==0) 
 				destination.resize(inner_index(0, s, __max_e_power)+1);
+			assert(inner_index(0, s, epower)>=0);
+			assert(inner_index(0, s, epower)
+					<static_cast<int>(destination.size()));
 			tabulated_coef >> destination[inner_index(0, s, epower)];
 		}
 		for(int s=-epower+2; s<=epower+2; s+=2) {
 			if(s) {
+				assert(s+__max_e_power-2>=0);
+				assert(s+__max_e_power-2<__gamma_plus.size());
 				std::vector<double> 
 					&destination=__gamma_plus[s+__max_e_power-2];
 				if(destination.size()==0)
 					destination.resize(inner_index(1, s, __max_e_power)+1);
+				assert(inner_index(1, s, epower)>=0);
+				assert(inner_index(1, s, epower)
+						<static_cast<int>(destination.size()));
 				tabulated_coef >> destination[inner_index(1, s, epower)];
 			}
 		}

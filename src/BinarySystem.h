@@ -150,7 +150,7 @@ private:
 	///
 	///The age of the system must already be set appropriately by
 	///configure().
-	void locked_surface_differential_equations(
+	int locked_surface_differential_equations(
 			///On output is set to the rates of change of \f$S^0_i\f$.
 			double *evolution_rates) const;
 
@@ -171,7 +171,7 @@ private:
 	///if no other body is present.
 	///
 	///configure() must already have been called.
-	void single_body_differential_equations(			
+	int single_body_differential_equations(			
 			///On outputs is set to the rate of change of the orbital
 			///parameters.
 			double *evolution_rates) const;
@@ -350,7 +350,7 @@ private:
 			double *evolution_rates) const;
 			
 	///The differential equations for a system with both bodies present.
-	void binary_differential_equations(
+	int binary_differential_equations(
 		///On output is set to the rates of change of the evolution
 		///variables. See differintal_equations() for details.
 		double *differential_equations);
@@ -698,7 +698,7 @@ public:
 	const std::string get_name() const {return __name;}
 
 	///Sets the current state of the system.
-	virtual void configure(
+	virtual int configure(
 			///The age to set the system to.
 			double age,
 
@@ -727,7 +727,7 @@ public:
 
 	///Sets the current state of the system directly from the evolutino
 	///variables.
-	void configure(
+	int configure(
 			///The current age of the system.
 			double age,
 

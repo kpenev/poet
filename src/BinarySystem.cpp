@@ -21,7 +21,7 @@ void BinarySystem::find_locked_zones()
 	}
 }
 
-void BinarySystem::locked_surface_differential_equations(
+int BinarySystem::locked_surface_differential_equations(
 		double *evolution_rates) const
 {
 	for(unsigned zone_index=1; zone_index<__body1.number_zones();
@@ -32,6 +32,7 @@ void BinarySystem::locked_surface_differential_equations(
 		assert(__body1.nontidal_torque(zone_index)[1]==0);
 #endif
 	}
+	return 0;
 }
 
 void BinarySystem::locked_surface_jacobian(double *param_derivs,
@@ -92,7 +93,7 @@ void BinarySystem::locked_surface_jacobian(double *param_derivs,
 	}
 }
 
-void BinarySystem::single_body_differential_equations(
+int BinarySystem::single_body_differential_equations(
 		double *evolution_rates) const
 {
 	unsigned nzones=__body1.number_zones();
@@ -117,6 +118,7 @@ void BinarySystem::single_body_differential_equations(
 					torque);
 		} else reference_torque=torque;
 	}
+	return 0;
 }
 
 void BinarySystem::fill_single_body_jacobian(
@@ -586,7 +588,7 @@ void BinarySystem::fill_binary_evolution_rates(
 			__orbit_angmom_gain);
 }
 
-void BinarySystem::binary_differential_equations(
+int BinarySystem::binary_differential_equations(
 		double *differential_equations)
 {
 	Eigen::Vector3d global_orbit_torque=__body1.tidal_orbit_torque()+
@@ -602,6 +604,7 @@ void BinarySystem::binary_differential_equations(
 						std::cos(__body1.zone(0).inclination());
 
 	fill_binary_evolution_rates(global_orbit_torque, differential_equations);
+	return 0;
 }
 
 	template<typename VALUE_TYPE>
@@ -1241,7 +1244,7 @@ void BinarySystem::fill_single_orbit(std::valarray<double> &orbit) const
 	}
 }
 
-void BinarySystem::configure(double age, double semimajor,
+int BinarySystem::configure(double age, double semimajor,
 		double eccentricity, const double *spin_angmom,
 		const double *inclination, const double *periapsis,
 		EvolModeType evolution_mode)
@@ -1279,19 +1282,20 @@ void BinarySystem::configure(double age, double semimajor,
 //	if(evolution_mode==BINARY)
 //		assert(__semimajor>minimum_semimajor());
 #endif
+	return 0;
 }
 
-void BinarySystem::configure(double age, const double *parameters, 
+int BinarySystem::configure(double age, const double *parameters, 
 		EvolModeType evolution_mode)
 {
 	double semimajor, eccentricity;
 	const double *spin_angmom, *inclination, *periapsis;
 	unsigned num_zones=number_zones();
 	if(evolution_mode==BINARY) {
-		semimajor=(__body1.number_locked_zones() ||
-				   __body2.number_locked_zones()
-				   ? parameters[0] : std::pow(std::max(0.0, parameters[0]),
-					   						  1.0/6.5));
+		if(__body1.number_locked_zones() || __body2.number_locked_zones()) {
+			semimajor=parameters[0];
+		} else if(parameters[0]<0) return GSL_EDOM;
+		else semimajor=std::pow(parameters[0], 1.0/6.5);
 		eccentricity=parameters[1];
 		inclination=parameters+2;
 	} else {
@@ -1311,8 +1315,8 @@ void BinarySystem::configure(double age, const double *parameters,
 		if(evolution_mode==SINGLE) --periapsis;
 		spin_angmom=periapsis+num_zones-1;
 	}
-	configure(age, semimajor, eccentricity, spin_angmom, inclination,
-			  periapsis, evolution_mode);
+	return configure(age, semimajor, eccentricity, spin_angmom, inclination,
+					 periapsis, evolution_mode);
 }
 
 EvolModeType BinarySystem::fill_orbit(std::valarray<double> &orbit) const
@@ -1358,21 +1362,17 @@ int BinarySystem::differential_equations(double age,
 		const double *parameters, EvolModeType evolution_mode,
 		double *differential_equations)
 {
-	configure(age, parameters, evolution_mode);
+	int status=configure(age, parameters, evolution_mode);
+	if(status!=GSL_SUCCESS) return status;
 	switch(evolution_mode) {
 		case LOCKED_SURFACE_SPIN : 
-			locked_surface_differential_equations(differential_equations);
-			return 0;
+			return locked_surface_differential_equations(
+					differential_equations);
 		case SINGLE :
-			single_body_differential_equations(differential_equations);
-			return 0;
+			return single_body_differential_equations(
+					differential_equations);
 		case BINARY :
-			binary_differential_equations(differential_equations);
-//			std::cerr << "t: " << age << ", diff eq=";
-//			for(unsigned i=0; i<10; ++i) //<++>
-//				std::cerr << differential_equations[i] << " "; //<++>
-//			std::cerr << std::endl; //<++>
-			return 0;
+			return binary_differential_equations(differential_equations);
 		default :
 			throw Error::BadFunctionArguments("Evolution mode other than "
 					"LOCKED_SURFACE_SPIN, SINGLE or BINARY encountered in "

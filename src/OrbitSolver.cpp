@@ -548,17 +548,20 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 					&t, max_next_t, &step_size, &(orbit[0]));
 			if (status == GSL_FAILURE)
 				throw Error::GSLZeroStep("rfk45");
-			else if (status != GSL_SUCCESS) {
+			else if (status != GSL_SUCCESS && status != GSL_EDOM) {
 				std::ostringstream msg;
 				msg << "GSL signaled failure while evolving (error code " <<
 					status << ")";
 				throw Error::Runtime(msg.str());
 			}
-			stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
-					sys_mode);
-			stop=update_stop_condition_history(t, orbit, derivatives,
-											   evolution_mode, stop_reason);
-			if(!acceptable_step(t, stop)) {
+			if(status==GSL_SUCCESS) {
+				stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
+									   sys_mode);
+				stop=update_stop_condition_history(t, orbit, derivatives,
+												   evolution_mode,
+												   stop_reason);
+			}
+			if(status==GSL_EDOM || !acceptable_step(t, stop)) {
 				double last_good_t=
 					go_back(stop.stop_age(), system, orbit, derivatives);
 				if(t<last_good_t
@@ -575,7 +578,7 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 				gsl_odeiv2_evolve_reset(evolve);
 				step_rejected=true;
 			} else step_rejected=false;
-			std::cerr << "t=" << t << "\r";
+			std::cerr << "t=" << t << std::endl;
 			std::cerr.flush();
 		} while(step_rejected &&
 				std::abs(stop.stop_condition_precision())>__precision);
