@@ -16,13 +16,15 @@ std::valarray<double> WindSaturationCondition::operator()(
 					  +(__primary ? 0
 							      : __other_body.number_zones()
 								    -__other_body.number_locked_zones());
-	else angmom_index-=1;
-	double wsurf=__body.spin_frequency(),
-		   surf_angmom_deriv=derivatives[angmom_index];
+	else angmom_index-=3;
+	assert(angmom_index>=0);
+	assert(angmom_index<=derivatives.size());
+	double wsurf=__body.spin_frequency(), surf_angmom_deriv,
+		   result=(wsurf-__saturation_freq)/__saturation_freq;
+	surf_angmom_deriv=derivatives[angmom_index];
 	stop_deriv.resize(1,
 		   	(surf_angmom_deriv - __body.zone(0).moment_of_inertia(1)*wsurf)
 			/(__body.zone(0).moment_of_inertia()*__saturation_freq));
 	if(std::isinf(__saturation_freq)) return std::valarray<double>(-1.0, 1);
-	return std::valarray<double>((wsurf-__saturation_freq)/__saturation_freq,
-								 1);
+	return std::valarray<double>(result, 1);
 }
