@@ -21,7 +21,8 @@ COMMON_MODULES  = BinarySystem BreakLockCondition CombinedStoppingCondition \
 				  SpinOrbitLockInfo StellarEvolution StopHistoryInterval \
 				  StopInformation StoppingCondition SynchronizedCondition \
 				  TwoPhaseLagZone WindSaturationCondition YRECCore \
-				  YRECEnvelope YRECIO ZoneOrientation
+				  YRECEnvelope YRECIO ZoneOrientation ConstSolutionIterator \
+				  IOColumns
 
 BOOST_LIB		= boost_serialization-mt
 LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \

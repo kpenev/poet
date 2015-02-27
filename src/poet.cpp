@@ -249,51 +249,6 @@ void CommandLineOptions::verify_custom_stellar_evolution()
 	}
 }
 
-void init_output_column_names()
-{
-	OUTPUT_COLUMN_NAMES[OutCol::AGE]="t";
-	OUTPUT_COLUMN_NAMES[OutCol::SEMIMAJOR]="a";
-	OUTPUT_COLUMN_NAMES[OutCol::CONV_INCLINATION]="convincl";
-	OUTPUT_COLUMN_NAMES[OutCol::CONV_PERIAPSIS]="convperi";
-	OUTPUT_COLUMN_NAMES[OutCol::RAD_INCLINATION]="radincl";
-	OUTPUT_COLUMN_NAMES[OutCol::RAD_PERIAPSIS]="radperi";
-	OUTPUT_COLUMN_NAMES[OutCol::WORB]="Worb";
-	OUTPUT_COLUMN_NAMES[OutCol::PORB]="Porb";
-	OUTPUT_COLUMN_NAMES[OutCol::LORB]="Lorb";
-	OUTPUT_COLUMN_NAMES[OutCol::LCONV]="Lconv";
-	OUTPUT_COLUMN_NAMES[OutCol::LRAD]="Lrad";
-	OUTPUT_COLUMN_NAMES[OutCol::LTOT]="L";
-	OUTPUT_COLUMN_NAMES[OutCol::ICONV]="Iconv";
-	OUTPUT_COLUMN_NAMES[OutCol::IRAD]="Irad";
-	OUTPUT_COLUMN_NAMES[OutCol::ITOT]="I";
-	OUTPUT_COLUMN_NAMES[OutCol::WSURF]="Wsurf";
-	OUTPUT_COLUMN_NAMES[OutCol::WRAD]="Wrad";
-	OUTPUT_COLUMN_NAMES[OutCol::PSURF]="Psurf";
-	OUTPUT_COLUMN_NAMES[OutCol::PRAD]="Prad";
-	OUTPUT_COLUMN_NAMES[OutCol::EVOL_MODE]="mode";
-	OUTPUT_COLUMN_NAMES[OutCol::WIND_STATE]="wind";
-	OUTPUT_COLUMN_NAMES[OutCol::RSTAR]="R";
-	OUTPUT_COLUMN_NAMES[OutCol::LSTAR]="Lum";
-	OUTPUT_COLUMN_NAMES[OutCol::RRAD]="Rrad";
-	OUTPUT_COLUMN_NAMES[OutCol::MRAD]="Mrad";
-	OUTPUT_COLUMN_NAMES[OutCol::ICONV_DERIV]="DIconv";
-	OUTPUT_COLUMN_NAMES[OutCol::IRAD_DERIV]="DIrad";
-	OUTPUT_COLUMN_NAMES[OutCol::ITOT_DERIV]="DI";
-	OUTPUT_COLUMN_NAMES[OutCol::RSTAR_DERIV]="DR";
-	OUTPUT_COLUMN_NAMES[OutCol::RRAD_DERIV]="DRrad";
-	OUTPUT_COLUMN_NAMES[OutCol::MRAD_DERIV]="DMrad";
-	OUTPUT_COLUMN_NAMES[OutCol::ICONV_SECOND_DERIV]="DDIconv";
-	OUTPUT_COLUMN_NAMES[OutCol::IRAD_SECOND_DERIV]="DDIrad";
-	OUTPUT_COLUMN_NAMES[OutCol::ITOT_SECOND_DERIV]="DDI";
-	OUTPUT_COLUMN_NAMES[OutCol::RRAD_SECOND_DERIV]="DDRrad";
-#ifdef COLUMN_NAME_EMPHASIS
-	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; ++i)
-		OUTPUT_COLUMN_NAMES[i]=std::string(COLUMN_NAME_EMPHASIS) +
-								OUTPUT_COLUMN_NAMES[i] +
-								std::string(COLUMN_NAME_EMPHASIS);
-#endif
-}
-
 void init_track_column_names()
 {
 	TRACK_COLUMN_NAMES[CustomStellarEvolution::AGE]="t";
@@ -608,7 +563,7 @@ void CommandLineOptions::define_options()
 			"argument should be a comma separated list containing some of "
 			"the following columns:" << std::endl;
 	for(int i=0; i<OutCol::NUM_OUTPUT_QUANTITIES; ++i)
-		option_help << "\t* " << OUTPUT_COLUMN_NAMES[i]
+		option_help << "\t* " << output_column_names()[i]
 					<< ": " << __output_column_descr[i] << std::endl;
 	option_help << "Default: " << __default_output_columns;
 	__output_file_columns=arg_str0(NULL, "output-columns",
@@ -762,7 +717,7 @@ void CommandLineOptions::postprocess()
 				__input_column_names, InCol::NUM_INPUT_QUANTITIES,
 				__input_file_format, true);
 	parse_column_list(__output_file_columns->sval[0],
-			OUTPUT_COLUMN_NAMES, OutCol::NUM_OUTPUT_QUANTITIES,
+			output_column_names(), OutCol::NUM_OUTPUT_QUANTITIES,
 			__output_file_format);
 	__need_orbit=false;
 	for(size_t i=0; i<__output_file_format.size(); ++i)
@@ -934,113 +889,37 @@ void output_solution(const OrbitSolver &solver, const BinarySystem &system,
 		double start_age, double end_age, double timestep,
 		const std::list<double> &required_ages)
 {
-	const DissipatingZone &convective=star.zone(0),
-		  				  &radiative=star.zone(1);
-	std::list<double>::const_iterator
-		age_i=solver.evolution_ages().begin(),
-		a_i=system.semimajor_evolution().begin(),
-		e_i=system.eccentricity_evolution().begin(),
-		conv_inclination_i=
-			convective.get_evolution_real(INCLINATION).begin(),
-		conv_periapsis_i=convective.get_evolution_real(PERIAPSIS).begin(),
-		conv_angmom_i=
-			convective.get_evolution_real(ANGULAR_MOMENTUM).begin(),
-		conv_inertia_i=
-			convective.get_evolution_real(MOMENT_OF_INERTIA).begin(),
-		rad_inclination_i=radiative.get_evolution_real(INCLINATION).begin(),
-		rad_periapsis_i=radiative.get_evolution_real(PERIAPSIS).begin(),
-		rad_angmom_i=radiative.get_evolution_real(ANGULAR_MOMENTUM).begin(),
-		rad_inertia_i=
-			radiative.get_evolution_real(MOMENT_OF_INERTIA).begin(),
-		rstar_i=convective.get_evolution_real(OUTER_RADIUS).begin(),
-		rcore_i=radiative.get_evolution_real(OUTER_RADIUS).begin(),
-		mcore_i=radiative.get_evolution_real(OUTER_MASS).begin();
-	std::list<EvolModeType>::const_iterator
-		mode_i=solver.mode_evolution().begin();
-	std::list<bool>::const_iterator 
-		wind_sat_i=star.wind_saturation_evolution().begin();
-
-
-	std::list<double>::const_iterator last_age=solver.evolution_ages().end();
-	std::list<double> age_list;
-	if(age_i==last_age) {
-		std::list<double>::const_iterator
-			required_ages_iter=required_ages.begin();
-		for(double age=start_age; age<=end_age; age+=timestep) {
-			for(;required_ages_iter!=required_ages.end() &&
-					*required_ages_iter<age; ++required_ages_iter)
-				age_list.push_back(*required_ages_iter);
-			age_list.push_back(age);
-		}
-		age_i=age_list.begin();
-		last_age=age_list.end();
-	}
-	double mstar=star.mass(), mplanet=system.secondary().mass();
-
 	std::ofstream outf(filename.c_str());
 	outf.precision(16);
 	outf << "#";
 	for(size_t i=0; i<output_file_format.size(); i++)
 		outf << std::setw(i==0 ? 24 : 25)
-            << OUTPUT_COLUMN_NAMES[output_file_format[i]];
+            << output_column_names()[output_file_format[i]];
 	outf << std::endl;
-
-	while(age_i!=last_age) {
+	for(
+			ConstSolutionIterator solution_iterator(solver,
+													system,
+													star,
+													start_age,
+													end_age,
+													timestep,
+													required_ages);
+			solution_iterator;
+			++solution_iterator
+	) {
 		for(size_t i=0; i<output_file_format.size(); i++) {
-			Eigen::Vector3d Ltot=zone_to_zone_transform(
-					star.zone(1), star.zone(0),
-					Eigen::Vector3d(0, 0, *rad_angmom_i));
-			Ltot[2]+=*conv_angmom_i;
-			double worb=orbital_angular_velocity(mstar, mplanet, *a_i),
-				   Lorb=orbital_angular_momentum(mstar, mplanet, *a_i, *e_i),
-				   wconv=(*conv_angmom_i)/(*conv_inertia_i),
-				   wrad=(*rad_angmom_i)/(*rad_inertia_i);
 			outf << std::setw(25);
-			switch(output_file_format[i]) {
-				case OutCol::AGE : outf << *age_i; break;
-				case OutCol::SEMIMAJOR : outf << *a_i; break;
-				case OutCol::WORB : outf << worb; break;
-				case OutCol::PORB : outf << 2.0*M_PI/worb; break;
-				case OutCol::LORB : outf << Lorb; break;
-				case OutCol::CONV_INCLINATION : outf << *conv_inclination_i;
-												break;
-				case OutCol::RAD_INCLINATION : outf << *rad_inclination_i;
-											   break;
-				case OutCol::CONV_PERIAPSIS : outf << *conv_periapsis_i;
-											  break;
-				case OutCol::RAD_PERIAPSIS : outf << *rad_periapsis_i;
-											 break;
-				case OutCol::LCONV : outf << *conv_angmom_i; break;
-				case OutCol::LRAD : outf << *rad_angmom_i; break;
-				case OutCol::LTOT : outf << Ltot.norm(); break;
-				case OutCol::ICONV : outf << *conv_inertia_i; break;
-				case OutCol::IRAD : outf << *rad_inertia_i; break;
-				case OutCol::ITOT : outf << *conv_inertia_i+*rad_inertia_i;
-									break;
-				case OutCol::WSURF : outf << wconv; break;
-				case OutCol::WRAD : outf << wrad; break;
-				case OutCol::PSURF : outf << 2.0*M_PI/wconv;
-									 break;
-				case OutCol::PRAD : outf << 2.0*M_PI/wrad; break;
-				case OutCol::EVOL_MODE : outf << *mode_i; break;
-				case OutCol::WIND_STATE : outf<< (*wind_sat_i
-												  ? "SATURATED"
-												  : "NOT SATURATED"); break;
-				case OutCol::RSTAR : outf << *rstar_i; break;
-				case OutCol::LSTAR : outf << star.luminosity(*age_i); break;
-				case OutCol::RRAD : outf << *rcore_i; break;
-				case OutCol::MRAD : outf << *mcore_i; break;
-				default : throw Error::BadFunctionArguments(
-								  "Unrecognized output column encountered in"
-								  " output_file_format in "
-								  "poet.cpp:output_solution.");
-			}
+			if(output_file_format[i]<OutCol::NUM_REAL_OUTPUT_QUANTITIES)
+				outf << 
+					solution_iterator.real_quantity(output_file_format[i]);
+			else if(output_file_format[i]==OutCol::EVOL_MODE)
+				outf << solution_iterator.evolution_mode();
+			else if(output_file_format[i]==OutCol::WIND_STATE)
+				outf << (solution_iterator.wind_saturation()
+						 ? "SATURATED"
+						 : "NOT SATURATED");
 		}
 		outf << std::endl;
-		++age_i; ++a_i; ++e_i, ++conv_inclination_i, ++conv_periapsis_i,
-			++conv_angmom_i, ++conv_inertia_i, ++rad_inclination_i,
-			++rad_periapsis_i, ++rad_angmom_i, ++rad_inertia_i, ++rstar_i,
-			++rcore_i, ++mcore_i, ++mode_i; ++wind_sat_i;
 	}
 	outf.close();
 }
@@ -1299,7 +1178,6 @@ int main(int argc, char **argv)
 		std::cerr.precision(16);
 		std::cerr.setf(std::ios_base::scientific);
 #endif
-		init_output_column_names();
 		init_track_column_names();
 		CommandLineOptions options(argc, argv);
 		DissipatingZone::read_eccentricity_expansion(

@@ -19,13 +19,18 @@
 
 ///IDs for quantities saved as part of the evolution.
 enum ZoneEvolutionQuantities {
-	ANGULAR_MOMENTUM,		 ///< Angular momentum of the zone.
-	INCLINATION,			 ///< Inclination of the zone.
-	PERIAPSIS,				 ///< Periapsis of the zone.
-	MOMENT_OF_INERTIA,		 ///< Moment of inertia of the zone
-	OUTER_RADIUS,			 ///< Outer radius boundary of the zone
-	OUTER_MASS,				 ///< Outer mass boundary of the zone.
-	NUM_REAL_EVOL_QUANTITIES,///< Number of real values evolution quantities.
+	ANGULAR_MOMENTUM,		  ///< Angular momentum of the zone.
+	INCLINATION,			  ///< Inclination of the zone.
+	PERIAPSIS,				  ///< Periapsis of the zone.
+	MOMENT_OF_INERTIA,		  ///< Moment of inertia of the zone
+	MOMENT_OF_INERTIA_FIRST_DERIV, ///< Age derivative of MOMENT_OF_INERTIA
+	MOMENT_OF_INERTIA_SECOND_DERIV, ///<Age second deriv of MOMENT_OF_INERTIA
+	OUTER_RADIUS,			  ///< Outer radius boundary of the zone
+	OUTER_RADIUS_FIRST_DERIV, ///< First age deriv of OUTER_RADIUS
+	OUTER_RADIUS_SECOND_DERIV,///< Second age deriv of OUTER_RADIUS
+	OUTER_MASS,				  ///< Outer mass boundary of the zone.
+	OUTER_MASS_DERIV,		  ///< First age derivative of OUTER_MASS.
+	NUM_REAL_EVOL_QUANTITIES, ///< Number of real values evolution quantities.
 	E_ORDER=NUM_REAL_EVOL_QUANTITIES,///< Eccentricity expansion order.
 
 	///For locked zones this is the orbital frequency multiple of the lock.
@@ -419,8 +424,22 @@ public:
 			///(NO_DERIV) or its derivative w.r.t. the specified quantity.
 			Dissipation::Derivative deriv) const =0;
 
-	///The moment of inertia of the zone or its age derivative.
+	///\brief Moment of inertia of the zone or its age derivative at the age
+	///of last configure() call.
 	virtual double moment_of_inertia(
+			///What to return:
+			/// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
+			/// - 1 The rate of change of the moment of inertia in 
+			///     \f$M_\odot R_\odot^2/Gyr\f$
+			/// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
+			int deriv_order=0) const =0;
+
+	///\brief The moment of inertia of the zone or its age derivative at a
+	///specified age (no configure necessary).
+	virtual double moment_of_inertia(
+			///The age at which to evaluate the moment of inertia.
+			double age,
+
 			///What to return:
 			/// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
 			/// - 1 The rate of change of the moment of inertia in 
@@ -582,7 +601,8 @@ public:
 	static void read_eccentricity_expansion(const std::string &fname)
 	{__pms.read(fname);}
 
-	///\brief Current outer radius of the zone or its derivative.
+	///\brief Outer radius of the zone or its derivative (per last
+	//configure()).
 	///
 	///The outermost zone's outer radius is considered to be the radius of
 	///the body.
@@ -592,6 +612,10 @@ public:
 			/// - 1 The rate of change of the boundary in \f$R_\odot/Gyr\f$
 			/// - 2 The second derivative in \f$R_\odot/Gyr^2\f$
 			int deriv_order=0) const =0;
+
+	///\brief Same as outer_radius(int) but may be evaluated at a different
+	///age than for last confgure(). 
+	virtual double outer_radius(double age, int deriv_order=0) const =0;
 
 	///\brief Mass coordinate of the zone's outer ouboundary or its
 	///derivative.
@@ -604,6 +628,10 @@ public:
 			/// - 1 The rate of change of the boundary in \f$M_\odot/Gyr\f$
 			/// - 2 The second derivative in \f$M_\odot/Gyr^2\f$
 			int deriv_order=0) const =0;
+
+	///\brief Same as outer_mass(int), but may be evaluated at a different
+	///age than last configure().
+	virtual double outer_mass(double age, int deriv_order=0) const =0;
 
 	///To what order should eccentricity expansion be performed for the given
 	///value of the eccentricity.

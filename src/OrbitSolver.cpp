@@ -578,7 +578,7 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 				gsl_odeiv2_evolve_reset(evolve);
 				step_rejected=true;
 			} else step_rejected=false;
-			std::cerr << "t=" << t << std::endl;
+//			std::cerr << "t=" << t << std::endl;
 			std::cerr.flush();
 		} while(step_rejected &&
 				std::abs(stop.stop_condition_precision())>__precision);

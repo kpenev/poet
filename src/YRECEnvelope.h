@@ -105,17 +105,23 @@ public:
 			///Is spin an angular velocity instead of angular momentum?
 			bool spin_is_frequency);
 
-	///The moment of inertia at a given age (no configure() necessary).
-	double moment_of_inertia(double age) const
-	{return (*__moment_of_inertia)(age);}
+	///See DissipatingZone::moment_of_inertia(double, int)
+	double moment_of_inertia(double age, int deriv_order=0) const;
 
-	///See DissipatingZone::moment_of_inertia.
+	///See DissipatingZone::moment_of_inertia(int).
 	double moment_of_inertia(int deriv_order=0) const
 	{return current_age_quantity(INERTIA, deriv_order);}
 
-	///See DissipatingZone::outer_radius.
+	///See DissipatingZone::outer_radius(double, int).
+	double outer_radius(double age, int deriv_order=0) const;
+
+	///See DissipatingZone::outer_radius(int).
 	double outer_radius(int deriv_order=0) const
 	{return current_age_quantity(RADIUS, deriv_order);}
+
+	///See DissipatingZone::outer_mass(double, int).
+	double outer_mass(double, int deriv_order=0) const
+	{return (deriv_order ? 0 : __stellar_mass);}
 
 	///See DissipatingZone::outer_mass.
 	double outer_mass(int deriv_order=0) const
