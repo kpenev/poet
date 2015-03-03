@@ -25,8 +25,6 @@ std::valarray<double> SecondaryDeathCondition::operator()(
 	stop_deriv.resize(1,(dsemimajor_dt*min_semimajor
 						  -semimajor*__system.minimum_semimajor(true))
 						/std::pow(min_semimajor, 2));
-	std::cerr << "Secondary death condition(" << __system.age() << ")="
-		<< (semimajor-min_semimajor)/min_semimajor << std::endl;
 	return std::valarray<double>(
 			(semimajor-min_semimajor)/min_semimajor, 1);
 }
