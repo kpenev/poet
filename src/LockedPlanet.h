@@ -45,15 +45,26 @@ public:
 			/// - 1 The rate of change of the moment of inertia in 
 			///     \f$M_\odot R_\odot^2/Gyr\f$
 			/// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
-			int deriv_order=0) const 
+			int deriv_order=0) const
 	{return (deriv_order==0 ? 1e-6*__mass*std::pow(__radius, 2) : 0);}
+
+	double moment_of_inertia(double, int deriv_order=0) const
+	{return moment_of_inertia(deriv_order);}
 
 	///The radius of the planet.
 	double outer_radius(int deriv_order=0) const
 	{return (deriv_order==0 ? __radius : 0);}
 
+	///Same as outer_radius(int) but accept age argument (ignored).
+	double outer_radius(double, int deriv_order=0) const
+	{return (deriv_order==0 ? __radius : 0);}
+
 	///The mass of the planet.
 	double outer_mass(int deriv_order=0) const
+	{return (deriv_order==0 ? __mass : 0);}
+
+	///Same as outer_mass(int) but accept age argument (ignored).
+	double outer_mass(double, int deriv_order=0) const
 	{return (deriv_order==0 ? __mass : 0);}
 
 	///No dissipation.

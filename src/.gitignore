@@ -13,3 +13,5 @@ poet.tgz
 *.track
 *.pyc
 alpha_beta_values*
+eccentricity_expansion_coef.txt
+kelt

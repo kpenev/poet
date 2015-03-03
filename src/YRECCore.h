@@ -103,17 +103,26 @@ public:
 			///Is spin an angular momentum or velocity?
 			bool spin_is_frequency);
 
-	///See DissipatingZone::moment_of_inertia.
+	///See DissipatingZone::moment_of_inertia(int).
 	double moment_of_inertia(int deriv_order=0) const
 	{return current_age_quantity(INERTIA, deriv_order);}
 
-	///See DissipatingZone::outer_radius.
+	///See DissipatingZone::moment_of_inertia(double, int).
+	double moment_of_inertia(double age, int deriv_order=0) const;
+
+	///See DissipatingZone::outer_radius(int).
 	double outer_radius(int deriv_order=0) const
 	{return current_age_quantity(RADIUS, deriv_order);}
 
-	///See DissipatingZone::outer_mass.
+	///See DissipatingZone::outer_radius(double, int).
+	double outer_radius(double age, int deriv_order=0) const;
+
+	///See DissipatingZone::outer_mass(int).
 	double outer_mass(int deriv_order=0) const
 	{return current_age_quantity(MASS, deriv_order);}
+
+	///See DissipatingZone::outer_mass(double, int).
+	double outer_mass(double age, int deriv_order=0) const;
 
 	///No dissipation in the core.
 	bool dissipative() const {return false;} 

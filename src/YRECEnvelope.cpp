@@ -67,3 +67,15 @@ void YRECEnvelope::configure(double age, double orbital_frequency,
 							   orbital_angmom, spin, inclination, periapsis,
 							   spin_is_frequency);
 }
+
+double YRECEnvelope::moment_of_inertia(double age, int deriv_order) const
+{
+	if(deriv_order==0) return (*__moment_of_inertia)(age);
+	else return __moment_of_inertia->deriv(age)->order(deriv_order);
+}
+
+double YRECEnvelope::outer_radius(double age, int deriv_order) const
+{
+	if(deriv_order==0) return (*__outer_radius)(age);
+	else return __outer_radius->deriv(age)->order(deriv_order);
+}

@@ -11,8 +11,15 @@ std::ostream &operator<<(std::ostream &os,
 		case INCLINATION : os << "INCLINATION"; break;
 		case PERIAPSIS : os << "PERIAPSIS"; break;
 		case MOMENT_OF_INERTIA : os << "MOMENT_OF_INERTIA"; break;
+		case MOMENT_OF_INERTIA_FIRST_DERIV :
+								 os << "DMOMENT_OF_INERTIA_DT"; break;
+		case MOMENT_OF_INERTIA_SECOND_DERIV :
+								 os << "D2MOMENT_OF_INERTIA_DT2"; break;
 		case OUTER_RADIUS : os << "OUTER_RADIUS"; break;
+		case OUTER_RADIUS_FIRST_DERIV : os << "DOUTER_RADIUS_DT"; break;
+		case OUTER_RADIUS_SECOND_DERIV : os << "D2OUTER_RADIUS_DT2"; break;
 		case OUTER_MASS : os << "OUTER_MASS"; break;
+		case OUTER_MASS_DERIV : os << "DOUTER_MASS_DT"; break;
 		case E_ORDER : os << "E_ORDER"; break;
 		case ORBITAL_FREQ_MULTIPLIER : os << "ORBITAL_FREQ_MULTIPLIER";
 									   break;
@@ -25,8 +32,6 @@ std::ostream &operator<<(std::ostream &os,
 	};
 	return os;
 }
-
-
 
 const double DissipatingZone::__Umm_coef[][3]={
 	{std::sqrt(3.0*M_PI/10.0)/4.0,
@@ -611,13 +616,35 @@ void DissipatingZone::change_e_order(unsigned new_e_order)
 void DissipatingZone::add_to_evolution()
 {
 	__evolution_real[ANGULAR_MOMENTUM].push_back(__angular_momentum);
+
 	__evolution_real[INCLINATION].push_back(inclination());
+
 	__evolution_real[PERIAPSIS].push_back(periapsis());
+
 	__evolution_real[MOMENT_OF_INERTIA].push_back(moment_of_inertia());
+
+	__evolution_real[MOMENT_OF_INERTIA_FIRST_DERIV].push_back(
+			moment_of_inertia(1)
+	);
+
+	__evolution_real[MOMENT_OF_INERTIA_SECOND_DERIV].push_back(
+			moment_of_inertia(2)
+	);
+
 	__evolution_real[OUTER_RADIUS].push_back(outer_radius());
+
+	__evolution_real[OUTER_RADIUS_FIRST_DERIV].push_back(outer_radius(1));
+
+	__evolution_real[OUTER_RADIUS_SECOND_DERIV].push_back(outer_radius(2));
+
 	__evolution_real[OUTER_MASS].push_back(outer_mass());
+
+	__evolution_real[OUTER_MASS_DERIV].push_back(outer_mass(1));
+
 	__evolution_integer[E_ORDER-NUM_REAL_EVOL_QUANTITIES].push_back(
-			__e_order);
+			__e_order
+	);
+
 	if(__lock) {
 		__evolution_integer[ORBITAL_FREQ_MULTIPLIER-NUM_REAL_EVOL_QUANTITIES]
 			.push_back(__lock.orbital_frequency_multiplier());
