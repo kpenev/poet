@@ -9,7 +9,7 @@ void ConstSolutionIterator::create_missing_lists(
 )
 {
 	const DissipatingZone &convective=__star.zone(0),
-		  				  &radiative=__star.zone(1);
+		  				  &radiative=__star.zone(__star.number_zones()-1);
 	static std::vector< std::list<double> >
 		quantities(OutCol::LAST_NO_ORBIT+1);
 	for(
