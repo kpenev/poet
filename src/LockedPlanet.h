@@ -127,7 +127,10 @@ public:
 	Eigen::Vector3d angular_momentum_coupling(unsigned,
 			Dissipation::Derivative =Dissipation::NO_DERIV,
 			bool =false) const
-	{assert(false);}
+	{
+		throw Error::Runtime("Request for the angular momentum coupling of "
+							 "a LockedPlanet!");
+	}
 
 	///Always zero.
 	double angular_momentum_loss(
