@@ -182,10 +182,12 @@ private :
 	friend class boost::serialization::access;
 
 	///Serialize this function.
-	//The second parameter is supposed to be version
+	///The second parameter is supposed to be version
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int) {
-		ar & boost::serialization::base_object< OneArgumentFunction<double,double> >(*this);
+		ar & boost::serialization::base_object< 
+			OneArgumentFunction<double,double> 
+		>(*this);
 	}
 #endif
 public:
@@ -196,6 +198,55 @@ public:
 	virtual const FunctionDerivatives *deriv(double x) const=0;
 
 	virtual ~OneArgumentDiffFunction() {}
+};
+
+///\brief The derivatives of an identically zero quantity.
+///
+///\ingroup StellarSystem_group
+class ZeroDerivatives : public FunctionDerivatives {
+public:
+	///Create a derivative of an identically zero quantity.
+	ZeroDerivatives() {}
+
+	///The deriv_order-th derivative.
+	double order(unsigned =1) const {return 0;}
+};
+
+///A class representing a function that is identically zero.
+class ZeroFunction : public OneArgumentDiffFunction {
+private :
+#ifndef NO_SERIALIZE
+	///Needed for serialization to work.
+	friend class boost::serialization::access;
+
+	///Serialize this function.
+	///The second parameter is supposed to be version
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int) {
+		ar & boost::serialization::base_object< OneArgumentDiffFunction >(
+				*this
+		);
+	}
+#endif
+
+public:
+	///See OneArgumentDiffFunction::deriv()
+	virtual const FunctionDerivatives *deriv(double) const
+	{return new ZeroDerivatives;}
+
+	///The function value (=0).
+	double operator()(double) const {return 0;}
+
+	///The function is defined everywhere.
+	double range_high() const {return Inf;}
+
+	///The function is defined everywhere
+	double range_low() const {return -Inf;}
+
+	///An iterator over the ages where the quantity takes the given y value.
+	InterpSolutionIterator crossings(double =0) const
+	{throw Error::Runtime("Called ZeroQuantity::crossings, "
+			"which are ill defined.");}
 };
 
 ///Function which interpolates, with possible smoothing, between points.
@@ -285,6 +336,7 @@ public:
 
 #ifndef NO_SERIALIZE
 BOOST_CLASS_EXPORT_KEY(InterpolatingFunctionALGLIB)
+BOOST_CLASS_EXPORT_KEY(ZeroFunction)
 #endif
 //BOOST_CLASS_EXPORT_GUID(InterpolatingFunctionALGLIB,
 	//	"InterpolatingFunctionALGLIB")

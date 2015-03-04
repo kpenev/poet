@@ -12,6 +12,7 @@
 
 #ifndef NO_SERIALIZE
 BOOST_CLASS_EXPORT_IMPLEMENT(InterpolatingFunctionALGLIB)
+BOOST_CLASS_EXPORT_IMPLEMENT(ZeroFunction)
 #endif
 
 void InterpSolutionIterator::get_solutions()

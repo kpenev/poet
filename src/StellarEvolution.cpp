@@ -399,35 +399,60 @@ void StellarEvolution::interpolate_from(
 		std::cout << "done" << std::endl;
 
 		size_t first_core_index=0;
-		while((*Mrad_iter)[first_core_index+1]==0) ++first_core_index;
-		std::slice core_slice(first_core_index,
-				log_ages.size()-first_core_index, 1);
-		std::valarray<double> core_log_ages=log_ages[core_slice];
-		core_formation=(*ages_iter)[first_core_index];
-		std::cout << "core_formation=" << core_formation << std::endl;
+		while(
+				(*Mrad_iter)[first_core_index+1]==0
+				&& first_core_index<Mrad_iter->size()-1
+		) ++first_core_index;
+		if(Mrad_iter->size()==0 || (*Mrad_iter)[first_core_index+1]==0) {
+			core_formation=Inf;
+			interpolated_rad_inertia.push_back(new ZeroFunction());
+			interpolated_rad_mass.push_back(new ZeroFunction());
+			interpolated_core_env_boundary.push_back(new ZeroFunction());
+		} else {
+			std::slice core_slice(first_core_index,
+					log_ages.size()-first_core_index, 1);
+			std::valarray<double> core_log_ages=log_ages[core_slice];
+			core_formation=(*ages_iter)[first_core_index];
+			std::cout << "core_formation=" << core_formation << std::endl;
 
-		std::cout << "Interpolating Irad...";
-		std::cout.flush();
-		interpolated_rad_inertia.push_back(
-			new InterpolatingFunctionALGLIB(core_log_ages,
-				(*Irad_iter)[core_slice], std::valarray<double>(),
-				smooth_rad_inertia/tabulated_masses[i], rad_inertia_nodes));
-		std::cout << "done" << std::endl;
+			std::cout << "Interpolating Irad...";
+			std::cout.flush();
+			interpolated_rad_inertia.push_back(
+					new InterpolatingFunctionALGLIB(
+						core_log_ages,
+						(*Irad_iter)[core_slice],
+						std::valarray<double>(),
+						smooth_rad_inertia/tabulated_masses[i],
+						rad_inertia_nodes
+					)
+			);
+			std::cout << "done" << std::endl;
 
-		std::cout << "Interpolating Mrad...";
-		std::cout.flush();
-		interpolated_rad_mass.push_back(
-			new InterpolatingFunctionALGLIB(core_log_ages,
-				(*Mrad_iter)[core_slice], std::valarray<double>(),
-				smooth_rad_mass/tabulated_masses[i], rad_mass_nodes));
-		std::cout << "done" << std::endl;
-		std::cout << "Interpolating Rrad...";
-		std::cout.flush();
-		interpolated_core_env_boundary.push_back(
-			new InterpolatingFunctionALGLIB(core_log_ages, 
-				(*core_boundary_iter)[core_slice], std::valarray<double>(),
-				smooth_core_env_boundary, core_env_boundary_nodes));
-		std::cout << "done" << std::endl;
+			std::cout << "Interpolating Mrad...";
+			std::cout.flush();
+			interpolated_rad_mass.push_back(
+					new InterpolatingFunctionALGLIB(
+						core_log_ages,
+						(*Mrad_iter)[core_slice],
+						std::valarray<double>(),
+						smooth_rad_mass/tabulated_masses[i],
+						rad_mass_nodes
+					)
+			);
+			std::cout << "done" << std::endl;
+			std::cout << "Interpolating Rrad...";
+			std::cout.flush();
+			interpolated_core_env_boundary.push_back(
+					new InterpolatingFunctionALGLIB(
+						core_log_ages, 
+						(*core_boundary_iter)[core_slice],
+						std::valarray<double>(),
+						smooth_core_env_boundary,
+						core_env_boundary_nodes
+					)
+			);
+			std::cout << "done" << std::endl;
+		}
 		if(tabulated_luminosities.size()>0) {
 			std::cout << "Interpolating Luminosity...";
 			std::cout.flush();
@@ -444,6 +469,7 @@ void StellarEvolution::interpolate_from(
 		++Irad_iter;
 		++Mrad_iter;
 		++core_boundary_iter;
+
 	}
 	if(ages_iter!=tabulated_ages.end())
 		throw Error::BadFunctionArguments(

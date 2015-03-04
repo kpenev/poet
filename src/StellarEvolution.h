@@ -227,18 +227,6 @@ public:
 	{if(destroy_derivs) {delete q1_deriv; delete q2_deriv;}}
 };
 
-///\brief The derivatives of an identically zero quantity.
-///
-///\ingroup StellarSystem_group
-class ZeroDerivatives : public FunctionDerivatives {
-public:
-	///Create a derivative of an identically zero quantity.
-	ZeroDerivatives() {}
-
-	///The deriv_order-th derivative.
-	double order(unsigned =1) const {return 0;}
-};
-
 ///\brief A class for stellar properties that depend on age.
 ///
 ///\ingroup StellarSystem_group

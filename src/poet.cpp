@@ -235,10 +235,24 @@ void CommandLineOptions::verify_custom_stellar_evolution()
 	for(int i=0; i<CustomStellarEvolution::NUM_TRACK_QUANTITIES; ++i) {
 		if(!found_quantity[i] && 
 				i!=CustomStellarEvolution::LSTAR && 
-				i!=CustomStellarEvolution::SKIP)
-			throw Error::CommandLine(TRACK_COLUMN_NAMES[i]+" not found in "
-					"the list of columns contained in the custom stellar "
-					"evolution track.");
+				i!=CustomStellarEvolution::SKIP) {
+			if(
+					i==CustomStellarEvolution::IRAD ||
+					i==CustomStellarEvolution::MRAD ||
+					i==CustomStellarEvolution::RRAD
+			) {
+				if(
+						found_quantity[CustomStellarEvolution::IRAD] ||
+						found_quantity[CustomStellarEvolution::MRAD] ||
+						found_quantity[CustomStellarEvolution::RRAD]
+				) throw Error::CommandLine("Some but not all radiative zone "
+					"quantities missing from the columns contained in the "
+					"custom stellar evolution track.");
+			} else throw Error::CommandLine(
+					TRACK_COLUMN_NAMES[i]+" not found in the list of columns"
+					" contained in the custom stellar evolution track."
+			);
+		}
 		if(i<CustomStellarEvolution::AGE) {
 			double smoothing=__custom_track_smoothing[i]->dval[0];
 			if(!std::isnan(smoothing) && (smoothing<-15 || smoothing>15))
@@ -974,7 +988,8 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				"before the stellar core starts to form is not supported.");
 
 	if(std::isnan(tstart) || tstart<real_parameters[InCol::TDISK]*1e-3) {
-		if(std::isnan(tstart) || tstart<star.core_formation_age())
+		if(std::isnan(tstart) || (std::isfinite(star.core_formation_age())
+								  && tstart<star.core_formation_age()))
 			tstart=star.core_formation_age();
 		system.configure(tstart, NaN, NaN, &zero, NULL, NULL,
 						 LOCKED_SURFACE_SPIN);
@@ -1173,7 +1188,9 @@ StellarEvolution *get_stellar_evolution(const CommandLineOptions &options)
 ///Calculates a realistic evolution chosen to be comlicated.
 int main(int argc, char **argv)
 {
+#ifndef DEBUG
 	try {
+#endif
 #ifdef DEBUG
 		std::cerr.precision(16);
 		std::cerr.setf(std::ios_base::scientific);
@@ -1186,8 +1203,10 @@ int main(int argc, char **argv)
 		StellarEvolution *stellar_evolution=get_stellar_evolution(options);
 		run(options, *stellar_evolution, options.input());
 		delete stellar_evolution;
+#ifndef DEBUG
 	} catch(Error::General &err) {
 		std::cerr << err.what() << ": " << err.get_message() << std::endl;
 		return 2;
 	}
+#endif
 }
