@@ -480,8 +480,7 @@ Eigen::VectorXd BinarySystem::above_lock_fractions_deriv(
 
 void BinarySystem::fill_above_lock_fractions_deriv()
 {
-	unsigned body_zone_ind=1,
-			 num_zones=__body1.number_zones()+__body2.number_zones();
+	unsigned num_zones=__body1.number_zones()+__body2.number_zones();
 	DissipatingBody *body=&__body1;
 	__above_lock_fractions_inclination_deriv.resize(num_zones);
 	__above_lock_fractions_periapsis_deriv.resize(num_zones);
@@ -495,7 +494,13 @@ void BinarySystem::fill_above_lock_fractions_deriv()
 		__above_lock_fractions[Dissipation::MOMENT_OF_INERTIA];
 	__above_lock_fractions_angmom_deriv[0]=
 		__above_lock_fractions[Dissipation::SPIN_ANGMOM];
+	unsigned body_zone_ind=0;
 	for(unsigned zone_ind=1; zone_ind<num_zones; ++zone_ind) {
+		++body_zone_ind;
+		if(body_zone_ind==body->number_zones()) {
+			body_zone_ind=0; 
+			body=&__body2;
+		}
 		__above_lock_fractions_inclination_deriv[zone_ind]=
 			above_lock_fractions_deriv(Dissipation::INCLINATION, *body,
 									   body_zone_ind);
@@ -508,11 +513,6 @@ void BinarySystem::fill_above_lock_fractions_deriv()
 		__above_lock_fractions_angmom_deriv[zone_ind]=
 			above_lock_fractions_deriv(Dissipation::SPIN_ANGMOM, *body,
 									   body_zone_ind);
-		++body_zone_ind;
-		if(body_zone_ind==body->number_zones()) {
-			body_zone_ind=0; 
-			body=&__body2;
-		}
 	}
 }
 
@@ -1483,7 +1483,7 @@ void BinarySystem::secondary_died()
 											  __orbital_angmom*cos_inc);
 
 	spin_angmom[0]=angmom;
-	assert(num_zones==2);
+//	assert(num_zones==2);
 	for(unsigned zone_ind=1; zone_ind<num_zones; ++zone_ind) {
 		DissipatingZone &zone=__body1.zone(zone_ind);
 		assert(zone.periapsis()==0);
