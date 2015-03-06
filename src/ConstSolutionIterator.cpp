@@ -110,10 +110,10 @@ ConstSolutionIterator::ConstSolutionIterator(
 		  				  &radiative=star.zone(1);
 	__real_iterators[OutCol::AGE]=solver.evolution_ages().begin();
 	__real_iterators[OutCol::ICONV]=convective.get_evolution_real(
-			MOMENT_OF_INERTIA_FIRST_DERIV
+			MOMENT_OF_INERTIA
 	).begin();
 	__real_iterators[OutCol::IRAD]=radiative.get_evolution_real(
-			MOMENT_OF_INERTIA_FIRST_DERIV
+			MOMENT_OF_INERTIA
 	).begin();
 	__real_iterators[OutCol::RSTAR]=convective.get_evolution_real(
 			OUTER_RADIUS
