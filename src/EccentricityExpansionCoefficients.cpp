@@ -83,7 +83,7 @@ void EccentricityExpansionCoefficients::read(
 	for(int epower=0; epower<=static_cast<int>(__max_e_power); ++epower) {
 		for(int s=-epower-2; s<=epower-2; s+=2) {
 			if(s) {
-				assert(s+__max_e_power+2>=0);
+				assert(s+static_cast<int>(__max_e_power)+2>=0);
 				assert(s+__max_e_power+2<__gamma_minus.size());
 				std::vector<double> 
 					&destination=__gamma_minus[s+__max_e_power+2];
@@ -96,7 +96,7 @@ void EccentricityExpansionCoefficients::read(
 			}
 		}
 		for(int s=-epower; s<=epower; s+=2) {
-			assert(s+__max_e_power>=0);
+			assert(s+static_cast<int>(__max_e_power)>=0);
 			assert(s+__max_e_power<__alpha.size());
 			std::vector<double> &destination=__alpha[s+__max_e_power];
 			if(destination.size()==0) 
@@ -108,7 +108,7 @@ void EccentricityExpansionCoefficients::read(
 		}
 		for(int s=-epower+2; s<=epower+2; s+=2) {
 			if(s) {
-				assert(s+__max_e_power-2>=0);
+				assert(s+static_cast<int>(__max_e_power)-2>=0);
 				assert(s+__max_e_power-2<__gamma_plus.size());
 				std::vector<double> 
 					&destination=__gamma_plus[s+__max_e_power-2];

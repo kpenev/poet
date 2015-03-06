@@ -17,7 +17,6 @@ std::valarray<double> WindSaturationCondition::operator()(
 							      : __other_body.number_zones()
 								    -__other_body.number_locked_zones());
 	else angmom_index-=3;
-	assert(angmom_index>=0);
 	assert(angmom_index<=derivatives.size());
 	double wsurf=__body.spin_frequency(), surf_angmom_deriv,
 		   result=(wsurf-__saturation_freq)/__saturation_freq;
