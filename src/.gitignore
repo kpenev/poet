@@ -15,3 +15,8 @@ poet.tgz
 alpha_beta_values*
 eccentricity_expansion_coef.txt
 kelt
+*.outerr
+*.lst
+*.out
+*.sh
+*.bkp
