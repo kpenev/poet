@@ -1018,14 +1018,18 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 					   std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	if(need_orbit) {
 		star.detect_saturation();
+#ifndef DEBUG
 		try {
+#endif
 			solver(system, real_parameters[InCol::MAX_STEP], required_ages);
+#ifndef DEBUG
 		} catch(std::exception) {
 			output_solution(solver, system, star, outfname,
 					output_file_format, tstart, tend,
 					real_parameters[InCol::MAX_STEP], required_ages);
 			throw;
 		}
+#endif
 	}
 	output_solution(solver, system, star, outfname, output_file_format,
 			tstart, tend, real_parameters[InCol::MAX_STEP], required_ages);
