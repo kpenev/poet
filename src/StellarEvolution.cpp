@@ -400,8 +400,11 @@ void StellarEvolution::interpolate_from(
 
 		size_t first_core_index=0;
 		while(
+				!tabulated_rad_mass.empty()
+				&&
+				first_core_index+1<Mrad_iter->size()
+				&&
 				(*Mrad_iter)[first_core_index+1]==0
-				&& first_core_index<Mrad_iter->size()-1
 		) ++first_core_index;
 		if(Mrad_iter->size()==0 || (*Mrad_iter)[first_core_index+1]==0) {
 			core_formation=Inf;
