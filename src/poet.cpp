@@ -1025,7 +1025,8 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 						 real_parameters[InCol::E_FORMATION], &(angmom[0]),
 						 &(inclination[0]), &(periapsis[0]), BINARY);
 	}
-	double tend=std::min(real_parameters[InCol::TEND], star.lifetime());
+	double tend=real_parameters[InCol::TEND];
+		//std::min(real_parameters[InCol::TEND], star.lifetime());
 	OrbitSolver solver(tend,
 					   std::pow(10.0, -real_parameters[InCol::PRECISION]));
 	if(need_orbit) {
