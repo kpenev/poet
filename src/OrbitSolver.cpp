@@ -494,14 +494,14 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 #ifdef DEBUG
 	std::cerr << "Starting evolution leg in " << evolution_mode
 		<< " from t=" << system.age() << " with initial orbit=";
-	std::cerr << "Stopping condition types:" << std::endl;
-	for(size_t i=0; i<__stopping_conditions->num_subconditions(); ++i)
-		std::cerr << i << ": " << __stopping_conditions->type(i) << std::endl;
 	for(size_t i=0; i<nargs; ++i) {
 		if(i) std::cerr << ", ";
 		std::cerr << orbit[i];
 	}
 	std::cerr << std::endl;
+	std::cerr << "Stopping condition types:" << std::endl;
+	for(size_t i=0; i<__stopping_conditions->num_subconditions(); ++i)
+		std::cerr << i << ": " << __stopping_conditions->type(i) << std::endl;
 #endif
 
 //	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
