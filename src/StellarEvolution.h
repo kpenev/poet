@@ -488,12 +488,15 @@ private:
 
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int) {
+		if(!std::isfinite(core_formation)) core_formation=-1;
 		ar & track_masses;
-		ar & interpolated_radius & interpolated_luminosity &
-			interpolated_conv_inertia & interpolated_rad_inertia &
-			interpolated_rad_mass & interpolated_core_env_boundary;
-		ar & mass_break & low_age_scaling & high_age_scaling &
-			extrapolate_low & extrapolate_high & core_formation;
+		ar & interpolated_radius & interpolated_luminosity
+		   & interpolated_conv_inertia & interpolated_rad_inertia
+		   & interpolated_rad_mass & interpolated_core_env_boundary;
+		ar & mass_break & low_age_scaling & high_age_scaling
+		   & extrapolate_low & extrapolate_high & core_formation;
+		if(core_formation<0) core_formation=Inf;
+		std::cerr << "core_formation=" << core_formation << std::endl;
 	}
 
 	///The stellar masses for which evolution tracks are available in
