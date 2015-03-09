@@ -987,10 +987,12 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 		throw Error::Runtime("At present the case when the disk dissipates "
 				"before the stellar core starts to form is not supported.");
 
-	if(std::isnan(tstart) || tstart<real_parameters[InCol::TDISK]*1e-3) {
-		if(std::isnan(tstart) || (std::isfinite(star.core_formation_age())
-								  && tstart<star.core_formation_age()))
-			tstart=star.core_formation_age();
+	if(
+			std::isfinite(star.core_formation_age())
+			&&
+			(std::isnan(tstart) || tstart<star.core_formation_age())
+	) {
+		tstart=star.core_formation_age();
 		system.configure(tstart, NaN, NaN, &zero, NULL, NULL,
 						 LOCKED_SURFACE_SPIN);
 	} else if(start_locked) {
@@ -1003,9 +1005,19 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				star.moment_of_inertia(tstart, radiative) : 0);*/
 	} else {
 		std::valarray<double> angmom(3), inclination(3), periapsis(0.0, 3);
-		angmom[0]=real_parameters[InCol::START_WRAD]
-				  *star.envelope().moment_of_inertia(tstart);
-		angmom[1]=angmom[2]=0;
+		if(std::isnan(tstart)) {
+			tstart=real_parameters[InCol::TDISK]*1e-3;
+			angmom[0]=real_parameters[InCol::WDISK]
+				*star.envelope().moment_of_inertia(tstart);
+		} else {
+			angmom[0]=real_parameters[InCol::START_WSURF]
+				*star.envelope().moment_of_inertia(tstart);
+		}
+		if(star.is_low_mass()) {
+			angmom[1]=real_parameters[InCol::START_WRAD]
+				*star.core().moment_of_inertia(tstart);
+			angmom[2]=0;
+		} else angmom[1]=0;
 		inclination[0]=real_parameters[InCol::INCLINATION_FORMATION];
 		inclination[1]=inclination[0];
 		inclination[2]=0;
