@@ -646,6 +646,11 @@ OrbitSolver::OrbitSolver(double max_age, double required_precision) :
 void OrbitSolver::operator()(BinarySystem &system, double max_step,
 		const std::list<double> &required_ages)
 {
+#ifdef DEBUG
+	std::cerr << "Calculating evolution from t=" << system.age() << " to "
+			  << "t=" << __end_age << std::endl;
+#endif
+
 	double stop_evol_age=__end_age;
 
 	reset(system);
@@ -674,8 +679,9 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 						stop_information.stop_condition_index());
 		}
 #ifdef DEBUG 
-		std::cerr << "Changing evolution mode from " << old_evolution_mode 
-			<< " with " << old_locked_zones << " zones locked to ";
+		std::cerr << "At t=" << last_age << ", changing evolution mode from "
+			      << old_evolution_mode  << " with " << old_locked_zones
+				  << " zones locked to ";
 #endif
 		evolution_mode=system.evolution_mode();
 #ifdef DEBUG
