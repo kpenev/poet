@@ -97,7 +97,8 @@ void test_DissipatingZone::test_Lai()
 					}
 				}
 				if(i%1000==0) 
-					std::cerr << "Lai test " << i << "\r";
+					std::cerr << "Lai test (e_order=" << e_order << ", incl="
+                              << inclination << "): " << i << "          \r";
 				single_power_torque_test(
                     e_order,    //eccentricity expansion order
                     lags,       //tidal lags
