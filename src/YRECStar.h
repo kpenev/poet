@@ -118,7 +118,7 @@ public:
 	}
 
 	///The lifetime of the star (where tracks end).
-	double lifetime() {return __lifetime;}
+	double lifetime() const {return __lifetime;}
 
 	///The luminosity of the star at the given age.
 	double luminosity(double age) const {return (*__luminosity)(age);}
@@ -127,10 +127,10 @@ public:
 	~YRECStar() {delete __luminosity;}
 
 	///Is this a low mass star?
-	bool is_low_mass() {return __low_mass;}
+	bool is_low_mass() const {return __low_mass;}
 
 	///The age when the core forms.
-	double core_formation_age() {return __core_formation;}
+	double core_formation_age() const {return __core_formation;}
 };
 
 #endif

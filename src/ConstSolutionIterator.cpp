@@ -72,6 +72,7 @@ void ConstSolutionIterator::fix_no_evolution(
 			age_list.push_back(*required_ages_iter);
 		age_list.push_back(age);
 	}
+    age_list.push_back(end_age);
 	__real_iterators[OutCol::AGE]=age_list.begin();
 	__last_age=age_list.end();
 	create_missing_lists(age_list);
@@ -170,7 +171,10 @@ ConstSolutionIterator::ConstSolutionIterator(
 			ANGULAR_MOMENTUM
 	).begin();
 	if(__real_iterators[OutCol::AGE]==__last_age)
-		fix_no_evolution(start_age, end_age, timestep, required_ages);
+		fix_no_evolution(start_age,
+                         std::min(end_age, __star.lifetime()),
+                         timestep,
+                         required_ages);
 }
 
 const ConstSolutionIterator &ConstSolutionIterator::operator++()
