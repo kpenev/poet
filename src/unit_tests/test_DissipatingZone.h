@@ -32,7 +32,7 @@ private:
 
 	///Performs a single check of the expected values of the tidal torques
 	///and power.
-	void single_test(
+	void single_power_torque_test(
 			///The eccentricity expansion order to use for the test (if
 			///non-zero, eccentricity itself must be zero).
 			int e_order,

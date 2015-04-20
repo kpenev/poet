@@ -113,6 +113,9 @@ public:
 	double moment_of_inertia(int deriv) const
 	{return __moment_of_inertia.at(deriv);}
 
+	double moment_of_inertia(double, int deriv) const
+	{return moment_of_inertia(deriv);}
+
 	double love_coefficient(int, int, Dissipation::Derivative) const
 	{return 0;}
 
@@ -121,9 +124,19 @@ public:
 		return __radius.at(deriv);
 	}
 
+	double outer_radius(double age, int deriv) const
+	{
+		return outer_radius(deriv);
+	}
+
 	double outer_mass(int deriv) const 
 	{
 		return __mass.at(deriv);
+	}
+
+	double outer_mass(double age, int deriv) const
+	{
+		return outer_mass(deriv);
 	}
 
 	bool dissipative() const {return true;}

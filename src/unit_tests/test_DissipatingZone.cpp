@@ -1,9 +1,17 @@
 #include "test_DissipatingZone.h"
 
-void test_DissipatingZone::single_test(int e_order, const Lags &lags,
-		double orbital_frequency, double eccentricity, double m1, double m2,
-		double spin_angmom, double inclination, double periapsis,
-		double torque_z, double torque_x, double power)
+void test_DissipatingZone::single_power_torque_test(int e_order,
+                                                    const Lags &lags,
+                                                    double orbital_frequency,
+                                                    double eccentricity,
+                                                    double m1,
+                                                    double m2,
+                                                    double spin_angmom,
+                                                    double inclination,
+                                                    double periapsis,
+                                                    double torque_z,
+                                                    double torque_x,
+                                                    double power)
 {
 	ConstPhaseLagDissipatingZone zone(lags, 1.0, 1.0, 1.0);
 	zone.change_e_order(e_order);
@@ -14,10 +22,15 @@ void test_DissipatingZone::single_test(int e_order, const Lags &lags,
 	msg_start << ", orbital freq=" << orbital_frequency
 		<< ", e=" << eccentricity;
 	std::ostringstream msg;
-	zone.configure(1.0, orbital_frequency, eccentricity,
+	zone.configure(1.0,               //age
+                   orbital_frequency, //orbital frequency
+                   eccentricity,      //eccentricity
 				   orbital_angmom_from_freq(m1, m2, orbital_frequency,
-					   						eccentricity),
-				   spin_angmom, inclination, periapsis);
+					   						eccentricity),//orbital angmom
+				   spin_angmom,       //spin angular momentum
+                   inclination,       //inclination
+                   periapsis,         //periapsis
+                   false);            //the spin argument is not a frequency
 	double above_value=zone.tidal_torque_z(true),
 		   below_value=zone.tidal_torque_z(false);
 	msg << msg_start.str()
@@ -76,7 +89,8 @@ void test_DissipatingZone::test_Lai()
 				for(int m=-2; m<=2; ++m) {
 					for(int mp=-2-e_order; mp<=0; ++mp) {
 						double this_lag=uniform_rand(0.1, 1.0)
-										*(enabled_terms_mask%2);
+										*
+                                        (enabled_terms_mask%2);
 						lags(m, mp)=this_lag;
 						lags(-m, -mp)=-this_lag;
 						enabled_terms_mask/=2;
@@ -84,22 +98,49 @@ void test_DissipatingZone::test_Lai()
 				}
 				if(i%1000==0) 
 					std::cerr << "Lai test " << i << "\r";
-				single_test(e_order, lags, 1.0, 0, 1.0, 1e-3, M_PI/2.0,
-							inclination, 0.0, 
-							dimensionless_torque_z_Lai(inclination, lags), 
-							dimensionless_torque_x_Lai(inclination, lags), 
-							dimensionless_power_Lai(inclination, lags));
+				single_power_torque_test(
+                    e_order,    //eccentricity expansion order
+                    lags,       //tidal lags
+                    1.0,        //orbital frequency
+                    0,          //eccentricity
+                    1.0,        //primary mass
+                    1e-3,       //secondary mass
+                    M_PI/2.0,   //spin angular momentum
+                    inclination,//inclination
+                    0.0,        //periapsis
+                    dimensionless_torque_z_Lai(inclination, lags), 
+                    dimensionless_torque_x_Lai(inclination, lags), 
+                    dimensionless_power_Lai(inclination, lags)
+                );
 				if(e_order==0) {
-					single_test(e_order, lags, 1.0, 0.5, 1.0, 1e-3, M_PI/20.0,
-								inclination, M_PI/3,
-								dimensionless_torque_z_Lai(inclination,lags),
-								dimensionless_torque_x_Lai(inclination,lags),
-								dimensionless_power_Lai(inclination, lags));
-					single_test(e_order, lags, 10.0, 0.5, 1.0, 1e-3, M_PI,
-								inclination, M_PI/3,
-								dimensionless_torque_z_Lai(inclination,lags),
-								dimensionless_torque_x_Lai(inclination,lags),
-								dimensionless_power_Lai(inclination, lags));
+					single_power_torque_test(
+                        e_order,    //eccentricity expansion order
+                        lags,       //tidal lags
+                        1.0,        //orbital frequency
+                        0.5,        //eccentricity
+                        1.0,        //primary mass
+                        1e-3,       //secondary mass
+                        M_PI/20.0,  //spin angular momentum
+                        inclination,//inclination
+                        M_PI/3,     //periapsis
+                        dimensionless_torque_z_Lai(inclination,lags),
+                        dimensionless_torque_x_Lai(inclination,lags),
+                        dimensionless_power_Lai(inclination, lags)
+                    );
+					single_power_torque_test(
+                        e_order,        //eccentricity expansion order
+                        lags,           //tidal lags
+                        10.0,           //orbital frequency
+                        0.5,            //eccentricity
+                        1.0,            //primary mass
+                        1e-3,           //secondary mass
+                        M_PI,           //spin angular momentum
+                        inclination,    //inclination
+                        M_PI/3,         //periapsis
+                        dimensionless_torque_z_Lai(inclination,lags),
+                        dimensionless_torque_x_Lai(inclination,lags),
+                        dimensionless_power_Lai(inclination, lags)
+                    );
 				}
 				TEST_ASSERT_MSG(!__current_failed, "Test failure.");
 			}

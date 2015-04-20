@@ -10,7 +10,6 @@ double dimensionless_torque_x_Lai(double inclination, const Lags &lags)
 			+ s*std::pow(1-c, 3)*lags(-2, 2)/2)
 		- 3.0*M_PI/5.0*(std::pow(s, 3)*c*lags(2,0)/2
 				+ s*std::pow(c, 3)*lags(1,0));
-
 }
 
 double dimensionless_torque_z_Lai(double inclination, const Lags &lags)
