@@ -88,7 +88,19 @@ def solve(array):
 
     maskindicesupper = datatempUpper['t'] == age
     maskindiceslower = datatempLower['t'] == age
-    
+
+    #solution not possible
+    if (not np.any(maskindicesupper) and not np.any(maskindiceslower)):
+        #last entry of evolution
+        upperEstimates = datatempUpper['ORBPERIOD'][-1]
+        lowerEstimates = datatempLower['ORBPERIOD'][-1]
+        
+        if ((upperEstimates-period) * (lowerEstimates - period)) > 0:
+            solution['initialperiod'] = -1
+            solution['OBLI'] = -1
+            return solution
+
+    #didn't get to age
     if (not np.any(maskindicesupper)):
         while not np.any(maskindicesupper) and periodUpper > periodLower:
             print 'Loop 1'
@@ -97,7 +109,8 @@ def solve(array):
             os.system(upperProcessString)
             datatempUpper = readEvolution(upperOutf)
             maskindicesupper = datatempUpper['t'] == age
-
+            
+    #didn't get to the age
     if (not np.any(maskindiceslower)):
         while not np.any(maskindicesupper) and periodLower < periodUpper:
             print 'Loop 2'
@@ -255,7 +268,7 @@ def solve(array):
 
 
 #testplanet = np.array([((2.0, 1.572, 8, 2.2, 0.3490658503988659, 6.0, 5.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
-       # dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
+       #dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
         #'formats':('f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
 #solution = solve(testplanet)
 #print solution
