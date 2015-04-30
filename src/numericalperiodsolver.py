@@ -36,7 +36,7 @@ def buildCommandString(array, period, solverEnd):
             + '--init-inclination=' + str(array['OBLI'][0]) + ' ' + '--lgQ=' + str(array['lgQ'][0]) + ' '\
             + '--lgQinr=' + str(array['lgQinr'][0]) + ' ' + '--p-disk=' + str(array['p-disk'][0]) + ' '\
             + '-K ' + str(array['K'][0]) + ' ' + '--core-env-coupling-timescale=' + str(array['tcoup'][0]) + ' '\
-            + '--high-mass-wind-sat-w=' + str(array['wsat'][0]) + ' '+ '--t-disk=' + str(array['tdisk'][0]) + ' '
+            + '--high-mass-wind-sat-w=' + str(array['wsat'][0]) + ' '+ '--t-disk=' + str(array['tdisk'][0]) + ' ' + '--tmax=' + str(2 * array['AGE'][0]) + ' '
     
     outputinfo = '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode '
     location = 'solver' + solverEnd + '.evol'
