@@ -74,6 +74,7 @@ def solve(array):
     
     upperGood = os.system(upperProcessString)
     lowerGood = os.system(lowerProcessString)
+    
     #simulation could not be allocated
     if (upperGood == 6 or lowerGood == 6):
         solution['initialperiod'] = -1
@@ -379,6 +380,6 @@ for planetdataarray in planetdata:
 planetObliquityCounts = np.array(planetObliquityCounts)
 planetObliquityProportions = np.array(planetObliquityProportions)
 
-np.savetxt('Part1PlanetObliquityCounts.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr3 logQinr4 logQinr5 logQ6 logQ7 logQ8')
-np.savetxt('Part1PlanetObliquityProportions.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr3 logQinr4 logQinr5 logQ6 logQ7 logQ8')
-np.savetxt('part1goodconfigarray.txt', np.array(goodConfigurations))
+np.savetxt('Part1PlanetObliquityCounts.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr3 logQinr4 logQinr5 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('Part1PlanetObliquityProportions.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr3 logQinr4 logQinr5 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('part1goodconfigarray.txt', np.array(goodConfigurations), fmt='%s')
