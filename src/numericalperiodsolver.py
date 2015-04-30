@@ -5,7 +5,6 @@ import os
 
 #can't exactly be pi or the simulation cancels out
 incl = np.linspace(0, np.pi * 0.98, 10)
-
 logQinr = np.array([3, 4, 5])
 logQ = np.array([6, 7, 8, 9])
 
@@ -22,7 +21,7 @@ for i in range(planetdata.shape[0]):
 
 def readEvolution(location):
     #output columns will be t, period, a, convincl, radincl, Lconv, Lrad, Iconv, Irad, I, mode
-    data = np.loadtxt(location, skiprows=1, usecols=(0, 1, 2, 3, 4, 10), dtype={'names': ('t', 'ORBPERIOD', 'a', 'convincl', 'radincl', 'mode'), 'formats': ('f8', 'f8', 'f8', 'f8', 'f8', 'S15')})
+    data = np.genfromtxt(location, skiprows=1, usecols=(0, 1, 2, 3, 4, 10), dtype={'names': ('t', 'ORBPERIOD', 'a', 'convincl', 'radincl', 'mode'), 'formats': ('f8', 'f8', 'f8', 'f8', 'f8', 'S15')})
     return data
 
 
