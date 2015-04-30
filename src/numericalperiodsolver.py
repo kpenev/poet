@@ -84,11 +84,10 @@ def solve(array):
 
     maskindicesupper = datatempUpper['t'] == age
     maskindiceslower = datatempLower['t'] == age
-    print 'Resolved Upper Lower'
     if (not np.any(maskindicesupper)):
         while not np.any(maskindicesupper) and periodUpper > periodLower:
             print 'Loop 1'
-            periodUpper = periodUpper - 0.05 * periodUpper
+            periodUpper = periodUpper - 0.2 * periodUpper
             upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
             os.system(upperProcessString)
             datatempUpper = readEvolution(upperOutf)
@@ -97,7 +96,7 @@ def solve(array):
     if (not np.any(maskindiceslower)):
         while not np.any(maskindicesupper) and periodLower < periodUpper:
             print 'Loop 2'
-            periodLower = periodLower + 0.05 * periodLower
+            periodLower = periodLower + 0.2 * periodLower
             lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
             os.system(lowerProcessString)
             datatempLower = readEvolution(lowerOutf)
@@ -118,7 +117,7 @@ def solve(array):
     if np.isnan(periodLowerEstimate):
         while np.isnan(periodLowerEstimate) and periodLower < periodUpper:
             print 'Loop 4'
-            periodLower = periodLower + 0.05 * periodLower
+            periodLower = periodLower + 0.2 * periodLower
             lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
             os.system(lowerProcessString)
             datatempLower = readEvolution(lowerOutf)
@@ -135,7 +134,7 @@ def solve(array):
     if np.isnan(periodUpperEstimate):
         while np.isnan(periodUpperEstimate) and periodUpper > periodLower:
             print 'Loop 5'
-            periodUpper = periodUpper - 0.05 * periodUpper
+            periodUpper = periodUpper - 0.2 * periodUpper
             upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
             os.system(upperProcessString)
             datatempUpper = readEvolution(upperOutf)
