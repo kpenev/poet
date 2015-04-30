@@ -49,7 +49,7 @@ for M in mstar:
 
 planetlist = np.array(planetlist)
 
-np.savetxt('./explorationpart/part2exploration.txt', planetlist, header='#M m pform lgQinr lgQ incl pdisk K tcoup wsat tdisk', delimiter=' ', fmt='%s')
+np.savetxt('./explorationpart/part2exploration.txt', planetlist,delimiter=' ', fmt='%s')
 
 
 outputinfo = '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode '
