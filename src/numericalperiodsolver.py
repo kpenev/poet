@@ -1,6 +1,10 @@
 import numpy as np
 import scipy
 import os
+import sys
+
+sys.stdout = open('log.txt', 'w')
+
 
 
 #can't exactly be pi or the simulation cancels out
@@ -84,6 +88,7 @@ def solve(array):
 
     maskindicesupper = datatempUpper['t'] == age
     maskindiceslower = datatempLower['t'] == age
+    
     if (not np.any(maskindicesupper)):
         while not np.any(maskindicesupper) and periodUpper > periodLower:
             print 'Loop 1'
@@ -104,6 +109,7 @@ def solve(array):
 
     if not np.any(maskindiceslower) or not np.any(maskindicesupper):
         #solution is not bounded so return zero
+        print 'no solution'
         solution['initialperiod'] = -1
         solution['OBLI'] = -1
         return solution
@@ -230,7 +236,6 @@ def solve(array):
             ak = bk
             bk = temp2
 
-        
         fractionalErrorOld = fractionalError
         fractionalError = 1.0 * np.abs(period-periodUpperEstimate)/period
         fractionalErrorChange = np.abs(fractionalError - fractionalErrorOld)
@@ -249,10 +254,11 @@ def solve(array):
     return solution
 
 
-#testplanet = np.array([((1.0, 1.572, 2.9036747, 2.5, 0.3490658503988659, 6.0, 4.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
-        #dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
+#testplanet = np.array([((2.0, 1.572, 8, 2.2, 0.3490658503988659, 6.0, 5.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
+       # dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
         #'formats':('f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
 #solution = solve(testplanet)
+#print solution
 
 fastrot = np.array([(1.4, 0.155, 12, 2.45, 2.5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
 mediumrot = np.array([(7, 0.17, 28, 2.45, 5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
@@ -310,6 +316,7 @@ for planetdataarray in planetdata:
                     #the second case is needed because of negatives
                     #this means we found a good solution
                     if (solutionObli >= obliLower and solutionObli <= obliUpper) or (solutionObli >= obliUpper and solutionObli <= obliLower) and solution['initialperiod'] != -1:
+                        print 'Solution Found'
                         goodConfigurations.append(planetConfig)
                         goodConfigurationsFile.write(planetConfig)
 
