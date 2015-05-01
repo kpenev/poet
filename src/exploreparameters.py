@@ -49,7 +49,7 @@ for M in mstar:
                                         + '--init-orbit-period=' + str(period) + ' ' + '--init-inclination=' + str(obliquity) + ' ' + '--lgQ=' + str(Qout) + ' '\
                                         + '--lgQinr=' + str(Qin) + ' ' + '--p-disk=' + str(rot[rotationsetting]['p-disk'][0]) + ' '\
                                         + '-K ' + str(rot[rotationsetting]['K'][0]) + ' ' + '--core-env-coupling-timescale=' + str(rot[rotationsetting]['tcoup'][0]) + ' '\
-                                        + '--high-mass-wind-sat-w=' + str(rot[rotationsetting]['wsat'][0]) + ' '+ '--t-disk=' + str(rot[rotationsetting]['tdisk'][0]) +' '\
+                                        + '--low-mass-wind-sat-w=' + str(rot[rotationsetting]['wsat'][0]) + ' '+ '--t-disk=' + str(rot[rotationsetting]['tdisk'][0]) +' '\
                                         + '--output=' + outf + ' ' + '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode')
                             planetlist.append(planet)
 

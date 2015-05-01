@@ -3,7 +3,7 @@ import scipy
 import os
 import sys
 
-sys.stdout = open('log.txt', 'w')
+#sys.stdout = open('log.txt', 'w')
 
 
 
@@ -107,6 +107,7 @@ def solve(array):
     else:
         periodLowerEstimate = np.array(datatempLower['ORBPERIOD'][maskindiceslower])[0]
     #make sure that solution is inside region
+    
     if np.isnan(periodLowerEstimate):
         periodLowerEstimate = 0
     
