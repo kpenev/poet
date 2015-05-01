@@ -3,7 +3,7 @@ import scipy
 import os
 import sys
 
-#sys.stdout = open('log.txt', 'w')
+sys.stdout = open('log.txt', 'w')
 
 
 
@@ -40,7 +40,7 @@ def buildCommandString(array, period, solverEnd):
             + '--init-inclination=' + str(array['OBLI'][0]) + ' ' + '--lgQ=' + str(array['lgQ'][0]) + ' '\
             + '--lgQinr=' + str(array['lgQinr'][0]) + ' ' + '--p-disk=' + str(array['p-disk'][0]) + ' '\
             + '-K ' + str(array['K'][0]) + ' ' + '--core-env-coupling-timescale=' + str(array['tcoup'][0]) + ' '\
-            + '--high-mass-wind-sat-w=' + str(array['wsat'][0]) + ' '+ '--t-disk=' + str(array['tdisk'][0]) + ' ' + '--tmax=' + str(2 * array['AGE'][0]) + ' '
+            + '--high-mass-wind-sat-w=' + str(array['wsat'][0]) + ' '+ '--t-disk=' + str(array['tdisk'][0]) + ' ' + '--tmax=' + str(1.01 * array['AGE'][0]) + ' '
     
     outputinfo = '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode '
     location = 'solver' + solverEnd + '.evol'
@@ -65,7 +65,7 @@ def solve(array):
     age = array['AGE'][0]
     #the following are $b_1$ and $a_1$ as in the notation of Dekker's method
     periodUpper = 10
-    periodLower = array['ORBPERIOD'][0] * 0.50
+    periodLower = array['ORBPERIOD'][0] * 0.60
     period = array['ORBPERIOD'][0]
 
     upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
@@ -74,7 +74,6 @@ def solve(array):
     
     upperGood = os.system(upperProcessString)
     lowerGood = os.system(lowerProcessString)
-    
     #simulation could not be allocated
     if (upperGood == 6 or lowerGood == 6):
         solution['initialperiod'] = -1
@@ -92,21 +91,21 @@ def solve(array):
 
 
     #didn't get to age
+    #these simulations were never finishing
     if (not np.any(maskindicesupper)):
         while not np.any(maskindicesupper):
-            print 'Loop 1'
-            periodUpper = periodUpper * 2
-            upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
-            os.system(upperProcessString)
-            datatempUpper = readEvolution(upperOutf)
-            maskindicesupper = datatempUpper['t'] == age
-            
-    
-
+            solution['initialperiod'] = -1
+            solution['OBLI'] = -1
+            return solution
+                
     #the estimates are the output f(b) and f(a) respectively, but notice that they are offset from zero
     #the array call is needed as sometimes it returns two
     periodUpperEstimate = np.array(datatempUpper['ORBPERIOD'][maskindicesupper])[0]
-    periodLowerEstimate = np.array(datatempLower['ORBPERIOD'][maskindiceslower])[0]
+    
+    if (not np.any(maskindiceslower)):
+        periodLowerEstimate = 0
+    else:
+        periodLowerEstimate = np.array(datatempLower['ORBPERIOD'][maskindiceslower])[0]
     #make sure that solution is inside region
     if np.isnan(periodLowerEstimate):
         periodLowerEstimate = 0
@@ -154,13 +153,6 @@ def solve(array):
     c = ak
     periodEstimateC = periodLowerEstimate
     
-    cProcessString, cOutf = buildCommandString(array, c, 'c')
-    process = os.system(cProcessString)
-    #process.wait()
-    datatempC = readEvolution(cOutf)
-    maskindicesc = datatempC['t'] == age
-    periodEstimateC = np.array(datatempC['ORBPERIOD'][maskindicesc])[0]
-
     #use of d in the solver
     mflag = True 
     
@@ -193,11 +185,15 @@ def solve(array):
         process = os.system(sProcessString)
         datatempS = readEvolution(sOutf)
         maskindicesS = datatempS['t'] == age
-        periodEstimateS = np.array(datatempS['ORBPERIOD'][maskindicesS])[0]
+        if (not np.any(maskindicesS)):
+            periodEstimateS = 0
+        else:
+            periodEstimateS = np.array(datatempS['ORBPERIOD'][maskindicesS])[0]
         
         #should never happen
-        if (np.isnan(periodEstimateS) or np.isnan(periodUpperEstimate) or np.isnan(periodLowerEstimate)):
-            print 'Is NAN Failure'
+        if (np.isnan(periodEstimateS)):
+            periodEstimateS = 0
+        
         
         d = c
         c = bk
@@ -205,13 +201,16 @@ def solve(array):
         
 
         if ((periodLowerEstimate - period) * (periodEstimateS - period)) < 0:
+            print 'Changing b'
             bk = s
             periodUpperEstimate = periodEstimateS
         else:
+            print 'Changing a'
             ak = s
             periodLowerEstimate = periodEstimateS
 
         if (np.abs(periodLowerEstimate-period) < np.abs(periodUpperEstimate - period)):
+            print 'Switching a and b'
             temp = periodLowerEstimate
             periodLowerEstimate = periodUpperEstimate
             periodUpperEstimate = temp
@@ -223,6 +222,10 @@ def solve(array):
         fractionalErrorOld = fractionalError
         fractionalError = 1.0 * np.abs(period-periodUpperEstimate)/period
         fractionalErrorChange = np.abs(fractionalError - fractionalErrorOld)
+        print ak
+        print bk
+        print periodLowerEstimate
+        print periodUpperEstimate
             
     if fractionalError <= 0.001:
         solution['initialperiod'] = bk
@@ -238,8 +241,8 @@ def solve(array):
     return solution
 
 
-#testplanet = np.array([((2.0, 1.072, 8, 2.2, 0.3490658503988659, 6.0, 5.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
-      # dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
+#testplanet = np.array([((0.52, 0.93, 3.36, 11, 0.3490658503988659, 6.0, 4.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
+       #dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
         #'formats':('f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
 #solution = solve(testplanet)
 #print solution
@@ -259,9 +262,9 @@ fastrotationsfile = open('fastrotationsgoodconfig.txt', 'wa')
 mediumrotationsfile = open('mediumrotationsgoodconfig.txt', 'wa')
 slowrotationsfile = open('slowrotationsgoodconfig.txt', 'wa')
 
-logQinr3file = open('logQinr3GoodConfig.txt', 'wa')
-logQinr4file = open('logQinr4GoodConfig.txt', 'wa')
-logQinr5file = open('logQinr5GoodConfig.txt', 'wa')
+logQinr3file = open('logQinr4GoodConfig.txt', 'wa')
+logQinr4file = open('logQinr5GoodConfig.txt', 'wa')
+logQinr5file = open('logQinr6GoodConfig.txt', 'wa')
 
 logQ6file = open('logQ6GoodConfig.txt', 'wa')
 logQ7file = open('logQ7GoodConfig.txt', 'wa')
@@ -275,15 +278,15 @@ planetObliquityProportions = []
 for planetdataarray in planetdata:
     #age = np.random(planetdataarray['AGE'] - planetdataarray['AGEMINUS'], planetdataarray['AGE'] + planetdataarray['AGEPLUS'])
     age = planetdataarray['AGE']
-    obliLower = planetdataarray['OBLI'] - planetdataarray['OBLIMINUS']
-    obliUpper = planetdataarray['OBLI'] + planetdataarray['OBLIPLUS']
+    obliLower = np.radians(np.abs(planetdataarray['OBLI'] - planetdataarray['OBLIMINUS']))
+    obliUpper = np.radians(np.abs(planetdataarray['OBLI'] + planetdataarray['OBLIPLUS']))
     totalObliquities = incl.shape[0]
     
     currentPlanetObliquityCounts = np.array([(planetdataarray['NAMES'], 0, 0, 0, 0, 0, 0, 0, 0, 0)], \
-            dtype=np.dtype({'names': ('NAMES', 'Fast', 'Medium', 'Slow', 'logQinr3', 'logQinr4', 'logQinr5', 'logQ6', 'logQ7', 'logQ8'), \
+            dtype=np.dtype({'names': ('NAMES', 'Fast', 'Medium', 'Slow', 'logQinr4', 'logQinr5', 'logQinr6', 'logQ6', 'logQ7', 'logQ8'), \
                                              'formats' : ('S10', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8')}))
     currentPlanetObliquityProportions = np.array([(planetdataarray['NAMES'], 0, 0, 0, 0, 0, 0, 0, 0, 0)], \
-            dtype=np.dtype({'names': ('NAMES', 'Fast', 'Medium', 'Slow', 'logQinr3', 'logQinr4', 'logQinr5', 'logQ6', 'logQ7', 'logQ8'), \
+            dtype=np.dtype({'names': ('NAMES', 'Fast', 'Medium', 'Slow', 'logQinr4', 'logQinr5', 'logQinr6', 'logQ6', 'logQ7', 'logQ8'), \
                                              'formats' : ('S10', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8')}))
 
     for Qin in logQinr:
@@ -306,33 +309,39 @@ for planetdataarray in planetdata:
                         goodConfigurationsFile.write(planetConfig)
 
                         if rotparam == 0:
-                            fastrotationsfile.write(planetConfig)
+                            print 'Wrote 1'
+                            fastrotationsfile.write(str(planetConfig))
                             currentPlanetObliquityCounts['Fast'] = currentPlanetObliquityCounts['Fast'] + 1
                         if rotparam == 1:
-                            mediumrotationsfile.write(planetConfig)
+                            print 'Wrote 2'
+                            mediumrotationsfile.write(str(planetConfig))
                             currentPlanetObliquityCounts['Medium'] = currentPlanetObliquityCounts['Medium'] + 1
                         if rotparam == 2:
+                            print 'Wrote 3'
                             slowrotationsfile.write(planetConfig)
                             currentPlanetObliquityCounts['Slow'] = currentPlanetObliquityCounts['Slow'] + 1
-                        if Qin == 3:
-                            logQinr3file.write(planetConfig)
-                            currentPlanetObliquityCounts['logQinr3'] = currentPlanetObliquityCounts['logQinr3'] + 1
                         if Qin == 4:
+                            print 'Wrote 4'
                             logQinr4file.write(planetConfig)
                             currentPlanetObliquityCounts['logQinr4'] = currentPlanetObliquityCounts['logQinr4'] + 1
                         if Qin == 5:
+                            print 'Wrote 5'
                             logQinr5file.write(planetConfig)
                             currentPlanetObliquityCounts['logQinr5'] = currentPlanetObliquityCounts['logQinr5'] + 1
-                        if Qin == 5:
-                            logQinr5file.write(planetConfig)
-                            currentPlanetObliquityCounts['logQinr5'] = currentPlanetObliquityCounts['logQinr5'] + 1
+                        if Qin == 6:
+                            print 'Wrote 6'
+                            logQinr6file.write(planetConfig)
+                            currentPlanetObliquityCounts['logQinr6'] = currentPlanetObliquityCounts['logQinr6'] + 1
                         if Qout == 6:
+                            print 'Wrote 7'
                             logQ6file.write(planetConfig)
                             currentPlanetObliquityCounts['logQ6'] = currentPlanetObliquityCounts['logQ6'] + 1
                         if Qout == 7:
+                            print 'Wrote 8'
                             logQ7file.write(planetConfig)
                             currentPlanetObliquityCounts['logQ7'] = currentPlanetObliquityCounts['logQ7'] + 1
                         if Qout == 8:
+                            print 'Wrote 9'
                             logQ8file.write(planetConfig)
                             currentPlanetObliquityCounts['logQ8'] = currentPlanetObliquityCounts['logQ8'] + 1
 
@@ -341,9 +350,9 @@ for planetdataarray in planetdata:
     currentPlanetObliquityProportions['Fast'] = 1.0 * currentPlanetObliquityCounts['Fast'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
     currentPlanetObliquityProportions['Medium'] = 1.0 * currentPlanetObliquityCounts['Medium'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
     currentPlanetObliquityProportions['Slow'] = 1.0 * currentPlanetObliquityCounts['Slow'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
-    currentPlanetObliquityProportions['logQinr3'] = 1.0 * currentPlanetObliquityCounts['logQinr3'] / (incl.shape[0] * len(rot) * logQ.shape[0])
     currentPlanetObliquityProportions['logQinr4'] = 1.0 * currentPlanetObliquityCounts['logQinr4'] / (incl.shape[0] * len(rot) * logQ.shape[0])
     currentPlanetObliquityProportions['logQinr5'] = 1.0 * currentPlanetObliquityCounts['logQinr5'] / (incl.shape[0] * len(rot) * logQ.shape[0])
+    currentPlanetObliquityProportions['logQinr6'] = 1.0 * currentPlanetObliquityCounts['logQinr6'] / (incl.shape[0] * len(rot) * logQ.shape[0])
     currentPlanetObliquityProportions['logQ6'] = 1.0 * currentPlanetObliquityCounts['logQ6'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
     currentPlanetObliquityProportions['logQ7'] = 1.0 * currentPlanetObliquityCounts['logQ7'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
     currentPlanetObliquityProportions['logQ8'] = 1.0 * currentPlanetObliquityCounts['logQ8'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
@@ -351,6 +360,6 @@ for planetdataarray in planetdata:
 planetObliquityCounts = np.array(planetObliquityCounts)
 planetObliquityProportions = np.array(planetObliquityProportions)
 
-np.savetxt('Part1PlanetObliquityCounts.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr3 logQinr4 logQinr5 logQ6 logQ7 logQ8', fmt='%s')
-np.savetxt('Part1PlanetObliquityProportions.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr3 logQinr4 logQinr5 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('Part1PlanetObliquityCounts.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('Part1PlanetObliquityProportions.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
 np.savetxt('part1goodconfigarray.txt', np.array(goodConfigurations), fmt='%s')

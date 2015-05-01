@@ -32,6 +32,7 @@ rottxt = ['fast.evol', 'medium.evol', 'slow.evol']
 
 
 planetlist = []
+agesstring = ','.join([str(0.01*1.5**i) for i in range(18)])
 
 for M in mstar:
     for m in mplanet:
@@ -44,20 +45,15 @@ for M in mstar:
                                     'lgQout_' + str(Qout) + 'Obli_' + str(obliquity) + 'rot_' + rottxt[rotationsetting]
                             planet = np.array([M, m, period, Qin, Qout, obliquity, rot[rotationsetting]['p-disk'][0], rot[rotationsetting]['K'][0], \
                                     rot[rotationsetting]['tcoup'][0], rot[rotationsetting]['wsat'][0], rot[rotationsetting]['tdisk'][0], outf])
+                            os.system('./poet --require-ages=' + agesstring + '--Mstar=' + str(M) + ' ' + '--Mplanet=' + str(m) + ' ' \
+                                        + '--init-orbit-period=' + str(period) + ' ' + '--init-inclination=' + str(obliquity) + ' ' + '--lgQ=' + str(Qout) + ' '\
+                                        + '--lgQinr=' + str(Qin) + ' ' + '--p-disk=' + str(rot[rotationsetting]['p-disk'][0]) + ' '\
+                                        + '-K ' + str(rot[rotationsetting]['K'][0]) + ' ' + '--core-env-coupling-timescale=' + str(rot[rotationsetting]['tcoup'][0]) + ' '\
+                                        + '--high-mass-wind-sat-w=' + str(rot[rotationsetting]['wsat'][0]) + ' '+ '--t-disk=' + str(rot[rotationsetting]['tdisk'][0]) +' '\
+                                        + '--output=' + outf + ' ' + '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode')
                             planetlist.append(planet)
 
 
 planetlist = np.array(planetlist)
-
 np.savetxt('./explorationpart/part2exploration.txt', planetlist,delimiter=' ', fmt='%s')
-
-
-outputinfo = '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode '
-
-
-beginningofcommand = './poet --input=./explorationpart/part2exploration.txt --input-columns=M,m,pform,lgQinr,lgQ,incl,pdisk,K,tcoup,wsat,tdisk,outf ' 
-
-agesstring = ','.join([str(0.01*1.5**i) for i in range(18)])
-
-os.system(beginningofcommand + '--require-ages=' + agesstring + ' ' + outputinfo)
 
