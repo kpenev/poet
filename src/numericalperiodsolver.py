@@ -295,61 +295,61 @@ for planetdataarray in planetdata:
                                             dtype=np.dtype({'names': ('NAMES', 'PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
                                             'formats':('S10', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
                     print 'Running configuration for: ' + str(planetConfig)
-                    log.write('Running configuration for: ' + str(planetConfig))
+                    logfile.write('Running configuration for: ' + str(planetConfig))
                     solution = solve(planetConfig)
                     print str(solution)
-                    log.write(str(solution))
+                    logfile.write(str(solution))
                     solutionObli = solution['OBLI']
                     #the second case is needed because of negatives
                     #this means we found a good solution
                     if (solutionObli >= obliLower and solutionObli <= obliUpper) or (solutionObli >= obliUpper and solutionObli <= obliLower) and solution['initialperiod'] != -1:
                         print 'Solution Found'
-                        log.write('Solution found')
+                        logfile.write('Solution found')
                         goodConfigurations.append(planetConfig)
                         goodConfigurationsFile.write(planetConfig)
 
                         if rotparam == 0:
                             print 'Wrote 1'
-                            log.write('Wrote 1')
+                            logfile.write('Wrote 1')
                             fastrotationsfile.write(str(planetConfig))
                             currentPlanetObliquityCounts['Fast'] = currentPlanetObliquityCounts['Fast'] + 1
                         if rotparam == 1:
-                            log.write('Wrote 2')
+                            logfile.write('Wrote 2')
                             print 'Wrote 2'
                             mediumrotationsfile.write(str(planetConfig))
                             currentPlanetObliquityCounts['Medium'] = currentPlanetObliquityCounts['Medium'] + 1
                         if rotparam == 2:
-                            log.write('Write 3')
+                            logfile.write('Write 3')
                             print 'Wrote 3'
                             slowrotationsfile.write(planetConfig)
                             currentPlanetObliquityCounts['Slow'] = currentPlanetObliquityCounts['Slow'] + 1
                         if Qin == 4:
-                            log.write('Wrote 4')
+                            logfile.write('Wrote 4')
                             print 'Wrote 4'
                             logQinr4file.write(planetConfig)
                             currentPlanetObliquityCounts['logQinr4'] = currentPlanetObliquityCounts['logQinr4'] + 1
                         if Qin == 5:
-                            log.write('Wrote 5')
+                            logfile.write('Wrote 5')
                             print 'Wrote 5'
                             logQinr5file.write(planetConfig)
                             currentPlanetObliquityCounts['logQinr5'] = currentPlanetObliquityCounts['logQinr5'] + 1
                         if Qin == 6:
-                            log.write('Wrote 6')
+                            logfile.write('Wrote 6')
                             print 'Wrote 6'
                             logQinr6file.write(planetConfig)
                             currentPlanetObliquityCounts['logQinr6'] = currentPlanetObliquityCounts['logQinr6'] + 1
                         if Qout == 6:
-                            log.write('Wrote 7')
+                            logfile.write('Wrote 7')
                             print 'Wrote 7'
                             logQ6file.write(planetConfig)
                             currentPlanetObliquityCounts['logQ6'] = currentPlanetObliquityCounts['logQ6'] + 1
                         if Qout == 7:
-                            log.write('Wrote 8')
+                            logfile.write('Wrote 8')
                             print 'Wrote 8'
                             logQ7file.write(planetConfig)
                             currentPlanetObliquityCounts['logQ7'] = currentPlanetObliquityCounts['logQ7'] + 1
                         if Qout == 8:
-                            log.write('Wrote 9')
+                            logfile.write('Wrote 9')
                             print 'Wrote 9'
                             logQ8file.write(planetConfig)
                             currentPlanetObliquityCounts['logQ8'] = currentPlanetObliquityCounts['logQ8'] + 1
