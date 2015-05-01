@@ -296,6 +296,7 @@ for planetdataarray in planetdata:
                                             'formats':('S10', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
                     print 'Running configuration for: ' + str(planetConfig)
                     solution = solve(planetConfig)
+                    print solution
                     solutionObli = solution['OBLI']
                     #the second case is needed because of negatives
                     #this means we found a good solution
