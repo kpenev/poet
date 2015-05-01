@@ -17,11 +17,11 @@ def buildCommandString(array, period, solverEnd):
     return (initialentry + inputinfo + outputinfo + locationinfo, location)
 
 incl = np.linspace(0, np.pi * 0.98, 16)
-logQinr = np.array([5])
+logQinr = np.array([3, 5])
 logQ = np.array([5, 7, 9])
 mstar = np.array([1, 0.5])
 mplanet = np.array([1])
-orbperiods = np.array([1, 2, 3, 4, 5, 6])
+orbperiods = np.array([3, 4, 5, 6])
 
 fastrot = np.array([(1.4, 0.155, 12, 2.45, 2.5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
 mediumrot = np.array([(7, 0.17, 28, 2.45, 5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
@@ -55,7 +55,7 @@ np.savetxt('./explorationpart/part2exploration.txt', planetlist,delimiter=' ', f
 outputinfo = '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode '
 
 
-beginningofcommand = './poet --input=./explorationpart/part2exploration.txt --input-columns=M,m,pform,lgQinr,lgQ,incl,pdisk,K,tcoup,wsat,tdisk ' 
+beginningofcommand = './poet --input=./explorationpart/part2exploration.txt --input-columns=M,m,pform,lgQinr,lgQ,incl,pdisk,K,tcoup,wsat,tdisk,outf ' 
 
 agesstring = ','.join([str(0.01*1.5**i) for i in range(18)])
 

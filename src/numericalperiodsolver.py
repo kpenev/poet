@@ -3,14 +3,14 @@ import scipy
 import os
 import sys
 
-sys.stdout = open('log.txt', 'w')
+#sys.stdout = open('log.txt', 'w')
 
 
 
 #can't exactly be pi or the simulation cancels out
 incl = np.linspace(0, np.pi * 0.98, 10)
-logQinr = np.array([3, 4, 5])
-logQ = np.array([6, 7, 8, 9])
+logQinr = np.array([4, 5, 6])
+logQ = np.array([6, 7, 8])
 
 
 
@@ -65,7 +65,7 @@ def solve(array):
     age = array['AGE'][0]
     #the following are $b_1$ and $a_1$ as in the notation of Dekker's method
     periodUpper = 10
-    periodLower = array['ORBPERIOD'][0] * 0.55
+    periodLower = array['ORBPERIOD'][0] * 0.50
     period = array['ORBPERIOD'][0]
 
     upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
@@ -90,44 +90,18 @@ def solve(array):
     maskindicesupper = datatempUpper['t'] == age
     maskindiceslower = datatempLower['t'] == age
 
-    #solution not possible
-    if (not np.any(maskindicesupper) and not np.any(maskindiceslower)):
-        #last entry of evolution
-        upperEstimates = datatempUpper['ORBPERIOD'][-1]
-        lowerEstimates = datatempLower['ORBPERIOD'][-1]
-        
-        if ((upperEstimates-period) * (lowerEstimates - period)) > 0:
-            solution['initialperiod'] = -1
-            solution['OBLI'] = -1
-            return solution
 
     #didn't get to age
     if (not np.any(maskindicesupper)):
-        while not np.any(maskindicesupper) and periodUpper > periodLower:
+        while not np.any(maskindicesupper):
             print 'Loop 1'
-            periodUpper = periodUpper - 0.2 * periodUpper
+            periodUpper = periodUpper * 2
             upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
             os.system(upperProcessString)
             datatempUpper = readEvolution(upperOutf)
             maskindicesupper = datatempUpper['t'] == age
             
-    #didn't get to the age
-    if (not np.any(maskindiceslower)):
-        while not np.any(maskindicesupper) and periodLower < periodUpper:
-            print 'Loop 2'
-            periodLower = periodLower + 0.2 * periodLower
-            lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
-            os.system(lowerProcessString)
-            datatempLower = readEvolution(lowerOutf)
-            maskindiceslower = datatempLower['t'] == age
-
-    if not np.any(maskindiceslower) or not np.any(maskindicesupper):
-        #solution is not bounded so return zero
-        print 'no solution'
-        solution['initialperiod'] = -1
-        solution['OBLI'] = -1
-        return solution
-
+    
 
     #the estimates are the output f(b) and f(a) respectively, but notice that they are offset from zero
     #the array call is needed as sometimes it returns two
@@ -135,31 +109,26 @@ def solve(array):
     periodLowerEstimate = np.array(datatempLower['ORBPERIOD'][maskindiceslower])[0]
     #make sure that solution is inside region
     if np.isnan(periodLowerEstimate):
-        while np.isnan(periodLowerEstimate) and periodLower < periodUpper:
-            print 'Loop 4'
-            periodLower = periodLower + 0.2 * periodLower
-            lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
-            os.system(lowerProcessString)
-            datatempLower = readEvolution(lowerOutf)
-            maskindiceslower = datatempLower['t'] == age
-            periodLowerEstimate = np.array(datatempLower['ORBPERIOD'][maskindiceslower])[0]
-
-    if np.isnan(periodLowerEstimate):
-        #solution is not bounded so return zero
-        solution['initialperiod'] = -1
-        solution['OBLI'] = -1
-        return solution
-
-
+        periodLowerEstimate = 0
+    
     if np.isnan(periodUpperEstimate):
-        while np.isnan(periodUpperEstimate) and periodUpper > periodLower:
+        while np.isnan(periodUpperEstimate):
             print 'Loop 5'
-            periodUpper = periodUpper - 0.2 * periodUpper
+            periodUpper = periodUpper * 2
             upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
             os.system(upperProcessString)
             datatempUpper = readEvolution(upperOutf)
             maskindicesupper = datatempUpper['t'] == age
             periodUpperEstimate = np.array(datatempUpper['ORBPERIOD'][maskindicesupper])[0]
+
+    while (periodUpperEstimate - period) < 0:
+        periodUpper = periodUpper * 2
+        upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
+        os.system(upperProcessString)
+        datatempUpper = readEvolution(upperOutf)
+        maskindicesupper = datatempUpper['t'] == age
+        periodUpperEstimate = np.array(datatempUpper['ORBPERIOD'][maskindicesupper])[0]
+
 
     fractionalError = 1.0 * np.abs(period-periodUpperEstimate)/period
     #just larger to better iterate, we want .1% difference so at least iterate if the %error changes
@@ -183,6 +152,7 @@ def solve(array):
         bk = temp2
 
     c = ak
+    periodEstimateC = periodLowerEstimate
     
     cProcessString, cOutf = buildCommandString(array, c, 'c')
     process = os.system(cProcessString)
@@ -268,11 +238,11 @@ def solve(array):
     return solution
 
 
-#testplanet = np.array([((2.0, 1.572, 8, 2.2, 0.3490658503988659, 6.0, 5.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
-       #dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
-        #'formats':('f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
-#solution = solve(testplanet)
-#print solution
+testplanet = np.array([((2.0, 1.072, 8, 2.2, 0.3490658503988659, 6.0, 5.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
+       dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
+        'formats':('f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
+solution = solve(testplanet)
+print solution
 
 fastrot = np.array([(1.4, 0.155, 12, 2.45, 2.5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
 mediumrot = np.array([(7, 0.17, 28, 2.45, 5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
@@ -367,15 +337,15 @@ for planetdataarray in planetdata:
 
     planetObliquityCounts.append(currentPlanetObliquityCounts)
 
-    currentplanetObliquityProportions['Fast'] = 1.0 * currentPlanetObliquityCounts['Fast'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
-    currentplanetObliquityProportions['Medium'] = 1.0 * currentPlanetObliquityCounts['Medium'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
-    currentplanetObliquityProportions['Slow'] = 1.0 * currentPlanetObliquityCounts['Slow'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
-    currentplanetObliquityProportions['logQinr3'] = 1.0 * currentPlanetObliquityCounts['logQinr3'] / (incl.shape[0] * len(rot) * logQ.shape[0])
-    currentplanetObliquityProportions['logQinr4'] = 1.0 * currentPlanetObliquityCounts['logQinr4'] / (incl.shape[0] * len(rot) * logQ.shape[0])
-    currentplanetObliquityProportions['logQinr5'] = 1.0 * currentPlanetObliquityCounts['logQinr5'] / (incl.shape[0] * len(rot) * logQ.shape[0])
-    currentplanetObliquityProportions['logQ6'] = 1.0 * currentPlanetObliquityCounts['logQ6'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
-    currentplanetObliquityProportions['logQ7'] = 1.0 * currentPlanetObliquityCounts['logQ7'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
-    currentplanetObliquityProportions['logQ8'] = 1.0 * currentPlanetObliquityCounts['logQ8'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
+    currentPlanetObliquityProportions['Fast'] = 1.0 * currentPlanetObliquityCounts['Fast'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
+    currentPlanetObliquityProportions['Medium'] = 1.0 * currentPlanetObliquityCounts['Medium'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
+    currentPlanetObliquityProportions['Slow'] = 1.0 * currentPlanetObliquityCounts['Slow'] / (incl.shape[0] * logQinr.shape[0] * logQ.shape[0])
+    currentPlanetObliquityProportions['logQinr3'] = 1.0 * currentPlanetObliquityCounts['logQinr3'] / (incl.shape[0] * len(rot) * logQ.shape[0])
+    currentPlanetObliquityProportions['logQinr4'] = 1.0 * currentPlanetObliquityCounts['logQinr4'] / (incl.shape[0] * len(rot) * logQ.shape[0])
+    currentPlanetObliquityProportions['logQinr5'] = 1.0 * currentPlanetObliquityCounts['logQinr5'] / (incl.shape[0] * len(rot) * logQ.shape[0])
+    currentPlanetObliquityProportions['logQ6'] = 1.0 * currentPlanetObliquityCounts['logQ6'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
+    currentPlanetObliquityProportions['logQ7'] = 1.0 * currentPlanetObliquityCounts['logQ7'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
+    currentPlanetObliquityProportions['logQ8'] = 1.0 * currentPlanetObliquityCounts['logQ8'] / (incl.shape[0] * len(rot) * logQinr.shape[0])
 
 planetObliquityCounts = np.array(planetObliquityCounts)
 planetObliquityProportions = np.array(planetObliquityProportions)
