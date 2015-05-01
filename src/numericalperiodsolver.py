@@ -222,10 +222,6 @@ def solve(array):
         fractionalErrorOld = fractionalError
         fractionalError = 1.0 * np.abs(period-periodUpperEstimate)/period
         fractionalErrorChange = np.abs(fractionalError - fractionalErrorOld)
-        print ak
-        print bk
-        print periodLowerEstimate
-        print periodUpperEstimate
             
     if fractionalError <= 0.001:
         solution['initialperiod'] = bk
