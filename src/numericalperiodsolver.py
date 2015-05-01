@@ -238,11 +238,11 @@ def solve(array):
     return solution
 
 
-testplanet = np.array([((2.0, 1.072, 8, 2.2, 0.3490658503988659, 6.0, 5.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
-       dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
-        'formats':('f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
-solution = solve(testplanet)
-print solution
+#testplanet = np.array([((2.0, 1.072, 8, 2.2, 0.3490658503988659, 6.0, 5.0, 1.4, 0.155, 12.0, 2.45, 2.5))], \
+      # dtype=np.dtype({'names': ('PMASS', 'STARMASS', 'ORBPERIOD', 'AGE', 'OBLI', 'lgQ', 'lgQinr', 'p-disk', 'K', 'tcoup', 'wsat', 'tdisk'), \
+        #'formats':('f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8' )}))
+#solution = solve(testplanet)
+#print solution
 
 fastrot = np.array([(1.4, 0.155, 12, 2.45, 2.5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
 mediumrot = np.array([(7, 0.17, 28, 2.45, 5)], dtype=np.dtype([('p-disk', 'f8'), ('K', 'f8'), ('tcoup', 'f8'), ('wsat', 'f8'), ('tdisk', 'f8')]))
