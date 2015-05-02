@@ -3,7 +3,7 @@ import scipy
 import os
 import sys
 
-logfile = open('log.txt', 'w')
+logfile = open('./part1/log.txt', 'w')
 
 
 
@@ -43,7 +43,7 @@ def buildCommandString(array, period, solverEnd):
             + '--high-mass-wind-sat-w=' + str(array['wsat'][0]) + ' '+ '--t-disk=' + str(array['tdisk'][0]) + ' ' + '--tmax=' + str(1.01 * array['AGE'][0]) + ' '
     
     outputinfo = '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode '
-    location = 'solver' + solverEnd + '.evol'
+    location = './part1/solver' + solverEnd + '.evol'
     locationinfo = '--output=' + location
     return (initialentry + inputinfo + outputinfo + locationinfo, location)
     
@@ -269,19 +269,19 @@ rot = [fastrot, mediumrot, slowrot]
 #these resulted in good runs
 goodConfigurations = []
 
-goodConfigurationsFile = open('part1goodconfig.txt', 'w')
+goodConfigurationsFile = open('./part1/part1goodconfig.txt', 'w')
 
-fastrotationsfile = open('fastrotationsgoodconfig.txt', 'w')
-mediumrotationsfile = open('mediumrotationsgoodconfig.txt', 'w')
-slowrotationsfile = open('slowrotationsgoodconfig.txt', 'w')
+fastrotationsfile = open('./part1/fastrotationsgoodconfig.txt', 'w')
+mediumrotationsfile = open('./part1/mediumrotationsgoodconfig.txt', 'w')
+slowrotationsfile = open('./part1/slowrotationsgoodconfig.txt', 'w')
 
-logQinr4file = open('logQinr4GoodConfig.txt', 'w')
-logQinr5file = open('logQinr5GoodConfig.txt', 'w')
-logQinr6file = open('logQinr6GoodConfig.txt', 'w')
+logQinr4file = open('./part1/logQinr4GoodConfig.txt', 'w')
+logQinr5file = open('./part1/logQinr5GoodConfig.txt', 'w')
+logQinr6file = open('./part1/logQinr6GoodConfig.txt', 'w')
 
-logQ6file = open('logQ6GoodConfig.txt', 'w')
-logQ7file = open('logQ7GoodConfig.txt', 'w')
-logQ8file = open('logQ8GoodConfig.txt', 'w')
+logQ6file = open('./part1/logQ6GoodConfig.txt', 'w')
+logQ7file = open('./part1/logQ7GoodConfig.txt', 'w')
+logQ8file = open('./part1/logQ8GoodConfig.txt', 'w')
 
 #this array will have how many of the simulations of a certain type for each planet resulted in obliquity
 #the structure is Fast, Medium, Slow, logQinr3, logQinr4, logQinr5, 
@@ -315,7 +315,7 @@ for planetdataarray in planetdata:
                     solution = solve(planetConfig)
                     print str(solution)
                     logfile.write(str(solution) + '\n')
-                    solutionObli = solution['OBLI']
+                    solutionObli = solution['OBLI'][0]
                     #the second case is needed because of negatives
                     #this means we found a good solution
                     if (solutionObli >= obliLower and solutionObli <= obliUpper) or (solutionObli >= obliUpper and solutionObli <= obliLower) and solution['initialperiod'] != -1:
@@ -390,6 +390,6 @@ for planetdataarray in planetdata:
 planetObliquityCounts = np.array(planetObliquityCounts)
 planetObliquityProportions = np.array(planetObliquityProportions)
 
-np.savetxt('Part1PlanetObliquityCounts.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
-np.savetxt('Part1PlanetObliquityProportions.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
-np.savetxt('part1goodconfigarray.txt', np.array(goodConfigurations), fmt='%s')
+np.savetxt('./part1/Part1PlanetObliquityCounts.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('./part1/Part1PlanetObliquityProportions.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('./part1/part1goodconfigarray.txt', np.array(goodConfigurations), fmt='%s')
