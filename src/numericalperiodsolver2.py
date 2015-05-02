@@ -3,7 +3,7 @@ import scipy
 import os
 import sys
 
-logfile = open('log.txt', 'w')
+logfile = open('log2.txt', 'w')
 
 
 
@@ -14,7 +14,7 @@ logQ = np.array([6, 7, 8])
 
 
 
-planetdata = np.loadtxt('initialplanetsearch.txt', skiprows=4, delimiter=',', usecols=(0,1,2,3,4,5,6,7,8,9,10,11,12), \
+planetdata = np.loadtxt('initialplanetsearch2.txt', skiprows=4, delimiter=',', usecols=(0,1,2,3,4,5,6,7,8,9,10,11,12), \
              dtype={'names':('NAMES', 'PMASS', 'STARMASS', 'PRADIUS', 'A', 'ORBPERIOD', 'INCL', 'OBLI', 'OBLIMINUS', 'OBLIPLUS', 'AGE', 'AGEMINUS', 'AGEPLUS'), \
              'formats':('S10','f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8')})
 
@@ -34,6 +34,7 @@ def readEvolution(location):
 #the outf only depends on the input, not the output period and its iteration
 #solverEnd is either '+' or '-' or 'c' to indicate how to save the file as bk iteratio or ak iteratio or c interation
 def buildCommandString(array, period, solverEnd):
+    solverEnd = solverEnd + '2'
     initialentry = './poet' + ' '
     inputinfo = '--Mstar=' + str(array['STARMASS'][0]) + ' ' + '--Mplanet=' + str(array['PMASS'][0]) + ' ' \
             + '--init-orbit-period=' + str(period) + ' ' + '--require-ages=' + str(array['AGE'][0]) + ' '\
@@ -269,19 +270,19 @@ rot = [fastrot, mediumrot, slowrot]
 #these resulted in good runs
 goodConfigurations = []
 
-goodConfigurationsFile = open('part1goodconfig.txt', 'w')
+goodConfigurationsFile = open('part1goodconfig2.txt', 'w')
 
-fastrotationsfile = open('fastrotationsgoodconfig.txt', 'w')
-mediumrotationsfile = open('mediumrotationsgoodconfig.txt', 'w')
-slowrotationsfile = open('slowrotationsgoodconfig.txt', 'w')
+fastrotationsfile = open('fastrotationsgoodconfig2.txt', 'w')
+mediumrotationsfile = open('mediumrotationsgoodconfig2.txt', 'w')
+slowrotationsfile = open('slowrotationsgoodconfig2.txt', 'w')
 
-logQinr4file = open('logQinr4GoodConfig.txt', 'w')
-logQinr5file = open('logQinr5GoodConfig.txt', 'w')
-logQinr6file = open('logQinr6GoodConfig.txt', 'w')
+logQinr4file = open('logQinr4GoodConfig2.txt', 'w')
+logQinr5file = open('logQinr5GoodConfig2.txt', 'w')
+logQinr6file = open('logQinr6GoodConfig2.txt', 'w')
 
-logQ6file = open('logQ6GoodConfig.txt', 'w')
-logQ7file = open('logQ7GoodConfig.txt', 'w')
-logQ8file = open('logQ8GoodConfig.txt', 'w')
+logQ6file = open('logQ6GoodConfig2.txt', 'w')
+logQ7file = open('logQ7GoodConfig2.txt', 'w')
+logQ8file = open('logQ8GoodConfig2.txt', 'w')
 
 #this array will have how many of the simulations of a certain type for each planet resulted in obliquity
 #the structure is Fast, Medium, Slow, logQinr3, logQinr4, logQinr5, 
@@ -390,6 +391,7 @@ for planetdataarray in planetdata:
 planetObliquityCounts = np.array(planetObliquityCounts)
 planetObliquityProportions = np.array(planetObliquityProportions)
 
-np.savetxt('Part1PlanetObliquityCounts.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
-np.savetxt('Part1PlanetObliquityProportions.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
-np.savetxt('part1goodconfigarray.txt', np.array(goodConfigurations), fmt='%s')
+np.savetxt('Part1PlanetObliquityCounts2.txt', planetObliquityCounts, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('Part1PlanetObliquityProportions2.txt', planetObliquityProportions, header = 'Name Fast Medium Slow logQinr4 logQinr5 logQinr6 logQ6 logQ7 logQ8', fmt='%s')
+np.savetxt('part1goodconfigarray2.txt', np.array(goodConfigurations), fmt='%s')
+
