@@ -114,9 +114,11 @@ def solve(array):
     
     if np.isnan(periodLowerEstimate):
         periodLowerEstimate = 0
-    
+        
     if np.isnan(periodUpperEstimate):
-        while np.isnan(periodUpperEstimate):
+        count = 0
+        while np.isnan(periodUpperEstimate) and count < 2:
+            count = count + 1
             print 'Loop 5'
             periodUpper = periodUpper * 1.4
             upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
@@ -130,6 +132,10 @@ def solve(array):
                 return solution
             
             periodUpperEstimate = np.array(datatempUpper['ORBPERIOD'][maskindicesupper])[0]
+            
+    #couldn't bound top
+    if np.isnan(periodUpperEstimate):
+        periodUpperEstimate=0
 
     while (periodUpperEstimate - period) < 0:
         periodUpper = periodUpper * 1.4
