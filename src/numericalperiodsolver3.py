@@ -94,25 +94,27 @@ def solve(array):
     period = array['ORBPERIOD'][0]
 
     upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
-    lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
- 
+    
     if upperOutf == -1:
-        print 'Timeout'
         solution['initialperiod'] = -1
         solution['OBLI'] = -1
         return solution
+
+    lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
+ 
     if lowerOutf == -1:
         solution['initialperiod'] = -1
         solution['OBLI'] = -1
         return solution
-
-
+    
+    #wait for simulations to finish before continuing to work with them
+    #exit = [p.wait() for p in process1, process2]
 
     datatempUpper = readEvolution(upperOutf)
     datatempLower = readEvolution(lowerOutf)
 
-    maskindicesupper = datatempUpper['t'] == age
-    maskindiceslower = datatempLower['t'] == age
+    maskindicesupper = np.isclose(datatempUpper['t'], age)
+    maskindiceslower = np.isclose(datatempLower['t'], age)
 
 
     #didn't get to age
@@ -125,12 +127,12 @@ def solve(array):
                 
     #the estimates are the output f(b) and f(a) respectively, but notice that they are offset from zero
     #the array call is needed as sometimes it returns two
-    periodUpperEstimate = np.array(datatempUpper['ORBPERIOD'][maskindicesupper])[0]
+    periodUpperEstimate = np.mean(datatempUpper['ORBPERIOD'][maskindicesupper])
     
     if (not np.any(maskindiceslower)):
         periodLowerEstimate = 0
     else:
-        periodLowerEstimate = np.array(datatempLower['ORBPERIOD'][maskindiceslower])[0]
+        periodLowerEstimate = np.mean(datatempLower['ORBPERIOD'][maskindiceslower])
     #make sure that solution is inside region
     
     if np.isnan(periodLowerEstimate):
@@ -147,22 +149,21 @@ def solve(array):
             if upperOutf == -1:
                 solution['initialperiod'] = -1
                 solution['OBLI'] = -1
-                return solution
-            
+                return solution 
             datatempUpper = readEvolution(upperOutf)
-            maskindicesupper = datatempUpper['t'] == age
+            maskindicesupper = np.isclose(datatempUpper['t'], age)
             
             if (not np.any(maskindicesupper)):
                 solution['initialperiod'] = -1
                 solution['OBLI'] = -1
                 return solution
             
-            periodUpperEstimate = np.array(datatempUpper['ORBPERIOD'][maskindicesupper])[0]
+            periodUpperEstimate = np.mean(datatempUpper['ORBPERIOD'][maskindicesupper])
     #couldn't bound top
     
     if np.isnan(periodUpperEstimate):
         periodUpperEstimate=0
-
+        
     while (periodUpperEstimate - period) < 0:
         periodUpper = periodUpper * 1.4
         upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
@@ -171,16 +172,15 @@ def solve(array):
             solution['initialperiod'] = -1
             solution['OBLI'] = -1
             return solution
-
         datatempUpper = readEvolution(upperOutf)
-        maskindicesupper = datatempUpper['t'] == age
+        maskindicesupper = np.isclose(datatempUpper['t'],age)
         #solution wasn't bounded for Hat p 17 b
         #when the step size was increased
         if (not np.any(maskindicesupper)):
             solution['initialperiod'] = -1
             solution['OBLI'] = -1
             return solution
-        periodUpperEstimate = np.array(datatempUpper['ORBPERIOD'][maskindicesupper])[0]
+        periodUpperEstimate = np.mean(datatempUpper['ORBPERIOD'][maskindicesupper])
 
 
     fractionalError = 1.0 * np.abs(period-periodUpperEstimate)/period
@@ -240,13 +240,13 @@ def solve(array):
             solution['initialperiod'] = -1
             solution['OBLI'] = -1
             return solution
-
+        
         datatempS = readEvolution(sOutf)
-        maskindicesS = datatempS['t'] == age
+        maskindicesS = np.isclose(datatempS['t'], age)
         if (not np.any(maskindicesS)):
             periodEstimateS = 0
         else:
-            periodEstimateS = np.array(datatempS['ORBPERIOD'][maskindicesS])[0]
+            periodEstimateS = np.mean(datatempS['ORBPERIOD'][maskindicesS])
         
         #should never happen
         if (np.isnan(periodEstimateS)):
@@ -289,10 +289,10 @@ def solve(array):
             solution['initialperiod'] = -1
             solution['OBLI'] = -1
             return solution
-
+        
         datafinal = readEvolution(finalOutf)
-        maskindicesfinal = np.array(datafinal['t'] == age)
-        solution['OBLI'] = np.array(datafinal['convincl'][maskindicesfinal])[0]
+        maskindicesfinal = np.isclose(datafinal['t'], age)
+        solution['OBLI'] = np.mean(datafinal['convincl'][maskindicesfinal])
     else:
         solution['initialperiod'] = -1
         solution['OBLI'] = -1
