@@ -1,0 +1,8 @@
+#skip this line: the order is name, planet mass(MJup), star mass(Msun), planet radius(rJup), current semi major axis length(AU), current orbital period(days), current inclination (degrees);misalignment
+#NAME,MASS,MSTAR,R,A,PER,I,LAMBDA,AGES
+#NAME,MASS,MSTAR,R,A,PER,I,LAMBDA,LAMBDALOWER,LAMBDAUPPER,YEAR,YEARLOWER,YEARUPPER
+#,mjupiter,msun,rjupiter,au,day,deg,deg,GYear,GLOWER,GUPPER# #WASP-6 b,0.52136,0.93,1.224,0.0428704,3.361006,88.47,-11,14,18,11,7,7
+WASP-24 b,1.091,1.184,1.3,0.0365155,2.3412127,83.64,-4.7,4,4,1.6,1.6,1.6
+WASP-22 b,0.559059,1.1,1.12,0.0468682,3.53269,89.2,22,16,16,3,1,1
+WASP-17 b,0.508547,1.19,1.932,0.0499354,3.735433,86.63,-148.5,5.1,4.2,3.0,2.6,2.6
+WASP-16 b,0.842294,1,1.008,0.0417858,3.1186009,85.22,-4.2,13.9,11,2.3,2.2,2.2
