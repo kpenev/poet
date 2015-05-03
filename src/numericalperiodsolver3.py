@@ -1,7 +1,10 @@
 import numpy as np
 import scipy
-import os
+import subprocess
+import time
 import sys
+import os
+import signal
 
 logfile = open('./part1/log3.txt', 'w')
 
@@ -13,6 +16,7 @@ logQinr = np.array([4, 5, 6])
 logQ = np.array([6, 7, 8])
 
 
+TIME_TO_WAIT = 120
 
 planetdata = np.loadtxt('initialplanetsearch3.txt', skiprows=4, delimiter=',', usecols=(0,1,2,3,4,5,6,7,8,9,10,11,12), \
              dtype={'names':('NAMES', 'PMASS', 'STARMASS', 'PRADIUS', 'A', 'ORBPERIOD', 'INCL', 'OBLI', 'OBLIMINUS', 'OBLIPLUS', 'AGE', 'AGEMINUS', 'AGEPLUS'), \
@@ -46,7 +50,23 @@ def buildCommandString(array, period, solverEnd):
     outputinfo = '--output-columns=t,Porb,a,convincl,radincl,Lconv,Lrad,Iconv,Irad,I,mode '
     location = './part1/solver' + solverEnd + '.evol'
     locationinfo = '--output=' + location
-    return (initialentry + inputinfo + outputinfo + locationinfo, location)
+    
+    process = subprocess.Popen(str.split(initialentry + inputinfo + outputinfo + locationinfo, ' '))
+    
+    t_zero = time.time()
+    seconds_passed = 0
+    
+    while (process.poll() is None and seconds_passed < TIME_TO_WAIT):
+        seconds_passed = time.time()-t_zero
+
+    if seconds_passed > TIME_TO_WAIT:
+        print 'Time out'
+        os.kill(process.pid, signal.SIGKILL)
+        return (str.split(initialentry + inputinfo + outputinfo + locationinfo, ' '), -1)
+        
+    
+        
+    return (str.split(initialentry + inputinfo + outputinfo + locationinfo, ' '), location)
     
 
 
@@ -75,18 +95,18 @@ def solve(array):
 
     upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
     lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
-
-    
-    upperGood = os.system(upperProcessString)
-    lowerGood = os.system(lowerProcessString)
-    #simulation could not be allocated
-    if (upperGood == 6 or lowerGood == 6):
+ 
+    if upperOutf == -1:
+        print 'Timeout'
+        solution['initialperiod'] = -1
+        solution['OBLI'] = -1
+        return solution
+    if lowerOutf == -1:
         solution['initialperiod'] = -1
         solution['OBLI'] = -1
         return solution
 
-    #wait for simulations to finish before continuing to work with them
-    #exit = [p.wait() for p in process1, process2]
+
 
     datatempUpper = readEvolution(upperOutf)
     datatempLower = readEvolution(lowerOutf)
@@ -123,7 +143,12 @@ def solve(array):
             print 'Loop 5'
             periodUpper = periodUpper * 1.4
             upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
-            os.system(upperProcessString)
+            
+            if upperOutf == -1:
+                solution['initialperiod'] = -1
+                solution['OBLI'] = -1
+                return solution
+            
             datatempUpper = readEvolution(upperOutf)
             maskindicesupper = datatempUpper['t'] == age
             
@@ -141,7 +166,12 @@ def solve(array):
     while (periodUpperEstimate - period) < 0:
         periodUpper = periodUpper * 1.4
         upperProcessString, upperOutf = buildCommandString(array, periodUpper, UPPER)
-        os.system(upperProcessString)
+        
+        if upperOutf == -1:
+            solution['initialperiod'] = -1
+            solution['OBLI'] = -1
+            return solution
+
         datatempUpper = readEvolution(upperOutf)
         maskindicesupper = datatempUpper['t'] == age
         #solution wasn't bounded for Hat p 17 b
@@ -206,7 +236,11 @@ def solve(array):
 
         #need to calculate the period that s iterates to
         sProcessString, sOutf = buildCommandString(array, s, 's')
-        process = os.system(sProcessString)
+        if sOutf == -1:
+            solution['initialperiod'] = -1
+            solution['OBLI'] = -1
+            return solution
+
         datatempS = readEvolution(sOutf)
         maskindicesS = datatempS['t'] == age
         if (not np.any(maskindicesS)):
@@ -250,7 +284,12 @@ def solve(array):
     if fractionalError <= 0.001:
         solution['initialperiod'] = bk
         finalProcessString, finalOutf = buildCommandString(array, solution['initialperiod'][0], 'final')
-        process = os.system(finalProcessString)
+        
+        if finalOutf == -1:
+            solution['initialperiod'] = -1
+            solution['OBLI'] = -1
+            return solution
+
         datafinal = readEvolution(finalOutf)
         maskindicesfinal = np.array(datafinal['t'] == age)
         solution['OBLI'] = np.array(datafinal['convincl'][maskindicesfinal])[0]
