@@ -28,7 +28,7 @@ BOOST_LIB		= $(shell (echo 'int main() {}' > \
 				    	   /tmp/trivial.cpp; g++ /tmp/trivial.cpp \
 						   -lboost_serialization -o /tmp/trivial 2>/dev/null) \
 					&& \
-					echo "boost_serialization" || echo "boost_serialization-mt")
+					echo "boost_serialization" || echo "boost_serialization")
 LIBRARIES       = $(shell gsl-config --libs 2>/dev/null || \
 					echo -lgsl -lgslcblas) -l$(BOOST_LIB) -largtable2
 
