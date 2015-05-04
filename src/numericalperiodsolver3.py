@@ -182,6 +182,21 @@ def solve(array):
             return solution
         periodUpperEstimate = np.mean(datatempUpper['ORBPERIOD'][maskindicesupper])
 
+    while (periodLowerEstimate - period) > 0:
+        periodLower = periodLower * 0.5
+        lowerProcessString, lowerOutf = buildCommandString(array, periodLower, LOWER)
+        
+        if lowerOutf == -1:
+            periodLowerEstimate = 0
+        else:
+            datatempLower = readEvolution(lowerOutf)
+            maskindiceslower = np.isclose(datatempLower['t'],age)
+            #solution wasn't bounded for Hat p 17 b
+            #when the step size was increased
+            if (not np.any(maskindiceslower)):
+                periodLowerEstimate = 0
+            periodLowerEstimate = np.mean(datatempLower['ORBPERIOD'][maskindiceslower])
+
 
     fractionalError = 1.0 * np.abs(period-periodUpperEstimate)/period
     #just larger to better iterate, we want .1% difference so at least iterate if the %error changes
