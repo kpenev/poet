@@ -27,7 +27,7 @@ int stellar_system_diff_eq(double age, const double *parameters,
 	BinarySystem &system=*static_cast< BinarySystem* >(input_params[0]);
 	EvolModeType evol_mode=*static_cast< EvolModeType* >(input_params[1]);
 	return system.differential_equations(age, parameters, evol_mode,
-										 derivatives);
+                                         derivatives);
 }
 
 int stellar_system_jacobian(double age, const double *orbital_parameters,

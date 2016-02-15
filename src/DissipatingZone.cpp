@@ -435,6 +435,11 @@ void DissipatingZone::configure(double
 				__power[deriv_ind+1]+=term_power*mod_phase_lag_above;
 				__torque_z[deriv_ind+1]+=term_torque_z*mod_phase_lag_above;
 				__torque_x[deriv_ind+1]+=term_torque_x*mod_phase_lag_above;
+/*                std::cout << "Umm'=" << U_mmp 
+                    << ", term_power=" << term_power 
+                    << ", mod_phase_lag(above=" << mod_phase_lag_above
+                    << ", below=" << mod_phase_lag_below
+                    << ")" << std::endl;*/
 			}
 			U_mm1mp_value=U_mmp_value;
 			U_mm1mp_i_deriv=U_mmp_i_deriv;
