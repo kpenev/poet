@@ -60,9 +60,11 @@ std::valarray<double> SynchronizedCondition::operator()(
 			 __spin_freq_mult)/__orbital_freq_mult);
 #ifdef DEBUG
 	if(std::isnan((__orbital_freq_mult*worb - wspin*__spin_freq_mult)/worb)) {
-		std::cerr << "Synchronized value(worb=" << worb << ", wspin=" << wspin
+		std::cerr << "Synchronized value for zone " << __zone_index << "/"
+            << __system.primary().number_zones() << " for worb=" << worb
+            << ", wspin=" << wspin
 			<< ", m'=" << __orbital_freq_mult << ", m="
-			<< "__spin_freq_mult) is NaN."
+			<< "__spin_freq_mult is NaN."
 			<< ", semimajor=" << semimajor << std::endl ;
 		assert(false);
 	}
