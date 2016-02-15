@@ -71,7 +71,7 @@ void transform_zone_orientation(
 		const ZoneOrientation &zone,
 
 		///The reference frame in which we want to express the zone's
-		///orientation in in the old reference frame.
+		///orientation in the old reference frame.
 		const ZoneOrientation &reference,
 
 		///Overwritten by the inclination of zone in the new reference frame.

@@ -253,7 +253,7 @@ public:
 			///The absolute value of the angular momentum of the orbit.
 			double orbital_angmom,
 
-			///The angular momentum or spin frequency of the spin of the zone
+			///The angular momentum or spin frequency of the zone
 			///if the zone is not in a spin--orbit lock (ignored it if is).
 			double spin,
 			
@@ -472,7 +472,7 @@ public:
 	}
 
 	///\brief Same as tidal_power(bool, Dissipation::Derivative), but using
-	///the predefined mixe of below/above contributions.
+	///the predefined mix of below/above contributions.
 	double tidal_power(
 			///The fraction of the timestep to assume to have spin above the
 			///lock.
