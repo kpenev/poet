@@ -48,7 +48,7 @@ public:
 
 	///Sets the saturation based on the currently configured spin frequency.
 	void detect_saturation() 
-	{__saturated=(spin_frequency()>__saturation_freq);}
+	{__saturated=(std::abs(spin_frequency())>__saturation_freq);}
 
 	///Is the wind loss currently saturated?
 	bool saturated() {return __saturated;}
