@@ -931,7 +931,7 @@ void output_solution(const OrbitSolver &solver, const BinarySystem &system,
 			else if(output_file_format[i]==OutCol::WIND_STATE)
 				outf << (solution_iterator.wind_saturation()
 						 ? "SATURATED"
-						 : "NOT SATURATED");
+						 : "NOT_SATURATED");
 		}
 		outf << std::endl;
 	}
