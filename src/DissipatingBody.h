@@ -307,7 +307,8 @@ public:
 			///relative to the lock.
 			short direction)
 	{
-		zone(zone_index).release_lock(direction);
+        if(direction == 0) zone(zone_index).release_lock();
+        else zone(zone_index).release_lock(direction);
 		--__num_locked_zones;
 	}
 

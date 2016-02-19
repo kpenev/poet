@@ -1494,6 +1494,7 @@ void BinarySystem::secondary_died()
 										 new_surface_inclination);
 		periapsis[zone_ind-1]=0;
 		spin_angmom[zone_ind]=zone.angular_momentum();
+        if(zone.locked()) __body1.unlock_zone_spin(zone_ind, 0);
 	}
 	configure(__age, NaN, NaN, &spin_angmom[0], &inclination[0],
 			&periapsis[0], SINGLE);
