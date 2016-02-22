@@ -12,12 +12,16 @@ void ConstSolutionIterator::create_missing_lists(
 		  				  &radiative=__star.zone(__star.number_zones()-1);
 	static std::vector< std::list<double> >
 		quantities(OutCol::LAST_NO_ORBIT+1);
+	for(unsigned i=0; i<=OutCol::LAST_NO_ORBIT; ++i) quantities[i].clear();
 	for(
 			std::list<double>::const_iterator t_i=tabulation_ages.begin();
 			t_i!=tabulation_ages.end();
 			++t_i
 	) {
 		double age=*t_i;
+#ifdef DEBUG
+        std::cerr << "Tabulating quantities at age = " << age << std::endl;
+#endif
 		quantities[OutCol::ICONV].push_back(
 				convective.moment_of_inertia(age)
 		);
@@ -63,15 +67,33 @@ void ConstSolutionIterator::fix_no_evolution(
 		const std::list<double> &required_ages
 )
 {
+#ifdef DEBUG
+    std::cerr << "Fixing no evolution output." << std::endl;
+#endif
 	static std::list<double> age_list;
+    age_list.clear();
 	std::list<double>::const_iterator
 		required_ages_iter=required_ages.begin();
 	for(double age=start_age; age<=end_age; age+=timestep) {
 		for(;required_ages_iter!=required_ages.end() &&
-				*required_ages_iter<age; ++required_ages_iter)
+				*required_ages_iter<age; ++required_ages_iter) {
+#ifdef DEBUG
+            std::cerr << "Adding required age: "
+                      << *required_ages_iter
+                      << std::endl;
+#endif
 			age_list.push_back(*required_ages_iter);
+        }
+#ifdef DEBUG
+        std::cerr << "Adding max step age: "
+                  << *required_ages_iter
+                  << std::endl;
+#endif
 		age_list.push_back(age);
 	}
+#ifdef DEBUG
+        std::cerr << "Adding final age: " << end_age << std::endl;
+#endif
     age_list.push_back(end_age);
 	__real_iterators[OutCol::AGE]=age_list.begin();
 	__last_age=age_list.end();

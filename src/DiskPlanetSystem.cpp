@@ -31,6 +31,7 @@ void DiskPlanetSystem::add_secondary()
 	}
 	configure(age(), __initial_semimajor, __initial_eccentricity,
 			  &(angmom[0]), &(inclination[0]), &(periapsis[0]), BINARY);
+    if(semimajor() < minimum_semimajor()) secondary_died();
 }
 
 DiskPlanetSystem::DiskPlanetSystem(DissipatingBody &body1,

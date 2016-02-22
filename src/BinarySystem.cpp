@@ -1465,6 +1465,9 @@ double BinarySystem::minimum_semimajor(bool deriv) const
 
 void BinarySystem::secondary_died()
 {
+#ifdef DEBUG
+    std::cerr << "Handling secondary death!" << std::endl;
+#endif
 	unsigned num_zones=__body1.number_zones();
 	std::valarray<double> spin_angmom(num_zones), inclination(num_zones-1), 
 						  periapsis(num_zones-1);
@@ -1484,6 +1487,7 @@ void BinarySystem::secondary_died()
 
 	spin_angmom[0]=angmom;
 //	assert(num_zones==2);
+    if(old_surface_zone.locked()) __body1.unlock_zone_spin(0, 1);
 	for(unsigned zone_ind=1; zone_ind<num_zones; ++zone_ind) {
 		DissipatingZone &zone=__body1.zone(zone_ind);
 		assert(zone.periapsis()==0);
@@ -1494,10 +1498,15 @@ void BinarySystem::secondary_died()
 										 new_surface_inclination);
 		periapsis[zone_ind-1]=0;
 		spin_angmom[zone_ind]=zone.angular_momentum();
-        if(zone.locked()) __body1.unlock_zone_spin(zone_ind, 0);
+        if(zone.locked()) __body1.unlock_zone_spin(zone_ind, 1);
 	}
-	configure(__age, NaN, NaN, &spin_angmom[0], &inclination[0],
-			&periapsis[0], SINGLE);
+	configure(__age,
+              NaN,
+              NaN,
+              &spin_angmom[0],
+              &inclination[0],
+              &periapsis[0],
+              SINGLE);
 	__body1.spin_jumped();
 }
 
