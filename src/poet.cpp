@@ -1063,13 +1063,16 @@ std::string update_run_parameters(std::vector<double> &real_parameters,
 			line >> real_parameters[quantity];
 			if(quantity==InCol::WINDK)
 				real_parameters[InCol::HIGH_MASS_WINDK]=
-					real_parameters[InCol::WINDK];
-			else if(quantity==InCol::WIND_SAT_W) {
+                    real_parameters[InCol::LOW_MASS_WINDK]=
+                    real_parameters[InCol::WINDK];
+            else if(quantity==InCol::WIND_SAT_W) {
 				real_parameters[InCol::HIGH_MASS_WIND_SAT_W]=
+                    real_parameters[InCol::LOW_MASS_WIND_SAT_W]=
 					real_parameters[InCol::WIND_SAT_W];
 				read_wind_sat_w=true;
 			} else if(quantity==InCol::WIND_SAT_P) {
 				real_parameters[InCol::HIGH_MASS_WIND_SAT_P]=
+                    real_parameters[InCol::LOW_MASS_WIND_SAT_P]=
 					real_parameters[InCol::WIND_SAT_P];
 				read_wind_sat_p=true;
 			} else if(quantity==InCol::WDISK) read_wdisk=true;
@@ -1124,46 +1127,62 @@ void run(const CommandLineOptions &options,
 		std::istream &input)
 {
 	std::vector<double> real_parameters(InCol::NUM_REAL_INPUT_QUANTITIES);
-	for(int i=0; i<InCol::NUM_REAL_INPUT_QUANTITIES; i++) 
-		real_parameters[i]=options.get_real_value(
-				static_cast<InCol::InputColumns>(i));
+	for(int i = 0; i < InCol::NUM_REAL_INPUT_QUANTITIES; i++)
+		real_parameters[i] = options.get_real_value(
+                static_cast<InCol::InputColumns>(i));
 
-	std::string outfname=options.output_filename();
-	bool done=false, start_locked=options.start_locked();
-	size_t input_lineno=0;
-	std::list<double> required_ages=options.required_ages();
+	std::string outfname = options.output_filename();
+	bool done=false, start_locked = options.start_locked();
+	size_t input_lineno = 0;
+	std::list<double> required_ages = options.required_ages();
+    double orig_low_mass_wind_k = real_parameters[InCol::LOW_MASS_WINDK],
+           orig_high_mass_wind_k = real_parameters[InCol::HIGH_MASS_WINDK],
+           orig_low_mass_wind_satw =
+               real_parameters[InCol::LOW_MASS_WIND_SAT_W],
+           orig_high_mass_wind_satw =
+               real_parameters[InCol::HIGH_MASS_WIND_SAT_W];
 	while(!done) {
 		if(options.input_from_list()) {
 			std::string line("#");
-			while(line[0]=='#' && !input.eof()) {
+			while(line[0] == '#' && !input.eof()) {
 				std::getline(input, line);
 				++input_lineno;
 			}
 			if(input.eof()) return;
 			else {
 				std::istringstream line_str(line);
-				required_ages=options.required_ages();
-				outfname=update_run_parameters(real_parameters,
+				required_ages = options.required_ages();
+				outfname = update_run_parameters(real_parameters,
 					start_locked, required_ages, options.input_file_format(),
 					line_str, input_lineno);
 				if(start_locked)
 					throw Error::NotImplemented("Locked evolution");
 			}
-		} else done=true;
-		if(real_parameters[InCol::MSTAR]>stellar_evolution.get_mass_break()){
-			real_parameters[InCol::WINDK]=
+		} else done = true;
+		if(
+                real_parameters[InCol::MSTAR]
+                >
+                stellar_evolution.get_mass_break()
+        ) {
+			real_parameters[InCol::WINDK] =
 				real_parameters[InCol::HIGH_MASS_WINDK];
-			real_parameters[InCol::WIND_SAT_W]=
+			real_parameters[InCol::WIND_SAT_W] =
 				real_parameters[InCol::HIGH_MASS_WIND_SAT_W];
 		} else {
-			real_parameters[InCol::WINDK]=
+			real_parameters[InCol::WINDK] =
 				real_parameters[InCol::LOW_MASS_WINDK];
-			real_parameters[InCol::WIND_SAT_W]=
+			real_parameters[InCol::WIND_SAT_W] =
 				real_parameters[InCol::LOW_MASS_WIND_SAT_W];
 		}
 		calculate_evolution(real_parameters, start_locked, required_ages,
 				stellar_evolution, outfname, options.output_file_format(),
 				options.need_orbit());
+        real_parameters[InCol::LOW_MASS_WINDK] = orig_low_mass_wind_k;
+        real_parameters[InCol::HIGH_MASS_WINDK] = orig_high_mass_wind_k;
+        real_parameters[InCol::LOW_MASS_WIND_SAT_W] =
+            orig_low_mass_wind_satw;
+        real_parameters[InCol::HIGH_MASS_WIND_SAT_W] =
+            orig_high_mass_wind_satw;
 	}
 }
 
