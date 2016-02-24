@@ -1438,14 +1438,14 @@ void BinarySystem::check_for_lock(int orbital_freq_mult, int spin_freq_mult,
 									-
 									__body1.number_locked_zones();
 	spin_angmom.insert(check_zone_dest, original_angmom);
-#ifdef DEBUG
 	if(std::isfinite(above_lock_fraction) || direction==0) {
+#ifdef DEBUG
 //		if(direction<0) assert(above_lock_fraction<0);
 //		else if(direction>0) assert(above_lock_fraction>0);
 //		else 
+#endif
 			direction=(above_lock_fraction<0 ? -1 : 1);
 	}
-#endif
 	body.unlock_zone_spin(zone_index, direction);
 	configure(__age, __semimajor, __eccentricity, &(spin_angmom[0]),
 			&(inclinations[0]), &(periapses[0]), BINARY);

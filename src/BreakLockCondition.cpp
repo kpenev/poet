@@ -92,10 +92,10 @@ std::valarray<double> BreakLockCondition::operator()(
 void BreakLockCondition::reached(short deriv_sign, unsigned index)
 {
 #ifdef DEBUG
-	if(index==0) assert(deriv_sign==-1);
+	if(index==0) assert(deriv_sign == -1);
 	else {
-		assert(index==1);
-		assert(deriv_sign=1);
+		assert(index == 1);
+		assert(deriv_sign == 1);
 	}
 #endif
 	StoppingCondition::reached(deriv_sign, index);

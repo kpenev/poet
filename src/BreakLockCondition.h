@@ -60,9 +60,9 @@ public:
 			unsigned index=0)
 	{
 #ifdef DEBUG
-		assert(index<=1);
+		assert(index <= 1);
 #endif
-		return (index==0 ? -1 : 1);
+		return (index == 0 ? -1 : 1);
 	}
 };
 

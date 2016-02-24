@@ -101,7 +101,7 @@ public:
 			=0)
 	{
 #ifdef DEBUG
-		assert(index==0);
+		assert(index == 0);
 #endif
 		__expected_crossing_deriv_sign=-deriv_sign;
 	}
@@ -118,7 +118,7 @@ public:
 			=0)
 	{
 #ifdef DEBUG
-		assert(index==0);
+		assert(index == 0);
 #endif
 		return __expected_crossing_deriv_sign;
 	}
