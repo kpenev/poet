@@ -190,16 +190,29 @@ public:
 		///The directory containing the YREC evolution tracks
 		const std::string &model_directory,
 
+		///How much to smooth the radius of the star when fitting.
+		double smooth_radius=-2.0,
+
 		///How much to smooth the moment of inertia of the convective zone
 		///when fitting.
 		double smooth_conv_inertia=0,
 
 		///How much to smooth the moment of inertia of the radiative zone of
 		///the star when fitting.
-		double smooth_rad_inertia=2,
+		double smooth_rad_inertia=2.0,
 
 		///How much to smooth the mass in the radiative zone when fitting.
-		double smooth_rad_mass=2,
+		double smooth_rad_mass=2.0,
+
+		///How much to smooth the radius in the radiative zone when fitting.
+		double smooth_core_env_boundary=3.5,
+
+		///How many nodes to use when smoothing the stellar radius (ignored
+        ///if smooth_conv_inertia is NaN - no smoothing).
+		///
+		///Negative values result in using min(-radius_nodes, number of
+        ///tabulated ages for each track).
+		int radius_nodes=-1000,
 		
 		///How many nodes to use when smoothing the moment of inertia of the
 		///convective zone (ignored if smooth_conv_inertia is NaN - no
@@ -218,11 +231,18 @@ public:
 		int rad_inertia_nodes=-1000,
 
 		///How many nodes to use when smoothing the mass of the radiative
-		///zone (ignored if smooth_rad_inertia is NaN - no smoothing).
+		///zone (ignored if smooth_rad_mass is NaN - no smoothing).
 		///
 		///Negative values result in using min(-rad_mass_nodes, number of
 		///tabulated ages for each track).
-		int rad_mass_nodes=-1000);
+		int rad_mass_nodes=-1000,
+        
+        ///How many nodes to use when smoothing the radius of the radiative
+		///zone (ignored if smooth_core_env_boundary is NaN - no smoothing).
+		///
+		///Negative values result in using min(-core_env_boundary_nodes,
+        ///number of tabulated ages for each track).
+		int core_env_boundary_nodes=-5000);
 };
 
 #endif

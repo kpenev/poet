@@ -1214,8 +1214,7 @@ StellarEvolution *get_stellar_evolution(const CommandLineOptions &options)
 				options.serialized_stellar_evolution());
 		return stellar_evolution;
 	} else
-		stellar_evolution=new YRECEvolution(data_directory()+"YREC", 0, 2.0,
-				2.0);
+		stellar_evolution=new YRECEvolution(data_directory()+"YREC");
 	if(!serialized_exists) stellar_evolution->save_state(
 			options.serialized_stellar_evolution());
 	return stellar_evolution;

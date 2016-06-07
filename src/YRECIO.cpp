@@ -223,9 +223,16 @@ void YRECEvolution::sort_masses()
 }
 
 YRECEvolution::YRECEvolution(const std::string &model_directory,
-	double smooth_conv_inertia, double smooth_rad_inertia,
-	double smooth_rad_mass, int conv_inertia_nodes,
-	int rad_inertia_nodes, int rad_mass_nodes)
+	                         double smooth_radius,
+                             double smooth_conv_inertia,
+                             double smooth_rad_inertia,
+                             double smooth_rad_mass,
+                             double smooth_core_env_boundary,
+                             int radius_nodes,
+                             int conv_inertia_nodes,
+                             int rad_inertia_nodes,
+                             int rad_mass_nodes,
+                             int core_env_boundary_nodes)
 {
 	DIR *dirstream=opendir(model_directory.c_str());
 	std::string join;
@@ -244,8 +251,24 @@ YRECEvolution::YRECEvolution(const std::string &model_directory,
 		" in YRECEvolution constructor.");
 	sort_masses();
 	std::valarray<double> masses = list_to_valarray(mass_list);
-	interpolate_from(masses, ages, radii, conv_inertias, rad_inertias,
-			rad_masses, core_boundaries, NaN, smooth_conv_inertia,
-			smooth_rad_inertia, smooth_rad_mass, NaN, 0, conv_inertia_nodes,
-			rad_inertia_nodes, rad_mass_nodes, 0, luminosities, NaN, 0);
+	interpolate_from(masses,
+                     ages,
+                     radii,
+                     conv_inertias,
+                     rad_inertias,
+                     rad_masses,
+                     core_boundaries,
+                     smooth_radius,
+                     smooth_conv_inertia,
+                     smooth_rad_inertia,
+                     smooth_rad_mass,
+                     smooth_core_env_boundary,
+                     radius_nodes,
+                     conv_inertia_nodes,
+                     rad_inertia_nodes,
+                     rad_mass_nodes,
+                     core_env_boundary_nodes,
+                     luminosities,
+                     NaN,
+                     0);
 }
