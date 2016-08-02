@@ -250,7 +250,7 @@ double EvolvingStellarQuantity::low_mass_interp(double age,
 		delete good_derivatives;
 	} else {
 		*derivatives=new InterpolatedDerivatives(stellar_mass,
-				good_derivatives, good_masses, (use_log_age ? age : NaN),
+				good_derivatives, good_masses, NaN,
 				true);
 		result=(*derivatives)->order(0);
 	}
