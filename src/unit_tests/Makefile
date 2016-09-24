@@ -19,7 +19,7 @@ POET            = EccentricityExpansionCoefficients DissipatingZone \
                   BinarySystem DissipatingBody SecondaryDeathCondition \
                   ZoneOrientation ExponentialDecayDiffRotBody \
                   SaturatingSkumanichWindBody WindSaturationCondition \
-                  DiskPlanetSystem
+                  DiskPlanetSystem MESAIO StellarEvolution Functions Common
 
 POET_OBJECTS    = $(addprefix ../, $(addsuffix .o, $(POET)))
 

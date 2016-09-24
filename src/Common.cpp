@@ -29,18 +29,6 @@ std::ostream &operator<<(std::ostream &os, std::valarray<double> &arr)
 	return os;
 }
 
-std::valarray<double> list_to_valarray(const std::list<double> &inlist)
-{
-	std::valarray<double> result(inlist.size());
-	double *dest=&result[0];
-	for(std::list<double>::const_iterator li=inlist.begin(); 
-			li!=inlist.end(); li++) {
-		*dest = *li;
-		dest++;
-	}
-	return result;
-}
-
 std::valarray<double> solve_cubic(double c0, double c1,
 		double c2, double c3) {
 	double x[3];

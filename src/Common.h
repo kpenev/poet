@@ -55,8 +55,25 @@ std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode);
 ///Outputs a valarray as a sequence of ', ' separated values.
 std::ostream &operator<<(std::ostream &os, std::valarray<double> &arr);
 
+///Creates a valarray from an iterator.
+template<typename ITERATOR_TYPE>
+std::valarray<double> valarray_from_iterator(ITERATOR_TYPE values,
+                                             unsigned size)
+{
+	std::valarray<double> result(size);
+	double *dest=&result[0];
+	for(; size>0; --size) {
+        *dest = *values;
+        ++dest;
+        ++values;
+    }
+	return result;
+}
+
 ///Creates a valarray containing the values in the given list.
-std::valarray<double> list_to_valarray(const std::list<double> &inlist);
+inline std::valarray<double> list_to_valarray(
+    const std::list<double> &inlist
+) {return valarray_from_iterator(inlist.begin(), inlist.size());}
 
 ///Solves the cubic equation \f$ \sum_{i=0}^3 c_i x^i=0 \f$
 std::valarray<double> solve_cubic(double c0, double c1,
