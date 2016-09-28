@@ -9,14 +9,21 @@ test_MESAIO::test_MESAIO(const std::string& mesa_dir) :
 void test_MESAIO::test_single_tracks()
 {
     std::cout << "Starting test" << std::endl;
-    const std::string& filename = "../MESA/0.7Msun_table.csv";
+    const std::string& filename = "../MESA/1.0Msun_table.csv";
     std::ifstream track(filename.c_str());
     MESA::Header header(track, filename);
     std::valarray< std::list<double> > track_columns = parse_columns(
         track,
         header.get_all_columns()
     );
-    TEST_THROWS_NOTHING(MESA::Evolution evolution("../MESA"));
+    MESA::Evolution evolution("../MESA");
+    const EvolvingStellarQuantity
+        *R_star = evolution.interpolate_radius(1.0),
+        *L_star = evolution.interpolate_luminosity(1.0),
+        *M_core = evolution.interpolate_zone_mass(1.0, radiative),
+        *R_core = evolution.interpolate_core_boundary(1.0),
+        *Iconv_star = evolution.interpolate_moment_of_inertia(1.0, convective),
+        *Irad_star = evolution.interpolate_moment_of_inertia(1.0, radiative);
 
     std::cout << "Age" << std::endl << std::endl;
     typedef std::list<double>::const_iterator TrackIter;
@@ -24,7 +31,35 @@ void test_MESAIO::test_single_tracks()
         TrackIter age_i = track_columns[MESA::AGE].begin();
         age_i != track_columns[MESA::AGE].end();
         ++age_i
-    ) std::cout << *age_i << std::endl;
+    ) {
+        TrackIter next_age = age_i;
+        ++next_age;
+        for(int substep = 0; substep < 10; ++substep) {
+            double age = (
+                (*age_i) * (10 - substep)
+                + 
+                (*next_age) * substep
+            ) / 1e10;
+            std::cout
+                << age << "," 
+                << (*R_star)(age) << ","
+                << (*L_star)(age) << ","
+                << 1.0 << ","
+                << (*R_core)(age) << ","
+                << 1.0 << ","
+                << 1.0 - (*M_core)(age) << ","
+                << (*M_core)(age) << ","
+                << (*Iconv_star)(age) << ","
+                << (*Irad_star)(age)
+                << std::endl;
+        }
+    }
+    delete R_star;
+    delete L_star;
+    delete M_core;
+    delete R_core;
+    delete Iconv_star;
+    delete Irad_star;
 }
 
 #ifdef STANDALONE
@@ -35,7 +70,6 @@ int main()
     std::cout.precision(16);
     Test::TextOutput output(Test::TextOutput::Verbose);
     test_MESAIO tests;
-    tests.test_single_tracks();
     return (tests.run(output, false) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #endif

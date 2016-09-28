@@ -51,8 +51,6 @@ std::valarray< std::list<double> > parse_columns(
 
             std::string word;
             std::getline(line_stream, word, ',');
-            std::cout << "Parsing column " << column_number
-                << " on line " << line_number << ": " << word << std::endl;
 			typename COLNUM_STRUCTURE::const_iterator
 				colnum_iter=column_numbers.begin();
 			for(size_t result_index=0; result_index<column_numbers.size();
@@ -62,11 +60,8 @@ std::valarray< std::list<double> > parse_columns(
                     if(word == "NaN") value = NaN;
                     else std::istringstream(word) >> value;
 					result[result_index].push_back(value);
-                    std::cout << "value = " << value << std::endl;
 					break;
 				}
-			if(colnum_iter==column_numbers.end())
-                std::cout << "skipping: " << word << std::endl;
 			if(line_stream.bad()) throw Error::IO(msg.str());
 		}
 	}

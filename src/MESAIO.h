@@ -198,7 +198,7 @@ namespace MESA {
 
             ///How much to smooth the mass in the radiative zone when
             ///fitting. Use NaN for no smoothing.
-            double smooth_rad_mass=2,
+            double smooth_rad_mass=0,
 
             ///How many nodes to use when smoothing the moment of inertia
             ///of the convective zone (ignored if smooth_conv_inertia is
@@ -206,7 +206,7 @@ namespace MESA {
             ///
             ///Negative values result in using min(-conv_inertia_nodes,
             ///number of tabulated ages for each track).
-            int conv_inertia_nodes=-1000,
+            int conv_inertia_nodes=1000,
 
             ///How many nodes to use when smoothing the moment of inertia
             ///of the radiative zone (ignored if smooth_rad_inertia is
@@ -222,7 +222,7 @@ namespace MESA {
             ///
             ///Negative values result in using min(-rad_mass_nodes,
             ///number of tabulated ages for each track).
-            int rad_mass_nodes=-1000
+            int rad_mass_nodes=1000
         );
     };
 };

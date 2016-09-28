@@ -47,7 +47,6 @@ namespace MESA {
             std::getline(track, line);
         }
 
-        std::cout << "Line: " << line << std::endl;
         std::istringstream line_parser(line);
         std::string column_name;
         for(
@@ -129,7 +128,7 @@ namespace MESA {
         
 #ifndef NDEBUG
         track_columns[MTRACK].unique();
-        assert(track_columns.size() == 1);
+        assert(track_columns[MTRACK].size() == 1);
 #endif
         __mass_list.push_back(track_columns[MTRACK].front());
         const double Inorm=AstroConst::solar_mass*
@@ -201,29 +200,40 @@ namespace MESA {
                          int rad_mass_nodes) :
         track_quantities(NUM_COLUMNS)
     {
-        std::cout << "Reading tracks from " << std::endl;
-        DIR *dirstream=opendir(model_directory.c_str());
+        std::cout << "Reading tracks from " << model_directory << std::endl;
+        DIR *dirstream = opendir(model_directory.c_str());
         std::string join;
-        if(model_directory[model_directory.size()-1]=='/') join="";
-        else join="/";
-        if(dirstream==NULL)
+        if(model_directory[model_directory.size()-1] == '/') join="";
+        else join = "/";
+        if(dirstream == NULL)
             throw Error::PathNotFound("in MESA::Evolution constructor.",
                                       model_directory);
-        struct dirent *entry; 
-        while((entry=readdir(dirstream))) {
+        struct dirent *entry;
+        while((entry = readdir(dirstream))) {
             std::string fname(entry->d_name);
-            if(fname[0]!='.' && fname.substr(fname.size()-5)==".data") {
-                std::cout << "Reading " << model_directory+join+entry->d_name
+            if(fname[0]!='.' && fname.substr(fname.size()-4)==".csv") {
+                std::cout
+                    << "Reading "
+                    << model_directory + join + entry->d_name
                     << std::endl;
-                read_model_file(model_directory+join+entry->d_name);
-            }
+                read_model_file(model_directory + join + entry->d_name);
+            } else
+                std::cout
+                    << "Skipping "
+                    << model_directory + join + entry->d_name
+                    << std::endl;
         }
         if(closedir(dirstream)) throw Error::Runtime(
-                "Failed to close directory stream tied to "+model_directory+
-                " in MESA::Evolution constructor.");
+                "Failed to close directory stream tied to "
+                +
+                model_directory
+                +
+                " in MESA::Evolution constructor."
+        );
         sort_masses();
         std::valarray<double> masses = list_to_valarray(__mass_list);
-        std::cout << "Done reading tracks." << std::endl
+        std::cout
+            << "Done reading tracks." << std::endl
             << "Starting interpolation" << std::endl;
         interpolate_from(masses,
                          track_quantities[AGE],
