@@ -7,13 +7,22 @@
  * stars or the whole star for high mass stars.
  */
 
+#ifdef TWO_QS
 #include "TwoPhaseLagZone.h"
+#else
+#include "PowerlawPhaseLagZone.h"
+#endif
+
 #include "Functions.h"
 #include "StellarEvolution.h"
 
 ///\brief Surface convective zone for low mass YREC stars or the entire star
 ///for high mass stars.
+#ifdef TWO_QS
 class YRECEnvelope : virtual public TwoPhaseLagZone {
+#else
+class YRECEnvelope : virtual public PowerlawPhaseLagZone {
+#endif
 private:
 	///The age for the last configure() call.
 	double __current_age, __stellar_mass;

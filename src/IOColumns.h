@@ -42,8 +42,14 @@ namespace InCol {
 		///mass stars.
 		CORE_ENV_COUPLING_TIMESCALE,
 
+#ifdef TWO_QS
 		LGQ,///< Lg(Q*) outside the inertial mode range.
 		LGQ_INERTIAL,///< Lg(Q*) in the inertial mode range.
+#else
+		LGQ,///< Lg(Q*) at tidal frequency of 1 day.
+		LGQ_POWERLAW,///< powerlaw index of Q* dependence.
+		LGQ_MIN,///< Lg(Q*) outside the inertial mode range.
+#endif
 		MSTAR, ///< Mass of the star in \f$M_\odot\f$.
 		MPLANET, ///< Mass of the planet in Jupiter masses.
 		RPLANET, ///< Radius of the planet in Jupiter radii.

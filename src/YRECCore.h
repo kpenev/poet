@@ -1,12 +1,21 @@
 #ifndef __YREC_CORE_H
 #define __YREC_CORE_H
 
+#ifdef TWO_QS
 #include "TwoPhaseLagZone.h"
+#else
+#include "PowerlawPhaseLagZone.h"
+#endif
+
 #include "Functions.h"
 #include "StellarEvolution.h"
 
 ///\brief Radiative core for low mass YREC stars.
+#ifdef TWO_QS
 class YRECCore : virtual public TwoPhaseLagZone {
+#else
+class YRECCore : virtual public PowerlawPhaseLagZone {
+#endif
 private:
 	///The age for the last configure() call.
 	double __current_age,

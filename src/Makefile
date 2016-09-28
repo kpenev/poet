@@ -20,7 +20,8 @@ COMMON_MODULES  = BinarySystem BreakLockCondition CombinedStoppingCondition \
 				  SaturatingSkumanichWindBody SecondaryDeathCondition \
 				  SpinOrbitLockInfo StellarEvolution StopHistoryInterval \
 				  StopInformation StoppingCondition SynchronizedCondition \
-				  TwoPhaseLagZone WindSaturationCondition YRECCore \
+				  TwoPhaseLagZone PowerlawPhaseLagZone \
+				  WindSaturationCondition YRECCore \
 				  YRECEnvelope YRECIO ZoneOrientation ConstSolutionIterator \
 				  IOColumns
 
@@ -102,7 +103,7 @@ DATADIR			= .
 CFLAGS_COMMON   = -W -Wall $(INCLUDES) \
 				  $(shell gsl-config --cflags 2>/dev/null) \
 				  -D'REVISION="$(shell git log --pretty=format:\%H -n 1)"' \
-				  -D'DATADIR="$(DATADIR)"'
+				  -D'DATADIR="$(DATADIR)"' $(CFLAGS_EXTRA)
 
 CFLAGS_DEBUG   = -ggdb -pg -DDEBUG -O0 $(CFLAGS_COMMON)
 CFLAGS_RELEASE = -O3 $(CFLAGS_COMMON) -DNDEBUG

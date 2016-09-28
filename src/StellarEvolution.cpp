@@ -564,7 +564,8 @@ const EvolvingStellarQuantity *StellarEvolution::interpolate_zone_mass(
 {
 	if (zone!=radiative) throw Error::BadFunctionArguments(
 		"Only the radiative zone mass is supported as a stellar "
-		"evolution quantity.");
+		"evolution quantity."
+    );
 	return new EvolvingStellarQuantity(stellar_mass, *track_masses,
 			interpolated_rad_mass, true, mass_break, low_age_scaling,
 			high_age_scaling, extrapolate_low, extrapolate_high, true);

@@ -18,7 +18,12 @@ void CommandLineOptions::init_input_column_names()
 	__input_column_names[InCol::HIGH_MASS_WIND_SAT_P]="psat";
 	__input_column_names[InCol::CORE_ENV_COUPLING_TIMESCALE]="tcoup";
 	__input_column_names[InCol::LGQ]="lgQ";
+#ifdef TWO_QS
 	__input_column_names[InCol::LGQ_INERTIAL]="lgQinr";
+#else
+	__input_column_names[InCol::LGQ_POWERLAW]="lgQpwr";
+	__input_column_names[InCol::LGQ_MIN]="lgQmin";
+#endif
 	__input_column_names[InCol::MSTAR]="M";
 	__input_column_names[InCol::MPLANET]="m";
 	__input_column_names[InCol::RPLANET]="r";
@@ -181,7 +186,12 @@ void CommandLineOptions::init_defaults()
 	__defaults[InCol::HIGH_MASS_WIND_SAT_P]=Inf;
 	__defaults[InCol::CORE_ENV_COUPLING_TIMESCALE]=5;
 	__defaults[InCol::LGQ]=8;
+#ifdef TWO_QS
 	__defaults[InCol::LGQ_INERTIAL]=6;
+#else
+	__defaults[InCol::LGQ_POWERLAW]=0;
+	__defaults[InCol::LGQ_MIN]=8;
+#endif
 	__defaults[InCol::MSTAR]=1;
 	__defaults[InCol::MPLANET]=1;
 	__defaults[InCol::RPLANET]=1;
@@ -371,19 +381,43 @@ void CommandLineOptions::define_options()
 
 	option_help.str("");
 	option_help << "Log base 10 of the tidal quality factor of the star "
-		"outside the inertial mode range. In --input-columns identified by "
+#ifdef TWO_QS
+		"outside the inertial mode range. "
+#else
+		"for a 1 day forcing frequency. "
+#endif
+        "In --input-columns identified by "
 		<< __input_column_names[InCol::LGQ] << "'. Default: "
 		<< __defaults[InCol::LGQ] << ".";
 	__direct_value_options[InCol::LGQ]=arg_dbl0(NULL, "lgQ", "<double>",
 			cstr_copy(option_help));
 
 	option_help.str("");
+#ifdef TWO_QS
 	option_help << "Log base 10 of the tidal quality factor of the star in "
 		"the inertial mode range. In --input-columns identified by "
 		<< __input_column_names[InCol::LGQ_INERTIAL] << "'. Default: "
 		<< __defaults[InCol::LGQ_INERTIAL] << ".";
 	__direct_value_options[InCol::LGQ_INERTIAL]=arg_dbl0(NULL, "lgQinr",
 			"<double>", cstr_copy(option_help));
+#else
+	option_help << "The powerlaw index of the Q dependence on forcing "
+        << "frequency. In --input-columns identified by "
+		<< __input_column_names[InCol::LGQ_POWERLAW] << "'. Default: "
+		<< __defaults[InCol::LGQ_POWERLAW] << ".";
+	__direct_value_options[InCol::LGQ_POWERLAW]=arg_dbl0(NULL, "lgQpwr",
+			"<double>", cstr_copy(option_help));
+
+	option_help.str("");
+	option_help << "Log base 10 of the minimum tidal quality factor of "
+        "the star for any forcing frequency. In --input-columns "
+        "identified by "
+		<< __input_column_names[InCol::LGQ_MIN] << "'. Default: "
+		<< __defaults[InCol::LGQ_MIN] << ".";
+	__direct_value_options[InCol::LGQ_MIN]=arg_dbl0(
+            NULL, "lgQmin", "<double>", cstr_copy(option_help)
+    );
+#endif
 
 	option_help.str("");
 	option_help << "Mass of the star in solar masses. In --input-columns "
@@ -956,10 +990,24 @@ void calculate_evolution(const std::vector<double> &real_parameters,
 				  real_parameters[InCol::WIND_SAT_W],
 				  real_parameters[InCol::CORE_ENV_COUPLING_TIMESCALE]*1e-3,
 				  stellar_evolution);
+#ifdef TWO_QS
 	star.envelope().set_equilibrium_modified_lag(
-			lag_from_lgQ(real_parameters[InCol::LGQ]));
+        lag_from_lgQ(real_parameters[InCol::LGQ])
+    );
 	star.envelope().set_inertial_modified_lag(
-			lag_from_lgQ(real_parameters[InCol::LGQ_INERTIAL]));
+        lag_from_lgQ(real_parameters[InCol::LGQ_INERTIAL])
+    );
+#else
+	star.envelope().set_phase_lag_one_day(
+        lag_from_lgQ(real_parameters[InCol::LGQ])
+    );
+	star.envelope().set_phase_lag_powerlaw_index(
+        real_parameters[InCol::LGQ_POWERLAW]
+    );
+	star.envelope().set_max_phase_lag(
+        lag_from_lgQ(real_parameters[InCol::LGQ_MIN])
+    );
+#endif
 	LockedPlanet planet(real_parameters[InCol::MPLANET],
 						real_parameters[InCol::RPLANET]);
 	double zero=0;

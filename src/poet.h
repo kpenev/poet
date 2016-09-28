@@ -136,8 +136,11 @@ private:
 			 ///coefficients from.
 			 *__eccentricity_expansion;
 
-	void *__argtable[InCol::NUM_INPUT_QUANTITIES+
-		2*CustomStellarEvolution::AGE+10];
+	void *__argtable[InCol::NUM_INPUT_QUANTITIES
+                     +
+                     2 * CustomStellarEvolution::AGE
+                     +
+                     10];
 
 	///A list of the columns in the input file.
 	std::vector<InCol::InputColumns> __input_file_format;

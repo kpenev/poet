@@ -42,7 +42,6 @@ std::valarray< std::list<double> > parse_columns(
 		std::istringstream line_stream(line);
 		for(int column_number=0; column_number<=last_column;
 				++column_number) {
-
 			std::ostringstream msg;
 			msg << "Failed to parse column " << column_number
 				<< " on line " << line_number << " of the data section of an"
