@@ -103,45 +103,35 @@ class PoetInterp :
 
         assert(not os.path.exists(self.output_fname))
         end_age = min(end_age, star_lifetime(star_mass))
-        while True :
-            input_line = (self.input_line_format
-                          %
-                          dict(M = repr(star_mass),
-                               t0 = repr(start_age),
-                               tmax = repr(end_age),
-                               maxdt = repr(max_age_step),
-                               outf = self.output_fname)).encode('ascii')
-            print(input_line)
-            self.poet.stdin.write(input_line)
+        input_line = (self.input_line_format
+                      %
+                      dict(M = repr(star_mass),
+                           t0 = repr(start_age),
+                           tmax = repr(end_age),
+                           maxdt = repr(max_age_step),
+                           outf = self.output_fname)).encode('ascii')
+
+        print(input_line)
+        self.poet.stdin.write(input_line)
+        while(not os.path.exists(self.output_fname)) : time.sleep(0.01)
+
+        last_age = numpy.nan
+        while not (end_age - last_age < 0.5 * max_age_step) :
             if self.poet.poll() is not None :
                 print('Restarting poet!')
                 self.start_poet()
-                continue
-            while(not os.path.exists(self.output_fname)) : time.sleep(0.01)
-            result = numpy.genfromtxt(self.output_fname, names = True)
-            while (
-                    't' not in result.dtype.names
-                    or
-                    result['t'].size == 0
-                    or
-                    end_age - result['t'][-1] > 0.5 * max_age_step
-            ) :
+                break
+            try :
+                result = numpy.genfromtxt(self.output_fname,
+                                          names = True)
+                last_age = result['t'][-1]
+            except : 
+                last_age = numpy.nan
                 if self.poet.poll() is not None :
                     print('Restarting poet!')
                     self.start_poet()
-                    break
-                try :
-                    result = numpy.genfromtxt(self.output_fname,
-                                              names = True)
-                except : pass
-            if (
-                    't' in result.dtype.names
-                    and
-                    result['t'].size > 0
-                    and
-                    end_age - result['t'][-1] < 0.5 * max_age_step
-            ) : break
-        
+                    self.poet.stdin.write(input_line)
+
         os.remove(self.output_fname)
         return result
 
@@ -169,14 +159,57 @@ class Application :
                       interpolated[self.plot_quantity],
                       '.r')
 
+            if self.deriv > 0 :
+                d1_y = numpy.copy(interpolated['D' + self.plot_quantity])
+                if self.deriv > 1 :
+                    d2_y = numpy.copy(interpolated['DD' + self.plot_quantity])
+
+                if self.logy : 
+                    d1_y /= interpolated[self.plot_quantity]
+                    if self.deriv > 1 :
+                        d2_y = (d2_y / interpolated[self.plot_quantity]
+                                -
+                                d1_y**2)
+
+                if self.logx : 
+                    deriv_plot_funcname = 'semilogx'
+                    d1_y *= interpolated['t']
+                    if self.deriv > 1 :
+                        d2_y = d1_y + interpolated['t']**2 * d2_y
+                else :
+                    deriv_plot_funcname = 'plot'
+
+
+                getattr(self.first_deriv_axes, deriv_plot_funcname)(
+                    interpolated['t'],
+                    d1_y,
+                    '.r'
+                )
+                if self.deriv > 1 :
+                    getattr(self.second_deriv_axes, deriv_plot_funcname)(
+                        interpolated['t'],
+                        d2_y,
+                        '.r'
+                    )
         if self.do_not_display : return
+        
+        main_x_lim = self.main_axes.get_xlim()
+        main_y_lim = self.main_axes.get_ylim()
 
-        self.main_axis.cla()
+        self.main_axes.cla()
+        if self.first_deriv_axes is not None : 
+            first_deriv_xlim = self.first_deriv_axes.get_xlim()
+            first_deriv_ylim = self.first_deriv_axes.get_ylim()
+            self.first_deriv_axes.cla()
+        if self.second_deriv_axes is not None : 
+            second_deriv_xlim = self.second_deriv_axes.get_xlim()
+            second_deriv_ylim = self.second_deriv_axes.get_ylim()
+            self.second_deriv_axes.cla()
 
-        if self.logx and self.logy : plot = self.main_axis.loglog
-        elif self.logx and not self.logy : plot = self.main_axis.semilogx
-        elif not self.logx and self.logy : plot = self.main_axis.semilogy
-        else : plot = self.main_axis.plot
+        if self.logx and self.logy : plot = self.main_axes.loglog
+        elif self.logx and not self.logy : plot = self.main_axes.semilogx
+        elif not self.logx and self.logy : plot = self.main_axes.semilogy
+        else : plot = self.main_axes.plot
 
         plot_interpolation(self.interp_mass, plot)
 
@@ -196,6 +229,24 @@ class Application :
                 plot(self.tracks[track_mass]['t'],
                      self.tracks[track_mass][self.plot_quantity],
                      'xk')
+        if not self.main_auto_axes :
+            self.main_axes.set_xlim(main_x_lim)
+            self.main_axes.set_ylim(main_y_lim)
+        if self.first_deriv_axes is not None :
+            if self.first_deriv_auto_axes :
+                self.first_deriv_axes.set_xlim(self.main_axes.get_xlim())
+            else :
+                self.first_deriv_axes.set_xlim(first_deriv_xlim)
+                self.first_deriv_axes.set_ylim(first_deriv_ylim)
+            if self.second_deriv_axes is not None :
+                if self.second_deriv_auto_axes :
+                    self.second_deriv_axes.set_xlim(self.main_axes.get_xlim())
+                else :
+                    self.second_deriv_axes.set_xlim(second_deriv_xlim)
+                    self.second_deriv_axes.set_ylim(second_deriv_ylim)
+        self.main_auto_axes = False
+        self.first_deriv_auto_axes = False
+        self.second_deriv_auto_axes = False
         self.main_canvas.show()
 
     def on_key_event(self, event) :
@@ -210,6 +261,9 @@ class Application :
         self.logy_button.config(
             relief = Tk.SUNKEN if self.logy else Tk.RAISED
         )
+        self.main_auto_axes = True
+        self.first_deriv_auto_axes = True
+        self.second_deriv_auto_axes = True
         self.display()
 
     def toggle_log_x(self) :
@@ -219,6 +273,9 @@ class Application :
         self.logx_button.config(
             relief = Tk.SUNKEN if self.logx else Tk.RAISED
         )
+        self.main_auto_axes = True
+        self.first_deriv_auto_axes = True
+        self.second_deriv_auto_axes = True
         self.display()
 
     def toggle_deriv(self, order) :
@@ -227,13 +284,39 @@ class Application :
         if self.deriv >= order : self.deriv = order - 1
         else : self.deriv = order
 
+        if self.first_deriv_axes is not None :
+            self.main_figure.delaxes(self.first_deriv_axes)
+            self.first_deriv_axes = None
+        if self.second_deriv_axes is not None :
+            self.main_figure.delaxes(self.second_deriv_axes)
+            self.second_deriv_axes = None
+
+        if self.deriv == 0 :
+            self.main_axes.set_position([0.05, 0.05, 0.9, 0.9])
+        else :
+            self.main_axes.set_position([0.05, 0.5, 0.9, 0.45])
+            if self.deriv == 1 :
+                self.first_deriv_axes = self.main_figure.add_axes(
+                    [0.05, 0.05, 0.9, 0.45]
+                )
+            else :
+                assert(self.deriv == 2)
+                self.first_deriv_axes = self.main_figure.add_axes(
+                    [0.05, 0.05, 0.45, 0.45]
+                )
+                self.second_deriv_axes = self.main_figure.add_axes(
+                    [0.5, 0.05, 0.45, 0.45]
+                )
+
         self.first_deriv_button.config(
             relief = Tk.RAISED if self.deriv < 1 else Tk.SUNKEN
         )
         self.second_deriv_button.config(
             relief = Tk.RAISED if self.deriv < 2 else Tk.SUNKEN
         )
-        self.change_plot_quantity()
+        self.first_deriv_auto_axes = True
+        self.second_deriv_auto_axes = True
+        self.display()
 
     def change_plot_quantity(self, plot_quantity = None) :
         """Modify y axis controls for the new quantity and refresh."""
@@ -250,7 +333,9 @@ class Application :
             state = (Tk.DISABLED if self.max_deriv[plot_quantity] < 2
                      else Tk.NORMAL)
         )
-
+        self.main_auto_axes = True
+        self.first_deriv_auto_axes = True
+        self.second_deriv_auto_axes = True
         self.display()
 
     def change_interp_mass(self, new_mass) :
@@ -309,19 +394,29 @@ class Application :
 
         self.display()
 
+    def auto_axes(self) :
+        """Re-plot letting matplotlib determine the axes limits."""
+
+        self.main_auto_axes = True
+        self.first_deriv_auto_axes = True
+        self.second_deriv_auto_axes = True
+        self.display()
+
     def __init__(self, main_window, tracks) :
         """Setup user controls and display frame."""
 
-        def create_main_axis() :
-            """Create a figure and add an axis to it for drawing."""
+        def create_main_axes() :
+            """Create a figure and add an axes to it for drawing."""
 
             self.main_figure = Figure(figsize=(5, 4), dpi=100)
-            self.main_axis = self.main_figure.add_axes(
+            self.main_axes = self.main_figure.add_axes(
                 (0.05, 0.05, 0.9, 0.9)
             )
+            self.first_deriv_axes = None
+            self.second_deriv_axes = None
 
-        def create_axis_controls() :
-            """Create controls for plot quantity and log axis."""
+        def create_axes_controls() :
+            """Create controls for plot quantity and log axes."""
 
             y_controls_frame = Tk.Frame(main_window)
             y_controls_frame.grid(row = 1, column = 0)
@@ -362,6 +457,15 @@ class Application :
                 relief = Tk.SUNKEN if self.logx else Tk.RAISED
             )
             self.logx_button.grid(row = 2, column = 1)
+
+            Tk.Button(
+                main_window,
+                text = 'Auto Axes',
+                command = self.auto_axes,
+                relief = Tk.RAISED
+            ).grid(row = 0,
+                   column = 2,
+                   sticky = Tk.N + Tk.S + Tk.W + Tk.E)
 
         def create_mass_controls(mass_control_frame) :
             """Create the controls to select the interpolation mass."""
@@ -432,6 +536,9 @@ class Application :
             self.main_canvas.mpl_connect('key_press_event',
                                          self.on_key_event)
 
+        self.main_auto_axes = True
+        self.first_deriv_auto_axes = True
+        self.second_deriv_auto_axes = True
         self.do_not_display = True
         self.display_job = None
         self.plot_quantities = [
@@ -468,16 +575,21 @@ class Application :
         Tk.Grid.columnconfigure(main_window, 1, weight = 1)
         Tk.Grid.rowconfigure(main_window, 1, weight = 1)
 
-        create_main_axis()
+        create_main_axes()
         create_main_canvas(plot_frame)
-        create_axis_controls()
+        create_axes_controls()
         create_mass_controls(mass_control_frame)
         create_track_selectors(track_selectors_frame)
 
         self.change_interp_mass(self.interp_mass)
         self.change_plot_quantity(self.plot_quantities[0])
         self.do_not_display = False
-        self.poet_interp = PoetInterp('./poet', ['t'] + self.plot_quantities)
+        poet_output_columns = ['t']
+        for quantity, max_deriv in self.max_deriv.items() :
+            poet_output_columns.append(quantity)
+            if max_deriv > 0 : poet_output_columns.append('D' + quantity)
+            if max_deriv > 1 : poet_output_columns.append('DD' + quantity)
+        self.poet_interp = PoetInterp('./poet', poet_output_columns)
         self.display()
 
 def read_YREC(dirname) :
