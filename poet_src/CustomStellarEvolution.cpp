@@ -20,7 +20,7 @@ namespace CustomStellarEvolution {
 			column_numbers[format[i]]=i;
 		}
 		std::valarray< std::list<double> >
-			quantities=parse_columns(track, column_numbers);
+			quantities=parse_columns(track, column_numbers, false);
 		track.close();
 		interpolate_from(
 				std::valarray<double>(1.0, 1),

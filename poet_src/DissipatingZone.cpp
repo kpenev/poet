@@ -342,18 +342,19 @@ void DissipatingZone::configure(double
 	assert(age>=0);
 #endif
 	ZoneOrientation::configure(inclination, periapsis);
-	__orbital_angmom=orbital_angmom;
-	__orbital_frequency=orbital_frequency;
+	__orbital_angmom = orbital_angmom;
+	__orbital_frequency = orbital_frequency;
 	if(__lock) {
-		__spin_frequency=__lock.spin(orbital_frequency);
-		__angular_momentum=__spin_frequency*moment_of_inertia();
+		__spin_frequency = __lock.spin(orbital_frequency);
+		__angular_momentum = __spin_frequency*moment_of_inertia();
 	} else {
 		if(spin_is_frequency) {
-			__angular_momentum=spin*moment_of_inertia(); 
-			__spin_frequency=spin;
+			__angular_momentum = spin * moment_of_inertia(); 
+			__spin_frequency = spin;
 		} else {
 			__angular_momentum=spin; 
-			__spin_frequency=spin/moment_of_inertia();
+            if(spin == 0 && moment_of_inertia() == 0) __spin_frequency = 0;
+            else __spin_frequency = spin / moment_of_inertia();
 		}
 	}
 	if(std::isnan(orbital_frequency)) return;
@@ -525,10 +526,11 @@ double DissipatingZone::inclination_evolution(
 		orbit_z_torque=orbit_torque_deriv[2];
 		zone_x_torque=zone_torque_deriv[0];
 	}
-	double result=(orbit_x_torque*cos_inc-orbit_z_torque*sin_inc)
-			      /__orbital_angmom;
+	double result=((orbit_x_torque * cos_inc - orbit_z_torque*sin_inc)
+                   /
+                   __orbital_angmom);
 	if(zone_x_torque!=0 && moment_of_inertia()!=0)
-		result-=zone_x_torque/__angular_momentum;
+		result -= zone_x_torque / __angular_momentum;
 	if(		deriv==Dissipation::NO_DERIV 
 			|| deriv==Dissipation::AGE 
 			|| deriv==Dissipation::ECCENTRICITY

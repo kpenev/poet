@@ -31,7 +31,7 @@ public:
     ///Test the interpolation of stellar evolution based on MESA tracks.
     test_MESAIO(
         ///The directory from which to read MESA files.
-        const std::string& mesa_dir = "../MESA_tracks"
+        const std::string& mesa_dir = "../MESA/FeH=+0.0"
     );
 
     ///Test a single track's interpolation.

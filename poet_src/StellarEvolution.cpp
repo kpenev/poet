@@ -394,19 +394,28 @@ void StellarEvolution::interpolate_from(
 		std::cout.flush();
 		interpolated_conv_inertia.push_back(
 			new InterpolatingFunctionALGLIB(log_ages,
-				*Iconv_iter, std::valarray<double>(), smooth_conv_inertia,
-				conv_inertia_nodes));
+                                            *Iconv_iter,
+                                            std::valarray<double>(),
+                                            smooth_conv_inertia,
+                                            conv_inertia_nodes)
+        );
 		std::cout << "done" << std::endl;
 
 		size_t first_core_index=0;
 		while(
 				!tabulated_rad_mass.empty()
 				&&
-				first_core_index+1<Mrad_iter->size()
+				first_core_index + 1 < Mrad_iter->size()
 				&&
 				(*Mrad_iter)[first_core_index+1]==0
 		) ++first_core_index;
-		if(Mrad_iter->size()==0 || (*Mrad_iter)[first_core_index+1]==0) {
+		if(
+            Mrad_iter->size() == 0
+            || 
+            first_core_index + 1 == Mrad_iter->size() 
+            ||
+            (*Mrad_iter)[first_core_index + 1]==0
+        ) {
 			core_formation=Inf;
 			interpolated_rad_inertia.push_back(new ZeroFunction());
 			interpolated_rad_mass.push_back(new ZeroFunction());

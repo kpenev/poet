@@ -9,14 +9,14 @@ test_MESAIO::test_MESAIO(const std::string& mesa_dir) :
 void test_MESAIO::test_single_tracks()
 {
     std::cout << "Starting test" << std::endl;
-    const std::string& filename = "../MESA/1.0Msun_table.csv";
+    const std::string& filename = "../MESA/FeH=+0.0/M1.0_Z0.015.csv";
     std::ifstream track(filename.c_str());
     MESA::Header header(track, filename);
     std::valarray< std::list<double> > track_columns = parse_columns(
         track,
         header.get_all_columns()
     );
-    MESA::Evolution evolution("../MESA");
+    MESA::Evolution evolution("../MESA/FeH=+0.0");
     const EvolvingStellarQuantity
         *R_star = evolution.interpolate_radius(1.0),
         *L_star = evolution.interpolate_luminosity(1.0),

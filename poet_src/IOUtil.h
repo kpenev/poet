@@ -15,13 +15,11 @@ std::valarray< std::list<double> > parse_columns(
 
 		///The column numbers to extract. Should provide operator[], size and
 		///iterators.
-		const COLNUM_STRUCTURE &column_numbers
-);
+		const COLNUM_STRUCTURE &column_numbers,
 
-template<class COLNUM_STRUCTURE>
-std::valarray< std::list<double> > parse_columns(
-    std::istream &is,
-    const COLNUM_STRUCTURE &column_numbers
+        ///Is the input file comma separate (no white space), if false, it
+        ///is assumed white space separated.
+        bool csv = true
 )
 {
 	int last_column=*max_element(column_numbers.begin(),
@@ -49,7 +47,8 @@ std::valarray< std::list<double> > parse_columns(
 			if(!line_stream.good()) throw Error::IO(msg.str());
 
             std::string word;
-            std::getline(line_stream, word, ',');
+            if(csv) std::getline(line_stream, word, ',');
+            else line_stream >> word;
 			typename COLNUM_STRUCTURE::const_iterator
 				colnum_iter=column_numbers.begin();
 			for(size_t result_index=0; result_index<column_numbers.size();
