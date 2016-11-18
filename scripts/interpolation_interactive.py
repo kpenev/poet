@@ -24,8 +24,10 @@ import time
 
 if sys.version_info[0] < 3:
     import Tkinter as Tk
+    from Tkinter import ttk
 else:
     import tkinter as Tk
+    from tkinter import ttk
 
 class Structure :
     """An empty class used only to hold user defined attributes."""
@@ -148,21 +150,25 @@ class Application :
     def display(self) :
         """(Re-)draw the plot as currently configured by the user."""
 
-        def plot_interpolation(star_mass, plot_func) :
+        def plot_interpolation(star_mass, star_metallicity, plot_func) :
             """Plot an interpolated stellar evolution track."""
 
+            if not self.interpolate : return
             interpolated = self.poet_interp(star_mass,
                                             0,
                                             star_lifetime(star_mass),
                                             0.001)
-            plot_func(interpolated['t'],
-                      interpolated[self.plot_quantity],
-                      '.r')
+            plot_x = age_transform(star_mass,
+                                   star_metallicity,
+                                   interpolated['t'])
+            plot_func(plot_x, interpolated[self.plot_quantity], '.r')
 
             if self.deriv > 0 :
                 d1_y = numpy.copy(interpolated['D' + self.plot_quantity])
                 if self.deriv > 1 :
-                    d2_y = numpy.copy(interpolated['DD' + self.plot_quantity])
+                    d2_y = numpy.copy(
+                        interpolated['DD' + self.plot_quantity]
+                    )
 
                 if self.logy : 
                     d1_y /= interpolated[self.plot_quantity]
@@ -173,26 +179,30 @@ class Application :
 
                 if self.logx : 
                     deriv_plot_funcname = 'semilogx'
-                    d1_y *= interpolated['t']
+                    d1_y *= plot_x
                     if self.deriv > 1 :
-                        d2_y = d1_y + interpolated['t']**2 * d2_y
+                        d2_y = d1_y + plot_x**2 * d2_y
                 else :
                     deriv_plot_funcname = 'plot'
 
 
                 getattr(self.first_deriv_axes, deriv_plot_funcname)(
-                    interpolated['t'],
+                    plot_x,
                     d1_y,
                     '.r'
                 )
                 if self.deriv > 1 :
                     getattr(self.second_deriv_axes, deriv_plot_funcname)(
-                        interpolated['t'],
+                        plot_x,
                         d2_y,
                         '.r'
                     )
         if self.do_not_display : return
         
+        exec('def age_transform(m, feh, t) : return '
+             +
+             self.age_transform_entry.get(),
+             globals())
         main_x_lim = self.main_axes.get_xlim()
         main_y_lim = self.main_axes.get_ylim()
 
@@ -211,24 +221,60 @@ class Application :
         elif not self.logx and self.logy : plot = self.main_axes.semilogy
         else : plot = self.main_axes.plot
 
-        plot_interpolation(self.interp_mass, plot)
+        plot_interpolation(self.interp['mass'],
+                           self.interp['metallicity'],
+                           plot)
 
-        for track_index in range(len(self.track_masses)) :
-            if (
-                    self.enabled_tracks[track_index]
-                    or
-                    track_index == self.track_index_below
-                    or
-                    track_index == self.track_index_below + 1
+        for track_mass_index, track_mass in enumerate(self.track_mass) :
+            nearby_track_mass = (
+                track_mass_index == self.track_below['mass']
+                or
+                track_mass_index == self.track_below['mass'] + 1
+            )
+            for track_metallicity_index, track_metallicity in enumerate(
+                    self.track_metallicity
             ) :
-                track_mass = self.track_masses[track_index]
+                nearby_track_metallicity = (
+                    track_metallicity_index == (
+                        self.track_below['metallicity']
+                    )
+                    or
+                    track_metallicity_index == (
+                        self.track_below['metallicity'] + 1
+                    )
+                )
+                if (
+                        self.track_state[track_mass][track_metallicity].get()
+                        or
+                        (nearby_track_mass and nearby_track_metallicity)
+                ) :
+                    track_mass = self.track_mass[track_mass_index]
+                    track_metallicity = self.track_metallicity[
+                        track_metallicity_index
+                    ]
 
-                if self.enabled_tracks[track_index] :
-                    plot_interpolation(track_mass, plot)
+                    if self.track_state[track_mass][track_metallicity] :
+                        plot_interpolation(track_mass,
+                                           track_metallicity,
+                                           plot)
 
-                plot(self.tracks[track_mass]['t'],
-                     self.tracks[track_mass][self.plot_quantity],
-                     'xk')
+                    plot(age_transform(track_mass,
+                                       track_metallicity,
+                                       self.tracks[
+                                           track_mass
+                                       ][
+                                           track_metallicity
+                                       ][
+                                           't'
+                                       ]),
+                         self.tracks[
+                             track_mass
+                         ][
+                             track_metallicity
+                         ][
+                             self.plot_quantity
+                         ],
+                         'xk')
         if not self.main_auto_axes :
             self.main_axes.set_xlim(main_x_lim)
             self.main_axes.set_ylim(main_y_lim)
@@ -240,7 +286,9 @@ class Application :
                 self.first_deriv_axes.set_ylim(first_deriv_ylim)
             if self.second_deriv_axes is not None :
                 if self.second_deriv_auto_axes :
-                    self.second_deriv_axes.set_xlim(self.main_axes.get_xlim())
+                    self.second_deriv_axes.set_xlim(
+                        self.main_axes.get_xlim()
+                    )
                 else :
                     self.second_deriv_axes.set_xlim(second_deriv_xlim)
                     self.second_deriv_axes.set_ylim(second_deriv_ylim)
@@ -276,6 +324,15 @@ class Application :
         self.main_auto_axes = True
         self.first_deriv_auto_axes = True
         self.second_deriv_auto_axes = True
+        self.display()
+
+    def toggle_interpolation(self) :
+        """Switch between displaying and not an interpolated track."""
+
+        self.interpolate = not self.interpolate
+        self.interpolate_button.config(
+            relief = Tk.SUNKEN if self.interpolate else Tk.RAISED
+        )
         self.display()
 
     def toggle_deriv(self, order) :
@@ -338,59 +395,83 @@ class Application :
         self.second_deriv_auto_axes = True
         self.display()
 
-    def change_interp_mass(self, new_mass) :
+    def change_interp(self, quantity, input_new_value) :
         """Modify the stellar mass for which to display the interpolation."""
 
-        if self.changing_mass : return
-        self.changing_mass = True
+        if self.changing[quantity] : return
+        self.changing[quantity] = True
 
-        self.interp_mass = float(new_mass)
-        self.track_index_below = len(self.track_masses) - 2
-        while (
-                self.track_index_below >= 0
-                and
-                self.track_masses[self.track_index_below] > \
-                self.interp_mass
-        ) : self.track_index_below -= 1
+        new_value = float(input_new_value)
+        self.interp[quantity] = new_value
+        track_quantities = getattr(self, 'track_' + quantity)
+        index_below = len(track_quantities) - 2
+        while (index_below >= 0
+               and
+               track_quantities[index_below] > new_value
+        ) : index_below -= 1
+        self.track_below[quantity] = index_below
+        self.track_below[quantity] = -2
 
-        self.fine_interp_mass_scale.config(
-            from_ = (self.track_masses[self.track_index_below]
-                     +
-                     1e-5),
-            to = (self.track_masses[self.track_index_below + 1]
-                  -
-                  1e-5)
+        self.fine_interp_scale[quantity].config(
+            from_ = (track_quantities[index_below] + 1e-5),
+            to = (track_quantities[index_below + 1] - 1e-5)
         )
 
-        self.coarse_interp_mass_scale.set(self.interp_mass)
-        self.fine_interp_mass_scale.set(self.interp_mass)
+        self.coarse_interp_scale[quantity].set(new_value)
+        self.fine_interp_scale[quantity].set(new_value)
 
         if self.display_job : self.main_window.after_cancel(self.display_job)
         self.display_job = self.main_window.after(100, self.display)
 
-        self.changing_mass = False
+        self.changing[quantity] = False
         return True
 
-    def toggle_track(self, track_index) :
-        """Toggle displaying the track with the given index."""
-
-        self.enabled_tracks[track_index] = (
-            not self.enabled_tracks[track_index]
-        )
-        self.track_buttons[track_index].config(
-            relief = (Tk.SUNKEN if self.enabled_tracks[track_index]
-                      else Tk.RAISED)
-        )
-        self.display()
-
-    def set_all_tracks(self, state) :
+    def toggle_all_tracks(self) :
         """Enable displaying all tracks."""
 
-        for i in range(len(self.enabled_tracks)) :
-            self.enabled_tracks[i] = state
-            self.track_buttons[i].config(
-                relief = Tk.SUNKEN if state else Tk.RAISED
-            )
+        selected = (self.all_tracks_button.cget('relief') == Tk.RAISED)
+        self.all_tracks_button.config(
+            relief = (Tk.SUNKEN if selected else Tk.RAISED),
+            text = ('None' if selected else 'All')
+        )
+
+        for button in self.track_mass_button.values() :
+            button.config(relief = (Tk.SUNKEN if selected else Tk.RAISED))
+        for button in self.track_metallicity_button.values() :
+            button.config(relief = (Tk.SUNKEN if selected else Tk.RAISED))
+
+        for mass_track_state in self.track_state.values() :
+            for track_state in mass_track_state.values() :
+                track_state.set(selected)
+
+        self.display()
+
+    def toggle_track_mass(self, mass) :
+        """Select/deselect displaying all tracks with the given mass."""
+
+        selected = (self.track_mass_button[mass].cget('relief') == Tk.RAISED)
+        self.track_mass_button[mass].config(
+            relief = (Tk.SUNKEN if selected else Tk.RAISED)
+        )
+        for track_state in self.track_state[mass].values() :
+            track_state.set(selected)
+
+        self.display()
+
+    def toggle_track_metallicity(self, metallicity) :
+        """Select/deselect displaying all tracks with the given [Fe/H]."""
+
+        selected = (
+            self.track_metallicity_button[metallicity].cget('relief')
+            == 
+            Tk.RAISED
+        )
+        self.track_metallicity_button[metallicity].config(
+            relief = (Tk.SUNKEN if selected else Tk.RAISED)
+        )
+        for mass_track_state in self.track_state.values() :
+            if metallicity in mass_track_state :
+                mass_track_state[metallicity].set(selected)
 
         self.display()
 
@@ -418,46 +499,65 @@ class Application :
         def create_axes_controls() :
             """Create controls for plot quantity and log axes."""
 
-            y_controls_frame = Tk.Frame(main_window)
-            y_controls_frame.grid(row = 1, column = 0)
+            def create_x_controls() :
+                """Create the controls for the x axis."""
 
-            self.selected_plot_quantity = Tk.StringVar()
-            self.selected_plot_quantity.set(self.plot_quantities[0])
-            self.plot_quantity_menu = Tk.OptionMenu(
-                y_controls_frame,
-                self.selected_plot_quantity,
-                *self.plot_quantities,
-                command = self.change_plot_quantity
-            )
-            self.logy_button = Tk.Button(
-                y_controls_frame,
-                text = 'log10',
-                command = self.toggle_log_y,
-                relief = Tk.SUNKEN if self.logy else Tk.RAISED
-            )
-            self.first_deriv_button = Tk.Button(
-                y_controls_frame,
-                text = 'd/dt',
-                command = functools.partial(self.toggle_deriv, 1)
-            )
-            self.second_deriv_button = Tk.Button(
-                y_controls_frame,
-                text = 'd/dt',
-                command = functools.partial(self.toggle_deriv, 2)
-            )
-            self.logy_button.grid(row = 0, column = 0)
-            self.first_deriv_button.grid(row = 1, column = 0)
-            self.second_deriv_button.grid(row = 2, column = 0)
-            self.plot_quantity_menu.grid(row = 3, column = 0)
+                x_controls_frame = Tk.Frame(main_window)
+                x_controls_frame.grid(row = 2, column = 1)
 
-            self.logx_button = Tk.Button(
-                main_window,
-                text = 'log10',
-                command = self.toggle_log_x,
-                relief = Tk.SUNKEN if self.logx else Tk.RAISED
-            )
-            self.logx_button.grid(row = 2, column = 1)
+                self.logx_button = Tk.Button(
+                    x_controls_frame,
+                    text = 'log10',
+                    command = self.toggle_log_x,
+                    relief = Tk.SUNKEN if self.logx else Tk.RAISED
+                )
+                self.age_transform_entry = Tk.Entry(
+                    x_controls_frame,
+                )
+                self.age_transform_entry.insert(
+                    0,
+                    't * (1.0 + (t / 5.0) * m**5 * 10.0**(-0.2*feh))'
+                    '* m**2.3 * 10.0**(-0.4*feh)')
+                self.logx_button.grid(row = 0, column = 0)
+                self.age_transform_entry.grid(row = 0, column = 1)
 
+            def create_y_controls() :
+                """Create the controls for the y axis."""
+
+                y_controls_frame = Tk.Frame(main_window)
+                y_controls_frame.grid(row = 1, column = 0)
+
+                self.selected_plot_quantity = Tk.StringVar()
+                self.selected_plot_quantity.set(self.plot_quantities[0])
+                self.plot_quantity_menu = Tk.OptionMenu(
+                    y_controls_frame,
+                    self.selected_plot_quantity,
+                    *self.plot_quantities,
+                    command = self.change_plot_quantity
+                )
+                self.logy_button = Tk.Button(
+                    y_controls_frame,
+                    text = 'log10',
+                    command = self.toggle_log_y,
+                    relief = Tk.SUNKEN if self.logy else Tk.RAISED
+                )
+                self.first_deriv_button = Tk.Button(
+                    y_controls_frame,
+                    text = 'd/dt',
+                    command = functools.partial(self.toggle_deriv, 1)
+                )
+                self.second_deriv_button = Tk.Button(
+                    y_controls_frame,
+                    text = 'd/dt',
+                    command = functools.partial(self.toggle_deriv, 2)
+                )
+                self.logy_button.grid(row = 0, column = 0)
+                self.first_deriv_button.grid(row = 1, column = 0)
+                self.second_deriv_button.grid(row = 2, column = 0)
+                self.plot_quantity_menu.grid(row = 3, column = 0)
+
+            create_x_controls()
+            create_y_controls()
             Tk.Button(
                 main_window,
                 text = 'Auto Axes',
@@ -467,57 +567,112 @@ class Application :
                    column = 2,
                    sticky = Tk.N + Tk.S + Tk.W + Tk.E)
 
-        def create_mass_controls(mass_control_frame) :
-            """Create the controls to select the interpolation mass."""
+        def create_interp_controls(interp_control_frame) :
+            """Create the controls for the interpolation mass & [Fe/H]."""
 
-            self.coarse_interp_mass_scale = Tk.Scale(
-                mass_control_frame,
-                from_ = self.track_masses[0],
-                to = self.track_masses[-1],
-                resolution = -1,
-                length = 1000,
-                orient = Tk.HORIZONTAL,
-                command = self.change_interp_mass,
-                digits = 6
-            )
+            self.coarse_interp_scale = dict()
+            self.fine_interp_scale = dict()
+            for index, quantity in enumerate(['mass', 'metallicity']) :
+                self.coarse_interp_scale[quantity] = Tk.Scale(
+                    interp_control_frame,
+                    from_ = self.track_mass[0],
+                    to = self.track_mass[-1],
+                    resolution = -1,
+                    length = 1000,
+                    orient = Tk.HORIZONTAL,
+                    command = functools.partial(self.change_interp, 'mass'),
+                    digits = 6
+                )
 
-            self.fine_interp_mass_scale = Tk.Scale(
-                mass_control_frame,
-                resolution = -1,
-                length = 1000,
-                orient = Tk.HORIZONTAL,
-                command = self.change_interp_mass,
-                digits = 6
-            )
+                self.fine_interp_scale[quantity] = Tk.Scale(
+                    interp_control_frame,
+                    resolution = -1,
+                    length = 1000,
+                    orient = Tk.HORIZONTAL,
+                    command = functools.partial(self.change_interp, 'mass'),
+                    digits = 6
+                )
 
-            self.coarse_interp_mass_scale.grid(row = 0, column = 0)
-            self.fine_interp_mass_scale.grid(row = 1, column = 0)
+                self.coarse_interp_scale[quantity].grid(row = 3 * index,
+                                                        column = 1)
+                self.fine_interp_scale[quantity].grid(row = 3 * index + 1,
+                                                      column = 1)
+            Tk.Label(interp_control_frame,
+                     text = 'M*/Msun').grid(row = 0, column = 0, rowspan = 2)
+            Tk.Label(interp_control_frame,
+                     text = '[Fe/H]').grid(row = 3, column = 0, rowspan = 2)
+            ttk.Separator(interp_control_frame,
+                          orient = Tk.HORIZONTAL).grid(row = 2,
+                                                       column = 0,
+                                                       columnspan = 2,
+                                                       sticky = "ew")
 
         def create_track_selectors(track_selectors_frame) :
             """Create buttons to enable/disable tracks to display."""
 
-            self.track_buttons = [
-                Tk.Button(
-                    track_selectors_frame,
-                    text = "M=%.3f" % mass,
-                    command = functools.partial(self.toggle_track, index)
-                )
-                for index, mass in enumerate(self.track_masses)
-            ]
-
-            Tk.Button(
+            self.all_tracks_button = Tk.Button(
                 track_selectors_frame,
                 text = 'All',
-                command = functools.partial(self.set_all_tracks, True)
-            ).grid(row = 0, column = 0)
-            Tk.Button(
-                track_selectors_frame,
-                text = 'None',
-                command = functools.partial(self.set_all_tracks, False)
-            ).grid(row = 0, column = 1)
+                command = self.toggle_all_tracks,
+                relief = Tk.RAISED
+            )
+            self.all_tracks_button.grid(row = 0,
+                                        column = 0,
+                                        rowspan = 2,
+                                        columnspan = 2)
 
-            for index, button in enumerate(self.track_buttons) :
-                button.grid(row = index + 1, column = 0, columnspan = 2)
+            Tk.Label(
+                track_selectors_frame,
+                text = 'M*/Msun'
+            ).grid(row = 1,
+                   column = 0,
+                   columnspan = len(self.track_mass))
+            Tk.Label(
+                track_selectors_frame,
+                text = '[Fe/H]',
+            ).grid(row = 0,
+                   column = 1,
+                   rowspan  = len(self.track_metallicity))
+
+            self.track_state = dict()
+            self.track_mass_button = dict()
+            self.track_metallicity_button = dict()
+            for row, mass in enumerate(self.track_mass) :
+                self.track_state[mass] = dict()
+                self.track_mass_button[mass] = Tk.Button(
+                    track_selectors_frame,
+                    text = '%.3f' % mass,
+                    command = functools.partial(self.toggle_track_mass,
+                                                mass),
+                    relief = Tk.RAISED
+                )
+                self.track_mass_button[mass].grid(row = 2 + row,
+                                                  column = 1)
+                for column, metallicity in enumerate(
+                        self.track_metallicity
+                ) :
+                    if row == 0 :
+                        self.track_metallicity_button[metallicity] = \
+                            Tk.Button(
+                                track_selectors_frame,
+                                text = '%.3f' % metallicity,
+                                command = functools.partial(
+                                    self.toggle_track_metallicity,
+                                    metallicity
+                                ),
+                                relief = Tk.RAISED
+                            )
+                        self.track_metallicity_button[metallicity].grid(
+                            row = 1,
+                            column = 2 + column
+                        )
+                    self.track_state[mass][metallicity] = Tk.IntVar()
+                    Tk.Checkbutton(
+                        track_selectors_frame,
+                        text = '',
+                        variable = self.track_state[mass][metallicity],
+                        command = self.display
+                    ).grid(row = 2 + row, column = 2 + column)
 
         def create_main_canvas(plot_frame) :
             """Create the canvas for plotting undifferentiated quantities."""
@@ -551,14 +706,22 @@ class Application :
                               Lum = 0,
                               Rrad = 2, 
                               Mrad = 1)
-        self.logx = False
-        self.logy = False
+        self.logx = True
+        self.logy = True
+        self.interpolate = False
         self.deriv = 0
         self.tracks = tracks
-        self.track_masses = sorted(tracks.keys())
-        self.interp_mass = 1.0
-        self.enabled_tracks = [False for m in self.track_masses]
-        self.changing_mass = False
+        self.track_mass = sorted(tracks.keys())
+        self.track_metallicity = set()
+        for mass_tracks in tracks.values() :
+            self.track_metallicity.update(mass_tracks.keys())
+        self.track_metallicity = sorted(list(self.track_metallicity))
+        self.interp = dict(mass = 1.0, metallicity = 0.0)
+        self.enabled_tracks = [
+            [False for feh in self.track_metallicity]
+            for m in self.track_mass
+        ]
+        self.changing = dict(mass = False, metallicity = False)
         self.main_window = main_window
 
         plot_frame = Tk.Frame(main_window)
@@ -566,8 +729,8 @@ class Application :
                         column = 1,
                         sticky = Tk.N + Tk.S + Tk.W + Tk.E )
 
-        mass_control_frame = Tk.Frame(main_window)
-        mass_control_frame.grid(row = 0, column = 1)
+        interp_control_frame = Tk.Frame(main_window)
+        interp_control_frame.grid(row = 0, column = 1)
 
         track_selectors_frame = Tk.Frame(main_window)
         track_selectors_frame.grid(row = 1, column = 2)
@@ -578,10 +741,22 @@ class Application :
         create_main_axes()
         create_main_canvas(plot_frame)
         create_axes_controls()
-        create_mass_controls(mass_control_frame)
+        create_interp_controls(interp_control_frame)
         create_track_selectors(track_selectors_frame)
 
-        self.change_interp_mass(self.interp_mass)
+        self.interpolate_button = Tk.Button(
+            main_window,
+            text = 'Interpolate',
+            command = self.toggle_interpolation,
+            relief = Tk.SUNKEN if self.interpolate else Tk.RAISED
+        )
+        self.interpolate_button.grid(row = 0,
+                                     column = 0,
+                                     sticky = Tk.N + Tk.S + Tk.W + Tk.E)
+
+        self.track_below = dict()
+        self.change_interp('mass', self.interp['mass'])
+        self.change_interp('metallicity', self.interp['metallicity'])
         self.change_plot_quantity(self.plot_quantities[0])
         self.do_not_display = False
         poet_output_columns = ['t']
@@ -600,10 +775,11 @@ def read_YREC(dirname) :
         - dirname: The directory containing the tracks to read. The tracks
                    are assumed to be all files with a name ending in
                    '.track'.
-    Returns: A dictionary with keys the track masses (to 3 significant
-             figures), each containing a dictionary with keys:
-             t, Iconv, Irad, I, R, Lum, Rrad, Mrad containing the
-             corresponding quantity in the units output by poet.
+    Returns: A dictionary indexed by mass (up to 3 significant figures)
+             containing dictionaries indexed by metallicity (up to 3
+             significant figures) each containing a dictionary with keys: t,
+             Iconv, Irad, I, R, Lum, Rrad, Mrad containing the corresponding
+             quantity in the units output by poet.
     """
 
     model_param_rex = re.compile(
@@ -617,6 +793,8 @@ def read_YREC(dirname) :
     Inorm = (astropy.constants.M_sun.to(astropy.units.g).value
              *
              astropy.constants.R_sun.to(astropy.units.cm).value**2)
+    metallicity_key = 0.0
+    all_metallicities = [metallicity_key]
     for fname in track_fnames :
         with open(fname, 'rb') as track_file :
             match = False
@@ -632,7 +810,9 @@ def read_YREC(dirname) :
                 deletechars = ''
             )
             mass_key = round(model_mass, 3)
-            result[mass_key] = dict(
+            if mass_key not in result : result[mass_key] = dict()
+            assert(metallicity_key not in result[mass_key])
+            result[mass_key][metallicity_key] = dict(
                 t = model_data['Age(Gyr)'],
                 Iconv = model_data['I_env'] / Inorm,
                 Irad = model_data['I_rad'] / Inorm,
@@ -640,18 +820,71 @@ def read_YREC(dirname) :
                 Lum = 10.0**model_data['log(L/Lsun)'],
                 Mrad = model_data['m_envp/M'] * model_mass
             )
-            result[mass_key]['I'] = (result[mass_key]['Iconv']
-                                     +
-                                     result[mass_key]['Irad'])
+            result[mass_key][metallicity_key]['I'] = (
+                result[mass_key]['Iconv']
+                +
+                result[mass_key]['Irad']
+            )
             Rrad_key = ('r_envp/M' if 'r_envp/M' in model_data.dtype.names
                         else 'r_envp/R')
-            result[mass_key]['Rrad'] = (model_data[Rrad_key]
-                                        * 
-                                        result[mass_key]['R'])
+            result[mass_key][metallicity_key]['Rrad'] = (
+                model_data[Rrad_key]
+                * 
+                result[mass_key]['R']
+            )
+    return result
+
+def read_MESA(dirname) :
+    """
+    Read all MESA tracks from the given directory.
+    
+    Args:
+        - dirname: The directory containing the tracks to read. The tracks
+                   are assumed to be all files with filenames like
+                   M<stellar_mass>_Z<metallicity>.csv
+    Returns: A dictionary indexed by mass (up to 3 significant figures)
+             containing dictionaries indexed by metallicity (up to 3
+             significant figures) each containing a numpy record array with
+             keys: t, Iconv, Irad, I, R, Lum, Rrad, Mrad containing the
+             corresponding quantity in the units output by poet.
+    """
+
+    def translate_name(name) :
+        """Return the output record name for the given name in the track."""
+
+        if name == 'age' : return 't'
+        elif name == 'R_star' : return 'R'
+        elif name == 'L_star' : return 'Lum'
+        elif name == 'R_tachocline' : return 'Rrad'
+        else : return name.replace('_', '')
+
+    result = dict()
+    fname_rex = re.compile(
+        'M(?P<MASS>[0-9.E+-]+)_Z(?P<METALLICITY>[0-9.E+-]+).csv'
+    )
+    track_fnames = glob(os.path.join(dirname, '*.csv'))
+    for fname in track_fnames :
+        parsed_fname = fname_rex.match(os.path.basename(fname))
+        if not parsed_fname : continue
+        mass_key = round(float(parsed_fname.group('MASS')), 3)
+        metallicity_key = round(
+            numpy.log10(float(parsed_fname.group('METALLICITY')) / 0.015), 
+            3
+        )
+        if mass_key not in result : result[mass_key] = dict()
+        assert(metallicity_key not in result[mass_key])
+        result[mass_key][metallicity_key] = numpy.genfromtxt(fname,
+                                                             delimiter = ',',
+                                                             names = True)
+        result[mass_key][metallicity_key].dtype.names = tuple(
+            translate_name(name) for name in
+            result[mass_key][metallicity_key].dtype.names
+        )
+        result[mass_key][metallicity_key]['t'] /= 1e9
     return result
 
 if __name__ == '__main__' :
-    tracks = read_YREC('../poet_src/YREC')
+    tracks = read_MESA('../poet_src/MESA')
     main_window = Tk.Tk()
     main_window.wm_title("Stellar Evolution Interpolation Explorer")
     ap = Application(main_window, tracks)
