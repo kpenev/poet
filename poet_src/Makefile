@@ -18,7 +18,8 @@ COMMON_MODULES  = BinarySystem BreakLockCondition CombinedStoppingCondition \
 				  ExponentialDecayDiffRotBody ExternalStoppingConditions \
 				  Functions MESAIO OrbitalExpressions OrbitSolver \
 				  SaturatingSkumanichWindBody SecondaryDeathCondition \
-				  SpinOrbitLockInfo StellarEvolution StopHistoryInterval \
+				  SpinOrbitLockInfo EvolvingStellarQuantity \
+				  StellarEvolution StopHistoryInterval \
 				  StopInformation StoppingCondition SynchronizedCondition \
 				  TwoPhaseLagZone PowerlawPhaseLagZone \
 				  WindSaturationCondition YRECCore \
