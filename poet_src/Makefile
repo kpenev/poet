@@ -22,9 +22,9 @@ COMMON_MODULES  = BinarySystem BreakLockCondition CombinedStoppingCondition \
 				  StellarEvolution StopHistoryInterval \
 				  StopInformation StoppingCondition SynchronizedCondition \
 				  TwoPhaseLagZone PowerlawPhaseLagZone \
-				  WindSaturationCondition YRECCore \
-				  YRECEnvelope YRECIO ZoneOrientation ConstSolutionIterator \
-				  IOColumns
+				  WindSaturationCondition EvolvingStellarCore \
+				  EvolvingStellarEnvelope YRECIO ZoneOrientation \
+				  ConstSolutionIterator IOColumns
 
 BOOST_LIB		= $(shell (echo 'int main() {}' > \
 				    	   /tmp/trivial.cpp; g++ /tmp/trivial.cpp \
@@ -101,7 +101,7 @@ COMPILER        = g++
 
 INCLUDES        = 
 DATADIR			= .
-CFLAGS_COMMON   = -W -Wall $(INCLUDES) \
+CFLAGS_COMMON   = -W -Wall -std=c++11 $(INCLUDES) \
 				  $(shell gsl-config --cflags 2>/dev/null) \
 				  -D'REVISION="$(shell git log --pretty=format:\%H -n 1)"' \
 				  -D'DATADIR="$(DATADIR)"' $(CFLAGS_EXTRA)

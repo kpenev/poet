@@ -13,7 +13,8 @@
 #include "AstronomicalConstants.h"
 #include "OrbitSolver.h"
 #include "YRECIO.h"
-#include "YRECStar.h"
+#include "MESAIO.h"
+#include "EvolvingStar.h"
 #include "LockedPlanet.h"
 #include "CustomStellarEvolution.h"
 #include "DiskPlanetSystem.h"
@@ -118,6 +119,9 @@ private:
 	///Whether the initial surfarce spin of the star should be
 	///synchronous to the orbit.
 	arg_lit *__start_locked;
+
+    ///Wether we should use the YREC tracks instead of the MESA.
+    arg_lit *__use_YREC;
 
 	///The name of the file to read the evolution scenarios from.
 	arg_file *__input_fname,
@@ -273,6 +277,9 @@ public:
 	///
 	///If true, causes the value of __start_wsurf to be ignored.
 	bool start_locked() const {return __start_locked->count>0;}
+
+	///\brief Whether to used the YREC tracks instead of the MESA ones.
+	bool use_YREC() const {return __use_YREC->count>0;}
 
 	///Are any quantities to be read from a list file?
 	bool input_from_list() const {return __input_file_format.size();}

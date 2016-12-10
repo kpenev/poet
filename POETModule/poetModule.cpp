@@ -478,7 +478,8 @@ static PyObject *evolve_orbit(PyObject *self, PyObject *pos_args,
 }
 
 static PyMethodDef poetMethods[] = {
-	{"serialize_stellar_evolution", serialize_stellar_evolution,
+	{
+        "serialize_stellar_evolution", serialize_stellar_evolution,
 		METH_VARARGS,
 		"Prepares and saves in a file the interpolation between YREC "
 		"tracks.\n"
@@ -493,8 +494,11 @@ static PyMethodDef poetMethods[] = {
 		DEFAULT_STELLAR_INTERP ").\n"
 		"\n"
 		"Raises:\n"
-		"    TypeError: the input argument was not a string."},
-	{"evolve_orbit", (PyCFunction)evolve_orbit, METH_VARARGS|METH_KEYWORDS, 
+		"    TypeError: the input argument was not a string."
+    },
+	{
+        "evolve_orbit", (PyCFunction)evolve_orbit,
+        METH_VARARGS|METH_KEYWORDS, 
 		"Calculates the orbital evolution for a planet-star system.\n"
 		"\n"
 		"Args:\n"

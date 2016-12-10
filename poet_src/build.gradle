@@ -1,0 +1,192 @@
+plugins {
+    id 'cpp'
+}
+
+import org.gradle.internal.os.OperatingSystem;
+
+model {
+    buildTypes {
+        debug
+        release
+        profile
+    }
+}
+
+model {
+    //Common configuration for all binaries
+    binaries {
+        all {
+
+            if(buildType == buildTypes.release) {
+                cppCompiler.define "NDEBUG"
+            }
+
+            if (toolChain in Gcc || toolChain in Clang) {
+                cppCompiler.args "-W", "-Wall", "-std=c++11"
+
+                getGSLLinkerArgs().each{linker.args it}
+                linker.args "-l" + ensureLibraryVersion(
+                    "boost_serialization",
+                    [min: "1.54", max: "2.0"]
+                )
+                linker.args "-l" + ensureLibraryVersion("argtable2")
+
+                if(buildType == buildTypes.release) {
+                    cppCompiler.args "-O3"
+                } else {
+                    cppCompiler.args "-ggdb", "-pg"
+                    if(buildType == buildTypes.debug) cppCompiler.args "-O0"
+                }
+            } else if (toolChain in VisualCpp ) {
+                if(buildType == buildTypes.debug) {
+                    cppCompiler.args '/Zi'
+                    cppCompiler.define 'DEBUG'
+                    linker.args '/DEBUG'
+                }
+            }
+
+        }
+        withType(StaticLibraryBinarySpec) {
+            cppCompiler.args '-fPIC'
+        }
+
+    }
+
+    components {
+        alglib(NativeLibrarySpec) {
+            sources.cpp {
+                source {
+                    srcDir "third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "third_party_libs/alglib"
+                }
+            }
+        }
+        eigen(NativeLibrarySpec) {
+            sources.cpp {
+                source {}
+                exportedHeaders {
+                    srcDir "third_party_libs/Eigen"
+                }
+            }
+        }
+        stellarEvolution(NativeLibrarySpec) {
+            sources.cpp {
+                lib library: "alglib"
+                lib library: "eigen"
+                source {
+                    srcDir "StellarEvolution"
+                    include "**/*.cpp"
+                    exclude "**/CustomStellarEvolution.cpp"
+                    exclude "**/YRECIO.cpp"
+                }
+                source {
+                    srcDir "Core"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "StellarEvolution/interface"
+                }
+            }
+        }
+//        poet(NativeExecutableSpec) {
+//            sources.cpp {
+//                source {
+//                    srcDir "."
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "core"
+//                    include "**/*.cpp"
+//                }
+//            }
+//        }
+    }
+}
+
+def findLibraryLinux(String libNameStart)
+{
+    def libInfoList
+    try {
+        libInfoList = "ldconfig -p".execute().text.split('\n')
+    } catch (Exception ex) {
+        throw new ProjectConfigurationException(
+            "Failed to execute command: ldconfig -p",
+            new NullPointerException()
+        )
+    }
+    def libSearch= ~(
+        "lib(?<name>${libNameStart}.*)\\.so\\.(?<version>[0-9.]*)\\s+.*=>"
+    )
+    def previousMatch = false
+    for(String libInfo : libInfoList) {
+        def match = libInfo =~ libSearch
+        if(match) {
+            if(previousMatch) {
+                throw new ProjectConfigurationException(
+                    "Multiple link candidates found for library " +
+                    "${libName}:\n" +
+                    "\t${previousMatch}\n" +
+                    "\tand\n" +
+                    "\t${libInfo}",
+                    new NullPointerException()
+                )
+            }
+            previousMatch = libInfo
+            def absLibFileName = libInfo.split('=>')[1].trim()
+            return [match.group("name"),
+                    match.group("version"),
+                    absLibFileName]
+        }
+    }
+    if(!previousMatch) {
+        throw new ProjectConfigurationException(
+            "No candidate ${libName} library found!",
+            new NullPointerException()
+        );
+    }
+}
+
+def findLibrary(String libNameStart)
+{
+    if(OperatingSystem.current().isLinux())
+        return findLibraryLinux(libNameStart)
+    else {
+        throw new ProjectConfigurationException(
+            "Compiling on non-linux operating systems not currently " +
+            "supported!",
+            new NullPointerException()
+        );
+    }
+}
+
+def ensureLibraryVersion(String libNameStart,
+                         Map versionRange = [:])
+{
+    def(String libName,
+        String libVersion,
+        String libAbsFileName) = findLibrary(libNameStart)
+    if(versionRange.containsKey('min'))
+        assert(libVersion >= versionRange['min'])
+    if(versionRange.containsKey('max'))
+        assert(libVersion <= versionRange['max'])
+    return libName
+}
+
+def getGSLLinkerArgs()
+{
+    if(OperatingSystem.current().isWindows()) {
+        return ["-lgsl", "-lgslcblas"]
+    } else {
+        try {
+            return "gsl-config --libs".execute().text.tokenize()
+        } catch (ReportedException) {
+            throw new MissingResourceException(
+                "Unable to configure linking with GSL: gsl-config --libs " +
+                "failed!"
+            );
+        }
+    }
+}

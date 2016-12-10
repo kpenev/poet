@@ -52,13 +52,21 @@ GSL_LIB			=$(shell gsl-config --libs 2>/dev/null \
 #############################################################################
 # compiler
 COMPILER        = g++
-INCLUDE_PATHS   = .. /opt/local/include
+INCLUDE_PATHS   = .. /opt/local/include\
+				  ../third_party_libs/alglib\
+				  ../third_party_libs/Eigen
 INCLUDE_FLAGS   = $(addprefix -I, $(INCLUDE_PATHS))
 LINK_PATHS      = /opt/local/lib
 LINK_FLAGS      = $(addprefix -L, $(LINK_PATHS))
 
-LIBRARIES		= -lcpptest $(GSL_LIB) $(BOOST_LIB)
-CFLAGS_COMMON   = -g -Wall -O0
+STELLAR_EVOL_LIB= ../build/libs/stellarEvolution/static/debug/libstellarEvolution.a
+
+LIBRARIES		=  $(STELLAR_EVOL_LIB)\
+				   -lcpptest\
+				   $(GSL_LIB)\
+				   $(BOOST_LIB)\
+				   -lalglib
+CFLAGS_COMMON   = -g -Wall -O0 -std=c++11
 CFLAGS          = $(CFLAGS_COMMON)
 
 #############################################################################
@@ -78,6 +86,9 @@ $(ALGLIB_TARGET):
 	@echo "building the ALGLIB library ..."
 	@cd $(ALGLIB_SRCPATH) && make COMPILER="$(COMPILER)" CFLAGS="$(CFLAGS)" \
 		ALGLIB_MODULES="$(ALGLIB_MODULES)" 2>/dev/null
+
+test_MESAIO: test_MESAIO.h test_MESAIO.cpp ../StellarEvolution/interface/MESAIO.h ../IO/IOUtil.h $(STELLAR_EVOL_LIB)
+	$(COMPILER) $(CFLAGS) -D STANDALONE $(INCLUDE_FLAGS) $(LINK_FLAGS) -o test_MESAIO test_MESAIO.cpp $(LIBRARIES)
 
 #############################################################################
 # Compile individual tests

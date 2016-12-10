@@ -44,6 +44,7 @@ bool approxEqual(double predicted, double actual, double thres) {
 
 double orbital_angmom_from_freq(double m1, double m2, double freq, double e)
 {
+    using namespace Core;
 	return m1*m2*AstroConst::day
 		   /std::pow(AstroConst::solar_radius, 2)
 		   *std::pow(std::pow(AstroConst::G*AstroConst::solar_mass, 2)

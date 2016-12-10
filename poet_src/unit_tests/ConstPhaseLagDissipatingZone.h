@@ -9,7 +9,7 @@
 #ifndef __CONST_PHASE_LAG_DISSIPATING_ZONE_H
 #define __CONST_PHASE_LAG_DISSIPATING_ZONE_H
 
-#include "../DissipatingZone.h"
+#include "../BinarySystem/DissipatingZone.h"
 #include <map>
 #include <utility>
 

@@ -8,7 +8,7 @@
 #ifndef __UNITTEST_COMMON_H
 #define __UNITTEST_COMMON_H
 
-#include "../AstronomicalConstants.h"
+#include "../Core/AstronomicalConstants.h"
 #include <cpptest.h>
 #include <valarray>
 #include <sstream>

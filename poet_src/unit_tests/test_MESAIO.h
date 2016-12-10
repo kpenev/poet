@@ -8,9 +8,10 @@
 #ifndef __TEST_MESAIO_H
 #define __TEST_MESAIO_H
 
-#include "Common.h"
-#include "../MESAIO.h"
-#include "../IOUtil.h"
+//#include "Common.h"
+#include "StellarEvolution/interface/MESAIO.h"
+#include "IO/IOUtil.h"
+#include <cpptest.h>
 #include <sstream>
 #include <cmath>
 #include <ctime>
@@ -31,7 +32,7 @@ public:
     ///Test the interpolation of stellar evolution based on MESA tracks.
     test_MESAIO(
         ///The directory from which to read MESA files.
-        const std::string& mesa_dir = "../MESA/FeH=+0.0"
+        const std::string& mesa_dir = "../StellarEvolution/MESA/"
     );
 
     ///Test a single track's interpolation.
