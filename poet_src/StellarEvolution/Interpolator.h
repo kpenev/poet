@@ -10,8 +10,8 @@
 #define __INTERPOLATOR_H
 
 #include "EvolvingStellarQuantity.h"
-#include "../../Core/StellarZone.h"
-#include "../../Core/Error.h"
+#include "../Core/StellarZone.h"
+#include "../Core/Error.h"
 #include <valarray>
 #include <list>
 #include <string>
@@ -116,21 +116,6 @@ namespace StellarEvolution {
             const std::valarray<double> &core_mass
         ) const;
 
-        ///\brief Return a single quantity interpolation to a given mass and
-        ///metallicity.
-        ///
-        ///The result must be destroyed when it becomes obsolete.
-        EvolvingStellarQuantity *interpolate_to(
-            ///The quantity for which to set-up the interpolation.
-            QuantityID quantity,
-
-            ///The stellar mass to which to interpolate in \f$M_\odot\f$.
-            double mass,
-
-            ///The stellar metallicity to which to interpolate in [Fe/H].
-            double metallicity
-        ) const;
-
     public:
         ///\brief Construct an object that can be set to interpolate between
         ///tabulated evolution tracks.
@@ -214,91 +199,18 @@ namespace StellarEvolution {
             const std::vector<int> &nodes
         );
 
-        ///\brief The moment of inertia of a stellar zone in
-        /// \f$M_\odot\cdot R_\odot^2\f$.
-        ///
-        ///Returns a single argument function which gives the moment of
-        ///inertia of the specified zone of a star of the specified mass and
-        ///metallicity as a function of age.
+        ///\brief Return a single quantity interpolation to a given mass and
+        ///metallicity.
         ///
         ///The result must be destroyed when it becomes obsolete.
-        virtual const EvolvingStellarQuantity *interpolate_moment_of_inertia(
-            ///The mass of the star for which to set up the interpolation in
-            ///\f$M_=odot\f$.
+        EvolvingStellarQuantity *operator()(
+            ///The quantity for which to set-up the interpolation.
+            QuantityID quantity,
+
+            ///The stellar mass to which to interpolate in \f$M_\odot\f$.
             double mass,
 
-            ///The metallicity of the star for which to set up the
-            ///interpolation in [Fe/H].
-            double metallicity,
-
-            ///Which zone's moment of inertia to interpolate.
-            Core::StellarZone zone
-        ) const;
-
-        ///\brief The stellar radius in \f$R_\odot\f$.
-        ///
-        ///Returns a single argument function which gives the radius of a 
-        ///star of the specified mass as a function of age.
-        ///
-        ///The result must be destroyed when it becomes obsolete.
-        virtual const EvolvingStellarQuantity *interpolate_radius(
-            ///The mass of the star for which to set up the interpolation in
-            ///\f$M_=odot\f$.
-            double mass,
-
-            ///The metallicity of the star for which to set up the
-            ///interpolation in [Fe/H].
-            double metallicity
-        ) const;
-
-        ///\brief The stellar luminosity in \f$L_\odot\f$.
-        //
-        ///Returns a single argument function which gives the luminosity of a 
-        ///star of the specified mass as a function of age.
-        ///
-        ///The result must
-        ///be destroyed when it becomes obsolete.
-        virtual const EvolvingStellarQuantity *interpolate_luminosity(
-            ///The mass of the star for which to set up the interpolation in
-            ///\f$M_=odot\f$.
-            double mass,
-
-            ///The metallicity of the star for which to set up the
-            ///interpolation in [Fe/H].
-            double metallicity
-        ) const;
-
-        ///\brief The mass of a stellar zone in \f$M_\odot\f$
-        ///
-        ///Returns a single argument function which gives the mass of
-        ///of the specified zone of a star of the specified mass as a
-        ///function of age.
-        ///
-        ///The result must be destroyed when it becomes obsolete.
-        virtual const EvolvingStellarQuantity *interpolate_core_mass(
-            ///The mass of the star for which to set up the interpolation in
-            ///\f$M_=odot\f$.
-            double mass,
-
-            ///The metallicity of the star for which to set up the
-            ///interpolation in [Fe/H].
-            double metallicity
-        ) const;
-
-        ///\brief The core-envelope boundary in \f$R_\odot\f$.
-        ///
-        ///Returns a single argument function which gives the radius of the 
-        ///convective-radiative boundary for a star of the specified mass as
-        ///a function of age.
-        ///
-        ///The result must be destroyed when it becomes obsolete. 
-        virtual const EvolvingStellarQuantity *interpolate_core_boundary(
-            ///The mass of the star for which to set up the interpolation in
-            ///\f$M_=odot\f$.
-            double mass,
-
-            ///The metallicity of the star for which to set up the
-            ///interpolation in [Fe/H].
+            ///The stellar metallicity to which to interpolate in [Fe/H].
             double metallicity
         ) const;
 

@@ -20,3 +20,5 @@ kelt
 *.out
 *.sh
 *.bkp
+.gradle
+build

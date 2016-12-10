@@ -6,7 +6,7 @@
  * \ingroup StellarSystem_group
  */
 
-#include "interface/EvolvingStellarQuantity.h"
+#include "EvolvingStellarQuantity.h"
 #include "mass_metallicity_interp.h"
 #include "InterpolatedDerivatives.h"
 #include <math.h>
@@ -552,13 +552,19 @@ namespace StellarEvolution {
     void EvolvingStellarQuantity::select_interpolation_region(double age)
         const
     {
-        __next_grid_change_age = std::upper_bound(
-            __interp_grid_change_ages.begin(),
-            __interp_grid_change_ages.end(),
-            age
-        );
-        assert(__next_grid_change_age != __interp_grid_change_ages.end());
-        update_interpolation_grid();
+        std::vector<double>::const_iterator new_grid_change_age =
+            std::upper_bound(
+                __interp_grid_change_ages.begin(),
+                __interp_grid_change_ages.end(),
+                age
+            );
+        if(__next_grid_change_age != new_grid_change_age) {
+            __next_grid_change_age = new_grid_change_age;
+            assert(__next_grid_change_age
+                   !=
+                   __interp_grid_change_ages.end());
+            update_interpolation_grid();
+        }
     }
 
     const FunctionDerivatives *EvolvingStellarQuantity::deriv(double age) 

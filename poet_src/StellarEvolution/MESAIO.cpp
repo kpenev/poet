@@ -1,4 +1,4 @@
-#include "interface/MESAIO.h"
+#include "MESAIO.h"
 
 std::ostream &operator<<(std::ostream &os,
                          StellarEvolution::MESA::Column col)

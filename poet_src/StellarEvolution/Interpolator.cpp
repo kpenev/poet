@@ -5,7 +5,7 @@
  * \ingroup StellarSystem_group
  */
 
-#include "interface/Interpolator.h"
+#include "Interpolator.h"
 #include "SumQuantity.h"
 #include "../Core/Functions.h"
 
@@ -22,23 +22,6 @@ namespace StellarEvolution {
             core_mass[first_core_index] == 0
         ) ++first_core_index;
         return first_core_index;
-    }
-
-    EvolvingStellarQuantity *Interpolator::interpolate_to(
-        QuantityID quantity,
-        double mass,
-        double metallicity
-    ) const
-    {
-        return new EvolvingStellarQuantity(
-            mass,
-            metallicity,
-            __track_masses, 
-            __track_metallicities,
-            __interpolated_quantities[quantity],
-            true,
-            quantity >= FIRST_CORE_QUANTITY
-        );
     }
 
     void Interpolator::create_from(
@@ -179,55 +162,21 @@ namespace StellarEvolution {
         }
     }
 
-    const EvolvingStellarQuantity* 
-    Interpolator::interpolate_moment_of_inertia(double mass,
-                                                double metallicity,
-                                                Core::StellarZone zone) const
+    EvolvingStellarQuantity *Interpolator::operator()(
+        QuantityID quantity,
+        double mass,
+        double metallicity
+    ) const
     {
-        switch (zone) {
-            case Core::radiative :
-                return interpolate_to(IRAD, mass, metallicity);
-            case Core::convective :
-                return interpolate_to(ICONV, mass, metallicity);
-            case Core::total :
-                return new SumQuantity(
-                    interpolate_to(IRAD, mass, metallicity),
-                    interpolate_to(ICONV, mass, metallicity)
-                );
-            default: 
-                throw Core::Error::BadFunctionArguments(
-                    "Moment of inertia requested for an unrecognized "
-                    "stellar zone."
-                );
-        }
-    }
-
-    const EvolvingStellarQuantity*
-    Interpolator::interpolate_radius(double mass, 
-                                     double metallicity) const
-    {
-        return interpolate_to(RADIUS, mass, metallicity);
-    }
-
-    const EvolvingStellarQuantity*
-    Interpolator::interpolate_luminosity(double mass,
-                                         double metallicity) const
-    {
-        return interpolate_to(LUM, mass, metallicity);
-    }
-
-    const EvolvingStellarQuantity*
-    Interpolator::interpolate_core_mass(double mass,
-                                        double metallicity) const
-    {
-        return interpolate_to(MRAD, mass, metallicity);
-    }
-
-    const EvolvingStellarQuantity*
-    Interpolator::interpolate_core_boundary(double mass,
-                                            double metallicity) const
-    {
-        return interpolate_to(RRAD, mass, metallicity);
+        return new EvolvingStellarQuantity(
+            mass,
+            metallicity,
+            __track_masses, 
+            __track_metallicities,
+            __interpolated_quantities[quantity],
+            true,
+            quantity >= FIRST_CORE_QUANTITY
+        );
     }
 
 #ifndef NO_SERIALIZE

@@ -9,11 +9,11 @@
 #ifndef __EVOLVING_STELLAR_QUANTITY_H
 #define __EVOLVING_STELLAR_QUANTITY_H
 
-#include "../AllowedGridGrowth.h"
-#include "../RemoveLogDeriv.h"
-#include "../SumDerivatives.h"
-#include "../../Core/Functions.h"
-#include "../../Core/Error.h"
+#include "AllowedGridGrowth.h"
+#include "RemoveLogDeriv.h"
+#include "SumDerivatives.h"
+#include "../Core/Functions.h"
+#include "../Core/Error.h"
 #include <valarray>
 #include <list>
 #include <string>

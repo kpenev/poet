@@ -87,7 +87,7 @@ model {
                     include "**/*.cpp"
                 }
                 exportedHeaders {
-                    srcDir "StellarEvolution/interface"
+                    srcDir "StellarEvolution/"
                 }
             }
         }

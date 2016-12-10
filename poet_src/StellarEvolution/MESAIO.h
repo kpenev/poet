@@ -10,10 +10,10 @@
 #define __MESAIO_H
 
 #include "Interpolator.h"
-#include "../../IO/IOUtil.h"
-#include "../../Core/Common.h"
-#include "../../Core/AstronomicalConstants.h"
-#include "../../Core/Error.h"
+#include "../IO/IOUtil.h"
+#include "../Core/Common.h"
+#include "../Core/AstronomicalConstants.h"
+#include "../Core/Error.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
