@@ -1,15 +1,20 @@
 #!/usr/bin/python
-from ctypes import cdll, c_int, c_double
+from ctypes import cdll, c_int, c_double, c_void_p
+import numpy
 
 library = cdll.LoadLibrary('libstellarEvolution.so')
+library.evaluate_quantity.restype = c_double
+library.create_interpolator.restype = c_void_p
+library.create_quantity.restype = c_void_p
+
 
 class MESAInterpolator :
     """A class for interpolating among a set of MESA tracks."""
 
-    __quantity_ids = {
-        q: c_int.in_dll(library, q).value
-        for q in ['RADIUS', 'ICONV', 'LUM', 'IRAD', 'MRAD', 'RRAD']
-    }
+    quantity_list = ['RADIUS', 'ICONV', 'LUM', 'IRAD', 'MRAD', 'RRAD']
+
+    __quantity_ids = {q: c_int.in_dll(library, q).value
+                      for q in quantity_list}
 
     def __init__(self, mesa_dir) :
         """
@@ -73,5 +78,7 @@ class Quantity :
 
 if __name__ == '__main__' :
     interpolator = MESAInterpolator('../poet_src/StellarEvolution/MESA_sub')
-    radius = interpolator('radius', 1.0, 0.0)
-    print('R(1.0) = ' + repr(radius(1.0)))
+    for quantity_name in MESAInterpolator.quantity_list :
+        quantity = interpolator(quantity_name, 1.0, 0.0)
+        print(quantity_name + '(1.0) = ' + repr(quantity(1.0)))
+        print(quantity_name + '(4.6) = ' + repr(quantity(4.6)))

@@ -115,18 +115,18 @@ namespace StellarEvolution {
         const FunctionDerivatives **derivatives
     ) const
     {
-        bool too_young = (
-            (__use_log_age ? std::log(age) : age) < track.range_low()
-        );
+        double track_argument = (__use_log_age ? std::log(age) : age);
+        bool too_young = (track_argument < track.range_low());
 
-        if(derivatives==NULL) return (too_young ? 0.0 : track(age));
+        if(derivatives==NULL)
+            return (too_young ? 0.0 : track(track_argument));
         else {
             if(too_young) *derivatives=new Core::ZeroDerivatives;
             else if(__use_log_age) 
                 *derivatives=new RemoveLogDeriv(age,
-                                                track.deriv(std::log(age)),
+                                                track.deriv(track_argument),
                                                 true);
-            else *derivatives=track.deriv(age);
+            else *derivatives=track.deriv(track_argument);
             return (*derivatives)->order(0);
         }
     }
@@ -302,29 +302,31 @@ namespace StellarEvolution {
             lower_age = __next_grid_change_age;
         --lower_age;
         double age = 0.5 * (*lower_age + *__next_grid_change_age);
+
         if(__min_interp_ages.max() < age && __max_interp_ages.min() > age) {
             __min_interp_mass_index = 0;
             __max_interp_mass_index = __track_masses.size();
             __min_interp_metallicity_index = 0;
             __max_interp_metallicity_index = __track_metallicities.size();
-            return;
+        } else {
+
+            AllowedGridGrowth grow;
+
+            if(__mass_index_above == __mass_index_below) 
+                grow.block_lighter().block_heavier();
+            if(__metallicity_index_above == __metallicity_index_below)
+                grow.block_poorer().block_richer();
+
+            __max_interp_mass_index = __mass_index_above + 1;
+            __min_interp_mass_index = __mass_index_below;
+            __max_interp_metallicity_index = __metallicity_index_above + 1;
+            __min_interp_metallicity_index = __metallicity_index_below;
+            while(grow) {
+                check_grid_expansion_directions(grow, age);
+                if(grow) expand_grid(grow, age);
+            }
         }
 
-        AllowedGridGrowth grow;
-
-        if(__mass_index_above == __mass_index_below) 
-            grow.block_lighter().block_heavier();
-        if(__metallicity_index_above == __metallicity_index_below)
-            grow.block_poorer().block_richer();
-
-        __max_interp_mass_index = __mass_index_above + 1;
-        __min_interp_mass_index = __mass_index_below;
-        __max_interp_metallicity_index = __metallicity_index_above + 1;
-        __min_interp_metallicity_index = __metallicity_index_below;
-        while(grow) {
-            check_grid_expansion_directions(grow, age);
-            if(grow) expand_grid(grow, age);
-        }
         __interp_masses.setcontent(
             __max_interp_mass_index - __min_interp_mass_index,
             &__track_masses[__min_interp_mass_index]

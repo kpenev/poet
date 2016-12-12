@@ -13,6 +13,13 @@ namespace StellarEvolution {
         assert(interp_masses.length() * interp_metallicities.length()
                ==
                interp_values.length());
+
+        if(interp_values.length() == 1) {
+            assert(stellar_mass == interp_masses[0]);
+            assert(stellar_metallicity == interp_metallicities[0]);
+            return interp_values[0];
+        }
+
         alglib::spline2dinterpolant spline;
         alglib::spline2dbuildbicubicv(interp_masses, 
                                       interp_masses.length(), 

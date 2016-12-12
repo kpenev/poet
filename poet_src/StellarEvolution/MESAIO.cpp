@@ -248,11 +248,6 @@ namespace StellarEvolution {
                    ==
                    track_columns[MESA::MTRACK].front());
 #endif
-            const double Inorm = (
-                Core::AstroConst::solar_mass
-                *
-                std::pow(Core::AstroConst::solar_radius, 2)
-            );
             __track_ages.push_back(
                 Core::list_to_valarray(track_columns[MESA::AGE]) * 1e-9
             );
@@ -276,12 +271,6 @@ namespace StellarEvolution {
                             10.0,
                             Core::list_to_valarray(track_columns[column])
                         )
-                    );
-                else if(column == MESA::ICONV || column == MESA::IRAD)
-                    __track_quantities[quantity].push_back(
-                        Core::list_to_valarray(track_columns[column])
-                        /
-                        Inorm
                     );
                 else 
                     __track_quantities[quantity].push_back(

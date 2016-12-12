@@ -258,23 +258,13 @@ namespace StellarEvolution {
 
         ///\brief Return the interpoltaion parameter for the given age for
         ///the current star.
-        template<typename VALUE_TYPE>
-            inline const VALUE_TYPE &age_to_interp_param(
-                const VALUE_TYPE &age
-            ) const
-            {return age_to_interp_param(age, __mass, __metallicity);}
+        inline double age_to_interp_param(double age) const
+        {return age_to_interp_param(age, __mass, __metallicity);}
 
         ///\brief Return the age for the given interpoltaion parameter for
         ///the current star.
-        template<typename VALUE_TYPE>
-            inline const VALUE_TYPE &interp_param_to_age(
-                const VALUE_TYPE &interp_param
-            ) const
-            {
-                return interp_param_to_age(interp_param,
-                                           __mass,
-                                           __metallicity);
-            }
+        inline double interp_param_to_age(double interp_param) const
+        {return interp_param_to_age(interp_param, __mass, __metallicity);}
 
     protected:
         ///\brief Return the interpoltaion parameter given age, mass and
