@@ -12,6 +12,8 @@
 #include "AllowedGridGrowth.h"
 #include "RemoveLogDeriv.h"
 #include "SumDerivatives.h"
+#include "InterpolatedDerivatives.h"
+#include "mass_metallicity_interp.h"
 #include "../Core/Functions.h"
 #include "../Core/Error.h"
 #include <valarray>
@@ -19,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 namespace StellarEvolution {
 

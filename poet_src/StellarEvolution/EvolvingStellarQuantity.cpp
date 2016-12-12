@@ -7,11 +7,7 @@
  */
 
 #include "EvolvingStellarQuantity.h"
-#include "mass_metallicity_interp.h"
-#include "InterpolatedDerivatives.h"
-#include <math.h>
 #include <memory>
-#include <sstream>
 
 namespace StellarEvolution {
 
@@ -64,7 +60,9 @@ namespace StellarEvolution {
                                       first_ptr + boundaries.size(),
                                       value),
         *below_ptr = above_ptr;
-        if( value < *above_ptr) --below_ptr;
+        if( value < *below_ptr) --below_ptr;
+        assert(*above_ptr >= value);
+        assert(value >= *below_ptr);
         below_index = below_ptr - first_ptr;
         above_index = above_ptr - first_ptr;
     }
@@ -159,7 +157,7 @@ namespace StellarEvolution {
             if(
                 grow.lighter()
                 &&
-                !track_in_range(__min_interp_mass_index - 1, 
+                !track_in_range(__min_interp_mass_index - 1,
                                 metallicity_index,
                                 age)
             )
@@ -319,9 +317,9 @@ namespace StellarEvolution {
         if(__metallicity_index_above == __metallicity_index_below)
             grow.block_poorer().block_richer();
 
-        __max_interp_mass_index = __mass_index_above;
+        __max_interp_mass_index = __mass_index_above + 1;
         __min_interp_mass_index = __mass_index_below;
-        __max_interp_metallicity_index = __metallicity_index_above;
+        __max_interp_metallicity_index = __metallicity_index_above + 1;
         __min_interp_metallicity_index = __metallicity_index_below;
         while(grow) {
             check_grid_expansion_directions(grow, age);
@@ -353,15 +351,9 @@ namespace StellarEvolution {
 
         double interp_param = age_to_interp_param(age);
         size_t num_interp_tracks = (
-            (
-                __max_interp_metallicity_index
-                -
-                __min_interp_metallicity_index
-                +
-                1
-            )
+            (__max_interp_metallicity_index - __min_interp_metallicity_index)
             *
-            (__max_interp_mass_index - __min_interp_mass_index + 1)
+            (__max_interp_mass_index - __min_interp_mass_index)
         );
         alglib::real_1d_array track_values;
         track_values.setlength(num_interp_tracks);
@@ -372,14 +364,14 @@ namespace StellarEvolution {
         size_t value_index = 0;
         for(
             size_t metallicity_index = __min_interp_metallicity_index;
-            metallicity_index <= __max_interp_metallicity_index;
+            metallicity_index < __max_interp_metallicity_index;
             ++metallicity_index
         ) {
             double
                 track_metallicity = __track_metallicities[metallicity_index];
             for(
                 size_t mass_index = __min_interp_mass_index;
-                mass_index <= __max_interp_mass_index;
+                mass_index < __max_interp_mass_index;
                 ++mass_index
             ) {
                 double track_mass = __track_masses[mass_index];
@@ -498,7 +490,7 @@ namespace StellarEvolution {
                   __interp_grid_change_ages.end());
         std::unique(__interp_grid_change_ages.begin(),
                     __interp_grid_change_ages.end());
-        __next_grid_change_age = __interp_grid_change_ages.begin();
+        __next_grid_change_age = __interp_grid_change_ages.end();
 
         find_cell(__track_masses,
                   mass,
