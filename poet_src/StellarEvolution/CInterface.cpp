@@ -87,6 +87,53 @@ double *evaluate_quantity_array(const EvolvingStellarQuantity *quantity,
     return result;
 }
 
+double *differentiate_quantity(const EvolvingStellarQuantity* quantity,
+                               double age)
+{
+    const StellarEvolution::EvolvingStellarQuantity* actual_quantity =
+        reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
+            quantity
+        );
+    actual_quantity->select_interpolation_region(age);
+    const Core::FunctionDerivatives *deriv = actual_quantity->deriv(age);
+
+    double *result = new double[3];
+    for(unsigned order = 0; order < 3; ++order)
+        result[order] = deriv->order(order);
+
+    delete deriv;
+    return result;
+}
+
+double *differentiate_quantity_array(const EvolvingStellarQuantity *quantity,
+                                     double *age,
+                                     unsigned nvalues)
+{
+    const StellarEvolution::EvolvingStellarQuantity* actual_quantity =
+        reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
+            quantity
+        );
+    double *result = new double[3 * nvalues];
+
+    for(unsigned i = 0; i < nvalues; ++i) {
+        if(
+            i==0
+            ||
+            age[i] < age[i - 1]
+            ||
+            actual_quantity->next_discontinuity() < age[i]
+        )
+            actual_quantity->select_interpolation_region(age[i]);
+        const Core::FunctionDerivatives 
+            *deriv = actual_quantity->deriv(age[i]);
+        for(unsigned order = 0; order < 3; ++order)
+            result[order * nvalues + i] = deriv->order(order);
+        delete deriv;
+    }
+
+    return result;
+}
+
 double quantity_min_age(const EvolvingStellarQuantity* quantity)
 {
     return 

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from ctypes import cdll, c_int, c_double, c_void_p, c_char_p
+from ctypes import cdll, c_int, c_double, c_void_p, c_char_p, c_uint
 import numpy
 
 def initialize_library() :
@@ -29,7 +29,7 @@ def initialize_library() :
         numpy.ctypeslib.ndpointer(dtype = numpy.float64,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
-        c_int
+        c_uint
     ]
 
     library.quantity_min_age.restype = c_double
@@ -41,6 +41,22 @@ def initialize_library() :
 
     library.load_interpolator.argtypes = [c_char_p]
     library.load_interpolator.restype = c_void_p
+
+    library.differentiate_quantity.argtypes = [c_void_p, c_double]
+    library.differentiate_quantity.restype = numpy.ctypeslib.ndpointer(
+        dtype = numpy.float64,
+        shape = (3,),
+        flags = 'C_CONTIGUOUS'
+    )
+
+    library.differentiate_quantity_array.argtypes = [
+        c_void_p,
+        numpy.ctypeslib.ndpointer(dtype = numpy.float64,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS'),
+        c_uint
+    ]
+
     return library
 
 library = initialize_library()
@@ -135,7 +151,15 @@ class Quantity :
         library.destroy_quantity(self.underlying_quantity)
 
     def __call__(self, age) :
-        """Evaluate the underlying quantity at the given age (in Gyr)."""
+        """
+        Evaluate the underlying quantity at the given age(s) (in Gyr).
+        
+        Args:
+            - age: Either a single float or a numpy array of floats giving
+                   the ages at which to evaluate the quantity.
+        
+        Returns: The value(s) of the quantity in the same format as age.
+        """
 
         if type(age) is numpy.ndarray :
             library.evaluate_quantity_array.restype = (
@@ -149,6 +173,34 @@ class Quantity :
         else :
             return library.evaluate_quantity(self.underlying_quantity,
                                              c_double(age))
+
+    def deriv(self, age) :
+        """
+        Return the 0-th, 1-st and 2-nd order derivatives of the quantity.
+
+        Args:
+            - age: Either a single float or a numpy array of floats giving
+                   the ages at which to evaluate the quantity.
+
+        Returns: A numpy array either 1-D (if age is a single float) or 2-D
+                 if age is a numpy array where the outside (or only) index is
+                 the derivative order.
+        """
+
+        if type(age) is numpy.ndarray :
+            library.differentiate_quantity_array.restype = (
+                numpy.ctypeslib.ndpointer(dtype = numpy.float64,
+                                          shape = (3, age.size),
+                                          flags = 'C_CONTIGUOUS')
+            )
+            return library.differentiate_quantity_array(
+                self.underlying_quantity,
+                age,
+                age.size
+            )
+        else :
+            return library.differentiate_quantity(self.underlying_quantity,
+                                                  c_double(age))
 
 if __name__ == '__main__' :
     mesa_dir = '../poet_src/StellarEvolution/MESA'

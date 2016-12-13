@@ -93,6 +93,35 @@ extern "C" {
         unsigned nvalues
     );
 
+    ///Calculate the zeroth, first and second derivatives of a quantity.
+    double *differentiate_quantity(
+        ///The quantity to differentiate. Must be previously created using
+        ///interpolate().
+        const EvolvingStellarQuantity* quantity,
+
+        ///The age at which to differentiate the quantity in Gyrs.
+        double age
+    );
+
+    ///\brief Calculate the derivatives of a quantity at an array of ages.
+    ///
+    ///The result is a double array containing 3 sub-arrays of
+    ///zeroth, first and second order derivatives. That is the first
+    ///consecutive nvalues entries are the function values at echo of the
+    ///nvalues ages, the next nvalues entries are the first derivatives at
+    ///each age etc. 
+    double *differentiate_quantity_array(
+        ///The quantity to differentiate. Must be previously created using
+        ///interpolate()
+        const EvolvingStellarQuantity *quantity,
+
+        ///The array of ages to evaluate the quantity at.
+        double *age,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues
+    );
+
     ///Return the minimum age for which the quantity is defined.
     double quantity_min_age(
         ///The quantity to characterize. Must be previously created using
