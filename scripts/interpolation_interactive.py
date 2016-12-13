@@ -39,7 +39,10 @@ class InterpolatedQuantitySum :
         self.max_age = min(q1.max_age, q2.max_age)
 
     def __call__(self, age) :
-        return q1(age) + q2(age)
+        return self.q1(age) + self.q2(age)
+
+    def deriv(self, age) :
+        return self.q1.deriv(age) + self.q2.deriv(age)
 
 class Application :
 
@@ -72,10 +75,10 @@ class Application :
                 return InterpolatedQuantitySum(
                     self.interpolator('ICONV',
                                       star_mass,
-                                      star_metallicity)(t),
+                                      star_metallicity),
                     self.interpolator('IRAD',
                                       star_mass,
-                                      star_metallicity)(t)
+                                      star_metallicity)
                 )
             else :
                 if self.plot_quantity == 'R' : quantity_id = 'radius'
@@ -106,24 +109,23 @@ class Application :
             plot_x = age_transform(star_mass,
                                    star_metallicity,
                                    interpolation_ages)
+            if self.deriv > 0 :
+                derivatives = interpolated_quantity.deriv(interpolation_ages)
+                plot_y = derivatives[0]
+            else :
+                plot_y = interpolated_quantity(interpolation_ages)
 
-            plot_func(plot_x,
-                      interpolated_quantity(interpolation_ages),
-                      '.r')
+            plot_func(plot_x, plot_y, '.r')
 
             if self.deriv > 0 :
-                d1_y = numpy.copy(interpolated['D' + self.plot_quantity])
+                d1_y = numpy.copy(derivatives[1])
                 if self.deriv > 1 :
-                    d2_y = numpy.copy(
-                        interpolated['DD' + self.plot_quantity]
-                    )
+                    d2_y = numpy.copy(derivatives[2])
 
                 if self.logy : 
-                    d1_y /= interpolated[self.plot_quantity]
+                    d1_y /= plot_y
                     if self.deriv > 1 :
-                        d2_y = (d2_y / interpolated[self.plot_quantity]
-                                -
-                                d1_y**2)
+                        d2_y = (d2_y / plot_y - d1_y**2)
 
                 if self.logx : 
                     deriv_plot_funcname = 'semilogx'
