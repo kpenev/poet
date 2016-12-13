@@ -5,22 +5,21 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 import sys
+sys.path.append('../PythonModules')
 
 from matplotlib.backends.backend_tkagg import\
     FigureCanvasTkAgg,\
     NavigationToolbar2TkAgg
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
+import stellar_evolution
 from glob import glob
 import os.path
 import re
 import numpy
 import astropy
 from datetime import datetime, timedelta
-import subprocess
-import psutil
 import functools
-import time
 
 if sys.version_info[0] < 3:
     import Tkinter as Tk
@@ -29,113 +28,18 @@ else:
     import tkinter as Tk
     from tkinter import ttk
 
-class Structure :
-    """An empty class used only to hold user defined attributes."""
-
-    def __init__(self, **initial_attributes) :
-        """Create a class with (optionally) initial attributes."""
-
-        for attribute_name, attribute_value in initial_attributes.items() :
-            setattr(self, attribute_name, attribute_value)
-
-    def format(self, prefix='') :
-        """Generate a tree-like representation of self."""
-
-        result=''
-        for attr_name in dir(self) :
-            if attr_name[0]!='_' :
-                attribute=getattr(self, attr_name)
-                if isinstance(attribute, Structure) :
-                    result+=(prefix
-                             +
-                             '|-'
-                             +
-                             attr_name
-                             +
-                             '\n'
-                             +
-                             attribute.format(prefix + '| '))
-                else : result+=(prefix
-                                +
-                                '|-'
-                                +
-                                attr_name
-                                +
-                                ': '
-                                +
-                                str(attribute)
-                                +
-                                '\n')
-        return result
-
 def star_lifetime(mass) : return min(9.0 * mass**-3, 10.0)
 
-class PoetInterp :
-    """Interface with POET to perform stellar evolution interpolation."""
+class InterpolatedQuantitySum :
 
-    def start_poet(self) :
-        """(Re-)start the poet process used for interpolation."""
+    def __init__(self, q1, q2) :
+        self.q1 = q1
+        self.q2 = q2
+        self.min_age = max(q1.min_age, q2.min_age)
+        self.max_age = min(q1.max_age, q2.max_age)
 
-        self.poet = subprocess.Popen(
-            [
-                self.poet_executable,
-                '--input-columns', ','.join(self.input_columns),
-                '--output-columns', ','.join(self.output_columns)
-            ],
-            stdin = subprocess.PIPE,
-            bufsize = 0
-        )
-        self.poet_process_files = psutil.Process(self.poet.pid).open_files
-
-    def __init__(self, poet_executable, output_columns) :
-        """Start poet and wait for interpolation requests."""
-
-        self.input_columns = ['M', 't0', 'tmax', 'maxdt', 'outf']
-        self.input_line_format = ' '.join(
-            ['%(' + c + ')s' for c in self.input_columns]
-        ) + '\n'
-        self.output_columns = output_columns
-        self.poet_executable = poet_executable
-        self.start_poet()
-
-        self.output_fname = 'poet.evol'
-
-    def __call__(self, star_mass, start_age, end_age, max_age_step) :
-        """Return the interpolated stellar evolution per the arguments."""
-
-        assert(not os.path.exists(self.output_fname))
-        end_age = min(end_age, star_lifetime(star_mass))
-        input_line = (self.input_line_format
-                      %
-                      dict(M = repr(star_mass),
-                           t0 = repr(start_age),
-                           tmax = repr(end_age),
-                           maxdt = repr(max_age_step),
-                           outf = self.output_fname)).encode('ascii')
-
-        print(input_line)
-        self.poet.stdin.write(input_line)
-        while(not os.path.exists(self.output_fname)) : time.sleep(0.01)
-
-        last_age = numpy.nan
-        while not (end_age - last_age < 0.5 * max_age_step) :
-            if self.poet.poll() is not None :
-                print('Restarting poet!')
-                self.start_poet()
-                break
-            try :
-                result = numpy.genfromtxt(self.output_fname,
-                                          names = True)
-                last_age = result['t'][-1]
-            except : 
-                last_age = numpy.nan
-                if self.poet.poll() is not None :
-                    print('Restarting poet!')
-                    self.start_poet()
-                    self.poet.stdin.write(input_line)
-
-        os.remove(self.output_fname)
-        return result
+    def __call__(self, age) :
+        return q1(age) + q2(age)
 
 class Application :
 
@@ -150,18 +54,62 @@ class Application :
     def display(self) :
         """(Re-)draw the plot as currently configured by the user."""
 
+        def get_interpolated_quantity(star_mass, star_metallicity) :
+            """Return a callable for plotting an interpolation quantity."""
+
+            if (
+                    star_mass < self.track_mass[0]
+                    or
+                    star_mass > self.track_mass[-1]
+                    or
+                    star_metallicity < self.track_metallicity[0]
+                    or
+                    star_metallicity > self.track_metallicity[-1]
+            ) :
+                return None
+
+            if self.plot_quantity == 'I' :
+                return InterpolatedQuantitySum(
+                    self.interpolator('ICONV',
+                                      star_mass,
+                                      star_metallicity)(t),
+                    self.interpolator('IRAD',
+                                      star_mass,
+                                      star_metallicity)(t)
+                )
+            else :
+                if self.plot_quantity == 'R' : quantity_id = 'radius'
+                else : quantity_id = self.plot_quantity
+                return self.interpolator(quantity_id,
+                                         star_mass,
+                                         star_metallicity)
+
+
         def plot_interpolation(star_mass, star_metallicity, plot_func) :
             """Plot an interpolated stellar evolution track."""
 
             if not self.interpolate : return
-            interpolated = self.poet_interp(star_mass,
-                                            0,
-                                            star_lifetime(star_mass),
-                                            0.001)
+
+            interpolated_quantity = get_interpolated_quantity(
+                star_mass,
+                star_metallicity
+            )
+
+            interpolation_ages = numpy.exp(
+                numpy.linspace(
+                    numpy.log(max(interpolated_quantity.min_age, 1e-5)),
+                    numpy.log(interpolated_quantity.max_age),
+                    300
+                )[1:-1]
+            )
+
             plot_x = age_transform(star_mass,
                                    star_metallicity,
-                                   interpolated['t'])
-            plot_func(plot_x, interpolated[self.plot_quantity], '.r')
+                                   interpolation_ages)
+
+            plot_func(plot_x,
+                      interpolated_quantity(interpolation_ages),
+                      '.r')
 
             if self.deriv > 0 :
                 d1_y = numpy.copy(interpolated['D' + self.plot_quantity])
@@ -393,13 +341,29 @@ class Application :
         self.main_auto_axes = True
         self.first_deriv_auto_axes = True
         self.second_deriv_auto_axes = True
+        self.change_interpolated_quantity()
         self.display()
 
+    def change_interpolated_quantity(self) :
+        """Re-creates the interpolated quantity per the current settings."""
+
+
     def change_interp(self, quantity, input_new_value) :
-        """Modify the stellar mass for which to display the interpolation."""
+        """
+        Modify the stellar mass or [Fe/H] for the displayed interpolation.
+
+        Args:
+            - quantity: One of 'mass' or 'metallicity'.
+            - input_new_value: The new value to set. Should be convertible
+                               to float.
+
+        Returns: 
+            - None: if the quantity was not changed due to it still being
+                    within the last change timeout.
+            - True: if the quantity was actually changed.
+        """
 
         if self.changing[quantity] : return
-        self.changing[quantity] = True
 
         new_value = float(input_new_value)
         self.interp[quantity] = new_value
@@ -420,8 +384,11 @@ class Application :
         self.coarse_interp_scale[quantity].set(new_value)
         self.fine_interp_scale[quantity].set(new_value)
 
+        self.change_interpolated_quantity()
+        self.changing[quantity] = True
+
         if self.display_job : self.main_window.after_cancel(self.display_job)
-        self.display_job = self.main_window.after(100, self.display)
+        self.display_job = self.main_window.after(10, self.display)
 
         self.changing[quantity] = False
         return True
@@ -483,7 +450,7 @@ class Application :
         self.second_deriv_auto_axes = True
         self.display()
 
-    def __init__(self, main_window, tracks) :
+    def __init__(self, main_window, tracks_dir) :
         """Setup user controls and display frame."""
 
         def create_main_axes() :
@@ -575,12 +542,13 @@ class Application :
             for index, quantity in enumerate(['mass', 'metallicity']) :
                 self.coarse_interp_scale[quantity] = Tk.Scale(
                     interp_control_frame,
-                    from_ = self.track_mass[0],
-                    to = self.track_mass[-1],
+                    from_ = getattr(self, 'track_' + quantity)[0],
+                    to = getattr(self, 'track_' + quantity)[-1],
                     resolution = -1,
                     length = 1000,
                     orient = Tk.HORIZONTAL,
-                    command = functools.partial(self.change_interp, 'mass'),
+                    command = functools.partial(self.change_interp,
+                                                quantity),
                     digits = 6
                 )
 
@@ -589,7 +557,8 @@ class Application :
                     resolution = -1,
                     length = 1000,
                     orient = Tk.HORIZONTAL,
-                    command = functools.partial(self.change_interp, 'mass'),
+                    command = functools.partial(self.change_interp,
+                                                quantity),
                     digits = 6
                 )
 
@@ -691,80 +660,94 @@ class Application :
             self.main_canvas.mpl_connect('key_press_event',
                                          self.on_key_event)
 
-        self.main_auto_axes = True
-        self.first_deriv_auto_axes = True
-        self.second_deriv_auto_axes = True
-        self.do_not_display = True
-        self.display_job = None
-        self.plot_quantities = [
-            'Iconv', 'Irad', 'I', 'R', 'Lum', 'Rrad', 'Mrad'
-        ]
-        self.max_deriv = dict(Iconv = 2,
-                              Irad = 2,
-                              I = 2,
-                              R = 1,
-                              Lum = 0,
-                              Rrad = 2, 
-                              Mrad = 1)
-        self.logx = True
-        self.logy = True
-        self.interpolate = False
-        self.deriv = 0
-        self.tracks = tracks
-        self.track_mass = sorted(tracks.keys())
-        self.track_metallicity = set()
-        for mass_tracks in tracks.values() :
-            self.track_metallicity.update(mass_tracks.keys())
-        self.track_metallicity = sorted(list(self.track_metallicity))
-        self.interp = dict(mass = 1.0, metallicity = 0.0)
-        self.enabled_tracks = [
-            [False for feh in self.track_metallicity]
-            for m in self.track_mass
-        ]
-        self.changing = dict(mass = False, metallicity = False)
-        self.main_window = main_window
+        def set_initial_state() :
+            """Set initial states for member variables."""
 
-        plot_frame = Tk.Frame(main_window)
-        plot_frame.grid(row = 1,
-                        column = 1,
-                        sticky = Tk.N + Tk.S + Tk.W + Tk.E )
+            self.main_auto_axes = True
+            self.first_deriv_auto_axes = True
+            self.second_deriv_auto_axes = True
+            self.do_not_display = True
+            self.display_job = None
+            self.plot_quantities = [
+                'Iconv', 'Irad', 'I', 'R', 'Lum', 'Rrad', 'Mrad'
+            ]
+            self.max_deriv = dict(Iconv = 2,
+                                  Irad = 2,
+                                  I = 2,
+                                  R = 1,
+                                  Lum = 0,
+                                  Rrad = 2, 
+                                  Mrad = 1)
+            self.logx = True
+            self.logy = True
+            self.interpolate = False
+            self.deriv = 0
+            self.tracks = read_MESA(tracks_dir)
+            self.track_mass = sorted(self.tracks.keys())
+            self.track_metallicity = set()
+            for mass_tracks in self.tracks.values() :
+                self.track_metallicity.update(mass_tracks.keys())
+            self.track_metallicity = sorted(list(self.track_metallicity))
+            self.interp = dict(mass = 1.0, metallicity = 0.0)
+            self.enabled_tracks = [
+                [False for feh in self.track_metallicity]
+                for m in self.track_mass
+            ]
+            self.changing = dict(mass = False, metallicity = False)
+            if os.path.exists('serialized_evolution') :
+                self.interpolator = stellar_evolution.MESAInterpolator(
+                    interpolator_fname = b'serialized_evolution'
+                )
+            else :
+                self.interpolator = stellar_evolution.MESAInterpolator(
+                    mesa_dir = tracks_dir
+                )
+                self.interpolator.save(b'serialized_evolution')
 
-        interp_control_frame = Tk.Frame(main_window)
-        interp_control_frame.grid(row = 0, column = 1)
+        def configure_main_window() :
+            """Arrange the various application elements."""
 
-        track_selectors_frame = Tk.Frame(main_window)
-        track_selectors_frame.grid(row = 1, column = 2)
+            self.main_window = main_window
 
-        Tk.Grid.columnconfigure(main_window, 1, weight = 1)
-        Tk.Grid.rowconfigure(main_window, 1, weight = 1)
+            plot_frame = Tk.Frame(main_window)
+            plot_frame.grid(row = 1,
+                            column = 1,
+                            sticky = Tk.N + Tk.S + Tk.W + Tk.E )
 
-        create_main_axes()
-        create_main_canvas(plot_frame)
-        create_axes_controls()
-        create_interp_controls(interp_control_frame)
-        create_track_selectors(track_selectors_frame)
+            interp_control_frame = Tk.Frame(main_window)
+            interp_control_frame.grid(row = 0, column = 1)
 
-        self.interpolate_button = Tk.Button(
-            main_window,
-            text = 'Interpolate',
-            command = self.toggle_interpolation,
-            relief = Tk.SUNKEN if self.interpolate else Tk.RAISED
-        )
-        self.interpolate_button.grid(row = 0,
-                                     column = 0,
-                                     sticky = Tk.N + Tk.S + Tk.W + Tk.E)
+            track_selectors_frame = Tk.Frame(main_window)
+            track_selectors_frame.grid(row = 1, column = 2)
 
-        self.track_below = dict()
+            Tk.Grid.columnconfigure(main_window, 1, weight = 1)
+            Tk.Grid.rowconfigure(main_window, 1, weight = 1)
+
+            create_main_axes()
+            create_main_canvas(plot_frame)
+            create_axes_controls()
+            create_interp_controls(interp_control_frame)
+            create_track_selectors(track_selectors_frame)
+
+            self.interpolate_button = Tk.Button(
+                main_window,
+                text = 'Interpolate',
+                command = self.toggle_interpolation,
+                relief = Tk.SUNKEN if self.interpolate else Tk.RAISED
+            )
+            self.interpolate_button.grid(row = 0,
+                                         column = 0,
+                                         sticky = Tk.N + Tk.S + Tk.W + Tk.E)
+
+            self.track_below = dict()
+
+        set_initial_state()
+        configure_main_window()
+
+        self.change_plot_quantity(self.plot_quantities[0])
         self.change_interp('mass', self.interp['mass'])
         self.change_interp('metallicity', self.interp['metallicity'])
-        self.change_plot_quantity(self.plot_quantities[0])
         self.do_not_display = False
-        poet_output_columns = ['t']
-        for quantity, max_deriv in self.max_deriv.items() :
-            poet_output_columns.append(quantity)
-            if max_deriv > 0 : poet_output_columns.append('D' + quantity)
-            if max_deriv > 1 : poet_output_columns.append('DD' + quantity)
-        self.poet_interp = PoetInterp('./poet', poet_output_columns)
         self.display()
 
 def read_YREC(dirname) :
@@ -862,10 +845,11 @@ def read_MESA(dirname) :
     fname_rex = re.compile(
         'M(?P<MASS>[0-9.E+-]+)_Z(?P<METALLICITY>[0-9.E+-]+).csv'
     )
-    track_fnames = glob(os.path.join(dirname, '*.csv'))
+    track_fnames = glob(os.path.join(dirname.decode(), '*.csv'))
     for fname in track_fnames :
         parsed_fname = fname_rex.match(os.path.basename(fname))
-        if not parsed_fname : continue
+        if not parsed_fname : 
+            continue
         mass_key = round(float(parsed_fname.group('MASS')), 3)
         metallicity_key = round(
             numpy.log10(float(parsed_fname.group('METALLICITY')) / 0.015), 
@@ -884,9 +868,8 @@ def read_MESA(dirname) :
     return result
 
 if __name__ == '__main__' :
-    tracks = read_MESA('../poet_src/MESA')
     main_window = Tk.Tk()
     main_window.wm_title("Stellar Evolution Interpolation Explorer")
-    ap = Application(main_window, tracks)
+    ap = Application(main_window, b'../poet_src/StellarEvolution/MESA')
 
     Tk.mainloop()

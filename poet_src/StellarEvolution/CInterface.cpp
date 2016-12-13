@@ -61,3 +61,59 @@ double evaluate_quantity(const EvolvingStellarQuantity* quantity,
     actual_quantity->select_interpolation_region(age);
     return (*actual_quantity)(age);
 }
+
+double *evaluate_quantity_array(const EvolvingStellarQuantity *quantity,
+                                double *age,
+                                unsigned nvalues)
+{
+    const StellarEvolution::EvolvingStellarQuantity* actual_quantity =
+        reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
+            quantity
+        );
+    double *result = new double[nvalues];
+
+    for(unsigned i = 0; i < nvalues; ++i) {
+        if(
+            i==0
+            ||
+            age[i] < age[i - 1]
+            ||
+            actual_quantity->next_discontinuity() < age[i]
+        )
+            actual_quantity->select_interpolation_region(age[i]);
+        result[i] = (*actual_quantity)(age[i]);
+    }
+
+    return result;
+}
+
+double quantity_min_age(const EvolvingStellarQuantity* quantity)
+{
+    return 
+        reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
+            quantity
+        )->range_low();
+}
+
+double quantity_max_age(const EvolvingStellarQuantity* quantity)
+{
+    return 
+        reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
+            quantity
+        )->range_high();
+}
+
+void save_interpolator(MESAInterpolator *interpolator, const char *filename)
+{
+    reinterpret_cast<const StellarEvolution::MESA::Interpolator*>(
+        interpolator
+    )->save_state(filename);
+}
+
+MESAInterpolator *load_interpolator(const char *filename)
+{
+    StellarEvolution::MESA::Interpolator *interpolator = 
+        new StellarEvolution::MESA::Interpolator();
+    interpolator->load_state(filename);
+    return reinterpret_cast<MESAInterpolator*>(interpolator);
+}

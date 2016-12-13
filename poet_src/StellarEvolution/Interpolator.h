@@ -222,7 +222,9 @@ namespace StellarEvolution {
         ///Only call this on objects initialized with the default
         ///constructor.
         virtual void save_state(
-            const std::string &filename="../interp_state_data") const;
+            ///The name of the file to save the state to.
+            const std::string &filename="../interp_state_data"
+        ) const;
 
         ///\brief Loads data from serialization.
         ///
@@ -244,7 +246,9 @@ namespace StellarEvolution {
         ///just copies of the original data on which the spline was based and
         ///are not necessary for evaluating the spline.
         virtual void load_state(
-            const std::string &filename="../interp_state_data");
+            ///The name of a file previously created using save_state()
+            const std::string &filename="../interp_state_data"
+        );
 
         virtual ~Interpolator() {}
     }; //End of Interpolator class declaration.

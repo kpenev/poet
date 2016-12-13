@@ -79,4 +79,47 @@ extern "C" {
         ///The age at which to evaluate the quantity in Gyrs.
         double age
     );
+
+    ///Evaluate a stellar quantity at an array of ages.
+    double *evaluate_quantity_array(
+        ///The quantity to evaluate. Must be previously created using
+        ///interpolate()
+        const EvolvingStellarQuantity *quantity,
+        
+        ///The array of ages to evaluate the quantity at.
+        double *age,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues
+    );
+
+    ///Return the minimum age for which the quantity is defined.
+    double quantity_min_age(
+        ///The quantity to characterize. Must be previously created using
+        ///interpolate().
+        const EvolvingStellarQuantity* quantity
+    );
+
+    ///Return the maximum age for which the quantity is defined.
+    double quantity_max_age(
+        ///The quantity to characterize. Must be previously created using
+        ///interpolate().
+        const EvolvingStellarQuantity* quantity
+    );
+
+    ///Save the state of an interpolator for faster creation.
+    void save_interpolator(
+        ///The interpolator to save. Must have previously been created
+        ///using create_interpolator()
+        MESAInterpolator *interpolator,
+
+        ///The name of the file to save the state to.
+        const char *filename
+    );
+
+    ///Load a previously saved interpolator state (faster than creating it).
+    MESAInterpolator *load_interpolator(
+        ///The name of the file to save the state to.
+        const char *filename
+    );
 }

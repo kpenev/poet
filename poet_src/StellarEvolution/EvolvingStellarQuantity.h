@@ -234,9 +234,9 @@ namespace StellarEvolution {
             double age
         ) const;
 
-        ///Expand the current interpolation grid in one of the allowed
-        ///directions.
-        void expand_grid(
+        ///\brief Attempt to expand the current interpolation grid returning
+        ///true on success.
+        bool expand_grid(
             ///The current state of the grid expansion possibilities.
             const AllowedGridGrowth &grow,
 

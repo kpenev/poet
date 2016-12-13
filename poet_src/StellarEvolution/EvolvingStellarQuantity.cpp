@@ -201,7 +201,7 @@ namespace StellarEvolution {
         }
     }
 
-    void EvolvingStellarQuantity::expand_grid(const AllowedGridGrowth &grow,
+    bool EvolvingStellarQuantity::expand_grid(const AllowedGridGrowth &grow,
                                               double age) const
     {
         if(
@@ -218,7 +218,7 @@ namespace StellarEvolution {
                            age)
         ) {
             --__min_interp_mass_index;
-            return;
+            return true;
         }
 
         if(
@@ -235,7 +235,7 @@ namespace StellarEvolution {
                            age)
         ) {
             ++__max_interp_mass_index;
-            return;
+            return true;
         }
 
         if(
@@ -251,7 +251,7 @@ namespace StellarEvolution {
                            age)
         ) {
             --__min_interp_metallicity_index;
-            return;
+            return true;
         }
 
         if(
@@ -267,7 +267,7 @@ namespace StellarEvolution {
                            age)
         ) {
             ++__max_interp_metallicity_index;
-            return;
+            return true;
         }
 
         std::valarray<size_t> padding(4);
@@ -281,19 +281,23 @@ namespace StellarEvolution {
 
         if(grow.lighter() && padding[0] == padding.min()) {
             --__min_interp_mass_index;
-            return;
+            return true;
         }
         padding[0] = std::numeric_limits<size_t>::max();
         if(grow.poorer() && padding[1] == padding.min()) {
             --__min_interp_metallicity_index;
-            return;
+            return true;
         }
         padding[1] = std::numeric_limits<size_t>::max();
         if(grow.richer() && padding[2] == padding.min()) {
             ++__max_interp_metallicity_index;
-            return;
+            return true;
         }
-        ++__max_interp_mass_index;
+        if(grow.heavier()) {
+            ++__max_interp_mass_index;
+            return true;
+        }
+        return false;
     }
 
     void EvolvingStellarQuantity::update_interpolation_grid() const
@@ -323,7 +327,7 @@ namespace StellarEvolution {
             __min_interp_metallicity_index = __metallicity_index_below;
             while(grow) {
                 check_grid_expansion_directions(grow, age);
-                if(grow) expand_grid(grow, age);
+                if(grow && !expand_grid(grow, age)) break;
             }
         }
 
@@ -415,6 +419,7 @@ namespace StellarEvolution {
         double metallicity
     ) const
     {
+        //t * (1.0 + (t / 5.0) * m**5 * 10.0**(-0.2*feh))* m**2.3 * 10.0**(-0.4*feh)
         double metallicity_factor = std::pow(10.0, -metallicity / 5.0);
         return std::log(
             age 
@@ -436,8 +441,8 @@ namespace StellarEvolution {
         double metallicity_factor = std::pow(10.0, -metallicity / 5.0),
                c = (std::exp(interp_param)
                     *
-                    std::pow(mass, 2.3)
-                    *
+                    std::pow(mass, -2.3)
+                    /
                     std::pow(metallicity_factor, 2)),
                a = 0.2 * std::pow(mass, 5) * metallicity_factor,
                discr = 1.0 + 4.0 * a * c;
