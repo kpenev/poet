@@ -38,7 +38,7 @@ namespace StellarEvolution {
         const std::vector<double> Interpolator::__default_smoothing(
             {
             Core::NaN,  //RADIUS
-            0,          //ICONV
+            3,          //ICONV
             Core::NaN,  //LUM
             2,          //IRAD
             0,          //MRAD
@@ -49,7 +49,7 @@ namespace StellarEvolution {
         const std::vector<int> Interpolator::__default_nodes(
             {
             0,      //RADIUS
-            1000,   //ICONV
+            3000,   //ICONV
             0,      //LUM
             -1000,  //IRAD
             1000,   //MRAD

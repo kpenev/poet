@@ -211,10 +211,10 @@ if __name__ == '__main__' :
 #        print(quantity_name + '(1.0) = ' + repr(quantity(1.0)))
 #        print(quantity_name + '(4.6) = ' + repr(quantity(4.6)))
     loaded_interpolator = MESAInterpolator(
-        interpolator_fname = (mesa_dir + '/saved_interpolator')
+        interpolator_fname = ('saved_interpolator')
     )
     for quantity_name in MESAInterpolator.quantity_list :
-        quantity = loaded_interpolator(quantity_name, 1.00001, 1e-05)
+        quantity = loaded_interpolator(quantity_name, 1.0, 0.25)
         ages = numpy.exp(
             numpy.linspace(numpy.log(max(quantity.min_age, 1e-5)),
                            numpy.log(quantity.max_age),
