@@ -66,8 +66,7 @@ class MESAInterpolator :
 
     quantity_list = ['RADIUS', 'ICONV', 'LUM', 'IRAD', 'MRAD', 'RRAD']
 
-    __quantity_ids = {q: c_int.in_dll(library, q).value
-                      for q in quantity_list}
+    quantity_ids = {q: c_int.in_dll(library, q).value for q in quantity_list}
 
     def __init__(self, **kwargs) :
         """
@@ -131,7 +130,7 @@ class MESAInterpolator :
 
         return Quantity(
             library.create_quantity(self.interpolator,
-                                    self.__quantity_ids[quantity.upper()],
+                                    self.quantity_ids[quantity.upper()],
                                     c_double(mass),
                                     c_double(metallicity))
         )

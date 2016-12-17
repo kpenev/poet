@@ -662,6 +662,9 @@ class Application :
             self.main_canvas.mpl_connect('key_press_event',
                                          self.on_key_event)
 
+        def create_reinterpolation_controls(reinterp_frame) :
+            """Creates controls for modifying the age interpolation used."""
+
         def set_initial_state() :
             """Set initial states for member variables."""
 
@@ -872,6 +875,6 @@ def read_MESA(dirname) :
 if __name__ == '__main__' :
     main_window = Tk.Tk()
     main_window.wm_title("Stellar Evolution Interpolation Explorer")
-    ap = Application(main_window, b'../poet_src/StellarEvolution/MESA')
+    ap = Application(main_window, b'./MESA_half')
 
     Tk.mainloop()
