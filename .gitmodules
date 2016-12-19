@@ -1,0 +1,3 @@
+[submodule "MESA_grids"]
+	path = MESA_grids
+	url = https://github.com/lgbouma/MESA_grids
