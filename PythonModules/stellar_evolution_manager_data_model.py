@@ -8,126 +8,27 @@ from sqlalchemy import\
     String,\
     Float,\
     ForeignKey,\
-    create_engine
+    create_engine,\
+    Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 DataModelBase = declarative_base()
 
-interpolator_nodes_association_table = 
-
-class SerializedInterpolator(DataModelBase) :
-    """The current set of serialized stellar evolution interpolators."""
-
-    __tablename__ = 'interpolators'
-
-    id = Column(
-        Integer,
-        primary_key = True,
-        doc = 'A uniquie identifier for each serialized interpolator'
-    )
-    filename = Column(
-        String,
-        nullable = False,
-        doc = 'The name of the file containing the serialized interpolator.'
-    )
-    nodes           = relationship("Nodes")
-    smoothing       = relationship("Smoothing")
-    tracks          = relationship("Track")
-
-class Nodes(DataModelBase) :
-    """The number of interpolation nodes used by each interpolator."""
-    __tablename__ = 'nodes'
-
-    interpolator_id = Column(
-        Integer,
-        ForeignKey('interpolators.id',
-                   onupdate = 'CASCADE',
-                   ondelete = 'RESTRICT'),
-        doc = 'The interpolator this set of nodes applies to.'
-    )
-    quantity_id = Column(
-        Integer,
-        ForeignKey('quantities.id',
-                   onupdate = 'CASCADE',
-                   ondelete = 'RESTRICT'),
-        primary_key = True,
-        doc = 'The ID of the quantity to which this set of nodes applies.'
-    )
-    value = Column(
-        name = 'nodes',
-        type_ = Integer,
-        nullable = False,
-        doc = 'The number of nodes used when constructing the interpolator '
-        'for the given quantity.'
-    )
-    quantity = relationship("Quantity")
-
-    def __repr__(self) :
-        return repr(self.quantity) + ':' + repr(self.value)
-
-class Smoothing(DataModelBase) :
-    """The smoothing arguments used by each interpolator."""
-    __tablename__ = 'smoothing'
-
-    interpolator_id = Column(
-        Integer,
-        ForeignKey('interpolators.id',
-                   onupdate = 'CASCADE',
-                   ondelete = 'RESTRICT'),
-        primary_key = True,
-        doc = 'The interpolator this set of smoothing arguments applies to.'
-    )
-    quantity_id = Column(
-        Integer,
-        ForeignKey('quantities.id',
-                   onupdate = 'CASCADE',
-                   ondelete = 'RESTRICT'),
-        primary_key = True,
-        doc = 'The ID of the quantity to which this set of smoothing '
-        'arguments applies.'
-    )
-    value = Column(
-        name = 'smoothing',
-        type_ = Float,
-        nullable = False,
-        doc = 'The smoothing argument used when constructing the '
-        'interpolator for the given quantity.'
-    )
-    quantity = relationship("Quantity")
-
-class Track(DataModelBase) :
-    """The grid of tracks used by each interpolator."""
-
-    __tablename__ = 'track_grids'
-
-    grid_id = Column(
-        Integer,
-        primary_key = True,
-        doc = 'A unique identifier for each grid of tracks.'
-    )
-    interpolator_id = Column(
-        Integer,
-        ForeignKey('interpolators.id',
-                   onupdate = 'CASCADE',
-                   ondelete = 'RESTRICT'),
-        doc = 'The interpolator based on this grid of tracks.'
-    )
-    mass = Column(
-        Float,
-        primary_key = True,
-        doc = 'The stellar mass of the track contained in the given file.',
-    )
-    metallicity = Column(
-        Float,
-        primary_key = True,
-        doc = 'The metallicity ([Fe/H])of the track contained in the given '
-        'file.',
-    )
-    checksum = Column(
-        String,
-        nullable = False,
-    )
+interpolator_tracks_table = Table(
+    'interpolator_tracks',
+    DataModelBase.metadata,
+    Column('interpolator_id',
+           Integer,
+           ForeignKey('interpolators.id',
+                      onupdate = 'CASCADE',
+                      ondelete = 'RESTRICT')),
+    Column('track_id',
+           Integer,
+           ForeignKey('tracks.id',
+                      onupdate = 'CASCADE',
+                      ondelete = 'RESTRICT'))
+)
 
 class Quantity(DataModelBase) :
     """The set of quantities tracked by stellar evolution."""
@@ -148,3 +49,139 @@ class Quantity(DataModelBase) :
 
     def __repr__(self) :
         return self.name + '(%d)' % self.id
+
+class ModelSuite(DataModelBase) :
+    """The various stellar evolution suites (e.g. MESA, YREC, ...)."""
+
+    __tablename__ = 'model_suites'
+
+    id = Column(
+        Integer,
+        primary_key = True,
+        doc = 'A unique identifier for the suite.'
+    )
+    name = Column(
+        String,
+        nullable = False,
+        doc = 'The name of the suite.'
+    )
+
+    def __repr__(self) :
+        return self.name + '_%d' % self.id
+
+class Track(DataModelBase) :
+    """The available stellar evolution tracks."""
+
+    __tablename__ = 'tracks'
+
+    id = Column(
+        Integer,
+        primary_key = True,
+        doc = 'A unique identifier for each track.'
+    )
+    mass = Column(
+        Float,
+        primary_key = True,
+        doc = 'The stellar mass of the track contained in the given file.',
+    )
+    metallicity = Column(
+        Float,
+        primary_key = True,
+        doc = 'The metallicity ([Fe/H])of the track contained in the given '
+        'file.',
+    )
+    model_suite_id = Column(
+        Integer,
+        ForeignKey('model_suites.id',
+                   onupdate = 'CASCADE',
+                   ondelete = 'RESTRICT'),
+        doc = 'The stellar evolution suite used to calculate the tracks.'
+    )
+    checksum = Column(
+        String,
+        nullable = False,
+    )
+    suite = relationship('ModelSuite')
+
+    def __repr__(self) :
+        """Human readable representation."""
+
+        return (repr(self.suite)
+                +
+                '(M = %g Msun, [Fe/H] = %g) [%s]' % (self.mass,
+                                                     self.metallicity,
+                                                     self.checksum))
+
+class InterpolationParameters(DataModelBase) :
+    """ The nodes and smoothing arguments for a given interpolator/quantity."""
+
+    __tablename__ = 'interpolation_parameters'
+
+    interpolator_id = Column(
+        Integer,
+        ForeignKey('interpolators.id',
+                   onupdate = 'CASCADE',
+                   ondelete = 'RESTRICT'),
+        primary_key = True,
+        doc = 'The interpolator this set of nodes applies to.'
+    )
+    quantity_id = Column(
+        Integer,
+        ForeignKey('quantities.id',
+                   onupdate = 'CASCADE',
+                   ondelete = 'RESTRICT'),
+        primary_key = True,
+        doc = 'The ID of the quantity to which this set of nodes applies.'
+    )
+    nodes = Column(
+        name = 'nodes',
+        type_ = Integer,
+        nullable = False,
+        doc = 'The number of nodes used when constructing the interpolator '
+        'for the given quantity.'
+    )
+    smoothing = Column(
+        name = 'smoothing',
+        type_ = Float,
+        nullable = False,
+        doc = 'The smoothing argument used when constructing the interpolator '
+        'for the given quantity.'
+    )
+    quantity = relationship('Quantity')
+    interpolator = relationship('SerializedInterpolator',
+                                back_populates = 'parameters')
+
+    def __repr__(self) :
+        return (repr(self.quantity)
+                +
+                '(%d nodes, %g smoothing)' % (self.nodes, self.smoothing))
+
+class SerializedInterpolator(DataModelBase) :
+    """The current set of serialized stellar evolution interpolators."""
+
+    __tablename__ = 'interpolators'
+
+    id = Column(
+        Integer,
+        primary_key = True,
+        doc = 'A uniquie identifier for each serialized interpolator'
+    )
+    filename = Column(
+        String,
+        nullable = False,
+        doc = 'The name of the file containing the serialized interpolator.'
+    )
+    parameters = relationship('InterpolationParameters',
+                              back_populates = 'interpolator')
+    tracks = relationship("Track",
+                          secondary = interpolator_tracks_table)
+
+    def __repr__(self) :
+        return ('I_%d(%s), Parameters: %s, Tracks: %s'
+                %
+                (self.id,
+                 self.filename,
+                 '; '.join([repr(p) for p in self.parameters]),
+                 '; '.join([repr(t) for t in self.tracks])))
+
+
