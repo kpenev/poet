@@ -7,7 +7,25 @@ def initialize_library() :
 
     library = cdll.LoadLibrary('libstellarEvolution.so')
 
-    library.create_interpolator.argtypes = [c_char_p]
+    num_quantities = c_int.in_dll(library, 'NUM_QUANTITIES').value
+    print('num_quantities: ' + repr(num_quantities) + ': ' +
+          repr(num_quantities))
+
+    library.create_interpolator.argtypes = [
+        c_char_p,
+        numpy.ctypeslib.ndpointer(
+            dtype = c_double,
+            ndim = 1,
+            shape = (num_quantities,),
+            flags = 'C_CONTIGUOUS'
+        ),
+        numpy.ctypeslib.ndpointer(
+            dtype = c_int,
+            ndim = 1,
+            shape = (num_quantities,),
+            flags = 'C_CONTIGUOUS'
+        )
+    ]
     library.create_interpolator.restype = c_void_p
 
     library.destroy_interpolator.argtypes = [
@@ -26,7 +44,7 @@ def initialize_library() :
 
     library.evaluate_quantity_array.argtypes = [
         c_void_p,
-        numpy.ctypeslib.ndpointer(dtype = numpy.float64,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
         c_uint
@@ -44,14 +62,14 @@ def initialize_library() :
 
     library.differentiate_quantity.argtypes = [c_void_p, c_double]
     library.differentiate_quantity.restype = numpy.ctypeslib.ndpointer(
-        dtype = numpy.float64,
+        dtype = c_double,
         shape = (3,),
         flags = 'C_CONTIGUOUS'
     )
 
     library.differentiate_quantity_array.argtypes = [
         c_void_p,
-        numpy.ctypeslib.ndpointer(dtype = numpy.float64,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
         c_uint
@@ -72,24 +90,31 @@ class MESAInterpolator :
         """
         Prepare a MESA based interpolation.
         
-        Kewyrd only arguments:
+        Keyword only arguments:
             - mesa_dir: A directory contaning a grid (mass and metallicity)
                         of MESA tracks to base the interpolation on. Must not
                         be specified if interpolator_fname is.
             - interpolator_fname: The filename of a previously saved
                                   interpolator state. Must not be specified
                                   together with mesa_dir.
+            - smoothing: A numpy float array of the smoothing arguments to
+                         use for the interpolation of each quantity. Should
+                         be in the order defined by quantity_ids.
+            - nodes: A numpy integer array of the nodes to use for the
+                     interpolation of each quantity. Same order as smoothing.
         Returns: None.
         """
 
         if 'mesa_dir' in kwargs :
             self.interpolator = library.create_interpolator(
-                kwargs['mesa_dir']
+                kwargs['mesa_dir'].encode('ascii'),
+                kwargs['smoothing'],
+                kwargs['nodes']
             )
         else :
             assert('interpolator_fname' in kwargs)
             self.interpolator = library.load_interpolator(
-                kwargs['interpolator_fname']
+                kwargs['interpolator_fname'].encode('ascii')
             )
 
     def delete() :
@@ -110,7 +135,8 @@ class MESAInterpolator :
         Returns: None
         """
 
-        library.save_interpolator(self.interpolator, filename)
+        library.save_interpolator(self.interpolator,
+                                  filename.encode('ascii'))
 
     def __call__(self, quantity, mass, metallicity) :
         """
@@ -122,8 +148,8 @@ class MESAInterpolator :
                         'mrad', 'rrad'. Case insensitive.
             - mass: The mass of the star for which this quantity should be
                     defined in solar masses.
-            - metallicity: The metallicity of the star for which this quantity 
-                           should be defined as [Fe/H].
+            - metallicity: The metallicity of the star for which this 
+                           quantity  should be defined as [Fe/H].
 
         Returns: A Quantity instance, callable with an age parameter.
         """
@@ -162,7 +188,7 @@ class Quantity :
 
         if type(age) is numpy.ndarray :
             library.evaluate_quantity_array.restype = (
-                numpy.ctypeslib.ndpointer(dtype = numpy.float64,
+                numpy.ctypeslib.ndpointer(dtype = c_double,
                                           shape = (age.size,),
                                           flags = 'C_CONTIGUOUS')
             )
@@ -188,7 +214,7 @@ class Quantity :
 
         if type(age) is numpy.ndarray :
             library.differentiate_quantity_array.restype = (
-                numpy.ctypeslib.ndpointer(dtype = numpy.float64,
+                numpy.ctypeslib.ndpointer(dtype = c_double,
                                           shape = (3, age.size),
                                           flags = 'C_CONTIGUOUS')
             )

@@ -8,10 +8,16 @@ const int MRAD = StellarEvolution::MRAD;
 const int RRAD = StellarEvolution::RRAD;
 const int NUM_QUANTITIES = StellarEvolution::NUM_QUANTITIES;
 
-MESAInterpolator* create_interpolator(const char *mesa_dir)
+MESAInterpolator* create_interpolator(const char *mesa_dir,
+                                      double *smoothing,
+                                      int *nodes)
 {
     return reinterpret_cast<MESAInterpolator*>(
-        new StellarEvolution::MESA::Interpolator(mesa_dir)
+        new StellarEvolution::MESA::Interpolator(
+            mesa_dir,
+            std::vector<double>(smoothing, smoothing + NUM_QUANTITIES),
+            std::vector<int>(nodes, nodes + NUM_QUANTITIES)
+        )
     );
 }
 

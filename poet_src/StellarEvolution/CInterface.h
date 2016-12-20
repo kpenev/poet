@@ -36,7 +36,19 @@ extern "C" {
     ///\brief Create an interpolator from a directory containing MESA tracks.
     ///
     ///The result must be de-allocated when no longer necessary.
-    MESAInterpolator* create_interpolator(const char *mesa_dir);
+    MESAInterpolator* create_interpolator(
+        ///The directory containing all and only the MESA tracks to include
+        ///in the interpolation.
+        const char *mesa_dir,
+        
+        ///The set of smoothing arguments to use. One for each quantity, in
+        ///the order defined by the RADIUS, ICONV, ..., constants.
+        double *smoothing,
+
+        ///The set of interpolation nodes to use in the same order as
+        ///smoothing.
+        int *nodes
+    );
 
     ///\brief Destroy a previously created interpolator.
     void destroy_interpolator(

@@ -6,12 +6,13 @@ from sqlalchemy import\
     Column,\
     Integer,\
     String,\
-    Float,\
+    Numeric,\
     ForeignKey,\
     create_engine,\
     Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from uuid import uuid4 as get_uuid
 
 DataModelBase = declarative_base()
 
@@ -80,12 +81,12 @@ class Track(DataModelBase) :
         doc = 'A unique identifier for each track.'
     )
     mass = Column(
-        Float,
+        Numeric(5, 3),
         primary_key = True,
         doc = 'The stellar mass of the track contained in the given file.',
     )
     metallicity = Column(
-        Float,
+        Numeric(5, 3),
         primary_key = True,
         doc = 'The metallicity ([Fe/H])of the track contained in the given '
         'file.',
@@ -142,10 +143,10 @@ class InterpolationParameters(DataModelBase) :
     )
     smoothing = Column(
         name = 'smoothing',
-        type_ = Float,
+        type_ = Numeric(5, 3),
         nullable = False,
-        doc = 'The smoothing argument used when constructing the interpolator '
-        'for the given quantity.'
+        doc = 'The smoothing argument used when constructing the '
+        'interpolator for the given quantity.'
     )
     quantity = relationship('Quantity')
     interpolator = relationship('SerializedInterpolator',
@@ -183,5 +184,3 @@ class SerializedInterpolator(DataModelBase) :
                  self.filename,
                  '; '.join([repr(p) for p in self.parameters]),
                  '; '.join([repr(t) for t in self.tracks])))
-
-
