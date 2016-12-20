@@ -163,4 +163,18 @@ extern "C" {
         ///The name of the file to save the state to.
         const char *filename
     );
+
+    ///Return the default smoothing argument used for the given quantity.
+    double default_smoothing(
+        ///The quantity to return the default smoothing for.
+        int quantityID
+    );
+
+    ///\brief Return the default number of interpolation nodes used for the
+    ///given quantity.
+    int default_nodes(
+        ///The quantity to return the default nodes for.
+        int quantityID
+    );
+
 }

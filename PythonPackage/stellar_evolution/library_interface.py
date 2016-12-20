@@ -75,6 +75,12 @@ def initialize_library() :
         c_uint
     ]
 
+    library.default_smoothing.argtypes = [c_int]
+    library.default_smoothing.restype = c_double
+
+    library.default_nodes.argtypes = [c_int]
+    library.default_nodes.restype = c_int
+
     return library
 
 library = initialize_library()
@@ -85,6 +91,12 @@ class MESAInterpolator :
     quantity_list = ['RADIUS', 'ICONV', 'LUM', 'IRAD', 'MRAD', 'RRAD']
 
     quantity_ids = {q: c_int.in_dll(library, q).value for q in quantity_list}
+
+    default_smoothing = {q_name: library.default_smoothing(q_id)
+                         for q_name, q_id in quantity_ids.items()}
+
+    default_nodes = {q_name: library.default_nodes(q_id)
+                     for q_name, q_id in quantity_ids.items()}
 
     def __init__(self, **kwargs) :
         """

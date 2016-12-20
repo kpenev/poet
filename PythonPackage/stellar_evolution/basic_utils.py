@@ -1,9 +1,7 @@
-from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 from tempfile import mkdtemp
 from shutil import rmtree
-
-Session = sessionmaker()
+from . import Session
 
 @contextmanager
 def db_session_scope() :

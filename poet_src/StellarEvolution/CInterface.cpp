@@ -12,13 +12,20 @@ MESAInterpolator* create_interpolator(const char *mesa_dir,
                                       double *smoothing,
                                       int *nodes)
 {
-    return reinterpret_cast<MESAInterpolator*>(
-        new StellarEvolution::MESA::Interpolator(
+    StellarEvolution::MESA::Interpolator *result;
+    if(!smoothing) {
+        assert(!nodes);
+        result = new StellarEvolution::MESA::Interpolator(mesa_dir);
+    } else {
+        assert(nodes);
+        result = new StellarEvolution::MESA::Interpolator(
             mesa_dir,
             std::vector<double>(smoothing, smoothing + NUM_QUANTITIES),
             std::vector<int>(nodes, nodes + NUM_QUANTITIES)
-        )
-    );
+        );
+    }
+
+    return reinterpret_cast<MESAInterpolator*>(result);
 }
 
 void destroy_interpolator(MESAInterpolator *interpolator)
@@ -169,4 +176,20 @@ MESAInterpolator *load_interpolator(const char *filename)
         new StellarEvolution::MESA::Interpolator();
     interpolator->load_state(filename);
     return reinterpret_cast<MESAInterpolator*>(interpolator);
+}
+
+double default_smoothing(int quantityID)
+{
+    assert(quantityID >= 0 && quantityID < NUM_QUANTITIES);
+    return StellarEvolution::MESA::Interpolator::default_smoothing(
+        static_cast<StellarEvolution::QuantityID>(quantityID)
+    );
+}
+
+int default_nodes(int quantityID)
+{
+    assert(quantityID >= 0 && quantityID < NUM_QUANTITIES);
+    return StellarEvolution::MESA::Interpolator::default_nodes(
+        static_cast<StellarEvolution::QuantityID>(quantityID)
+    );
 }

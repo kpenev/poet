@@ -278,6 +278,20 @@ namespace StellarEvolution {
                 ///number of tabulated ages for each track).
                 const std::vector<int> &nodes = __default_nodes
             );
+
+            ///The default smoothing argument used for a given quantity.
+            static double default_smoothing(
+                ///The quantity to return the default smoothing for.
+                StellarEvolution::QuantityID quantity
+            )
+            {return __default_smoothing[quantity];}
+
+            ///The default interpolation nodes used for a given quantity.
+            static int default_nodes(
+                ///The quantity to return the default nodes for.
+                StellarEvolution::QuantityID quantity
+            )
+            {return __default_nodes[quantity];}
         };
 
     } //End MESA namespace.

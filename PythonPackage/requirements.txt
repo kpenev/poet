@@ -1,0 +1,4 @@
+# Python package dependencies for the POET package.
+
+numpy
+sqlalchemy
