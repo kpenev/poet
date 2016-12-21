@@ -48,7 +48,7 @@ class Quantity(DataModelBase) :
         'module.'
     )
 
-    def __repr__(self) :
+    def __str__(self) :
         return self.name + '(%d)' % self.id
 
 class ModelSuite(DataModelBase) :
@@ -67,7 +67,7 @@ class ModelSuite(DataModelBase) :
         doc = 'The name of the suite.'
     )
 
-    def __repr__(self) :
+    def __str__(self) :
         return self.name + '_%d' % self.id
 
 class Track(DataModelBase) :
@@ -79,6 +79,13 @@ class Track(DataModelBase) :
         Integer,
         primary_key = True,
         doc = 'A unique identifier for each track.'
+    )
+    filename = Column(
+        String,
+        nullable = False,
+        unique = True,
+        index = True,
+        doc = 'The absolute name of the file containing the track.'
     )
     mass = Column(
         Numeric(5, 3),
@@ -104,7 +111,7 @@ class Track(DataModelBase) :
     )
     suite = relationship('ModelSuite')
 
-    def __repr__(self) :
+    def __str__(self) :
         """Human readable representation."""
 
         return (repr(self.suite)
@@ -144,7 +151,7 @@ class InterpolationParameters(DataModelBase) :
     smoothing = Column(
         name = 'smoothing',
         type_ = Numeric(5, 3),
-        nullable = False,
+        nullable = True,
         doc = 'The smoothing argument used when constructing the '
         'interpolator for the given quantity.'
     )
@@ -152,7 +159,7 @@ class InterpolationParameters(DataModelBase) :
     interpolator = relationship('SerializedInterpolator',
                                 back_populates = 'parameters')
 
-    def __repr__(self) :
+    def __str__(self) :
         return (repr(self.quantity)
                 +
                 '(%d nodes, %g smoothing)' % (self.nodes, self.smoothing))
@@ -167,20 +174,33 @@ class SerializedInterpolator(DataModelBase) :
         primary_key = True,
         doc = 'A uniquie identifier for each serialized interpolator'
     )
+    name = Column(
+        String,
+        nullable = False,
+        unique = True,
+        index = True,
+        doc = 'A unique human-readable name assigned to this interpolator.'
+    )
     filename = Column(
         String,
         nullable = False,
         doc = 'The name of the file containing the serialized interpolator.'
+    )
+    checksum = Column(
+        String,
+        nullable = False,
+        doc = 'A checksum of the serialized interpolator file.'
     )
     parameters = relationship('InterpolationParameters',
                               back_populates = 'interpolator')
     tracks = relationship("Track",
                           secondary = interpolator_tracks_table)
 
-    def __repr__(self) :
-        return ('I_%d(%s), Parameters: %s, Tracks: %s'
+    def __str__(self) :
+        return ('%s_%d(%s), Parameters: %s, Tracks: %s'
                 %
-                (self.id,
+                (self.name,
+                 self.id,
                  self.filename,
                  '; '.join([repr(p) for p in self.parameters]),
                  '; '.join([repr(t) for t in self.tracks])))
