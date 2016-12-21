@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 import sys
-sys.path.append('../PythonModules')
+sys.path.append('../PythonPackage')
 
 from matplotlib.backends.backend_tkagg import\
     FigureCanvasTkAgg,\
@@ -44,13 +44,13 @@ class InterpolatedQuantitySum :
     def deriv(self, age) :
         return self.q1.deriv(age) + self.q2.deriv(age)
 
-class Application :
+class InterpolationInteractive :
 
     def quit(self) :
         """Exit the application."""
 
-        main_window.quit()     # stops mainloop
-        main_window.destroy()  # this is necessary on Windows to prevent
+        self.window.quit()     # stops mainloop
+        self.window.destroy()  # this is necessary on Windows to prevent
                                # Fatal Python Error: PyEval_RestoreThread:
                                # NULL tstate
 
@@ -389,8 +389,8 @@ class Application :
         self.change_interpolated_quantity()
         self.changing[quantity] = True
 
-        if self.display_job : self.main_window.after_cancel(self.display_job)
-        self.display_job = self.main_window.after(10, self.display)
+        if self.display_job : self.window.after_cancel(self.display_job)
+        self.display_job = self.window.after(10, self.display)
 
         self.changing[quantity] = False
         return True
@@ -452,7 +452,7 @@ class Application :
         self.second_deriv_auto_axes = True
         self.display()
 
-    def __init__(self, main_window, tracks_dir) :
+    def __init__(self, window, tracks_dir) :
         """Setup user controls and display frame."""
 
         def create_main_axes() :
@@ -471,7 +471,7 @@ class Application :
             def create_x_controls() :
                 """Create the controls for the x axis."""
 
-                x_controls_frame = Tk.Frame(main_window)
+                x_controls_frame = Tk.Frame(window)
                 x_controls_frame.grid(row = 2, column = 1)
 
                 self.logx_button = Tk.Button(
@@ -493,7 +493,7 @@ class Application :
             def create_y_controls() :
                 """Create the controls for the y axis."""
 
-                y_controls_frame = Tk.Frame(main_window)
+                y_controls_frame = Tk.Frame(window)
                 y_controls_frame.grid(row = 1, column = 0)
 
                 self.selected_plot_quantity = Tk.StringVar()
@@ -528,7 +528,7 @@ class Application :
             create_x_controls()
             create_y_controls()
             Tk.Button(
-                main_window,
+                window,
                 text = 'Auto Axes',
                 command = self.auto_axes,
                 relief = Tk.RAISED
@@ -709,24 +709,24 @@ class Application :
                 )
                 self.interpolator.save(b'serialized_evolution')
 
-        def configure_main_window() :
+        def configure_window() :
             """Arrange the various application elements."""
 
-            self.main_window = main_window
+            self.window = window
 
-            plot_frame = Tk.Frame(main_window)
+            plot_frame = Tk.Frame(window)
             plot_frame.grid(row = 1,
                             column = 1,
                             sticky = Tk.N + Tk.S + Tk.W + Tk.E )
 
-            interp_control_frame = Tk.Frame(main_window)
+            interp_control_frame = Tk.Frame(window)
             interp_control_frame.grid(row = 0, column = 1)
 
-            track_selectors_frame = Tk.Frame(main_window)
+            track_selectors_frame = Tk.Frame(window)
             track_selectors_frame.grid(row = 1, column = 2)
 
-            Tk.Grid.columnconfigure(main_window, 1, weight = 1)
-            Tk.Grid.rowconfigure(main_window, 1, weight = 1)
+            Tk.Grid.columnconfigure(window, 1, weight = 1)
+            Tk.Grid.rowconfigure(window, 1, weight = 1)
 
             create_main_axes()
             create_main_canvas(plot_frame)
@@ -735,7 +735,7 @@ class Application :
             create_track_selectors(track_selectors_frame)
 
             self.interpolate_button = Tk.Button(
-                main_window,
+                window,
                 text = 'Interpolate',
                 command = self.toggle_interpolation,
                 relief = Tk.SUNKEN if self.interpolate else Tk.RAISED
@@ -747,7 +747,7 @@ class Application :
             self.track_below = dict()
 
         set_initial_state()
-        configure_main_window()
+        configure_window()
 
         self.change_plot_quantity(self.plot_quantities[0])
         self.change_interp('mass', self.interp['mass'])
@@ -875,6 +875,6 @@ def read_MESA(dirname) :
 if __name__ == '__main__' :
     main_window = Tk.Tk()
     main_window.wm_title("Stellar Evolution Interpolation Explorer")
-    ap = Application(main_window, b'./MESA_half')
+    ap = InterpolationInteractive(main_window, b'./MESA_half')
 
     Tk.mainloop()
