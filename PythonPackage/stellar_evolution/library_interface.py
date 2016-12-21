@@ -91,6 +91,8 @@ class MESAInterpolator :
     quantity_list = ['RADIUS', 'ICONV', 'LUM', 'IRAD', 'MRAD', 'RRAD']
 
     quantity_ids = {q: c_int.in_dll(library, q).value for q in quantity_list}
+    quantity_names = {c_int.in_dll(library, q).value: q 
+                      for q in quantity_list} 
 
     default_smoothing = {q_name: library.default_smoothing(q_id)
                          for q_name, q_id in quantity_ids.items()}
@@ -103,17 +105,22 @@ class MESAInterpolator :
         Prepare a MESA based interpolation.
         
         Keyword only arguments:
-            - mesa_dir: A directory contaning a grid (mass and metallicity)
-                        of MESA tracks to base the interpolation on. Must not
-                        be specified if interpolator_fname is.
-            - interpolator_fname: The filename of a previously saved
-                                  interpolator state. Must not be specified
-                                  together with mesa_dir.
-            - smoothing: A numpy float array of the smoothing arguments to
-                         use for the interpolation of each quantity. Should
-                         be in the order defined by quantity_ids.
-            - nodes: A numpy integer array of the nodes to use for the
-                     interpolation of each quantity. Same order as smoothing.
+            - mesa_dir:
+                A directory contaning a grid (mass and metallicity) of MESA
+                tracks to base the interpolation on. Must not be specified
+                if interpolator_fname is.
+            - smoothing:
+                A numpy float array of the smoothing arguments to use for
+                the interpolation of each quantity. Should be in the order
+                defined by quantity_ids.
+            - nodes:
+                A numpy integer array of the nodes to use for the
+                interpolation of each quantity. Same order as smoothing.
+            - interpolator_fname: 
+                The filename of a previously saved interpolator state. Must
+                not be specified together with mesa_dir. If passed, the
+                smoothing and nodes arguments are ignored.
+
         Returns: None.
         """
 
