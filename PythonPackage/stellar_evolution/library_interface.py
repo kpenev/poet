@@ -108,7 +108,8 @@ def library_track_fname(mass, metallicity) :
 
     solarZ = 0.015
 
-    return 'M%s_Z%s.csv' % (repr(mass), repr(solarZ * 10.0 ** metallicity))
+    return 'M%s_Z%s.csv' % (repr(float(mass)),
+                            repr(solarZ * 10.0**float(metallicity)))
 
 class MESAInterpolator :
     """A class for interpolating among a set of MESA tracks."""
