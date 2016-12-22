@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from ctypes import cdll, c_int, c_double, c_void_p, c_char_p, c_uint
 import numpy
+import re
 
 def initialize_library() :
     """Prepare the stellarEvolution library for use."""
@@ -84,6 +85,30 @@ def initialize_library() :
     return library
 
 library = initialize_library()
+
+library_track_fname_rex = re.compile(
+    'M(?P<MASS>[0-9.E+-]+)_Z(?P<Z>[0-9.E+-]+).csv'
+)
+
+def library_track_fname(mass, metallicity) :
+    """
+    Returns the base name expected by library for a track.
+
+    Args:
+        - mass:
+            The mass of the star whose evolution is stored in the track.
+        - metallicity:
+            The metallicity ([Fe/H]) of the star whose evolution is stored
+            in the track.
+
+    Returns:
+        The base filename the stellar evolution library expects to be used
+        for the given track.
+    """
+
+    solarZ = 0.015
+
+    return 'M%s_Z%s.csv' % (repr(mass), repr(solarZ * 10.0 ** metallicity))
 
 class MESAInterpolator :
     """A class for interpolating among a set of MESA tracks."""

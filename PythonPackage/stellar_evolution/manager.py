@@ -1,6 +1,9 @@
 """Define class for managing many stellar evolution interpolations."""
 
-from .library_interface import MESAInterpolator
+from .library_interface import\
+    MESAInterpolator,\
+    library_track_fname_rex,\
+    library_track_fname
 from .manager_data_model import\
     DataModelBase,\
     SerializedInterpolator,\
@@ -9,9 +12,8 @@ from .manager_data_model import\
     Track,\
     ModelSuite
 from . import Session
-from . import __path__
 from .basic_utils import db_session_scope, Structure, tempdir_scope
-from sqlalchemy import exists, and_, literal
+from sqlalchemy import exists, and_, literal, func, create_engine
 import hashlib
 import re
 import os
@@ -21,7 +23,6 @@ import numpy
 from uuid import uuid4 as get_uuid
 from decimal import Decimal
 import ctypes
-from sqlalchemy import create_engine
 from glob import glob
 from math import isnan
 
@@ -348,6 +349,18 @@ class StellarEvolutionManager :
             returns None.
         """
 
+
+        num_tracks = len(track_grid) * len(next(iter(track_grid.values())))
+
+        track_counts = db_session.query(
+            SerializedInterpolator.id,
+            func.count('*').label('num_tracks')
+        ).join(
+            SerializedInterpolator.tracks
+        ).group_by(
+            SerializedInterpolator.id
+        ).subquery()
+
         match_config = (
             [
                 exists().where(
@@ -376,10 +389,18 @@ class StellarEvolutionManager :
                 for mass, mass_row in track_grid.items()
                 for metallicity, (track_fname, track_id) in mass_row.items()
             ]
+            +
+            [track_counts.c.num_tracks == num_tracks]
         )
+
         result = db_session.query(
             SerializedInterpolator
-        ).filter(*match_config).one_or_none()
+        ).join(
+            track_counts,
+            SerializedInterpolator.id == track_counts.c.id
+        ).filter(
+            *match_config
+        ).one_or_none()
         if result is None : 
             return result
         else :
@@ -438,7 +459,11 @@ class StellarEvolutionManager :
                         id = track_id
                     ).one()
                     db_interpolator.tracks.append(track)
-                    shutil.copy(track_fname, track_dir)
+                    shutil.copy(
+                        track_fname, 
+                        os.path.join(track_dir,
+                                     library_track_fname(mass, metallicity))
+                    )
             interp_smoothing = numpy.empty(
                 len(MESAInterpolator.quantity_list),
                 dtype = ctypes.c_double
@@ -501,29 +526,25 @@ class StellarEvolutionManager :
             self._get_db_config(db_session)
 
     def get_interpolator(self,
+                         nodes = MESAInterpolator.default_nodes,
+                         smoothing = MESAInterpolator.default_smoothing,
+                         track_fnames = None,
                          masses = None,
                          metallicities = None,
                          model_suite = 'MESA',
-                         nodes = MESAInterpolator.default_nodes,
-                         smoothing = MESAInterpolator.default_smoothing,
                          new_interp_name = None) :
         """
         Return a stellar evolution interpolator with the given configuration.
 
+        All tracks that the interpolator should be based on must be
+        pre-registered with the manager. Two ways are supported for
+        identifying tracks: as a list of filenames or as a mass-metallicity
+        grid combined with a suite. The first case always works, while the
+        second requires that the set of identified tracks is unique, i.e. for
+        none of the mass - metallicity combinations there are two or more
+        tracks registered for the given suite.
+
         Args:
-            - masses:
-                A list of the stellar masses to include in the interpolation.
-                Unique tracks with those masses and all selected
-                metallicities (see next argument) must already be registered
-                with the database for the given suite. If None, all track
-                masses from the given suite are used.
-            - metallicities:
-                A list of the stellar metallicities to include in the
-                interpolation. If None, all track metallicities from the
-                given suite are used.
-            - model_suite:
-                The software suite used to generate the stellar evolution
-                tracks.
             - nodes:
                 The number of nodes to use for the age interpolation of each
                 quantity of each track. Should be a dictionary with keys
@@ -536,6 +557,23 @@ class StellarEvolutionManager :
                 MESAInterpolator.quantity_list. See the POET code
                 StellarEvolution::Interpolator::create_from() documentation
                 for a description of what this actually means.
+            - track_fnames:
+                A list of files containing stellar evolution tracks the
+                interpolator should be based on.
+            - masses:
+                A list of the stellar masses to include in the interpolation.
+                Unique tracks with those masses and all selected
+                metallicities (see next argument) must already be registered
+                with the database for the given suite. If None, all track
+                masses from the given suite are used.
+            - metallicities:
+                A list of the stellar metallicities to include in the
+                interpolation. If None, all track metallicities from the
+                given suite are used.
+            - model_suite:
+                The software suite used to generate the stellar evolution
+                tracks. May be omitted if tracks are specified by filename,
+                but must be supplied if using masses and metallicities.
             - new_interp_name:
                 Name to assign to the a newly generated interolator. Ignored
                 if an interpolator matching all other arguments already
@@ -550,10 +588,15 @@ class StellarEvolutionManager :
         """
 
         with db_session_scope() as db_session :
-            track_grid = self._track_grid_from_grid(masses,
-                                                    metallicities,
-                                                    model_suite,
-                                                    db_session)
+            if track_fnames is None :
+                track_grid = self._track_grid_from_grid(masses,
+                                                        metallicities,
+                                                        model_suite,
+                                                        db_session)
+            else :
+                track_grid = self._track_grid_from_files(track_fnames,
+                                                         db_session,
+                                                         model_suite)
 
             result = self._find_existing_interpolator(
                 track_grid = track_grid,
@@ -624,8 +667,8 @@ class StellarEvolutionManager :
 
     def register_track_collection(self,
                                   track_fnames,
-                                  fname_rex,
-                                  model_suite) :
+                                  fname_rex = library_track_fname_rex,
+                                  model_suite = 'MESA') :
         """
         Add a collection of tracks with [Fe/H] and M* encoded in filename.
 
