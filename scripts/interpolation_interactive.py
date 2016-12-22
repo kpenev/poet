@@ -7,12 +7,12 @@ matplotlib.use('TkAgg')
 import sys
 sys.path.append('../PythonPackage')
 
+from interpolator_manager_gui import InterpolatorManagerGUI
 from matplotlib.backends.backend_tkagg import\
     FigureCanvasTkAgg,\
     NavigationToolbar2TkAgg
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
-import stellar_evolution
 from glob import glob
 import os.path
 import re
@@ -28,7 +28,8 @@ else:
     import tkinter as Tk
     from tkinter import ttk
 
-def star_lifetime(mass) : return min(9.0 * mass**-3, 10.0)
+serialized_interpolator_dir = '../stellar_evolution_interpolators'
+mesa_track_dir = '../MESA_tracks'
 
 class InterpolatedQuantitySum :
 
@@ -73,19 +74,25 @@ class InterpolationInteractive :
 
             if self.plot_quantity == 'I' :
                 return InterpolatedQuantitySum(
-                    self.interpolator('ICONV',
-                                      star_mass,
-                                      star_metallicity),
-                    self.interpolator('IRAD',
-                                      star_mass,
-                                      star_metallicity)
+                    self.interpolator_manager.current_interpolator()(
+                        'ICONV',
+                        star_mass,
+                        star_metallicity
+                    ),
+                    self.interpolator_manager.current_interpolator()(
+                        'IRAD',
+                        star_mass,
+                        star_metallicity
+                    )
                 )
             else :
                 if self.plot_quantity == 'R' : quantity_id = 'radius'
                 else : quantity_id = self.plot_quantity
-                return self.interpolator(quantity_id,
-                                         star_mass,
-                                         star_metallicity)
+                return self.interpolator_manager.current_interpolator()(
+                    quantity_id,
+                    star_mass,
+                    star_metallicity
+                )
 
 
         def plot_interpolation(star_mass, star_metallicity, plot_func) :
@@ -472,7 +479,7 @@ class InterpolationInteractive :
                 """Create the controls for the x axis."""
 
                 x_controls_frame = Tk.Frame(window)
-                x_controls_frame.grid(row = 2, column = 1)
+                x_controls_frame.grid(row = 3, column = 2)
 
                 self.logx_button = Tk.Button(
                     x_controls_frame,
@@ -494,7 +501,7 @@ class InterpolationInteractive :
                 """Create the controls for the y axis."""
 
                 y_controls_frame = Tk.Frame(window)
-                y_controls_frame.grid(row = 1, column = 0)
+                y_controls_frame.grid(row = 1, column = 1, rowspan = 2)
 
                 self.selected_plot_quantity = Tk.StringVar()
                 self.selected_plot_quantity.set(self.plot_quantities[0])
@@ -532,8 +539,8 @@ class InterpolationInteractive :
                 text = 'Auto Axes',
                 command = self.auto_axes,
                 relief = Tk.RAISED
-            ).grid(row = 0,
-                   column = 2,
+            ).grid(row = 1,
+                   column = 3,
                    sticky = Tk.N + Tk.S + Tk.W + Tk.E)
 
         def create_interp_controls(interp_control_frame) :
@@ -699,15 +706,6 @@ class InterpolationInteractive :
                 for m in self.track_mass
             ]
             self.changing = dict(mass = False, metallicity = False)
-            if os.path.exists('serialized_evolution') :
-                self.interpolator = stellar_evolution.MESAInterpolator(
-                    interpolator_fname = b'serialized_evolution'
-                )
-            else :
-                self.interpolator = stellar_evolution.MESAInterpolator(
-                    mesa_dir = tracks_dir
-                )
-                self.interpolator.save(b'serialized_evolution')
 
         def configure_window() :
             """Arrange the various application elements."""
@@ -716,16 +714,17 @@ class InterpolationInteractive :
 
             plot_frame = Tk.Frame(window)
             plot_frame.grid(row = 1,
-                            column = 1,
+                            column = 2,
+                            rowspan = 2,
                             sticky = Tk.N + Tk.S + Tk.W + Tk.E )
 
             interp_control_frame = Tk.Frame(window)
-            interp_control_frame.grid(row = 0, column = 1)
+            interp_control_frame.grid(row = 0, column = 1, columnspan = 3)
 
             track_selectors_frame = Tk.Frame(window)
-            track_selectors_frame.grid(row = 1, column = 2)
+            track_selectors_frame.grid(row = 2, column = 3)
 
-            Tk.Grid.columnconfigure(window, 1, weight = 1)
+            Tk.Grid.columnconfigure(window, 2, weight = 1)
             Tk.Grid.rowconfigure(window, 1, weight = 1)
 
             create_main_axes()
@@ -743,6 +742,13 @@ class InterpolationInteractive :
             self.interpolate_button.grid(row = 0,
                                          column = 0,
                                          sticky = Tk.N + Tk.S + Tk.W + Tk.E)
+
+            interpolator_manager_frame = Tk.Frame(window)
+            interpolator_manager_frame.grid(row = 1, column = 0, rowspan = 2)
+            self.interpolator_manager = InterpolatorManagerGUI(
+                interpolator_manager_frame,
+                serialized_interpolator_dir
+            )
 
             self.track_below = dict()
 
@@ -850,10 +856,11 @@ def read_MESA(dirname) :
     fname_rex = re.compile(
         'M(?P<MASS>[0-9.E+-]+)_Z(?P<METALLICITY>[0-9.E+-]+).csv'
     )
-    track_fnames = glob(os.path.join(dirname.decode(), '*.csv'))
+    track_fnames = glob(os.path.join(dirname, '*.csv'))
     for fname in track_fnames :
         parsed_fname = fname_rex.match(os.path.basename(fname))
         if not parsed_fname : 
+            print('Skipping ' + repr(fname))
             continue
         mass_key = round(float(parsed_fname.group('MASS')), 3)
         metallicity_key = round(
@@ -875,6 +882,6 @@ def read_MESA(dirname) :
 if __name__ == '__main__' :
     main_window = Tk.Tk()
     main_window.wm_title("Stellar Evolution Interpolation Explorer")
-    ap = InterpolationInteractive(main_window, b'./MESA_half')
+    ap = InterpolationInteractive(main_window, mesa_track_dir)
 
     Tk.mainloop()

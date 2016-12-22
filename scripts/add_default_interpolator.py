@@ -14,7 +14,7 @@ if __name__ == '__main__' :
 
     manager = StellarEvolutionManager(serialized_dir)
 
-    if manager.get_suite_tracks() is None :
+    if not list(manager.get_suite_tracks()) :
         manager.register_track_collection(
             glob(os.path.join(default_track_dir, '*.csv')),
             fname_rex = re.compile(
