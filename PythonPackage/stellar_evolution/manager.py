@@ -652,10 +652,10 @@ class StellarEvolutionManager :
             )
 
     def register_track(self,
-                  track_fname,
-                  mass,
-                  metallicity,
-                  model_suite = 'MESA') :
+                       track_fname,
+                       mass,
+                       metallicity,
+                       model_suite = 'MESA') :
         """Register a track for use in creating interpolators."""
 
         with db_session_scope() as db_session :
