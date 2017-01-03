@@ -114,6 +114,8 @@ class AnnotatedInterpolator(MESAInterpolator) :
         self.filename = db_interpolator.filename
         self.smoothing = dict()
         self.nodes = dict()
+        self.vs_log_age = dict()
+        self.log_quantity = dict()
         suite = {track.suite.name for track in db_interpolator.tracks}
         assert(len(suite) == 1)
         self.suite = suite.pop()
@@ -121,6 +123,8 @@ class AnnotatedInterpolator(MESAInterpolator) :
             quantity = self.quantity_names[param.quantity_id]
             self.smoothing[quantity] = param.smoothing or float('nan')
             self.nodes[quantity] = param.nodes
+            self.vs_log_age[quantity] = param.vs_log_age
+            self.log_quantity[quantity] = param.log_quantity
         self.track_masses = sorted(
             {track.mass  for track in db_interpolator.tracks}
         )
@@ -328,6 +332,8 @@ class StellarEvolutionManager :
                                     track_grid,
                                     nodes,
                                     smoothing,
+                                    vs_log_age,
+                                    log_quantity,
                                     db_session) :
         """
         Return the specified interpolation if already exists, otherwise None.
@@ -338,6 +344,10 @@ class StellarEvolutionManager :
             - nodes:
                 see get_interpolator.
             - smoothing:
+                see get_interpolator.
+            - vs_log_age:
+                see get_interpolator.
+            - log_quantity:
                 see get_interpolator.
             - db_session:
                 The currently active database session.
@@ -378,7 +388,13 @@ class StellarEvolutionManager :
                         ,
                         InterpolationParameters.nodes
                         ==
-                        nodes[quantity.name]
+                        nodes[quantity.name],
+                        InterpolationParameters.vs_log_age
+                        ==
+                        vs_log_age[quantity.name],
+                        InterpolationParameters.log_quantity
+                        ==
+                        log_quantity[quantity.name]
                     )
                 )
                 for quantity in self._quantities
@@ -413,6 +429,8 @@ class StellarEvolutionManager :
                                  track_grid,
                                  nodes,
                                  smoothing,
+                                 vs_log_age,
+                                 log_quantity,
                                  db_session,
                                  name = None) :
         """
@@ -472,14 +490,26 @@ class StellarEvolutionManager :
                 len(MESAInterpolator.quantity_list),
                 dtype = ctypes.c_int
             )
+            interp_vs_log_age = numpy.empty(
+                len(MESAInterpolator.quantity_list),
+                dtype = ctypes.c_bool
+            )
+            interp_log_quantity = numpy.empty(
+                len(MESAInterpolator.quantity_list),
+                dtype = ctypes.c_bool
+            )
             for q_name, q_index in MESAInterpolator.quantity_ids.items() :
                 interp_smoothing[q_index] = smoothing[q_name]
                 interp_nodes[q_index] = nodes[q_name]
+                interp_vs_log_age[q_index] = vs_log_age[q_name]
+                interp_log_quantity[q_index] = log_quantity[q_name]
 
             db_interpolator.parameters = [
                 InterpolationParameters(quantity_id = q.id,
                                         nodes = nodes[q.name],
                                         smoothing = smoothing[q.name],
+                                        vs_log_age = vs_log_age[q.name],
+                                        log_quantity = log_quantity[q.name],
                                         interpolator = db_interpolator)
                 for q in self._quantities
             ]
@@ -489,7 +519,9 @@ class StellarEvolutionManager :
                 serialization_path = self._serialization_path,
                 mesa_dir = track_dir,
                 smoothing = interp_smoothing,
-                nodes = interp_nodes
+                nodes = interp_nodes,
+                vs_log_age = interp_vs_log_age,
+                log_quantity = interp_log_quantity
             )
 
         actual_interpolator.save(interp_fname)
@@ -525,14 +557,18 @@ class StellarEvolutionManager :
         with db_session_scope() as db_session :
             self._get_db_config(db_session)
 
-    def get_interpolator(self,
-                         nodes = MESAInterpolator.default_nodes,
-                         smoothing = MESAInterpolator.default_smoothing,
-                         track_fnames = None,
-                         masses = None,
-                         metallicities = None,
-                         model_suite = 'MESA',
-                         new_interp_name = None) :
+    def get_interpolator(
+        self,
+        nodes = MESAInterpolator.default_nodes,
+        smoothing = MESAInterpolator.default_smoothing,
+        vs_log_age = MESAInterpolator.default_vs_log_age,
+        log_quantity = MESAInterpolator.default_log_quantity,
+        track_fnames = None,
+        masses = None,
+        metallicities = None,
+        model_suite = 'MESA',
+        new_interp_name = None
+    ) :
         """
         Return a stellar evolution interpolator with the given configuration.
 
@@ -557,6 +593,13 @@ class StellarEvolutionManager :
                 MESAInterpolator.quantity_list. See the POET code
                 StellarEvolution::Interpolator::create_from() documentation
                 for a description of what this actually means.
+            - vs_log_age:
+                Use log(age) instead of age as the independent argument for
+                the intperpolation? Should be a dictionary with keys
+                MESAInterpolator.quantity_list.
+            - log_quantity:
+                Interpolate log(quantity) instead of quantity? Should be a
+                dictionary with keys MESAInterpolator.quantity_list.
             - track_fnames:
                 A list of files containing stellar evolution tracks the
                 interpolator should be based on.
@@ -602,6 +645,8 @@ class StellarEvolutionManager :
                 track_grid = track_grid,
                 nodes = nodes,
                 smoothing = smoothing,
+                vs_log_age = vs_log_age,
+                log_quantity = log_quantity,
                 db_session = db_session
             )
             if result is not None :
@@ -609,11 +654,15 @@ class StellarEvolutionManager :
             if new_interp_name is None :
                 return None
             else : 
-                return self._create_new_interpolator(track_grid = track_grid,
-                                                     nodes = nodes,
-                                                     smoothing = smoothing,
-                                                     db_session = db_session,
-                                                     name = new_interp_name)
+                return self._create_new_interpolator(
+                    track_grid = track_grid,
+                    nodes = nodes,
+                    smoothing = smoothing,
+                    vs_log_age = vs_log_age,
+                    log_quantity = log_quantity,
+                    db_session = db_session,
+                    name = new_interp_name
+                )
 
     def get_interpolator_by_name(self, name) :
         """Return the interpolator with the given name."""

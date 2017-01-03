@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from ctypes import cdll, c_int, c_double, c_void_p, c_char_p, c_uint
+from ctypes import cdll, c_int, c_double, c_void_p, c_char_p, c_uint, c_bool
 import numpy
 import re
 
@@ -9,23 +9,25 @@ def initialize_library() :
     library = cdll.LoadLibrary('libstellarEvolution.so')
 
     num_quantities = c_int.in_dll(library, 'NUM_QUANTITIES').value
-    print('num_quantities: ' + repr(num_quantities) + ': ' +
-          repr(num_quantities))
 
     library.create_interpolator.argtypes = [
         c_char_p,
-        numpy.ctypeslib.ndpointer(
-            dtype = c_double,
-            ndim = 1,
-            shape = (num_quantities,),
-            flags = 'C_CONTIGUOUS'
-        ),
-        numpy.ctypeslib.ndpointer(
-            dtype = c_int,
-            ndim = 1,
-            shape = (num_quantities,),
-            flags = 'C_CONTIGUOUS'
-        )
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  shape = (num_quantities,),
+                                  flags = 'C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype = c_int,
+                                  ndim = 1,
+                                  shape = (num_quantities,),
+                                  flags = 'C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype = c_bool,
+                                  ndim = 1,
+                                  shape = (num_quantities,),
+                                  flags = 'C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype = c_bool,
+                                  ndim = 1,
+                                  shape = (num_quantities,),
+                                  flags = 'C_CONTIGUOUS')
     ]
     library.create_interpolator.restype = c_void_p
 
@@ -126,6 +128,12 @@ class MESAInterpolator :
     default_nodes = {q_name: library.default_nodes(q_id)
                      for q_name, q_id in quantity_ids.items()}
 
+    default_vs_log_age = {q_name: library.default_vs_log_age(q_id)
+                          for q_name, q_id in quantity_ids.items()}
+
+    default_log_quantity = {q_name: library.default_log_quantity(q_id)
+                            for q_name, q_id in quantity_ids.items()}
+
     def __init__(self, **kwargs) :
         """
         Prepare a MESA based interpolation.
@@ -142,6 +150,13 @@ class MESAInterpolator :
             - nodes:
                 A numpy integer array of the nodes to use for the
                 interpolation of each quantity. Same order as smoothing.
+            - vs_log_age:
+                A numpy boolean array indicating whether the interpolation
+                for each quantity should be done vs log(age) instead of age.
+            - log_quantity:
+                A numpy boolean array indicating whether the interpolation
+                for each quantity should be of log(quantity) instead of
+                quantity.
             - interpolator_fname: 
                 The filename of a previously saved interpolator state. Must
                 not be specified together with mesa_dir. If passed, the
@@ -154,7 +169,9 @@ class MESAInterpolator :
             self.interpolator = library.create_interpolator(
                 kwargs['mesa_dir'].encode('ascii'),
                 kwargs['smoothing'],
-                kwargs['nodes']
+                kwargs['nodes'],
+                kwargs['vs_log_age'],
+                kwargs['log_quantity']
             )
         else :
             assert('interpolator_fname' in kwargs)

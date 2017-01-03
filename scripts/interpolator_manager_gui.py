@@ -109,6 +109,14 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
             quantity: Tk.StringVar()
             for quantity in MESAInterpolator.quantity_list
         }
+        self.vs_log_age = {
+            quantity: Tk.IntVar()
+            for quantity in MESAInterpolator.quantity_list
+        }
+        self.log_quantity = {
+            quantity: Tk.IntVar()
+            for quantity in MESAInterpolator.quantity_list
+        }
 
         for quantity_name, quantity_index in \
                 MESAInterpolator.quantity_ids.items() :
@@ -134,6 +142,18 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
                 textvariable = self.smoothing[quantity_name],
                 width = 10
             ).grid(row = row, column = column)
+            if orientation == 'horizontal' : row += 1
+            else : column += 1
+            Tk.Checkbutton(
+                parent,
+                variable = self.vs_log_age[quantity_name]
+            ).grid(row = row, column = column)
+            if orientation == 'horizontal' : row += 1
+            else : column += 1
+            Tk.Checkbutton(
+                parent,
+                variable = self.log_quantity[quantity_name]
+            ).grid(row = row, column = column)
 
         if orientation == 'horizontal' : row, column = 2, 1
         else : column, row = 2, 1
@@ -143,6 +163,14 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
         else : column += 1
         Tk.Label(parent,
                  text = 'Smoothing:').grid(row = row, column = column)
+        if orientation == 'horizontal' : row += 1
+        else : column += 1
+        Tk.Label(parent,
+                 text = 'ln(t):').grid(row = row, column = column)
+        if orientation == 'horizontal' : row += 1
+        else : column += 1
+        Tk.Label(parent,
+                 text = 'ln(Q):').grid(row = row, column = column)
 
     def _refresh_interpolator(self, *ignore) :
         """
@@ -161,6 +189,12 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
             self.nodes[quantity].set(str(self.interpolator.nodes[quantity]))
             self.smoothing[quantity].set(
                 str(self.interpolator.smoothing[quantity])
+            )
+            self.vs_log_age[quantity].set(
+                self.interpolator.vs_log_age[quantity]
+            )
+            self.log_quantity[quantity].set(
+                self.interpolator.log_quantity[quantity]
             )
         self.selected_suite.set(self.interpolator.suite)
         self._refresh_suite()
@@ -204,12 +238,20 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
         smoothing = {quantity: float(tkvar.get())
                      for quantity, tkvar in self.smoothing.items()}
 
+        vs_log_age = {quantity: bool(tkvar.get())
+                      for quantity, tkvar in self.vs_log_age.items()}
+
+        log_quantity = {quantity: bool(tkvar.get())
+                        for quantity, tkvar in self.log_quantity.items()}
+
         self.interpolator = self.get_interpolator(
             masses = masses,
             metallicities = metallicities,
             model_suite = self.selected_suite.get(),
             nodes = nodes,
-            smoothing = smoothing
+            smoothing = smoothing,
+            vs_log_age = vs_log_age,
+            log_quantity = log_quantity
         )
         if self.interpolator is None :
             dialog = NewInterpolatorDialog(self.parent, self._interp_list)
@@ -221,6 +263,8 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
                     model_suite = self.selected_suite.get(),
                     nodes = nodes,
                     smoothing = smoothing,
+                    vs_log_age = vs_log_age,
+                    log_quantity = log_quantity,
                     new_interp_name = dialog.name.get()
                 )
                 self._interp_list.append(self.interpolator.name)
@@ -228,8 +272,9 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
                                    self._interp_list,
                                    self.selected_interpolator,
                                    self._refresh_interpolator)
-        self.selected_interpolator.set(self.interpolator.name)
-        self._refresh_interpolator()
+        if self.interpolator is not None :
+            self.selected_interpolator.set(self.interpolator.name)
+            self._refresh_interpolator()
 
     def __init__(self,
                  parent,

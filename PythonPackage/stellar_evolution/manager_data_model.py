@@ -6,6 +6,7 @@ from sqlalchemy import\
     Column,\
     Integer,\
     String,\
+    Boolean,\
     Numeric,\
     ForeignKey,\
     create_engine,\
@@ -154,6 +155,20 @@ class InterpolationParameters(DataModelBase) :
         nullable = True,
         doc = 'The smoothing argument used when constructing the '
         'interpolator for the given quantity.'
+    )
+    vs_log_age = Column(
+        name = 'vs_log_age',
+        type_ = Boolean,
+        nullable = False,
+        doc = 'Is the given quantity interpolation vs log(age) instead of '
+        'age?'
+    )
+    log_quantity = Column(
+        name = 'log_quantity',
+        type_ = Boolean,
+        nullable = False,
+        doc = 'Is the log of the given quantity interpolated instead of '
+        'the quantity?'
     )
     quantity = relationship('Quantity')
     interpolator = relationship('SerializedInterpolator',
