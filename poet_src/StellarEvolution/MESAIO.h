@@ -187,6 +187,16 @@ namespace StellarEvolution {
             ///quantity. See StellarEvolution::Interpolator::create_from.
             static const std::vector<int> __default_nodes;
 
+            ///\brief The default selection of interpolation argument (age vs
+            ///log(age) for each quantity. See 
+            ///StellarEvolution::Interpolator::create_from.
+            static const std::vector<bool> __default_vs_log_age;
+
+            ///\brief The default selection of interpolation function
+            ///(quantity vs log(quantity) for each quantity. See 
+            ///StellarEvolution::Interpolator::create_from.
+            static const std::vector<bool> __default_log_quantity;
+
             ///The masses of the available tracks in the order read.
             std::list<double> __mass_list;
 
@@ -276,7 +286,15 @@ namespace StellarEvolution {
                 ///
                 ///Negative values result in using min(-nodes[i],
                 ///number of tabulated ages for each track).
-                const std::vector<int> &nodes = __default_nodes
+                const std::vector<int> &nodes = __default_nodes,
+
+                ///Should interpolation be done vs. log(age) instead of age for
+                ///each quantity?
+                const std::vector<bool> &vs_log_age = __default_vs_log_age,
+
+                ///Should interpolation be done of log(quantity) instead of
+                ///quantity for each quantity?
+                const std::vector<bool> &log_quantity =__default_log_quantity
             );
 
             ///The default smoothing argument used for a given quantity.
@@ -286,12 +304,43 @@ namespace StellarEvolution {
             )
             {return __default_smoothing[quantity];}
 
+            ///Return the default smoothing argument to pass to constructor.
+            static const std::vector<double> &default_smoothing()
+            {return __default_smoothing;}
+
             ///The default interpolation nodes used for a given quantity.
             static int default_nodes(
                 ///The quantity to return the default nodes for.
                 StellarEvolution::QuantityID quantity
             )
             {return __default_nodes[quantity];}
+
+            ///Return the default nodes argument to pass to constructor.
+            static const std::vector<int> &default_nodes()
+            {return __default_nodes;}
+
+            ///By default is the given quantity interpolated vs log(age)?
+            static bool default_vs_log_age(
+                ///The quantity to return the default setting for.
+                StellarEvolution::QuantityID quantity
+            )
+            {return __default_vs_log_age[quantity];}
+
+            ///Return the default vs_log_age argument to pass to constructor.
+            static const std::vector<bool> &default_vs_log_age()
+            {return __default_vs_log_age;}
+
+            ///By default is the log(given quantity) interpolated?
+            static bool default_log_quantity(
+                ///The quantity to return the default setting for.
+                StellarEvolution::QuantityID quantity
+            )
+            {return __default_log_quantity[quantity];}
+
+            ///\brief Return the default log_quantity argument to pass to
+            ///constructor.
+            static const std::vector<bool> &default_log_quantity()
+            {return __default_log_quantity;}
         };
 
     } //End MESA namespace.

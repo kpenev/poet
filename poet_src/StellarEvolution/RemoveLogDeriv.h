@@ -8,13 +8,12 @@
 #ifndef __REMOVE_LOG_DERIV_H
 #define __REMOVE_LOG_DERIV_H
 
-#include "LogArgDerivatives.h"
+#include "../Core/LogDerivatives.h"
 
 namespace StellarEvolution {
 
-    ///\brief Makes a derivative with respect to linear argument from a
-    ///derivative with respect to log(argument).
-    class RemoveLogDeriv : public LogArgDerivatives {
+    ///\brief Return dy/dx given dy/dln(x), dln(y)/dx or dln(y)/dln(x).
+    class RemoveLogDeriv : public LogDerivatives {
     private:
         ///The original logarithmic derivative 
         const FunctionDerivatives *__log_deriv;
@@ -27,12 +26,18 @@ namespace StellarEvolution {
         {return __log_deriv->order(deriv_order);}
     public:
         ///Create a linear derivative from a log one.
-        RemoveLogDeriv(double age, const FunctionDerivatives *log_deriv,
-                       bool delete_deriv) :
-            LogArgDerivatives(age), __log_deriv(log_deriv), 
-            __delete_deriv(delete_deriv) {}
+        RemoveLogDeriv(
+            double age, 
+            bool log_quantity,
+            const FunctionDerivatives *log_deriv,
+            bool delete_deriv
+        ) :
+            LogDerivatives(age, log_quantity),
+            __log_deriv(log_deriv), 
+            __delete_deriv(delete_deriv)
+        {}
 
-        ///\brief Deletes the input logarithmic derivative if so specified on 
+        ///\brief Deletes the input logarithmic derivative if so specified on
         ///creation.
         ~RemoveLogDeriv()
         {if(__delete_deriv) delete __log_deriv;}

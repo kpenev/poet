@@ -108,11 +108,17 @@ namespace StellarEvolution {
         std::vector< std::vector<const OneArgumentDiffFunction*> >
             __interpolated_quantities;
 
+        ///Was the interpolation of the corresponding quantity vs. log(age)?
+        std::vector<bool> __vs_log_age;
+
+        ///Was the interpolation of the log(corresponding quantity)?
+        std::vector<bool> __log_quantity;
+
         ///The age at which the core starts forming in Gyr.
         double __core_formation;
 
         ///Return the index of the first non-zero value in the argument.
-        size_t find_first_core_index(
+        int find_first_core_index(
             const std::valarray<double> &core_mass
         ) const;
 
@@ -155,7 +161,15 @@ namespace StellarEvolution {
             ///the corresponding smoothing entry is NaN - no smoothing).
             ///Corresponds entry by entry with \p tabulated_quantities and
             ///\p smoothing.
-            const std::vector<int> &nodes
+            const std::vector<int> &nodes,
+
+            ///Should interpolation be done vs. log(age) instead of age for
+            ///each quantity?
+            const std::vector<bool> &vs_log_age,
+
+            ///Should interpolation be done of log(quantity) instead of
+            ///quantity for each quantity?
+            const std::vector<bool> &log_quantity
         )
         {
             create_from(tabulated_masses,
@@ -163,7 +177,9 @@ namespace StellarEvolution {
                         tabulated_ages,
                         tabulated_quantities,
                         smoothing,
-                        nodes);
+                        nodes,
+                        vs_log_age,
+                        log_quantity);
         }
 
         ///Fully setup an object created by the default constructor.
@@ -196,7 +212,15 @@ namespace StellarEvolution {
             ///the corresponding smoothing entry is NaN - no smoothing).
             ///Corresponds entry by entry with \p tabulated_quantities and
             ///\p smoothing.
-            const std::vector<int> &nodes
+            const std::vector<int> &nodes,
+
+            ///Should interpolation be done vs. log(age) instead of age for
+            ///each quantity?
+            const std::vector<bool> &vs_log_age,
+
+            ///Should interpolation be done of log(quantity) instead of
+            ///quantity for each quantity?
+            const std::vector<bool> &log_quantity
         );
 
         ///\brief Return a single quantity interpolation to a given mass and

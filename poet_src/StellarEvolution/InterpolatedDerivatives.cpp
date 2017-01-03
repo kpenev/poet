@@ -25,9 +25,10 @@ namespace StellarEvolution {
         const alglib::real_1d_array &interp_masses,
         const alglib::real_1d_array &interp_metallicities,
         double age,
+        bool log_quantity,
         bool delete_derivatives
     ) :
-        LogArgDerivatives(age),
+        LogDerivatives(age, log_quantity),
         __stellar_mass(mass),
         __stellar_metallicity(metallicity),
         __interp_deriv(derivatives),

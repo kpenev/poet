@@ -57,6 +57,28 @@ namespace StellarEvolution {
             }
         );
 
+        const std::vector<bool> Interpolator::__default_vs_log_age(
+            {
+            true,   //RADIUS
+            true,   //ICONV
+            true,   //LUM
+            true,   //IRAD
+            true,   //MRAD
+            true    //RRAD
+            }
+        );
+
+        const std::vector<bool> Interpolator::__default_log_quantity(
+            {
+            false,  //RADIUS
+            true,   //ICONV
+            false,  //LUM
+            false,  //IRAD
+            false,  //MRAD
+            false   //RRAD
+            }
+        );
+
         void Header::set_column_names()
         {
             __column_names.resize(NUM_COLUMNS);
@@ -445,7 +467,9 @@ namespace StellarEvolution {
 
         Interpolator::Interpolator(const std::string &model_directory,
                                    const std::vector<double> &smoothing,
-                                   const std::vector<int> &nodes) :
+                                   const std::vector<int> &nodes,
+                                   const std::vector<bool> &vs_log_age,
+                                   const std::vector<bool> &log_quantity) :
             __track_quantities(NUM_QUANTITIES)
         {
             std::clog << "Reading tracks from "
@@ -500,7 +524,9 @@ namespace StellarEvolution {
                         __track_ages,
                         __track_quantities,
                         smoothing,
-                        nodes);
+                        nodes,
+                        vs_log_age,
+                        log_quantity);
             std::cout << "Done with interpolation" << std::endl;
         }
     } //End MESA namespace.

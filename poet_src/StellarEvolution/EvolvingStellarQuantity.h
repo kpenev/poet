@@ -50,7 +50,10 @@ namespace StellarEvolution {
             __max_age; 
 
         ///Whether the tracks have log(age) instead of age as their argument.
-        bool __use_log_age;
+        bool __log_age;
+
+        ///Whether the tracks are of log(quantity) instead of the quantity.
+        bool __log_quantity;
 
         ///Should the quantity be assumed zero below the minimum track age.
         bool __initially_zero;
@@ -205,7 +208,7 @@ namespace StellarEvolution {
         ///If derivatives is not NULL initializes that to a pointer to a
         ///derivatives at the current age structure.
         double evaluate_track(
-            ///The age at which to evaluate the track. If ::__use_log_age is
+            ///The age at which to evaluate the track. If ::__log_age is
             ///true, the track is evaluated at log(\p track_age), otherwise
             ///it is directly passed to the track. In particular, the caller
             ///should have already transformed this argument to the correct
@@ -330,6 +333,10 @@ namespace StellarEvolution {
             ///Whether the track uses log(age) as the independent argument
             ///instead of age.
             bool log_age=true,
+
+            ///Whether the track is uses log(quantity) as the dependent 
+            ///argument instead of quantity.
+            bool log_quantity=true,
 
             ///Whether this is a quantity that is identically zero below some
             ///age and turns on afterwards

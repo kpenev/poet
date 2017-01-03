@@ -47,7 +47,16 @@ extern "C" {
 
         ///The set of interpolation nodes to use in the same order as
         ///smoothing.
-        int *nodes
+        int *nodes,
+
+        ///For each quantity the corresponding entry decides if log(age) will
+        ///be the independent argument against which interpolation is
+        ///performed (instead of age).
+        bool *vs_log_age,
+
+        ///For each quantity the corresponding entry decides if log(quantity)
+        ///will be interpolated instead of just quantity.
+        bool *log_quantity
     );
 
     ///\brief Destroy a previously created interpolator.
@@ -177,4 +186,17 @@ extern "C" {
         int quantityID
     );
 
+    ///\brief Return whether by default the given quantity is interpolated
+    ///vs. log(age).
+    bool default_vs_log_age(
+        ///The quantity to return the default nodes for.
+        int quantityID
+    );
+
+    ///\brief Return whether by default the log(given quantity) is interpolated
+    ///vs. the quantity itself.
+    bool default_log_quantity(
+        ///The quantity to return the default nodes for.
+        int quantityID
+    );
 }

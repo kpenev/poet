@@ -10,7 +10,9 @@ const int NUM_QUANTITIES = StellarEvolution::NUM_QUANTITIES;
 
 MESAInterpolator* create_interpolator(const char *mesa_dir,
                                       double *smoothing,
-                                      int *nodes)
+                                      int *nodes,
+                                      bool *vs_log_age,
+                                      bool *log_quantity)
 {
     StellarEvolution::MESA::Interpolator *result;
     if(!smoothing) {
@@ -21,7 +23,9 @@ MESAInterpolator* create_interpolator(const char *mesa_dir,
         result = new StellarEvolution::MESA::Interpolator(
             mesa_dir,
             std::vector<double>(smoothing, smoothing + NUM_QUANTITIES),
-            std::vector<int>(nodes, nodes + NUM_QUANTITIES)
+            std::vector<int>(nodes, nodes + NUM_QUANTITIES),
+            std::vector<bool>(vs_log_age, vs_log_age + NUM_QUANTITIES),
+            std::vector<bool>(log_quantity, log_quantity + NUM_QUANTITIES)
         );
     }
 
@@ -190,6 +194,22 @@ int default_nodes(int quantityID)
 {
     assert(quantityID >= 0 && quantityID < NUM_QUANTITIES);
     return StellarEvolution::MESA::Interpolator::default_nodes(
+        static_cast<StellarEvolution::QuantityID>(quantityID)
+    );
+}
+
+bool default_vs_log_age(int quantityID)
+{
+    assert(quantityID >= 0 && quantityID < NUM_QUANTITIES);
+    return StellarEvolution::MESA::Interpolator::default_vs_log_age(
+        static_cast<StellarEvolution::QuantityID>(quantityID)
+    );
+}
+
+bool default_log_quantity(int quantityID)
+{
+    assert(quantityID >= 0 && quantityID < NUM_QUANTITIES);
+    return StellarEvolution::MESA::Interpolator::default_log_quantity(
         static_cast<StellarEvolution::QuantityID>(quantityID)
     );
 }

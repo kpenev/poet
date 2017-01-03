@@ -1,8 +1,8 @@
 #ifndef __INTERPOLATED_DERIVATIVES_H
 #define __INTERPOLATED_DERIVATIVES_H
 
-#include "LogArgDerivatives.h"
 #include "mass_metallicity_interp.h"
+#include "../Core/LogDerivatives.h"
 #include "../Core/Functions.h"
 #include <vector>
 
@@ -12,7 +12,7 @@ namespace StellarEvolution {
     ///age, mass and metallicity.
     ///
     ///\ingroup StellarSystem_group
-    class InterpolatedDerivatives : public LogArgDerivatives {
+    class InterpolatedDerivatives : public LogDerivatives {
     private:
         double 
             ///The mass to interpolate to in \f$M_\odot\f$.
@@ -38,19 +38,40 @@ namespace StellarEvolution {
         ///Returns the deriv_order-th derivative of the quantity
         double calc_deriv(unsigned deriv_order) const;
     public:
-        ///\brief Create an object that interpolates derivatives from evolution
-        ///tracks.
+        ///\brief Create an object that interpolates derivatives from
+        ///evolution tracks.
         ///
-        ///If age is specified the input derivatives are assumed to be with
-        ///respect to ln(age), while derivatives always with respect to age are
-        ///output.
+        ///The input grid of derivatives may be of quantity of log(quantity)
+        ///vs. age or log(age). The returned derivatives are always of
+        ///quantity vs age (no log of anything).
         InterpolatedDerivatives(
+            ///The stellar mass at which to evaluate the interpolated
+            ///derivatives.
             double mass,
+
+            ///The stellar metallicity at which to evaluate the interpolated
+            ///derivatives.
             double metallicity,
+
+            ///The derivatives at each grid intersection.
             std::vector<const FunctionDerivatives*> *derivatives,
+
+            ///The masses of the grid intersections.
             const alglib::real_1d_array &interp_masses,
+
+            ///The sorted metallicities of the grid intersections.
             const alglib::real_1d_array &interp_metallicities,
+
+            ///If not NaN, \p derivatives are assumed to calculate
+            ///derivatives w.r.t. ln(age), whereas this object always returns
+            ///derivatives w.r.t. age.
             double age = NaN,
+
+            ///Are \p derivatives of log(quantity) instead of quantity?
+            bool log_quantity = false,
+
+            ///Should \p derivatives be deleted when this object is
+            ///destroyed?
             bool delete_derivatives = false
         );
 

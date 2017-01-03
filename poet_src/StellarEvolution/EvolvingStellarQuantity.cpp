@@ -86,7 +86,7 @@ namespace StellarEvolution {
                            __evolution_tracks[track_i]->range_low(),
                        max_track_age = 
                            __evolution_tracks[track_i]->range_high();
-                if(__use_log_age) {
+                if(__log_age) {
                     min_track_age = std::exp(min_track_age);
                     max_track_age = std::exp(max_track_age);
                 }
@@ -115,18 +115,23 @@ namespace StellarEvolution {
         const FunctionDerivatives **derivatives
     ) const
     {
-        double track_argument = (__use_log_age ? std::log(age) : age);
+        double track_argument = (__log_age ? std::log(age) : age);
         bool too_young = (track_argument < track.range_low());
 
-        if(derivatives==NULL)
-            return (too_young ? 0.0 : track(track_argument));
-        else {
+        if(derivatives==NULL) {
+            if(too_young) return 0.0;
+            else return (__log_quantity
+                         ? std::exp(track(track_argument))
+                         : track(track_argument));
+        } else {
             if(too_young) *derivatives=new Core::ZeroDerivatives;
-            else if(__use_log_age) 
-                *derivatives=new RemoveLogDeriv(age,
-                                                track.deriv(track_argument),
-                                                true);
-            else *derivatives=track.deriv(track_argument);
+            else 
+                *derivatives = new RemoveLogDeriv(
+                    (__log_age ? age : NaN),
+                    __log_quantity,
+                    track.deriv(track_argument),
+                    true
+                );
             return (*derivatives)->order(0);
         }
     }
@@ -408,6 +413,7 @@ namespace StellarEvolution {
                                                        __interp_masses,
                                                        __interp_metallicities,
                                                        NaN,
+                                                       false,
                                                        true);
             return (*derivatives)->order(0);
         }
@@ -456,11 +462,13 @@ namespace StellarEvolution {
         const std::valarray<double> &track_metallicities,
         const std::vector<const OneArgumentDiffFunction *> &evolution_tracks,
         bool log_age,
+        bool log_quantity,
         bool starts_zero
     ) :
         __mass(mass), 
         __metallicity(metallicity),
-        __use_log_age(log_age),
+        __log_age(log_age),
+        __log_quantity(log_quantity),
         __initially_zero(starts_zero),
         __track_masses(track_masses),
         __track_metallicities(track_metallicities),
