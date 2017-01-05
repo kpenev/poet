@@ -53,7 +53,7 @@ def verify_checksum(filename, checksum, what) :
         raise IOError(
             '%s with filename %s registered, with a different checksum!'
             %
-            (what.title(), repr(fname))
+            (what.title(), repr(filename))
         )
 
 class AnnotatedInterpolator(MESAInterpolator) :
