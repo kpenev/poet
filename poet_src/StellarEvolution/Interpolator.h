@@ -76,21 +76,16 @@ namespace StellarEvolution {
     ///\ingroup StellarSystem_group
     class Interpolator {
     private:
-        ///Serialize the found interpolation.
         friend class boost::serialization::access;
 
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int) {
-                if(!std::isfinite(__core_formation)) __core_formation = -1;
-                ar 
-                    & __track_masses
-                    & __track_metallicities;
-                ar 
-                    & __interpolated_quantities;
-                ar 
-                    & __core_formation;
-                if(__core_formation < 0) __core_formation = Core::Inf;
-            }
+        ///Serialize the current interpolation.
+        template<class Archive> void serialize(
+            ///The archive to serialize to.
+            Archive & ar, 
+
+            ///Version number. Ignored!
+            const unsigned int
+        ); 
 
         std::valarray<double> 
             ///The stellar masses for which evolution tracks are available in
@@ -276,6 +271,23 @@ namespace StellarEvolution {
 
         virtual ~Interpolator() {}
     }; //End of Interpolator class declaration.
+
+    ///Serialize the current interpolation.
+    template<class Archive> void Interpolator::serialize(Archive & ar,
+                                                         const unsigned int)
+    {
+        if(!std::isfinite(__core_formation)) __core_formation = -1;
+        ar & __track_masses;
+        ar & __track_metallicities;
+
+        ar & __interpolated_quantities;
+
+        ar & __vs_log_age;
+        ar & __log_quantity;
+
+        ar & __core_formation;
+        if(__core_formation < 0) __core_formation = Core::Inf;
+    }
 
 }//End of StellarEvolution namespace
 

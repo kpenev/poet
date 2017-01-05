@@ -75,103 +75,85 @@ namespace StellarEvolution {
 
         for(size_t grid_index = 0; grid_index < num_tracks; ++grid_index) {
 
-            std::valarray<double> log_ages = std::log(*ages_iter);
-            for(
-                int quantity_index = 0;
-                quantity_index < FIRST_CORE_QUANTITY;
-                ++quantity_index
-            ) {
-                std::clog << "Interpolating "
-                    << static_cast<QuantityID>(quantity_index)
-                    << std::endl;
-                __interpolated_quantities[quantity_index][grid_index] = 
-                    new Core::InterpolatingFunctionALGLIB(
-                        (vs_log_age[quantity_index] ? log_ages : *ages_iter),
-                        (
-                            log_quantity[quantity_index]
-                            ? std::log(*(track_iter[quantity_index]))
-                            : *(track_iter[quantity_index])
-                        ),
-                        std::valarray<double>(),
-                        smoothing[quantity_index],
-                        nodes[quantity_index]
-                    );
-            }
+            std::clog << "Grid point " << grid_index
+                << ": M = "
+                << tabulated_masses[grid_index % tabulated_masses.size()]
+                << ", [Fe/H] = " 
+                << tabulated_metallicities[grid_index
+                                           /
+                                           tabulated_masses.size()]
+                << std::endl;
 
             int first_core_index = (
                 tabulated_quantities[MRAD].empty()
                 ? 0
                 : find_first_core_index(*(track_iter[MRAD]))
             );
-            if(
+
+            bool no_core = (
                 first_core_index == static_cast<int>(
                     track_iter[MRAD]->size()
                 )
                 ||
                 (*(track_iter[MRAD]))[first_core_index] == 0
+            );
+
+            if(!no_core) 
+                __core_formation = std::min(
+                    __core_formation,
+                    (*ages_iter)[std::max(0, first_core_index - 1)]
+                );
+
+            std::valarray<double> log_ages = std::log(*ages_iter);
+
+            for(
+                int quantity_index = 0;
+                quantity_index < NUM_QUANTITIES;
+                ++quantity_index
             ) {
-                for(
-                    size_t quantity_index = FIRST_CORE_QUANTITY;
-                    quantity_index < NUM_QUANTITIES;
-                    ++quantity_index
-                ) {
+                std::clog << "Interpolating "
+                    << static_cast<QuantityID>(quantity_index)
+                    << std::endl;
+
+                if(quantity_index >= FIRST_CORE_QUANTITY && no_core) {
                     __interpolated_quantities[quantity_index][grid_index] = 
                         new Core::ZeroFunction();
                     __vs_log_age[quantity_index] = false;
                     __log_quantity[quantity_index] = false;
+                    continue;
                 }
-            } else {
-                std::slice core_slice(
-                    std::max(first_core_index - 1, 0),
-                    log_ages.size() - std::max(first_core_index - 1, 0),
-                    1
-                );
-                std::slice log_core_slice(first_core_index,
-                                          log_ages.size() - first_core_index,
-                                          1);
-                std::valarray<double> core_ages = (*ages_iter)[core_slice];
-                std::valarray<double>
-                    core_log_ages = log_ages[log_core_slice];
-                __core_formation = std::min(
-                    __core_formation,
-                    (*ages_iter)[std::max(first_core_index - 1, 0)]
-                );
-                for(
-                    size_t quantity_index = FIRST_CORE_QUANTITY;
-                    quantity_index < NUM_QUANTITIES;
-                    ++quantity_index
-                ) {
-                    std::clog << "Interpolating "
-                        << static_cast<QuantityID>(quantity_index)
-                        << std::endl;
-                    std::valarray<double> *interp_quantity;
-                    if(log_quantity[quantity_index])
-                        interp_quantity = new std::valarray<double>(
-                            std::log(
-                                (
-                                    *(track_iter[quantity_index])
-                                )[log_core_slice]
-                            )
-                        );
-                    else 
-                        interp_quantity = new std::valarray<double>(
-                            (*(track_iter[quantity_index]))[core_slice]
-                        );
-                    __interpolated_quantities[quantity_index][grid_index] = 
-                        new Core::InterpolatingFunctionALGLIB(
-                            (
-                                vs_log_age[quantity_index]
-                                ? core_log_ages
-                                : core_ages
-                            ),
-                            *interp_quantity,
-                            std::valarray<double>(),
-                            smoothing[quantity_index],
-                            nodes[quantity_index]
-                        );
-                    delete interp_quantity;
-                }
+
+                int first_interp_index;
+                const std::valarray<double> *interp_quantity;
+                if(log_quantity[quantity_index])
+                    interp_quantity = new std::valarray<double>(
+                        std::log(*(track_iter[quantity_index]))
+                    );
+                else
+                    interp_quantity = &(*(track_iter[quantity_index]));
+                if(quantity_index < FIRST_CORE_QUANTITY)
+                    first_interp_index = 0;
+                else if(log_quantity[quantity_index])
+                    first_interp_index = first_core_index;
+                else
+                    first_interp_index = std::max(0, first_core_index - 1);
+
+                __interpolated_quantities[quantity_index][grid_index] = 
+                    new Core::InterpolatingFunctionALGLIB(
+                        (
+                            vs_log_age[quantity_index]
+                            ? &(log_ages[first_interp_index])
+                            : &((*ages_iter)[first_interp_index])
+                        ),
+                        &((*interp_quantity)[first_interp_index]),
+                        log_ages.size() - first_interp_index,
+                        NULL,
+                        smoothing[quantity_index],
+                        nodes[quantity_index]
+                    );
+                if(log_quantity[quantity_index]) delete interp_quantity;
             }
+
             ++ages_iter;
             for(
                 size_t quantity_index = 0; 

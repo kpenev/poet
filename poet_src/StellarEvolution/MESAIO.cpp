@@ -71,7 +71,7 @@ namespace StellarEvolution {
         const std::vector<bool> Interpolator::__default_log_quantity(
             {
             false,  //RADIUS
-            true,   //ICONV
+            false,   //ICONV
             false,  //LUM
             false,  //IRAD
             false,  //MRAD
@@ -211,12 +211,6 @@ namespace StellarEvolution {
             while(mass_iter != __mass_list.end()) {
                 assert(metallicity_iter != __metallicity_list.end());
                 assert(age_iter != __track_ages.end());
-                std::clog
-                    << "M = " << *mass_iter
-                    << ", [Fe/H] = " << *metallicity_iter
-                    << ", age range = " << (*age_iter)[0]
-                    << " - " << (*age_iter)[age_iter->size() -1]
-                    << std::endl;
                 ++mass_iter;
                 ++metallicity_iter;
                 ++age_iter;
@@ -252,6 +246,51 @@ namespace StellarEvolution {
             );
             __mass_list.push_back(std::round(PRECISION * mass) / PRECISION);
             return true;
+        }
+
+        ///Used as comparison when sorting quantities by age.
+        class CompareAges {
+        private:
+            const std::valarray<double> __ages;
+        public:
+            CompareAges(const std::valarray<double> &ages) : __ages(ages) {}
+
+            bool operator()(size_t i1, size_t i2)
+            {return __ages[i1] < __ages[i2];}
+        };
+
+        void Interpolator::sort_last_track_by_age()
+        {
+            if(
+                std::is_sorted(std::begin(__track_ages.back()), 
+                               std::end(__track_ages.back()))
+            )
+                return;
+
+            std::valarray<size_t> age_sorting_indices(
+                __track_ages.back().size()
+            );
+            for(size_t i = 0; i < __track_ages.back().size(); ++i)
+                age_sorting_indices[i] = i;
+            std::sort(std::begin(age_sorting_indices),
+                      std::end(age_sorting_indices),
+                      CompareAges(__track_ages.back()));
+
+            __track_ages.back() = std::valarray<double>(
+                __track_ages.back()[age_sorting_indices]
+            );
+            assert(
+                std::is_sorted(std::begin(__track_ages.back()),
+                               std::end(__track_ages.back()))
+            );
+            for(
+                int quantity = 0;
+                quantity < StellarEvolution::NUM_QUANTITIES;
+                ++quantity
+            ) 
+                __track_quantities[quantity].back() = std::valarray<double>(
+                    __track_quantities[quantity].back()[age_sorting_indices]
+                );
         }
 
         void Interpolator::read_model_file(const std::string &filename)
@@ -299,6 +338,7 @@ namespace StellarEvolution {
                         Core::list_to_valarray(track_columns[column])
                     );
             }
+            sort_last_track_by_age();
         }
 
         void Interpolator::get_mass_metallicity_grid(

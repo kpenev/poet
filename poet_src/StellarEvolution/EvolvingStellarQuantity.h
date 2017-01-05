@@ -15,6 +15,8 @@
 #include "InterpolatedDerivatives.h"
 #include "mass_metallicity_interp.h"
 #include "../Core/Functions.h"
+#include "../Core/InterpSolutionIterator.h"
+#include "../Core/InterpolatingFunctionALGLIB.h"
 #include "../Core/Error.h"
 #include <valarray>
 #include <list>

@@ -230,6 +230,9 @@ namespace StellarEvolution {
             ///unchanged.
             bool parse_model_file_name(const std::string &filename);
 
+            ///Sorts the quantities read from the last track by age.
+            void sort_last_track_by_age();
+
             ///Reads a single evolution track file
             void read_model_file(const std::string &filename);
 
