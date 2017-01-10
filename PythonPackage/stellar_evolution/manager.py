@@ -443,6 +443,10 @@ class StellarEvolutionManager :
                 see get_interpolator().
             - smoothing:
                 see get_interpolator().
+            - vs_log_age:
+                 see get_interpolator().
+            - log_quantity:
+                 see get_interpolator().
             - name:
                 The name to assign to the new interpolator. If None, the UUID
                 used to form the filename is used.

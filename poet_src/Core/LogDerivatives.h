@@ -63,8 +63,8 @@ namespace StellarEvolution {
         ) const;
 
     protected:
-        ///\brief Should be overwritten to calculate the derivatives with respect
-        ///to either arg or log(arg) as specified on construction.
+        ///\brief Should be overwritten to calculate the derivatives with
+        ///respect to either arg or log(arg) as specified on construction.
         virtual double calc_deriv(unsigned deriv_order) const =0;
     public:
         ///\brief Create a derivative for possibly log(functions) of possibly

@@ -36,17 +36,21 @@ namespace StellarEvolution {
         unsigned order
     ) const
     {
-        switch(order) {
-            case 0: 
-                return std::exp(uncorrected_derivative);
-            case 1: 
-                return __deriv_values[0] * uncorrected_derivative;
-            case 2:
+        if(order == 0)
+            return std::exp(uncorrected_derivative);
+        else if(order == 1)
+            return __deriv_values[0] * uncorrected_derivative;
+        else if(order == 2) {
+            if(__deriv_values[0] == 0) {
+                assert(__deriv_values[1] == 0);
+                return 0.0;
+            } else {
                 return (
                     __deriv_values[0] * uncorrected_derivative
                     +
                     __deriv_values[1] * __deriv_values[1] / __deriv_values[0]
                 );
+            }
         }
     }
 
@@ -55,7 +59,7 @@ namespace StellarEvolution {
         if(__deriv_values.size() <= deriv_order) {
             for(
                 unsigned order = __deriv_values.size();
-                order < deriv_order; 
+                order <= deriv_order; 
                 ++order
             ) {
                 __underlying_deriv_values.push_back(calc_deriv(order));

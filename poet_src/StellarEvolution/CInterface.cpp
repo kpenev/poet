@@ -167,6 +167,20 @@ double quantity_max_age(const EvolvingStellarQuantity* quantity)
         )->range_high();
 }
 
+void quantity_continuous_range(const EvolvingStellarQuantity* quantity,
+                               double age,
+                               double *range_min,
+                               double *range_max)
+{
+    const StellarEvolution::EvolvingStellarQuantity* actual_quantity =
+        reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
+            quantity
+        );
+    actual_quantity->select_interpolation_region(age);
+    *range_min = actual_quantity->previous_discontinuity();
+    *range_max = actual_quantity->next_discontinuity();
+}
+
 void save_interpolator(MESAInterpolator *interpolator, const char *filename)
 {
     reinterpret_cast<const StellarEvolution::MESA::Interpolator*>(

@@ -364,7 +364,8 @@ namespace StellarEvolution {
 
         ///\brief The smallest age for which the quantity can be interpolated
         ///in Gyr.
-        virtual double range_low() const {return __min_age;}
+        virtual double range_low() const 
+        {return (__initially_zero ? -Core::Inf : __min_age);}
 
         ///The ages at which the quantity may be discontinuous.
         virtual const std::vector<double> &discontinuities() const
@@ -378,6 +379,10 @@ namespace StellarEvolution {
         ///by ::enable_next_interpolation_region.
         virtual double next_discontinuity() const
         {return *__next_grid_change_age;}
+
+        ///\brief The lower bound of the current inteprolation region (over
+        ///which the quantity is guaranteed continuous).
+        virtual double previous_discontinuity() const;
 
         ///\brief Set up the interpolation over the next interpolation region
         ///(between consecutive discontinuities.)

@@ -157,6 +157,13 @@ extern "C" {
         const EvolvingStellarQuantity* quantity
     );
 
+    ///\brief Return the range of ages surrounding a given age over which a
+    ///quantity is guaranteed continuous.
+    void quantity_continuous_range(const EvolvingStellarQuantity* quantity,
+                                   double age,
+                                   double *range_min,
+                                   double *range_max);
+
     ///Save the state of an interpolator for faster creation.
     void save_interpolator(
         ///The interpolator to save. Must have previously been created

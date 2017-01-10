@@ -112,7 +112,13 @@ namespace StellarEvolution {
                 ++quantity_index
             ) {
                 std::clog << "Interpolating "
-                    << static_cast<QuantityID>(quantity_index)
+                    << (log_quantity[quantity_index] ? "ln(" : "")
+                    << QUANTITY_NAME[quantity_index]
+                    << (log_quantity[quantity_index] ? ") " : " ")
+                    << "vs "
+                    << (vs_log_age[quantity_index] ? "log(t)" : "t")
+                    << ": nodes: " << nodes[quantity_index]
+                    << ", smoothing: " << smoothing[quantity_index]
                     << std::endl;
 
                 if(quantity_index >= FIRST_CORE_QUANTITY && no_core) {

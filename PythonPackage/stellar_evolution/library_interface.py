@@ -1,5 +1,8 @@
 #!/usr/bin/python
-from ctypes import cdll, c_int, c_double, c_void_p, c_char_p, c_uint, c_bool
+from ctypes import\
+    cdll,\
+    c_int, c_double, c_void_p, c_char_p, c_uint, c_bool,\
+    byref
 import numpy
 import re
 
@@ -56,6 +59,8 @@ def initialize_library() :
     library.quantity_min_age.restype = c_double
 
     library.quantity_max_age.restype = c_double
+
+    library.quantity_continuous_range.restype = None
 
     library.save_interpolator.argtypes = [c_void_p, c_char_p]
     library.save_interpolator.restype = None
@@ -288,6 +293,24 @@ class Quantity :
         else :
             return library.differentiate_quantity(self.underlying_quantity,
                                                   c_double(age))
+
+    def continuous_range(self, age) :
+        """
+        Return the range around age over which the quantity is continuous.
+
+        Args:
+            - age: The age around which the continuous region is required.
+
+        Returns: A 2-tuple of the minimum and maximum ages surrounding age
+                 over thich the quantity is guaranteed continuous
+        """
+
+        min_age, max_age = c_double(), c_double()
+        library.quantity_continuous_range(self.underlying_quantity,
+                                          c_double(age),
+                                          byref(min_age),
+                                          byref(max_age))
+        return min_age.value, max_age.value
 
 if __name__ == '__main__' :
     mesa_dir = '../poet_src/StellarEvolution/MESA'

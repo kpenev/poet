@@ -90,14 +90,10 @@ namespace StellarEvolution {
                     min_track_age = std::exp(min_track_age);
                     max_track_age = std::exp(max_track_age);
                 }
-                __min_interp_ages[track_i] = (
-                    __initially_zero 
-                    ? -Core::Inf 
-                    : interp_param_to_age(
-                        age_to_interp_param(min_track_age,
-                                            track_mass,
-                                            track_metallicity)
-                    )
+                __min_interp_ages[track_i] = interp_param_to_age(
+                    age_to_interp_param(min_track_age,
+                                        track_mass,
+                                        track_metallicity)
                 );
                 __max_interp_ages[track_i] = interp_param_to_age(
                     age_to_interp_param(max_track_age,
@@ -116,24 +112,22 @@ namespace StellarEvolution {
     ) const
     {
         double track_argument = (__log_age ? std::log(age) : age);
-        bool too_young = (track_argument < track.range_low());
-
-        if(derivatives==NULL) {
-            if(too_young) return 0.0;
-            else return (__log_quantity
-                         ? std::exp(track(track_argument))
-                         : track(track_argument));
-        } else {
-            if(too_young) *derivatives=new Core::ZeroDerivatives;
-            else 
-                *derivatives = new RemoveLogDeriv(
-                    (__log_age ? age : NaN),
-                    __log_quantity,
-                    track.deriv(track_argument),
-                    true
-                );
-            return (*derivatives)->order(0);
+        if(track_argument < track.range_low()) {
+            assert(std::abs(track_argument - track.range_low()) 
+                   <
+                   1e-8 * std::abs(track_argument)); 
+            track_argument = track.range_low();
         }
+
+        if(derivatives) {
+            *derivatives = new RemoveLogDeriv(
+                (__log_age ? age : NaN),
+                false,
+                track.deriv(track_argument),
+                true
+            );
+            return (*derivatives)->order(0);
+        } else return track(track_argument);
     }
 
     void EvolvingStellarQuantity::check_grid_expansion_directions(
@@ -351,6 +345,10 @@ namespace StellarEvolution {
         const FunctionDerivatives **derivatives
     ) const
     {
+        if(age < __min_age && __initially_zero) {
+            if(derivatives) *derivatives=new Core::ZeroDerivatives;
+            return 0.0;
+        }
         assert(__min_age <= age && age <= __max_age);
         assert(__next_grid_change_age != __interp_grid_change_ages.begin());
 #ifndef NDEBUG
@@ -400,21 +398,24 @@ namespace StellarEvolution {
                 ++value_index;
             }
         }
-        if(derivatives == NULL)
-            return mass_metallicity_interp(__interp_masses,
-                                           __interp_metallicities,
-                                           track_values,
-                                           __mass,
-                                           __metallicity);
-        else {
-            *derivatives = new InterpolatedDerivatives(__mass,
-                                                       __metallicity,
-                                                       track_derivatives,
-                                                       __interp_masses,
-                                                       __interp_metallicities,
-                                                       NaN,
-                                                       false,
-                                                       true);
+        if(derivatives == NULL) {
+            double result = mass_metallicity_interp(__interp_masses,
+                                                    __interp_metallicities,
+                                                    track_values,
+                                                    __mass,
+                                                    __metallicity);
+            return (__log_quantity ? std::exp(result) : result);
+        } else {
+            *derivatives = new InterpolatedDerivatives(
+                __mass,
+                __metallicity,
+                track_derivatives,
+                __interp_masses,
+                __interp_metallicities,
+                NaN,
+                __log_quantity,
+                true
+            );
             return (*derivatives)->order(0);
         }
     }
@@ -483,18 +484,20 @@ namespace StellarEvolution {
         set_interp_age_ranges();
 
         if(starts_zero) {
-            __interp_grid_change_ages.reserve(evolution_tracks.size() + 1);
+            __interp_grid_change_ages.reserve(2 * evolution_tracks.size()
+                                              +
+                                              1);
             __interp_grid_change_ages.insert(__interp_grid_change_ages.end(),
                                              -Core::Inf);
 
         } else {
             __interp_grid_change_ages.reserve(2 * evolution_tracks.size());
-            __interp_grid_change_ages.insert(
-                __interp_grid_change_ages.end(),
-                &__min_interp_ages[0],
-                &__min_interp_ages[0] + __min_interp_ages.size()
-            );
         }
+        __interp_grid_change_ages.insert(
+            __interp_grid_change_ages.end(),
+            &__min_interp_ages[0],
+            &__min_interp_ages[0] + __min_interp_ages.size()
+        );
         __interp_grid_change_ages.insert(
             __interp_grid_change_ages.end(),
             &__max_interp_ages[0],
@@ -509,12 +512,12 @@ namespace StellarEvolution {
 
         find_cell(__track_masses,
                   mass,
-                  __mass_index_above,
-                  __mass_index_below);
+                  __mass_index_below,
+                  __mass_index_above);
         find_cell(__track_metallicities,
                   metallicity,
-                  __metallicity_index_above,
-                  __metallicity_index_below);
+                  __metallicity_index_below,
+                  __metallicity_index_above);
 
         __min_age = __min_interp_ages[
             track_index(__mass_index_below, __metallicity_index_below)
@@ -580,6 +583,16 @@ namespace StellarEvolution {
         const FunctionDerivatives *deriv;
         interpolate(age, &deriv);
         return deriv;
+    }
+
+    double EvolvingStellarQuantity::previous_discontinuity() const
+    {
+        if(__next_grid_change_age == __interp_grid_change_ages.begin()) {
+            assert(__initially_zero);
+            return -Core::Inf;
+        }
+        std::vector<double>::const_iterator result = __next_grid_change_age;
+        return *(--result);
     }
 
     void EvolvingStellarQuantity::enable_next_interpolation_region() const
