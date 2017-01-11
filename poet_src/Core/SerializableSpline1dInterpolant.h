@@ -56,6 +56,7 @@ namespace Core {
         const unsigned int
     )
     {
+        alglib_impl::ae_int_t c_length, x_length;
         ar & p_struct->periodic;
         ar & p_struct->n;
         ar & p_struct->k;
@@ -65,11 +66,15 @@ namespace Core {
         ar & p_struct->x.datatype;
         if (Archive::is_loading::value) {
             using namespace alglib_impl;
-            p_struct->c.ptr.p_double = (double*)
-                ae_malloc((p_struct->n - 1) * 4 * sizeof(double),
-                          NULL);
-            p_struct->x.ptr.p_double = (double*)
-                ae_malloc((p_struct->n) * sizeof(double), NULL);
+            ae_state state;
+            ae_vector_init(&p_struct->c,
+                           (p_struct->n - 1) * 4 + 2,
+                           p_struct->c.datatype,
+                           &state);
+            ae_vector_init(&p_struct->x,
+                           p_struct->n,
+                           p_struct->x.datatype,
+                           &state);
         }
         for (
             int node_index=0;

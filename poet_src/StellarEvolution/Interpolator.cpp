@@ -187,6 +187,28 @@ namespace StellarEvolution {
         );
     }
 
+    void Interpolator::delete_tracks()
+    {
+        size_t num_tracks = (__track_masses.size()
+                             *
+                             __track_metallicities.size());
+
+        for(
+            std::vector< 
+                std::vector<const OneArgumentDiffFunction*>
+            >::iterator quantity_tracks = __interpolated_quantities.begin();
+            quantity_tracks != __interpolated_quantities.end();
+            ++quantity_tracks
+        )
+            for(
+                std::vector<const OneArgumentDiffFunction*>::iterator 
+                    track = quantity_tracks->begin();
+                track != quantity_tracks->end();
+                ++track
+            )
+                if(*track) delete *track;
+    }
+
 #ifndef NO_SERIALIZE
     void Interpolator::load_state(const std::string &filename)
     {

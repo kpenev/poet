@@ -61,11 +61,13 @@ LINK_FLAGS      = $(addprefix -L, $(LINK_PATHS))
 
 STELLAR_EVOL_LIB= ../build/libs/stellarEvolution/static/debug/libstellarEvolution.a
 
+ALGLIB_LIB= ../build/libs/alglib/static/debug/libalglib.a
+
 LIBRARIES		=  $(STELLAR_EVOL_LIB)\
+				   $(ALGLIB_LIB)\
 				   -lcpptest\
 				   $(GSL_LIB)\
-				   $(BOOST_LIB)\
-				   -lalglib
+				   $(BOOST_LIB)
 CFLAGS_COMMON   = -g -Wall -O0 -std=c++11
 CFLAGS          = $(CFLAGS_COMMON)
 
@@ -87,7 +89,7 @@ $(ALGLIB_TARGET):
 	@cd $(ALGLIB_SRCPATH) && make COMPILER="$(COMPILER)" CFLAGS="$(CFLAGS)" \
 		ALGLIB_MODULES="$(ALGLIB_MODULES)" 2>/dev/null
 
-test_MESAIO: test_MESAIO.h test_MESAIO.cpp ../StellarEvolution/interface/MESAIO.h ../IO/IOUtil.h $(STELLAR_EVOL_LIB)
+test_MESAIO: test_MESAIO.h test_MESAIO.cpp ../StellarEvolution/MESAIO.h ../IO/IOUtil.h $(STELLAR_EVOL_LIB)
 	$(COMPILER) $(CFLAGS) -D STANDALONE $(INCLUDE_FLAGS) $(LINK_FLAGS) -o test_MESAIO test_MESAIO.cpp $(LIBRARIES)
 
 #############################################################################

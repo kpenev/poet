@@ -158,9 +158,13 @@ namespace StellarEvolution {
 
             ///The age to which interpolation is desired.
             double age) const
-        {return (__min_interp_ages[track_i] <= age
-                 &&
-                 __max_interp_ages[track_i] >= age);}
+        {
+            assert(track_i < __min_interp_ages.size());
+            assert(track_i < __max_interp_ages.size());
+            return (__min_interp_ages[track_i] <= age
+                    &&
+                    __max_interp_ages[track_i] >= age);
+        }
 
         ///\brief Answer if a given track can participate in interpolating to 
         ///the given age.
@@ -342,7 +346,8 @@ namespace StellarEvolution {
 
             ///Whether this is a quantity that is identically zero below some
             ///age and turns on afterwards
-            bool starts_zero=false);
+            bool starts_zero=false
+        );
 
         ///\brief Prepare the quantity for interpolation around the given
         ///age.

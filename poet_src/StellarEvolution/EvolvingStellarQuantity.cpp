@@ -207,8 +207,8 @@ namespace StellarEvolution {
             grow.lighter()
             &&
             track_in_range(__min_interp_mass_index - 1,
-                           std::max(size_t(0),
-                                    __min_interp_metallicity_index - 1),
+                           std::max(size_t(1),
+                                    __min_interp_metallicity_index) - 1,
                            age)
             &&
             track_in_range(__min_interp_mass_index - 1,
@@ -224,8 +224,8 @@ namespace StellarEvolution {
             grow.heavier()
             &&
             track_in_range(__max_interp_mass_index,
-                           std::max(size_t(0),
-                                    __min_interp_metallicity_index - 1),
+                           std::max(size_t(1),
+                                    __min_interp_metallicity_index) - 1,
                            age)
             &&
             track_in_range(__max_interp_mass_index,
@@ -240,12 +240,12 @@ namespace StellarEvolution {
         if(
             grow.poorer()
             &&
-            track_in_range(std::max(size_t(0), __min_interp_mass_index - 1),
+            track_in_range(std::max(size_t(1), __min_interp_mass_index) - 1,
                            __min_interp_metallicity_index - 1,
                            age)
             &&
             track_in_range(std::min(__max_interp_mass_index,
-                                    __track_masses.size()),
+                                    __track_masses.size() - 1),
                            __min_interp_metallicity_index - 1,
                            age)
         ) {
@@ -256,12 +256,12 @@ namespace StellarEvolution {
         if(
             grow.richer()
             &&
-            track_in_range(std::max(size_t(0), __min_interp_mass_index - 1),
+            track_in_range(std::max(size_t(1), __min_interp_mass_index) - 1,
                            __max_interp_metallicity_index,
                            age)
             &&
             track_in_range(std::min(__max_interp_mass_index,
-                                    __track_masses.size()),
+                                    __track_masses.size() - 1),
                            __max_interp_metallicity_index,
                            age)
         ) {
@@ -303,6 +303,16 @@ namespace StellarEvolution {
     {
         std::vector<double>::const_iterator
             lower_age = __next_grid_change_age;
+        if(__next_grid_change_age == __interp_grid_change_ages.begin()) {
+            assert(__initially_zero);
+            __min_interp_mass_index = 0;
+            __max_interp_mass_index = 0;
+            __min_interp_metallicity_index = 0;
+            __max_interp_metallicity_index = 0;
+            __interp_masses.setlength(0);
+            __interp_metallicities.setlength(0);
+            return;
+        }
         --lower_age;
         double age = 0.5 * (*lower_age + *__next_grid_change_age);
 

@@ -123,7 +123,8 @@ namespace StellarEvolution {
         Interpolator() :
             __track_masses(),
             __track_metallicities(),
-            __interpolated_quantities(NUM_QUANTITIES)
+            __interpolated_quantities(NUM_QUANTITIES),
+            __core_formation(Core::NaN)
         {}
 
         ///\brief Creates a fully functional stellar evolution interpolator.
@@ -268,6 +269,15 @@ namespace StellarEvolution {
             ///The name of a file previously created using save_state()
             const std::string &filename="../interp_state_data"
         );
+
+        ///\brief Free all evolution tracks, rendering all created quantities
+        ///unuseable!
+        ///
+        ///Essentially an only explicitly called destructor. The reason for
+        ///requiring explicit destruction is that generated quantities cannot
+        ///be used after this method is invoked, and not invoking it simply
+        ///causes a benign memory leak.
+        void delete_tracks();
 
         virtual ~Interpolator() {}
     }; //End of Interpolator class declaration.

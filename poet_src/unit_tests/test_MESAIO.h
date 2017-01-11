@@ -9,7 +9,8 @@
 #define __TEST_MESAIO_H
 
 //#include "Common.h"
-#include "StellarEvolution/interface/MESAIO.h"
+#include "StellarEvolution/MESAIO.h"
+#include "Core/Functions.h"
 #include "IO/IOUtil.h"
 #include <cpptest.h>
 #include <sstream>
