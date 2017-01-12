@@ -96,6 +96,7 @@ class TestStellarEvolution(unittest.TestCase) :
                                     abs(expected - got),
                                     error
                                 )
+                    quantity.delete()
 
 
 if __name__ == '__main__' :

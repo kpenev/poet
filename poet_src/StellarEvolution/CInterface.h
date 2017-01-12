@@ -102,7 +102,7 @@ extern "C" {
     );
 
     ///Evaluate a stellar quantity at an array of ages.
-    double *evaluate_quantity_array(
+    void evaluate_quantity_array(
         ///The quantity to evaluate. Must be previously created using
         ///interpolate()
         const EvolvingStellarQuantity *quantity,
@@ -111,17 +111,23 @@ extern "C" {
         double *age,
 
         ///The number of ages at which evaluation is required.
-        unsigned nvalues
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: nvalues) where to place the result.
+        double *result
     );
 
     ///Calculate the zeroth, first and second derivatives of a quantity.
-    double *differentiate_quantity(
+    void differentiate_quantity(
         ///The quantity to differentiate. Must be previously created using
         ///interpolate().
         const EvolvingStellarQuantity* quantity,
 
         ///The age at which to differentiate the quantity in Gyrs.
-        double age
+        double age,
+
+        ///A pre-allocated array of size 3 where to place the result.
+        double *result
     );
 
     ///\brief Calculate the derivatives of a quantity at an array of ages.
@@ -131,7 +137,7 @@ extern "C" {
     ///consecutive nvalues entries are the function values at echo of the
     ///nvalues ages, the next nvalues entries are the first derivatives at
     ///each age etc. 
-    double *differentiate_quantity_array(
+    void differentiate_quantity_array(
         ///The quantity to differentiate. Must be previously created using
         ///interpolate()
         const EvolvingStellarQuantity *quantity,
@@ -140,7 +146,11 @@ extern "C" {
         double *age,
 
         ///The number of ages at which evaluation is required.
-        unsigned nvalues
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: 3 * nvalues) where to place the 
+        ///result.
+        double *result
     );
 
     ///Return the minimum age for which the quantity is defined.

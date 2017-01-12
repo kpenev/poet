@@ -2,7 +2,7 @@
 from ctypes import\
     cdll,\
     c_int, c_double, c_void_p, c_char_p, c_uint, c_bool,\
-    byref
+    byref, POINTER
 import numpy
 import re
 
@@ -53,7 +53,10 @@ def initialize_library() :
         numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
-        c_uint
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS'),
     ]
 
     library.quantity_min_age.restype = c_double
@@ -68,19 +71,23 @@ def initialize_library() :
     library.load_interpolator.argtypes = [c_char_p]
     library.load_interpolator.restype = c_void_p
 
-    library.differentiate_quantity.argtypes = [c_void_p, c_double]
-    library.differentiate_quantity.restype = numpy.ctypeslib.ndpointer(
-        dtype = c_double,
-        shape = (3,),
-        flags = 'C_CONTIGUOUS'
-    )
+    library.differentiate_quantity.argtypes = [
+        c_void_p,
+        c_double,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS')
+    ]
 
     library.differentiate_quantity_array.argtypes = [
         c_void_p,
         numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
-        c_uint
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS')
     ]
 
     library.default_smoothing.argtypes = [c_int]
@@ -184,7 +191,7 @@ class MESAInterpolator :
                 kwargs['interpolator_fname'].encode('ascii')
             )
 
-    def delete() :
+    def delete(self) :
         """
         Free the resources allocated at construction.
         """
@@ -237,7 +244,7 @@ class Quantity :
         self.min_age = library.quantity_min_age(underlying_quantity)
         self.max_age = library.quantity_max_age(underlying_quantity)
 
-    def delete() :
+    def delete(self) :
         """Destroy the underlying quantity."""
 
         library.destroy_quantity(self.underlying_quantity)
@@ -254,14 +261,14 @@ class Quantity :
         """
 
         if type(age) is numpy.ndarray :
-            library.evaluate_quantity_array.restype = (
-                numpy.ctypeslib.ndpointer(dtype = c_double,
-                                          shape = (age.size,),
-                                          flags = 'C_CONTIGUOUS')
-            )
-            return library.evaluate_quantity_array(self.underlying_quantity,
-                                                   age,
-                                                   age.size)
+            result = numpy.empty(dtype = c_double,
+                                 shape = (age.size,),
+                                 order = 'C')
+            library.evaluate_quantity_array(self.underlying_quantity,
+                                            age,
+                                            age.size,
+                                            result)
+            return result
         else :
             return library.evaluate_quantity(self.underlying_quantity,
                                              c_double(age))
@@ -280,19 +287,23 @@ class Quantity :
         """
 
         if type(age) is numpy.ndarray :
-            library.differentiate_quantity_array.restype = (
-                numpy.ctypeslib.ndpointer(dtype = c_double,
-                                          shape = (3, age.size),
-                                          flags = 'C_CONTIGUOUS')
-            )
-            return library.differentiate_quantity_array(
+            result = numpy.empty(dtype = c_double,
+                                 shape = (3, age.size),
+                                 order = 'C')
+            library.differentiate_quantity_array(
                 self.underlying_quantity,
                 age,
-                age.size
+                age.size,
+                result.reshape(3 * age.size)
             )
         else :
-            return library.differentiate_quantity(self.underlying_quantity,
-                                                  c_double(age))
+            result = numpy.empty(dtype = c_double,
+                                 shape = (3,),
+                                 order = 'C')
+            library.differentiate_quantity(self.underlying_quantity,
+                                           c_double(age),
+                                           result)
+        return result
 
     def continuous_range(self, age) :
         """
