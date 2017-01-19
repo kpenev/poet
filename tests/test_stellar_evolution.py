@@ -19,25 +19,27 @@ class TestStellarEvolution(unittest.TestCase) :
         self.interp = StellarEvolutionManager(
             '../stellar_evolution_interpolators'
         ).get_interpolator_by_name('default_all_log')
-        self.num_test_masses = 1
-        self.num_test_metallicities = 1
-        self.num_test_ages = 100
+        self.num_test_masses = 10
+        self.num_test_metallicities = 10
+        self.num_test_ages = 10
         print('Done')
 
     def test_derivatives(self) :
         """Tests that derivatives integrate to lower order ones."""
 
-        check_masses = [1.0] #scipy.random.uniform(
-#            min(self.interp.track_masses),
-#            max(self.interp.track_masses),
-#            self.num_test_masses
-#        )
+        check_masses = scipy.random.uniform(
+            min(self.interp.track_masses),
+            max(self.interp.track_masses),
+            self.num_test_masses
+        )
+        check_masses[0] = 1.0
         for mass in check_masses :
-            check_metallicities = [0.0]#scipy.random.uniform(
-#                min(self.interp.track_metallicities),
-#                max(self.interp.track_metallicities),
-#                self.num_test_metallicities
-#            )
+            check_metallicities = scipy.random.uniform(
+                min(self.interp.track_metallicities),
+                max(self.interp.track_metallicities),
+                self.num_test_metallicities
+            )
+            check_metallicities[0] = 0.0
             for metallicity in check_metallicities :
                 min_reference_age = self.interp('RADIUS',
                                                 mass,
@@ -83,7 +85,7 @@ class TestStellarEvolution(unittest.TestCase) :
                                 scipy.log(age),
                                 limit = 1000
                             )
-                            error = max(error, 1e-8 * abs(expected))
+                            error = max(3.0 * error, 1e-8 * abs(expected))
                             print('Expected %f, got %f +- %f'
                                   %
                                   (expected, got, error))

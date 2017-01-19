@@ -1,7 +1,7 @@
 """Define class for managing many stellar evolution interpolations."""
 
-from .library_interface import\
-    MESAInterpolator,\
+from .change_variables import\
+    VarChangingInterpolator,\
     library_track_fname_rex,\
     library_track_fname
 from .manager_data_model import\
@@ -56,8 +56,29 @@ def verify_checksum(filename, checksum, what) :
             (what.title(), repr(filename))
         )
 
-class AnnotatedInterpolator(MESAInterpolator) :
-    """A MESAinterpolator with properties describing the configuration."""
+class ManagedInterpolator(VarChangingInterpolator) :
+    """Add properties describing the configuration of an interpolator."""
+
+    def _new_var_change_grid(metallicities, massses, ages) :
+        """
+        Generate, save and register with DB a grid of Teff, rho, L, log10(g).
+
+        Args:
+            - metallicities:
+                The [Fe/H] values at which to tabulate the dependent
+                variables.
+            - masses:
+                The stellar masses at which to tabulate the dependent
+                variables.
+            - ages:
+                The ages (in Gyrs) at which to tabulate the dependent
+                variables.
+
+        Returns:
+            A numpy record array with keys: Teff, rho, L, logg. Each record
+            is a 3-d array where the indices in the following order:
+            metallicity, mass, age.
+        """
 
     def __init__(self, db_interpolator, serialization_path, **kwargs) :
         """
@@ -420,7 +441,7 @@ class StellarEvolutionManager :
         if result is None : 
             return result
         else :
-            return AnnotatedInterpolator(
+            return ManagedInterpolator(
                 db_interpolator = result,
                 serialization_path = self._serialization_path
             )
@@ -518,7 +539,7 @@ class StellarEvolutionManager :
                 for q in self._quantities
             ]
 
-            actual_interpolator = AnnotatedInterpolator(
+            actual_interpolator = ManagedInterpolator(
                 db_interpolator = db_interpolator,
                 serialization_path = self._serialization_path,
                 mesa_dir = track_dir,
@@ -672,7 +693,7 @@ class StellarEvolutionManager :
         """Return the interpolator with the given name."""
 
         with db_session_scope() as db_session :
-            return AnnotatedInterpolator(
+            return ManagedInterpolator(
                 db_interpolator = db_session.query(
                     SerializedInterpolator
                 ).filter_by(

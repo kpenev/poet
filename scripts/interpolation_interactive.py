@@ -4,6 +4,8 @@ import matplotlib
 
 matplotlib.use('TkAgg')
 
+import matplotlib.pyplot
+
 import sys
 sys.path.append('../PythonPackage')
 
@@ -55,107 +57,128 @@ class InterpolationInteractive :
                                # Fatal Python Error: PyEval_RestoreThread:
                                # NULL tstate
 
-    def display(self) :
-        """(Re-)draw the plot as currently configured by the user."""
+    def get_interpolated_quantity(self, star_mass, star_metallicity) :
+        """Return a callable for plotting an interpolation quantity."""
 
-        def get_interpolated_quantity(star_mass, star_metallicity) :
-            """Return a callable for plotting an interpolation quantity."""
+        if (
+                star_mass < self.track_mass[0]
+                or
+                star_mass > self.track_mass[-1]
+                or
+                star_metallicity < self.track_metallicity[0]
+                or
+                star_metallicity > self.track_metallicity[-1]
+        ) :
+            return None
 
-            if (
-                    star_mass < self.track_mass[0]
-                    or
-                    star_mass > self.track_mass[-1]
-                    or
-                    star_metallicity < self.track_metallicity[0]
-                    or
-                    star_metallicity > self.track_metallicity[-1]
-            ) :
-                return None
-
-            if self.plot_quantity == 'I' :
-                return InterpolatedQuantitySum(
-                    self.interpolator_manager.current_interpolator()(
-                        'ICONV',
-                        star_mass,
-                        star_metallicity
-                    ),
-                    self.interpolator_manager.current_interpolator()(
-                        'IRAD',
-                        star_mass,
-                        star_metallicity
-                    )
-                )
-            else :
-                if self.plot_quantity == 'R' : quantity_id = 'radius'
-                else : quantity_id = self.plot_quantity
-                return self.interpolator_manager.current_interpolator()(
-                    quantity_id,
+        if self.plot_quantity == 'I' :
+            return InterpolatedQuantitySum(
+                self.interpolator_manager.current_interpolator()(
+                    'ICONV',
+                    star_mass,
+                    star_metallicity
+                ),
+                self.interpolator_manager.current_interpolator()(
+                    'IRAD',
                     star_mass,
                     star_metallicity
                 )
-
-
-        def plot_interpolation(star_mass, star_metallicity, plot_func) :
-            """Plot an interpolated stellar evolution track."""
-
-            if not self.interpolate : return
-
-            interpolated_quantity = get_interpolated_quantity(
+            )
+        else :
+            if self.plot_quantity == 'R' : quantity_id = 'radius'
+            else : quantity_id = self.plot_quantity
+            return self.interpolator_manager.current_interpolator()(
+                quantity_id,
                 star_mass,
                 star_metallicity
             )
 
-            interpolation_ages = numpy.exp(
-                numpy.linspace(
-                    numpy.log(max(interpolated_quantity.min_age, 1e-5)),
-                    numpy.log(interpolated_quantity.max_age),
-                    300
-                )[1:-1]
-            )
+    def plot_interpolation(self,
+                           star_mass,
+                           star_metallicity,
+                           plot_func,
+                           deriv_order,
+                           single_plot = False) :
+        """Plot an interpolated stellar evolution track."""
 
-            plot_x = age_transform(star_mass,
-                                   star_metallicity,
-                                   interpolation_ages)
-            if self.deriv > 0 :
-                derivatives = interpolated_quantity.deriv(interpolation_ages)
-                plot_y = derivatives[0]
+        interpolated_quantity = self.get_interpolated_quantity(
+            star_mass,
+            star_metallicity
+        )
+
+        try : resolution =  int(self.resolution_text.get())
+        except : resolution = 100
+        interpolation_ages = numpy.exp(
+            numpy.linspace(
+                numpy.log(max(interpolated_quantity.min_age, 1e-5)),
+                numpy.log(interpolated_quantity.max_age),
+                resolution
+            )[1:-1]
+        )
+
+        plot_x = age_transform(star_mass,
+                               star_metallicity,
+                               interpolation_ages)
+        if deriv_order > 0 :
+            derivatives = interpolated_quantity.deriv(interpolation_ages)
+            plot_y = derivatives[deriv_order if single_plot else 0]
+        else :
+            plot_y = interpolated_quantity(interpolation_ages)
+
+        plot_func(plot_x, plot_y, self.interp_plot_style.get())
+
+        if single_plot : return
+
+        if deriv_order > 0 :
+            d1_y = numpy.copy(derivatives[1])
+            if deriv_order > 1 :
+                d2_y = numpy.copy(derivatives[2])
+
+            if self.logy : 
+                d1_y /= plot_y
+                if deriv_order > 1 :
+                    d2_y = (d2_y / plot_y - d1_y**2)
+
+            if self.logx : 
+                deriv_plot_funcname = 'semilogx'
+                d1_y *= plot_x
+                if deriv_order > 1 :
+                    d2_y = d1_y + plot_x**2 * d2_y
             else :
-                plot_y = interpolated_quantity(interpolation_ages)
-
-            plot_func(plot_x, plot_y, '.r')
-
-            if self.deriv > 0 :
-                d1_y = numpy.copy(derivatives[1])
-                if self.deriv > 1 :
-                    d2_y = numpy.copy(derivatives[2])
-
-                if self.logy : 
-                    d1_y /= plot_y
-                    if self.deriv > 1 :
-                        d2_y = (d2_y / plot_y - d1_y**2)
-
-                if self.logx : 
-                    deriv_plot_funcname = 'semilogx'
-                    d1_y *= plot_x
-                    if self.deriv > 1 :
-                        d2_y = d1_y + plot_x**2 * d2_y
-                else :
-                    deriv_plot_funcname = 'plot'
+                deriv_plot_funcname = 'plot'
 
 
-                getattr(self.first_deriv_axes, deriv_plot_funcname)(
+            getattr(self.first_deriv_axes, deriv_plot_funcname)(
+                plot_x,
+                d1_y,
+                self.interp_plot_style.get()
+            )
+            if deriv_order > 1 :
+                getattr(self.second_deriv_axes, deriv_plot_funcname)(
                     plot_x,
-                    d1_y,
-                    '.r'
+                    d2_y,
+                    self.interp_plot_style.get()
                 )
-                if self.deriv > 1 :
-                    getattr(self.second_deriv_axes, deriv_plot_funcname)(
-                        plot_x,
-                        d2_y,
-                        '.r'
-                    )
+
+    def separate_window(self, deriv_order) :
+        """Spawn a new window plotting curves of given order derivative."""
+
+        if self.logx and self.logy : plot = matplotlib.pyplot.loglog
+        elif self.logx and not self.logy : plot = matplotlib.pyplot.semilogx
+        elif not self.logx and self.logy : plot = matplotlib.pyplot.semilogy
+        else : plot = matplotlib.pyplot.plot
+        self.plot_interpolation(self.interp['mass'],
+                                self.interp['metallicity'],
+                                plot,
+                                deriv_order,
+                                True)
+        matplotlib.pyplot.show()
+
+    def display(self) :
+        """(Re-)draw the plot as currently configured by the user."""
+
         if self.do_not_display : return
-        
+
         exec('def age_transform(m, feh, t) : return '
              +
              self.age_transform_entry.get(),
@@ -164,11 +187,11 @@ class InterpolationInteractive :
         main_y_lim = self.main_axes.get_ylim()
 
         self.main_axes.cla()
-        if self.first_deriv_axes is not None : 
+        if self.first_deriv_axes is not None :
             first_deriv_xlim = self.first_deriv_axes.get_xlim()
             first_deriv_ylim = self.first_deriv_axes.get_ylim()
             self.first_deriv_axes.cla()
-        if self.second_deriv_axes is not None : 
+        if self.second_deriv_axes is not None :
             second_deriv_xlim = self.second_deriv_axes.get_xlim()
             second_deriv_ylim = self.second_deriv_axes.get_ylim()
             self.second_deriv_axes.cla()
@@ -178,9 +201,11 @@ class InterpolationInteractive :
         elif not self.logx and self.logy : plot = self.main_axes.semilogy
         else : plot = self.main_axes.plot
 
-        plot_interpolation(self.interp['mass'],
-                           self.interp['metallicity'],
-                           plot)
+        if self.interpolate :
+            self.plot_interpolation(self.interp['mass'],
+                                    self.interp['metallicity'],
+                                    plot,
+                                    self.deriv)
 
         for track_mass_index, track_mass in enumerate(self.track_mass) :
             nearby_track_mass = (
@@ -210,10 +235,15 @@ class InterpolationInteractive :
                         track_metallicity_index
                     ]
 
-                    if self.track_state[track_mass][track_metallicity] :
-                        plot_interpolation(track_mass,
-                                           track_metallicity,
-                                           plot)
+                    if (
+                            self.track_state[track_mass][track_metallicity]
+                            and
+                            self.interpolate
+                    ) :
+                        self.plot_interpolation(track_mass,
+                                                track_metallicity,
+                                                plot,
+                                                self.deriv)
 
                     plot(age_transform(track_mass,
                                        track_metallicity,
@@ -231,7 +261,7 @@ class InterpolationInteractive :
                          ][
                              self.plot_quantity
                          ],
-                         'xk')
+                         self.track_plot_style.get())
         if not self.main_auto_axes :
             self.main_axes.set_xlim(main_x_lim)
             self.main_axes.set_ylim(main_y_lim)
@@ -652,6 +682,53 @@ class InterpolationInteractive :
                         command = self.display
                     ).grid(row = 2 + row, column = 2 + column)
 
+        def create_curve_controls(curve_control_frame) :
+            """Create controls for modifying plotting."""
+
+            Tk.Button(curve_control_frame,
+                      text = 'Replot',
+                      command = self.display).grid(row = 0,
+                                                   column = 0,
+                                                   columnspan = 2)
+            curve_setup_frame = Tk.Frame(curve_control_frame)
+            curve_setup_frame.grid(row = 1, column = 0)
+            Tk.Label(curve_setup_frame,
+                     text = 'Resolution:').grid(row = 1, column = 0)
+            Tk.Entry(curve_setup_frame,
+                     textvariable = self.resolution_text).grid(row = 1,
+                                                               column = 1)
+            Tk.Label(curve_setup_frame,
+                     text = 'Track style:').grid(row = 2, column = 0)
+            Tk.Entry(curve_setup_frame,
+                     textvariable = self.track_plot_style).grid(row = 2,
+                                                                column = 1)
+
+            Tk.Label(curve_setup_frame,
+                     text = 'Interp style:').grid(row = 3, column = 0)
+            Tk.Entry(curve_setup_frame,
+                     textvariable = self.interp_plot_style).grid(row = 3,
+                                                                 column = 1)
+
+            isolate_frame = Tk.Frame(curve_control_frame)
+            isolate_frame.grid(row = 1, column = 1)
+            Tk.Label(isolate_frame,
+                     text = 'Separate Window').grid(row = 0, column = 0)
+            Tk.Button(
+                isolate_frame,
+                text = 'Main curve',
+                command = functools.partial(self.separate_window, 0)
+            ).grid(row = 1, column = 0)
+            Tk.Button(
+                isolate_frame,
+                text = 'First deriv',
+                command = functools.partial(self.separate_window, 1)
+            ).grid(row = 2, column = 0)
+            Tk.Button(
+                isolate_frame,
+                text = 'Second deriv',
+                command = functools.partial(self.separate_window, 2)
+            ).grid(row = 3, column = 0)
+
         def create_main_canvas(plot_frame) :
             """Create the canvas for plotting undifferentiated quantities."""
 
@@ -669,9 +746,6 @@ class InterpolationInteractive :
             self.main_canvas.mpl_connect('key_press_event',
                                          self.on_key_event)
 
-        def create_reinterpolation_controls(reinterp_frame) :
-            """Creates controls for modifying the age interpolation used."""
-
         def set_initial_state() :
             """Set initial states for member variables."""
 
@@ -688,8 +762,8 @@ class InterpolationInteractive :
                                   I = 2,
                                   R = 1,
                                   Lum = 0,
-                                  Rrad = 2, 
-                                  Mrad = 1)
+                                  Rrad = 1, 
+                                  Mrad = 2)
             self.logx = True
             self.logy = True
             self.interpolate = False
@@ -705,6 +779,14 @@ class InterpolationInteractive :
                 [False for feh in self.track_metallicity]
                 for m in self.track_mass
             ]
+
+            self.resolution_text = Tk.StringVar()
+            self.resolution_text.set('100')
+            self.interp_plot_style = Tk.StringVar()
+            self.interp_plot_style.set('.r')
+            self.track_plot_style = Tk.StringVar()
+            self.track_plot_style.set('xk')
+
             self.changing = dict(mass = False, metallicity = False)
 
         def configure_window() :
@@ -716,13 +798,17 @@ class InterpolationInteractive :
             plot_frame.grid(row = 1,
                             column = 2,
                             rowspan = 2,
-                            sticky = Tk.N + Tk.S + Tk.W + Tk.E )
+                            sticky = Tk.N + Tk.S + Tk.W + Tk.E)
 
             interp_control_frame = Tk.Frame(window)
             interp_control_frame.grid(row = 0, column = 1, columnspan = 3)
 
-            track_selectors_frame = Tk.Frame(window)
-            track_selectors_frame.grid(row = 2, column = 3)
+            plot_control_frame = Tk.Frame(window)
+            plot_control_frame.grid(row = 2, column = 3)
+            track_selectors_frame = Tk.Frame(plot_control_frame)
+            track_selectors_frame.grid(row = 0, column = 0)
+            curve_control_frame = Tk.Frame(plot_control_frame)
+            curve_control_frame.grid(row = 1, column = 0)
 
             Tk.Grid.columnconfigure(window, 2, weight = 1)
             Tk.Grid.rowconfigure(window, 1, weight = 1)
@@ -732,6 +818,7 @@ class InterpolationInteractive :
             create_axes_controls()
             create_interp_controls(interp_control_frame)
             create_track_selectors(track_selectors_frame)
+            create_curve_controls(curve_control_frame)
 
             self.interpolate_button = Tk.Button(
                 window,
