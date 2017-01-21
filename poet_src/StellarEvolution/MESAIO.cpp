@@ -41,8 +41,8 @@ namespace StellarEvolution {
             5,          //ICONV
             Core::NaN,  //LUM
             6,          //IRAD
-            0,          //MRAD: TBD
-            Core::NaN   //RRAD: TBD
+            7,          //MRAD
+            6           //RRAD: TBD
             }
         );
 
@@ -52,8 +52,8 @@ namespace StellarEvolution {
             3000,   //ICONV
             0,      //LUM
             3000,   //IRAD
-            3000,   //MRAD: TBD
-            0       //RRAD: TBD
+            6000,   //MRAD
+            3000    //RRAD: TBD
             }
         );
 
