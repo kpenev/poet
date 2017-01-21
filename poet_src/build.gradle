@@ -117,7 +117,7 @@ def findLibraryLinux(String libNameStart)
             new NullPointerException()
         )
     }
-    def libSearch= ~(
+    def libSearch = ~(
         "lib(?<name>${libNameStart}.*)\\.so\\.(?<version>[0-9.]*)\\s+.*=>"
     )
     def previousMatch = false
@@ -149,13 +149,43 @@ def findLibraryLinux(String libNameStart)
     }
 }
 
+def findLibraryMacOS(String libName)
+{
+    def libFullPath
+    libFullPath = "ld -l${libName} -dylib -t".execute().text.trim()
+    if(!libFullPath) 
+        throw new ProjectConfigurationException(
+            "No candidate ${libName} library found!",
+            new NullPointerException()
+        );
+
+    def versionSearch = ~(
+        "${libName}[0-9.]*.dylib \\(.* current version (?<version>[0-9.]*)"
+    )
+
+    def otoolOutput = (
+        "otool -L ${libFullPath}".execute().text.split('\n')
+    )
+    for(String line : otoolOutput) {
+        def match = line =~ versionSearch
+        if(match) return [libName, match.group("version"), libFullPath]
+    }
+    throw new ProjectConfigurationException(
+        "Failed to determine the version of ${libName} library!",
+        new NullPointerException()
+    );
+}
+
 def findLibrary(String libNameStart)
 {
     if(OperatingSystem.current().isLinux())
         return findLibraryLinux(libNameStart)
+    else if(OperatingSystem.current().isMacOsX())
+        return findLibraryMacOS(libNameStart)
     else {
         throw new ProjectConfigurationException(
-            "Compiling on non-linux operating systems not currently " +
+            "Compiling on non-linux or Mac operating systems not currently "
+            +
             "supported!",
             new NullPointerException()
         );
@@ -168,6 +198,7 @@ def ensureLibraryVersion(String libNameStart,
     def(String libName,
         String libVersion,
         String libAbsFileName) = findLibrary(libNameStart)
+    if(libVersion == "0.0.0") return libName
     if(versionRange.containsKey('min'))
         assert(libVersion >= versionRange['min'])
     if(versionRange.containsKey('max'))
