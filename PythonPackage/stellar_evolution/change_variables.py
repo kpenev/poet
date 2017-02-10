@@ -180,7 +180,6 @@ class VarChangingInterpolator(MESAInterpolator) :
             method = 'lm',
             options = dict(ftol = 1e-15, xtol = 1e-15)
         )
-        return solution.x
         if solution.success : return solution.x
         else : return None
 
@@ -196,7 +195,6 @@ class VarChangingInterpolator(MESAInterpolator) :
         Returns: None
         """
 
-        print('Adding grid.' + variable)
         setattr(
             self.grid,
             variable,
@@ -244,7 +242,6 @@ class VarChangingInterpolator(MESAInterpolator) :
         the grid masses and ages. 
         """
 
-        print('Interpolating %s to [Fe/H] = %f' % (var_name, metallicity))
         result = scipy.empty((self.grid.masses.size, self.grid.ages.size))
         for mass_index in range(self.grid.masses.size) :
             for age_index in range(self.grid.ages.size) :
@@ -263,7 +260,6 @@ class VarChangingInterpolator(MESAInterpolator) :
                         y = interp_y,
                         k = 1
                     )(metallicity)
-        print('Interpolation result shape: ' + repr(result.shape))
         return result
 
     def __init__(self, **kwargs) :
@@ -324,6 +320,61 @@ class VarChangingInterpolator(MESAInterpolator) :
             The mass and age at which the keyword arguments are matched
             as list of tuplse of (mass, age).
         """
+
+        def find_candidate_cells() :
+            """
+            Identify grid cells possibly containing a solution.
+
+            Args: None
+
+            Returns:
+                - possible_solutions:
+                    A 2-D array matching the shape of grid variables with
+                    True entries for grid cells which may contain a solution.
+                - var_diff:
+                    A 3-D array with the last two dimensions matching the
+                    shape of grid variables, consisting of two slabs giving
+                    the difference from the target values of each of the
+                    grid variables used for variable change.
+            """
+
+            possible_solutions = True
+            var_diff = scipy.empty(
+                (2, self.grid.masses.size, self.grid.ages.size)
+            )
+            for var_index, (var_name, var_value) in enumerate(
+                    kwargs.items()
+            ) :
+                if not hasattr(self.grid, var_name) :
+                    self._add_grid_variable(var_name)
+                var_diff[var_index] = self._interpolate_grid_variable(
+                    var_name,
+                    metallicity
+                ) - var_value
+                sign_change_right = (
+                    (var_diff[var_index][1:, :]
+                     *
+                     var_diff[var_index][:-1, :])
+                    <=
+                    0
+                )
+                sign_change_up = (
+                    (var_diff[var_index][:, 1:]
+                     *
+                     var_diff[var_index][:, :-1])
+                    <=
+                    0
+                )
+                sign_change = scipy.logical_or(
+                    scipy.logical_or(sign_change_right[:, :-1],
+                                     sign_change_up[:-1, :]),
+                    scipy.logical_or(sign_change_right[:, 1:],
+                                     sign_change_up[1:, :])
+                )
+                possible_solutions = scipy.logical_and(possible_solutions,
+                                                       sign_change)
+
+            return possible_solutions, var_diff
 
         def bilinear_coef_equations(m0, m1, t0, t1) :
             """
@@ -389,35 +440,27 @@ class VarChangingInterpolator(MESAInterpolator) :
             )
             return zip(mass_roots, time_roots)
 
-        possible_solutions = True
-        var_diff = scipy.empty(
-            (2, self.grid.masses.size, self.grid.ages.size)
-        )
-        for var_index, (var_name, var_value) in enumerate(kwargs.items()) :
-            if not hasattr(self.grid, var_name) :
-                self._add_grid_variable(var_name)
-            var_diff[var_index] = self._interpolate_grid_variable(
-                var_name,
-                metallicity
-            ) - var_value
-            sign_change_right = (
-                (var_diff[var_index][1:, :] * var_diff[var_index][:-1, :])
-                <=
-                0
-            )
-            sign_change_up = (
-                (var_diff[var_index][:, 1:] * var_diff[var_index][:, :-1])
-                <=
-                0
-            )
-            sign_change = scipy.logical_or(
-                scipy.logical_or(sign_change_right[:, :-1],
-                                 sign_change_up[:-1, :]),
-                scipy.logical_or(sign_change_right[:, 1:],
-                                 sign_change_up[1:, :])
-            )
-            possible_solutions = scipy.logical_and(possible_solutions,
-                                                   sign_change)
+        def get_unique_solutions(solutions, telorance = 1e-8) :
+            """Merge repeated solutions from the given list."""
+
+            ref_ind = 0
+            while ref_ind < len(solutions) - 1 :
+                ref_solution = solutions[ref_ind]
+                target_ind = ref_ind + 1
+                while target_ind < len(solutions) :
+                    target_solution = solutions[target_ind]
+                    if (
+                            scipy.linalg.norm(
+                                (ref_solution - target_solution)
+                                /
+                                (ref_solution + target_solution)
+                            ) 
+                            < 
+                            tolerance
+                    ) :
+                        del solutions[target_ind]
+
+        possible_solutions, var_diff = find_candidate_cells()
         result = []
         for mass_index, age_index in scipy.transpose(
                 scipy.nonzero(possible_solutions)
@@ -430,14 +473,6 @@ class VarChangingInterpolator(MESAInterpolator) :
                              age_index : age_index + 2]
             ).any() :
                 continue
-            print('Suspected solution for: %f < t < %f, %f < M* < %f with '
-                  'var_diff = '
-                  %
-                  (t0, t1, m0, m1)
-                  +
-                  repr(var_diff[:,
-                                mass_index: mass_index + 2,
-                                age_index: age_index + 2]))
             coef_equations = bilinear_coef_equations(m0, m1, t0, t1)
             coef = scipy.empty((2, 4))
             for var_index in range(2) :
@@ -454,18 +489,10 @@ class VarChangingInterpolator(MESAInterpolator) :
                         and
                         age >= t0 and age <= t1
                 ) :
-                    print('Checking solution near t = %s, M* = %s'
-                          %
-                          (repr(age), repr(mass)))
                     solution = self.search_near(mass = mass,
                                                 age = age,
                                                 metallicity = metallicity,
                                                 **kwargs)
-                    print('Found: ' + repr(solution))
                     if solution is not None : 
                         result.append(solution)
-                else :
-                    print('Guess M* = %s, t = %s is outside cell.'
-                          %
-                          (repr(mass), repr(age)))
         return result

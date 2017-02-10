@@ -10,39 +10,78 @@ from stellar_evolution.change_variables import QuantityEvaluator
 from math import pi
 import numpy
 
-if __name__ == '__main__' :
-    manager = StellarEvolutionManager('../stellar_evolution_interpolators')
-    interp = manager.get_interpolator_by_name('default')
+def get_solutions(interp,
+                  target_mass,
+                  target_metallicity,
+                  target_age) :
+    """
+    Return all solutions found attempting to recover the specified params.
 
-    target_mass = 0.53
-    target_metallicity = 0.0
-    target_age = pi
+    Args:
+        - interp:
+            The interpolator on which variable changes are based. 
+        - target_mass:
+            The true stellar mass of the correct solution.
+        - target_metallicity:
+            The true stellar metallicity of the correct solution.
+        - target_age:
+            The true age of the correct solution.
+
+    Returns: A possibly empty list of 2-tuples of (mass, age) recovered.
+    """
+
+def visualize_mismatch(interp,
+                       target_mass,
+                       target_metallicity,
+                       target_age) :
+    """
+    Visualize a solution which does not match expectations.
+
+    For now assumes that the input variables are stellar density and
+    effective temperature.
+
+    Args:
+        - interp:
+            The interpolator on which variable changes are based. 
+        - target_mass:
+            The true stellar mass of the correct solution.
+        - target_metallicity:
+            The true stellar metallicity of the correct solution.
+        - target_age:
+            The true age of the correct solution.
+
+    Returns: None
+    """
+
     target_radius = interp('radius', target_mass, target_metallicity)
     target_lum = interp('lum', target_mass, target_metallicity)
     target_teff = TeffK(target_radius, target_lum)
     target_rho = RhoCGS(target_mass, target_radius)
+    solutions = interp.change_variables(
+        metallicity = target_metallicity,
+        rho = target_rho(target_age),
+        teff = target_teff(target_age)
+    )
 
-    solutions = interp.change_variables(metallicity = target_metallicity,
-                                        rho = target_rho(target_age),
-                                        teff = target_teff(target_age))
-    for mass, age in solutions :
-        radius = interp('radius', mass, target_metallicity)
-        lum = interp('lum', mass, target_metallicity)
+    for solution_mass, solution_age in solutions :
+        radius = interp('radius', solution_mass, target_metallicity)
+        lum = interp('lum', solution_mass, target_metallicity)
         teff = TeffK(radius, lum)
-        rho = RhoCGS(mass, radius)
+        rho = RhoCGS(solution_mass, radius)
         print(
             'M* = %s, t = %s, Rho* = %s (%s), Teff = %s (%s)'
             %
             (
-                repr(mass),
-                repr(age),
-                repr(rho(age)),
+                repr(solution_mass),
+                repr(solution_age),
+                repr(rho(solution_age)),
                 repr(target_rho(target_age)),
-                repr(teff(age)),
+                repr(teff(solution_age)),
                 repr(target_teff(target_age))
             )
         )
-        mass_diff, age_diff = target_mass - mass, target_age - age
+        mass_diff = target_mass - solution_mass
+        age_diff = target_age - solution_age
         plot_x = numpy.linspace(-2.0, 2.0, 1000)
         mass_age_track = [
             (target_mass + x * mass_diff, target_age + x * age_diff)
@@ -73,11 +112,11 @@ if __name__ == '__main__' :
         pyplot.show()
         pyplot.cla()
 
-        m = numpy.linspace(1.5 * mass - 0.5 * target_mass,
-                           2.5 * target_mass - 1.5 * mass,
+        m = numpy.linspace(1.5 * solution_mass - 0.5 * target_mass,
+                           2.5 * target_mass - 1.5 * solution_mass,
                            100)
-        t = numpy.linspace(1.5 * age - 0.5 * target_age,
-                           2.5 * target_age - 1.5 * age,
+        t = numpy.linspace(1.5 * solution_age - 0.5 * target_age,
+                           2.5 * target_age - 1.5 * solution_age,
                            100)
         grid_m, grid_t = numpy.meshgrid(m, t)
         square_diff = numpy.empty((m.size, t.size))
@@ -95,3 +134,63 @@ if __name__ == '__main__' :
                       origin = 'lower',
                       aspect = 'equal')
         pyplot.show()
+
+def random_tests(interp) :
+    """Run a series of randomly selected tests."""
+
+    line_fmt = '%25s: %25s %25s %25s %25s %25s %25s'
+    print(line_fmt % ('[Fe/H]',
+                      'M*(target)',
+                      't(target)',
+                      'DM*',
+                      'dt',
+                      'M*(found)',
+                      't(found)'))
+    for target_mass in numpy.random.uniform(0.4, 1.2, 10) :
+        for target_metallicity in numpy.random.uniform(-1.0, 0.5, 10) :
+            target_radius = interp('radius', target_mass, target_metallicity)
+            target_lum = interp('lum', target_mass, target_metallicity)
+            target_teff = TeffK(target_radius, target_lum)
+            target_rho = RhoCGS(target_mass, target_radius)
+            for target_age in numpy.random.uniform(target_radius.min_age,
+                                                   min(target_radius.max_age,
+                                                       13.7),
+                                                   10) :
+                solutions = interp.change_variables(
+                    metallicity = target_metallicity,
+                    rho = target_rho(target_age),
+                    teff = target_teff(target_age)
+                )
+                if not solutions : 
+                    found_mass_str = found_age_str = mass_diff_str = \
+                    age_diff_str = '-'
+                else :
+                    min_distance = numpy.inf
+                    for solution_mass, solution_age in solutions :
+                        distance = ((solution_mass - target_mass)**2
+                                    +
+                                    (solution_age - target_age)**2)
+                        if distance < min_distance :
+                            found_mass_str = repr(solution_mass)
+                            found_age_str = repr(solution_age)
+                            mass_diff_str = repr(target_mass - solution_mass)
+                            age_diff_str = repr(target_age - solution_age)
+                            min_distance = distance
+                print(line_fmt
+                      %
+                      (repr(target_metallicity),
+                       repr(target_mass),
+                       repr(target_age),
+                       mass_diff_str,
+                       age_diff_str,
+                       found_mass_str,
+                       found_age_str))
+
+if __name__ == '__main__' :
+    manager = StellarEvolutionManager('../stellar_evolution_interpolators')
+    interp = manager.get_interpolator_by_name('default')
+    visualize_mismatch(interp = interp,
+                       target_mass = 0.77285588027585062, 
+                       target_metallicity = -0.28278013953588377,
+                       target_age = 13.812435550152532)
+#    random_tests(interp)
