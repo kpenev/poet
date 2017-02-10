@@ -1,10 +1,14 @@
 #!/usr/bin/python
+
+"""An interface to the POET stellar evolution interpolation utilities."""
+
 from ctypes import\
     cdll,\
     c_int, c_double, c_void_p, c_char_p, c_uint, c_bool,\
     byref, POINTER
 import numpy
 import re
+from astropy import constants, units
 
 def initialize_library() :
     """Prepare the stellarEvolution library for use."""
@@ -217,13 +221,16 @@ class MESAInterpolator :
         Return a stellar quantity interpolated to the given mass and [Fe/H].
 
         Args:
-            - quantity: A string identifying the quantity to interpolate.
-                        Valid values: 'radius', 'iconv', 'lum', 'irad',
-                        'mrad', 'rrad'. Case insensitive.
-            - mass: The mass of the star for which this quantity should be
-                    defined in solar masses.
-            - metallicity: The metallicity of the star for which this 
-                           quantity  should be defined as [Fe/H].
+            - quantity:
+                A string identifying the quantity to interpolate. The
+                following values are allowed: 'radius', 'iconv', 'lum',
+                'irad', 'mrad', 'rrad'. This is a case insensitive argument.
+            - mass:
+                The mass of the star for which this quantity should be
+                defined in solar masses.
+            - metallicity:
+                The metallicity of the star for which this  quantity  should
+                be defined as [Fe/H].
 
         Returns: A Quantity instance, callable with an age parameter.
         """

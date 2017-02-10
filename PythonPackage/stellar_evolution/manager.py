@@ -1,7 +1,7 @@
 """Define class for managing many stellar evolution interpolations."""
 
-from .change_variables import\
-    VarChangingInterpolator,\
+from .change_variables import VarChangingInterpolator
+from .library_interface import\
     library_track_fname_rex,\
     library_track_fname
 from .manager_data_model import\
@@ -82,7 +82,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
 
     def __init__(self, db_interpolator, serialization_path, **kwargs) :
         """
-        Create a MESAInterpolator and add properties describing the config.
+        Create VarChangingInterpolator and add properties describing config.
 
         Defines the following properties containing the information from
         db_interpolator:
@@ -127,10 +127,6 @@ class ManagedInterpolator(VarChangingInterpolator) :
                             db_interpolator.checksum,
                             'interpolator')
 
-        if kwargs :
-            super().__init__(**kwargs)
-        else :
-            super().__init__(interpolator_fname = interpolator_fname)
         self.name = db_interpolator.name
         self.filename = db_interpolator.filename
         self.smoothing = dict()
@@ -152,6 +148,10 @@ class ManagedInterpolator(VarChangingInterpolator) :
         self.track_metallicities = sorted(
             {track.metallicity for track in db_interpolator.tracks}
         )
+        if kwargs :
+            super().__init__(**kwargs)
+        else :
+            super().__init__(interpolator_fname = interpolator_fname)
 
     def __str__(self) :
         """Human readable representation of the interpolator."""
@@ -189,7 +189,7 @@ class StellarEvolutionManager :
 
     def _define_evolution_quantities(self, db_session) :
         """
-        Define the set of quantities tracked by MESAInterpolator instances.
+        Define the quantities tracked by VarChangingInterpolator instances.
 
         Args:
             - db_session: The currently active database session.
@@ -199,7 +199,7 @@ class StellarEvolutionManager :
 
         db_quantities = [
             Quantity(id = id, name = name)
-            for name, id in MESAInterpolator.quantity_ids.items()
+            for name, id in VarChangingInterpolator.quantity_ids.items()
         ]
         db_session.add_all(db_quantities)
 
@@ -374,10 +374,10 @@ class StellarEvolutionManager :
                 The currently active database session.
 
         Returns:
-            An instance of MESAInterpolator created from a pre-serialized
-            interpolation matching the given arguments if one is found in the
-            interpolation archive. If no pre-serialized interpolation exists,
-            returns None.
+            An instance of VarChangingInterpolator created from a
+            pre-serialized interpolation matching the given arguments if one
+            is found in the interpolation archive. If no pre-serialized
+            interpolation exists, returns None.
         """
 
 
@@ -473,8 +473,8 @@ class StellarEvolutionManager :
                 used to form the filename is used.
 
         Returns: 
-            An instance of MESAInterpolator created from scratch based on the
-            given arguments.
+            An instance of VarChangingInterpolator created from scratch
+            based on the given arguments.
         """
 
         interp_str = str(get_uuid())
@@ -508,22 +508,23 @@ class StellarEvolutionManager :
                                      library_track_fname(mass, metallicity))
                     )
             interp_smoothing = numpy.empty(
-                len(MESAInterpolator.quantity_list),
+                len(VarChangingInterpolator.quantity_list),
                 dtype = ctypes.c_double
             )
             interp_nodes = numpy.empty(
-                len(MESAInterpolator.quantity_list),
+                len(VarChangingInterpolator.quantity_list),
                 dtype = ctypes.c_int
             )
             interp_vs_log_age = numpy.empty(
-                len(MESAInterpolator.quantity_list),
+                len(VarChangingInterpolator.quantity_list),
                 dtype = ctypes.c_bool
             )
             interp_log_quantity = numpy.empty(
-                len(MESAInterpolator.quantity_list),
+                len(VarChangingInterpolator.quantity_list),
                 dtype = ctypes.c_bool
             )
-            for q_name, q_index in MESAInterpolator.quantity_ids.items() :
+            for q_name, q_index in \
+                    VarChangingInterpolator.quantity_ids.items() :
                 interp_smoothing[q_index] = smoothing[q_name]
                 interp_nodes[q_index] = nodes[q_name]
                 interp_vs_log_age[q_index] = vs_log_age[q_name]
@@ -584,10 +585,10 @@ class StellarEvolutionManager :
 
     def get_interpolator(
         self,
-        nodes = MESAInterpolator.default_nodes,
-        smoothing = MESAInterpolator.default_smoothing,
-        vs_log_age = MESAInterpolator.default_vs_log_age,
-        log_quantity = MESAInterpolator.default_log_quantity,
+        nodes = VarChangingInterpolator.default_nodes,
+        smoothing = VarChangingInterpolator.default_smoothing,
+        vs_log_age = VarChangingInterpolator.default_vs_log_age,
+        log_quantity = VarChangingInterpolator.default_log_quantity,
         track_fnames = None,
         masses = None,
         metallicities = None,
@@ -609,22 +610,22 @@ class StellarEvolutionManager :
             - nodes:
                 The number of nodes to use for the age interpolation of each
                 quantity of each track. Should be a dictionary with keys
-                MESAInterpolator.quantity_list. See the POET code
+                VarChangingInterpolator.quantity_list. See the POET code
                 StellarEvolution::Interpolator::create_from() documentation
                 for a description of what this actually means.
             - smoothing:
                 The amount of smoothing to use for the age interpolation of
                 each quantity of each track. Should be a dictionary with keys
-                MESAInterpolator.quantity_list. See the POET code
+                VarChangingInterpolator.quantity_list. See the POET code
                 StellarEvolution::Interpolator::create_from() documentation
                 for a description of what this actually means.
             - vs_log_age:
                 Use log(age) instead of age as the independent argument for
                 the intperpolation? Should be a dictionary with keys
-                MESAInterpolator.quantity_list.
+                VarChangingInterpolator.quantity_list.
             - log_quantity:
                 Interpolate log(quantity) instead of quantity? Should be a
-                dictionary with keys MESAInterpolator.quantity_list.
+                dictionary with keys VarChangingInterpolator.quantity_list.
             - track_fnames:
                 A list of files containing stellar evolution tracks the
                 interpolator should be based on.
@@ -649,9 +650,9 @@ class StellarEvolutionManager :
                 the remining arguments, a new interpolator is not generated.
 
         Returns:
-            An instance of MESAInterpolator (see stellar_evolution python
-            module) configured per the arguments supplied or None if no
-            existing interpolator is found and creating a new one is
+            An instance of VarChangingInterpolator (see stellar_evolution
+            python module) configured per the arguments supplied or None if
+            no existing interpolator is found and creating a new one is
             forbidden (see new_interp_name argument).
         """
 
