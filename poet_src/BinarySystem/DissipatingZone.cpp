@@ -315,14 +315,16 @@ void DissipatingZone::initialize_locks()
 #endif
 }
 
-DissipatingZone::DissipatingZone()
-	: __e_order(0), __Ummp_inclination(NaN), __Ummp(5), __Ummp_deriv(5),
-	__power(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__torque_x(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__torque_y(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__torque_z(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
-	__evolution_real(NUM_REAL_EVOL_QUANTITIES),
-	__evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES)
+DissipatingZone::DissipatingZone() :
+    __e_order(0),
+    __Ummp_inclination(Core::NaN),
+    __Ummp(5), __Ummp_deriv(5),
+    __power(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
+    __torque_x(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
+    __torque_y(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
+    __torque_z(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
+    __evolution_real(NUM_REAL_EVOL_QUANTITIES),
+    __evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES)
 {
 	for(int i=0; i<5; ++i) {
 		__Ummp[i].resize(3);
@@ -502,7 +504,7 @@ double DissipatingZone::periapsis_evolution(
 #ifdef DEBUG
 	else assert(false);
 #endif
-	return NaN;
+	return Core::NaN;
 }
 
 double DissipatingZone::inclination_evolution(
@@ -553,7 +555,7 @@ double DissipatingZone::inclination_evolution(
 #ifdef DEBUG
 	else assert(false);
 #endif
-	return NaN;
+	return Core::NaN;
 }
 
 void DissipatingZone::release_lock()
@@ -684,23 +686,32 @@ void DissipatingZone::rewind_evolution(unsigned nsteps)
 }
 
 CombinedStoppingCondition *DissipatingZone::stopping_conditions(
-			BinarySystem &system,  bool primary, unsigned zone_index)
+			BinarySystem &system, 
+            bool primary,
+            unsigned zone_index
+)
 {
-	CombinedStoppingCondition *result=new CombinedStoppingCondition();
+	CombinedStoppingCondition *result = new CombinedStoppingCondition();
 	if(!dissipative()) return result;
 	if(__lock) 
-		(*result)|=new BreakLockCondition(system, __locked_zone_index);
-	else if(system.evolution_mode()==BINARY) {
-		(*result)|=new SynchronizedCondition(
-				__lock.orbital_frequency_multiplier(),
-				__lock.spin_frequency_multiplier(),
-				__lock.lock_direction(),
-				primary, zone_index, system);
-		(*result)|=new SynchronizedCondition(
-				__other_lock.orbital_frequency_multiplier(),
-				__other_lock.spin_frequency_multiplier(),
-				__other_lock.lock_direction(),
-				primary, zone_index, system);
+		(*result) |= new BreakLockCondition(system, __locked_zone_index);
+	else if(system.evolution_mode() == Core::BINARY) {
+		(*result) |= new SynchronizedCondition(
+            __lock.orbital_frequency_multiplier(),
+            __lock.spin_frequency_multiplier(),
+            __lock.lock_direction(),
+            primary,
+            zone_index,
+            system
+        );
+		(*result) |= new SynchronizedCondition(
+            __other_lock.orbital_frequency_multiplier(),
+            __other_lock.spin_frequency_multiplier(),
+            __other_lock.lock_direction(),
+            primary,
+            zone_index,
+            system
+        );
 	}
 	return result;
 }

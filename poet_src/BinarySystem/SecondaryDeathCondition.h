@@ -27,7 +27,7 @@ public:
 	///The evolution mode must be FAST_PLANET, LOCKED_TO_PLANET or
 	///SLOW_PLANET.
 	std::valarray<double> operator()(
-			EvolModeType evol_mode,
+			Core::EvolModeType evol_mode,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			std::valarray<double> &stop_deriv) const;

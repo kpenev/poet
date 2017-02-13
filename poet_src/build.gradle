@@ -91,18 +91,25 @@ model {
                 }
             }
         }
-//        poet(NativeExecutableSpec) {
-//            sources.cpp {
-//                source {
-//                    srcDir "."
-//                    include "**/*.cpp"
-//                }
-//                source {
-//                    srcDir "core"
-//                    include "**/*.cpp"
-//                }
-//            }
-//        }
+        poet(NativeExecutableSpec) {
+            sources.cpp {
+                lib library: "alglib"
+                lib library: "eigen"
+                lib library: "stellarEvolution"
+                source {
+                    srcDir "."
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "IO"
+                    include "**/*.cpp"
+                }
+            }
+        }
     }
 }
 

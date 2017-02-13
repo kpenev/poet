@@ -40,10 +40,12 @@ public:
 	///arguments.
 	///
 	///The evolution mode must be LOCKED_TO_PLANET.
-	std::valarray<double> operator()(EvolModeType evol_mode, 
-			const std::valarray<double> &orbit,
-			const std::valarray<double> &derivatives,
-			std::valarray<double> &stop_deriv) const;
+	std::valarray<double> operator()(
+        Core::EvolModeType evol_mode,
+        const std::valarray<double> &orbit,
+        const std::valarray<double> &derivatives,
+        std::valarray<double> &stop_deriv
+    ) const;
 
 	///The number of subconditions in the current condition.
 	virtual size_t num_subconditions() const {return 2;}

@@ -20,7 +20,7 @@ SynchronizedCondition::SynchronizedCondition(int orbital_freq_mult,
 {}
 
 std::valarray<double> SynchronizedCondition::operator()(
-		EvolModeType
+		Core::EvolModeType
 #ifdef DEBUG
 		evol_mode
 #endif

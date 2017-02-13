@@ -33,7 +33,7 @@ private:
 			const StoppingCondition *cond,
 
 			///See operator()
-			EvolModeType evol_mode,
+			Core::EvolModeType evol_mode,
 
 			///See operator()
 			const std::valarray<double> &orbit,
@@ -73,7 +73,7 @@ public:
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
 	std::valarray<double> operator()(
-			EvolModeType evol_mode,
+			Core::EvolModeType evol_mode,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			std::valarray<double> &stop_deriv) const;

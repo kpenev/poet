@@ -9,17 +9,16 @@
  * \todo Add command line option to chose between YREC and MESA
  */
 
-#include "Common.h"
-#include "AstronomicalConstants.h"
-#include "OrbitSolver.h"
-#include "YRECIO.h"
-#include "MESAIO.h"
-#include "EvolvingStar.h"
-#include "LockedPlanet.h"
-#include "CustomStellarEvolution.h"
-#include "DiskPlanetSystem.h"
-#include "ConstSolutionIterator.h"
-#include "IOColumns.h"
+#include "Core/Common.h"
+#include "Core/AstronomicalConstants.h"
+#include "StellarEvoltion/MESAIO.h"
+#include "StellarEvolution/CustomStellarEvolution.h"
+#include "BinarySystem/OrbitSolver.h"
+#include "BinarySystem/EvolvingStar.h"
+#include "BinarySystem/LockedPlanet.h"
+#include "BinarySystem/DiskPlanetSystem.h"
+#include "BinarySystem/ConstSolutionIterator.h"
+#include "IO/IOColumns.h"
 #include <argtable2.h>
 #include <iostream>
 #include <fstream>

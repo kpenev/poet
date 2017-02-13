@@ -2,7 +2,7 @@
 #include "BinarySystem.h"
 
 std::valarray<double> SecondaryDeathCondition::operator()(
-		EvolModeType
+		Core::EvolModeType
 #ifdef DEBUG
 		evol_mode
 #endif

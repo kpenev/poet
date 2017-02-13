@@ -9,12 +9,12 @@
 #define __BINARY_SYSTEM_H
 
 #include "DissipatingBody.h"
-#include "AstronomicalConstants.h"
+#include "../Core/AstronomicalConstants.h"
 #include "CombinedStoppingCondition.h"
 #include "SecondaryDeathCondition.h"
-#include "Common.h"
+#include "../Core/Common.h"
 #include "OrbitalExpressions.h"
-#include "Error.h"
+#include "../Core/Error.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_odeiv2.h>
 #include <gsl/gsl_siman.h>
@@ -86,7 +86,7 @@ private:
 		   __orbit_angmom_gain;
 
 	///The evolution mode from the last call to configure();
-	EvolModeType __evolution_mode;
+    Core::EvolModeType __evolution_mode;
 
 	///A list of indices of locked zones.
 	std::list<unsigned> __locked_zones;
@@ -233,7 +233,7 @@ private:
 			///If not NaN, the derivative with respect to the semimajoir axis
 			///is returned, assuming that this is the derivative of
 			///orbit_energy_gain with respect to the semimajor axis.
-			double orbit_energy_gain_deriv=NaN) const;
+			double orbit_energy_gain_deriv=Core::NaN) const;
 
 	///\brief Returns the rate of evolution of the eccentricity or one of its
 	///derivatives.
@@ -259,12 +259,12 @@ private:
 			//eccentricity is returned instead of the rate itself. In this
 			///case, this value must be the derivative of orbit_power w.r.t.
 			///the same this as the desired derivative.
-			double orbit_energy_gain_deriv=NaN,
+			double orbit_energy_gain_deriv=Core::NaN,
 			
 			///If orbit_energy_gain_deriv is not NaN, this must be set to the
 			///derivative of orbit_torque with respect to the same variable
 			///as orbit_energy_gain_deriv.
-			double orbit_angmom_gain_deriv=NaN,
+			double orbit_angmom_gain_deriv=Core::NaN,
 			
 			///If true the derivative calculated is assumed to be w.r.t. the
 			///semimajor axis.
@@ -723,7 +723,7 @@ public:
 			const double *periapsis,
 			
 			///The evolution mode to assume.
-			EvolModeType evolution_mode);
+			Core::EvolModeType evolution_mode);
 
 	///Sets the current state of the system directly from the evolutino
 	///variables.
@@ -735,7 +735,7 @@ public:
 			const double *parameters, 
 			
 			///The evolution mode to assume for the system.
-			EvolModeType evolution_mode);
+			Core::EvolModeType evolution_mode);
 
 	///Returns the present age of the system in Gyr.
 	double age() const {return __age;}
@@ -748,7 +748,7 @@ public:
 
 	///The total number of zones in both system bodies.
 	unsigned number_zones() const
-	{return (__evolution_mode==BINARY
+	{return (__evolution_mode==Core::BINARY
 			 ? __body1.number_zones() + __body2.number_zones()
 			 : __body1.number_zones());}
 
@@ -763,7 +763,7 @@ public:
 	///differential_equations() and jacobian(), returning the evolution mode.
 	///
 	///The system must be appropriately configure() -ed already.
-	EvolModeType fill_orbit(
+    Core::EvolModeType fill_orbit(
 			///The orbit to fill (resized as necessary).
 			std::valarray<double> &orbit) const;
 
@@ -825,7 +825,7 @@ public:
 			const double *parameters,
 
 			///The evolution mode to assume for the system.
-			EvolModeType evolution_mode,
+			Core::EvolModeType evolution_mode,
 
 			///On outputs gets filled  with the rates at which the entries in
 			///parameters evolve. It is assumed that sufficient space has
@@ -843,7 +843,7 @@ public:
 			const double *parameters, 
 
 			///The evolution mode to assume for the system.
-			EvolModeType evolution_mode,
+			Core::EvolModeType evolution_mode,
 			
 			///The matrix of partial derivatives of the evolution rates for
 			///the parameters w.r.t. each of the parameters.
@@ -884,7 +884,7 @@ public:
 			bool deriv=false) const;
 
 	///The evolution mode of last call to configure().
-	EvolModeType evolution_mode() {return __evolution_mode;}
+    Core::EvolModeType evolution_mode() {return __evolution_mode;}
 
 	///\brief Update the system to account for the death of the secondary.
 	///

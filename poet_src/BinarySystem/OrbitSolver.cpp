@@ -25,7 +25,9 @@ int stellar_system_diff_eq(double age, const double *parameters,
 {
 	void **input_params=static_cast<void **>(system_mode);
 	BinarySystem &system=*static_cast< BinarySystem* >(input_params[0]);
-	EvolModeType evol_mode=*static_cast< EvolModeType* >(input_params[1]);
+    Core::EvolModeType evol_mode=*static_cast< Core::EvolModeType* >(
+        input_params[1]
+    );
 	return system.differential_equations(age, parameters, evol_mode,
                                          derivatives);
 }
@@ -35,7 +37,9 @@ int stellar_system_jacobian(double age, const double *orbital_parameters,
 {
 	void **input_params=static_cast<void **>(system_mode);
 	BinarySystem &system=*static_cast< BinarySystem* >(input_params[0]);
-	EvolModeType evol_mode=*static_cast< EvolModeType* >(input_params[1]);
+    Core::EvolModeType evol_mode=*static_cast< Core::EvolModeType* >(
+        input_params[1]
+    );
 	return system.jacobian(age, orbital_parameters, evol_mode, param_derivs,
 						   age_derivs);
 }
@@ -135,8 +139,9 @@ void OrbitSolver::insert_discarded(double age,
 	__stop_deriv_discarded.insert(deriv_i, current_stop_deriv);
 }
 
-void OrbitSolver::add_to_evolution(double age, EvolModeType evolution_mode,
-		BinarySystem &system)
+void OrbitSolver::add_to_evolution(double age,
+                                   Core::EvolModeType evolution_mode,
+                                   BinarySystem &system)
 {
 	clear_discarded();
 	system.add_to_evolution();
@@ -268,7 +273,7 @@ ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
 		   c2=stop_interval.stop_condition_value(condition_index);
 	if(stop_interval.num_points()==3) {
 		if((c1-c0)*(c2-c1)>0) return result;
-		result.x()=quadratic_extremum(t0, c0, t1, c1, t2, c2,
+		result.x()=Core::quadratic_extremum(t0, c0, t1, c1, t2, c2,
 				&(result.y()));
 	} else {
 		double t3=(++stop_interval).age(),
@@ -279,10 +284,11 @@ ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
 			range_low=t0; range_high=t2;
 		} else if(std::abs(c2)<=std::abs(c1) && std::abs(c2)<=std::abs(c3)) {
 			range_low=t1; range_high=t3;
-		} else throw Error::BadFunctionArguments("Searching for extremum "
-				"among monotonic stopping condition values in "
-				"OrbitSolver::extremum_from_history_no_deriv.");
-		result.x()=cubic_extremum(t0, c0, t1, c1, t2, c2, t3, c3,
+		} else throw Core::Error::BadFunctionArguments(
+            "Searching for extremum among monotonic stopping condition "
+            "values in OrbitSolver::extremum_from_history_no_deriv."
+        );
+		result.x()=Core::cubic_extremum(t0, c0, t1, c1, t2, c2, t3, c3,
 				&(result.y()), range_low, range_high);
 	}
 	return result;
@@ -292,86 +298,107 @@ ExtremumInformation OrbitSolver::extremum_from_history(
 		size_t condition_index) const
 {
 	ExtremumInformation result;
-	if(__stop_history_ages.size()==0
+	if(__stop_history_ages.size() == 0
 			||
-			__stop_history_ages.back()<
+			__stop_history_ages.back()
+            <
 			__skip_history_extremum[condition_index])
 		return result;
-	double prev_stop_cond=__stop_cond_history.back()[condition_index],
-		   next_stop_cond=__stop_cond_discarded.front()[condition_index];
-	if(next_stop_cond*prev_stop_cond<=0)
+	double prev_stop_cond = __stop_cond_history.back()[condition_index],
+		   next_stop_cond = __stop_cond_discarded.front()[condition_index];
+	if(next_stop_cond * prev_stop_cond <= 0)
 		return result;
 	if(std::isnan(__stop_deriv_history.back()[condition_index]))
 		return extremum_from_history_no_deriv(condition_index);
-	double prev_stop_deriv=__stop_deriv_history.back()[condition_index],
-		   next_stop_deriv=__stop_deriv_discarded.front()[condition_index];
-	if(next_stop_cond*next_stop_deriv<0 ||next_stop_deriv*prev_stop_deriv>=0)
+	double prev_stop_deriv = __stop_deriv_history.back()[condition_index],
+		   next_stop_deriv = __stop_deriv_discarded.front()[condition_index];
+	if(
+        next_stop_cond * next_stop_deriv < 0
+        ||
+        next_stop_deriv * prev_stop_deriv >= 0
+    )
 		return result;
-	result.x()=estimate_extremum(__stop_history_ages.back(), prev_stop_cond,
-			__discarded_stop_ages.front(), next_stop_cond, prev_stop_deriv,
-			next_stop_deriv, &(result.y()));
+	result.x()=Core::estimate_extremum(__stop_history_ages.back(),
+                                       prev_stop_cond,
+                                       __discarded_stop_ages.front(),
+                                       next_stop_cond,
+                                       prev_stop_deriv,
+                                       next_stop_deriv,
+                                       &(result.y()));
 	return result;
 }
 
 double OrbitSolver::crossing_from_history_no_deriv(size_t condition_index)
 	const
 {
-	StopHistoryInterval stop_interval=select_stop_condition_interval(true,
-			condition_index, 4);
-	if(stop_interval.num_points()<2) return Inf;
-	double t0=stop_interval.age(),
-		   c0=stop_interval.stop_condition_value(condition_index),
-		   t1=(++stop_interval).age(),
-		   c1=stop_interval.stop_condition_value(condition_index);
-	if(stop_interval.num_points()==2)
-		return estimate_zerocrossing(t0, c0, t1, c1);
-	double t2=(++stop_interval).age(),
-		   c2=stop_interval.stop_condition_value(condition_index);
-	double range_low=NaN, range_high=NaN;
-	short crossing_sign=
-		__stopping_conditions->expected_crossing_deriv_sign(condition_index);
-	if(c0*c1<=0 && c1*crossing_sign>0) {range_low=t0; range_high=t1;}
-	else if(c1*c2<=0 && c2*crossing_sign>0) {range_low=t1; range_high=t2;}
-	if(stop_interval.num_points()==3) {
-#ifdef DEBUG
+	StopHistoryInterval stop_interval = select_stop_condition_interval(
+        true,
+        condition_index,
+        4
+    );
+	if(stop_interval.num_points() < 2) return Core::Inf;
+	double t0 = stop_interval.age(),
+		   c0 = stop_interval.stop_condition_value(condition_index),
+		   t1 = (++stop_interval).age(),
+		   c1 = stop_interval.stop_condition_value(condition_index);
+	if(stop_interval.num_points() == 2)
+		return Core::estimate_zerocrossing(t0, c0, t1, c1);
+	double t2 = (++stop_interval).age(),
+		   c2 = stop_interval.stop_condition_value(condition_index);
+	double range_low = Core::NaN,
+           range_high = Core::NaN;
+	short crossing_sign =
+        __stopping_conditions->expected_crossing_deriv_sign(condition_index);
+	if(c0 * c1 <= 0 && c1 * crossing_sign > 0) {
+        range_low = t0;
+        range_high = t1;
+    } else if(c1 * c2 <= 0 && c2 * crossing_sign > 0) {
+        range_low = t1;
+        range_high = t2;
+    }
+	if(stop_interval.num_points() == 3) {
 		assert(!std::isnan(range_low) && !std::isnan(range_high));
-#endif
-		return quadratic_zerocrossing(t0, c0, t1, c1, t2, c2,
-				range_low, range_high);
+		return Core::quadratic_zerocrossing(
+            t0, c0, t1, c1, t2, c2, range_low, range_high
+        );
 	}
-	double t3=(++stop_interval).age(),
-		   c3=stop_interval.stop_condition_value(condition_index);
+	double t3 = (++stop_interval).age(),
+		   c3 = stop_interval.stop_condition_value(condition_index);
 	if(std::isnan(range_low)) {
-		range_low=t2; range_high=t3;
-#ifdef DEBUG
-		assert(c2*c3<0);
-		assert(c3*crossing_sign>0);
-#endif
+		range_low = t2; 
+        range_high = t3;
+		assert(c2 * c3 < 0);
+		assert(c3 * crossing_sign > 0);
 	}
-	return cubic_zerocrossing(t0, c0, t1, c1, t2, c2, t3, c3,
-			range_low, range_high);
+	return Core::cubic_zerocrossing(
+        t0, c0, t1, c1, t2, c2, t3, c3, range_low, range_high
+    );
 }
 
 double OrbitSolver::crossing_from_history(size_t condition_index) const
 {
 	if(__stop_history_ages.size()==0 || 
 			__stop_history_ages.size()==
-			__skip_history_zerocrossing[condition_index]) return Inf;
+			__skip_history_zerocrossing[condition_index]) return Core::Inf;
 	double prev_stop_cond=__stop_cond_history.back()[condition_index];
 	double next_stop_cond=__stop_cond_discarded.front()[condition_index];
 	if(next_stop_cond*prev_stop_cond>0 
 			|| 
 			next_stop_cond
 			*__stopping_conditions->expected_crossing_deriv_sign(
-				condition_index)<0) return Inf;
+				condition_index)<0) return Core::Inf;
 	if(std::isnan(__stop_deriv_history.back()[condition_index]))
 		return crossing_from_history_no_deriv(condition_index);
 	double prev_stop_deriv=__stop_deriv_history.back()[condition_index],
 		   prev_age=__stop_history_ages.back(),
 		   next_stop_deriv=__stop_deriv_discarded.front()[condition_index],
 		   next_age=__discarded_stop_ages.front();
-	return estimate_zerocrossing(prev_age, prev_stop_cond, next_age,
-			next_stop_cond, prev_stop_deriv, next_stop_deriv);
+	return Core::estimate_zerocrossing(prev_age,
+                                       prev_stop_cond,
+                                       next_age,
+                                       next_stop_cond,
+                                       prev_stop_deriv,
+                                       next_stop_deriv);
 }
 
 void OrbitSolver::initialize_skip_history(const StoppingCondition &stop_cond,
@@ -418,22 +445,32 @@ bool OrbitSolver::acceptable_step(double age,
 			 (stop_info.crossed_zero() || !stop_info.is_crossing()));
 }
 
-StopInformation OrbitSolver::update_stop_condition_history(double age,
-		const std::valarray<double> &orbit,
-		const std::valarray<double> &derivatives,
-		EvolModeType evolution_mode, StoppingConditionType stop_reason)
+StopInformation OrbitSolver::update_stop_condition_history(
+    double age,
+    const std::valarray<double> &orbit,
+    const std::valarray<double> &derivatives,
+    Core::EvolModeType evolution_mode,
+    StoppingConditionType stop_reason
+)
 {
-	for(unsigned i=0; i<orbit.size(); ++i)
-		if(std::isnan(orbit[i]) || (evolution_mode==BINARY && orbit[0]<=0))
-			return StopInformation(0.5*(age+__stop_history_ages.back()),
-								   Inf);
+	for(unsigned i = 0; i < orbit.size(); ++i)
+		if(
+            std::isnan(orbit[i])
+            ||
+            (evolution_mode == Core::BINARY && orbit[0] <= 0)
+        )
+			return StopInformation(0.5 * (age + __stop_history_ages.back()),
+								   Core::Inf);
 	std::valarray<double> current_stop_cond(
-			__stopping_conditions->num_subconditions()),
-						  current_stop_deriv;
-	current_stop_cond=(*__stopping_conditions)(evolution_mode, orbit,
-			derivatives, current_stop_deriv);
+        __stopping_conditions->num_subconditions()
+    );
+    std::valarray<double> current_stop_deriv;
+    current_stop_cond = (*__stopping_conditions)(evolution_mode,
+                                                 orbit,
+                                                 derivatives,
+                                                 current_stop_deriv);
 
-	if(__stop_history_ages.size()==0)
+	if(__stop_history_ages.size() == 0)
 		initialize_skip_history(*__stopping_conditions, stop_reason);
 	StopInformation result;
 	insert_discarded(age, current_stop_cond, current_stop_deriv);
@@ -441,33 +478,45 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 //	std::cerr << std::string(77, '@') << std::endl;
 //	output_history_and_discarded(std::cerr);
 #endif
-	for(size_t cond_ind=0; __stop_cond_history.size()>0 &&
-						   cond_ind<current_stop_cond.size(); cond_ind++) {
+	for(
+        size_t cond_ind = 0; 
+        __stop_cond_history.size() > 0 && cond_ind<current_stop_cond.size();
+        cond_ind++
+    ) {
 		StoppingConditionType
-			stop_cond_type=__stopping_conditions->type(cond_ind);
-		double stop_cond_value=current_stop_cond[cond_ind],
-			   crossing_age=crossing_from_history(cond_ind),
-			   crossing_precision=__stop_cond_history.back()[cond_ind]; 
-		bool crossed_zero=false;
-		if(std::abs(crossing_precision)>=std::abs(stop_cond_value)) {
-			crossing_precision=stop_cond_value;
-			crossed_zero=true;
+			stop_cond_type = __stopping_conditions->type(cond_ind);
+		double stop_cond_value = current_stop_cond[cond_ind],
+			   crossing_age = crossing_from_history(cond_ind),
+			   crossing_precision = __stop_cond_history.back()[cond_ind]; 
+		bool crossed_zero = false;
+		if(std::abs(crossing_precision) >= std::abs(stop_cond_value)) {
+			crossing_precision = stop_cond_value;
+			crossed_zero = true;
 		}
-		ExtremumInformation extremum=extremum_from_history(cond_ind);
+		ExtremumInformation extremum = extremum_from_history(cond_ind);
 		double extremum_precision;
-		if(std::isnan(extremum.y())) extremum_precision=NaN;
-		else extremum_precision=std::min(
-				std::abs(extremum.y()-stop_cond_value),
-				std::abs(extremum.y()-
-					__stop_cond_history.back()[cond_ind]))/
-			std::abs(extremum.y());
-		bool is_crossing=crossing_age<=extremum.x();
-		short deriv_sign=0;
-		if(is_crossing) deriv_sign=(stop_cond_value>0 ? 1 : -1);
-		StopInformation stop_info(std::min(crossing_age, extremum.x()),
-				(is_crossing ? crossing_precision : extremum_precision),
-				stop_cond_type, is_crossing, crossed_zero, cond_ind,
-				deriv_sign);
+		if(std::isnan(extremum.y())) extremum_precision = Core::NaN;
+		else 
+            extremum_precision = (
+                std::min(
+                    std::abs(extremum.y() - stop_cond_value),
+                    std::abs(extremum.y() - __stop_cond_history.back()[cond_ind])
+                )
+                /
+                std::abs(extremum.y())
+            );
+        bool is_crossing = crossing_age<=extremum.x();
+		short deriv_sign = 0;
+		if(is_crossing) deriv_sign = (stop_cond_value > 0 ? 1 : -1);
+		StopInformation stop_info(
+            std::min(crossing_age, extremum.x()),
+            (is_crossing ? crossing_precision : extremum_precision),
+            stop_cond_type,
+            is_crossing,
+            crossed_zero,
+            cond_ind,
+            deriv_sign
+        );
 #ifdef DEBUG
 //		std::cerr << stop_info << std::endl;
 #endif
@@ -486,9 +535,11 @@ StopInformation OrbitSolver::update_stop_condition_history(double age,
 }
 
 StopInformation OrbitSolver::evolve_until(BinarySystem &system,
-		double &max_age, std::valarray<double> &orbit,
-		StoppingConditionType &stop_reason, double max_step,
-		EvolModeType evolution_mode)
+		double &max_age,
+        std::valarray<double> &orbit,
+		StoppingConditionType &stop_reason,
+        double max_step,
+		Core::EvolModeType evolution_mode)
 {
 	size_t nargs=orbit.size();
 #ifdef DEBUG
@@ -547,12 +598,12 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 					evolve, step_control, step, &ode_system,
 					&t, max_next_t, &step_size, &(orbit[0]));
 			if (status == GSL_FAILURE)
-				throw Error::GSLZeroStep("rfk45");
+				throw Core::Error::GSLZeroStep("rfk45");
 			else if (status != GSL_SUCCESS && status != GSL_EDOM) {
 				std::ostringstream msg;
 				msg << "GSL signaled failure while evolving (error code " <<
 					status << ")";
-				throw Error::Runtime(msg.str());
+				throw Core::Error::Runtime(msg.str());
 			}
 			if(status==GSL_SUCCESS) {
 				stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
@@ -566,7 +617,7 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 					go_back(stop.stop_age(), system, orbit, derivatives);
 				if(t<last_good_t
 					 *(1.0+10.0*std::numeric_limits<double>::epsilon())) {
-					throw Error::NonGSLZeroStep();
+					throw Core::Error::NonGSLZeroStep();
 				}
 				t=last_good_t;
 				if(stop.is_crossing())
@@ -658,7 +709,7 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 	double last_age=system.age();
 	std::valarray<double> orbit;
 	
-	EvolModeType evolution_mode=system.fill_orbit(orbit);
+    Core::EvolModeType evolution_mode=system.fill_orbit(orbit);
 	while(last_age<stop_evol_age) {
 		double next_stop_age=std::min(stopping_age(last_age, system,
 					required_ages), stop_evol_age);
@@ -666,7 +717,7 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 		StopInformation stop_information=evolve_until(system, next_stop_age,
 				orbit, stop_reason, max_step, evolution_mode);
 #ifdef DEBUG
-		EvolModeType old_evolution_mode=evolution_mode;
+        Core::EvolModeType old_evolution_mode=evolution_mode;
 		unsigned old_locked_zones=system.number_locked_zones();
 #endif
 		last_age=next_stop_age;

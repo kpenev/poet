@@ -7,7 +7,7 @@
  * [\f$p_{m,s}\f$ coefficients]{@ref InclinationEccentricity_pms1}.
  */
 
-#include "Error.h"
+#include "../Core/Error.h"
 #include <vector>
 #include <fstream>
 #include <iomanip>

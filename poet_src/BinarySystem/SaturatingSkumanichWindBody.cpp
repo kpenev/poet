@@ -32,7 +32,7 @@ CombinedStoppingCondition *SaturatingSkumanichWindBody::stopping_conditions(
 	else assert(this==&(system.secondary()));
 #endif
 	CombinedStoppingCondition *result=new CombinedStoppingCondition();
-	if(system.evolution_mode()!=LOCKED_SURFACE_SPIN)
+	if(system.evolution_mode()!=Core::LOCKED_SURFACE_SPIN)
 		(*result)|=new WindSaturationCondition(
 				*this, (primary ? system.secondary() : system.primary()),
 				primary);

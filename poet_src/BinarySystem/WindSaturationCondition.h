@@ -37,7 +37,7 @@ public:
 	///\brief The difference between the convective and wind saturation
 	///angular velocities divided by the latter.
 	std::valarray<double> operator()(
-			EvolModeType evol_mode,
+			Core::EvolModeType evol_mode,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			std::valarray<double> &stop_deriv) const;

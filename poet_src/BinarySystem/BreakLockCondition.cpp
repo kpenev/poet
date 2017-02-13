@@ -3,16 +3,17 @@
 
 std::valarray<double> BreakLockCondition::operator()(
 #ifdef DEBUG
-		EvolModeType evol_mode,
+		Core::EvolModeType evol_mode,
 		const std::valarray<double> &orbit,
 #else
-		EvolModeType, const std::valarray<double> &,
+		Core::EvolModeType,
+        const std::valarray<double> &,
 #endif
 		const std::valarray<double> &derivatives,
 		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
-	assert(evol_mode==BINARY);
+	assert(evol_mode==Core::BINARY);
 	assert(orbit.size()==1 + 3*__system.number_zones() -
 						 __system.number_locked_zones());
 	assert(orbit.size()==derivatives.size());
@@ -81,7 +82,7 @@ std::valarray<double> BreakLockCondition::operator()(
 		}
 
 	}
-	dfrac_dt=NaN;
+	dfrac_dt=Core::NaN;
 	stop_deriv.resize(2, dfrac_dt);
 	std::valarray<double> result(2);
 	result[0]=frac;

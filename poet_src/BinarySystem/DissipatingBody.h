@@ -3,8 +3,8 @@
 
 #include "DissipatingZone.h"
 #include "OrbitalExpressions.h"
-#include "AstronomicalConstants.h"
-#include "Common.h"
+#include "../Core/AstronomicalConstants.h"
+#include "../Core/Common.h"
 #include <valarray>
 #include <cassert>
 
@@ -545,7 +545,7 @@ public:
 
 	///\brief The next age when the evolution needs to be stopped for a
 	///change in one of the bodies.
-	virtual double next_stop_age() const {return Inf;}
+	virtual double next_stop_age() const {return Core::Inf;}
 
 	///Virtual destructor.
 	~DissipatingBody() {}

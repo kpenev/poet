@@ -11,7 +11,7 @@ void CombinedStoppingCondition::update_meta_information(
 
 void CombinedStoppingCondition::add_subcondition_values(
 		const StoppingCondition *cond, 
-		EvolModeType evol_mode,
+		Core::EvolModeType evol_mode,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
 		size_t &first_index,
@@ -67,13 +67,13 @@ CombinedStoppingCondition &CombinedStoppingCondition::operator|=(
 }
 
 std::valarray<double> CombinedStoppingCondition::operator()(
-		EvolModeType evol_mode,
+		Core::EvolModeType evol_mode,
 		const std::valarray<double> &orbit,
 		const std::valarray<double> &derivatives,
 		std::valarray<double> &stop_deriv) const
 {
 	std::valarray<double> result(__num_subconditions);
-	stop_deriv.resize(__num_subconditions, NaN);
+	stop_deriv.resize(__num_subconditions, Core::NaN);
 	size_t i=0;
 	for(std::vector<StoppingCondition *>::const_iterator
 			cond=__sub_conditions.begin(); cond!=__sub_conditions.end();

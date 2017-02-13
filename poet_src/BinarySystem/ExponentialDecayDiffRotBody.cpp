@@ -5,7 +5,9 @@ void ExponentialDecayDiffRotBody::reset_torque()
 	if(__torque.size()!=number_zones()-1)
 		__torque.resize(number_zones()-1);
 	for(unsigned i=0; i<number_zones()-1; ++i)
-		__torque[i].resize(11, Eigen::Vector3d(NaN, NaN, NaN));
+		__torque[i].resize(11, Eigen::Vector3d(Core::NaN,
+                                               Core::NaN,
+                                               Core::NaN));
 }
 
 Eigen::Vector3d &ExponentialDecayDiffRotBody::torque_entry(
@@ -31,8 +33,10 @@ Eigen::Vector3d &ExponentialDecayDiffRotBody::torque_entry(
 				   return zone_torque[(with_respect_to_top ? 7 : 8)];
 		case Dissipation::SPIN_ANGMOM :
 				   return zone_torque[(with_respect_to_top ? 9 : 10)];
-		default: throw Error::BadFunctionArguments("Unsupported derivative "
-						 "in ExponentialDecayDiffRotBody::torque_entry");
+        default: throw Core::Error::BadFunctionArguments(
+                     "Unsupported derivative in "
+                     "ExponentialDecayDiffRotBody::torque_entry"
+                 );
 	}
 }
 

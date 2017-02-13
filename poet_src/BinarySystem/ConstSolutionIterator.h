@@ -8,7 +8,7 @@
 #define __SOLUTION_ITERATOR_H
 
 #include "BinarySystem.h"
-#include "IOColumns.h"
+#include "../IO/IOColumns.h"
 #include "EvolvingStar.h"
 #include "OrbitSolver.h"
 #include "DissipatingZone.h"
@@ -29,7 +29,7 @@ private:
 	static std::list<double>::const_iterator __placeholder_iterator;
 
 	///Iterator over the tabulated evolution mode.
-	std::list<EvolModeType>::const_iterator __mode;
+	std::list<Core::EvolModeType>::const_iterator __mode;
 
 	///Iterator over the tabulated wind saturation state.
 	std::list<bool>::const_iterator __wind_saturation;
@@ -48,7 +48,7 @@ private:
 	Eigen::Vector3d __stellar_angmom;
 
 	///The star in the system.
-	const EvolvingStar &__star;
+	const InterpolatedEvolutionStar &__star;
 
 	///\brief Creates lists for non-orbital quantities and sets the
 	///corresponding iterators.
@@ -86,7 +86,7 @@ public:
 
 			///The star that was evolved need modification privileges only if
 			///no evolution was calculated.
-			const EvolvingStar &star,
+			const InterpolatedEvolutionStar &star,
 
 			///The starting age if no orbit was calculated. Ignored if solver
 			///contains an orbit.
@@ -115,7 +115,7 @@ public:
 	double real_quantity(OutCol::OutputColumns quantity);
 
 	///Get the evolution mode for the current step.
-	EvolModeType evolution_mode() {return *__mode;}
+    Core::EvolModeType evolution_mode() {return *__mode;}
 
 	///Was the wind saturated for the current step?
 	bool wind_saturation() {return *__wind_saturation;}

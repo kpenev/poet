@@ -15,35 +15,44 @@ double factorial(unsigned n)
 double orbital_angular_velocity(double m1, double m2, double semimajor,
 		bool deriv)
 {
-	return (deriv ? -1.5 : 1.0)*std::sqrt(
-				AstroConst::G*(m1+m2)*AstroConst::solar_mass/
-				std::pow(semimajor*AstroConst::solar_radius, (deriv ? 5 :3))
-			)*AstroConst::day;
+	return (
+        deriv ? -1.5 : 1.0) * std::sqrt(
+            Core::AstroConst::G * (m1 + m2) * Core::AstroConst::solar_mass
+            /
+            std::pow(
+                semimajor * Core::AstroConst::solar_radius,
+                (deriv ? 5 :3)
+            )
+        )
+        * 
+        Core::AstroConst::day;
 }
 
 double orbital_energy(double m1, double m2, double semimajor, unsigned deriv_order)
 {
-	return (deriv_order%2 ? 1 : -1)*m1*m2*factorial(deriv_order)
+	return (deriv_order%2 ? 1 : -1) * m1 * m2 * factorial(deriv_order)
 		   /
-		   (2.0*std::pow(semimajor, static_cast<int>(deriv_order+1)))
+		   (2.0 * std::pow(semimajor, static_cast<int>(deriv_order + 1)))
 		   *
-		   AstroConst::G*AstroConst::solar_mass
+		   Core::AstroConst::G * Core::AstroConst::solar_mass
 		   *
-		   std::pow(AstroConst::day, 2)
+		   std::pow(Core::AstroConst::day, 2)
 		   /
-		   std::pow(AstroConst::solar_radius, 3);
+		   std::pow(Core::AstroConst::solar_radius, 3);
 }
 
 double orbital_angular_momentum(double m1, double m2, double semimajor,
 		double eccentricity)
 {
-	return m1*m2
+	return m1 * m2
 		   *
-		   std::sqrt(semimajor*(1.0-std::pow(eccentricity, 2))/(m1+m2)
-					 *
-					 AstroConst::G*AstroConst::solar_mass/
-					 std::pow(AstroConst::solar_radius, 3)
-					)
+		   std::sqrt(
+               semimajor*(1.0 - std::pow(eccentricity, 2)) / (m1 + m2)
+               *
+               Core::AstroConst::G * Core::AstroConst::solar_mass
+               /
+               std::pow(Core::AstroConst::solar_radius, 3)
+           )
 		   *
-		   AstroConst::day;
+		   Core::AstroConst::day;
 }

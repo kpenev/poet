@@ -56,7 +56,6 @@ namespace Core {
         const unsigned int
     )
     {
-        alglib_impl::ae_int_t c_length, x_length;
         ar & p_struct->periodic;
         ar & p_struct->n;
         ar & p_struct->k;

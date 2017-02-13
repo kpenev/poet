@@ -8,7 +8,7 @@
 #ifndef __STOP_HISTORY_INTERVAL_H
 #define __STOP_HISTORY_INTERVAL_H
 
-#include "Error.h"
+#include "../Core/Error.h"
 #include <valarray>
 #include <list>
 #include <ostream>

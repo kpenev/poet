@@ -65,7 +65,7 @@ StopHistoryInterval::StopHistoryInterval(size_t num_points,
 			__stop_deriv_discarded_begin(stop_deriv_discarded_begin),
 			__stop_deriv_i(first_stop_deriv)
 {
-	if(num_points==0) throw Error::BadFunctionArguments(
+	if(num_points==0) throw Core::Error::BadFunctionArguments(
 			"Attempt to contsruct a StopHistoryInterval of size 0.");
 	for(size_t i=0; i<num_points-1; i++)
 		advance_iterator_set(__last_age, __last_stop_cond,
@@ -103,8 +103,10 @@ StopHistoryInterval &StopHistoryInterval::operator++()
 {
 	++__point_i;
 	if(__point_i>__num_points)
-		throw Error::Runtime("Attempting to increment two points past the "
-				"end of a StopHistoryInterval!");
+		throw Core::Error::Runtime(
+            "Attempting to increment two points past the end of a "
+            "StopHistoryInterval!"
+        );
 	advance_iterator_set(__age_i, __stop_cond_i, __stop_deriv_i);
 	return *this;
 }
@@ -118,8 +120,10 @@ StopHistoryInterval StopHistoryInterval::operator++(int)
 
 StopHistoryInterval &StopHistoryInterval::operator--()
 {
-	if(__point_i==0) throw Error::Runtime("Attempting to go before the "
-			"beginning of a StopHistoryInterval.");
+	if(__point_i==0) throw Core::Error::Runtime(
+        "Attempting to go before the beginning of a "
+        "StopHistoryInterval."
+    );
 	--__point_i;
 	retreat_iterator_set(__age_i, __stop_cond_i, __stop_deriv_i);
 	return *this;

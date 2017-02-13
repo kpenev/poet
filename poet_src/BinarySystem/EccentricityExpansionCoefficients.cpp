@@ -61,8 +61,13 @@ void EccentricityExpansionCoefficients::read(
 			const std::string &tabulated_pms_fname, int max_e_power)
 {
 	std::ifstream tabulated_coef(tabulated_pms_fname.c_str());
-	if(!tabulated_coef) throw Error::IO("Unable to open eccentricity "
-			"expansion file: "+tabulated_pms_fname+"!");
+	if(!tabulated_coef) throw Core::Error::IO(
+        "Unable to open eccentricity expansion file: "
+        +
+        tabulated_pms_fname
+        +
+        "!"
+    );
 	tabulated_coef >> __max_e_power;
 	if(max_e_power>=0) {
 		if(__max_e_power<static_cast<unsigned>(max_e_power)) {
@@ -71,7 +76,7 @@ void EccentricityExpansionCoefficients::read(
 				<< "' stops at lower eccentricity power (" << __max_e_power
 				<<") than requested (" << max_e_power 
 				<< ") in EccentricityExpansionCoefficients::read()!";
-			throw Error::BadFunctionArguments(msg.str());
+			throw Core::Error::BadFunctionArguments(msg.str());
 		}
 		__max_e_power=max_e_power;
 	}
@@ -127,15 +132,17 @@ void EccentricityExpansionCoefficients::read(
 double EccentricityExpansionCoefficients::operator()(int m, int s, 
 		double e, unsigned max_e_power, bool deriv) const
 {
-	if(!__useable) throw Error::Runtime("Attempting to evaluate Pms before "
-			"reading in eccentricity expansion coefficients!");
+	if(!__useable) throw Core::Error::Runtime(
+        "Attempting to evaluate Pms before reading in eccentricity expansion"
+        " coefficients!"
+    );
 	if(s<-static_cast<int>(max_e_power)+m || 
 			s>static_cast<int>(max_e_power)+m) return 0;
 	switch(m) {
 		case -2 : return (s==0 ? 0 : p_m2s(e, s, max_e_power, deriv));
 		case 0  : return p_0s(e, s, max_e_power, deriv);
 		case 2  : return (s==0 ? 0 : p_p2s(e, s, max_e_power, deriv));
-		default : throw Error::BadFunctionArguments(
+        default : throw Core::Error::BadFunctionArguments(
 						  "Asking for p_{m,s} with m other than +-2 and 0");
 	};
 }

@@ -3,47 +3,68 @@
 double DissipatingBody::normalize_torques(double companion_mass,
 		double semimajor, double orbital_frequency)
 {
-	double torque_norm=std::pow(companion_mass/std::pow(semimajor, 3), 2)
-					   *std::pow(radius(), 5)
-					   *AstroConst::G*AstroConst::day*AstroConst::Gyr
-					   *AstroConst::solar_mass
-					   /std::pow(AstroConst::solar_radius, 3),
-		   dangular_velocity_da=-1.5*orbital_frequency/semimajor;
-	for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
-		bool above=false;
-		const DissipatingZone &current_zone=zone(zone_index);
+	double torque_norm = (
+        std::pow(companion_mass / std::pow(semimajor, 3), 2)
+        *
+        std::pow(radius(), 5)
+        *
+        Core::AstroConst::G
+        *
+        Core::AstroConst::day
+        *
+        Core::AstroConst::Gyr
+        *
+        Core::AstroConst::solar_mass
+        /
+        std::pow(Core::AstroConst::solar_radius, 3)
+    );
+    double dangular_velocity_da = -1.5 * orbital_frequency / semimajor;
+	for(unsigned zone_index = 0; zone_index < number_zones(); ++zone_index) {
+		bool above = false;
+		const DissipatingZone &current_zone = zone(zone_index);
 		do {
 			std::valarray<Eigen::Vector3d> &tidal_torque=
 				(above ? __tidal_torques_above : __tidal_torques_below)
 				[zone_index];
-			tidal_torque[Dissipation::ORBITAL_FREQUENCY]+=
-				4.0/orbital_frequency*tidal_torque[Dissipation::NO_DERIV];
-			tidal_torque[Dissipation::RADIUS]=
-				5.0/radius()*tidal_torque[Dissipation::NO_DERIV];
-			tidal_torque[Dissipation::MOMENT_OF_INERTIA]=
+			tidal_torque[Dissipation::ORBITAL_FREQUENCY] += (
+				4.0
+                /
+                orbital_frequency
+                *
+                tidal_torque[Dissipation::NO_DERIV]
+            );
+			tidal_torque[Dissipation::RADIUS] = (
+				5.0 / radius() * tidal_torque[Dissipation::NO_DERIV]
+            );
+			tidal_torque[Dissipation::MOMENT_OF_INERTIA] = (
 				-current_zone.spin_frequency()
-				/current_zone.moment_of_inertia()
-				*tidal_torque[Dissipation::SPIN_FREQUENCY];
-			tidal_torque[Dissipation::SPIN_ANGMOM]=
-				tidal_torque[Dissipation::SPIN_FREQUENCY]
-				/current_zone.moment_of_inertia();
-			tidal_torque[Dissipation::SEMIMAJOR]=
-				dangular_velocity_da
-				*tidal_torque[Dissipation::ORBITAL_FREQUENCY];
-			above=!above;
+				/
+                current_zone.moment_of_inertia()
+				*
+                tidal_torque[Dissipation::SPIN_FREQUENCY]
+            );
+			tidal_torque[Dissipation::SPIN_ANGMOM] = (
+                tidal_torque[Dissipation::SPIN_FREQUENCY]
+				/
+                current_zone.moment_of_inertia()
+            );
+			tidal_torque[Dissipation::SEMIMAJOR] = (
+                dangular_velocity_da
+				*
+                tidal_torque[Dissipation::ORBITAL_FREQUENCY]
+            );
+			above = !above;
 		} while (above);
 	}
-#ifdef DEBUG
-	 assert(__tidal_torques_above.size()==__tidal_torques_below.size());
-#endif
-	for(unsigned i=0; i<__tidal_torques_above.size(); ++i) {
-#ifdef DEBUG
-		assert(__tidal_torques_above[i].size()==
-				__tidal_torques_below[i].size());
-#endif
-		for(unsigned j=0; j<__tidal_torques_above[i].size(); ++j) {
-			__tidal_torques_above[i][j]*=torque_norm;
-			__tidal_torques_below[i][j]*=torque_norm;
+
+    assert(__tidal_torques_above.size() == __tidal_torques_below.size());
+	for(unsigned i = 0; i < __tidal_torques_above.size(); ++i) {
+		assert(__tidal_torques_above[i].size()
+               ==
+               __tidal_torques_below[i].size());
+		for(unsigned j = 0; j < __tidal_torques_above[i].size(); ++j) {
+			__tidal_torques_above[i][j] *= torque_norm;
+			__tidal_torques_below[i][j] *= torque_norm;
 		}
 	}
 	return torque_norm;
@@ -166,7 +187,7 @@ Eigen::Vector3d DissipatingBody::angular_momentum_transfer_from_top(
 #endif
 	const DissipatingZone &this_zone=zone(zone_index),
 		  				  &zone_above=zone(zone_index-1);
-	double scaling=NaN, dm_dt=this_zone.outer_mass(1);
+	double scaling=Core::NaN, dm_dt=this_zone.outer_mass(1);
 	if(deriv==Dissipation::NO_DERIV) scaling=1;
 	else if(deriv==Dissipation::AGE) {
 		scaling=2.0*this_zone.outer_radius(1)/this_zone.outer_radius(0)
@@ -212,7 +233,7 @@ Eigen::Vector3d DissipatingBody::angular_momentum_transfer_from_bottom(
 #endif
 	const DissipatingZone &this_zone=zone(zone_index),
 						  &zone_below=zone(zone_index+1);
-	double scaling=NaN, dm_dt=zone_below.outer_mass(1);
+	double scaling=Core::NaN, dm_dt=zone_below.outer_mass(1);
 	if(deriv==Dissipation::NO_DERIV) scaling=1;
 	else if(deriv==Dissipation::AGE) {
 		scaling=2.0*zone_below.outer_radius(1)/zone_below.outer_radius(0)
@@ -304,7 +325,7 @@ void DissipatingBody::correct_orbit_energy_gain(
 							-
 							tidal_power(zone_index, true, deriv));
 				if(deriv!=Dissipation::NO_DERIV) {
-					double frac_deriv=NaN;
+					double frac_deriv=Core::NaN;
 					if(deriv==Dissipation::AGE) frac_deriv=
 						above_lock_fractions_age_deriv[locked_zone_index];
 					else if(deriv==Dissipation::ORBITAL_FREQUENCY)
@@ -403,7 +424,7 @@ void DissipatingBody::configure(double age, double companion_mass,
 		if(locked_surface && zone_index==0)
 			zone_spin=surface_lock_frequency();
 		else if(current_zone.locked()) {
-			zone_spin=NaN;
+			zone_spin=Core::NaN;
 			++angmom_offset;
 		} else zone_spin=spin_angmom[zone_index-angmom_offset];
 		current_zone.configure(age, __orbital_frequency, eccentricity,
@@ -524,7 +545,7 @@ double DissipatingBody::tidal_orbit_energy_gain(
 		const Eigen::VectorXd &above_lock_fraction_deriv) const
 {
 	const DissipatingZone &deriv_zone=zone(deriv_zone_index);
-	double result=NaN;
+	double result=Core::NaN;
 	if(!zone_specific(deriv) || !deriv_zone.locked() 
 			|| __above_lock_fractions.size()==0) {
 		if(zone_specific(deriv))

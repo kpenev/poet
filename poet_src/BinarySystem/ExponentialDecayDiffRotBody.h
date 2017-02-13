@@ -46,7 +46,9 @@ public:
 	ExponentialDecayDiffRotBody(
 			///The timescale for differential rotation coupling.
 			double coupling_timescale) :
-		__current_age(NaN), __timescale(coupling_timescale), __torque(0)
+		__current_age(Core::NaN),
+        __timescale(coupling_timescale),
+        __torque(0)
 	{}
 
 	///\brief See DissipatingBody::configure().

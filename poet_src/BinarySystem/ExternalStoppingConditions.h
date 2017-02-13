@@ -30,7 +30,7 @@ public:
 	///\brief Returns the difference between the convective zone spin and
 	///the threshold divided by the latter.
 	std::valarray<double> operator()(
-			EvolModeType evol_mode,
+			Core::EvolModeType evol_mode,
 			const std::valarray<double> &orbit,
 			const std::valarray<double> &derivatives,
 			std::valarray<double> &stop_deriv) const;

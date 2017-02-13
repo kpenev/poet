@@ -1,14 +1,10 @@
 #ifndef __EVOLVING_STELLAR_CORE_H
 #define __EVOLVING_STELLAR_CORE_H
 
-#ifdef TWO_QS
-#include "TwoPhaseLagZone.h"
-#else
-#include "PowerlawPhaseLagZone.h"
-#endif
+#include "EvolvingStellarZone.h"
 
-#include "Functions.h"
-#include "StellarEvolution.h"
+#include "../Core/Functions.h"
+#include "../StellarEvolution/EvolvingStellarQuantity.h"
 
 ///\brief Radiative core for low mass evolving stars.
 class EvolvingStellarCore : public EvolvingStellarZone {
@@ -27,21 +23,23 @@ private:
 	};
 
 public:
+    ///Create a stellar core with the specified properties.
 	EvolvingStellarCore(
 			///The age at which the core forms.
-			double formation_age=Inf, 
+			double formation_age=Core::Inf, 
 
 			///The mass of the core.
-			const EvolvingStellarQuantity *mass=NULL,
+			const StellarEvolution::EvolvingStellarQuantity *mass=NULL,
 
 			///The radius of the core.
-			const EvolvingStellarQuantity *radius=NULL,
+			const StellarEvolution::EvolvingStellarQuantity *radius=NULL,
 
 			///The moment of inertia of the zone.
-			const EvolvingStellarQuantity *moment_of_inertia=NULL
+			const StellarEvolution::EvolvingStellarQuantity 
+            *moment_of_inertia=NULL
     ) :
         EvolvingStellarZone({mass, radius, moment_of_inertia}),
-        __formation_age(formation_age),
+        __formation_age(formation_age)
     {}
 
 	///See DissipatingZone::moment_of_inertia(int).
@@ -66,10 +64,13 @@ public:
 
 	///See DissipatingZone::outer_mass(double, int).
 	double outer_mass(double age, int deriv_order=0) const
-	{return any_age_quantity(MASS, deriv_order);}
+	{return any_age_quantity(MASS, age, deriv_order);}
 
 	///No dissipation in the core.
 	bool dissipative() const {return false;} 
+
+    ///The age at which the core forms in Gyr.
+    double formation_age() const {return __formation_age;}
 };
 
 #endif

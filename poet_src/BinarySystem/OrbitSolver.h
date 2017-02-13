@@ -9,8 +9,8 @@
 #ifndef __ORBIT_SOLVER_H
 #define __ORBIT_SOLVER_H
 
-#include "AstronomicalConstants.h"
-#include "Common.h"
+#include "../Core/AstronomicalConstants.h"
+#include "../Core/Common.h"
 #include "BinarySystem.h"
 #include "CombinedStoppingCondition.h"
 #include "ExternalStoppingConditions.h"
@@ -86,10 +86,10 @@ public:
 	///Create an object to hold information about a function extremum.
 	ExtremumInformation(
 			///The value of the argument where the extremum occurs.
-			double x=Inf,
+			double x=Core::Inf,
 
 			///The value of the function at the extremum.
-			double y=NaN) : __x(x), __y(y) {}
+			double y=Core::NaN) : __x(x), __y(y) {}
 
 	///The value of the argument where the extremum occurs.
 	double x() const {return __x;}
@@ -119,7 +119,7 @@ private:
 	std::list<double> __tabulated_ages;
 
 	///The evolution mode corresponding to the matching tabulated age.
-	std::list<EvolModeType> __tabulated_evolution_modes;
+	std::list<Core::EvolModeType> __tabulated_evolution_modes;
 
 	///\brief The number of points at the start of the history to skip when
 	///lookng for a zero crossing for each condition
@@ -181,7 +181,7 @@ private:
             double age,
 
 			///The evolution mode represented in orbit.
-			EvolModeType evolution_mode,
+			Core::EvolModeType evolution_mode,
 		
 			///The binary system being evolved.
 			BinarySystem &system);
@@ -277,7 +277,7 @@ private:
 			const std::valarray<double> &derivatives,
 
 			///The current evolution mode.
-			EvolModeType evolution_mode,
+			Core::EvolModeType evolution_mode,
 
 			///For the first call of this function for an evolution stretch,
 			///this should indicate the reason why the previous stretch was
@@ -321,7 +321,7 @@ private:
 			double max_step,
 
 			///The evolution mode for this part of the evolution.
-			EvolModeType evolution_mode);
+			Core::EvolModeType evolution_mode);
 
 	///Returns the stopping conditions which end the given evolution mode.
 	CombinedStoppingCondition *get_stopping_condition(
@@ -359,7 +359,7 @@ public:
 
 			///The maximum size of the time steps allowed (useful if finer
 			///sampling of the output than default is necessary).
-			double max_step=Inf,
+			double max_step=Core::Inf,
 
 			///A sorted list of ages to include in the tabulated evolution.
 			const std::list<double> &required_ages=std::list<double>());	
@@ -369,7 +369,7 @@ public:
 	{return __tabulated_ages;}
 
 	///The tabulated evolution modes so far.
-	const std::list<EvolModeType> &mode_evolution() const
+	const std::list<Core::EvolModeType> &mode_evolution() const
 	{return __tabulated_evolution_modes;}
 };
 

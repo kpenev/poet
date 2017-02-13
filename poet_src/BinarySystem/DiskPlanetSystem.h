@@ -2,7 +2,7 @@
 #define __DISK_PLANET_SYSTEM_H
 
 #include "BinarySystem.h"
-#include "Error.h"
+#include "../Core/Error.h"
 #include <sstream>
 
 /**\file

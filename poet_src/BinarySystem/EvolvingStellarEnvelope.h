@@ -31,13 +31,15 @@ public:
 			double stellar_mass,
 
 			///The radius of the star.
-			const EvolvingStellarQuantity *outer_radius=NULL,
+			const StellarEvolution::EvolvingStellarQuantity
+            *outer_radius=NULL,
 
 			///The moment of inertia of the zone.
-			const EvolvingStellarQuantity *moment_of_inertia=NULL
+			const StellarEvolution::EvolvingStellarQuantity 
+            *moment_of_inertia=NULL
     ) :
         EvolvingStellarZone({outer_radius, moment_of_inertia}),
-		__stellar_mass(stellar_mass),
+		__stellar_mass(stellar_mass)
 	{}
 
 	///See DissipatingZone::moment_of_inertia(double, int)
@@ -50,7 +52,7 @@ public:
 
 	///See DissipatingZone::outer_radius(double, int).
 	double outer_radius(double age, int deriv_order=0) const
-    {return any_age_quantity(RADIUS, age, deriv_orger);}
+    {return any_age_quantity(RADIUS, age, deriv_order);}
 
 	///See DissipatingZone::outer_radius(int).
 	double outer_radius(int deriv_order=0) const

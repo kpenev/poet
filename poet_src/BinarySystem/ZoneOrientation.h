@@ -16,7 +16,7 @@
 
 #include "DissipationQuantities.h"
 #include "Eigen/Dense"
-#include "Common.h"
+#include "../Core/Common.h"
 
 class ZoneOrientation {
 private:
@@ -27,7 +27,8 @@ private:
 		   ///The periapsis of the orbit in the equatorial frame of the zone.
 		   __periapsis;
 public:
-	ZoneOrientation(double inclination=NaN, double periapsis=NaN) :
+	ZoneOrientation(double inclination = Core::NaN,
+                    double periapsis = Core::NaN) :
 		__inclination(inclination), __periapsis(periapsis) {}
 
 	///Changes the zone orientation.

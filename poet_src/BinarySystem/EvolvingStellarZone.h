@@ -7,7 +7,7 @@
 #include "PowerlawPhaseLagZone.h"
 #endif
 
-#include "Functions.h"
+#include "../Core/Functions.h"
 #include "EvolvingStellarQuantity.h"
 
 #include <initializer_list>
@@ -26,11 +26,12 @@ private:
 
 	///\brief Pre-computed values and derivatives for quantities which only
 	///depend on age at the current age.
-	mutable std::vector< const FunctionDerivatives* >
+	mutable std::vector< const Core::FunctionDerivatives* >
 		__current_age_quantities;
 
     ///The quantities describing the stellar zone.
-    const std::vector< EvolvingStellarQuantity* > __evolving_quantities;
+    const std::vector< const StellarEvolution::EvolvingStellarQuantity* >
+        __evolving_quantities;
 
 	///Forgets any previously calculated quantities for the current age.
 	void reset_current_quantities();
@@ -41,9 +42,11 @@ public:
     ///WARNING: All quantities are destroyed by the desctructor.
     EvolvingStellarZone(
         ///The quantities describing the zone.
-        std::initializer_list<EvolvingStellarQuantity*> evolving_quantities
+        std::initializer_list<
+            const StellarEvolution::EvolvingStellarQuantity*
+        > evolving_quantities
     ) : 
-        __current_age(NaN),
+        __current_age(Core::NaN),
         __current_age_quantities(evolving_quantities.size(), NULL),
         __evolving_quantities(evolving_quantities)
     {}
@@ -119,6 +122,9 @@ public:
 	///\brief The next age when the evolution needs to be stopped for a
 	///change in one of the bodies.
 	double next_stop_age() const;
+
+    ///Delete any dynamically allocated memory.
+    ~EvolvingStellarZone();
 };
 
 #endif

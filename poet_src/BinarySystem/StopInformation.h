@@ -43,10 +43,10 @@ public:
 	///should be stopped.
 	StopInformation(
 			///The target stopping age in Gyr.
-			double stop_age=Inf,
+			double stop_age=Core::Inf,
 			
 			///The precision up to which the reason to stop is satisfied.
-			double stop_precision=NaN,
+			double stop_precision=Core::NaN,
 
 			///The reason for stopping.
 			StoppingConditionType stop_reason=NO_STOP,

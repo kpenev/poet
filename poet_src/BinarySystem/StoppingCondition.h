@@ -8,7 +8,7 @@
 #ifndef __STOPPING_CONDITION_H
 #define __STOPPING_CONDITION_H
 
-#include "Common.h"
+#include "../Core/Common.h"
 
 #include <cassert>
 
@@ -62,7 +62,7 @@ public:
 			///The evolution mode for which the orbit and derivatives are
 			///given. For some conditions some EvolModeType values will not
 			///make sense and will result in an exception.
-			EvolModeType evol_mode,
+			Core::EvolModeType evol_mode,
 
 			///The variables which are currently being evolved. The content
 			///depends on the evol_mode argument.
@@ -136,10 +136,10 @@ public:
 	///See StoppingCondition::operator()() for a description of the
 	///arguments.
 	std::valarray<double> operator()(
-			EvolModeType, const std::valarray<double> &, 
+			Core::EvolModeType, const std::valarray<double> &, 
 			const std::valarray<double> &, 
 			std::valarray<double> &stop_deriv) const
-	{stop_deriv.resize(1, NaN); return std::valarray<double>(1, 1);}
+	{stop_deriv.resize(1, Core::NaN); return std::valarray<double>(1, 1);}
 
 	///Identifies the condition as NO_STOP.
 	StoppingConditionType type(unsigned =0) const {return NO_STOP;}

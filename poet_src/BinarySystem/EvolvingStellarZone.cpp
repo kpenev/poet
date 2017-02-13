@@ -23,12 +23,12 @@ double EvolvingStellarZone::current_age_quantity(size_t quantity,
 
 double EvolvingStellarZone::any_age_quantity(size_t quantity,
                                              double age, 
-                                             unsigned deriv_order=0) const
+                                             unsigned deriv_order) const
 {
     if(deriv_order == 0)
         return (*(__evolving_quantities[quantity]))(age);
     else {
-        FunctionDerivatives 
+        const Core::FunctionDerivatives 
             *deriv = __evolving_quantities[quantity]->deriv(age);
         double result = deriv->order(deriv_order);
         delete deriv;
@@ -70,14 +70,15 @@ EvolvingStellarZone::~EvolvingStellarZone()
 void EvolvingStellarZone::reached_critical_age(double age)
 {
     for(size_t i = 0; i < __evolving_quantities.size(); ++i)
-        __evolving_quantities[i]->reached_critical_age(age);
+        while(__evolving_quantities[i]->next_discontinuity() <= age)
+            __evolving_quantities[i]->enable_next_interpolation_region();
 }
 
 double EvolvingStellarZone::next_stop_age() const
 {
-    double result = Inf;
+    double result = Core::Inf;
     for(size_t i = 0; i < __evolving_quantities.size(); ++i)
         result = std::min(result,
-                          __evolving_quantities[i]->next_stop_age(age));
+                          __evolving_quantities[i]->next_discontinuity());
     return result;
 }

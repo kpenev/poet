@@ -1,17 +1,17 @@
 #include "WindSaturationCondition.h"
 
 std::valarray<double> WindSaturationCondition::operator()(
-		EvolModeType evol_mode,
+		Core::EvolModeType evol_mode,
 		const std::valarray<double> &,
 		const std::valarray<double> &derivatives,
 		std::valarray<double> &stop_deriv) const
 {
 #ifdef DEBUG
 	assert(evol_mode != LOCKED_SURFACE_SPIN);
-	if(evol_mode != BINARY) assert(__primary);
+	if(evol_mode != Core::BINARY) assert(__primary);
 #endif 
 	unsigned angmom_index = 1 + 2 * __body.number_zones();
-	if(evol_mode == BINARY) 
+	if(evol_mode == Core::BINARY) 
 		angmom_index += 2 * __other_body.number_zones()
 					    + 
                         (__primary ? 0

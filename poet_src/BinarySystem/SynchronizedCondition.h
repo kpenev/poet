@@ -35,24 +35,25 @@ private:
 public:
 	///Create the synchronization condition for the given planet.
 	SynchronizedCondition(
-			///The mutiplier in front of the orbital frequency in the lock.
-			int orbital_freq_mult,
+        ///The mutiplier in front of the orbital frequency in the lock.
+        int orbital_freq_mult,
 
-			///The multiplier in front of the spin frequency in the lock.
-			int spin_freq_mult,
+        ///The multiplier in front of the spin frequency in the lock.
+        int spin_freq_mult,
 
-			///The sign the first derivative should have if a crossing
-			///occurs.
-			short deriv_sign,
+        ///The sign the first derivative should have if a crossing
+        ///occurs.
+        short deriv_sign,
 
-			///Which body's spin is checked for locking.
-			bool primary,
-			
-			///Which zone's spin is checked for locking.
-			unsigned zone_index,
-			
-			///The binary system this locking condition is attached to
-			BinarySystem &system);
+        ///Which body's spin is checked for locking.
+        bool primary,
+
+        ///Which zone's spin is checked for locking.
+        unsigned zone_index,
+
+        ///The binary system this locking condition is attached to
+        BinarySystem &system
+    );
 
 	///\brief Returns the difference between the orbital and multiplier
 	///scaled stellar spin angular velocities divided by the orbital angular
@@ -63,10 +64,12 @@ public:
 	///
 	///The evolution mode must be FAST_PLANET, SLOW_PLANET or LOCKED_TO_DISK
 	///or NO_PLANET.
-	std::valarray<double> operator()(EvolModeType evol_mode,
-			const std::valarray<double> &orbit,
-			const std::valarray<double> &derivatives,
-			std::valarray<double> &stop_deriv) const;
+	std::valarray<double> operator()(
+        Core::EvolModeType evol_mode,
+        const std::valarray<double> &orbit,
+        const std::valarray<double> &derivatives,
+        std::valarray<double> &stop_deriv
+    ) const;
 
 	///Identify this as a SYNCHRONIZED condition.
 	StoppingConditionType type(unsigned =0) const {return SYNCHRONIZED;}

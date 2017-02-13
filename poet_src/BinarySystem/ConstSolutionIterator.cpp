@@ -115,7 +115,7 @@ void ConstSolutionIterator::fix_no_evolution(
 ConstSolutionIterator::ConstSolutionIterator(
 		const OrbitSolver &solver,
 		const BinarySystem &system,
-		const YRECStar &star,
+		const InterpolatedEvolutionStar &star,
 		double start_age,
 		double end_age,
 		double timestep,
