@@ -2,7 +2,7 @@
 #define __DISSIPATING_BODY_H
 
 #include "DissipatingZone.h"
-#include "OrbitalExpressions.h"
+#include "../Core/OrbitalExpressions.h"
 #include "../Core/AstronomicalConstants.h"
 #include "../Core/Common.h"
 #include <valarray>

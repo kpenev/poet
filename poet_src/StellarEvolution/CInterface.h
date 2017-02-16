@@ -216,4 +216,4 @@ extern "C" {
         ///The quantity to return the default nodes for.
         int quantityID
     );
-}
+} //End extern "C"

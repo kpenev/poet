@@ -11,10 +11,10 @@
 
 #include "../Core/AstronomicalConstants.h"
 #include "../Core/Common.h"
+#include "../Core/OrbitalExpressions.h"
 #include "BinarySystem.h"
 #include "CombinedStoppingCondition.h"
 #include "ExternalStoppingConditions.h"
-#include "OrbitalExpressions.h"
 #include "StopInformation.h"
 #include "StopHistoryInterval.h"
 #include <math.h>

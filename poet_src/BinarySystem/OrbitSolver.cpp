@@ -652,11 +652,12 @@ StopInformation OrbitSolver::evolve_until(BinarySystem &system,
 }
 
 CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
-		BinarySystem &system) const
+		BinarySystem &system
+) const
 {
-	CombinedStoppingCondition *result=system.stopping_conditions();
+	CombinedStoppingCondition *result = system.stopping_conditions();
 #ifdef EXTERNAL_CONDITION
-	(*result)|= new EXTERNAL_CONDITION;
+	(*result) |= new EXTERNAL_CONDITION;
 #endif
 	return result;
 }
@@ -698,46 +699,57 @@ void OrbitSolver::operator()(BinarySystem &system, double max_step,
 		const std::list<double> &required_ages)
 {
 #ifdef DEBUG
-	std::cerr << "Calculating evolution from t=" << system.age() << " to "
-			  << "t=" << __end_age << std::endl;
+	std::cerr << "Calculating evolution from t = " << system.age()
+              << " to t = " << __end_age << std::endl;
 #endif
 
-	double stop_evol_age=__end_age;
+	double stop_evol_age = __end_age;
 
 	reset(system);
-	StoppingConditionType stop_reason=NO_STOP;
-	double last_age=system.age();
+	StoppingConditionType stop_reason = NO_STOP;
+	double last_age = system.age();
 	std::valarray<double> orbit;
 	
-    Core::EvolModeType evolution_mode=system.fill_orbit(orbit);
-	while(last_age<stop_evol_age) {
-		double next_stop_age=std::min(stopping_age(last_age, system,
-					required_ages), stop_evol_age);
-		__stopping_conditions=get_stopping_condition(system);
-		StopInformation stop_information=evolve_until(system, next_stop_age,
-				orbit, stop_reason, max_step, evolution_mode);
+    Core::EvolModeType evolution_mode = system.fill_orbit(orbit);
+	while(last_age < stop_evol_age) {
+		double next_stop_age = std::min(stopping_age(last_age,
+                                                     system,
+                                                     required_ages), 
+                                        stop_evol_age);
+		__stopping_conditions = get_stopping_condition(system);
+		StopInformation stop_information = evolve_until(system,
+                                                        next_stop_age,
+                                                        orbit,
+                                                        stop_reason,
+                                                        max_step,
+                                                        evolution_mode);
 #ifdef DEBUG
-        Core::EvolModeType old_evolution_mode=evolution_mode;
-		unsigned old_locked_zones=system.number_locked_zones();
+        Core::EvolModeType old_evolution_mode = evolution_mode;
+		unsigned old_locked_zones = system.number_locked_zones();
 #endif
-		last_age=next_stop_age;
-		if(last_age<stop_evol_age) {
-			if(stop_reason==NO_STOP) 
+		last_age = next_stop_age;
+		if(last_age < stop_evol_age) {
+			if(stop_reason == NO_STOP) 
 				system.reached_critical_age(last_age);
 			else 
 				__stopping_conditions->reached(
 						stop_information.deriv_sign_at_crossing(),
-						stop_information.stop_condition_index());
+						stop_information.stop_condition_index()
+                );
 		}
 #ifdef DEBUG 
-		std::cerr << "At t=" << last_age << ", changing evolution mode from "
-			      << old_evolution_mode  << " with " << old_locked_zones
-				  << " zones locked to ";
+		std::cerr
+            << "At t=" << last_age
+            << ", changing evolution mode from " << old_evolution_mode
+            << " with " << old_locked_zones
+            << " zones locked ";
 #endif
-		evolution_mode=system.evolution_mode();
+		evolution_mode = system.evolution_mode();
 #ifdef DEBUG
-		std::cerr << evolution_mode << " with "
-			<< system.number_locked_zones() << " zones locked." << std::endl
+		std::cerr 
+            << "to " << evolution_mode
+            << " with " << system.number_locked_zones() << " zones locked." 
+            << std::endl
 			<< "Transforming orbit from: " << orbit;
 #endif
 		system.fill_orbit(orbit);

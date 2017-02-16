@@ -9,7 +9,7 @@
 #define __ORBITAL_EXPRESSIONS_H
 
 #include <cmath>
-#include "../Core/AstronomicalConstants.h"
+#include "AstronomicalConstants.h"
 
 ///Returns the orbital angular velocity of the given orbit in rad/day.
 double orbital_angular_velocity(

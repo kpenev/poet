@@ -53,10 +53,11 @@ public:
 			double diff_rot_coupling_timescale,
 
 			///A StellarEvolution interpolator.
-			const StellarEvolution::Interpolator &interpolator) :
-		SaturatingSkumanichWindBody(wind_strength,
-									wind_saturation_frequency),
-		ExponentialDecayDiffRotBody(diff_rot_coupling_timescale),
+			const StellarEvolution::Interpolator &interpolator
+    ) : 
+        SaturatingSkumanichWindBody(wind_strength,
+                                    wind_saturation_frequency),
+        ExponentialDecayDiffRotBody(diff_rot_coupling_timescale),
 		__luminosity(interpolator(StellarEvolution::LUM, mass, metallicity)),
 		__lifetime(__luminosity->range_high()),
 		__envelope(mass,

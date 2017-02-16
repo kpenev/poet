@@ -9,11 +9,11 @@
 #define __BINARY_SYSTEM_H
 
 #include "DissipatingBody.h"
-#include "../Core/AstronomicalConstants.h"
 #include "CombinedStoppingCondition.h"
 #include "SecondaryDeathCondition.h"
+#include "../Core/AstronomicalConstants.h"
 #include "../Core/Common.h"
-#include "OrbitalExpressions.h"
+#include "../Core/OrbitalExpressions.h"
 #include "../Core/Error.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_odeiv2.h>

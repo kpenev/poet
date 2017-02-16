@@ -291,8 +291,8 @@ namespace StellarEvolution {
                 ///number of tabulated ages for each track).
                 const std::vector<int> &nodes = __default_nodes,
 
-                ///Should interpolation be done vs. log(age) instead of age for
-                ///each quantity?
+                ///Should interpolation be done vs. log(age) instead of age
+                ///for each quantity?
                 const std::vector<bool> &vs_log_age = __default_vs_log_age,
 
                 ///Should interpolation be done of log(quantity) instead of

@@ -1,7 +1,7 @@
 #ifndef __LOCKED_PLANET_H
 #define __LOCKED_PLANET_H
 
-#include "AstronomicalConstants.h"
+#include "../Core/AstronomicalConstants.h"
 
 /**\file
  * 
@@ -20,8 +20,16 @@ private:
 		   __radius;
 public:
 	LockedPlanetZone(double mass, double radius) :
-		__mass(mass*AstroConst::jupiter_mass/AstroConst::solar_mass),
-		__radius(radius*AstroConst::jupiter_radius/AstroConst::solar_radius)
+		__mass(mass
+               *
+               Core::AstroConst::jupiter_mass
+               /
+               Core::AstroConst::solar_mass),
+		__radius(radius
+                 *
+                 Core::AstroConst::jupiter_radius
+                 /
+                 Core::AstroConst::solar_radius)
 	{}
 
 	///See DissipatingZone::modified_phase_lag(), very large constant value.
@@ -124,17 +132,20 @@ public:
 	DissipatingZone &zone(unsigned) {return __zone;}
 
 	///Should never be called.
-	Eigen::Vector3d angular_momentum_coupling(unsigned,
-			Dissipation::Derivative =Dissipation::NO_DERIV,
-			bool =false) const
+	Eigen::Vector3d angular_momentum_coupling(
+        unsigned,
+        Dissipation::Derivative = Dissipation::NO_DERIV,
+        bool = false
+    ) const
 	{
-		throw Error::Runtime("Request for the angular momentum coupling of "
-							 "a LockedPlanet!");
+		throw Core::Error::Runtime("Request for the angular momentum "
+                                   "coupling of a LockedPlanet!");
 	}
 
 	///Always zero.
 	double angular_momentum_loss(
-			Dissipation::Derivative =Dissipation::NO_DERIV) const
+			Dissipation::Derivative =Dissipation::NO_DERIV
+    ) const
 	{return 0;}
 };
 

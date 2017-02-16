@@ -98,6 +98,9 @@ model {
                 lib library: "stellarEvolution"
                 source {
                     srcDir "."
+                    exclude "**/unit_tests/"
+                    exclude "**/StellarEvolution/"
+                    exclude "**/third_party_libs/"
                     include "**/*.cpp"
                 }
                 source {
