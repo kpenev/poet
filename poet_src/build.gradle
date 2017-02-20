@@ -91,28 +91,64 @@ model {
                 }
             }
         }
-        poet(NativeExecutableSpec) {
-            sources.cpp {
+        evolve(NativeLibrarySpec) {
+            sources.cpp{
                 lib library: "alglib"
                 lib library: "eigen"
-                lib library: "stellarEvolution"
                 source {
-                    srcDir "."
-                    exclude "**/unit_tests/"
-                    exclude "**/StellarEvolution/"
-                    exclude "**/third_party_libs/"
+                    srcDir "Evolve"
                     include "**/*.cpp"
                 }
                 source {
                     srcDir "Core"
                     include "**/*.cpp"
                 }
-                source {
-                    srcDir "IO"
-                    include "**/*.cpp"
+                exportedHeaders {
+                    srcDir "Evolve/"
                 }
             }
         }
+        planet(NativeLibrarySpec) {
+            sources.cpp {
+                lib library: "alglib"
+                lib library: "eigen"
+                lib library: "evolve"
+                source {
+                    srcDir "Planet"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "Core"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "Planet/"
+                }
+            }
+
+        }
+//        poet(NativeExecutableSpec) {
+//            sources.cpp {
+//                lib library: "alglib"
+//                lib library: "eigen"
+//                lib library: "stellarEvolution"
+//                source {
+//                    srcDir "."
+//                    exclude "**/unit_tests/"
+//                    exclude "**/StellarEvolution/"
+//                    exclude "**/third_party_libs/"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "Core"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "IO"
+//                    include "**/*.cpp"
+//                }
+//            }
+//        }
     }
 }
 
