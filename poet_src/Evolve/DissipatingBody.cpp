@@ -395,18 +395,29 @@ namespace Evolve {
 
     }
 
-    void DissipatingBody::configure(double age, double companion_mass,
-            double semimajor, double eccentricity, const double *spin_angmom,
-            const double *inclination, const double *periapsis, 
-            bool locked_surface, bool zero_outer_inclination, 
-            bool zero_outer_periapsis)
+    void DissipatingBody::configure(double age,
+                                    double companion_mass,
+                                    double semimajor,
+                                    double eccentricity,
+                                    const double *spin_angmom,
+                                    const double *inclination,
+                                    const double *periapsis,
+                                    bool locked_surface,
+                                    bool zero_outer_inclination,
+                                    bool zero_outer_periapsis)
     {
-        double orbital_angmom=orbital_angular_momentum(companion_mass, mass(),
-                       semimajor, eccentricity);
-        __orbital_frequency=orbital_angular_velocity(companion_mass, mass(),
-                                                     semimajor, false);
-        __dorbital_frequency_da=orbital_angular_velocity(companion_mass, mass(),
-                       semimajor, true);
+        double orbital_angmom=orbital_angular_momentum(companion_mass,
+                                                       mass(),
+                                                       semimajor,
+                                                       eccentricity);
+        __orbital_frequency=orbital_angular_velocity(companion_mass,
+                                                     mass(),
+                                                     semimajor,
+                                                     false);
+        __dorbital_frequency_da=orbital_angular_velocity(companion_mass,
+                                                         mass(),
+                                                         semimajor,
+                                                         true);
                     
         __tidal_torques_above.resize(number_zones());
         __tidal_torques_below.resize(number_zones());
@@ -417,7 +428,9 @@ namespace Evolve {
             double zone_inclination, zone_periapsis, zone_spin;
             if(!inclination) zone_inclination=0;
             else if(zero_outer_inclination) 
-                zone_inclination=(zone_index ? inclination[zone_index-1] : 0);
+                zone_inclination=(zone_index
+                                  ? inclination[zone_index-1]
+                                  : 0);
             else zone_inclination=inclination[zone_index];
             if(!periapsis) zone_periapsis=0;
             else if(zero_outer_periapsis)
@@ -429,9 +442,14 @@ namespace Evolve {
                 zone_spin=Core::NaN;
                 ++angmom_offset;
             } else zone_spin=spin_angmom[zone_index-angmom_offset];
-            current_zone.configure(age, __orbital_frequency, eccentricity,
-                    orbital_angmom, zone_spin, zone_inclination, zone_periapsis,
-                    locked_surface && zone_index==0);
+            current_zone.configure(age,
+                                   __orbital_frequency,
+                                   eccentricity,
+                                   orbital_angmom,
+                                   zone_spin,
+                                   zone_inclination,
+                                   zone_periapsis,
+                                   locked_surface && zone_index==0);
         }
         for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
             DissipatingZone &current_zone=zone(zone_index);
@@ -463,7 +481,9 @@ namespace Evolve {
             } while(above);
         }
         collect_orbit_rates(__orbital_frequency, 
-            normalize_torques(companion_mass, semimajor, __orbital_frequency));
+            normalize_torques(companion_mass,
+                              semimajor,
+                              __orbital_frequency));
         calculate_orbit_rate_corrections();
         __above_lock_fractions.resize(0);
     }

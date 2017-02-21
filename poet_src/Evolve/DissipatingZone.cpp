@@ -139,9 +139,12 @@ namespace Evolve {
         }
     }
 
-    void DissipatingZone::fix_forcing_frequency(const SpinOrbitLockInfo &limit, 
-            int orbital_frequency_multiplier, int spin_frequency_multiplier,
-            double &forcing_frequency)
+    void DissipatingZone::fix_forcing_frequency(
+        const SpinOrbitLockInfo &limit, 
+        int orbital_frequency_multiplier,
+        int spin_frequency_multiplier,
+        double &forcing_frequency
+    )
     {
 #ifdef DEBUG
         assert(limit.spin_frequency_multiplier()==1 ||
@@ -166,25 +169,6 @@ namespace Evolve {
 #endif
         forcing_frequency=std::numeric_limits<double>::epsilon()
             *limit.lock_direction();
-    }
-
-    double DissipatingZone::forcing_frequency(int orbital_frequency_multiplier,
-            int spin_frequency_multiplier, double orbital_frequency)
-    {
-#ifdef DEBUG
-        check_locks_consistency();
-#endif
-        if(__lock(orbital_frequency_multiplier, spin_frequency_multiplier))
-            return 0;
-        double forcing_freq=orbital_frequency_multiplier*orbital_frequency
-                            -
-                            spin_frequency_multiplier*spin_frequency();
-        fix_forcing_frequency(__lock, orbital_frequency_multiplier,
-                              spin_frequency_multiplier, forcing_freq);
-        if(!__lock && __other_lock.spin_frequency_multiplier()!=0)
-            fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
-                    spin_frequency_multiplier, forcing_freq);
-        return forcing_freq;
     }
 
 #ifdef DEBUG
@@ -336,11 +320,16 @@ namespace Evolve {
 
     void DissipatingZone::configure(double
 #ifdef DEBUG
-            age
+                                    age
 #endif
-            , double orbital_frequency,
-            double eccentricity, double orbital_angmom, double spin,
-            double inclination, double periapsis, bool spin_is_frequency)
+                                    ,
+                                    double orbital_frequency,
+                                    double eccentricity,
+                                    double orbital_angmom,
+                                    double spin,
+                                    double inclination,
+                                    double periapsis,
+                                    bool spin_is_frequency)
     {
 #ifdef DEBUG
         assert(age>=0);
@@ -452,6 +441,30 @@ namespace Evolve {
             }
         }
     }
+
+    double DissipatingZone::forcing_frequency(
+        int orbital_frequency_multiplier,
+        int spin_frequency_multiplier,
+        double orbital_frequency
+    )
+    {
+#ifdef DEBUG
+        check_locks_consistency();
+#endif
+        if(__lock(orbital_frequency_multiplier, spin_frequency_multiplier))
+            return 0;
+        double forcing_freq=orbital_frequency_multiplier*orbital_frequency
+                            -
+                            spin_frequency_multiplier*spin_frequency();
+        fix_forcing_frequency(__lock, orbital_frequency_multiplier,
+                              spin_frequency_multiplier, forcing_freq);
+        if(!__lock && __other_lock.spin_frequency_multiplier()!=0)
+            fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
+                    spin_frequency_multiplier, forcing_freq);
+        return forcing_freq;
+    }
+
+
 
     double DissipatingZone::periapsis_evolution(
             const Eigen::Vector3d &orbit_torque,

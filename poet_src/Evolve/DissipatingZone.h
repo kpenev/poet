@@ -226,23 +226,6 @@ namespace Evolve {
                 ///limit.
                 double &forcing_frequency);
 
-        ///\brief The tidal forcing frequency for the given term and orbital
-        ///frequency.
-        ///
-        ///Makes sure the forcing frequency has the correct sign regardless of
-        ///numerical round-off.
-        double forcing_frequency(
-                ///The multiplier of the orbital frequency in the
-                ///expression for the forcing frequency.
-                int orbital_frequency_multiplier,
-
-                ///The multiplier of the spin frequency in the
-                ///expression for the forcing frequency.
-                int spin_frequency_multiplier,
-                
-                ///The orbital frequency.
-                double orbital_frequency);
-
 #ifdef DEBUG
         ///\brief Runs a bunch of asserts to check the consistency of __lock and
         ///__other_lock.
@@ -296,6 +279,24 @@ namespace Evolve {
                 ///Should the spin argument be interpreted as an angular momentum
                 ///or a spin frequency?
                 bool spin_is_frequency);
+
+        ///\brief The tidal forcing frequency for the given term and orbital
+        ///frequency.
+        ///
+        ///Makes sure the forcing frequency has the correct sign regardless of
+        ///numerical round-off.
+        double forcing_frequency(
+            ///The multiplier of the orbital frequency in the
+            ///expression for the forcing frequency.
+            int orbital_frequency_multiplier,
+
+            ///The multiplier of the spin frequency in the
+            ///expression for the forcing frequency.
+            int spin_frequency_multiplier,
+
+            ///The orbital frequency.
+            double orbital_frequency
+        );
 
         ///\brief Defines the angular momentum of the reference zone for single
         ///body evolution.

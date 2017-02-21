@@ -1,3 +1,11 @@
+/**\file
+ *
+ * \brief Declare C-style functions for accessing the functionality of the
+ * StellarEvolution library.
+ *
+ * \ingroup StellarEvolution
+ */
+
 #include "MESAIO.h"
 
 extern "C" {

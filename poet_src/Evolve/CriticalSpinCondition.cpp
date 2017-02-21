@@ -20,6 +20,22 @@ namespace Evolve {
         );
     }
 
+    void CriticalSpinCondition::fill_locked_derivs(
+        Core::EvolModeType evol_mode,
+        const std::valarray<double> &orbit,
+        const std::valarray<double> &derivatives,
+        std::valarray<double> &stop_deriv
+    ) const
+    {
+        double deriv_factor = (-1.5 * __zone.spin_frequency()
+                               *
+                               derivatives[0] / orbit[0]);
+        if(__critical_below_iter != __critical_spins.end())
+            stop_deriv[0] = deriv_factor * (*critical_below_iter);
+        if(__critical_above_iter != __critical_spins.end())
+            stop_deriv[0] = deriv_factor * (*critical_above_iter);
+    }
+
     void CriticalSpinCondition::fill_unlocked_derivs(
         Core::EvolModeType evol_mode,
         const std::valarray<double> &orbit,

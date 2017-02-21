@@ -1,3 +1,10 @@
+/**\file
+ *
+ * \brief The definitions of the functions declared in CInterface.h.
+ *
+ * \ingroup StellarEvolution
+ */
+
 #include "CInterface.h"
 
 const int RADIUS = StellarEvolution::RADIUS;
