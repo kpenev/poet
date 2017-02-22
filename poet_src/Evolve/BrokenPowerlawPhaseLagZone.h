@@ -10,6 +10,10 @@
  */
 
 #include "DissipatingZone.h"
+#include "DissipatingBody.h"
+#include "BinarySystem.h"
+#include "CriticalForcingFrequencyCondition.h"
+#include "CriticalSpinCondition.h"
 
 namespace Evolve {
 
@@ -34,10 +38,35 @@ namespace Evolve {
             ///frequency breaks index changes slower.
             __break_phase_lags;
 
+
+        ///\brief The stopping condition monitoring for crossing of critical
+        ///spin frequencies.
+        CriticalSpinCondition *__spin_condition;
+
+        ///Stoping conditions at the critical tidal frequencies for each
+        ///order in eccentricity.
+        std::list<CombinedStoppingCondition *> __tidal_frequency_conditions;
+
+        ///\brief Make sure that the entries in __tidal_frequency_conditions
+        ///are appropriate for the current eccentricity expansion order.
+        void fill_tidal_frequency_conditions(
+            ///The system being evolved.
+            BinarySystem &system, 
+
+            ///Is the body this zone is part of, the primary in the system.
+            bool primary,
+
+            ///The index of the zone in the body.
+            unsigned zone_index
+        );
+
     public:
-        ///\brief Create the zone with the given breaks/powers imposing
-        ///continuity accress all breaks.
-        BrokenPowerlawPhaseLagZone(
+        ///\brief Create an unuseable zone. Must call setup() before use.
+        BrokenPowerlawPhaseLagZone() : __spin_condition(NULL) {}
+
+        ///\brief Seup the zone with the given breaks/powers imposing
+        ///continuity accress all breaks. Must only be called before use.
+        void setup(
             ///The locations of the breaks in tidal frequency in rad/day.
             ///Entries should be sorted.
             std::vector<double> tidal_frequency_breaks,
@@ -124,6 +153,25 @@ namespace Evolve {
             ///The index of the zone in the body.
             unsigned zone_index
         );
+
+        ///Changes the order of the eccentricity expansion performed.
+        virtual void change_e_order(
+            ///The new eccentricity expansion order.
+            unsigned new_e_order,
+
+            ///The system being evolved.
+            BinarySystem &system, 
+
+            ///Is the body this zone is part of, the primary in the system.
+            bool primary,
+
+            ///The index of the zone in the body.
+            unsigned zone_index
+        );
+
+        ///Cleanup. 
+        ~BrokenPowerlawPhaseLagZone();
+
     }; //End BrokenPowerlawPhaseLagZone class.
 
 } //End BinarySystem namespace.

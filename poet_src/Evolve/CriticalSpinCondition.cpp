@@ -1,6 +1,18 @@
-#include "CriticalSpin.h"
+#include "CriticalSpinCondition.h"
 
 namespace Evolve {
+
+    void CriticalSpinCondition::set_num_subconditions()
+    {
+        if(
+            __critical_below_iter == __critical_spins.end()
+            ||
+            __critical_above_iter == __critical_spins.end()
+        )
+            __num_subconditions = 1;
+        else
+            __num_subconditions = 2;
+    }
 
     double CriticalSpinCondition::derivative(double surf_angmom_deriv,
                                              double wcritical) const
@@ -21,24 +33,30 @@ namespace Evolve {
     }
 
     void CriticalSpinCondition::fill_locked_derivs(
-        Core::EvolModeType evol_mode,
+        Core::EvolModeType 
+#ifndef NDEBUG
+        evol_mode
+#endif
+        ,
         const std::valarray<double> &orbit,
         const std::valarray<double> &derivatives,
         std::valarray<double> &stop_deriv
     ) const
     {
+        assert(evol_mode == Core::BINARY);
         double deriv_factor = (-1.5 * __zone.spin_frequency()
                                *
                                derivatives[0] / orbit[0]);
+        unsigned subcond = 0;
         if(__critical_below_iter != __critical_spins.end())
-            stop_deriv[0] = deriv_factor * (*critical_below_iter);
+            stop_deriv[subcond++] = deriv_factor * (*__critical_below_iter);
         if(__critical_above_iter != __critical_spins.end())
-            stop_deriv[0] = deriv_factor * (*critical_above_iter);
+            stop_deriv[subcond] = deriv_factor * (*__critical_above_iter);
     }
 
     void CriticalSpinCondition::fill_unlocked_derivs(
         Core::EvolModeType evol_mode,
-        const std::valarray<double> &orbit,
+        const std::valarray<double> &,
         const std::valarray<double> &derivatives,
         std::valarray<double> &stop_deriv
     ) const
@@ -58,7 +76,7 @@ namespace Evolve {
         assert(angmom_index <= derivatives.size());
 
         double surf_angmom_deriv = derivatives[angmom_index];
-        stop_deriv.resize(Core::NaN, 2);
+
         if(__critical_below_iter != __critical_spins.end())
             stop_deriv[0] = derivative(surf_angmom_deriv,
                                        *__critical_below_iter);
@@ -70,7 +88,7 @@ namespace Evolve {
     CriticalSpinCondition::CriticalSpinCondition(
         const DissipatingBody &body,
         const DissipatingBody &other_body,
-        bool primary
+        bool primary,
         unsigned zone_index,
         std::vector<double> critical_spins
     ) : 
@@ -89,11 +107,12 @@ namespace Evolve {
         __primary(primary),
         __zone_index(zone_index)
     {
-        if(__zone.spin_frequency() == *critical_above_iter)
+        if(__zone.spin_frequency() == *__critical_above_iter)
             throw Core::Error::BadFunctionArguments(
                 "Starting evolution from exactly a critical spin frequency "
                 "is not currently supported."
-            )
+            );
+        set_num_subconditions();
     }
 
     std::valarray<double> CriticalSpinCondition::operator()(
@@ -103,24 +122,57 @@ namespace Evolve {
         std::valarray<double> &stop_deriv
     ) const
     {
-        assert(evol_mode != LOCKED_SURFACE_SPIN);
+        assert(evol_mode != Core::LOCKED_SURFACE_SPIN);
         assert(__primary || evol_mode == Core::BINARY);
+
+        stop_deriv.resize(Core::NaN, __num_subconditions);
+
 
         if(__zone.locked())
             fill_locked_derivs(evol_mode, orbit, derivatives, stop_deriv);
         else
             fill_unlocked_derivs(evol_mode, orbit, derivatives, stop_deriv);
 
-        std::valarray<double> result(2);
-        result[0] = (__critical_below_iter == __critical_spins.end()
-                     ? Core::Inf
-                     : ((__zone.spin_frequency() - *critical_below_iter)
-                        /
-                        *critical_below_iter));
-        result[1] = (__critical_above_iter == __critical_spins.end()
-                     ? Core::Inf
-                     : ((__zone.spin_frequency() - *critical_above_iter)
-                        /
-                        *critical_above_iter));
+        std::valarray<double> result(__num_subconditions);
+
+        unsigned subcond = 0;
+        if(__critical_below_iter != __critical_spins.end())
+            result[subcond++] = (
+                (__zone.spin_frequency() - *__critical_below_iter)
+                /
+                *__critical_below_iter
+            );
+        if(__critical_above_iter != __critical_spins.end())
+        result[subcond] = (
+            (__zone.spin_frequency() - *__critical_above_iter)
+            /
+            *__critical_above_iter
+        );
         return result;
     }
+
+    void CriticalSpinCondition::reached(short deriv_sign, unsigned index)
+    {
+        assert(index < __num_subconditions);
+        if(__critical_below_iter != __critical_spins.end() && index == 0) {
+            assert(deriv_sign == -1);
+            --__critical_above_iter;
+            assert(__critical_above_iter == __critical_below_iter);
+            if(__critical_below_iter == __critical_spins.begin())
+                __critical_below_iter = __critical_spins.end();
+            else 
+                --__critical_below_iter;
+        } else {
+            assert(deriv_sign == 1);
+            assert(__critical_above_iter != __critical_spins.end());
+            if(__critical_below_iter == __critical_spins.end())
+                __critical_below_iter = __critical_spins.begin();
+            else
+                ++__critical_below_iter;
+            assert(__critical_above_iter == __critical_below_iter);
+            ++__critical_above_iter;
+        }
+        set_num_subconditions();
+    }
+
+}//End Evolve namespace

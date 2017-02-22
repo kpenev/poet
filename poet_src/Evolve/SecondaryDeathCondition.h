@@ -3,9 +3,9 @@
 
 #include "StoppingCondition.h"
 
-class BinarySystem;
-
 namespace Evolve {
+
+    class BinarySystem;
 
     ///\brief Satisfied when the planet enters below either the roche sphere or
     ///the stellar photosphere.

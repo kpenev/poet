@@ -127,6 +127,26 @@ model {
             }
 
         }
+        star(NativeLibrarySpec) {
+            sources.cpp {
+                lib library: "alglib"
+                lib library: "eigen"
+                lib library: "evolve"
+                lib library: "stellarEvolution"
+                source {
+                    srcDir "Star"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "Core"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "Star/"
+                }
+            }
+
+        }
 //        poet(NativeExecutableSpec) {
 //            sources.cpp {
 //                lib library: "alglib"

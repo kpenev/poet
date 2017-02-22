@@ -253,44 +253,45 @@ namespace Evolve {
         ///The inclinations and arguments of periapsis must be already set for
         ///all zones.
         virtual void configure(
-                ///The age to set the body to.
-                double age,
+            ///The age to set the body to.
+            double age,
 
-                ///The mass of the second body in the system.
-                double companion_mass,
+            ///The mass of the second body in the system.
+            double companion_mass,
 
-                ///The semimajor axis of the orbit in \f$R_\odot\f$.
-                double semimajor,
+            ///The semimajor axis of the orbit in \f$R_\odot\f$.
+            double semimajor,
 
-                ///The eccentricity of the orbit
-                double eccentricity,
+            ///The eccentricity of the orbit
+            double eccentricity,
 
-                ///The spin angular momenta of the non-locked zones of the body
-                ///(outermost zone to innermost).
-                const double *spin_angmom,
+            ///The spin angular momenta of the non-locked zones of the body
+            ///(outermost zone to innermost).
+            const double *spin_angmom,
 
-                ///The inclinations of the zones of the body (same order as 
-                ///spin_angmom). If NULL, all inclinations are assumed zero.
-                const double *inclination=NULL,
-                
-                ///The arguments of periapsis of the zones of the bodies (same
-                ///order as spin_angmom). If NULL, all periapses are assumed
-                ///zero.
-                const double *periapsis=NULL,
+            ///The inclinations of the zones of the body (same order as 
+            ///spin_angmom). If NULL, all inclinations are assumed zero.
+            const double *inclination=NULL,
 
-                ///If true, the outermost zone's spin is assumed locked to a 
-                ///disk and spin_angmom is assumed to start from the next zone.
-                bool locked_surface=false,
-                
-                ///If true, the outermost zone's inclination is assumed to be
-                ///zero and the inclination argument is assumed to start from the
-                ///next zone.
-                bool zero_outer_inclination=false,
-                
-                ///If true, the outermost zone's periapsis is assumed to be
-                ///zero and the inclination argument is assumed to start from the
-                ///next zone.
-                bool zero_outer_periapsis=false);
+            ///The arguments of periapsis of the zones of the bodies (same
+            ///order as spin_angmom). If NULL, all periapses are assumed
+            ///zero.
+            const double *periapsis=NULL,
+
+            ///If true, the outermost zone's spin is assumed locked to a 
+            ///disk and spin_angmom is assumed to start from the next zone.
+            bool locked_surface=false,
+
+            ///If true, the outermost zone's inclination is assumed to be
+            ///zero and the inclination argument is assumed to start from the
+            ///next zone.
+            bool zero_outer_inclination=false,
+
+            ///If true, the outermost zone's periapsis is assumed to be
+            ///zero and the inclination argument is assumed to start from the
+            ///next zone.
+            bool zero_outer_periapsis=false
+        );
 
         ///Locks the given zone's spin to the orbit with the given frequency
         ///ratio.
@@ -551,7 +552,7 @@ namespace Evolve {
         virtual double next_stop_age() const {return Core::Inf;}
 
         ///Virtual destructor.
-        ~DissipatingBody() {}
+        virtual ~DissipatingBody() {}
     }; //End DissipatingBody class.
 
 } //End Evolve namespace.

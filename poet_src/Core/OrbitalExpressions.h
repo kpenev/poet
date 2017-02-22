@@ -11,49 +11,53 @@
 #include <cmath>
 #include "AstronomicalConstants.h"
 
-///Returns the orbital angular velocity of the given orbit in rad/day.
-double orbital_angular_velocity(
-		///The mass of the first body in \f$M_\odot\f$.
-		double m1,
+namespace Core {
 
-		///The mass of the second body in \f$M_\odot\f$.
-		double m2,
-		
-		///The semimajor axis in \f$R_\odot\f$
-		double semimajor,
-		
-		///Whether to return the derivative with respect to the semimajor
-		///axis instead of the value.
-		bool deriv=false);
+    ///Returns the orbital angular velocity of the given orbit in rad/day.
+    double orbital_angular_velocity(
+            ///The mass of the first body in \f$M_\odot\f$.
+            double m1,
 
-///\brief The energy of the orbit (assuming 0 gravitational potential at
-///infinity) in \f$\frac{M_\odot R_\odot^2 rad^2}{day^2}\f$.
-double orbital_energy(
-		///The mass of the first body in \f$M_\odot\f$.
-		double m1,
+            ///The mass of the second body in \f$M_\odot\f$.
+            double m2,
+            
+            ///The semimajor axis in \f$R_\odot\f$
+            double semimajor,
+            
+            ///Whether to return the derivative with respect to the semimajor
+            ///axis instead of the value.
+            bool deriv=false);
 
-		///The mass of the second body in \f$M_\odot\f$.
-		double m2,
-		
-		///The semimajor axis in AU
-		double semimajor,
-		
-		///The order of the derivative w.r.t. a required.
-		unsigned deriv_order=0);
+    ///\brief The energy of the orbit (assuming 0 gravitational potential at
+    ///infinity) in \f$\frac{M_\odot R_\odot^2 rad^2}{day^2}\f$.
+    double orbital_energy(
+            ///The mass of the first body in \f$M_\odot\f$.
+            double m1,
 
-///\brief The angular momentum of the orbit in 
-/// \f$\frac{M_\odot R_\odot^2 rad}{day}\f$.
-double orbital_angular_momentum(
-		///The mass of the first body in \f$M_\odot\f$.
-		double m1,
+            ///The mass of the second body in \f$M_\odot\f$.
+            double m2,
+            
+            ///The semimajor axis in AU
+            double semimajor,
+            
+            ///The order of the derivative w.r.t. a required.
+            unsigned deriv_order=0);
 
-		///The mass of the second body in \f$M_\odot\f$.
-		double m2,
-		
-		///The semimajor axis in AU
-		double semimajor,
+    ///\brief The angular momentum of the orbit in 
+    /// \f$\frac{M_\odot R_\odot^2 rad}{day}\f$.
+    double orbital_angular_momentum(
+            ///The mass of the first body in \f$M_\odot\f$.
+            double m1,
 
-		///The eccentricity.
-		double eccentricity);
+            ///The mass of the second body in \f$M_\odot\f$.
+            double m2,
+            
+            ///The semimajor axis in AU
+            double semimajor,
+
+            ///The eccentricity.
+            double eccentricity);
+
+}//End Core namespace.
 
 #endif

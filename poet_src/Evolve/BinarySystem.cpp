@@ -442,10 +442,10 @@ namespace Evolve {
         ) {
             double coef = (deriv == Dissipation::SEMIMAJOR
                            ? 1
-                           : orbital_angular_velocity(__body1.mass(),
-                                                      __body2.mass(),
-                                                      __semimajor,
-                                                      true));
+                           : Core::orbital_angular_velocity(__body1.mass(),
+                                                            __body2.mass(),
+                                                            __semimajor,
+                                                            true));
             bool done = false;
             unsigned locked_ind = 0;
             for(DissipatingBody *body = &__body1; !done; body = &__body2) {
@@ -1742,11 +1742,11 @@ namespace Evolve {
         __age = age;
         __semimajor = semimajor;
         __eccentricity = eccentricity;
-        __orbital_energy = orbital_energy(m1, m2, semimajor);
-        __orbital_angmom = orbital_angular_momentum(m1,
-                                                    m2,
-                                                    semimajor,
-                                                    eccentricity);
+        __orbital_energy = Core::orbital_energy(m1, m2, semimajor);
+        __orbital_angmom = Core::orbital_angular_momentum(m1,
+                                                          m2,
+                                                          semimajor,
+                                                          eccentricity);
         find_locked_zones();
         __body1.configure(age,
                           m2,

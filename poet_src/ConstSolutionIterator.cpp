@@ -239,13 +239,13 @@ namespace Evolve {
                 return (*__real_iterators[OutCol::ICONV_SECOND_DERIV]
                         +
                         *__real_iterators[OutCol::IRAD_SECOND_DERIV]);
-            case OutCol::WORB : return orbital_angular_velocity(
-                                        __mstar,
-                                        __mplanet,
-                                        *__real_iterators[OutCol::SEMIMAJOR]
+            case OutCol::WORB : return Core::orbital_angular_velocity(
+                                    __mstar,
+                                    __mplanet,
+                                    *__real_iterators[OutCol::SEMIMAJOR]
                                 );
             case OutCol::PORB : return 2.0*M_PI/real_quantity(OutCol::WORB);
-            case OutCol::LORB : return orbital_angular_momentum(
+            case OutCol::LORB : return Core::orbital_angular_momentum(
                                         __mstar,
                                         __mplanet,
                                         *__real_iterators[OutCol::SEMIMAJOR],

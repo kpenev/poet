@@ -144,31 +144,52 @@ namespace Evolve {
         int orbital_frequency_multiplier,
         int spin_frequency_multiplier,
         double &forcing_frequency
-    )
+    ) const
     {
 #ifdef DEBUG
-        assert(limit.spin_frequency_multiplier()==1 ||
-                limit.spin_frequency_multiplier()==2);
+        assert(limit.spin_frequency_multiplier()==1
+               ||
+               limit.spin_frequency_multiplier()==2);
 #endif
-        if(limit.term(orbital_frequency_multiplier, spin_frequency_multiplier)) {
-            if(spin_frequency_multiplier*limit.lock_direction()
-               *forcing_frequency>0) 
-                forcing_frequency=
-                    (spin_frequency_multiplier*limit.lock_direction()>0 ? -1 : 1)
+        if(
+            limit.term(orbital_frequency_multiplier,
+                       spin_frequency_multiplier)
+        ) {
+            if(
+                spin_frequency_multiplier
+                * limit.lock_direction()
+                * forcing_frequency
+                >
+                0
+            ) 
+                forcing_frequency =
+                    (spin_frequency_multiplier*limit.lock_direction() > 0
+                     ? -1
+                     : 1)
                     *std::numeric_limits<double>::epsilon();
             return;
         }
-        int expected_sign=limit.spin_frequency_multiplier()*
-            (orbital_frequency_multiplier*limit.spin_frequency_multiplier()
-             -
-             limit.orbital_frequency_multiplier()*spin_frequency_multiplier);
-        if(expected_sign*limit.lock_direction()>0) return;
-        if(forcing_frequency*expected_sign>0) return;
+        int expected_sign = (
+            limit.spin_frequency_multiplier()
+            *
+            (
+                orbital_frequency_multiplier
+                *
+                limit.spin_frequency_multiplier()
+                -
+                limit.orbital_frequency_multiplier()
+                *
+                spin_frequency_multiplier
+            )
+        );
+        if(expected_sign * limit.lock_direction() > 0) return;
+        if(forcing_frequency * expected_sign > 0) return;
 #ifdef DEBUG
         assert(limit.lock_direction());
 #endif
-        forcing_frequency=std::numeric_limits<double>::epsilon()
-            *limit.lock_direction();
+        forcing_frequency = (std::numeric_limits<double>::epsilon()
+                             *
+                             limit.lock_direction());
     }
 
 #ifdef DEBUG
@@ -446,7 +467,7 @@ namespace Evolve {
         int orbital_frequency_multiplier,
         int spin_frequency_multiplier,
         double orbital_frequency
-    )
+    ) const
     {
 #ifdef DEBUG
         check_locks_consistency();
@@ -605,7 +626,12 @@ namespace Evolve {
         update_lock_to_lower_e_order(__other_lock);
     }
 
-    void DissipatingZone::change_e_order(unsigned new_e_order)
+    void DissipatingZone::change_e_order(
+        unsigned new_e_order,
+        BinarySystem &, 
+        bool ,
+        unsigned
+    )
     {
         if(__lock.spin_frequency_multiplier()==0) {
             __e_order=new_e_order;

@@ -49,7 +49,8 @@ namespace Core {
 
         ///Used as the mode to transform to from all other modes when storing
         ///the computed evolution.
-        TABULATION};
+        TABULATION
+    };
 
     ///More civilized output for EvolModeType variables.
     std::ostream &operator<<(std::ostream &os,

@@ -51,7 +51,7 @@ namespace Evolve {
                 if(!zone.locked())
                     dangmom_dt=derivatives[angmom_offset+unlocked_zone_ind++];
                 else {
-                    double dworb_dt=orbital_angular_velocity(
+                    double dworb_dt=Core::orbital_angular_velocity(
                             __system.primary().mass(),
                             __system.secondary().mass(), __system.semimajor(),
                             true)

@@ -48,9 +48,12 @@ namespace Evolve {
         double m1 = __system.primary().mass(), 
                m2 = __system.secondary().mass(),
                semimajor = __system.semimajor(),
-               worb = orbital_angular_velocity(m1, m2, semimajor),
+               worb = Core::orbital_angular_velocity(m1, m2, semimajor),
                wspin = __zone.spin_frequency(),
-               dworb_dt = (orbital_angular_velocity(m1, m2, semimajor, true)
+               dworb_dt = (Core::orbital_angular_velocity(m1,
+                                                          m2,
+                                                          semimajor,
+                                                          true)
                            *
                            derivatives[0]);
 

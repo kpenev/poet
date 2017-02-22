@@ -76,7 +76,8 @@ public:
 			///If the lag of a locked term is calculated this should be set
 			///to the lag assuming the spin frequency is just above the lock.
 			///Otherwise, leave untouched.
-			double &above_lock_value) const;
+			double &above_lock_value
+    ) const;
 
 	///\brief Should return the corresponding component of the love
 	///coefficient (Lai 2012 Equation 24).
@@ -91,7 +92,9 @@ public:
 
 			///The return value should be either the phase lag itself
 			///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-			Dissipation::Derivative) const {return 0;}
+			Dissipation::Derivative
+    ) const
+    {return 0;}
 };
 
 #endif

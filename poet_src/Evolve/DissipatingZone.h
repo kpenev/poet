@@ -224,7 +224,8 @@ namespace Evolve {
 
                 ///The current forcing frequency to be updated if it violates the
                 ///limit.
-                double &forcing_frequency);
+                double &forcing_frequency
+        ) const;
 
 #ifdef DEBUG
         ///\brief Runs a bunch of asserts to check the consistency of __lock and
@@ -296,7 +297,7 @@ namespace Evolve {
 
             ///The orbital frequency.
             double orbital_frequency
-        );
+        ) const;
 
         ///\brief Defines the angular momentum of the reference zone for single
         ///body evolution.
@@ -668,7 +669,19 @@ namespace Evolve {
         virtual unsigned eccentricity_order() const {return __e_order;}
 
         ///Changes the order of the eccentricity expansion performed.
-        void change_e_order(unsigned new_e_order);
+        virtual void change_e_order(
+            ///The new eccentricity expansion order.
+            unsigned new_e_order,
+
+            ///The system being evolved.
+            BinarySystem &system, 
+
+            ///Is the body this zone is part of, the primary in the system.
+            bool primary,
+
+            ///The index of the zone in the body.
+            unsigned zone_index
+        );
 
         ///Appends the state defined by last configure(), to the evolution.
         virtual void add_to_evolution();

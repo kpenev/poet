@@ -406,19 +406,25 @@ namespace Evolve {
                                     bool zero_outer_inclination,
                                     bool zero_outer_periapsis)
     {
-        double orbital_angmom=orbital_angular_momentum(companion_mass,
-                                                       mass(),
-                                                       semimajor,
-                                                       eccentricity);
-        __orbital_frequency=orbital_angular_velocity(companion_mass,
-                                                     mass(),
-                                                     semimajor,
-                                                     false);
-        __dorbital_frequency_da=orbital_angular_velocity(companion_mass,
-                                                         mass(),
-                                                         semimajor,
-                                                         true);
-                    
+        double orbital_angmom=Core::orbital_angular_momentum(
+            companion_mass,
+            mass(),
+            semimajor,
+            eccentricity
+        );
+        __orbital_frequency=Core::orbital_angular_velocity(
+            companion_mass,
+            mass(),
+            semimajor,
+            false
+        );
+        __dorbital_frequency_da=Core::orbital_angular_velocity(
+            companion_mass,
+            mass(),
+            semimajor,
+            true
+        );
+
         __tidal_torques_above.resize(number_zones());
         __tidal_torques_below.resize(number_zones());
         __angular_momentum_transfer.resize(number_zones()-1);

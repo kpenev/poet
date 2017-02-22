@@ -687,7 +687,7 @@ namespace Evolve {
                 DissipatingBody &body1, 
 
                 ///The second body in the system, initially may not be there and
-                ///later may be engulfed by the second body.
+                ///later may be engulfed by the first body.
                 DissipatingBody &body2,
 
                 ///The name of the system.
@@ -701,31 +701,32 @@ namespace Evolve {
 
         ///Sets the current state of the system.
         virtual int configure(
-                ///The age to set the system to.
-                double age,
+            ///The age to set the system to.
+            double age,
 
-                ///The semimajor axis of the orbit.
-                double semimajor,
+            ///The semimajor axis of the orbit.
+            double semimajor,
 
-                ///The eccentricity of the orbit.
-                double eccentricity,
+            ///The eccentricity of the orbit.
+            double eccentricity,
 
-                ///The spin angular momenta of the zones of the bodies (body 1 
-                ///first, outermost zone to innermost, followed by body 2).
-                const double *spin_angmom,
-                
-                ///The inclinations of the zones of the bodies (same order as
-                ///spin_angmom). The surface zone inclination must be omitted for
-                ///single body systems.
-                const double *inclination,
-                
-                ///The arguments of periapsis of the zones of the bodies (same
-                ///order as spin_angmom, but not including the surface zone of
-                ///the first body).
-                const double *periapsis,
-                
-                ///The evolution mode to assume.
-                Core::EvolModeType evolution_mode);
+            ///The spin angular momenta of the zones of the bodies (body 1 
+            ///first, outermost zone to innermost, followed by body 2).
+            const double *spin_angmom,
+
+            ///The inclinations of the zones of the bodies (same order as
+            ///spin_angmom). The surface zone inclination must be omitted for
+            ///single body systems.
+            const double *inclination,
+
+            ///The arguments of periapsis of the zones of the bodies (same
+            ///order as spin_angmom, but not including the surface zone of
+            ///the first body).
+            const double *periapsis,
+
+            ///The evolution mode to assume.
+            Core::EvolModeType evolution_mode
+        );
 
         ///Sets the current state of the system directly from the evolutino
         ///variables.

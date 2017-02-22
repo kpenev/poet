@@ -2,7 +2,7 @@
  *
  * \brief The definitions of the functions declared in CInterface.h.
  *
- * \ingroup StellarEvolution
+ * \ingroup StellarEvolution_group
  */
 
 #include "CInterface.h"

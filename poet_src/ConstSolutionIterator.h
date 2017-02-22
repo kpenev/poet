@@ -9,7 +9,7 @@
 
 #include "BinarySystem.h"
 #include "../IO/IOColumns.h"
-#include "EvolvingStar.h"
+#include "../Star/EvolvingStar.h"
 #include "OrbitSolver.h"
 #include "DissipatingZone.h"
 

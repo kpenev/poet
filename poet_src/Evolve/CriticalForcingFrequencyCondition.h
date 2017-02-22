@@ -10,14 +10,16 @@
 #define __CRITICAL_FORCING_FREQUENCY_CONDITION_H
 
 #include "StoppingCondition.h"
+#include "DissipatingBody.h"
 #include "../Core/OrbitalExpressions.h"
 #include "../Core/Error.h"
+#include <vector>
 
 namespace Evolve {
     class DissipatingZone;
 
     ///\brief satisfied when a forcing frequency reaches a critical value.
-    class CriticalForcingFrequencyCondition {
+    class CriticalForcingFrequencyCondition : public StoppingCondition {
     private:
         ///The critical forcing frequencies to watch for in rad/day.
         std::vector<double> __critical_frequencies;
@@ -35,15 +37,15 @@ namespace Evolve {
         const DissipatingZone &__zone;
 
         std::vector<double>::const_iterator
-            ///\brief The __critical_frequencies entry immediately below the
-            ///current spin of the monitored zone. If all entries are above,
-            ///the value is __critical_spins.end()
-            __critical_below_iter,
-
             ///\brief The __critical_frequencies entry immediately above the
             ///current spin of the monitored zone. If all entries are below,
             ///the value is __critical_spins.end()
-            __critical_above_iter;
+            __critical_above_iter,
+
+            ///\brief The __critical_frequencies entry immediately below the
+            ///current spin of the monitored zone. If all entries are above,
+            ///the value is __critical_spins.end()
+            __critical_below_iter;
 
         const DissipatingBody 
             ///The body this condition is monitoring.
@@ -58,6 +60,12 @@ namespace Evolve {
         ///\brief The index (within __body) of the zone whose spin is being
         ///monitored.
         unsigned __zone_index;
+
+        ///\brief See num_subcondition().
+        unsigned __num_subconditions;
+
+        ///Set the appropriate value of __num_subcondition.
+        void set_num_subconditions();
     public:
         ///\brief Monitor a single forcing term of a single zone for a number
         ///of critical forcing frequencies.
@@ -105,6 +113,22 @@ namespace Evolve {
             const std::valarray<double> &derivatives,
             std::valarray<double> &stop_deriv
         ) const;
+
+        ///\brief Adjust the above and below critical frequencies being
+        ///monitored.
+        ///
+        ///See StoppingCondition::reached() for a description of the
+        ///arguments.
+        virtual void reached(short deriv_sign, unsigned index = 0);
+
+        ///\brief The number of subconditions (1 if all critical spins are
+        ///below or above the current spin, 2 otherwise).
+        virtual size_t num_subconditions() const
+        {return __num_subconditions;}
+
+        ///Define stopping condition type as EXTERNAL.
+        virtual StoppingConditionType type(unsigned =0) const
+        {return Evolve::EXTERNAL;}
     };//End CriticalForcingFrequencyCondition class.
 } //End Evolve namespace.
 
