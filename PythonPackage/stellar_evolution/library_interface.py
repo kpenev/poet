@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3 -u
 
 """An interface to the POET stellar evolution interpolation utilities."""
 
@@ -196,9 +196,7 @@ class MESAInterpolator :
             )
 
     def delete(self) :
-        """
-        Free the resources allocated at construction.
-        """
+        """Free the resources allocated at construction."""
 
         library.destroy_interpolator(self.interpolator)
 

@@ -1,4 +1,5 @@
 #include "BrokenPowerlawPhaseLagZone.h"
+#include <iostream>
 
 namespace Evolve {
 
@@ -56,6 +57,59 @@ namespace Evolve {
 
     }
 
+    void BrokenPowerlawPhaseLagZone::print_configuration()
+    {
+        std::clog << "Tidal breaks: ";
+        for(
+            std::vector<double>::const_iterator
+                i = __tidal_frequency_breaks.begin();
+            i != __tidal_frequency_breaks.end();
+            ++i
+        )
+            std::clog << *i << " ";
+        std::clog << std::endl;
+
+        std::clog << "Tidal powers: ";
+        for(
+            std::vector<double>::const_iterator
+                i = __tidal_frequency_powers.begin();
+            i != __tidal_frequency_powers.end();
+            ++i
+        )
+            std::clog << *i << " ";
+        std::clog << std::endl;
+
+        std::clog << "Spin breaks: ";
+        for(
+            std::vector<double>::const_iterator
+                i = __spin_frequency_breaks.begin();
+            i != __spin_frequency_breaks.end();
+            ++i
+        )
+            std::clog << *i << " ";
+        std::clog << std::endl;
+
+        std::clog << "Spin powers: ";
+        for(
+            std::vector<double>::const_iterator
+                i = __spin_frequency_powers.begin();
+            i != __spin_frequency_powers.end();
+            ++i
+        )
+            std::clog << *i << " ";
+        std::clog << std::endl;
+
+        std::clog << "Break lags: ";
+        for(
+            std::vector<double>::const_iterator
+                i = __break_phase_lags.begin();
+            i != __break_phase_lags.end();
+            ++i
+        )
+            std::clog << *i << " ";
+        std::clog << std::endl;
+    }
+
     void BrokenPowerlawPhaseLagZone::setup(
         std::vector<double> tidal_frequency_breaks,
         std::vector<double> spin_frequency_breaks,
@@ -75,19 +129,27 @@ namespace Evolve {
         assert(spin_frequency_powers.size()
                ==
                spin_frequency_breaks.size() + 1);
+        assert(tidal_frequency_breaks.size() > 0
+               ||
+               tidal_frequency_powers.front() == 0);
+        assert(spin_frequency_breaks.size() > 0
+               ||
+               spin_frequency_powers.front() == 0);
 
         __tidal_frequency_breaks = tidal_frequency_breaks;
         __spin_frequency_breaks = spin_frequency_breaks;
         __tidal_frequency_powers = tidal_frequency_powers;
         __spin_frequency_powers = spin_frequency_powers;
-        __break_phase_lags.resize(spin_frequency_breaks.size()
-                                  *
-                                  tidal_frequency_breaks.size());
+        __break_phase_lags.resize(
+            std::max(int(spin_frequency_breaks.size()), 1)
+            *
+            std::max(int(tidal_frequency_breaks.size()), 1)
+        );
 
         unsigned break_lag_i = 0;
         for(
-            unsigned spin_break_i = 0;
-            spin_break_i < spin_frequency_breaks.size();
+            int spin_break_i = 0;
+            spin_break_i < std::max(int(spin_frequency_breaks.size()), 1);
             ++spin_break_i
         ) {
             if(break_lag_i == 0)
@@ -98,36 +160,49 @@ namespace Evolve {
                         break_lag_i - tidal_frequency_breaks.size()
                     ]
                     *
-                    std::pow(
-                        (
-                            spin_frequency_breaks[spin_break_i]
-                            /
-                            spin_frequency_breaks[spin_break_i - 1]
-                        ),
-                        spin_frequency_powers[spin_break_i]
+                    (
+                        spin_frequency_powers[spin_break_i] == 0
+                        ? 1.0
+                        : std::pow(
+                            (
+                                spin_frequency_breaks[spin_break_i]
+                                /
+                                spin_frequency_breaks[spin_break_i - 1]
+                            ),
+                            spin_frequency_powers[spin_break_i]
+                        )
                     )
                 );
             ++break_lag_i;
             for(
-                unsigned tidal_break_i = 1;
-                tidal_break_i < tidal_frequency_breaks.size();
+                int tidal_break_i = 1;
+                tidal_break_i < std::max(int(tidal_frequency_breaks.size()),
+                                         1);
                 ++tidal_break_i
             ) {
                 __break_phase_lags[break_lag_i] = (
                     __break_phase_lags[break_lag_i - 1]
                     *
-                    std::pow(
-                        (
-                            tidal_frequency_breaks[tidal_break_i]
-                            /
-                            tidal_frequency_breaks[tidal_break_i - 1]
-                        ),
-                        tidal_frequency_powers[spin_break_i]
+                    (
+                        tidal_frequency_powers[spin_break_i] == 0
+                        ? 1.0
+                        : std::pow(
+                            (
+                                tidal_frequency_breaks[tidal_break_i]
+                                /
+                                tidal_frequency_breaks[tidal_break_i - 1]
+                            ),
+                            tidal_frequency_powers[spin_break_i]
+                        )
                     )
                 );
                 ++break_lag_i;
             }
         }
+
+#ifndef NDEBUG
+        print_configuration();
+#endif
     }//End BrokenPowerlawPhaseLagZone::BrokenPowerlawPhaseLagZone definition.
 
     double BrokenPowerlawPhaseLagZone::modified_phase_lag(
@@ -140,25 +215,24 @@ namespace Evolve {
     {
         if(deriv == Dissipation::AGE) return 0;
 
-        if(__tidal_frequency_breaks.size() == 0) {
-            assert(__spin_frequency_breaks.size() == 0);
-            return 0.0;
-        }
-
         double abs_forcing_frequency = std::abs(forcing_frequency),
                abs_spin_frequency = std::abs(spin_frequency());
 
         std::vector<double>::const_iterator 
             tidal_break_iter = std::lower_bound(
                 __tidal_frequency_breaks.begin(),
-                __tidal_frequency_breaks.end() - 1,
+                __tidal_frequency_breaks.end(),
                 abs_forcing_frequency
             ),
             spin_break_iter = std::lower_bound(
                 __spin_frequency_breaks.begin(),
-                __spin_frequency_breaks.end() - 1,
+                __spin_frequency_breaks.end(),
                 abs_spin_frequency
             );
+        if(tidal_break_iter == __tidal_frequency_breaks.end())
+            --tidal_break_iter;
+        if(spin_break_iter == __spin_frequency_breaks.end())
+            --spin_break_iter;
         unsigned tidal_index = (tidal_break_iter
                                 -
                                 __tidal_frequency_breaks.begin()),
@@ -188,6 +262,11 @@ namespace Evolve {
                                spin_power)
                 )
             );
+        std::clog << "lag index: " << lag_index << std::endl;
+        std::clog << "base lag: " 
+                  << __break_phase_lags[lag_index]
+                  << std::endl;
+        std::clog << "scaled lag: " << result << std::endl;
         switch(deriv) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (

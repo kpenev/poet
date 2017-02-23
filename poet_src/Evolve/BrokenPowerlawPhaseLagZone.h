@@ -60,6 +60,9 @@ namespace Evolve {
             unsigned zone_index
         );
 
+        ///Print the configuration of the zone to stdlog.
+        void print_configuration();
+
     public:
         ///\brief Create an unuseable zone. Must call setup() before use.
         BrokenPowerlawPhaseLagZone() : __spin_condition(NULL) {}
@@ -95,11 +98,11 @@ namespace Evolve {
         ///\brief Should return the tidal phase lag times the love number for
         ///the given tidal term (or one of its derivatives).
         ///
-        ///In case the forcing frequency is exactly zero, it should return the
-        ///phase lag for the case of the spin frequency approaching the term from
-        ///below. The lag for spin frequency approaching from above should be
-        ///written to above_lock_value. If the forcing frequency is non-zero, 
-        ///leave above_lock_value untouched.
+        ///In case the forcing frequency is exactly zero, it should return
+        ///the phase lag for the case of the spin frequency approaching the
+        ///term from below. The lag for spin frequency approaching from above
+        ///should be written to above_lock_value. If the forcing frequency is
+        ///non-zero, leave above_lock_value untouched.
         virtual double modified_phase_lag(
             ///The multiplier of the orbital frequency in the
             ///expression for the forcing frequency.

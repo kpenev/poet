@@ -7,6 +7,11 @@
 
 #include "CInterface.h"
 
+const int NO_DERIV = Evolve::Dissipation::NO_DERIV;
+const int AGE_DERIV = Evolve::Dissipation::AGE;
+const int SPIN_FREQUENCY_DERIV = Evolve::Dissipation::SPIN_FREQUENCY;
+const int ORBITAL_FREQUENCY_DERIV = Evolve::Dissipation::ORBITAL_FREQUENCY;
+
 ///Converts lg(Q) to a tidal phase lag.
 double lag_from_lgQ(double lgQ)
 {
@@ -82,4 +87,23 @@ void detect_stellar_wind_saturation(EvolvingStar *star)
     reinterpret_cast<Star::InterpolatedEvolutionStar*>(
         star
     )->detect_saturation();
+}
+
+double modified_phase_lag(EvolvingStar *star,
+                          unsigned zone_index,
+                          int orbital_frequency_multiplier,
+                          int spin_frequency_multiplier,
+                          double forcing_frequency,
+                          int deriv,
+                          double *above_lock_value)
+{
+    return reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+        star
+    )->zone(zone_index).modified_phase_lag(
+        orbital_frequency_multiplier,
+        spin_frequency_multiplier,
+        forcing_frequency,
+        static_cast<Evolve::Dissipation::Derivative>(deriv),
+        *above_lock_value
+    );
 }

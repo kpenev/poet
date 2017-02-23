@@ -8,8 +8,21 @@
 
 #include "EvolvingStar.h"
 #include "../StellarEvolution/CInterface.h"
+#include "../Evolve/DissipationQuantities.h"
 
 extern "C" {
+    ///Identifier for not differentiating the phase lag.
+    extern const int NO_DERIV;
+
+    ///Identifier for differentiating the phase lag w.r.t. age.
+    extern const int AGE_DERIV;
+
+    ///Identifier for differentiating the phase lag w.r.t. spin freuqency.
+    extern const int SPIN_FREQUENCY_DERIV;
+
+    ///Identifier for differentiating the phase lag w.r.t. orbital freuqency.
+    extern const int ORBITAL_FREQUENCY_DERIV;
+
     ///Opaque struct to cast to/from Star::InterpolatedEvolutionStar.
     struct EvolvingStar;
 
@@ -86,4 +99,35 @@ extern "C" {
         ///The star to detect the saturation state of.
         EvolvingStar *star
     );
+
+    ///\brief See Evolve::BrokenPowerlawPhaseLagZone::modified_phase_lag for
+    ///details.
+    double modified_phase_lag(
+        ///The star to get the modified phase lag for.
+        EvolvingStar *star,
+
+        ///The index of the zone whose modified phase lag to return.
+        unsigned zone_index,
+
+        ///The multiplier of the orbital frequency in the
+        ///expression for the forcing frequency.
+        int orbital_frequency_multiplier,
+
+        ///The multiplier of the spin frequency in the
+        ///expression for the forcing frequency.
+        int spin_frequency_multiplier,
+
+        ///The current forcing frequency in rad/day.
+        double forcing_frequency,
+
+        ///The return value should be either the phase lag itself
+        ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
+        int deriv,
+
+        ///If the lag of a locked term is calculated this should be set
+        ///to the lag assuming the spin frequency is just above the lock.
+        ///Otherwise, leave untouched.
+        double *above_lock_value
+    );
+
 } //End extern "C"
