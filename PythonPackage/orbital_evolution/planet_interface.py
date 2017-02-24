@@ -3,14 +3,17 @@
 """An interface to the POET planet library."""
 
 from ctypes import cdll, c_void_p, c_double
+from ctypes.util import find_library
+
+class c_planet_p(c_void_p) : pass
 
 def initialize_library() :
     """Prepare the planet library for use."""
 
-    library = cdll.LoadLibrary('libplanet.so')
+    library = cdll.LoadLibrary(find_library('planet'))
 
     library.create_planet.argtypes = [c_double, c_double]
-    library.create_planet.restype = c_void_p
+    library.create_planet.restype = c_planet_p
 
     library.destroy_planet.argtypes = [library.create_planet.restype]
     library.destroy_planet.restype = None

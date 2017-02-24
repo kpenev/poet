@@ -6,14 +6,20 @@ from ctypes import\
     cdll,\
     c_int, c_double, c_void_p, c_char_p, c_uint, c_bool,\
     byref, POINTER
+from ctypes.util import find_library
 import numpy
 import re
 from astropy import constants, units
 
+class c_interpolator_p(c_void_p) : pass
+
+class c_quantity_p(c_void_p) : pass
+
 def initialize_library() :
     """Prepare the stellarEvolution library for use."""
 
-    library = cdll.LoadLibrary('libstellarEvolution.so')
+    print('library name: ' + find_library('stellarEvolution'))
+    library = cdll.LoadLibrary(find_library('stellarEvolution'))
 
     num_quantities = c_int.in_dll(library, 'NUM_QUANTITIES').value
 
@@ -36,24 +42,27 @@ def initialize_library() :
                                   shape = (num_quantities,),
                                   flags = 'C_CONTIGUOUS')
     ]
-    library.create_interpolator.restype = c_void_p
+    library.create_interpolator.restype = c_interpolator_p
 
     library.destroy_interpolator.argtypes = [
         library.create_interpolator.restype
     ]
     library.destroy_interpolator.restype = None
 
-    library.create_quantity.argtypes = [c_void_p, c_int, c_double, c_double]
-    library.create_quantity.restype = c_void_p
+    library.create_quantity.argtypes = [library.create_interpolator.restype,
+                                        c_int,
+                                        c_double,
+                                        c_double]
+    library.create_quantity.restype = c_quantity_p
 
-    library.destroy_quantity.argtypes = [c_void_p]
+    library.destroy_quantity.argtypes = [c_quantity_p]
     library.destroy_quantity.restype = None
 
-    library.evaluate_quantity.argtypes = [c_void_p, c_double]
+    library.evaluate_quantity.argtypes = [c_quantity_p, c_double]
     library.evaluate_quantity.restype = c_double
 
     library.evaluate_quantity_array.argtypes = [
-        c_void_p,
+        c_quantity_p,
         numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
@@ -69,14 +78,17 @@ def initialize_library() :
 
     library.quantity_continuous_range.restype = None
 
-    library.save_interpolator.argtypes = [c_void_p, c_char_p]
+    library.save_interpolator.argtypes = [
+        library.create_interpolator.restype,
+        c_char_p
+    ]
     library.save_interpolator.restype = None
 
     library.load_interpolator.argtypes = [c_char_p]
-    library.load_interpolator.restype = c_void_p
+    library.load_interpolator.restype = library.create_interpolator.restype
 
     library.differentiate_quantity.argtypes = [
-        c_void_p,
+        c_quantity_p,
         c_double,
         numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
@@ -84,7 +96,7 @@ def initialize_library() :
     ]
 
     library.differentiate_quantity_array.argtypes = [
-        c_void_p,
+        c_quantity_p,
         numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),

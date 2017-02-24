@@ -82,7 +82,7 @@ namespace Star {
 #ifdef DEBUG
             assert(zone_index<=1);
 #endif
-            if(zone_index==0) return __envelope;
+            if(zone_index == 0) return __envelope;
             else return __core;
         }
 

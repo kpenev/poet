@@ -184,7 +184,7 @@ namespace Evolve {
                     __break_phase_lags[break_lag_i - 1]
                     *
                     (
-                        tidal_frequency_powers[spin_break_i] == 0
+                        tidal_frequency_powers[tidal_break_i] == 0
                         ? 1.0
                         : std::pow(
                             (
@@ -192,7 +192,7 @@ namespace Evolve {
                                 /
                                 tidal_frequency_breaks[tidal_break_i - 1]
                             ),
-                            tidal_frequency_powers[spin_break_i]
+                            tidal_frequency_powers[tidal_break_i]
                         )
                     )
                 );
@@ -214,59 +214,80 @@ namespace Evolve {
     ) const
     {
         if(deriv == Dissipation::AGE) return 0;
-
         double abs_forcing_frequency = std::abs(forcing_frequency),
                abs_spin_frequency = std::abs(spin_frequency());
 
-        std::vector<double>::const_iterator 
-            tidal_break_iter = std::lower_bound(
-                __tidal_frequency_breaks.begin(),
-                __tidal_frequency_breaks.end(),
-                abs_forcing_frequency
-            ),
-            spin_break_iter = std::lower_bound(
-                __spin_frequency_breaks.begin(),
-                __spin_frequency_breaks.end(),
-                abs_spin_frequency
-            );
-        if(tidal_break_iter == __tidal_frequency_breaks.end())
-            --tidal_break_iter;
-        if(spin_break_iter == __spin_frequency_breaks.end())
-            --spin_break_iter;
-        unsigned tidal_index = (tidal_break_iter
-                                -
-                                __tidal_frequency_breaks.begin()),
-                 spin_index = (spin_break_iter
-                               -
-                               __spin_frequency_breaks.begin()),
-                 lag_index = (spin_index * __tidal_frequency_breaks.size()
-                              +
-                              tidal_index);
-        double 
-            tidal_power = __tidal_frequency_powers[tidal_index],
-            spin_power = __spin_frequency_powers[spin_index],
-            result = (
-                __break_phase_lags[lag_index]
-                *
-                (
-                    tidal_power == 0
-                    ? 1.0
-                    : std::pow(abs_forcing_frequency / *tidal_break_iter,
-                               tidal_power)
+        int tidal_index = 0, spin_index = 0;
+
+        if(__tidal_frequency_breaks.size() != 0) 
+            tidal_index = (
+                std::lower_bound(
+                    __tidal_frequency_breaks.begin(),
+                    __tidal_frequency_breaks.end(),
+                    abs_forcing_frequency
                 )
-                *
-                (
-                    spin_power == 0
-                    ? 1.0
-                    : std::pow(abs_spin_frequency / *spin_break_iter,
-                               spin_power)
-                )
+                -
+                __tidal_frequency_breaks.begin()
             );
-        std::clog << "lag index: " << lag_index << std::endl;
+        if(__spin_frequency_breaks.size() != 0)
+            spin_index = (
+                std::lower_bound(
+                    __spin_frequency_breaks.begin(),
+                    __spin_frequency_breaks.end(),
+                    abs_spin_frequency
+                )
+                -
+                __spin_frequency_breaks.begin()
+            );
+        double tidal_power = __tidal_frequency_powers[tidal_index],
+               spin_power = __spin_frequency_powers[spin_index];
+        if(spin_index > 0 && spin_index >= __spin_frequency_breaks.size())
+            --spin_index;
+        if(tidal_index > 0 && tidal_index >= __tidal_frequency_breaks.size())
+            --tidal_index;
+        int lag_index = (spin_index * __tidal_frequency_breaks.size()
+                         +
+                         tidal_index);
+/*        std::clog << "tidal_index = " << tidal_index << std::endl;
+        std::clog << "spin_index = " << spin_index << std::endl;
+        std::clog << "lag_index = " << lag_index << std::endl;*/
+        double result = (
+            __break_phase_lags[lag_index]
+            *
+            (
+                tidal_power == 0
+                ? 1.0
+                : std::pow(abs_forcing_frequency
+                           /
+                           __tidal_frequency_breaks[tidal_index]
+                           ,
+                           tidal_power)
+            )
+            *
+            (
+                spin_power == 0
+                ? 1.0
+                : std::pow(
+                    abs_spin_frequency / __spin_frequency_breaks[spin_index],
+                    spin_power
+                )
+            )
+        );
+/*        std::clog << "lag index: " << lag_index << std::endl;
         std::clog << "base lag: " 
                   << __break_phase_lags[lag_index]
                   << std::endl;
-        std::clog << "scaled lag: " << result << std::endl;
+        std::clog << "spin power: " << spin_power << std::endl;
+        std::clog << "tidal power: " << tidal_power << std::endl;
+        if(spin_power != 0)
+            std::clog << "ref spin freq: "
+                      << __spin_frequency_breaks[spin_index]
+                      << std::endl;
+        if(tidal_power != 0)
+            std::clog << "ref tidal freq: "
+                      << __tidal_frequency_breaks[tidal_index]
+                      << std::endl;
+        std::clog << "scaled lag: " << result << std::endl;*/
         switch(deriv) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (

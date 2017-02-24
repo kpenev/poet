@@ -9,12 +9,15 @@ from stellar_evolution.library_interface import\
     library as stellar_evolution_library
 from stellar_evolution.manager import StellarEvolutionManager
 from ctypes import cdll, c_int, c_double, c_void_p, c_uint, c_bool, byref
+from ctypes.util import find_library
 import numpy
+
+class c_star_p(c_void_p) : pass
 
 def initialize_library() :
     """Prepare the planet library for use."""
 
-    library = cdll.LoadLibrary('libstar.so')
+    library = cdll.LoadLibrary(find_library('star'))
 
     library.create_star.argtypes = [
         c_double,
@@ -24,7 +27,7 @@ def initialize_library() :
         c_double,
         stellar_evolution_library.create_interpolator.restype
     ]
-    library.create_star.restype = c_void_p
+    library.create_star.restype = c_star_p
 
     library.destroy_star.argtypes = [library.create_star.restype]
     library.destroy_star.restype = None
@@ -216,33 +219,54 @@ if __name__ == '__main__' :
     serialized_dir = '../../stellar_evolution_interpolators'
     manager = StellarEvolutionManager(serialized_dir)
     interpolator = manager.get_interpolator_by_name('default')
-    star = EvolvingStar(1.0, 0.0, 0.15, 2.5, 5.0, interpolator)
-    star.set_dissipation(0,
+    star1 = EvolvingStar(1.0, 0.0, 0.15, 2.5, 5.0, interpolator)
+    star2 = EvolvingStar(1.0, 0.0, 0.15, 2.5, 5.0, interpolator)
+    star1.set_dissipation(0,
                          numpy.array([]),
                          numpy.array([]),
                          numpy.array([0.0]),
                          numpy.array([0.0]),
                          0.1)
-    star.set_dissipation(1,
+    star1.set_dissipation(1,
                          numpy.array([1.0]),
                          numpy.array([]),
                          numpy.array([0.0, 1.0]),
                          numpy.array([0.0]),
                          0.1)
-    print('%25s %25s %25s' % ('w', 'Env(kDt)', 'Core(kDt)'))
+    star2.set_dissipation(0,
+                         numpy.array([0.6, 1.2]),
+                         numpy.array([]),
+                         numpy.array([0.0, 1.0, 0.0]),
+                         numpy.array([0.0]),
+                         0.1)
+    star2.set_dissipation(1,
+                         numpy.array([0.5, 1.0, 1.5]),
+                         numpy.array([]),
+                         numpy.array([1.0, 2.0, 3.0, 4.0]),
+                         numpy.array([0.0]),
+                         0.1)
+    print('%25s %25s %25s %25s %25s'
+          %
+          ('w', 'Env1(kDt)', 'Core1(kDt)', 'Env2(kDt)', 'Core2(kDt)'))
     for w in numpy.linspace(0.1, 2.0, 20) :
-        print('%25s %25s %25s'
-              %
-              (w, 
-               repr(star.modified_phase_lag(0,
-                                            1,
-                                            1,
-                                            w,
-                                            star.deriv_ids['NO'])),
-               repr(star.modified_phase_lag(1,
-                                            1,
-                                            1,
-                                            w,
-                                            star.deriv_ids['NO']))))
+        print(
+            '%25s %25s %25s %25s %25s'
+            %
+            (
+                w, 
+                repr(star1.modified_phase_lag(
+                    0, 1, 1, w, star1.deriv_ids['NO']
+                )),
+                repr(star1.modified_phase_lag(
+                    1, 1, 1, w, star1.deriv_ids['NO']
+                )), 
+                repr(star2.modified_phase_lag(
+                    0, 1, 1, w, star2.deriv_ids['NO']
+                )),
+                repr(star2.modified_phase_lag(
+                    1, 1, 1, w, star2.deriv_ids['NO']
+                ))
+            )
+        )
 
 

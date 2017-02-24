@@ -18,7 +18,7 @@ double lag_from_lgQ(double lgQ)
 	return 15.0 / (16.0 * M_PI * std::pow(10.0, lgQ));
 }
 
-EvolvingStar *create_star(double mass,
+void *create_star(double mass,
                           double metallicity,
                           double wind_strength,
                           double wind_saturation_frequency,
@@ -58,8 +58,8 @@ void set_dissipation(EvolvingStar *star,
     Star::InterpolatedEvolutionStar* real_star = 
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
     Evolve::BrokenPowerlawPhaseLagZone *zone;
-    if(zone_index == 0) zone = &real_star->envelope();
-    else zone = &real_star->core();
+    if(zone_index == 0) zone = &(real_star->envelope());
+    else zone = &(real_star->core());
     
     zone->setup(
         std::vector<double>(

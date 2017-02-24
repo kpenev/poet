@@ -27,7 +27,7 @@ extern "C" {
     struct EvolvingStar;
 
     ///Create a star to participate in the orbital evolution calculation.
-    EvolvingStar *create_star(
+    void *create_star(
         ///Mass of the star
         double mass,
 
