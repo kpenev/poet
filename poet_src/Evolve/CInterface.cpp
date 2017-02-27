@@ -89,11 +89,11 @@ void configure_system(DiskPlanetSystem *system,
 }
 
 OrbitSolver *evolve_system(DiskPlanetSystem *system,
-                   double final_age,
-                   double max_time_step,
-                   double precision,
-                   double *required_ages,
-                   unsigned num_required_ages)
+                           double final_age,
+                           double max_time_step,
+                           double precision,
+                           double *required_ages,
+                           unsigned num_required_ages)
 {
     Evolve::OrbitSolver *solver = new Evolve::OrbitSolver(final_age,
                                                           precision);

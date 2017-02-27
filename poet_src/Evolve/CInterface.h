@@ -55,14 +55,14 @@ extern "C" {
         ///radians.
         double initial_inclination,
 
-        ///\brief Frequency of the surface spin of the primary when disk
-        ///is present in rad/day.
+        ///Frequency of the surface spin of the primary when disk is present
+        ///in rad/day.
         double disk_lock_frequency,
 
-        ///\brief Age when disk dissipates in Gyrs.
+        ///Age when disk dissipates in Gyrs.
         double disk_dissipation_age,
 
-        ///\brief Age when the secondary forms.
+        ///Age when the secondary forms.
         double secondary_formation_age
     );
 
@@ -98,26 +98,26 @@ extern "C" {
 
         ///The inclinations of the zones of the body (same order as 
         ///spin_angmom). If NULL, all inclinations are assumed zero.
-        const double *inclination=NULL,
+        const double *inclination,
 
         ///The arguments of periapsis of the zones of the bodies (same
         ///order as spin_angmom). If NULL, all periapses are assumed
         ///zero.
-        const double *periapsis=NULL,
+        const double *periapsis,
 
         ///If true, the outermost zone's spin is assumed locked to a 
         ///disk and spin_angmom is assumed to start from the next zone.
-        bool locked_surface=false,
+        bool locked_surface,
 
         ///If true, the outermost zone's inclination is assumed to be
         ///zero and the inclination argument is assumed to start from the
         ///next zone.
-        bool zero_outer_inclination=false,
+        bool zero_outer_inclination,
 
         ///If true, the outermost zone's periapsis is assumed to be
         ///zero and the inclination argument is assumed to start from the
         ///next zone.
-        bool zero_outer_periapsis=false
+        bool zero_outer_periapsis
     );
 
     ///Sets the current state of a system.
@@ -148,7 +148,8 @@ extern "C" {
         ///the first body).
         const double *periapsis,
 
-        ///The evolution mode to assume. Must be one of the constants defined 
+        ///The evolution mode to assume. Must be one of the constants
+        ///defined.
         int evolution_mode
     );
 

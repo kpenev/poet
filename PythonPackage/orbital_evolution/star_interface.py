@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -u
+#!/usr/bin/env python3
 
 """An interface to the POET star library."""
 
@@ -7,17 +7,21 @@ sys.path.append('..')
 
 from stellar_evolution.library_interface import\
     library as stellar_evolution_library
-from stellar_evolution.manager import StellarEvolutionManager
+from orbital_evolution.evolve_interface import\
+    c_dissipating_body_p,\
+    DissipatingBody
+from orbital_evolution.evolve_interface import library as evolve_library
 from ctypes import cdll, c_int, c_double, c_void_p, c_uint, c_bool, byref
 from ctypes.util import find_library
 import numpy
 
-class c_star_p(c_void_p) : pass
-
 def initialize_library() :
     """Prepare the planet library for use."""
 
-    library = cdll.LoadLibrary(find_library('star'))
+    library_fname = find_library('star')
+    if(library_fname is None) :
+        raise OSError('Unable to find POET\'s star library.') 
+    library = cdll.LoadLibrary(library_fname)
 
     library.create_star.argtypes = [
         c_double,
@@ -27,7 +31,7 @@ def initialize_library() :
         c_double,
         stellar_evolution_library.create_interpolator.restype
     ]
-    library.create_star.restype = c_star_p
+    library.create_star.restype = c_dissipating_body_p
 
     library.destroy_star.argtypes = [library.create_star.restype]
     library.destroy_star.restype = None
@@ -64,7 +68,7 @@ def initialize_library() :
 
 library = initialize_library()
 
-class EvolvingStar :
+class EvolvingStar(DissipatingBody) :
     """A class for stars following interpolated stellar evolution tracks."""
 
     deriv_list = ['NO', 'AGE', 'SPIN_FREQUENCY', 'ORBITAL_FREQUENCY']
@@ -84,14 +88,19 @@ class EvolvingStar :
         Args:
             - mass:
                 The mass of the star in solar masses.
+
             - metallicity:
                 The metallicity ([Fe/H]) of the star.
+
             - wind_strength:
                 The efficiency of the wind carrying away angular momentum.
+
             - wind_saturation_frequency:
                 The frequency at which the wind loss saturates in rad/day.
+
             - diff_rot_coupling_timescale:
                 The timescale for differential rotation coupling.
+
             - interpolator:
                 An instance of stellar_evolution.MESAInterpolator to base the
                 stellar evolution on.
@@ -104,7 +113,7 @@ class EvolvingStar :
         self.wind_strength = wind_strength
         self.wind_saturation_frequency = wind_saturation_frequency
         self.diff_rot_coupling_timescale = diff_rot_coupling_timescale
-        self.star = library.create_star(mass,
+        self.body = library.create_star(mass,
                                         metallicity,
                                         wind_strength,
                                         wind_saturation_frequency,
@@ -114,7 +123,7 @@ class EvolvingStar :
     def delete(self) :
         """Destroy the library star object created at construction."""
 
-        library.destroy_star(self.star)
+        library.destroy_star(self.body)
 
     def set_dissipation(self,
                         zone_index, 
@@ -153,7 +162,7 @@ class EvolvingStar :
         Returns: None
         """
 
-        library.set_dissipation(self.star,
+        library.set_dissipation(self.body,
                                 zone_index,
                                 tidal_frequency_breaks.size,
                                 spin_frequency_breaks.size,
@@ -166,7 +175,7 @@ class EvolvingStar :
     def detect_stellar_wind_saturation(self) :
         """Tell a fully configured star to set its wind saturation state."""
 
-        library.detect_stellar_wind_saturation(self.star)
+        library.detect_stellar_wind_saturation(self.body)
 
     def modified_phase_lag(self,
                            zone_index,
@@ -202,7 +211,7 @@ class EvolvingStar :
 
         above_lock_value = c_double()
         below_lock_value = library.modified_phase_lag(
-            self.star,
+            self.body,
             c_uint(zone_index),
             c_int(orbital_frequency_multiplier),
             c_int(spin_frequency_multiplier),
@@ -216,6 +225,8 @@ class EvolvingStar :
             return below_lock_value
 
 if __name__ == '__main__' :
+    from stellar_evolution.manager import StellarEvolutionManager
+
     serialized_dir = '../../stellar_evolution_interpolators'
     manager = StellarEvolutionManager(serialized_dir)
     interpolator = manager.get_interpolator_by_name('default')

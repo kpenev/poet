@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -u
+#!/usr/bin/env python3
 
 """An interface to the POET stellar evolution interpolation utilities."""
 
@@ -18,8 +18,10 @@ class c_quantity_p(c_void_p) : pass
 def initialize_library() :
     """Prepare the stellarEvolution library for use."""
 
-    print('library name: ' + find_library('stellarEvolution'))
-    library = cdll.LoadLibrary(find_library('stellarEvolution'))
+    library_fname = find_library('stellarEvolution')
+    if library_fname is None :
+        raise OSError('Unable to find POET\'s stellarEvolution library.')
+    library = cdll.LoadLibrary(library_fname)
 
     num_quantities = c_int.in_dll(library, 'NUM_QUANTITIES').value
 

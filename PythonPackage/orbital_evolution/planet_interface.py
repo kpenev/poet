@@ -1,19 +1,24 @@
-#!/usr/bin/python3 -u
+#!/usr/bin/env python3
 
 """An interface to the POET planet library."""
 
+from orbital_evolution.evolve_interface import\
+    c_dissipating_body_p,\
+    DissipatingBody
+from orbital_evolution.evolve_interface import library as evolve_library
 from ctypes import cdll, c_void_p, c_double
 from ctypes.util import find_library
-
-class c_planet_p(c_void_p) : pass
 
 def initialize_library() :
     """Prepare the planet library for use."""
 
-    library = cdll.LoadLibrary(find_library('planet'))
+    library_fname = find_library('planet')
+    if(library_fname is None) :
+        raise OSError('Unable to find POET\'s planet library.') 
+    library = cdll.LoadLibrary(library_fname)
 
     library.create_planet.argtypes = [c_double, c_double]
-    library.create_planet.restype = c_planet_p
+    library.create_planet.restype = c_dissipating_body_p
 
     library.destroy_planet.argtypes = [library.create_planet.restype]
     library.destroy_planet.restype = None
@@ -22,7 +27,7 @@ def initialize_library() :
 
 library = initialize_library()
 
-class LockedPlanet :
+class LockedPlanet(DissipatingBody) :
     """A class for tidally locked and thus non-dissipative planets."""
 
     def __init__(self, mass, radius) :
@@ -40,14 +45,14 @@ class LockedPlanet :
 
         self.mass = mass
         self.radius = radius
-        self.planet = library.create_planet(mass, radius)
+        self.body = library.create_planet(mass, radius)
 
     def delete(self) :
         """
         Destroy the library planet created at construction.
         """
 
-        library.destroy_planet(self.planet)
+        library.destroy_planet(self.body)
 
 if __name__ == '__main__' :
     planet = LockedPlanet(1.0, 1.0)
