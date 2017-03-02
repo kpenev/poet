@@ -42,7 +42,8 @@ def initialize_library() :
         numpy.ctypeslib.ndpointer(dtype = c_bool,
                                   ndim = 1,
                                   shape = (num_quantities,),
-                                  flags = 'C_CONTIGUOUS')
+                                  flags = 'C_CONTIGUOUS'),
+        c_uint
     ]
     library.create_interpolator.restype = c_interpolator_p
 
@@ -191,6 +192,9 @@ class MESAInterpolator :
                 The filename of a previously saved interpolator state. Must
                 not be specified together with mesa_dir. If passed, the
                 smoothing and nodes arguments are ignored.
+            - num_threads:
+                The number of simultaneous threads to use when constructing
+                the interpolation.
 
         Returns: None.
         """
@@ -201,7 +205,8 @@ class MESAInterpolator :
                 kwargs['smoothing'],
                 kwargs['nodes'],
                 kwargs['vs_log_age'],
-                kwargs['log_quantity']
+                kwargs['log_quantity'],
+                kwargs['num_threads']
             )
         else :
             assert('interpolator_fname' in kwargs)

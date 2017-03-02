@@ -506,6 +506,7 @@ namespace StellarEvolution {
         }
 
         Interpolator::Interpolator(const std::string &model_directory,
+                                   unsigned num_threads,
                                    const std::vector<double> &smoothing,
                                    const std::vector<int> &nodes,
                                    const std::vector<bool> &vs_log_age,
@@ -566,7 +567,8 @@ namespace StellarEvolution {
                         smoothing,
                         nodes,
                         vs_log_age,
-                        log_quantity);
+                        log_quantity,
+                        num_threads);
             std::cout << "Done with interpolation" << std::endl;
         }
     } //End MESA namespace.

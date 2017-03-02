@@ -2,7 +2,7 @@
  *
  * \brief Defines some of the methods of the StellarEvolution class.
  * 
- * \ingroup StellarSystem_group
+ * \ingroup StellarEvolution_group
  */
 
 #include "Interpolator.h"
@@ -24,6 +24,25 @@ namespace StellarEvolution {
         return first_core_index;
     }
 
+    void Interpolator::perform_queued_interpolations(
+        InterpolationQueue &interpolation_queue,
+        unsigned num_threads
+    )
+    {
+        
+        for(
+            interpolation_queue.calculate(num_threads);
+            interpolation_queue;
+            interpolation_queue.pop_front()
+        ) {
+            __interpolated_quantities[
+                interpolation_queue.quantity_id()
+            ][
+                interpolation_queue.grid_index()
+            ] = interpolation_queue.result();
+        }
+    }
+
     void Interpolator::create_from(
         const std::valarray<double> &tabulated_masses,
         const std::valarray<double> &tabulated_metallicities,
@@ -33,7 +52,8 @@ namespace StellarEvolution {
         const std::vector<double> &smoothing,
         const std::vector<int> &nodes,
         const std::vector<bool> &vs_log_age,
-        const std::vector<bool> &log_quantity
+        const std::vector<bool> &log_quantity,
+        unsigned num_threads
     )
     {
         __track_masses = tabulated_masses;
@@ -60,6 +80,8 @@ namespace StellarEvolution {
 
         std::vector< track_quantity_iter > track_iter(NUM_QUANTITIES);
 
+        std::list< std::valarray<double> > log_ages;
+
         for(
             int quantity_index = 0;
             quantity_index < NUM_QUANTITIES;
@@ -72,6 +94,10 @@ namespace StellarEvolution {
             track_iter[quantity_index] = 
                 tabulated_quantities[quantity_index].begin();
         }
+
+        std::list<const std::valarray<double> *> to_delete;
+
+        InterpolationQueue interpolation_queue;
 
         for(size_t grid_index = 0; grid_index < num_tracks; ++grid_index) {
 
@@ -104,22 +130,13 @@ namespace StellarEvolution {
                     (*ages_iter)[std::max(0, first_core_index - 1)]
                 );
 
-            std::valarray<double> log_ages = std::log(*ages_iter);
+            log_ages.push_back(std::log(*ages_iter));
 
             for(
                 int quantity_index = 0;
                 quantity_index < NUM_QUANTITIES;
                 ++quantity_index
             ) {
-                std::clog << "Interpolating "
-                    << (log_quantity[quantity_index] ? "ln(" : "")
-                    << QUANTITY_NAME[quantity_index]
-                    << (log_quantity[quantity_index] ? ") " : " ")
-                    << "vs "
-                    << (vs_log_age[quantity_index] ? "log(t)" : "t")
-                    << ": nodes: " << nodes[quantity_index]
-                    << ", smoothing: " << smoothing[quantity_index]
-                    << std::endl;
 
                 if(quantity_index >= FIRST_CORE_QUANTITY && no_core) {
                     __interpolated_quantities[quantity_index][grid_index] = 
@@ -144,20 +161,21 @@ namespace StellarEvolution {
                 else
                     first_interp_index = std::max(0, first_core_index - 1);
 
-                __interpolated_quantities[quantity_index][grid_index] = 
-                    new Core::InterpolatingFunctionALGLIB(
-                        (
-                            vs_log_age[quantity_index]
-                            ? &(log_ages[first_interp_index])
-                            : &((*ages_iter)[first_interp_index])
-                        ),
-                        &((*interp_quantity)[first_interp_index]),
-                        log_ages.size() - first_interp_index,
-                        NULL,
-                        smoothing[quantity_index],
-                        nodes[quantity_index]
-                    );
-                if(log_quantity[quantity_index]) delete interp_quantity;
+                interpolation_queue.push_back(
+                    (
+                        vs_log_age[quantity_index]
+                        ? &(log_ages.back()[first_interp_index])
+                        : &((*ages_iter)[first_interp_index])
+                    ),
+                    &((*interp_quantity)[first_interp_index]),
+                    ages_iter->size() - first_interp_index,
+                    nodes[quantity_index],
+                    smoothing[quantity_index],
+                    quantity_index,
+                    grid_index
+                );
+
+                to_delete.push_back(interp_quantity);
             }
 
             ++ages_iter;
@@ -165,8 +183,17 @@ namespace StellarEvolution {
                 size_t quantity_index = 0; 
                 quantity_index < NUM_QUANTITIES;
                 ++quantity_index
-            ) ++track_iter[quantity_index];
+            )
+                ++track_iter[quantity_index];
         }
+        perform_queued_interpolations(interpolation_queue, num_threads);
+        for(
+            std::list<const std::valarray<double> *>::iterator 
+                del_iter = to_delete.begin();
+            del_iter != to_delete.end();
+            ++del_iter
+        )
+            delete *del_iter;
     }
 
     EvolvingStellarQuantity *Interpolator::operator()(

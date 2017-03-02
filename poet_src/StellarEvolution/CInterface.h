@@ -64,7 +64,10 @@ extern "C" {
 
         ///For each quantity the corresponding entry decides if log(quantity)
         ///will be interpolated instead of just quantity.
-        bool *log_quantity
+        bool *log_quantity,
+
+        ///How many threads to use for simultaneous interpolation.
+        unsigned num_threads
     );
 
     ///\brief Destroy a previously created interpolator.

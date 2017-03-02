@@ -3,7 +3,7 @@
  * \brief Defines the classes for generating stellar evolution interpolators
  * from the MESA tracks. 
  * 
- * \ingroup StellarSystem_group
+ * \ingroup StellarEvolution_group
  */
 
 #ifndef __MESAIO_H
@@ -276,6 +276,9 @@ namespace StellarEvolution {
             Interpolator(
                 ///The directory containing the MESA evolution tracks
                 const std::string &model_directory,
+
+                ///How many threads to use for simultaneous interpolation.
+                unsigned num_threads,
 
                 ///How much to smooth each stellar evolution quantity when
                 ///fitting. Use NaN for no smoothing. See

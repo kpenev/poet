@@ -32,7 +32,7 @@ namespace StellarEvolution {
             : q1(quantity1), q2(quantity2), destroy_qs(delete_inputs) {}
 
         ///See EvolvingStellarQuantity::select_interpolation_region.
-        virtual void select_interpolation_region(double age)
+        virtual void select_interpolation_region(double age) const
         {
             q1->select_interpolation_region(age);
             q2->select_interpolation_region(age);
@@ -59,7 +59,7 @@ namespace StellarEvolution {
         {return std::min(q1->next_discontinuity(), q2->next_discontinuity());}
 
         ///See EvolvingStellarQuantity::enable_next_interpolation_region.
-        void enable_next_interpolation_region()
+        void enable_next_interpolation_region() const
         {
             if(q1->next_discontinuity() == q2->next_discontinuity()) {
                 q1->enable_next_interpolation_region();

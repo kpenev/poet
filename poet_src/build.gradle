@@ -30,6 +30,7 @@ model {
                     [min: "1.54", max: "2.0"]
                 )
                 linker.args "-l" + ensureLibraryVersion("argtable2")
+                linker.args "-l" + ensureLibraryVersion("pthread")
 
                 if(buildType == buildTypes.release) {
                     cppCompiler.args "-O3"

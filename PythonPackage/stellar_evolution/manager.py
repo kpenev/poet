@@ -452,6 +452,7 @@ class StellarEvolutionManager :
                                  smoothing,
                                  vs_log_age,
                                  log_quantity,
+                                 num_threads,
                                  db_session,
                                  name = None) :
         """
@@ -468,6 +469,11 @@ class StellarEvolutionManager :
                  see get_interpolator().
             - log_quantity:
                  see get_interpolator().
+            - num_threads:
+                The number of simultaneous threads to use when constructing
+                the interpolation.
+            - db_session:
+                The database query session to use.
             - name:
                 The name to assign to the new interpolator. If None, the UUID
                 used to form the filename is used.
@@ -547,7 +553,8 @@ class StellarEvolutionManager :
                 smoothing = interp_smoothing,
                 nodes = interp_nodes,
                 vs_log_age = interp_vs_log_age,
-                log_quantity = interp_log_quantity
+                log_quantity = interp_log_quantity,
+                num_threads = num_threads
             )
 
         actual_interpolator.save(interp_fname)
@@ -584,16 +591,17 @@ class StellarEvolutionManager :
             self._get_db_config(db_session)
 
     def get_interpolator(
-        self,
-        nodes = VarChangingInterpolator.default_nodes,
-        smoothing = VarChangingInterpolator.default_smoothing,
-        vs_log_age = VarChangingInterpolator.default_vs_log_age,
-        log_quantity = VarChangingInterpolator.default_log_quantity,
-        track_fnames = None,
-        masses = None,
-        metallicities = None,
-        model_suite = 'MESA',
-        new_interp_name = None
+            self,
+            nodes = VarChangingInterpolator.default_nodes,
+            smoothing = VarChangingInterpolator.default_smoothing,
+            vs_log_age = VarChangingInterpolator.default_vs_log_age,
+            log_quantity = VarChangingInterpolator.default_log_quantity,
+            track_fnames = None,
+            masses = None,
+            metallicities = None,
+            model_suite = 'MESA',
+            new_interp_name = None,
+            num_threads = 1
     ) :
         """
         Return a stellar evolution interpolator with the given configuration.
@@ -648,6 +656,9 @@ class StellarEvolutionManager :
                 if an interpolator matching all other arguments already
                 exists. If not specified, and no interpolator exists matching
                 the remining arguments, a new interpolator is not generated.
+            - num_threads:
+                If a new interpolator is created this many simultaneous
+                interpolation threads are used.
 
         Returns:
             An instance of VarChangingInterpolator (see stellar_evolution
@@ -687,7 +698,8 @@ class StellarEvolutionManager :
                     vs_log_age = vs_log_age,
                     log_quantity = log_quantity,
                     db_session = db_session,
-                    name = new_interp_name
+                    name = new_interp_name,
+                    num_threads = num_threads
                 )
 
     def get_interpolator_by_name(self, name) :

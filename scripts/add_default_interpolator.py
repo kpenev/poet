@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
 sys.path.append('../PythonPackage')
@@ -20,4 +20,5 @@ if __name__ == '__main__' :
             track_fnames = glob(os.path.join(default_track_dir, '*.csv')),
         )
 
-    print(manager.get_interpolator(new_interp_name = 'default'))
+    print(manager.get_interpolator(new_interp_name = 'default',
+                                   num_threads = 4))

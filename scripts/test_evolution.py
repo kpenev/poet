@@ -7,6 +7,7 @@ from orbital_evolution.evolve_interface import *
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 from stellar_evolution.manager import StellarEvolutionManager
+import numpy
 
 if __name__ == '__main__' :
 
@@ -27,8 +28,11 @@ if __name__ == '__main__' :
                      star.mass,
                      4.0,
                      0.0,
+                     numpy.array([0]),
                      numpy.array([]),
-                     numpy.array([]), 
+                     numpy.array([]),
+                     False,
+                     True)
 
     binary = Binary(primary = star,
                     secondary = planet,
@@ -38,4 +42,5 @@ if __name__ == '__main__' :
                     disk_lock_frequency = 2.0 * numpy.pi / 7.0,
                     disk_dissipation_age = 5e-3,
                     secondary_formation_age = 0.0)
-    binary.evolve(8.0, 0.01, 1e-6, numpy.array([1.0, 2.0, 3.0]))
+
+#    binary.evolve(8.0, 0.01, 1e-6, numpy.array([1.0, 2.0, 3.0]))

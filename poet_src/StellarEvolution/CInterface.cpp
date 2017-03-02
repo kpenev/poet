@@ -19,16 +19,19 @@ MESAInterpolator* create_interpolator(const char *mesa_dir,
                                       double *smoothing,
                                       int *nodes,
                                       bool *vs_log_age,
-                                      bool *log_quantity)
+                                      bool *log_quantity,
+                                      unsigned num_threads)
 {
     StellarEvolution::MESA::Interpolator *result;
     if(!smoothing) {
         assert(!nodes);
-        result = new StellarEvolution::MESA::Interpolator(mesa_dir);
+        result = new StellarEvolution::MESA::Interpolator(mesa_dir,
+                                                          num_threads);
     } else {
         assert(nodes);
         result = new StellarEvolution::MESA::Interpolator(
             mesa_dir,
+            num_threads,
             std::vector<double>(smoothing, smoothing + NUM_QUANTITIES),
             std::vector<int>(nodes, nodes + NUM_QUANTITIES),
             std::vector<bool>(vs_log_age, vs_log_age + NUM_QUANTITIES),

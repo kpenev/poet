@@ -3,13 +3,15 @@
  * \brief Defines the StellarEvolution class needed for interpolating among
  * stellar evolution tracks.
  * 
- * \ingroup StellarSystem_group
+ * \ingroup StellarEvolution_group
  */
 
 #ifndef __INTERPOLATOR_H
 #define __INTERPOLATOR_H
 
 #include "EvolvingStellarQuantity.h"
+#include "InterpolationQuantities.h"
+#include "ThreadedInterpolation.h"
 #include "../Core/StellarZone.h"
 #include "../Core/Error.h"
 #include <valarray>
@@ -25,44 +27,6 @@
 #include <boost/serialization/vector.hpp>
 
 namespace StellarEvolution {
-
-    ///Defines the quantities tracked by stellar evolution and their order.
-    enum QuantityID {
-        ///The radius of the star for in \f$R_\odot\f$.
-        RADIUS = 0,
-
-        ///\brief The convective zone moment of inertia in
-        /// \f$M_\odot \cdot R_\odot^2\f$.
-        ICONV,
-
-        ///The luminosity in \f$L_\odot\f$.
-        LUM,
-
-        ///The index of the first core quantity.
-        FIRST_CORE_QUANTITY,
-
-        ///\brief The radiative zone moment of inertia in
-        /// \f$M_\odot \cdot R_\odot^2\f$.
-        IRAD = FIRST_CORE_QUANTITY,
-
-        ///The radiative zone mass in \f$M_\odot\f$.
-        MRAD,
-
-        ///The convective-radiative boundary in \f$R_\odot\f$.
-        RRAD,
-
-        ///The number of stellar evolution quantities tracked.
-        NUM_QUANTITIES
-    };
-
-    static const std::vector<std::string> QUANTITY_NAME {
-        "R*",
-        "Iconv",
-        "L*",
-        "Irad",
-        "Mrad",
-        "Rrad",
-    };
 
     ///\brief A class that interpolates among stellar evolution tracks.
     ///
@@ -117,6 +81,14 @@ namespace StellarEvolution {
             const std::valarray<double> &core_mass
         ) const;
 
+        ///Perform all queued interpolations.
+        void perform_queued_interpolations(
+            ///The queue of pending interpolations to calculate.
+            InterpolationQueue &interpolation_queue,
+
+            ///The number of threads to use for simultaneous processing
+            unsigned num_threads = 1
+        );
     public:
         ///\brief Construct an object that can be set to interpolate between
         ///tabulated evolution tracks.
@@ -165,7 +137,11 @@ namespace StellarEvolution {
 
             ///Should interpolation be done of log(quantity) instead of
             ///quantity for each quantity?
-            const std::vector<bool> &log_quantity
+            const std::vector<bool> &log_quantity,
+
+            ///The number of simultaneosly running threads to use for the
+            ///interpolation.
+            unsigned num_threads
         )
         {
             create_from(tabulated_masses,
@@ -175,7 +151,8 @@ namespace StellarEvolution {
                         smoothing,
                         nodes,
                         vs_log_age,
-                        log_quantity);
+                        log_quantity,
+                        num_threads);
         }
 
         ///Fully setup an object created by the default constructor.
@@ -216,7 +193,11 @@ namespace StellarEvolution {
 
             ///Should interpolation be done of log(quantity) instead of
             ///quantity for each quantity?
-            const std::vector<bool> &log_quantity
+            const std::vector<bool> &log_quantity,
+
+            ///The number of simultaneosly running threads to use for the
+            ///interpolation.
+            unsigned num_threads
         );
 
         ///\brief Return a single quantity interpolation to a given mass and
