@@ -148,11 +148,12 @@ namespace StellarEvolution {
 
                 int first_interp_index;
                 const std::valarray<double> *interp_quantity;
-                if(log_quantity[quantity_index])
+                if(log_quantity[quantity_index]) {
                     interp_quantity = new std::valarray<double>(
                         std::log(*(track_iter[quantity_index]))
                     );
-                else
+                    to_delete.push_back(interp_quantity);
+                } else
                     interp_quantity = &(*(track_iter[quantity_index]));
                 if(quantity_index < FIRST_CORE_QUANTITY)
                     first_interp_index = 0;
@@ -174,8 +175,6 @@ namespace StellarEvolution {
                     quantity_index,
                     grid_index
                 );
-
-                to_delete.push_back(interp_quantity);
             }
 
             ++ages_iter;

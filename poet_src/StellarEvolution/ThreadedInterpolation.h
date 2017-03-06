@@ -40,11 +40,11 @@ namespace StellarEvolution {
         std::list<int> __grid_index;
 
         ///The interpolation results.
-        std::list<Core::InterpolatingFunctionALGLIB*> __result;
+        std::vector<Core::InterpolatingFunctionALGLIB*> __result;
 
         ///\brief A pthread mutex used to ensure that only one thread is
         ///extracting the next quantity for interpolation.
-        pthread_mutex_t __get_task_mutex;
+        pthread_mutex_t __sync_mutex;
 
 #ifndef NDEBUG
         std::list<int>::const_iterator __quantity_id_iter;
@@ -56,7 +56,7 @@ namespace StellarEvolution {
 
     public:
         ///Create an empty queue.
-        InterpolationQueue() {pthread_mutex_init(&__get_task_mutex, NULL);}
+        InterpolationQueue() {pthread_mutex_init(&__sync_mutex, NULL);}
 
         ///Add an interpolation taks to the queue.
         void push_back(const double *x,
@@ -79,7 +79,7 @@ namespace StellarEvolution {
 
         ///The currently selected interupolation result.
         Core::InterpolatingFunctionALGLIB* result() const
-        {return __result.front();}
+        {return __result[__result.size() - __quantity_id.size()];}
 
         ///\brief Move to the next result in the queue (earlier results are
         ///no longer accessible.
@@ -89,7 +89,7 @@ namespace StellarEvolution {
         void pop_front();
 
         ///Are there any un-popped results?
-        operator bool() const {return __result.size();}
+        operator bool() const {return __quantity_id.size();}
 
         friend void *do_interpolation(void *);
 

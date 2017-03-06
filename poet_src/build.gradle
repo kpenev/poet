@@ -148,6 +148,19 @@ model {
             }
 
         }
+        debug_stellar_evolution(NativeExecutableSpec) {
+            sources.cpp {
+                lib library: "alglib"
+                lib library: "eigen"
+                lib library: "stellarEvolution"
+                source {
+                    srcDir "debug"
+                    include "**/*.c"
+                }
+            }
+        }
+
+
 //        poet(NativeExecutableSpec) {
 //            sources.cpp {
 //                lib library: "alglib"

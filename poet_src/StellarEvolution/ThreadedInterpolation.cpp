@@ -12,6 +12,7 @@ namespace StellarEvolution {
     void *do_interpolation (void *queue)
     {
         reinterpret_cast<InterpolationQueue*>(queue)->interpolate_thread();
+        return NULL;
     }
 
     void InterpolationQueue::push_back(const double *x,
@@ -34,49 +35,56 @@ namespace StellarEvolution {
     void InterpolationQueue::interpolate_thread()
     {
         while(true) {
-            pthread_mutex_lock(&__get_task_mutex);
+            pthread_mutex_lock(&__sync_mutex);
 
             if(__x.size() == 0) {
                 assert(__y.size() == 0);
                 assert(__npoints.size() == 0);
                 assert(__nodes.size() == 0);
                 assert(__smoothing.size() == 0);
-                pthread_mutex_unlock(&__get_task_mutex);
+                pthread_mutex_unlock(&__sync_mutex);
                 pthread_exit(NULL);
                 assert(false);
             }
 
-            const double *x = __x.front(),
-                         *y = __y.front();
-            size_t npoints = __npoints.front();
-            int nodes = __nodes.front();
-            double smoothing = __smoothing.front();
+            const double *x = __x.back(),
+                         *y = __y.back();
+            size_t npoints = __npoints.back();
+            int nodes = __nodes.back();
+            double smoothing = __smoothing.back();
 
-            __x.pop_front();
-            __y.pop_front();
-            __npoints.pop_front();
-            __nodes.pop_front();
-            __smoothing.pop_front();
+            __x.pop_back();
+            __y.pop_back();
+            __npoints.pop_back();
+            __nodes.pop_back();
+            __smoothing.pop_back();
+            int destination = __x.size();
 
 #ifndef NDEBUG
-            ++__quantity_id_iter;
             std::clog
                 << "Interpolating "
                 << QUANTITY_NAME[*__quantity_id_iter]
                 << " using " << nodes << " nodes and "
                 << smoothing << " smoothing."
                 << std::endl;
+            ++__quantity_id_iter;
 #endif
 
-            pthread_mutex_unlock(&__get_task_mutex);
-            __result.push_back(
+            pthread_mutex_unlock(&__sync_mutex);
+            Core::InterpolatingFunctionALGLIB *quantity = 
                 new Core::InterpolatingFunctionALGLIB(x,
                                                       y,
                                                       npoints,
                                                       NULL,
                                                       smoothing,
-                                                      nodes)
-            );
+                                                      nodes);
+
+            pthread_mutex_lock(&__sync_mutex);
+#ifndef NDEBUG
+            std::clog << "Created result @: " << quantity << std::endl;
+#endif
+            __result[destination] = quantity;
+            pthread_mutex_unlock(&__sync_mutex);
         }
     }
 
@@ -87,6 +95,7 @@ namespace StellarEvolution {
         pthread_attr_setdetachstate(&thread_attributes,
                                     PTHREAD_CREATE_JOINABLE);
         std::vector<pthread_t> threads(num_threads);
+        __result.resize(__x.size());
 #ifndef NDEBUG
         __quantity_id_iter = __quantity_id.begin();
 #endif
@@ -101,9 +110,14 @@ namespace StellarEvolution {
 
     void InterpolationQueue::pop_front()
     {
+#ifndef NDEBUG
         assert(*this);
+        std::clog << "quantity ID size: " << __quantity_id.size() << std::endl;
+        std::clog << "grid index size: " << __grid_index.size() << std::endl;
+        std::clog << "result size: " << __result.size() << std::endl;
+        std::clog << "Popping result @: " << __result[__quantity_id.size()-1] << std::endl;
+#endif
         __quantity_id.pop_front();
         __grid_index.pop_front();
-        __result.pop_front();
     }
 }//End StellarEvolution namespace.
