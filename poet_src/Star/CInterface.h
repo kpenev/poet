@@ -27,7 +27,7 @@ extern "C" {
     struct EvolvingStar;
 
     ///Create a star to participate in the orbital evolution calculation.
-    void *create_star(
+    EvolvingStar *create_star(
         ///Mass of the star
         double mass,
 
@@ -104,7 +104,7 @@ extern "C" {
     ///details.
     double modified_phase_lag(
         ///The star to get the modified phase lag for.
-        EvolvingStar *star,
+        const EvolvingStar *star,
 
         ///The index of the zone whose modified phase lag to return.
         unsigned zone_index,
@@ -128,6 +128,12 @@ extern "C" {
         ///to the lag assuming the spin frequency is just above the lock.
         ///Otherwise, leave untouched.
         double *above_lock_value
+    );
+
+    ///The age at which the core of a star forms.
+    double core_formation_age(
+        ///The star for which to return the core formation age.
+        const EvolvingStar *star
     );
 
 } //End extern "C"

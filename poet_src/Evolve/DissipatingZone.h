@@ -122,11 +122,13 @@ namespace Evolve {
                ///The absolute value of the angular momentum of the orbit
                __orbital_angmom;
 
-        ///The \f$\mathcal{U}_{m,m'}\f$ quantities defined in Lai (2012).
-        std::valarray< std::valarray<double> > __Ummp,
+        
+        std::valarray< std::valarray<double> >
+            ///The \f$\mathcal{U}_{m,m'}\f$ quantities defined in Lai (2012).
+            __Ummp,
 
-            ///The derivatives of the \f$\mathcal{U}_{m,m'}\f$ quantities w.r.t.
-            ///the inclination.
+            ///\brief The derivatives of the \f$\mathcal{U}_{m,m'}\f$
+            ///quantities w.r.t. the inclination.
             __Ummp_deriv;
 
         ///\brief The dimensionless tidal power and its derivatives.

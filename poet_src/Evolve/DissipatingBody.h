@@ -36,37 +36,38 @@ namespace Evolve {
     ///\ingroup StellarSystem_group
     class DissipatingBody {
     private:
-        ///The coefficient used to normalize tidal power.
-        double __power_norm, 
+        double
+            ///The coefficient used to normalize tidal power.
+            __power_norm, 
 
-               ///The mean angular velocity with which the orbit is traversed.
-               __orbital_frequency,
+            ///The mean angular velocity with which the orbit is traversed.
+            __orbital_frequency,
 
-               ///The derivative of the orbital frequency w.r.t. semimajor axis 
-               __dorbital_frequency_da,
-               
-               ///The frequency at which the surface is locked (if any).
-               __surface_lock_frequency;
+            ///The derivative of the orbital frequency w.r.t. semimajor axis.
+            __dorbital_frequency_da,
+
+            ///The frequency at which the surface is locked (if any).
+            __surface_lock_frequency;
 
         std::valarray< std::valarray<Eigen::Vector3d> > 
             ///\brief The rate of angular momentum transfer between two
             ///neighboring zones due to zone boundaries moving.
             ///
             ///The outer index is the index of the outer zone and each entry
-            ///consists of two sub-entries giving the rate at which each of the
-            ///two zones (outer first, inner second) involved gains angular 
-            ///momentum due to the moving boundary in each zone's coordinate 
-            ///system.
+            ///consists of two sub-entries giving the rate at which each of
+            ///the two zones (outer first, inner second) involved gains
+            ///angular momentum due to the moving boundary in each zone's
+            ///coordinate system.
             __angular_momentum_transfer,
 
-            ///\brief Tidal torques and their derivatives on each zone for spin
-            ///frequency approaching potential lock from above.
+            ///\brief Tidal torques and their derivatives on each zone for
+            ///spin frequency approaching potential lock from above.
             ///
             ///See tidal_torque() for more details.
             __tidal_torques_above,
 
-            ///\brief Tidal torques and their derivatives on each zone for spin
-            ///frequency approaching potential lock from below.
+            ///\brief Tidal torques and their derivatives on each zone for
+            ///spin frequency approaching potential lock from below.
             ///
             ///See tidal_torque() for more details.
             __tidal_torques_below;
@@ -75,15 +76,16 @@ namespace Evolve {
         ///gain and torque are pre-calculated.
         std::vector<Dissipation::Derivative> __orbit_deriv;
 
-        ///\brief Total tidal power (and derivatives) gained by the orbit from
-        ///this body.
-        ///
-        ///The derivatives are only w.r.t. the non-zone specific quantities
-        ///listed in __orbit_deriv.
-        std::valarray<double> __orbit_energy_gain,
+        std::valarray<double>
+            ///\brief Total tidal power (and derivatives) gained by the orbit
+            ///from this body.
+            ///
+            ///The derivatives are only w.r.t. the non-zone specific
+            ///quantities listed in __orbit_deriv.
+            __orbit_energy_gain,
             
-            ///\brief Corrections to __orbit_energy_gain_below (undifferentiated)
-            ///if single zones switch to above.
+            ///\brief Corrections to __orbit_energy_gain_below
+            ///(undifferentiated) if single zones switch to above.
             __orbit_energy_gain_correction;
 
         ///\brief Torque on the orbit (and its derivatives) due to tides on this
@@ -112,24 +114,26 @@ namespace Evolve {
         ///\brief Scales the dimensionless torques as appropriate and corrects
         ///the relevant derivatives returning the normalization used.
         double normalize_torques(
-                ///The mass of the other object in the system.
-                double companion_mass,
-                
-                ///The orbital semimajor axis.
-                double semimajor,
+            ///The mass of the other object in the system.
+            double companion_mass,
 
-                ///The orbital frequency (passed to avoid duplicate calculation).
-                double orbital_frequency);
+            ///The orbital semimajor axis.
+            double semimajor,
+
+            ///The orbital frequency (passed to avoid duplicate calculation).
+            double orbital_frequency
+        );
 
         ///\brief Calcuates the total energy and angular momentum loss rates for
         ///the orbit due to this body's tidal dissipation.
         void collect_orbit_rates(
-                ///The orbital frequency.
-                double orbital_frequency,
-                
-                ///The normalization constant for the torques, as returned by
-                ///normalize_torques().
-                double torque_norm);
+            ///The orbital frequency.
+            double orbital_frequency,
+
+            ///The normalization constant for the torques, as returned by
+            ///normalize_torques().
+            double torque_norm
+        );
 
         ///\brief Calculates the correction the orbital energy gain and torque
         ///due to switching locked zones from fully below to fully above.

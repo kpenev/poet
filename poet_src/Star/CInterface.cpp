@@ -18,7 +18,7 @@ double lag_from_lgQ(double lgQ)
 	return 15.0 / (16.0 * M_PI * std::pow(10.0, lgQ));
 }
 
-void *create_star(double mass,
+EvolvingStar *create_star(double mass,
                           double metallicity,
                           double wind_strength,
                           double wind_saturation_frequency,
@@ -89,7 +89,7 @@ void detect_stellar_wind_saturation(EvolvingStar *star)
     )->detect_saturation();
 }
 
-double modified_phase_lag(EvolvingStar *star,
+double modified_phase_lag(const EvolvingStar *star,
                           unsigned zone_index,
                           int orbital_frequency_multiplier,
                           int spin_frequency_multiplier,
@@ -97,7 +97,7 @@ double modified_phase_lag(EvolvingStar *star,
                           int deriv,
                           double *above_lock_value)
 {
-    return reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+    return reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
         star
     )->zone(zone_index).modified_phase_lag(
         orbital_frequency_multiplier,
@@ -106,4 +106,11 @@ double modified_phase_lag(EvolvingStar *star,
         static_cast<Evolve::Dissipation::Derivative>(deriv),
         *above_lock_value
     );
+}
+
+double core_formation_age(const EvolvingStar *star)
+{
+    return reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+        star
+    )->core().formation_age();
 }

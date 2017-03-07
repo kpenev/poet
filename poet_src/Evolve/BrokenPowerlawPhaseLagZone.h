@@ -65,7 +65,10 @@ namespace Evolve {
 
     public:
         ///\brief Create an unuseable zone. Must call setup() before use.
-        BrokenPowerlawPhaseLagZone() : __spin_condition(NULL) {}
+        BrokenPowerlawPhaseLagZone() :
+            __spin_condition(NULL),
+            __tidal_frequency_conditions()
+        {}
 
         ///\brief Seup the zone with the given breaks/powers imposing
         ///continuity accress all breaks. Must only be called before use.

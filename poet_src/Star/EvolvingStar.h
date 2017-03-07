@@ -21,17 +21,16 @@ namespace Star {
         public SaturatingSkumanichWindBody,
         public ExponentialDecayDiffRotBody {
     private:
-        ///\brief The luminosity of the star in \f$L_\odot\f$ as a function of
-        ///age in Gyr.
+        ///\brief The luminosity of the star in \f$L_\odot\f$ as a function
+        ///of age in Gyr.
         ///
         ///Since the luminosity does not enter in the equations solved it
         ///might not be defined. If that is the case, this member should be
         ///NULL.
         const StellarEvolution::EvolvingStellarQuantity *__luminosity;
 
-        double 
-            ///The age at which the star leaves the main sequence in Gyrs.
-            __lifetime;
+        ///The age at which the star leaves the main sequence in Gyrs.
+        double __lifetime;
 
         ///The surface zone of the star (the entire star if high mass).
         EvolvingStellarEnvelope __envelope;

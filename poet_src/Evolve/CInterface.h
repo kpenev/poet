@@ -25,6 +25,9 @@ extern "C" {
     ///other modes when storing the computed evolution.
     extern const int TABULATION_EVOL_MODE;
 
+    ///Not a number.
+    extern const double NaN;
+
     ///Opaque struct to cast to/from Evolve::DiskPlanetSystem.
     struct DiskPlanetSystem;
 

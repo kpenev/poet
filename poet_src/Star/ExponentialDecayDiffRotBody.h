@@ -10,8 +10,8 @@
 #ifndef __EXPONENTIAL_DECAY_DIFF_ROT_COUPLING_BODY_H
 #define __EXPONENTIAL_DECAY_DIFF_ROT_COUPLING_BODY_H
 
-#include "DissipatingBody.h"
-#include "ZoneOrientation.h"
+#include "../Evolve/DissipatingBody.h"
+#include "../Evolve/ZoneOrientation.h"
 
 namespace Star {
 

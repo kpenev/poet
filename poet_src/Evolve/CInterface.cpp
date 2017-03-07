@@ -11,6 +11,7 @@ const int LOCKED_SURFACE_SPIN_EVOL_MODE = Core::LOCKED_SURFACE_SPIN;
 const int BINARY_EVOL_MODE = Core::BINARY;
 const int SINGLE_EVOL_MODE = Core::SINGLE;
 const int TABULATION_EVOL_MODE = Core::TABULATION;
+const double NaN = Core::NaN;
 
 DiskPlanetSystem *create_disk_planet_system(DissipatingBody *primary, 
                                             DissipatingBody *secondary,

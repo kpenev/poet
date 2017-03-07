@@ -155,8 +155,24 @@ model {
                 lib library: "stellarEvolution"
                 source {
                     srcDir "debug"
-                    include "**/*.c"
+                    include "**/stellar_evolution.c"
                 }
+            }
+        }
+        debug_orbital_evolution(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "debug"
+                    include "**/orbital_evolution.c"
+                }
+            }
+            binaries.all {
+                lib library: "alglib", linkage: "static"
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "star", linkage: "static"
+                lib library: "planet", linkage: "static"
+                lib library: "evolve", linkage: "static"
             }
         }
 
