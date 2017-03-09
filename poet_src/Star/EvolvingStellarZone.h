@@ -23,8 +23,8 @@ namespace Star {
         ///The age for the last configure() call.
         double __current_age;
 
-        ///\brief Pre-computed values and derivatives for quantities which only
-        ///depend on age at the current age.
+        ///\brief Pre-computed values and derivatives for quantities which 
+        ///only depend on age at the current age.
         mutable std::vector< const Core::FunctionDerivatives* >
             __current_age_quantities;
 
@@ -121,6 +121,17 @@ namespace Star {
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.
         double next_stop_age() const;
+
+        ///The minimum age at wich zone quantities can be querried.
+        double min_interp_age() const;
+
+        ///\brief Prepare the zone quantities for interpolation around the
+        ///given age.
+        ///
+        ///After calling this method, requesting values or derivatives
+        ///outside the range of the continuous region containing this age
+        ///(see ::discontinuities) fails an assert.
+        virtual void select_interpolation_region(double age) const;
 
         ///Delete any dynamically allocated memory.
         ~EvolvingStellarZone();

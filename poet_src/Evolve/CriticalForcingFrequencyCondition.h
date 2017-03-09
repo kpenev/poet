@@ -92,7 +92,7 @@ namespace Evolve {
             int spin_frequency_multiplier,
 
             ///The critical spin frequency to watch for.
-            std::vector<double> critical_frequencies,
+            const std::vector<double> &critical_frequencies,
 
             ///The current orbital frequency for which to initialize this
             ///condition.

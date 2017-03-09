@@ -75,26 +75,26 @@ namespace Evolve {
         void setup(
             ///The locations of the breaks in tidal frequency in rad/day.
             ///Entries should be sorted.
-            std::vector<double> tidal_frequency_breaks,
+            const std::vector<double> &tidal_frequency_breaks,
 
             ///The locations of the breaks in spin frequency in rad/day.
             ///Entries should be sorted.
-            std::vector<double> spin_frequency_breaks,
+            const std::vector<double> &spin_frequency_breaks,
             
             ///The powerlaw indices for the tidal frequency dependence.
             ///Should be indexed in the same order as tidal_frequency_breaks,
             ///but must contain an additional starting entry for the powerlaw
             ///index before the first break.
-            std::vector<double> tidal_frequency_powers,
+            const std::vector<double> &tidal_frequency_powers,
 
             ///The powerlaw indices for the spin frequency dependence.
             ///Should be indexed in the same order as spin_frequency_breaks,
             ///but must contain an additional starting entry for the powerlaw
             ///index before the first break.
-            std::vector<double> spin_frequency_powers,
+            const std::vector<double> &spin_frequency_powers,
 
-            ///The phase lag at the first tidal and first spin frequency break.
-            ///The rest are calculated by imposing continuity.
+            ///The phase lag at the first tidal and first spin frequency 
+            ///break. The rest are calculated by imposing continuity.
             double reference_phase_lag
         );
         

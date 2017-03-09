@@ -19,7 +19,8 @@ namespace Star {
     /// \f$\propto\omega\min(\omega, \omega_{sat})^2\f$
     ///
     ///\ingroup StellarSystem_group
-    class SaturatingSkumanichWindBody : virtual public Evolve::DissipatingBody {
+    class SaturatingSkumanichWindBody : 
+        virtual public Evolve::DissipatingBody {
     private:
         ///The strength of the magnetic wind
         double __wind_strength,
@@ -121,6 +122,8 @@ namespace Star {
             detect_saturation();
             Evolve::DissipatingBody::spin_jumped();
         }
+
+        virtual ~SaturatingSkumanichWindBody() {}
     };//End SaturatingSkumanichWindBody class.
 
 }//End Star namespace.

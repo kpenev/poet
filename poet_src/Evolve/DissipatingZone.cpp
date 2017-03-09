@@ -193,39 +193,79 @@ namespace Evolve {
     }
 
 #ifdef DEBUG
-    void DissipatingZone::check_locks_consistency()
+    void DissipatingZone::check_locks_consistency() const
     {
-        int max_abs_orb_mult=static_cast<int>(__e_order+2);
-        assert(__lock || 
-                (__lock.lock_direction()*__other_lock.lock_direction()==-1) ||
-                (__lock.spin_frequency_multiplier()==1 && 
-                 __lock.orbital_frequency_multiplier()==
-                 __lock.lock_direction()*max_abs_orb_mult &&
-                 __other_lock.orbital_frequency_multiplier()==1 && 
-                 __other_lock.spin_frequency_multiplier()==0 &&
-                 __other_lock.lock_direction()==1));
-        assert((__lock.spin_frequency_multiplier()==1 ||
-                    __lock.spin_frequency_multiplier()==2));
-        assert((__other_lock.spin_frequency_multiplier()>=0 && 
-                    __other_lock.spin_frequency_multiplier()<=2));
+        int max_abs_orb_mult = static_cast<int>(__e_order + 2);
+        assert(
+            __lock
+            || 
+            (__lock.lock_direction() * __other_lock.lock_direction( )== -1)
+            ||
+            (
+                __lock.spin_frequency_multiplier() == 1
+                && 
+                (
+                    __lock.orbital_frequency_multiplier()
+                    ==
+                    __lock.lock_direction() * max_abs_orb_mult
+                )
+                &&
+                __other_lock.orbital_frequency_multiplier() == 1
+                && 
+                __other_lock.spin_frequency_multiplier() == 0
+                &&
+                __other_lock.lock_direction() == 1)
+        );
+        assert(__lock.spin_frequency_multiplier() == 1
+               ||
+               __lock.spin_frequency_multiplier() == 2);
+        assert(__other_lock.spin_frequency_multiplier() >= 0
+               && 
+               __other_lock.spin_frequency_multiplier() <= 2);
         if(__lock) return;
         return;//<++>
-        assert(__lock.lock_direction()*__lock.spin_frequency_multiplier()
-                *spin_frequency()+1.0e-5*__orbital_frequency
-                >=
-                __lock.lock_direction()*__lock.orbital_frequency_multiplier()*
-                __orbital_frequency);
+        assert(
+            (
+                __lock.lock_direction()
+                *
+                __lock.spin_frequency_multiplier()
+                *
+                spin_frequency()
+                +
+                1.0e-5 * __orbital_frequency
+            )
+            >=
+            (
+                __lock.lock_direction()
+                *
+                __lock.orbital_frequency_multiplier()
+                *
+                __orbital_frequency
+            )
+        );
         if(__other_lock.spin_frequency_multiplier()) {
-            assert(__other_lock.lock_direction()
-                    *__other_lock.spin_frequency_multiplier()
-                    *spin_frequency()
-                    >
+            assert(
+                (
                     __other_lock.lock_direction()
-                    *__other_lock.orbital_frequency_multiplier()
-                    *__orbital_frequency);
-        } else assert(__lock.lock_direction()
-                    *__lock.orbital_frequency_multiplier()
-                    >0);
+                    *
+                    __other_lock.spin_frequency_multiplier()
+                    *
+                    spin_frequency()
+                )
+                >
+                (
+                    __other_lock.lock_direction()
+                    *
+                    __other_lock.orbital_frequency_multiplier()
+                    *
+                    __orbital_frequency
+                )
+            );
+        } else assert(
+            __lock.lock_direction() * __lock.orbital_frequency_multiplier()
+            >
+            0
+        );
     }
 #endif
 

@@ -59,6 +59,7 @@ namespace Evolve {
 
     void BrokenPowerlawPhaseLagZone::print_configuration()
     {
+        return;
         std::clog << "Tidal breaks: ";
         for(
             std::vector<double>::const_iterator
@@ -111,10 +112,10 @@ namespace Evolve {
     }
 
     void BrokenPowerlawPhaseLagZone::setup(
-        std::vector<double> tidal_frequency_breaks,
-        std::vector<double> spin_frequency_breaks,
-        std::vector<double> tidal_frequency_powers,
-        std::vector<double> spin_frequency_powers,
+        const std::vector<double> &tidal_frequency_breaks,
+        const std::vector<double> &spin_frequency_breaks,
+        const std::vector<double> &tidal_frequency_powers,
+        const std::vector<double> &spin_frequency_powers,
         double reference_phase_lag
     )
     {
@@ -329,27 +330,33 @@ namespace Evolve {
             DissipatingZone::stopping_conditions(system,
                                                  primary,
                                                  zone_index);
+
         if(system.evolution_mode() != Core::BINARY) return result;
 
-        fill_tidal_frequency_conditions(system, primary, zone_index);
+        if(__spin_frequency_breaks.size() != 0) {
+            if(__spin_condition == NULL)
+                __spin_condition = new CriticalSpinCondition(
+                    (primary ? system.primary() : system.secondary()),
+                    (primary ? system.secondary() : system.primary()),
+                    primary,
+                    zone_index,
+                    __spin_frequency_breaks
+                );
 
-        if(__spin_condition == NULL)
-            __spin_condition = new CriticalSpinCondition(
-                (primary ? system.primary() : system.secondary()),
-                (primary ? system.secondary() : system.primary()),
-                primary,
-                zone_index,
-                __spin_frequency_breaks
-            );
+            (*result) |= __spin_condition;
+        }
 
-        (*result) |= __spin_condition;
-        for(
-            std::list<CombinedStoppingCondition *>::const_iterator 
-                tidal_cond_iter = __tidal_frequency_conditions.begin();
-            tidal_cond_iter != __tidal_frequency_conditions.end();
-            ++tidal_cond_iter
-        )
-            (*result) |= *tidal_cond_iter;
+        if(__tidal_frequency_breaks.size() != 0) {
+            fill_tidal_frequency_conditions(system, primary, zone_index);
+
+            for(
+                std::list<CombinedStoppingCondition *>::const_iterator 
+                    tidal_cond_iter = __tidal_frequency_conditions.begin();
+                tidal_cond_iter != __tidal_frequency_conditions.end();
+                ++tidal_cond_iter
+            )
+                (*result) |= *tidal_cond_iter;
+        }
 
         return result;
     }//End BrokenPowerlawPhaseLagZone::stopping_conditions definition.

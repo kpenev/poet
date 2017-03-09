@@ -8,6 +8,8 @@
 
 #include "DiskPlanetSystem.h"
 #include "OrbitSolver.h"
+#include "../Star/CInterface.h"
+#include "../Planet/CInterface.h"
 
 extern "C" {
     ///\brief Evolution mode ID for when the surface rotation of one of the
@@ -29,23 +31,23 @@ extern "C" {
     extern const double NaN;
 
     ///Opaque struct to cast to/from Evolve::DiskPlanetSystem.
-    struct DiskPlanetSystem;
+    struct StarPlanetSystem;
 
     ///Opaque struct to cast to/from Evolve::OrbitSolver.
     struct OrbitSolver;
 
-    ///Opaque struct to cast to/from Evolve::DissipatingBody.
-    struct DissipatingBody;
+    ///Read eccentricity expansion coefficients from a file.
+    void read_eccentricity_expansion_coefficients(const char *filename);
 
     ///Create a binary system out of two bodies.
-    DiskPlanetSystem *create_disk_planet_system(
+    StarPlanetSystem *create_star_planet_system(
         ///The first body in the system. Assumed to always be there, so
         ///for a star-planet system this should be the star.
-        DissipatingBody *primary, 
+        EvolvingStar *star, 
 
         ///The second body in the system, initially may not be there and
         ///later may be engulfed by the first body.
-        DissipatingBody *secondary,
+        LockedPlanet *planet,
 
         ///The semimajor axis of the orbit at which the secondary forms in
         /// \f$R_\odot\f$.
@@ -72,16 +74,64 @@ extern "C" {
     ///Destroy a previously created binary system.
     void destroy_binary(
         ///The system to destroy.
-        DiskPlanetSystem *system
+        StarPlanetSystem *system
     );
 
-    ///\brief Defines the orbit a body is in.
+    ///\brief Defines the orbit a planet is in.
     ///
     ///The inclinations and arguments of periapsis must be already set for
     ///all zones.
-    void configure_body(
+    void configure_planet(
         ///The body to configure.
-        DissipatingBody *body,
+        LockedPlanet *planet,
+
+        ///The age to set the body to.
+        double age,
+
+        ///The mass of the second body in the system.
+        double companion_mass,
+
+        ///The semimajor axis of the orbit in \f$R_\odot\f$.
+        double semimajor,
+
+        ///The eccentricity of the orbit
+        double eccentricity,
+
+        ///The spin angular momenta of the non-locked zones of the body
+        ///(outermost zone to innermost).
+        const double *spin_angmom,
+
+        ///The inclinations of the zones of the body (same order as 
+        ///spin_angmom). If NULL, all inclinations are assumed zero.
+        const double *inclination,
+
+        ///The arguments of periapsis of the zones of the bodies (same
+        ///order as spin_angmom). If NULL, all periapses are assumed
+        ///zero.
+        const double *periapsis,
+
+        ///If true, the outermost zone's spin is assumed locked to a 
+        ///disk and spin_angmom is assumed to start from the next zone.
+        bool locked_surface,
+
+        ///If true, the outermost zone's inclination is assumed to be
+        ///zero and the inclination argument is assumed to start from the
+        ///next zone.
+        bool zero_outer_inclination,
+
+        ///If true, the outermost zone's periapsis is assumed to be
+        ///zero and the inclination argument is assumed to start from the
+        ///next zone.
+        bool zero_outer_periapsis
+    );
+
+    ///\brief Defines the orbit a star is in.
+    ///
+    ///The inclinations and arguments of periapsis must be already set for
+    ///all zones.
+    void configure_star(
+        ///The body to configure.
+        EvolvingStar *star,
 
         ///The age to set the body to.
         double age,
@@ -126,7 +176,7 @@ extern "C" {
     ///Sets the current state of a system.
     void configure_system(
         ///The system to set the state of.
-        DiskPlanetSystem *system,
+        StarPlanetSystem *system,
 
         ///The age to set the system to.
         double age,
@@ -159,7 +209,7 @@ extern "C" {
     ///Calculate the evolution of a previously configured binary system.
     OrbitSolver *evolve_system(
         ///The system to evolve.
-        DiskPlanetSystem *system,
+        StarPlanetSystem *system,
 
         ///The age at which to stop the evolution in Gyrs. The starting age
         ///must be already set for the system.
@@ -176,6 +226,77 @@ extern "C" {
 
         ///The number of required ages.
         unsigned num_required_ages
+    );
+
+    ///Destroy a solver created by evolve_system.
+    void destroy_solver(
+        ///The solver to destroy.
+        OrbitSolver *solver
+    );
+
+    ///At how many points was the evolution saved.
+    unsigned num_evolution_steps(
+        ///The solver used to follow the evolution.
+        OrbitSolver *solver
+    );
+
+    ///\brief Fill C-style arrays with the calculated evolution of a system.
+    ///
+    ///All return arrays must either be allocated to the correct size or be
+    ///NULL. In the latter case, the corresponding quantity is not returned.
+    void get_evolution(
+        ///The solver which was used to calculate the orbital evolution.
+        const OrbitSolver *solver,
+
+        ///The system which was evolved.
+        const StarPlanetSystem *system,
+
+        ///The star which was evolved.
+        const EvolvingStar *star,
+
+        ///An array to fill with the ages at which the evolution was
+        ///calculated.
+        double *age,
+
+        ///An array to fill with the semimajor axis at the saved evolution
+        ///steps.
+        double *semimajor,
+
+        ///An array to fill with the orbital eccentricity at the saved 
+        ///evolution steps.
+        double *eccentricity,
+
+        ///An array to fill with the angle between the stellar convective
+        ///envelope and the orbital angular momenta.
+        double *envelope_inclination,
+
+        ///An array to fill with the angle between the stellar radiative core
+        ///and the orbital angular momenta.
+        double *core_inclination,
+
+        ///An array to fill with the periapsis of the orbit in the equatorial
+        ///plane of the stellar convective envelope.
+        double *envelope_periapsis,
+
+        ///An array to fill with the periapsis of the orbit in the equatorial
+        ///plane of the stellar radiative core.
+        double *core_periapsis,
+
+        ///An array to fill with the angular momentum of the stellar
+        ///convective envelope.
+        double *envelope_angmom,
+
+        ///An array to fill with the angular momentum of the stellar
+        ///radiative core.
+        double *core_angmom,
+
+        ///An array to fill with the evolution mode of the system.
+        int *evolution_mode,
+
+        ///An array to fill with a flag indicating whether the angular
+        ///momentum loss due to stellar wind is in the satured state (true)
+        ///or not (false).
+        bool *wind_saturation
     );
 
 }//End Extern "C"

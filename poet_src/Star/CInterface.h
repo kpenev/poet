@@ -100,6 +100,18 @@ extern "C" {
         EvolvingStar *star
     );
 
+    ///\brief Prepare the zone quantities for interpolation around the
+    ///given age.
+    ///
+    ///See EvolvingStar::select_interpolation_region() for details.
+    void select_interpolation_region(
+        ///The star to select the interpolation region for.
+        const EvolvingStar *star,
+
+        ///The age around which interpolation should work.
+        double age
+    );
+
     ///\brief See Evolve::BrokenPowerlawPhaseLagZone::modified_phase_lag for
     ///details.
     double modified_phase_lag(

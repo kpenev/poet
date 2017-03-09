@@ -32,7 +32,7 @@ namespace Evolve {
     ) const
     {
 #ifdef DEBUG
-        assert(evol_mode == BINARY);
+        assert(evol_mode == Core::BINARY);
         if(__system.number_locked_zones())
             assert(orbit[0] == __system.semimajor());
         else assert(std::pow(std::max(0.0, orbit[0]), 1.0 / 6.5)

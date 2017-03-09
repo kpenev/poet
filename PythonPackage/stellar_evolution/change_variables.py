@@ -1,8 +1,13 @@
 """Allows finding mass and age given other properties at fixed [Fe/H]."""
+import sys
+sys.path.append('..')
 
-from .library_interface import MESAInterpolator
-from .derived_stellar_quantities import TeffK, LogGCGS, RhoCGS
-from .basic_utils import Structure
+from stellar_evolution.library_interface import MESAInterpolator
+from stellar_evolution.derived_stellar_quantities import\
+    TeffK,\
+    LogGCGS,\
+    RhoCGS
+from basic_utils import Structure
 import scipy
 import scipy.interpolate
 import scipy.linalg

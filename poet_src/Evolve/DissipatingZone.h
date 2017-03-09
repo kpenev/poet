@@ -232,7 +232,7 @@ namespace Evolve {
 #ifdef DEBUG
         ///\brief Runs a bunch of asserts to check the consistency of __lock and
         ///__other_lock.
-        void check_locks_consistency();
+        void check_locks_consistency() const;
 #endif
 
         ///\brief Updates a SpinOrbitLockInfo variable as appropriate when 

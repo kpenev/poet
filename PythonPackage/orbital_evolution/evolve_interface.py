@@ -2,7 +2,12 @@
 
 """An interface to the POET orbital evolution library."""
 
-from ctypes import cdll, c_int, c_double, c_void_p, c_uint, c_bool
+import sys
+sys.path.append('..')
+
+from orbital_evolution.c_interface_util import ndpointer_or_null
+from basic_utils import Structure
+from ctypes import cdll, c_int, c_double, c_void_p, c_uint, c_bool, c_char_p
 from ctypes.util import find_library
 import numpy
 
@@ -20,7 +25,10 @@ def initialize_library() :
         raise OSError('Unable to find POET\'s evolve library.') 
     library = cdll.LoadLibrary(library_fname)
 
-    library.create_disk_planet_system.argtypes = [c_dissipating_body_p,
+    library.read_eccentricity_expansion_coefficients.argtypes = [c_char_p]
+    library.read_eccentricity_expansion_coefficients.restype = None
+
+    library.create_star_planet_system.argtypes = [c_dissipating_body_p,
                                                   c_dissipating_body_p,
                                                   c_double,
                                                   c_double,
@@ -28,33 +36,36 @@ def initialize_library() :
                                                   c_double,
                                                   c_double,
                                                   c_double]
-    library.create_disk_planet_system.restype = c_binary_p
+    library.create_star_planet_system.restype = c_binary_p
 
     library.destroy_binary.argtypes = [
-        library.create_disk_planet_system.restype
+        library.create_star_planet_system.restype
     ]
     library.destroy_binary.restype = None
 
-    library.configure_body.argtypes = [
+    library.configure_planet.argtypes = [
         c_dissipating_body_p,
         c_double,
         c_double,
         c_double,
         c_double,
         numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
         c_bool,
         c_bool,
         c_bool
     ]
-    library.configure_body.restype = None
+    library.configure_planet.restype = None
+
+    library.configure_star.argtypes = library.configure_planet.argtypes
+    library.configure_star.restype = library.configure_planet.restype
 
     library.configure_system.argtypes = [
         c_binary_p,
@@ -64,12 +75,12 @@ def initialize_library() :
         numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
         c_int
     ]
     library.configure_system.restype = None
@@ -79,12 +90,58 @@ def initialize_library() :
         c_double,
         c_double,
         c_double,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
         c_uint
     ]
     library.evolve_system.restype = c_solver_p
+
+    library.destroy_solver.argtypes = [library.evolve_system.restype]
+    library.destroy_solver.restype = None
+
+    library.num_evolution_steps.argtypes = [library.evolve_system.restype]
+    library.num_evolution_steps.restype = c_uint
+
+    library.get_evolution.argtypes = [
+        library.evolve_system.restype,
+        library.create_star_planet_system.restype,
+        c_dissipating_body_p,
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_int,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_bool,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS')
+    ]
+    library.get_evolution.restype = None
 
     return library
 
@@ -149,17 +206,17 @@ class DissipatingBody :
         Returns: None.
         """
 
-        library.configure_body(self.body,
-                               age,
-                               companion_mass,
-                               semimajor,
-                               eccentricity,
-                               spin_angmom,
-                               inclination,
-                               periapsis,
-                               locked_surface,
-                               zero_outer_inclination,
-                               zero_outer_periapsis)
+        self.lib_configure_body(self.c_body,
+                                age,
+                                companion_mass,
+                                semimajor,
+                                eccentricity,
+                                spin_angmom,
+                                inclination,
+                                periapsis,
+                                locked_surface,
+                                zero_outer_inclination,
+                                zero_outer_periapsis)
 
 class Binary :
     """A class for binaries POET can evolve."""
@@ -172,6 +229,18 @@ class Binary :
         mode: c_int.in_dll(library, mode + '_EVOL_MODE').value
         for mode in evolution_modes
     }
+
+    evolution_quantities = ['age',
+                            'semimajor',
+                            'eccentricity',
+                            'envelope_inclination',
+                            'core_inclination',
+                            'envelope_periapsis',
+                            'core_periapsis',
+                            'envelope_angmom',
+                            'core_angmom',
+                            'evolution_mode',
+                            'wind_saturation']
 
     def __init__(self,
                  primary,
@@ -220,9 +289,9 @@ class Binary :
 
         self.primary = primary
         self.secondary = secondary
-        self.binary = library.create_disk_planet_system(
-            primary.body,
-            secondary.body,
+        self.c_binary = library.create_star_planet_system(
+            primary.c_body,
+            secondary.c_body,
             initial_semimajor,
             initial_eccentricity,
             initial_inclination,
@@ -234,7 +303,9 @@ class Binary :
     def delete(self) :
         """Destroy the binary created at construction."""
 
-        library.destroy_binary(self.binary)
+        library.destroy_binary(self.c_binary)
+        if hasattr(self, 'solver') :
+            library.destroy_solver(self.c_solver)
 
     def configure(self,
                   age,
@@ -278,14 +349,14 @@ class Binary :
         Returns: None
         """
 
-        library.configure_system(self.binary,
+        library.configure_system(self.c_binary,
                                  age,
                                  semimajor,
                                  eccentricity,
                                  spin_angmom,
                                  inclination,
                                  periapsis,
-                                 evolution_mode)
+                                 self.evolution_mode_ids[evolution_mode])
 
     def evolve(self,
                final_age,
@@ -312,12 +383,48 @@ class Binary :
         Returnns: None
         """
 
-        self.solver = library.evolve_system(self.binary,
-                                            final_age,
-                                            max_time_step,
-                                            precision,
-                                            required_ages,
-                                            required_ages.size)
+        self.c_solver = library.evolve_system(self.c_binary,
+                                              final_age,
+                                              max_time_step,
+                                              precision,
+                                              required_ages,
+                                              required_ages.size)
+        self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
+
+    def get_evolution(self, quantities = evolution_quantities) :
+        """
+        Return the last calculated evolution.
+        
+        Args:
+            - skip:
+                An iterable of quantities to not read the evolution of. The
+                evolution can still be obtained later by subsequent calls to
+                this method. The allowed entries are in the
+                evolution_quantities property.
+        
+        Returns: 
+            A structure with mebers named the same way as the arguments
+            which were set to True containing the values of the
+            corresponding quantity at each evolution step.
+        """
+
+        result = Structure()
+        for q in quantities :
+            if q == 'evolution_mode' : dtype = c_int
+            elif q == 'wind_saturation' : dtype = c_bool
+            else : dtype = c_double
+            setattr(result,
+                    q, 
+                    numpy.empty(self.num_evolution_steps, dtype = dtype))
+
+        library.get_evolution(
+            self.c_solver,
+            self.c_binary,
+            self.primary.c_body,
+            *[getattr(result, quantity, None)
+              for quantity in self.evolution_quantities]
+        )
+        return result
 
 def phase_lag(lgQ) :
     """Return the phase lag corresponding to the given Q value."""

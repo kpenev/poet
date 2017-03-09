@@ -15,13 +15,6 @@ namespace Evolve {
 
     const double OrbitSolver::MAX_END_AGE = 10;
 
-    std::ostream &operator<<(std::ostream &os, const std::list<double> &l)
-    {
-        for(std::list<double>::const_iterator i=l.begin();
-                i!=l.end(); i++) os << *i << ", ";
-        return os;
-    }
-
     int stellar_system_diff_eq(double age, const double *parameters,
             double *derivatives, void *system_mode)
     {
@@ -350,7 +343,9 @@ namespace Evolve {
         double range_low = Core::NaN,
                range_high = Core::NaN;
         short crossing_sign =
-            __stopping_conditions->expected_crossing_deriv_sign(condition_index);
+            __stopping_conditions->expected_crossing_deriv_sign(
+                condition_index
+            );
         if(c0 * c1 <= 0 && c1 * crossing_sign > 0) {
             range_low = t0;
             range_high = t1;
@@ -384,11 +379,15 @@ namespace Evolve {
                 __skip_history_zerocrossing[condition_index]) return Core::Inf;
         double prev_stop_cond=__stop_cond_history.back()[condition_index];
         double next_stop_cond=__stop_cond_discarded.front()[condition_index];
-        if(next_stop_cond*prev_stop_cond>0 
-                || 
-                next_stop_cond
-                *__stopping_conditions->expected_crossing_deriv_sign(
-                    condition_index)<0) return Core::Inf;
+        if(
+            next_stop_cond*prev_stop_cond>0 
+            || 
+            next_stop_cond
+            *
+            __stopping_conditions->expected_crossing_deriv_sign(
+                condition_index
+            )<0
+        ) return Core::Inf;
         if(std::isnan(__stop_deriv_history.back()[condition_index]))
             return crossing_from_history_no_deriv(condition_index);
         double prev_stop_deriv=__stop_deriv_history.back()[condition_index],
@@ -664,19 +663,29 @@ namespace Evolve {
         return result;
     }
 
-    double OrbitSolver::stopping_age(double age, const BinarySystem &system, 
-            const std::list<double> &required_ages)
+    double OrbitSolver::stopping_age(double age,
+                                     const BinarySystem &system, 
+                                     const std::list<double> &required_ages)
     {
-        double result=system.next_stop_age();
+#ifdef DEBUG
+        std::cerr << "Determining next stop age: " << std::endl;
+#endif
+        double result = system.next_stop_age();
+#ifdef DEBUG
+        std::cerr << "Next system stop age: " << result << std::endl;
+#endif
         static std::list<double>::const_iterator
-            next_required_age=required_ages.begin();
-        if(age<=required_ages.front())
-            next_required_age=required_ages.begin();
-        if(next_required_age!=required_ages.end() && 
-                result>*next_required_age) {
-            if(age==*next_required_age) ++next_required_age;
-            if(next_required_age!=required_ages.end()) 
-                result=*next_required_age;
+            next_required_age = required_ages.begin();
+        if(age <= required_ages.front())
+            next_required_age = required_ages.begin();
+        if(
+            next_required_age != required_ages.end()
+            && 
+            result > *next_required_age
+        ) {
+            if(age == *next_required_age) ++next_required_age;
+            if(next_required_age != required_ages.end()) 
+                result = *next_required_age;
         }
         return result;
     }
@@ -689,7 +698,9 @@ namespace Evolve {
     }
 
     OrbitSolver::OrbitSolver(double max_age, double required_precision) :
-        __end_age(max_age), __precision(required_precision)
+        __end_age(max_age),
+        __precision(required_precision),
+        __stopping_conditions(NULL)
     {
 #ifdef DEBUG
         assert(max_age>0);
@@ -719,6 +730,9 @@ namespace Evolve {
                                                          required_ages), 
                                             stop_evol_age);
             __stopping_conditions = get_stopping_condition(system);
+#ifdef DEBUG
+            std::cerr << "Next stop age: " << next_stop_age << std::endl;
+#endif
             StopInformation stop_information = evolve_until(system,
                                                             next_stop_age,
                                                             orbit,
@@ -750,15 +764,18 @@ namespace Evolve {
 #ifdef DEBUG
             std::cerr 
                 << "to " << evolution_mode
-                << " with " << system.number_locked_zones() << " zones locked." 
+                << " with " << system.number_locked_zones()
+                << " zones locked." 
                 << std::endl
-                << "Transforming orbit from: " << orbit;
+                << "Transforming orbit from: ";
+            std::clog << orbit;
 #endif
             system.fill_orbit(orbit);
 #ifdef DEBUG
             std::cerr << " to " << orbit << std::endl;
 #endif
             delete __stopping_conditions;
+            __stopping_conditions = NULL;
         }
     }
 

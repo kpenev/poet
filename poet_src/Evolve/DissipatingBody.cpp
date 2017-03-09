@@ -291,8 +291,9 @@ namespace Evolve {
         return result;
     }
 
-    DissipatingBody::DissipatingBody()
-        : __orbit_deriv(6), __orbit_energy_gain(__orbit_deriv.size()),
+    DissipatingBody::DissipatingBody() : 
+        __orbit_deriv(6),
+        __orbit_energy_gain(__orbit_deriv.size()),
         __orbit_torque(Dissipation::NUM_DERIVATIVES),
         __num_locked_zones(0)
     {

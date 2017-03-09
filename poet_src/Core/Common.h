@@ -52,13 +52,6 @@ namespace Core {
         TABULATION
     };
 
-    ///More civilized output for EvolModeType variables.
-    std::ostream &operator<<(std::ostream &os,
-                             const EvolModeType &evol_mode);
-
-    ///Outputs a valarray as a sequence of ', ' separated values.
-    std::ostream &operator<<(std::ostream &os, std::valarray<double> &arr);
-
     ///Creates a valarray from an iterator.
     template<typename ITERATOR_TYPE>
         std::valarray<double> valarray_from_iterator(ITERATOR_TYPE values,
@@ -289,6 +282,20 @@ namespace Core {
                 gsl_matrix_free(xpowers_LU);
                 return coefficients;*/
         }
+
+    ///More civilized output for EvolModeType variables.
+    std::ostream &operator<<(std::ostream &os,
+                             const Core::EvolModeType &evol_mode);
+
 } //End Core namespace.
+
+namespace std {
+    ///Outputs a valarray as a sequence of ', ' separated values.
+    std::ostream &operator<<(std::ostream &os,
+                             const std::valarray<double> &arr);
+
+    ///Outputs a list as a sequence of ', ' separated values.
+    std::ostream &operator<<(std::ostream &os, const std::list<double> &l);
+}
 
 #endif

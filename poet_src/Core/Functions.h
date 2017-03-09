@@ -112,8 +112,8 @@ namespace Core {
         template<class Archive>
             void serialize(Archive & ar, const unsigned int) {
                 ar & boost::serialization::base_object< 
-                    OneArgumentFunction<double,double> 
-                    >(*this);
+                        OneArgumentFunction<double,double> 
+                     >(*this);
             }
 #endif
     public:

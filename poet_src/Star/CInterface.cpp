@@ -62,13 +62,21 @@ void set_dissipation(EvolvingStar *star,
     else zone = &(real_star->core());
     
     zone->setup(
-        std::vector<double>(
-            tidal_frequency_breaks, 
-            tidal_frequency_breaks + num_tidal_frequency_breaks
+        (
+            num_tidal_frequency_breaks
+            ? std::vector<double>(
+                tidal_frequency_breaks, 
+                tidal_frequency_breaks + num_tidal_frequency_breaks
+            )
+            : std::vector<double>()
         ),
-        std::vector<double>(
-            spin_frequency_breaks,
-            spin_frequency_breaks + num_spin_frequency_breaks
+        (
+            num_spin_frequency_breaks
+            ? std::vector<double>(
+                spin_frequency_breaks,
+                spin_frequency_breaks + num_spin_frequency_breaks
+            )
+            : std::vector<double>()
         ),
         std::vector<double>(
             tidal_frequency_powers,
@@ -87,6 +95,14 @@ void detect_stellar_wind_saturation(EvolvingStar *star)
     reinterpret_cast<Star::InterpolatedEvolutionStar*>(
         star
     )->detect_saturation();
+}
+
+void select_interpolation_region(const EvolvingStar *star,
+                                 double age)
+{
+    return reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+        star
+    )->select_interpolation_region(age);
 }
 
 double modified_phase_lag(const EvolvingStar *star,

@@ -485,18 +485,19 @@ namespace Evolve {
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV,
                 
                 ///For derivatives with respect to zone specific quantities,
-                ///this determines which zone's quantity to differentiate with
-                ///respect to (top zone if true, bottom zone if false).
+                ///this determines which zone's quantity to differentiate
+                ///with respect to (top zone if true, bottom zone if false).
                 bool with_respect_to_top=false) const =0;
 
-        ///\brief Rate of angular momentum loss by the top zone of the body and
-        ///its derivatives.
+        ///\brief Rate of angular momentum loss by the top zone of the body 
+        ///and its derivatives.
         ///
         ///The spin frequency of the topmost zone of the body must already be
         ///set.
         virtual double angular_momentum_loss(
-                ///The derivative of the angular momentum loss required.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const =0;
+            ///The derivative of the angular momentum loss required.
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const =0;
 
         ///\brief The current radius or its derivative with age of the body.
         double radius(
@@ -505,7 +506,8 @@ namespace Evolve {
         {return zone(0).outer_radius(deriv_order);}
 
         ///The mass of the body (constant with age).
-        double mass() const {return zone(0).outer_mass(Dissipation::NO_DERIV);}
+        double mass() const
+        {return zone(0).outer_mass(Dissipation::NO_DERIV);}
 
         ///The surface spin freuqency of the body.
         double spin_frequency() const {return zone(0).spin_frequency();}
@@ -515,7 +517,8 @@ namespace Evolve {
         ///
         ///For example this could be the frequency of the stellar convective 
         ///zone when locked to the disk.
-        double surface_lock_frequency() const {return __surface_lock_frequency;}
+        double surface_lock_frequency() const
+        {return __surface_lock_frequency;}
 
         ///\brief Sets the frequency at which the surface is locked (if any).
         void set_surface_lock_frequency(double frequency)
@@ -532,8 +535,8 @@ namespace Evolve {
         ///Discards all evolution.
         virtual void reset_evolution();
 
-        ///\brief Conditions detecting the next possible discontinuities in the
-        ///evolution due to this body.
+        ///\brief Conditions detecting the next possible discontinuities in 
+        ///the evolution due to this body.
         ///
         ///Must be deleted when no longer necessary.
         virtual CombinedStoppingCondition *stopping_conditions(

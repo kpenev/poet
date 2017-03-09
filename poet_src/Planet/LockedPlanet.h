@@ -49,6 +49,10 @@ namespace Planet {
             Evolve::Dissipation::Derivative =Evolve::Dissipation::NO_DERIV
         ) const
         {return 0;}
+
+        ///No critical ages for non-evolving non-dissipating planets.
+        void reached_critical_age(double) {}
+
     }; //End LockedPlanet class.
 
 }//End Planet namespace.

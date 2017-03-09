@@ -29,7 +29,7 @@ namespace Evolve {
         unsigned zone_index,
         int orbital_frequency_multiplier,
         int spin_frequency_multiplier,
-        std::vector<double> critical_frequencies,
+        const std::vector<double> &critical_frequencies,
         double orbital_frequency
     ) :
         __critical_frequencies(critical_frequencies),

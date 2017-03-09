@@ -40,23 +40,23 @@ namespace Star {
 
     public:
         InterpolatedEvolutionStar(
-                ///Mass of the star
-                double mass,
+            ///Mass of the star
+            double mass,
 
-                ///The metallicity ([Fe/H]) of the star
-                double metallicity,
+            ///The metallicity ([Fe/H]) of the star
+            double metallicity,
 
-                ///The strength of the wind.
-                double wind_strength,
+            ///The strength of the wind.
+            double wind_strength,
 
-                ///The frequency at which the wind loss saturates in rad/day.
-                double wind_saturation_frequency,
+            ///The frequency at which the wind loss saturates in rad/day.
+            double wind_saturation_frequency,
 
-                ///The timescale for differential rotation coupling.
-                double diff_rot_coupling_timescale,
+            ///The timescale for differential rotation coupling.
+            double diff_rot_coupling_timescale,
 
-                ///A StellarEvolution interpolator.
-                const StellarEvolution::Interpolator &interpolator
+            ///A StellarEvolution interpolator.
+            const StellarEvolution::Interpolator &interpolator
         ) : 
             SaturatingSkumanichWindBody(wind_strength,
                                         wind_saturation_frequency),
@@ -64,9 +64,14 @@ namespace Star {
             __luminosity(interpolator(StellarEvolution::LUM, mass, metallicity)),
             __lifetime(__luminosity->range_high()),
             __envelope(mass,
-                       interpolator(StellarEvolution::RADIUS, mass, metallicity),
-                       interpolator(StellarEvolution::ICONV, mass, metallicity)),
-            __core(interpolator.core_formation_age(), 
+                       interpolator(StellarEvolution::RADIUS,
+                                    mass,
+                                    metallicity),
+                       interpolator(StellarEvolution::ICONV,
+                                    mass,
+                                    metallicity)),
+            __core(std::max(__envelope.min_interp_age(),
+                            interpolator.core_formation_age()),
                    interpolator(StellarEvolution::MRAD, mass, metallicity),
                    interpolator(StellarEvolution::RRAD, mass, metallicity),
                    interpolator(StellarEvolution::IRAD, mass, metallicity))
@@ -128,7 +133,20 @@ namespace Star {
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.
         virtual double next_stop_age() const
-        {return std::min(__core.next_stop_age(), __envelope.next_stop_age());}
+        {return std::min(__core.next_stop_age(),
+                         __envelope.next_stop_age());}
+
+        ///\brief Prepare the stellar quantities for interpolation around the
+        ///given age.
+        ///
+        ///After calling this method, requesting values or derivatives
+        ///outside the range of the continuous region containing this age
+        ///(see ::discontinuities) fails an assert.
+        virtual void select_interpolation_region(double age) const
+        {
+            __core.select_interpolation_region(age);
+            __envelope.select_interpolation_region(age);
+        }
     };//End InterpolatedEvolutionStar class
 
 }//End Star namespace.

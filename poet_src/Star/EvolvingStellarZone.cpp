@@ -87,9 +87,37 @@ namespace Star {
     {
         double result = Core::Inf;
         for(size_t i = 0; i < __evolving_quantities.size(); ++i)
-            result = std::min(result,
-                              __evolving_quantities[i]->next_discontinuity());
+            result = std::min(
+                result,
+                __evolving_quantities[i]->next_discontinuity()
+            );
         return result;
+    }
+
+    double EvolvingStellarZone::min_interp_age() const
+    {
+        double result = -Core::Inf;
+        for(
+            std::vector< 
+                const StellarEvolution::EvolvingStellarQuantity*
+            >::const_iterator quantity_iter = __evolving_quantities.begin();
+            quantity_iter != __evolving_quantities.end();
+            ++quantity_iter
+        )
+            result = std::max(result, (*quantity_iter)->range_low());
+        return result;
+    }
+
+    void EvolvingStellarZone::select_interpolation_region(double age) const
+    {
+        for(
+            std::vector< 
+                const StellarEvolution::EvolvingStellarQuantity*
+            >::const_iterator quantity_iter = __evolving_quantities.begin();
+            quantity_iter != __evolving_quantities.end();
+            ++quantity_iter
+        )
+            (*quantity_iter)->select_interpolation_region(age);
     }
 
 }//End Star namespace.

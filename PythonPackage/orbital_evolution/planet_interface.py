@@ -5,7 +5,8 @@
 from orbital_evolution.evolve_interface import\
     c_dissipating_body_p,\
     DissipatingBody
-from orbital_evolution.evolve_interface import library as evolve_library
+from orbital_evolution.evolve_interface import\
+    library as orbital_evolution_library
 from ctypes import cdll, c_void_p, c_double
 from ctypes.util import find_library
 
@@ -30,6 +31,8 @@ library = initialize_library()
 class LockedPlanet(DissipatingBody) :
     """A class for tidally locked and thus non-dissipative planets."""
 
+    lib_configure_body = orbital_evolution_library.configure_planet
+
     def __init__(self, mass, radius) :
         """
         Create a planet with the given mass and radius.
@@ -45,14 +48,14 @@ class LockedPlanet(DissipatingBody) :
 
         self.mass = mass
         self.radius = radius
-        self.body = library.create_planet(mass, radius)
+        self.c_body = library.create_planet(mass, radius)
 
     def delete(self) :
         """
         Destroy the library planet created at construction.
         """
 
-        library.destroy_planet(self.body)
+        library.destroy_planet(self.c_body)
 
 if __name__ == '__main__' :
     planet = LockedPlanet(1.0, 1.0)

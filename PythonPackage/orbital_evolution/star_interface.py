@@ -8,9 +8,12 @@ sys.path.append('..')
 from stellar_evolution.library_interface import\
     library as stellar_evolution_library
 from orbital_evolution.evolve_interface import\
-    c_dissipating_body_p,\
-    DissipatingBody
+    DissipatingBody,\
+    c_dissipating_body_p
+from orbital_evolution.evolve_interface import\
+    library as orbital_evolution_library
 from orbital_evolution.evolve_interface import library as evolve_library
+from orbital_evolution.c_interface_util import ndpointer_or_null
 from ctypes import cdll, c_int, c_double, c_void_p, c_uint, c_bool, byref
 from ctypes.util import find_library
 import numpy
@@ -41,12 +44,12 @@ def initialize_library() :
         c_uint,
         c_uint,
         c_uint,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
         numpy.ctypeslib.ndpointer(dtype = c_double,
                                   ndim = 1,
                                   flags = 'C_CONTIGUOUS'),
@@ -62,7 +65,16 @@ def initialize_library() :
     ]
     library.detect_stellar_wind_saturation.restype = None
 
+    library.select_interpolation_region.argtypes = [
+        library.create_star.restype,
+        c_double
+    ]
+    library.select_interpolation_region.restype = None
+
     library.modified_phase_lag.restype = c_double
+
+    library.core_formation_age.argtypes = [library.create_star.restype]
+    library.core_formation_age.restype = c_double
 
     return library
 
@@ -74,6 +86,8 @@ class EvolvingStar(DissipatingBody) :
     deriv_list = ['NO', 'AGE', 'SPIN_FREQUENCY', 'ORBITAL_FREQUENCY']
     deriv_ids = {d: c_int.in_dll(library, d + '_DERIV').value
                  for d in deriv_list}
+
+    lib_configure_body = orbital_evolution_library.configure_star
 
     def __init__(self,
                  mass,
@@ -113,17 +127,17 @@ class EvolvingStar(DissipatingBody) :
         self.wind_strength = wind_strength
         self.wind_saturation_frequency = wind_saturation_frequency
         self.diff_rot_coupling_timescale = diff_rot_coupling_timescale
-        self.body = library.create_star(mass,
-                                        metallicity,
-                                        wind_strength,
-                                        wind_saturation_frequency,
-                                        diff_rot_coupling_timescale,
-                                        interpolator.interpolator)
+        self.c_body = library.create_star(mass,
+                                          metallicity,
+                                          wind_strength,
+                                          wind_saturation_frequency,
+                                          diff_rot_coupling_timescale,
+                                          interpolator.interpolator)
 
     def delete(self) :
         """Destroy the library star object created at construction."""
 
-        library.destroy_star(self.body)
+        library.destroy_star(self.c_body)
 
     def set_dissipation(self,
                         zone_index, 
@@ -162,10 +176,10 @@ class EvolvingStar(DissipatingBody) :
         Returns: None
         """
 
-        library.set_dissipation(self.body,
+        library.set_dissipation(self.c_body,
                                 zone_index,
-                                tidal_frequency_breaks.size,
-                                spin_frequency_breaks.size,
+                                tidal_frequency_powers.size - 1,
+                                spin_frequency_powers.size - 1,
                                 tidal_frequency_breaks,
                                 spin_frequency_breaks,
                                 tidal_frequency_powers,
@@ -175,7 +189,20 @@ class EvolvingStar(DissipatingBody) :
     def detect_stellar_wind_saturation(self) :
         """Tell a fully configured star to set its wind saturation state."""
 
-        library.detect_stellar_wind_saturation(self.body)
+        library.detect_stellar_wind_saturation(self.c_body)
+
+    def select_interpolation_region(self, age) :
+        """
+        Prepare for interpolating stellar quantities around the given age.
+
+        Args:
+            - age:
+                The age around which interpolation will be needed.
+
+        Returns: None
+        """
+
+        library.select_interpolation_region(self.c_body, age)
 
     def modified_phase_lag(self,
                            zone_index,
@@ -211,7 +238,7 @@ class EvolvingStar(DissipatingBody) :
 
         above_lock_value = c_double()
         below_lock_value = library.modified_phase_lag(
-            self.body,
+            self.c_body,
             c_uint(zone_index),
             c_int(orbital_frequency_multiplier),
             c_int(spin_frequency_multiplier),
@@ -223,6 +250,11 @@ class EvolvingStar(DissipatingBody) :
             return below_lock_value, above_lock_value.value
         else :
             return below_lock_value
+
+    def core_formation_age(self) :
+        """Return the age at which the core of the star forms in Gyrs."""
+
+        return library.core_formation_age(self.c_body)
 
 if __name__ == '__main__' :
     from stellar_evolution.manager import StellarEvolutionManager

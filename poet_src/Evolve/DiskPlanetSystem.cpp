@@ -100,13 +100,13 @@ namespace Evolve {
 
     double DiskPlanetSystem::next_stop_age() const
     {
-        if(age()<__disk_dissipation_age) 
-            return std::min(__disk_dissipation_age,
-                            BinarySystem::next_stop_age());
-        else if(age()<__secondary_formation_age)
-            return std::min(__secondary_formation_age,
-                            BinarySystem::next_stop_age());
-        else return Core::Inf;
+        double result;
+        if(age() < __disk_dissipation_age)
+            result = __disk_dissipation_age;
+        else if(age() < __secondary_formation_age)
+            result = __secondary_formation_age;
+        else result = Core::Inf;
+        return std::min(result, BinarySystem::next_stop_age());
     }
 
 } //End Evolve namespace.

@@ -1,7 +1,10 @@
 """Define class for managing many stellar evolution interpolations."""
 
-from .change_variables import VarChangingInterpolator
-from .library_interface import\
+import sys
+sys.path.append('..')
+
+from stellar_evolution.change_variables import VarChangingInterpolator
+from stellar_evolution.library_interface import\
     library_track_fname_rex,\
     library_track_fname
 from .manager_data_model import\
@@ -11,8 +14,9 @@ from .manager_data_model import\
     Quantity,\
     Track,\
     ModelSuite
-from . import Session
-from .basic_utils import db_session_scope, Structure, tempdir_scope
+from stellar_evolution import Session
+from stellar_evolution.basic_utils import db_session_scope, tempdir_scope
+from basic_utils import Structure
 from sqlalchemy import exists, and_, literal, func, create_engine
 import hashlib
 import re

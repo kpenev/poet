@@ -34,45 +34,45 @@ namespace Star {
     public:
         ///Create a stellar core with the specified properties.
         EvolvingStellarCore(
-                ///The age at which the core forms.
-                double formation_age=Core::Inf, 
+            ///The age at which the core forms.
+            double formation_age=Core::Inf, 
 
-                ///The mass of the core.
-                const StellarEvolution::EvolvingStellarQuantity *mass=NULL,
+            ///The mass of the core.
+            const StellarEvolution::EvolvingStellarQuantity *mass = NULL,
 
-                ///The radius of the core.
-                const StellarEvolution::EvolvingStellarQuantity *radius=NULL,
+            ///The radius of the core.
+            const StellarEvolution::EvolvingStellarQuantity *radius = NULL,
 
-                ///The moment of inertia of the zone.
-                const StellarEvolution::EvolvingStellarQuantity 
-                *moment_of_inertia=NULL
+            ///The moment of inertia of the zone.
+            const StellarEvolution::EvolvingStellarQuantity 
+            *moment_of_inertia = NULL
         ) :
             EvolvingStellarZone({mass, radius, moment_of_inertia}),
             __formation_age(formation_age)
         {}
 
         ///See DissipatingZone::moment_of_inertia(int).
-        double moment_of_inertia(int deriv_order=0) const
+        double moment_of_inertia(int deriv_order = 0) const
         {return current_age_quantity(INERTIA, deriv_order);}
 
         ///See DissipatingZone::moment_of_inertia(double, int).
-        double moment_of_inertia(double age, int deriv_order=0) const
+        double moment_of_inertia(double age, int deriv_order = 0) const
         {return any_age_quantity(INERTIA, age, deriv_order);}
 
         ///See DissipatingZone::outer_radius(int).
-        double outer_radius(int deriv_order=0) const
+        double outer_radius(int deriv_order = 0) const
         {return current_age_quantity(RADIUS, deriv_order);}
 
         ///See DissipatingZone::outer_radius(double, int).
-        double outer_radius(double age, int deriv_order=0) const
+        double outer_radius(double age, int deriv_order = 0) const
         {return any_age_quantity(RADIUS, age, deriv_order);}
 
         ///See DissipatingZone::outer_mass(int).
-        double outer_mass(int deriv_order=0) const
+        double outer_mass(int deriv_order = 0) const
         {return current_age_quantity(MASS, deriv_order);}
 
         ///See DissipatingZone::outer_mass(double, int).
-        double outer_mass(double age, int deriv_order=0) const
+        double outer_mass(double age, int deriv_order = 0) const
         {return any_age_quantity(MASS, age, deriv_order);}
 
         ///No dissipation in the core.

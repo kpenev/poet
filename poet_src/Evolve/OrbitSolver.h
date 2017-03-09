@@ -22,6 +22,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <fstream>
+#include <iostream>
 #include <gsl/gsl_odeiv2.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_poly.h>
@@ -29,6 +30,9 @@
 #include <iostream>
 #include <limits>
 
+///Outputs a valarray as a sequence of ', ' separated values.
+std::ostream &operator<<(std::ostream &os,
+                         const std::valarray<double> &arr);
 namespace Evolve {
 
     typedef int (*GSL_ODE_TYPE)(double, const double*, double*, void*);
@@ -347,24 +351,26 @@ namespace Evolve {
     public:
         ///\brief Prepare to solve for the orbital evolution.
         OrbitSolver(
-                ///The end age for the evolution.
-                double max_age,
-                
-                ///The precision which to require of the solution.
-                double required_precision);
+            ///The end age for the evolution.
+            double max_age,
+
+            ///The precision which to require of the solution.
+            double required_precision
+        );
 
         ///\brief Actually solves the given differential equation with the given
         ///boundary conditions.
         void operator()(
-                ///The stellar system to calculate the evolution for
-                BinarySystem &system,
+            ///The stellar system to calculate the evolution for
+            BinarySystem &system,
 
-                ///The maximum size of the time steps allowed (useful if finer
-                ///sampling of the output than default is necessary).
-                double max_step=Core::Inf,
+            ///The maximum size of the time steps allowed (useful if finer
+            ///sampling of the output than default is necessary).
+            double max_step=Core::Inf,
 
-                ///A sorted list of ages to include in the tabulated evolution.
-                const std::list<double> &required_ages=std::list<double>());	
+            ///A sorted list of ages to include in the tabulated evolution.
+            const std::list<double> &required_ages=std::list<double>()
+        );
 
         ///The ages at which evolution has been tabulated so far.
         const std::list<double> &evolution_ages() const
@@ -373,6 +379,11 @@ namespace Evolve {
         ///The tabulated evolution modes so far.
         const std::list<Core::EvolModeType> &mode_evolution() const
         {return __tabulated_evolution_modes;}
+
+        ///Clean up.
+        ~OrbitSolver()
+        {if(__stopping_conditions) delete __stopping_conditions;}
+
     }; //End OrbitSolver class.
 
 }//End Evolve namespace.

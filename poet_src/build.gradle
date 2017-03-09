@@ -19,6 +19,7 @@ model {
 
             if(buildType == buildTypes.release) {
                 cppCompiler.define "NDEBUG"
+            } else if(buildType == buildTypes.debug) {
             }
 
             if (toolChain in Gcc || toolChain in Clang) {
@@ -167,12 +168,12 @@ model {
                 }
             }
             binaries.all {
-                lib library: "alglib", linkage: "static"
-                lib library: "eigen", linkage: "static"
-                lib library: "stellarEvolution", linkage: "static"
-                lib library: "star", linkage: "static"
-                lib library: "planet", linkage: "static"
-                lib library: "evolve", linkage: "static"
+                lib library: "alglib"
+                lib library: "eigen"
+                lib library: "stellarEvolution"
+                lib library: "star"
+                lib library: "planet"
+                lib library: "evolve"
             }
         }
 

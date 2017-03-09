@@ -15,7 +15,7 @@ namespace Star {
             std::valarray<double> &stop_deriv) const
     {
 #ifdef DEBUG
-        assert(evol_mode != LOCKED_SURFACE_SPIN);
+        assert(evol_mode != Core::LOCKED_SURFACE_SPIN);
         if(evol_mode != Core::BINARY) assert(__primary);
 #endif 
         unsigned angmom_index = 1 + 2 * __body.number_zones();
@@ -29,7 +29,10 @@ namespace Star {
         assert(angmom_index <= derivatives.size());
         double wsurf = __body.spin_frequency(),
                surf_angmom_deriv,
-               result = (std::abs(wsurf)-__saturation_freq) / __saturation_freq,
+               result = (
+                   (std::abs(wsurf) - __saturation_freq)
+                   / __saturation_freq
+               ),
                wsurf_sign = (wsurf < 0 ? -1.0 : 1.0);
         if(std::isinf(__saturation_freq)) result=-1;
         if(__body.zone(0).locked()) return std::valarray<double>(result, 1);

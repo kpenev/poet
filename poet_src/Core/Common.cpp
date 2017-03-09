@@ -7,22 +7,9 @@
 
 #include "Common.h"
 
-namespace Core {
-
-    const double NUMERIC_SAFETY=100.0*std::numeric_limits<double>::epsilon();
-
-    std::ostream &operator<<(std::ostream &os, const EvolModeType &evol_mode)
-    {
-        switch(evol_mode) {
-            case BINARY: os << "BINARY"; break;
-            case SINGLE: os << "SINGLE"; break;
-            case LOCKED_SURFACE_SPIN : os << "LOCKED_SURFACE_SPIN"; break;
-            case TABULATION : os << "TABULATION";
-        }
-        return os;
-    }
-
-    std::ostream &operator<<(std::ostream &os, std::valarray<double> &arr)
+namespace std {
+    std::ostream &operator<<(std::ostream &os,
+                             const std::valarray<double> &arr)
     {
         for(size_t i=0; i<arr.size(); i++) {
             if(i) os << ", ";
@@ -30,6 +17,34 @@ namespace Core {
         }
         return os;
     }
+
+    std::ostream &operator<<(std::ostream &os, const std::list<double> &l)
+    {
+        for(
+            std::list<double>::const_iterator i=l.begin();
+            i!=l.end();
+            ++i
+        )
+            os << *i << ", ";
+        return os;
+    }
+}
+
+namespace Core {
+
+    std::ostream &operator<<(std::ostream &os,
+                             const Core::EvolModeType &evol_mode)
+    {
+        switch(evol_mode) {
+            case BINARY: os << "BINARY"; break;
+            case SINGLE: os << "SINGLE"; break;
+            case LOCKED_SURFACE_SPIN: os << "LOCKED_SURFACE_SPIN"; break;
+            case TABULATION: os << "TABULATION";
+        }
+        return os;
+    }
+
+    const double NUMERIC_SAFETY=100.0*std::numeric_limits<double>::epsilon();
 
     std::valarray<double> solve_cubic(double c0,
                                       double c1,
