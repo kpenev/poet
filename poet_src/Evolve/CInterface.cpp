@@ -221,3 +221,71 @@ void get_evolution(const OrbitSolver *solver_arg,
     list_to_array(star->wind_saturation_evolution(), wind_saturation);
 }
 
+void get_final_state(const OrbitSolver *solver_arg,
+                     const StarPlanetSystem *system_arg,
+                     const EvolvingStar *star_arg,
+                     double *age,
+                     double *semimajor,
+                     double *eccentricity,
+                     double *envelope_inclination,
+                     double *core_inclination,
+                     double *envelope_periapsis,
+                     double *core_periapsis,
+                     double *envelope_angmom,
+                     double *core_angmom,
+                     int *evolution_mode,
+                     bool *wind_saturation)
+{
+    const Evolve::OrbitSolver *solver =
+        reinterpret_cast<const Evolve::OrbitSolver*>(solver_arg);
+    const Evolve::DiskPlanetSystem *system =
+        reinterpret_cast<const Evolve::DiskPlanetSystem*>(system_arg);
+    const Star::InterpolatedEvolutionStar *star = 
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(star_arg);
+
+    if(age)
+        *age = solver->evolution_ages().back();
+
+    if(semimajor)
+        *semimajor = system->semimajor_evolution().back();
+
+    if(eccentricity)
+        *eccentricity = system->eccentricity_evolution().back();
+
+    if(envelope_inclination)
+        *envelope_inclination = (
+            star->envelope().get_evolution_real(Evolve::INCLINATION).back()
+        );
+
+    if(core_inclination)
+        *core_inclination = star->core().get_evolution_real(
+            Evolve::INCLINATION
+        ).back();
+
+    if(envelope_periapsis)
+        *envelope_periapsis = star->envelope().get_evolution_real(
+            Evolve::PERIAPSIS
+        ).back();
+
+    if(core_periapsis)
+        *core_periapsis = star->core().get_evolution_real(
+            Evolve::PERIAPSIS
+        ).back();
+
+    if(envelope_angmom)
+        *envelope_angmom = star->envelope().get_evolution_real(
+            Evolve::ANGULAR_MOMENTUM
+        ).back();
+
+    if(core_angmom)
+        *core_angmom = star->core().get_evolution_real(
+            Evolve::ANGULAR_MOMENTUM
+        ).back();
+
+    if(evolution_mode)
+        *evolution_mode = solver->mode_evolution().back();
+
+    if(wind_saturation)
+        *wind_saturation = star->wind_saturation_evolution().back();
+}
+

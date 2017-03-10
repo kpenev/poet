@@ -299,4 +299,63 @@ extern "C" {
         bool *wind_saturation
     );
 
+    ///\brief Fill destiantions with the calculated final state of a system.
+    ///
+    ///All return variables must either be allocated or be NULL. In the
+    ///latter case, the corresponding quantity is not returned.
+    void get_final_state(
+        ///The solver which was used to calculate the orbital evolution.
+        const OrbitSolver *solver,
+
+        ///The system which was evolved.
+        const StarPlanetSystem *system,
+
+        ///The star which was evolved.
+        const EvolvingStar *star,
+
+        ///An array to fill with the ages at which the evolution was
+        ///calculated.
+        double *age,
+
+        ///An array to fill with the semimajor axis at the saved evolution
+        ///steps.
+        double *semimajor,
+
+        ///An array to fill with the orbital eccentricity at the saved 
+        ///evolution steps.
+        double *eccentricity,
+
+        ///An array to fill with the angle between the stellar convective
+        ///envelope and the orbital angular momenta.
+        double *envelope_inclination,
+
+        ///An array to fill with the angle between the stellar radiative core
+        ///and the orbital angular momenta.
+        double *core_inclination,
+
+        ///An array to fill with the periapsis of the orbit in the equatorial
+        ///plane of the stellar convective envelope.
+        double *envelope_periapsis,
+
+        ///An array to fill with the periapsis of the orbit in the equatorial
+        ///plane of the stellar radiative core.
+        double *core_periapsis,
+
+        ///An array to fill with the angular momentum of the stellar
+        ///convective envelope.
+        double *envelope_angmom,
+
+        ///An array to fill with the angular momentum of the stellar
+        ///radiative core.
+        double *core_angmom,
+
+        ///An array to fill with the evolution mode of the system.
+        int *evolution_mode,
+
+        ///An array to fill with a flag indicating whether the angular
+        ///momentum loss due to stellar wind is in the satured state (true)
+        ///or not (false).
+        bool *wind_saturation
+    );
+
 }//End Extern "C"
