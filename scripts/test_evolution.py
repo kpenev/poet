@@ -36,9 +36,13 @@ def create_star() :
 
     serialized_dir = '../stellar_evolution_interpolators'
     manager = StellarEvolutionManager(serialized_dir)
+    print('Created interpolator manager')
     interpolator = manager.get_interpolator_by_name('default')
+    print('Got interpolator')
     star = EvolvingStar(1.0, 0.0, 0.15, 2.5, 5.0, interpolator)
+    print('Created unconfigured star.')
     star.select_interpolation_region(star.core_formation_age())
+    print('Set the interpolation region around core formation.')
     star.set_dissipation(0,
                          None,
                          None,
@@ -51,6 +55,7 @@ def create_star() :
                          numpy.array([0.0]),
                          numpy.array([0.0]),
                          0.0)
+    print('Defined dissipation.')
     return star
 
 def create_system(star, planet) :
@@ -78,12 +83,19 @@ if __name__ == '__main__' :
     orbital_evolution_library.read_eccentricity_expansion_coefficients(
         b"eccentricity_expansion_coef.txt"
     )
+    print('Read eccentricity expansion coefficients.')
 
     star = create_star()
+    print('Created star')
     planet = create_planet(star.mass)
+    print('Created planet')
     binary = create_system(star, planet)
+    print('Created binary')
 
     binary.evolve(10.0, 0.01, 1e-4, numpy.array([1.0, 2.0, 3.0]))
+    print('====== FINAL STATE ======')
+    print(binary.final_state().format())
+    print('=========================')
     evolution = binary.get_evolution(['age', 'semimajor'])
     pyplot.plot(evolution.age, evolution.semimajor, 'xr')
     pyplot.show()

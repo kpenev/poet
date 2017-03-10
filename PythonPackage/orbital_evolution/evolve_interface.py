@@ -7,7 +7,16 @@ sys.path.append('..')
 
 from orbital_evolution.c_interface_util import ndpointer_or_null
 from basic_utils import Structure
-from ctypes import cdll, c_int, c_double, c_void_p, c_uint, c_bool, c_char_p
+from ctypes import\
+    cdll,\
+    c_int,\
+    c_double,\
+    c_void_p,\
+    c_uint,\
+    c_bool,\
+    c_char_p,\
+    POINTER,\
+    byref
 from ctypes.util import find_library
 import numpy
 
@@ -142,6 +151,24 @@ def initialize_library() :
                           flags = 'C_CONTIGUOUS')
     ]
     library.get_evolution.restype = None
+
+    library.get_final_state.argtypes = [
+        library.evolve_system.restype,
+        library.create_star_planet_system.restype,
+        c_dissipating_body_p,
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_int),
+        POINTER(c_bool)
+    ]
+    library.get_final_state.restype = None
 
     return library
 
@@ -396,11 +423,11 @@ class Binary :
         Return the last calculated evolution.
         
         Args:
-            - skip:
-                An iterable of quantities to not read the evolution of. The
-                evolution can still be obtained later by subsequent calls to
-                this method. The allowed entries are in the
-                evolution_quantities property.
+            - quantities:
+                An iterable of quantities to read the evolution of. The
+                evolution of omitted quantities can still be obtained later
+                by subsequent calls to this method. The allowed entries are
+                in the evolution_quantities property.
         
         Returns: 
             A structure with mebers named the same way as the arguments
@@ -424,6 +451,21 @@ class Binary :
             *[getattr(result, quantity, None)
               for quantity in self.evolution_quantities]
         )
+        return result
+
+    def final_state(self) :
+        """Return the final evolution state of a system (all quantities)."""
+
+        result = Structure()
+        for q in self.evolution_quantities :
+            if q == 'evolution_mode' : result.evolution_mode = int()
+            elif q == 'wind_saturation' : result.wind_saturation = bool()
+            else : setattr(result, q, float())
+        library.get_final_state(self.c_solver,
+                                self.c_binary,
+                                self.primary.c_body,
+                                *[byref(getattr(result, q))
+                                  for q in self.evolution_quantities])
         return result
 
 def phase_lag(lgQ) :
