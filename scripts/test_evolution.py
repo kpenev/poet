@@ -8,8 +8,8 @@ from orbital_evolution.evolve_interface import library as\
     orbital_evolution_library
 from orbital_evolution.evolve_interface import\
     DissipatingBody,\
-    Binary,\
-    phase_lag
+    Binary
+from orbital_evolution.transformations import phase_lag
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 from stellar_evolution.manager import StellarEvolutionManager
@@ -36,26 +36,21 @@ def create_star() :
 
     serialized_dir = '../stellar_evolution_interpolators'
     manager = StellarEvolutionManager(serialized_dir)
-    print('Created interpolator manager')
     interpolator = manager.get_interpolator_by_name('default')
-    print('Got interpolator')
     star = EvolvingStar(1.0, 0.0, 0.15, 2.5, 5.0, interpolator)
-    print('Created unconfigured star.')
     star.select_interpolation_region(star.core_formation_age())
-    print('Set the interpolation region around core formation.')
     star.set_dissipation(0,
                          None,
                          None,
                          numpy.array([0.0]),
                          numpy.array([0.0]),
-                         phase_lag(5))
+                         phase_lag(6))
     star.set_dissipation(1,
                          None,
                          None,
                          numpy.array([0.0]),
                          numpy.array([0.0]),
                          0.0)
-    print('Defined dissipation.')
     return star
 
 def create_system(star, planet) :
@@ -83,19 +78,23 @@ if __name__ == '__main__' :
     orbital_evolution_library.read_eccentricity_expansion_coefficients(
         b"eccentricity_expansion_coef.txt"
     )
-    print('Read eccentricity expansion coefficients.')
 
     star = create_star()
-    print('Created star')
     planet = create_planet(star.mass)
-    print('Created planet')
     binary = create_system(star, planet)
-    print('Created binary')
 
     binary.evolve(10.0, 0.01, 1e-4, numpy.array([1.0, 2.0, 3.0]))
     print('====== FINAL STATE ======')
     print(binary.final_state().format())
     print('=========================')
-    evolution = binary.get_evolution(['age', 'semimajor'])
-    pyplot.plot(evolution.age, evolution.semimajor, 'xr')
+    evolution = binary.get_evolution(['age', 'semimajor', 'envelope_angmom'])
+    pyplot.plot(evolution.age,
+                binary.orbital_period(evolution.semimajor),
+                'xr')
+    pyplot.plot(evolution.age,
+                2.0 * numpy.pi *
+                binary.primary.envelope_inertia(evolution.age)
+                /
+                evolution.envelope_angmom,
+                'xg')
     pyplot.show()

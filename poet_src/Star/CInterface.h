@@ -148,4 +148,83 @@ extern "C" {
         const EvolvingStar *star
     );
 
+    ///The lifetime of a star (the maximum age at which it can be queried)
+    double lifetime(
+        ///The star whose lifetime to return.
+        const EvolvingStar *star
+    );
+
+    ///The luminosity of a star at a given age.
+    double luminosity(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The age at which to return the luminosity.
+        double age
+    );
+
+    ///The luminosity of a star at a given array of ages.
+    void luminosity_array(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The ages at which to return the luminosity.
+        const double *age,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: nvalues) where to place the result.
+        double *result
+    );
+
+    ///The moment of inertia of the stellar core at a given age.
+    double core_inertia(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The age at which to return the luminosity.
+        double age
+    );
+
+    ///The moment of inertia of the stellar core at a given array of ages.
+    void core_inertia_array(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The ages at which to return the moment of inertia.
+        const double *age,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: nvalues) where to place the result.
+        double *result
+    );
+
+    ///The moment of inertia of the stellar envelope at a given age.
+    double envelope_inertia(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The age at which to return the luminosity.
+        double age
+    );
+
+    ///\brief The moment of inertia of the stellar envelope at a given array
+    ///of ages.
+    void envelope_inertia_array(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The age at which to return the luminosity.
+        const double *age,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: nvalues) where to place the result.
+        double *result
+    );
+
 } //End extern "C"

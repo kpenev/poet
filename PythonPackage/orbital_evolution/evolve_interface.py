@@ -19,6 +19,7 @@ from ctypes import\
     byref
 from ctypes.util import find_library
 import numpy
+from astropy import units, constants
 
 class c_dissipating_body_p(c_void_p) : pass
 
@@ -268,6 +269,12 @@ class Binary :
                             'core_angmom',
                             'evolution_mode',
                             'wind_saturation']
+    def evolution_quantity_c_type(self, quantity) :
+        """Return the ctypes type of the given evolution quantity."""
+
+        if quantity == 'evolution_mode' : return c_int
+        elif quantity == 'wind_saturation' : return c_bool
+        else : return c_double
 
     def __init__(self,
                  primary,
@@ -437,12 +444,10 @@ class Binary :
 
         result = Structure()
         for q in quantities :
-            if q == 'evolution_mode' : dtype = c_int
-            elif q == 'wind_saturation' : dtype = c_bool
-            else : dtype = c_double
             setattr(result,
                     q, 
-                    numpy.empty(self.num_evolution_steps, dtype = dtype))
+                    numpy.empty(self.num_evolution_steps,
+                                dtype = self.evolution_quantity_c_type(q)))
 
         library.get_evolution(
             self.c_solver,
@@ -457,18 +462,53 @@ class Binary :
         """Return the final evolution state of a system (all quantities)."""
 
         result = Structure()
-        for q in self.evolution_quantities :
-            if q == 'evolution_mode' : result.evolution_mode = int()
-            elif q == 'wind_saturation' : result.wind_saturation = bool()
-            else : setattr(result, q, float())
+        library_final_state = [self.evolution_quantity_c_type(q)()
+                               for q in self.evolution_quantities]
         library.get_final_state(self.c_solver,
                                 self.c_binary,
                                 self.primary.c_body,
-                                *[byref(getattr(result, q))
-                                  for q in self.evolution_quantities])
+                                *library_final_state)
+        for quantity, library_value in zip(self.evolution_quantities,
+                                           library_final_state) :
+            setattr(result, quantity, library_value.value)
         return result
 
-def phase_lag(lgQ) :
-    """Return the phase lag corresponding to the given Q value."""
+    def orbital_frequency(self, semimajor) :
+        """
+        The orbital frequency of the system for the given semimajor axis.
 
-    return 15.0 / (16.0 * numpy.pi * 10.0**lgQ);
+        Args:
+            - semimajor:
+                The semimajor axis at which the system's orbital period is
+                required in solar radii. 
+
+        Returns:
+            The orbital period in days if the two bodies of this system are
+            in an orbit with the given semimajor axis.
+        """
+
+        return (
+            (
+                constants.G
+                *
+                (self.primary.mass + self.secondary.mass) * constants.M_sun
+                /
+                (semimajor * constants.R_sun)**3
+            )**0.5
+        ).to(1 / units.day)
+
+    def orbital_period(self, semimajor) :
+        """
+        The orbital period of the system for the given semimajor axis.
+
+        Args:
+            - semimajor:
+                The semimajor axis at which the system's orbital period is
+                required in solar radii.
+
+        Returns:
+            The orbital period in days if the two bodies of this system are
+            in an orbit with the given semimajor axis.
+        """
+
+        return 2.0 * numpy.pi / self.orbital_frequency(semimajor)

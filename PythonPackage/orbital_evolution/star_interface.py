@@ -76,6 +76,55 @@ def initialize_library() :
     library.core_formation_age.argtypes = [library.create_star.restype]
     library.core_formation_age.restype = c_double
 
+    library.lifetime.argtypes = [library.create_star.restype]
+    library.lifetime.restype = c_double
+
+    library.luminosity.argtypes = [library.create_star.restype, c_double]
+    library.luminosity.restype = c_double
+
+    library.luminosity_array.argtypes = [
+        library.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS'),
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS')
+    ]
+    library.luminosity_array.restype = None
+
+    library.core_inertia.argtypes = [library.create_star.restype, c_double]
+    library.core_inertia.restype = c_double
+
+    library.core_inertia_array.argtypes = [
+        library.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS'),
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS')
+    ]
+    library.core_inertia_array.restype = None
+
+    library.envelope_inertia.argtypes = [library.create_star.restype,
+                                         c_double]
+    library.envelope_inertia.restype = c_double
+
+    library.envelope_inertia_array.argtypes = [
+        library.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS'),
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS')
+    ]
+    library.envelope_inertia_array.restype = None
+
     return library
 
 library = initialize_library()
@@ -88,6 +137,21 @@ class EvolvingStar(DissipatingBody) :
                  for d in deriv_list}
 
     lib_configure_body = orbital_evolution_library.configure_star
+
+    def _evaluate_stellar_property(self, property_name, age) :
+        """Evaluate a library function at a single age or array of ages."""
+
+        if type(age) is numpy.ndarray :
+            result = numpy.empty(dtype = c_double,
+                                 shape = (age.size,),
+                                 order = 'C')
+            getattr(library, property_name + '_array')(self.c_body,
+                                                       age,
+                                                       age.size,
+                                                       result)
+            return result
+        else :
+            return getattr(library, property_name)(self.c_body, age)
 
     def __init__(self,
                  mass,
@@ -255,6 +319,30 @@ class EvolvingStar(DissipatingBody) :
         """Return the age at which the core of the star forms in Gyrs."""
 
         return library.core_formation_age(self.c_body)
+
+    def lifetime(self) :
+        """Return the maximum age at which the star can be queried."""
+
+        return library.lifetime(self.c_body)
+
+    def luminosity(self, age) :
+        """Return the luminosity of the star at the given age."""
+
+        return self._evaluate_stellar_property('luminosity', age)
+
+    def core_inertia(self, age) :
+        """
+        Return the moment of inertia of the stellar core at the given age.
+        """
+
+        return self._evaluate_stellar_property('core_inertia', age)
+
+    def envelope_inertia(self, age) :
+        """
+        Return the moment of inertia of the stellar env. at the given age.
+        """
+
+        return self._evaluate_stellar_property('envelope_inertia', age)
 
 if __name__ == '__main__' :
     from stellar_evolution.manager import StellarEvolutionManager

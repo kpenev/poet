@@ -130,3 +130,110 @@ double core_formation_age(const EvolvingStar *star)
         star
     )->core().formation_age();
 }
+
+double lifetime(const EvolvingStar *star)
+{
+    return reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+        star
+    )->lifetime();
+}
+
+double luminosity(EvolvingStar *star, double age)
+{
+    const Star::InterpolatedEvolutionStar *actual_star = 
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+            star
+        );
+    actual_star->select_interpolation_region(age);
+    return actual_star->luminosity(age);
+}
+
+void luminosity_array(EvolvingStar *star,
+                      const double *age,
+                      unsigned nvalues,
+                      double *result)
+{
+    Star::InterpolatedEvolutionStar *actual_star = 
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+            star
+        );
+    for(unsigned i = 0; i < nvalues; ++i) {
+        if(
+            i == 0
+            ||
+            age[i] < age[i - 1]
+        )
+            actual_star->select_interpolation_region(age[i]);
+        else 
+            actual_star->reached_critical_age(age[i]);
+        result[i] = actual_star->luminosity(age[i]);
+    }
+}
+
+double core_inertia(EvolvingStar *star, double age)
+{
+    const Star::EvolvingStellarCore &core =
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+            star
+        )->core();
+    core.select_interpolation_region(age);
+    return core.moment_of_inertia(age);
+}
+
+void zone_inertia_array(Star::EvolvingStellarZone &zone,
+                        const double *age,
+                        unsigned nvalues,
+                        double *result)
+{
+    for(unsigned i = 0; i < nvalues; ++i) {
+        if(
+            i == 0
+            ||
+            age[i] < age[i - 1]
+        )
+            zone.select_interpolation_region(age[i]);
+        else
+            zone.reached_critical_age(age[i]);
+        result[i] = zone.moment_of_inertia(age[i]);
+    }
+}
+
+void core_inertia_array(EvolvingStar *star,
+                        const double *age,
+                        unsigned nvalues,
+                        double *result)
+{
+    zone_inertia_array(
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+            star
+        )->core(),
+        age,
+        nvalues,
+        result
+    );
+}
+
+double envelope_inertia(EvolvingStar *star, double age)
+{
+    const Star::EvolvingStellarEnvelope &envelope =
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+            star
+        )->envelope();
+    envelope.select_interpolation_region(age);
+    return envelope.moment_of_inertia(age);
+}
+
+void envelope_inertia_array(EvolvingStar *star,
+                            const double *age,
+                            unsigned nvalues,
+                            double *result)
+{
+    zone_inertia_array(
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+            star
+        )->envelope(),
+        age,
+        nvalues,
+        result
+    );
+}
