@@ -1,3 +1,4 @@
+from math import pi
 
 class InitialConditionSolver :
     """Find initial conditions which reproduce a given system now."""
@@ -51,22 +52,39 @@ class InitialConditionSolver :
             self.evolution_precision,
             None
         )
-         MAKE IT POSSIBLE TO GET FINAL CONFIG <++>
+        final_state = self.binary.final_state()
+        assert(final_state.age == self.system_parametrs.age)
+        return (self.binary.orbital_period(final_state.semimajor),
+                (2.0 * pi
+                 *
+                 self.binary.primary.envelope_inertia(final_state.age)
+                 /
+                 final_state.envelope_angmom))
 
-        return orbital_period, spin_period
+    def _find_porb_range(self, guess_porb_initial, disk_period) :
+        """
+        Find initial orbital period range where final porb error flips sign.
 
-    def __find_porb_range(self, guess_porb_initial, disk_period) :
-        """Find a range of initial porb where final porb error flips sign."""
+        Args:
+            - guess_porb_initial:
+                An initial guess for where the sign change occurs.
+
+            - disk_period:
+                The disk locking period to assume during the search.
+
+        Returns:
+            A pair of initial orbital periods for which the sign of the final
+            orbital period error changes.
+        """
 
         porb_min, porb_max = numpy.nan, numpy.nan
-        porb_initial=guess_porb_initial
-        porb, psurf = self.__try_initial_conditions(porb_initial,
-                                                    disk_period)
+        porb_initial = guess_porb_initial
+        porb, psurf = self._try_initial_conditions(porb_initial, disk_period)
         porb_error = porb - self.system.Porb
         guess_porb_error = porb_error
         step = 2.0 if guess_porb_error < 0 else 0.5
 
-        while porb_error*guess_porb_error > 0 and porb_initial < 100.0 :
+        while porb_error * guess_porb_error > 0 and porb_initial < 100.0 :
             if porb_error < 0 : porb_min = porb_initial
             else : porb_max = porb_initial
             porb_initial *= step
@@ -85,37 +103,12 @@ class InitialConditionSolver :
         return porb_min, porb_max
 
     def __init__(self,
-                 poet_cmdline,
-                 scenario_file,
-                 input_columns,
-                 output_columns,
-                 trial_evolutions_fname,
-                 selected_evolution_fname,
                  past_lifetime = None,
                  timeout_seconds = None) :
         """
         Initialize the object.
 
         Args:
-            - poet_cmdline: A command line with which to start the POET
-                            process.
-            - scenario_file: An open file object which poet is reading for
-                             scenarios to try.
-            - input_columns: A list of the columns expected by poeit in the
-                             scenario file.
-            - trial_evolutions_fname: A %-substitution pattern for the
-                                      filenames to use for each trial
-                                      evolution while searching for the
-                                      solution. The pattern may contain a
-                                      %(trial) substition, which gets filled
-                                      by an integer incremented at each trial
-                                      step. If not, the file gets overwritten
-                                      at each trial. These files are NOT
-                                      automatically deleted.
-            - selected_evolution_fname: The filename to save the best
-                                        evolution found as. It should not
-                                        coincide with any possible resolution
-                                        of trial_evolutions_fname.
             - past_lifetime: If not None, the system is started at an
                              age = current age - past_lifetime, and the
                              initial conditions at that age are solved for.
@@ -129,24 +122,7 @@ class InitialConditionSolver :
         Returns: None.
         """
 
-        self.__poet_cmdline = poet_cmdline
-        self.__scenario_file = open(scenario_file, 'w')
-        self.__scenario_file.write(
-            "# PID %d POET command line: '" % current_process().pid
-            + 
-            "' '".join(poet_cmdline)
-            +
-            "'\n"
-        )
-        self.__scenario_file.flush()
-
-        self.poet = Popen(poet_cmdline, stdin=PIPE, bufsize=0)
-        self.__input_columns = input_columns
-        self.__output_columns = output_columns
-        self.__trial_index = 0
         self.__past_lifetime = past_lifetime
-        self.trial_evolutions_fname = trial_evolutions_fname
-        self.selected_evolution_fname = selected_evolution_fname
         self.timeout_seconds = timeout_seconds
 
     def stellar_wsurf(self,
@@ -171,16 +147,8 @@ class InitialConditionSolver :
 
         disk_period = 2.0 * pi / wdisk
 
-        porb_min, porb_max = self.__find_porb_range(orbital_period_guess,
-                                                    disk_period)
-
-        self.__scenario_file.write(
-            '# For disk period = %25.16e initial orbital period range is '
-            '[%25.16e, %25.16e].\n'
-            %
-            (disk_period, porb_min, porb_max)
-        )
-        self.__scenario_file.flush()
+        porb_min, porb_max = self._find_porb_range(orbital_period_guess,
+                                                   disk_period)
 
         if numpy.isnan(porb_min) :
             assert(numpy.isnan(porb_max))
@@ -203,16 +171,7 @@ class InitialConditionSolver :
 
         spin_frequency = 2.0 * pi / spin_period
 
-        self.__scenario_file.write(
-            '# For disk period = %25.16e the current orbital period of '
-            '%25.16e is reproduced by starting from orbital period of '
-            '%25.16e. Current stellar angular velocity = %25.16e.\n'
-            %
-            (disk_period, self.system.Porb, porb_initial, spin_frequency)
-        )
-
         if not return_difference : 
-            shutil.copyfile(self.__evol_fname, self.selected_evolution_fname)
             return spin_frequency, porb_initial, orbital_period
 
         result = spin_frequency - 2.0 * pi / self.system.Psurf
@@ -229,9 +188,7 @@ class InitialConditionSolver :
                 porb_initial
             )
             self.__best_initial_conditions.disk_period = disk_period
-            shutil.copyfile(self.__evol_fname, self.selected_evolution_fname)
         return result
-
 
     def __call__(self, system) :
         """
@@ -310,61 +267,23 @@ class InitialConditionSolver :
 
         wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid()
 
-        try :
-            nsolutions = 0
-            for i in range(len(wdisk_grid)-1) :
-                if (
-                        stellar_wsurf_residual_grid[i]
-                        *
-                        stellar_wsurf_residual_grid[i+1]
-                        <
-                        0
-                ) :
-                    wdisk = brentq(
-                        f = self.stellar_wsurf,
-                        a = wdisk_grid[i],
-                        b = wdisk_grid[i+1],
-                        args = (system.Porb,
-                                True),
-                        xtol = 1e-8,
-                        rtol = 1e-8
-                    )
+        nsolutions = 0
+        for i in range(len(wdisk_grid)-1) :
+            if (
+                    stellar_wsurf_residual_grid[i]
+                    *
+                    stellar_wsurf_residual_grid[i+1]
+                    <
+                    0
+            ) :
+                wdisk = brentq(
+                    f = self.stellar_wsurf,
+                    a = wdisk_grid[i],
+                    b = wdisk_grid[i+1],
+                    args = (system.Porb,
+                            True),
+                    xtol = 1e-8,
+                    rtol = 1e-8
+                )
 
-                    self.__scenario_file.write(
-                        '###    Solution %d: \n'
-                        '###        age = %25.16e\n'
-                        '###        P0 = %25.16e\n'
-                        '###        pdisk = %25.16e\n'
-                        '###        Porb = %25.16e\n'
-                        '###        Wsurf = %25.16e\n'
-                        %
-                        (nsolutions,
-                         self.system.age,
-                         self.__best_initial_conditions.\
-                            initial_orbital_period,
-                         self.__best_initial_conditions.disk_period,
-                         self.__best_initial_conditions.orbital_period,
-                         self.__best_initial_conditions.spin_frequency)
-                    )
-                    nsolutions += 1
-            if nsolutions == 0 :
-                    self.__scenario_file.write(
-                        '###    No solution found: \n'
-                        '###        age = %25.16e\n'
-                        '###        P0 = %25.16e\n'
-                        '###        pdisk = %25.16e\n'
-                        '###        Porb = %25.16e\n'
-                        '###        Wsurf = %25.16e\n'
-                        %
-                        (self.system.age,
-                         self.__best_initial_conditions.\
-                            initial_orbital_period,
-                         self.__best_initial_conditions.disk_period,
-                         self.__best_initial_conditions.orbital_period,
-                         self.__best_initial_conditions.spin_frequency)
-                    )
-        except :
-            self.__scenario_file.write(
-                '#' + format_exc().replace('\n', '\n#')
-            )
-            raise
+                nsolutions += 1
