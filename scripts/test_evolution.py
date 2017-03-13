@@ -4,6 +4,7 @@ import sys
 sys.path.append('../PythonPackage')
 
 from matplotlib import pyplot
+from stellar_evolution.manager import StellarEvolutionManager
 from orbital_evolution.evolve_interface import library as\
     orbital_evolution_library
 from orbital_evolution.evolve_interface import\
@@ -12,7 +13,8 @@ from orbital_evolution.evolve_interface import\
 from orbital_evolution.transformations import phase_lag
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
-from stellar_evolution.manager import StellarEvolutionManager
+from orbital_evolution.initial_condition_solver import InitialConditionSolver
+from basic_utils import Structure
 import numpy
 
 def create_planet(stellar_mass) :
@@ -79,10 +81,8 @@ def create_system(star, planet) :
     star.detect_stellar_wind_saturation()
     return binary
 
-if __name__ == '__main__' :
-    orbital_evolution_library.read_eccentricity_expansion_coefficients(
-        b"eccentricity_expansion_coef.txt"
-    )
+def test_evolution() :
+    """Run a single orbital evolution calculation and plot the results."""
 
     star = create_star()
     planet = create_planet(star.mass)
@@ -103,3 +103,27 @@ if __name__ == '__main__' :
                 evolution.envelope_angmom,
                 'xg')
     pyplot.show()
+
+def test_ic_solver() :
+    """Find initial condition to reproduce some current state and plot."""
+
+    find_ic = InitialConditionSolver(disk_dissipation_age = 5e-3,
+                                     evolution_max_time_step = 1e-2)
+    target = Structure(age = 5.0,
+                       Porb = 3.0,
+                       Psurf = 10.0,
+                       planet_formation_age = 5e-3)
+    star = create_star()
+    planet = create_planet(star.mass)
+    initial_porb, initial_psurf = find_ic(target = target,
+                                          star = star,
+                                          planet = planet)
+    print('IC: Porb0 = %s, P*0 = %s' % (repr(initial_porb),
+                                        repr(initial_psurf)))
+
+if __name__ == '__main__' :
+    orbital_evolution_library.read_eccentricity_expansion_coefficients(
+        b"eccentricity_expansion_coef.txt"
+    )
+#    test_evolution()
+    test_ic_solver()

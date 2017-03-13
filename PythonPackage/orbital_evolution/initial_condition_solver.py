@@ -1,4 +1,8 @@
+from orbital_evolution.evolve_interface import Binary
+from basic_utils import Structure
 from math import pi
+from scipy.optimize import brentq
+import numpy
 
 class InitialConditionSolver :
     """Find initial conditions which reproduce a given system now."""
@@ -22,22 +26,36 @@ class InitialConditionSolver :
                 evolution is started with the input periods.
         """
 
-        self.binary.primary.select_interpolation_region(
-            self.disk_dissipation_age
+        print('Trying P0 = %s, Pdisk = %s'
+              %
+              (repr(initial_orbital_period), repr(disk_period)))
+        self.binary = Binary(
+            primary = self.primary,
+            secondary = self.secondary,
+            initial_orbital_period = initial_orbital_period,
+            initial_eccentricity = 0.0,
+            initial_inclination = 0.0,
+            disk_lock_frequency = 2.0 * numpy.pi / disk_period,
+            disk_dissipation_age = self.target.disk_dissipation_age,
+            secondary_formation_age = self.target.planet_formation_age
         )
-        self.binary.primary.detect_stellar_wind_saturation()
 
-        self.binary.configure(self.primary.core_formation_age,
+        self.binary.primary.select_interpolation_region(
+            self.primary.core_formation_age()
+        )
+
+        self.binary.configure(self.primary.core_formation_age(),
                               float('nan'),
                               float('nan'),
                               numpy.array([0.0]),
                               None,
                               None,
                               'LOCKED_SURFACE_SPIN')
+        self.binary.primary.detect_stellar_wind_saturation()
         self.binary.secondary.configure(
-            self.planet_formation_age,
+            self.target.planet_formation_age,
             self.binary.primary.mass,
-            self.semimajor(initial_orbital_period),
+            self.binary.semimajor(initial_orbital_period),
             0.0,
             numpy.array([0.0]),
             None,
@@ -47,19 +65,27 @@ class InitialConditionSolver :
             True
         )
         self.binary.evolve(
-            self.system_parametrs.age,
+            self.target.age,
             self.evolution_max_time_step,
             self.evolution_precision,
             None
         )
         final_state = self.binary.final_state()
-        assert(final_state.age == self.system_parametrs.age)
-        return (self.binary.orbital_period(final_state.semimajor),
-                (2.0 * pi
-                 *
-                 self.binary.primary.envelope_inertia(final_state.age)
-                 /
-                 final_state.envelope_angmom))
+        assert(final_state.age == self.target.age)
+        orbital_period = self.binary.orbital_period(final_state.semimajor)
+        stellar_spin_period = (
+            2.0 * pi
+            *
+            self.binary.primary.envelope_inertia(final_state.age)
+            /
+            final_state.envelope_angmom
+        )
+        self.binary.delete()
+        print('Got Porb = %s, P* = %s'
+              %
+              (repr(orbital_period), repr(stellar_spin_period)))
+        if(numpy.isnan(orbital_period)) : orbital_period = 0.0
+        return orbital_period, stellar_spin_period
 
     def _find_porb_range(self, guess_porb_initial, disk_period) :
         """
@@ -80,7 +106,7 @@ class InitialConditionSolver :
         porb_min, porb_max = numpy.nan, numpy.nan
         porb_initial = guess_porb_initial
         porb, psurf = self._try_initial_conditions(porb_initial, disk_period)
-        porb_error = porb - self.system.Porb
+        porb_error = porb - self.target.Porb
         guess_porb_error = porb_error
         step = 2.0 if guess_porb_error < 0 else 0.5
 
@@ -88,10 +114,10 @@ class InitialConditionSolver :
             if porb_error < 0 : porb_min = porb_initial
             else : porb_max = porb_initial
             porb_initial *= step
-            porb, psurf = self.__try_initial_conditions(porb_initial,
-                                                        disk_period)
+            porb, psurf = self._try_initial_conditions(porb_initial,
+                                                       disk_period)
             if not numpy.isnan(porb) :
-                porb_error = porb - self.system.Porb
+                porb_error = porb - self.target.Porb
 
         if numpy.isnan(porb_error) : return numpy.nan, numpy.nan
 
@@ -100,30 +126,50 @@ class InitialConditionSolver :
             porb_max = porb_initial
             if porb_error == 0 : porb_min = porb_initial
 
+        print('For Pdisk = %s, orbital period range: %s < Porb < %s'
+              %
+              (repr(disk_period), repr(porb_min), repr(porb_max)))
         return porb_min, porb_max
 
     def __init__(self,
-                 past_lifetime = None,
+                 planet_formation_age = None,
+                 disk_dissipation_age = None,
+                 evolution_max_time_step = 1.0,
+                 evolution_precision = 1e-6,
                  timeout_seconds = None) :
         """
         Initialize the object.
 
         Args:
-            - past_lifetime: If not None, the system is started at an
-                             age = current age - past_lifetime, and the
-                             initial conditions at that age are solved for.
-                             Otherwise, the starting age is left to the poet
-                             command line arguments.
-            - timeout_seconds: If an orbital evolution takes longer than this
-                               many seconds to finish it is canceled and
-                               invalid results are assumed. Use None to
-                               disable timing out.
+            - planet_formation_age:
+                If not None, the planet is assumed to form at the given age
+                (in Gyr). Otherwise, the starting age must be specified each
+                time this object is called.
+
+            - disk_dissipation_age:
+                The age at which the disk dissipates in Gyrs.
+
+            - evolution_max_time_step:
+                The maximum timestep the evolution is allowed to make.
+
+            - evolution_precision:
+                The precision to require of the evolution.
+
+            - timeout_seconds:
+                If an orbital evolution takes longer than this many seconds
+                to finish it is canceled and invalid results are assumed. Use
+                None to disable timing out.
 
         Returns: None.
         """
 
-        self.__past_lifetime = past_lifetime
+        if planet_formation_age :
+            self.planet_formation_age = planet_formation_age
         self.timeout_seconds = timeout_seconds
+        if disk_dissipation_age is not None :
+            self.disk_dissipation_age = disk_dissipation_age
+        self.evolution_max_time_step = evolution_max_time_step
+        self.evolution_precision = evolution_precision
 
     def stellar_wsurf(self,
                       wdisk,
@@ -156,15 +202,17 @@ class InitialConditionSolver :
                                                          numpy.nan,
                                                          numpy.nan))
         porb_initial = brentq(
-            lambda porb_initial : self.__try_initial_conditions(
+            lambda porb_initial : self._try_initial_conditions(
                 porb_initial,
                 disk_period,
-            )[0] - self.system.Porb,
+            )[0] - self.target.Porb,
             porb_min,
-            porb_max
+            porb_max,
+            xtol = 1e-8,
+            rtol = 1e-8
         )
 
-        orbital_period, spin_period = self.__try_initial_conditions(
+        orbital_period, spin_period = self._try_initial_conditions(
             porb_initial,
             disk_period,
         )
@@ -174,42 +222,74 @@ class InitialConditionSolver :
         if not return_difference : 
             return spin_frequency, porb_initial, orbital_period
 
-        result = spin_frequency - 2.0 * pi / self.system.Psurf
+        result = spin_frequency - 2.0 * pi / self.target.Psurf
         if (
                 abs(result) 
                 < 
-                abs(self.__best_initial_conditions.spin_frequency 
+                abs(self._best_initial_conditions.spin_frequency 
                     - 
-                    2.0 * pi / self.system.Psurf) 
+                    2.0 * pi / self.target.Psurf) 
         ) :
-            self.__best_initial_conditions.spin_frequency = spin_frequency
-            self.__best_initial_conditions.orbital_period = orbital_period
-            self.__best_initial_conditions.initial_orbital_period = (
+            self._best_initial_conditions.spin_frequency = spin_frequency
+            self._best_initial_conditions.orbital_period = orbital_period
+            self._best_initial_conditions.initial_orbital_period = (
                 porb_initial
             )
-            self.__best_initial_conditions.disk_period = disk_period
+            self._best_initial_conditions.disk_period = disk_period
         return result
 
-    def __call__(self, system) :
+    def __call__(self, target, star, planet) :
         """
         Find initial conditions which reproduce the given system now.
 
         Args:
-            - system: The system to find the initial conditions for. Should
-                      be generated by calling one of :
-                        - hatsouth_to_solver_system()
-                        - exoplanets_org_solver_system().
-                        - nasa_solver_system()
+            - target:
+                The target configuration to reproduce by tuning the the
+                initial conditions for.
+                The following attributes must be defined:
+                    - age:
+                        The age at which the system configuration is known.
+                    - Porb:
+                        The orbital period to reproduce.
+                    - Psurf:
+                        The stellar surface spin period to reproduce.
+                The following optional attributes can be specified:
+                    - planet_formation_age:
+                        The age at which the planet forms in Gyrs. If not
+                        specified the planet is assumed to form either
+                        '-past_lifetime' Gyrs before '-age' or as soon as
+                        the disk dissipates.
+                    - past_lifetime:
+                        An alternative way of specifying when the planet
+                        forms. If the '-planet_formation-age' attribute is
+                        not defined, the planet is assumed to form this many
+                        Gyr before '-age'.
+                    - disk_dissipation_age:
+                        The age at which the disk dissipates in Gyrs. If not
+                        specified, it must have been defined when this solver
+                        was initialized.
+            - star:
+                The star to use in the evolution, should be instance of
+                evolve_interface.EvolvingStar and its dissipative properties
+                should be defined.
+
+            - planet:
+                The planet to use in the evolution. Should be an instance of
+                evolve_interface.LockedPlanet
 
         Returns:
             - porb: Initial orbital period.
             - pdisk: Initial disk period.
+            Further, the solver object has an attribute named 'binary' (an
+            instance of (evolve_interface.Binary) which was evolved from
+            the initial conditions found to most closely reproduce the
+            specified target configuration.
         """
 
         def reset_best_initial_conditions() :
-            """Reset the entries in self.__best_initial_conditions."""
+            """Reset the entries in self._best_initial_conditions."""
 
-            self.__best_initial_conditions=Structure(
+            self._best_initial_conditions=Structure(
                 spin_frequency = numpy.inf,
                 orbital_period = numpy.nan,
                 initial_orbital_period = numpy.nan,
@@ -235,35 +315,39 @@ class InitialConditionSolver :
                           200.0*pi]
 
             stellar_wsurf_residual_grid = [
-                self.stellar_wsurf(wdisk, system.Porb, True)
+                self.stellar_wsurf(wdisk, target.Porb, True)
                 for wdisk in wdisk_grid
             ]
 
-            self.__scenario_file.write(
-                '##    %25s %25s\n'%('disk_period', 'current_stellar_spin')
-            )
+            print('##    %25s %25s\n' % ('disk_period',
+                                         'current_stellar_spin'))
             for wdisk, wsurf_residual in zip(wdisk_grid,
                                              stellar_wsurf_residual_grid) :
-                self.__scenario_file.write(
-                    '##    %25.16e %25.16e\n'
-                    %
-                    (2.0 * pi / wdisk, 
-                     wsurf_residual + 2.0 * pi / self.system.Psurf)
-                )
-            self.__scenario_file.write('## Target current stellar spin: '
-                                       +
-                                       repr(2.0 * pi / self.system.Psurf)
-                                       +
-                                       '\n')
+                print('##    %25.16e %25.16e\n'
+                      %
+                      (2.0 * pi / wdisk, 
+                       wsurf_residual + 2.0 * pi / self.target.Psurf))
+            print('## Target current stellar spin: '
+                  +
+                  repr(2.0 * pi / self.target.Psurf)
+                  +
+                  '\n')
 
             return wdisk_grid, stellar_wsurf_residual_grid
 
-        self.system = system
-        self.planet_formation_age = (
-            getattr(self.system_parameters, 'start_age', None) 
-            if self._past_lifetime is None else
-            (self.system_parametrs.age - self._past_lifetime)
-        )
+        self.target = target
+        self.primary = star
+        self.secondary = planet
+
+        if not hasattr(self.target, 'disk_dissipation_age') :
+            self.target.disk_dissipation_age = self.disk_dissipation_age
+        if not hasattr(self.target, 'planet_formation_age') :
+            if hasattr(self.target, 'past_lifetime') :
+                self.target.planet_formation_age = (self.target.age
+                                                    -
+                                                    self.target.past_lifetime)
+            else :
+                self.target.planet_formation_age = self.planet_formation_age
 
         wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid()
 
@@ -280,10 +364,14 @@ class InitialConditionSolver :
                     f = self.stellar_wsurf,
                     a = wdisk_grid[i],
                     b = wdisk_grid[i+1],
-                    args = (system.Porb,
+                    args = (target.Porb,
                             True),
                     xtol = 1e-8,
                     rtol = 1e-8
                 )
 
                 nsolutions += 1
+
+        return (self._best_initial_conditions.initial_orbital_period,
+                self._best_initial_conditions.disk_period)
+

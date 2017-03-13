@@ -279,12 +279,13 @@ class Binary :
     def __init__(self,
                  primary,
                  secondary,
-                 initial_semimajor,
-                 initial_eccentricity,
-                 initial_inclination,
                  disk_lock_frequency,
                  disk_dissipation_age,
-                 secondary_formation_age) :
+                 initial_semimajor = None,
+                 initial_orbital_period = None,
+                 initial_eccentricity = 0.0,
+                 initial_inclination = 0.0,
+                 secondary_formation_age = None) :
         """
         Create a binary system out of two bodies.
 
@@ -297,9 +298,20 @@ class Binary :
                 The second body in the system, initially may not be there and
                 later may be engulfed by the first body.
 
+            - disk_lock_frequency:
+                Frequency of the surface spin of the primary when disk is
+                present in rad/day.
+
+            - disk_dissipation_age:
+                Age when disk dissipates in Gyrs.
+
             - initial_semimajor:
                 The semimajor axis of the orbit at which the secondary forms
-                in solar radii.
+                in solar radii. If omitted, initial_orbital_period must be
+                specified.
+
+            - initial_orbital_period:
+                Alternative to specifying the initial semimajor axis.
 
             - initial_eccentricity:
                 The eccentricity of the orbit at which the secondary forms.
@@ -307,13 +319,6 @@ class Binary :
             - initial_inclination:
                 Inclination between surface zone of primary and initial orbit
                 in radians.
-
-            - disk_lock_frequency:
-                Frequency of the surface spin of the primary when disk is
-                present in rad/day.
-
-            - disk_dissipation_age:
-                Age when disk dissipates in Gyrs.
 
             - secondary_formation_age:
                 Age when the secondary forms.
@@ -323,6 +328,10 @@ class Binary :
 
         self.primary = primary
         self.secondary = secondary
+        if initial_semimajor is None :
+            initial_semimajor = self.semimajor(initial_orbital_period)
+        if secondary_formation_age is None :
+            secondary_formation_age = disk_dissipation_age
         self.c_binary = library.create_star_planet_system(
             primary.c_body,
             secondary.c_body,
@@ -338,7 +347,7 @@ class Binary :
         """Destroy the binary created at construction."""
 
         library.destroy_binary(self.c_binary)
-        if hasattr(self, 'solver') :
+        if hasattr(self, 'c_solver') :
             library.destroy_solver(self.c_solver)
 
     def configure(self,
@@ -417,12 +426,16 @@ class Binary :
         Returnns: None
         """
 
-        self.c_solver = library.evolve_system(self.c_binary,
-                                              final_age,
-                                              max_time_step,
-                                              precision,
-                                              required_ages,
-                                              required_ages.size)
+        if hasattr(self, 'c_solver') :
+            library.destroy_solver(self.c_solver)
+        self.c_solver = library.evolve_system(
+            self.c_binary,
+            final_age,
+            max_time_step,
+            precision,
+            required_ages,
+            (0 if required_ages is None else required_ages.size)
+        )
         self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
 
     def get_evolution(self, quantities = evolution_quantities) :
@@ -491,11 +504,11 @@ class Binary :
             (
                 constants.G
                 *
-                (self.primary.mass + self.secondary.mass) * constants.M_sun
+                (self.primary.mass + self.secondary.mass) * units.M_sun
                 /
-                (semimajor * constants.R_sun)**3
+                (semimajor * units.R_sun)**3
             )**0.5
-        ).to(1 / units.day)
+        ).to(1 / units.day).value
 
     def orbital_period(self, semimajor) :
         """
@@ -512,3 +525,29 @@ class Binary :
         """
 
         return 2.0 * numpy.pi / self.orbital_frequency(semimajor)
+
+    def semimajor(self, orbital_period) :
+        """
+        The semimajor axis of the system for the given orbital period.
+
+        Args:
+            - orbital_period:
+                The orbital period at which the system's orbital period is
+                required in days.
+
+        Returns:
+            The semimajor axis in solar radii if the two bodies of this
+            system are in an orbit with the given period.
+        """
+
+        return (
+            (
+                constants.G
+                *
+                (self.primary.mass + self.secondary.mass) * units.M_sun
+                *
+                (orbital_period * units.day)**2
+                /
+                (4.0 * numpy.pi**2)
+            )**(1.0 / 3.0)
+        ).to(units.R_sun).value

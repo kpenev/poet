@@ -674,6 +674,8 @@ namespace Evolve {
 #ifdef DEBUG
         std::cerr << "Next system stop age: " << result << std::endl;
 #endif
+        if(required_ages.size() == 0) return result;
+
         static std::list<double>::const_iterator
             next_required_age = required_ages.begin();
         if(age <= required_ages.front())
@@ -687,6 +689,9 @@ namespace Evolve {
             if(next_required_age != required_ages.end()) 
                 result = *next_required_age;
         }
+#ifdef DEBUG
+        std::cerr << "Required ages change that to: " << result << std::endl;
+#endif
         return result;
     }
 
