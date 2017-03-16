@@ -125,6 +125,21 @@ def initialize_library() :
     ]
     library.envelope_inertia_array.restype = None
 
+    library.star_radius.argtypes = [library.create_star.restype, c_double]
+    library.star_radius.restype = c_double
+
+    library.star_radius_array.argtypes = [
+        library.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS'),
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype = c_double,
+                                  ndim = 1,
+                                  flags = 'C_CONTIGUOUS')
+    ]
+    library.star_radius_array.restype = None
+
     return library
 
 library = initialize_library()
@@ -343,6 +358,11 @@ class EvolvingStar(DissipatingBody) :
         """
 
         return self._evaluate_stellar_property('envelope_inertia', age)
+
+    def radius(self, age) :
+        """Return the luminosity of the star at the given age."""
+
+        return self._evaluate_stellar_property('star_radius', age)
 
 if __name__ == '__main__' :
     from stellar_evolution.manager import StellarEvolutionManager

@@ -6,7 +6,7 @@ import sys
 sys.path.append('..')
 
 from orbital_evolution.c_interface_util import ndpointer_or_null
-from basic_utils import Structure
+from basic_utils import Structure, semimajor, orbital_frequency
 from ctypes import\
     cdll,\
     c_int,\
@@ -500,15 +500,9 @@ class Binary :
             in an orbit with the given semimajor axis.
         """
 
-        return (
-            (
-                constants.G
-                *
-                (self.primary.mass + self.secondary.mass) * units.M_sun
-                /
-                (semimajor * units.R_sun)**3
-            )**0.5
-        ).to(1 / units.day).value
+        return orbital_frequency(self.primary.mass,
+                                 self.secondary.mass,
+                                 semimajor)
 
     def orbital_period(self, semimajor) :
         """
@@ -540,14 +534,6 @@ class Binary :
             system are in an orbit with the given period.
         """
 
-        return (
-            (
-                constants.G
-                *
-                (self.primary.mass + self.secondary.mass) * units.M_sun
-                *
-                (orbital_period * units.day)**2
-                /
-                (4.0 * numpy.pi**2)
-            )**(1.0 / 3.0)
-        ).to(units.R_sun).value
+        return semimajor(self.primary.mass,
+                         self.secondary.mass,
+                         orbital_period)

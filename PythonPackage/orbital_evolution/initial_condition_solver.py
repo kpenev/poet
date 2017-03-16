@@ -29,6 +29,7 @@ class InitialConditionSolver :
         print('Trying P0 = %s, Pdisk = %s'
               %
               (repr(initial_orbital_period), repr(disk_period)))
+        if hasattr(self, 'binary') : self.binary.delete()
         self.binary = Binary(
             primary = self.primary,
             secondary = self.secondary,
@@ -80,7 +81,6 @@ class InitialConditionSolver :
             /
             final_state.envelope_angmom
         )
-        self.binary.delete()
         print('Got Porb = %s, P* = %s'
               %
               (repr(orbital_period), repr(stellar_spin_period)))
@@ -135,8 +135,7 @@ class InitialConditionSolver :
                  planet_formation_age = None,
                  disk_dissipation_age = None,
                  evolution_max_time_step = 1.0,
-                 evolution_precision = 1e-6,
-                 timeout_seconds = None) :
+                 evolution_precision = 1e-6) :
         """
         Initialize the object.
 
@@ -155,17 +154,11 @@ class InitialConditionSolver :
             - evolution_precision:
                 The precision to require of the evolution.
 
-            - timeout_seconds:
-                If an orbital evolution takes longer than this many seconds
-                to finish it is canceled and invalid results are assumed. Use
-                None to disable timing out.
-
         Returns: None.
         """
 
         if planet_formation_age :
             self.planet_formation_age = planet_formation_age
-        self.timeout_seconds = timeout_seconds
         if disk_dissipation_age is not None :
             self.disk_dissipation_age = disk_dissipation_age
         self.evolution_max_time_step = evolution_max_time_step
@@ -186,9 +179,21 @@ class InitialConditionSolver :
                                  angulare velocity, the function returns the
                                  difference from the observed value.
 
-        Returns: The angular velocity with which the star spins at the
-                 present age for an evolution scenario which reproduces the
-                 current orbital period.
+        Returns: 
+            - spin_frequency:
+                The angular velocity with which the star spins at the present
+                age for an evolution scenario which reproduces the current
+                orbital period. Or the difference between the spin frequency
+                and the target spin frequency if return_difference is True.
+
+            The following are returned only if return_difference is False:
+            - porb_initial:
+                The initial orbital period which reproduces the specified
+                final orbital period as close as possible.
+
+            - porb_final:
+                The closest final orbital period found (starting with
+                porb_initial).
         """
 
         disk_period = 2.0 * pi / wdisk
@@ -212,7 +217,7 @@ class InitialConditionSolver :
             rtol = 1e-8
         )
 
-        orbital_period, spin_period = self._try_initial_conditions(
+        porb_final, spin_period = self._try_initial_conditions(
             porb_initial,
             disk_period,
         )
@@ -220,7 +225,7 @@ class InitialConditionSolver :
         spin_frequency = 2.0 * pi / spin_period
 
         if not return_difference : 
-            return spin_frequency, porb_initial, orbital_period
+            return spin_frequency, porb_initial, porb_final
 
         result = spin_frequency - 2.0 * pi / self.target.Psurf
         if (
@@ -251,8 +256,9 @@ class InitialConditionSolver :
                         The age at which the system configuration is known.
                     - Porb:
                         The orbital period to reproduce.
-                    - Psurf:
-                        The stellar surface spin period to reproduce.
+                    - Psurf | Pdisk | Wdisk:
+                        The stellar surface spin period to reproduce or the
+                        disk locking period or the disk locking frequency.
                 The following optional attributes can be specified:
                     - planet_formation_age:
                         The age at which the planet forms in Gyrs. If not
@@ -278,8 +284,13 @@ class InitialConditionSolver :
                 evolve_interface.LockedPlanet
 
         Returns:
-            - porb: Initial orbital period.
-            - pdisk: Initial disk period.
+            - porb_initial:
+                Initial orbital period.
+
+            - pdisk | pstar:
+                Initial disk period if matching observed stellar spin or
+                stellar spin if initial disk period is specified.
+
             Further, the solver object has an attribute named 'binary' (an
             instance of (evolve_interface.Binary) which was evolved from
             the initial conditions found to most closely reproduce the
@@ -349,29 +360,36 @@ class InitialConditionSolver :
             else :
                 self.target.planet_formation_age = self.planet_formation_age
 
-        wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid()
+        if not hasattr(target, 'Psurf') :
+            Wdisk = (target.Wdisk if hasattr(target, 'Wdisk')
+                     else 2.0 * pi / target.Pdisk)
+            Wstar, Porb_initial, Porb_now = self.stellar_wsurf(Wdisk,
+                                                               target.Porb)
+            return Porb_initial, 2.0 * pi / Wstar
+        else :
+            wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid()
 
-        nsolutions = 0
-        for i in range(len(wdisk_grid)-1) :
-            if (
-                    stellar_wsurf_residual_grid[i]
-                    *
-                    stellar_wsurf_residual_grid[i+1]
-                    <
-                    0
-            ) :
-                wdisk = brentq(
-                    f = self.stellar_wsurf,
-                    a = wdisk_grid[i],
-                    b = wdisk_grid[i+1],
-                    args = (target.Porb,
-                            True),
-                    xtol = 1e-8,
-                    rtol = 1e-8
-                )
+            nsolutions = 0
+            for i in range(len(wdisk_grid)-1) :
+                if (
+                        stellar_wsurf_residual_grid[i]
+                        *
+                        stellar_wsurf_residual_grid[i+1]
+                        <
+                        0
+                ) :
+                    wdisk = brentq(
+                        f = self.stellar_wsurf,
+                        a = wdisk_grid[i],
+                        b = wdisk_grid[i+1],
+                        args = (target.Porb,
+                                True),
+                        xtol = 1e-8,
+                        rtol = 1e-8
+                    )
 
-                nsolutions += 1
+                    nsolutions += 1
 
-        return (self._best_initial_conditions.initial_orbital_period,
-                self._best_initial_conditions.disk_period)
+            return (self._best_initial_conditions.initial_orbital_period,
+                    self._best_initial_conditions.disk_period)
 

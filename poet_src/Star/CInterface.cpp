@@ -237,3 +237,36 @@ void envelope_inertia_array(EvolvingStar *star,
         result
     );
 }
+
+double star_radius(EvolvingStar *star, double age)
+{
+    const Star::EvolvingStellarEnvelope &envelope =
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+            star
+        )->envelope();
+    envelope.select_interpolation_region(age);
+    return envelope.outer_radius(age);
+}
+
+///The radius of the star at an array of ages.
+void star_radius_array(EvolvingStar *star,
+                       const double *age,
+                       unsigned nvalues,
+                       double *result)
+{
+    Star::EvolvingStellarZone &zone = 
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+            star
+        )->envelope();
+    for(unsigned i = 0; i < nvalues; ++i) {
+        if(
+            i == 0
+            ||
+            age[i] < age[i - 1]
+        )
+            zone.select_interpolation_region(age[i]);
+        else
+            zone.reached_critical_age(age[i]);
+        result[i] = zone.outer_radius(age[i]);
+    }
+}

@@ -39,11 +39,11 @@ def create_star() :
     serialized_dir = '../stellar_evolution_interpolators'
     manager = StellarEvolutionManager(serialized_dir)
     interpolator = manager.get_interpolator_by_name('default')
-    star = EvolvingStar(mass = 1.0,
-                        metallicity = 0.0,
-                        wind_strength = 0.15,
-                        wind_saturation_frequency = 2.5,
-                        diff_rot_coupling_timescale = 5.0,
+    star = EvolvingStar(mass = 1.03722121523,
+                        metallicity = -0.0168205008034,
+                        wind_strength = 0.17,
+                        wind_saturation_frequency = 2.54,
+                        diff_rot_coupling_timescale = 5.0e-3,
                         interpolator = interpolator)
     star.select_interpolation_region(star.core_formation_age())
     star.set_dissipation(zone_index = 0,
@@ -51,7 +51,7 @@ def create_star() :
                          spin_frequency_breaks = None,
                          tidal_frequency_powers = numpy.array([0.0]),
                          spin_frequency_powers = numpy.array([0.0]),
-                         reference_phase_lag = phase_lag(6))
+                         reference_phase_lag = phase_lag(5.90888077397))
     star.set_dissipation(zone_index = 1,
                          tidal_frequency_breaks = None,
                          spin_frequency_breaks = None,
@@ -65,12 +65,12 @@ def create_system(star, planet) :
 
     binary = Binary(primary = star,
                     secondary = planet,
-                    initial_semimajor = 10.0,
+                    initial_orbital_period = 0.8616169137903579,
                     initial_eccentricity = 0.0,
                     initial_inclination = 0.0,
-                    disk_lock_frequency = 2.0 * numpy.pi / 7.0,
+                    disk_lock_frequency = 281.386628479,
                     disk_dissipation_age = 5e-3,
-                    secondary_formation_age = 0.0)
+                    secondary_formation_age = 5e-3)
     binary.configure(age = star.core_formation_age(),
                      semimajor = float('nan'),
                      eccentricity = float('nan'),
@@ -88,7 +88,7 @@ def test_evolution() :
     planet = create_planet(star.mass)
     binary = create_system(star, planet)
 
-    binary.evolve(10.0, 0.01, 1e-4, numpy.array([1.0, 2.0, 3.0]))
+    binary.evolve(0.0600389809382, 0.01, 1e-4, numpy.array([1.0, 2.0, 3.0]))
     print('====== FINAL STATE ======')
     print(binary.final_state().format())
     print('=========================')
@@ -125,5 +125,5 @@ if __name__ == '__main__' :
     orbital_evolution_library.read_eccentricity_expansion_coefficients(
         b"eccentricity_expansion_coef.txt"
     )
-#    test_evolution()
+    test_evolution()
     test_ic_solver()
