@@ -13,8 +13,6 @@
 
 namespace Evolve {
 
-    const double OrbitSolver::MAX_END_AGE = 10;
-
     int stellar_system_diff_eq(double age, const double *parameters,
             double *derivatives, void *system_mode)
     {
@@ -710,7 +708,6 @@ namespace Evolve {
 #ifdef DEBUG
         assert(max_age>0);
 #endif
-        if (__end_age > MAX_END_AGE) __end_age = MAX_END_AGE;
     }
 
     void OrbitSolver::operator()(BinarySystem &system, double max_step,

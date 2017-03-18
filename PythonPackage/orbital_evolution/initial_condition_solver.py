@@ -135,7 +135,9 @@ class InitialConditionSolver :
                  planet_formation_age = None,
                  disk_dissipation_age = None,
                  evolution_max_time_step = 1.0,
-                 evolution_precision = 1e-6) :
+                 evolution_precision = 1e-6,
+                 orbital_period_tolerance = 1e-6,
+                 spin_tolerance = 1e-6) :
         """
         Initialize the object.
 
@@ -163,6 +165,8 @@ class InitialConditionSolver :
             self.disk_dissipation_age = disk_dissipation_age
         self.evolution_max_time_step = evolution_max_time_step
         self.evolution_precision = evolution_precision
+        self.orbital_period_tolerance = orbital_period_tolerance
+        self.spin_tolerance = spin_tolerance
 
     def stellar_wsurf(self,
                       wdisk,
@@ -213,8 +217,8 @@ class InitialConditionSolver :
             )[0] - self.target.Porb,
             porb_min,
             porb_max,
-            xtol = 1e-8,
-            rtol = 1e-8
+            xtol = self.orbital_period_tolerance,
+            rtol = self.orbital_period_tolerance
         )
 
         porb_final, spin_period = self._try_initial_conditions(
@@ -384,8 +388,8 @@ class InitialConditionSolver :
                         b = wdisk_grid[i+1],
                         args = (target.Porb,
                                 True),
-                        xtol = 1e-8,
-                        rtol = 1e-8
+                        xtol = self.spin_tolerance,
+                        rtol = self.spin_tolerance
                     )
 
                     nsolutions += 1

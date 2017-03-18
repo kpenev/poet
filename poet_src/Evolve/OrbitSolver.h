@@ -114,10 +114,6 @@ namespace Evolve {
     ///\ingroup OrbitSolver_group
     class OrbitSolver {
     private:
-        ///A hard limit for the maximum age imposed on all solvers.
-        static const double MAX_END_AGE;
-
-        
         double __end_age, ///< The last  age for which evolution is required.
                __precision;///< The precision required of the solution
 

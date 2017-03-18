@@ -47,6 +47,10 @@ namespace Evolve {
         ///order in eccentricity.
         std::list<CombinedStoppingCondition *> __tidal_frequency_conditions;
 
+        ///Cleanup either during destruction or in preparation for changid
+        ///dissipation.
+        void reset();
+
         ///\brief Make sure that the entries in __tidal_frequency_conditions
         ///are appropriate for the current eccentricity expansion order.
         void fill_tidal_frequency_conditions(
@@ -176,7 +180,7 @@ namespace Evolve {
         );
 
         ///Cleanup. 
-        ~BrokenPowerlawPhaseLagZone();
+        ~BrokenPowerlawPhaseLagZone() {reset();}
 
     }; //End BrokenPowerlawPhaseLagZone class.
 

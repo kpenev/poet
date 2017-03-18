@@ -3,6 +3,27 @@
 
 namespace Evolve {
 
+    void BrokenPowerlawPhaseLagZone::reset()
+    {
+        if(__spin_condition) {
+            delete __spin_condition;
+            __spin_condition = NULL;
+        }
+        for(
+            std::list<CombinedStoppingCondition *>::iterator
+                condition = __tidal_frequency_conditions.begin();
+            condition != __tidal_frequency_conditions.end();
+            ++condition
+        )
+            delete *condition;
+        __tidal_frequency_conditions.clear();
+        __tidal_frequency_breaks.clear();
+        __spin_frequency_breaks.clear();
+        __tidal_frequency_powers.clear();
+        __spin_frequency_powers.clear();
+        __break_phase_lags.clear();
+    }
+
     void BrokenPowerlawPhaseLagZone::fill_tidal_frequency_conditions(
         BinarySystem &system, 
         bool primary,
@@ -119,6 +140,7 @@ namespace Evolve {
         double reference_phase_lag
     )
     {
+        reset();
         assert(__spin_frequency_breaks.size() == 0);
         assert(__tidal_frequency_breaks.size() == 0);
         assert(__spin_frequency_breaks.size() == 0);
@@ -375,18 +397,6 @@ namespace Evolve {
                                         primary,
                                         zone_index);
         fill_tidal_frequency_conditions(system, primary, zone_index);
-    }
-
-    BrokenPowerlawPhaseLagZone::~BrokenPowerlawPhaseLagZone()
-    {
-        delete __spin_condition;
-        for(
-            std::list<CombinedStoppingCondition *>::iterator
-                condition = __tidal_frequency_conditions.begin();
-            condition != __tidal_frequency_conditions.end();
-            ++condition
-        )
-            delete *condition;
     }
 
 } //End BinarySystem namespace.
