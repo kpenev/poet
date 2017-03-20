@@ -9,7 +9,8 @@ namespace Evolve {
                               zeros(0.0, nzones - 1);
         for(unsigned zone_ind = 0; zone_ind < nzones; ++zone_ind)
             angmom[zone_ind] = primary().zone(zone_ind).angular_momentum();
-        configure(age(),
+        configure(false,
+                  age(),
                   Core::NaN,
                   Core::NaN,
                   &(angmom[0]),
@@ -43,7 +44,8 @@ namespace Evolve {
                 ++zone_ind;
             }
         }
-        configure(age(),
+        configure(true,
+                  age(),
                   __initial_semimajor,
                   __initial_eccentricity,
                   &(angmom[0]),

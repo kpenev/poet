@@ -60,6 +60,7 @@ void configure_star(EvolvingStar *star,
                     bool zero_outer_periapsis)
 {
     reinterpret_cast<Star::InterpolatedEvolutionStar*>(star)->configure(
+        true,
         age,
         companion_mass,
         semimajor,
@@ -86,6 +87,7 @@ void configure_planet(LockedPlanet *planet,
                       bool zero_outer_periapsis)
 {
     reinterpret_cast<Planet::LockedPlanet*>(planet)->configure(
+        true,
         age,
         companion_mass,
         semimajor,
@@ -110,6 +112,7 @@ void configure_system(StarPlanetSystem *system,
 {
     assert(evolution_mode < TABULATION_EVOL_MODE);
     reinterpret_cast<Evolve::DiskPlanetSystem*>(system)->configure(
+        true,
         age,
         semimajor,
         eccentricity,

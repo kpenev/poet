@@ -60,14 +60,17 @@ namespace Star {
         ///\brief See DissipatingBody::configure().
         ///
         ///Invokes DissipatingBody::configure().
-        virtual void configure(double age, double companion_mass,
-                               double semimajor, double eccentricity,
+        virtual void configure(bool initialize,
+                               double age,
+                               double companion_mass,
+                               double semimajor,
+                               double eccentricity,
                                const double *spin_angmom,
-                               const double *inclination=NULL,
-                               const double *periapsis=NULL,
-                               bool locked_surface=false,
-                               bool zero_outer_inclination=false,
-                               bool zero_outer_periapsis=false);
+                               const double *inclination = NULL,
+                               const double *periapsis = NULL,
+                               bool locked_surface = false,
+                               bool zero_outer_inclination = false,
+                               bool zero_outer_periapsis = false);
 
         ///See DissipatingBody::angular_momentum_coupling().
         Eigen::Vector3d angular_momentum_coupling(

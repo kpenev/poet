@@ -257,6 +257,9 @@ namespace Evolve {
         ///The inclinations and arguments of periapsis must be already set for
         ///all zones.
         virtual void configure(
+            ///Is this the first time the body is configure() -ed?
+            bool initialize,
+
             ///The age to set the body to.
             double age,
 
@@ -275,26 +278,26 @@ namespace Evolve {
 
             ///The inclinations of the zones of the body (same order as 
             ///spin_angmom). If NULL, all inclinations are assumed zero.
-            const double *inclination=NULL,
+            const double *inclination = NULL,
 
             ///The arguments of periapsis of the zones of the bodies (same
             ///order as spin_angmom). If NULL, all periapses are assumed
             ///zero.
-            const double *periapsis=NULL,
+            const double *periapsis = NULL,
 
             ///If true, the outermost zone's spin is assumed locked to a 
             ///disk and spin_angmom is assumed to start from the next zone.
-            bool locked_surface=false,
+            bool locked_surface = false,
 
             ///If true, the outermost zone's inclination is assumed to be
             ///zero and the inclination argument is assumed to start from the
             ///next zone.
-            bool zero_outer_inclination=false,
+            bool zero_outer_inclination = false,
 
             ///If true, the outermost zone's periapsis is assumed to be
             ///zero and the inclination argument is assumed to start from the
             ///next zone.
-            bool zero_outer_periapsis=false
+            bool zero_outer_periapsis = false
         );
 
         ///Locks the given zone's spin to the orbit with the given frequency

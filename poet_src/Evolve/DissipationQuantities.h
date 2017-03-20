@@ -83,7 +83,7 @@ namespace Evolve {
 
             ///The derivative w.r.t. the angle between the spin angular momentum
             ///of the body and the orbital angular momentum.
-            INCLINATION=END_PHASE_LAG_DERIV,
+            INCLINATION = END_PHASE_LAG_DERIV,
 
             ///The derivative w.r.t. the eccentricity.
             ECCENTRICITY,
@@ -94,7 +94,7 @@ namespace Evolve {
 
             ///The derivative w.r.t. the argument of periapsis of the orbit in
             ///the equatorial plane a given zone.
-            PERIAPSIS=END_DIMENSIONLESS_DERIV,
+            PERIAPSIS = END_DIMENSIONLESS_DERIV,
 
             ///The derivative w.r.t. the radius of the body in \f$R_\odot\f$.
             RADIUS,

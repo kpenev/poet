@@ -21,11 +21,7 @@ namespace Evolve {
             case Dissipation::ORBIT_SPINUP : os << "ORBIT_SPINUP"; break;
             case Dissipation::INCLINATION_DECAY : os << "INCLINATION_DECAY";
                                                   break;
-            default :
-#ifdef DEBUG
-                      assert(false)
-#endif
-                          ;
+            default : assert(false);
         };
         return os;
     }
@@ -35,20 +31,29 @@ namespace Evolve {
             const Dissipation::Derivative &deriv)
     {
         switch(deriv) {
-            case Dissipation::NO_DERIV : os << "NO_DERIV"; break;
-            case Dissipation::AGE : os << "AGE"; break;
-            case Dissipation::RADIUS : os << "RADIUS"; break;
-            case Dissipation::MOMENT_OF_INERTIA :
-                                       os << "MOMENT_OF_INERTIA";
+            case Dissipation::NO_DERIV : os << "NO_DERIV";
+                                         break;
+            case Dissipation::AGE : os << "AGE";
+                                    break;
+            case Dissipation::SPIN_FREQUENCY : os << "SPIN_FREQUENCY";
+                                               break;
+            case Dissipation::ORBITAL_FREQUENCY: os << "ORBITAL_FREQUENCY";
+                                                 break;
+            case Dissipation::INCLINATION : os << "INCLINATION";
+                                            break;
+            case Dissipation::ECCENTRICITY: os << "ECCENTRICITY";
+                                            break;
+            case Dissipation::PERIAPSIS: os << "PERIAPSIS";
+                                         break;
+            case Dissipation::RADIUS : os << "RADIUS";
                                        break;
-            case Dissipation::SPIN_ANGMOM : os << "SPIN_ANGMOM"; break;
-            case Dissipation::SEMIMAJOR : os << "SEMIMAJOR"; break;
-            case Dissipation::INCLINATION : os << "INCLINATION"; break;
-            default :
-#ifdef DEBUG
-                      assert(false)
-#endif
-                          ;
+            case Dissipation::MOMENT_OF_INERTIA : os << "MOMENT_OF_INERTIA";
+                                                  break;
+            case Dissipation::SPIN_ANGMOM : os << "SPIN_ANGMOM";
+                                            break;
+            case Dissipation::SEMIMAJOR : os << "SEMIMAJOR";
+                                          break;
+            default : assert(false);
         };
         return os;
     }

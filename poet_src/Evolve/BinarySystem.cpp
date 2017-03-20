@@ -1718,7 +1718,8 @@ namespace Evolve {
         }
     }
 
-    int BinarySystem::configure(double age,
+    int BinarySystem::configure(bool initialize,
+                                double age,
                                 double semimajor,
                                 double eccentricity,
                                 const double *spin_angmom,
@@ -1748,7 +1749,8 @@ namespace Evolve {
                                                           semimajor,
                                                           eccentricity);
         find_locked_zones();
-        __body1.configure(age,
+        __body1.configure(initialize,
+                          age,
                           m2,
                           semimajor,
                           eccentricity,
@@ -1760,7 +1762,8 @@ namespace Evolve {
                           true);
         if(evolution_mode == Core::BINARY) {
             unsigned offset = __body1.number_zones();
-            __body2.configure(age,
+            __body2.configure(initialize,
+                              age,
                               m1,
                               semimajor,
                               eccentricity,
@@ -1776,7 +1779,8 @@ namespace Evolve {
         return 0;
     }
 
-    int BinarySystem::configure(double age,
+    int BinarySystem::configure(bool initialize,
+                                double age,
                                 const double *parameters, 
                                 Core::EvolModeType evolution_mode)
     {
@@ -1807,7 +1811,8 @@ namespace Evolve {
             if(evolution_mode == Core::SINGLE) --periapsis;
             spin_angmom = periapsis + num_zones - 1;
         }
-        return configure(age,
+        return configure(initialize,
+                         age,
                          semimajor,
                          eccentricity,
                          spin_angmom,
@@ -1865,7 +1870,7 @@ namespace Evolve {
                                              Core::EvolModeType evolution_mode,
                                              double *differential_equations)
     {
-        int status = configure(age, parameters, evolution_mode);
+        int status = configure(false, age, parameters, evolution_mode);
         if(status != GSL_SUCCESS) return status;
         switch(evolution_mode) {
             case Core::LOCKED_SURFACE_SPIN : 
@@ -1893,7 +1898,7 @@ namespace Evolve {
                                double *param_derivs,
                                double *age_derivs)
     {
-        configure(age, parameters, evolution_mode);
+        configure(false, age, parameters, evolution_mode);
         switch(evolution_mode) {
             case Core::LOCKED_SURFACE_SPIN :
                 locked_surface_jacobian(param_derivs, age_derivs);
@@ -1941,7 +1946,8 @@ namespace Evolve {
             inclinations[zone_ind] = zone.inclination();
             if(zone_ind) periapses[zone_ind - 1] = zone.periapsis();
         }
-        configure(__age,
+        configure(false,
+                  __age,
                   __semimajor,
                   __eccentricity,
                   &(spin_angmom[0]),
@@ -1968,7 +1974,8 @@ namespace Evolve {
                 direction=(above_lock_fraction < 0 ? -1 : 1);
         }
         body.unlock_zone_spin(zone_index, direction);
-        configure(__age,
+        configure(false,
+                  __age,
                   __semimajor,
                   __eccentricity,
                   &(spin_angmom[0]),
@@ -2033,7 +2040,8 @@ namespace Evolve {
             spin_angmom[zone_ind] = zone.angular_momentum();
             if(zone.locked()) __body1.unlock_zone_spin(zone_ind, 1);
         }
-        configure(__age,
+        configure(false,
+                  __age,
                   Core::NaN,
                   Core::NaN,
                   &spin_angmom[0],

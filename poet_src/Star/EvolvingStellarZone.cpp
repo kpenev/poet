@@ -45,7 +45,8 @@ namespace Star {
         }
     }
 
-    void EvolvingStellarZone::configure(double age,
+    void EvolvingStellarZone::configure(bool initialize,
+                                        double age,
                                         double orbital_frequency,
                                         double eccentricity,
                                         double orbital_angmom,
@@ -58,7 +59,8 @@ namespace Star {
             __current_age = age;
             reset_current_quantities();
         }
-        DissipatingZone::configure(age,
+        DissipatingZone::configure(initialize,
+                                   age,
                                    orbital_frequency,
                                    eccentricity,
                                    orbital_angmom,

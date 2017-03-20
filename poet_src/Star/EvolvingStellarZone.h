@@ -53,31 +53,34 @@ namespace Star {
         ///\brief Defines the current orbit, triggering re-calculation of all
         ///quantities.
         virtual void configure(
-                ///The age to set the zone to.
-                double age,
+            ///Is this the first time configure() is invoked?
+            bool initialize,
 
-                ///The angular velocity of the orbit in rad/day.
-                double orbital_frequency,
+            ///The age to set the zone to.
+            double age,
 
-                ///The eccentricity of the orbit
-                double eccentricity,
-                
-                ///The absolute value of the angular momentum of the orbit.
-                double orbital_angmom,
+            ///The angular velocity of the orbit in rad/day.
+            double orbital_frequency,
 
-                ///The angular (momentum/velocity) of the spin of the zone if
-                ///the zone is not in a spin-orbit lock (ignored it if is).
-                double spin,
-                
-                ///The inclination of the zone relative to the orbit.
-                double inclination,
-                
-                ///The argument of periapsis of the orbit in the equatorial
-                ///planet of the zone.
-                double periapsis,
-                
-                ///Is spin an angular velocity instead of angular momentum?
-                bool spin_is_frequency
+            ///The eccentricity of the orbit
+            double eccentricity,
+
+            ///The absolute value of the angular momentum of the orbit.
+            double orbital_angmom,
+
+            ///The angular (momentum/velocity) of the spin of the zone if
+            ///the zone is not in a spin-orbit lock (ignored it if is).
+            double spin,
+
+            ///The inclination of the zone relative to the orbit.
+            double inclination,
+
+            ///The argument of periapsis of the orbit in the equatorial
+            ///planet of the zone.
+            double periapsis,
+
+            ///Is spin an angular velocity instead of angular momentum?
+            bool spin_is_frequency
         );
 
         ///\brief The current age value of the given quantity (or its 

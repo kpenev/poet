@@ -396,7 +396,8 @@ namespace Evolve {
 
     }
 
-    void DissipatingBody::configure(double age,
+    void DissipatingBody::configure(bool initialize,
+                                    double age,
                                     double companion_mass,
                                     double semimajor,
                                     double eccentricity,
@@ -449,7 +450,8 @@ namespace Evolve {
                 zone_spin=Core::NaN;
                 ++angmom_offset;
             } else zone_spin=spin_angmom[zone_index-angmom_offset];
-            current_zone.configure(age,
+            current_zone.configure(initialize,
+                                   age,
                                    __orbital_frequency,
                                    eccentricity,
                                    orbital_angmom,

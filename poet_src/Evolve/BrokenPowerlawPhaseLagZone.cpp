@@ -271,9 +271,6 @@ namespace Evolve {
         int lag_index = (spin_index * __tidal_frequency_breaks.size()
                          +
                          tidal_index);
-/*        std::clog << "tidal_index = " << tidal_index << std::endl;
-        std::clog << "spin_index = " << spin_index << std::endl;
-        std::clog << "lag_index = " << lag_index << std::endl;*/
         double result = (
             __break_phase_lags[lag_index]
             *
@@ -296,21 +293,6 @@ namespace Evolve {
                 )
             )
         );
-/*        std::clog << "lag index: " << lag_index << std::endl;
-        std::clog << "base lag: " 
-                  << __break_phase_lags[lag_index]
-                  << std::endl;
-        std::clog << "spin power: " << spin_power << std::endl;
-        std::clog << "tidal power: " << tidal_power << std::endl;
-        if(spin_power != 0)
-            std::clog << "ref spin freq: "
-                      << __spin_frequency_breaks[spin_index]
-                      << std::endl;
-        if(tidal_power != 0)
-            std::clog << "ref tidal freq: "
-                      << __tidal_frequency_breaks[tidal_index]
-                      << std::endl;
-        std::clog << "scaled lag: " << result << std::endl;*/
         switch(deriv) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (

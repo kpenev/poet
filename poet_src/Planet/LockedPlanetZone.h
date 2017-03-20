@@ -86,33 +86,43 @@ namespace Planet {
         ///\brief Calls the usual DissipatingZone::configure but with zero
         ///inclination and periapsis.
         void configure(
-                ///The age to set the zone to.
-                double age,
+            ///Is this the first time configure() is invoked?
+            bool initialize,
 
-                ///The angular velocity of the orbit in rad/day.
-                double orbital_frequency,
+            ///The age to set the zone to.
+            double age,
 
-                ///The eccentricity of the orbit
-                double eccentricity,
-                
-                ///The absolute value of the angular momentum of the orbit.
-                double orbital_angmom,
+            ///The angular velocity of the orbit in rad/day.
+            double orbital_frequency,
 
-                ///The angular momentum/frequency of the spin of the zone if the
-                ///zone is not locked (ignored it if is).
-                double spin_angmom,
-                
-                ///The inclination of the zone relative to the orbit.
-                double ,
-                
-                ///The argument of periapsis of the orbit in the equatorial
-                ///planet of the zone.
-                double ,
+            ///The eccentricity of the orbit
+            double eccentricity,
 
-                ///Is spin_angmom angular momentum of freuqency? 
-                bool spin_is_frequency)
-        {DissipatingZone::configure(age, orbital_frequency, eccentricity,
-                                    orbital_angmom, spin_angmom, 0, 0,
+            ///The absolute value of the angular momentum of the orbit.
+            double orbital_angmom,
+
+            ///The angular momentum/frequency of the spin of the zone if the
+            ///zone is not locked (ignored it if is).
+            double spin_angmom,
+
+            ///The inclination of the zone relative to the orbit.
+            double ,
+
+            ///The argument of periapsis of the orbit in the equatorial
+            ///planet of the zone.
+            double ,
+
+            ///Is spin_angmom angular momentum of freuqency? 
+            bool spin_is_frequency
+        )
+        {DissipatingZone::configure(initialize,
+                                    age,
+                                    orbital_frequency,
+                                    eccentricity,
+                                    orbital_angmom,
+                                    spin_angmom,
+                                    0,
+                                    0,
                                     spin_is_frequency);}
     }; //End LockedPlanetZone class.
 

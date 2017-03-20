@@ -379,7 +379,8 @@ namespace Evolve {
         }
     }
 
-    void DissipatingZone::configure(double
+    void DissipatingZone::configure(bool initialize,
+                                    double
 #ifdef DEBUG
                                     age
 #endif
@@ -412,7 +413,7 @@ namespace Evolve {
             }
         }
         if(std::isnan(orbital_frequency)) return;
-        if(__lock.spin_frequency_multiplier()==0) initialize_locks();
+        if(initialize) initialize_locks();
 
         fill_Umm();
         __power=0;

@@ -701,6 +701,9 @@ namespace Evolve {
 
         ///Sets the current state of the system.
         virtual int configure(
+            ///Is this the first time configure() is invoked?
+            bool initialize,
+
             ///The age to set the system to.
             double age,
 
@@ -731,14 +734,18 @@ namespace Evolve {
         ///Sets the current state of the system directly from the evolutino
         ///variables.
         int configure(
-                ///The current age of the system.
-                double age,
+            ///Is this the first time configure() is invoked?
+            bool initialize,
 
-                ///The parameters being evolved. See differential_equations().
-                const double *parameters, 
-                
-                ///The evolution mode to assume for the system.
-                Core::EvolModeType evolution_mode);
+            ///The current age of the system.
+            double age,
+
+            ///The parameters being evolved. See differential_equations().
+            const double *parameters, 
+
+            ///The evolution mode to assume for the system.
+            Core::EvolModeType evolution_mode
+        );
 
         ///Returns the present age of the system in Gyr.
         double age() const {return __age;}

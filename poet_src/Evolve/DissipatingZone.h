@@ -256,6 +256,9 @@ namespace Evolve {
         ///\brief Defines the current orbit, triggering re-calculation of all
         ///quantities.
         virtual void configure(
+                ///Is this the first time the zone is configure() -ed?
+                bool initialize,
+
                 ///The age to set the zone to.
                 double age,
 
@@ -281,7 +284,8 @@ namespace Evolve {
                 
                 ///Should the spin argument be interpreted as an angular momentum
                 ///or a spin frequency?
-                bool spin_is_frequency);
+                bool spin_is_frequency
+        );
 
         ///\brief The tidal forcing frequency for the given term and orbital
         ///frequency.

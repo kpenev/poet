@@ -53,7 +53,8 @@ namespace Star {
         }
     }
 
-    void ExponentialDecayDiffRotBody::configure(double age,
+    void ExponentialDecayDiffRotBody::configure(bool initialize,
+                                                double age,
                                                 double companion_mass,
                                                 double semimajor,
                                                 double eccentricity,
@@ -68,7 +69,8 @@ namespace Star {
             __current_age=age;
             reset_torque();
         }
-        Evolve::DissipatingBody::configure(age,
+        Evolve::DissipatingBody::configure(initialize,
+                                           age,
                                            companion_mass,
                                            semimajor,
                                            eccentricity,
