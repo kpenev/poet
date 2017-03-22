@@ -221,10 +221,20 @@ extern "C" {
         int quantityID
     );
 
-    ///\brief Return whether by default the log(given quantity) is interpolated
-    ///vs. the quantity itself.
+    ///\brief Return whether by default the log(given quantity) is 
+    ///interpolated vs. the quantity itself.
     bool default_log_quantity(
         ///The quantity to return the default nodes for.
         int quantityID
     );
+
+    ///Alias for StellarEvolution::metallicity_from_feh()
+    double metallicity_from_feh(double feh);
+
+    ///Alias for StellarEvolution::feh_from_metallicity()
+    double feh_from_metallicity(double metallicity);
+
+    ///Calculate [Fe/H] given Z (metal mass fraction) for a star.
+    double feh_from_z(double z);
+
 } //End extern "C"

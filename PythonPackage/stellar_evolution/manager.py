@@ -184,8 +184,6 @@ class StellarEvolutionManager :
     Class for managing a collection of stellar evolution inteprolations.
     """
 
-    _solarZ = 0.015
-
     def _get_decimal(self, value) :
         """Prepare a value for db storage as a limited precision decimal."""
 
@@ -782,9 +780,7 @@ class StellarEvolutionManager :
             mass = self._get_decimal(parsed_fname['MASS'])
             if 'Z' in parsed_fname :
                 metallicity = self._get_decimal(
-                    numpy.log10(float(parsed_fname['Z'])
-                                /
-                                self._solarZ) 
+                    library.feh_from_z(float(parsed_fname['Z']))
                 )
             else :
                 metallicity = self._get_decimal(parsed_fname['FeH'])

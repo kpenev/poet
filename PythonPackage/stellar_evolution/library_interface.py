@@ -115,6 +115,15 @@ def initialize_library() :
     library.default_nodes.argtypes = [c_int]
     library.default_nodes.restype = c_int
 
+    library.metallicity_from_feh.argtypes = [c_double]
+    library.metallicity_from_feh.restype = c_double
+
+    library.feh_from_metallicity.argtypes = [c_double]
+    library.feh_from_metallicity.restype = c_double
+
+    library.feh_from_z.argtypes = [c_double]
+    library.feh_from_z.restype = c_double
+
     return library
 
 library = initialize_library()

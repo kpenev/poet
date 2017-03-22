@@ -10,6 +10,8 @@ import sys
 sys.path.append('../PythonPackage')
 
 from interpolator_manager_gui import InterpolatorManagerGUI
+from stellar_evolution.library_interface import\
+    library as stellar_evolution_library
 from matplotlib.backends.backend_tkagg import\
     FigureCanvasTkAgg,\
     NavigationToolbar2TkAgg
@@ -22,6 +24,7 @@ import numpy
 import astropy
 from datetime import datetime, timedelta
 import functools
+from math import floor
 
 if sys.version_info[0] < 3:
     import Tkinter as Tk
@@ -950,8 +953,11 @@ def read_MESA(dirname) :
             print('Skipping ' + repr(fname))
             continue
         mass_key = round(float(parsed_fname.group('MASS')), 3)
+        feh = stellar_evolution_library.feh_from_z(
+            float(parsed_fname.group('METALLICITY'))
+        )
         metallicity_key = round(
-            numpy.log10(float(parsed_fname.group('METALLICITY')) / 0.015), 
+            (-1.0 if feh < 0 else 1.0) * floor(abs(feh) * 1000) / 1000,
             3
         )
         if mass_key not in result : result[mass_key] = dict()

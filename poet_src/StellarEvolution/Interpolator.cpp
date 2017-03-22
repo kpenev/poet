@@ -11,6 +11,36 @@
 
 namespace StellarEvolution {
 
+    ///\brief A scaling constant used when transforming between different
+    ///metallicity quantities.
+    const double scaling = Yprotosun - Yprimordial + Zprotosun;
+
+    double metallicity_from_feh(double feh)
+    {
+        return (
+            feh
+            +
+            std::log10(
+                (1 - Yprimordial)
+                /
+                (Xprotosun + scaling * std::pow(10.0, feh))
+            )
+        );
+    }
+
+    double feh_from_metallicity(double metallicity)
+    {
+        return (
+            metallicity
+            -
+            std::log10(
+                (1.0 - Yprimordial - scaling * std::pow(10.0, metallicity))
+                /
+                Xprotosun
+            )
+        );
+    }
+
     int Interpolator::find_first_core_index(
         const std::valarray<double> &core_mass
     ) const
@@ -198,12 +228,12 @@ namespace StellarEvolution {
     EvolvingStellarQuantity *Interpolator::operator()(
         QuantityID quantity,
         double mass,
-        double metallicity
+        double feh
     ) const
     {
         return new EvolvingStellarQuantity(
             mass,
-            metallicity,
+            metallicity_from_feh(feh),
             __track_masses, 
             __track_metallicities,
             __interpolated_quantities[quantity],

@@ -29,7 +29,10 @@ namespace Core {
         public:
             ///Create an exception.
             General(const std::string &error_message="") : 
-                message(error_message) {}
+                message(error_message)
+                {
+                    std::cerr << what() << ": " << error_message << std::endl;
+                }
 
             ///The type of error.
             virtual const char *what() const throw() {return "general error";}

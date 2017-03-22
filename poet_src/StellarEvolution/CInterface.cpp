@@ -231,3 +231,18 @@ bool default_log_quantity(int quantityID)
         static_cast<StellarEvolution::QuantityID>(quantityID)
     );
 }
+
+double metallicity_from_feh(double feh)
+{
+    return StellarEvolution::metallicity_from_feh(feh);
+}
+
+double feh_from_metallicity(double metallicity)
+{
+    return StellarEvolution::feh_from_metallicity(metallicity);
+}
+
+double feh_from_z(double z)
+{
+    return feh_from_metallicity(std::log10(z/StellarEvolution::Zprotosun));
+}

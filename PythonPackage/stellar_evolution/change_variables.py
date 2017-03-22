@@ -222,6 +222,7 @@ class VarChangingInterpolator(MESAInterpolator) :
                     age_in_range,
                     metallicity_index
                 ] = quantity(self.grid.ages[age_in_range])
+
                 if not self._defined_weights :
                     self.grid.weights[mass_index,
                                       :,
@@ -285,8 +286,8 @@ class VarChangingInterpolator(MESAInterpolator) :
         super().__init__(**kwargs)
         self.grid = Structure(
             metallicities = scipy.linspace(
-                float(self.track_metallicities[0]),
-                float(self.track_metallicities[-1]),
+                float(self.track_metallicities[0]) * 0.99,
+                float(self.track_metallicities[-1]) * 0.99,
                 3 * len(self.track_metallicities)
             ),
             masses = scipy.linspace(

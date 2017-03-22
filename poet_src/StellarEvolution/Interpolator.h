@@ -28,6 +28,18 @@
 
 namespace StellarEvolution {
 
+    ///The primordial Helium fraction of the universe.
+    const double Yprimordial = 0.249;
+
+    ///The Helium fraction with which the Sun formed.
+    const double Yprotosun = 0.2612;
+
+    ///The metal fraction with which the Sun formed.
+    const double Zprotosun = 0.0150;
+
+    ///The hydrogen fraction with which the Sun formed.
+    const double Xprotosun = 1.0 - Yprotosun - Zprotosun;
+
     ///\brief A class that interpolates among stellar evolution tracks.
     ///
     ///Uses a  set of pre-computed evolution tracks to generate 
@@ -201,7 +213,7 @@ namespace StellarEvolution {
         );
 
         ///\brief Return a single quantity interpolation to a given mass and
-        ///metallicity.
+        ///[Fe/H].
         ///
         ///The result must be destroyed when it becomes obsolete.
         EvolvingStellarQuantity *operator()(
@@ -211,8 +223,8 @@ namespace StellarEvolution {
             ///The stellar mass to which to interpolate in \f$M_\odot\f$.
             double mass,
 
-            ///The stellar metallicity to which to interpolate in [Fe/H].
-            double metallicity
+            ///The stellar [Fe/H] to which to interpolate.
+            double feh
         ) const;
 
         ///The age at which the core begins to form in Gyr.
@@ -279,6 +291,14 @@ namespace StellarEvolution {
         ar & __core_formation;
         if(__core_formation < 0) __core_formation = Core::Inf;
     }
+
+    ///\brief Return the metallicity interpolation parameter corresponding to
+    ///the given [Fe/H] value.
+    double metallicity_from_feh(double feh);
+
+    ///\brief Return the [Fe/H] value corresponding to the given metallicity
+    //interpolation parameter.
+    double feh_from_metallicity(double metallicity);
 
 }//End of StellarEvolution namespace
 
