@@ -233,6 +233,7 @@ class VarChangingInterpolator(MESAInterpolator) :
                          ==
                          age_in_range).all()
                     )
+        self._defined_weights = True
 
     def _interpolate_grid_variable(self, var_name, metallicity) :
         """
@@ -268,15 +269,55 @@ class VarChangingInterpolator(MESAInterpolator) :
                     )(metallicity)
         return result
 
-    def __init__(self, **kwargs) :
+    def _define_var_change_grid(self, metallicities, masses, ages) :
         """
-        Prepare an interpolator able to find mass, age from other quantities.
+        Create a new grid with the given locations of the nodes.
 
         Args:
-            - change_from:
-                A length-2 iterable listing the two quantities which will
-                be transformed to mass and age. Any two of the following:
-                'teff', 'logg', 'lum',  'rho'. This is case-insensitive.
+            - metallicities:
+                The [Fe/H] values at which to tabulate the dependent
+                variables.
+
+            - masses:
+                The stellar masses at which to tabulate the dependent
+                variables.
+
+            - ages:
+                The ages (in Gyrs) at which to tabulate the dependent
+                variables.
+ 
+        Returns:
+            None, but creates self.grid with all arguments as same-name
+            members and an additional weight member containing an empty array
+            to fill with weights later when grid variables start to be
+            calculated. Also creates self._defined_weigths to keep track if
+            weights have been previously initialized.
+        """
+
+        print(77 * '=')
+        print('Defining grid with\n'
+              +
+              '\t[Fe/H] = ' + repr(metallicities) + '\n'
+              +
+              '\tM* = ' + repr(masses) + '\n'
+              +
+              '\tt = ' + repr(ages))
+        self.grid = Structure(metallicities = metallicities,
+                              masses = masses,
+                              ages = ages)
+        self.grid.weights = scipy.empty((self.grid.masses.size,
+                                         self.grid.ages.size,
+                                         self.grid.metallicities.size),
+                                        dtype = bool)
+        self._defined_weights = False
+                             
+    def __init__(self, 
+                 grid_metallicities,
+                 grid_masses,
+                 grid_ages,
+                 **kwargs) :
+        """
+        Prepare an interpolator able to find mass, age from other quantities.
 
         Keyword only arguments: see MESAInterpolator.__init__
 
@@ -284,24 +325,11 @@ class VarChangingInterpolator(MESAInterpolator) :
         """
 
         super().__init__(**kwargs)
-        self.grid = Structure(
-            metallicities = scipy.linspace(
-                float(self.track_metallicities[0]) * 0.99,
-                float(self.track_metallicities[-1]) * 0.99,
-                3 * len(self.track_metallicities)
-            ),
-            masses = scipy.linspace(
-                float(self.track_masses[0]),
-                float(self.track_masses[-1]),
-                10 * len(self.track_masses)
-            ),
-            ages = scipy.linspace(1e-2, 13.71, 412),
+        self._define_var_change_grid(
+            metallicities = grid_metallicities,
+            masses = grid_masses,
+            ages = grid_ages
         )
-        self.grid.weights = scipy.empty((self.grid.masses.size,
-                                         self.grid.ages.size,
-                                         self.grid.metallicities.size),
-                                        dtype = bool)
-        self._defined_weights = False
 
     def change_variables(self, metallicity, **kwargs) :
         """

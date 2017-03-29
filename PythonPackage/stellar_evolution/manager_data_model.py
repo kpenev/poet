@@ -266,7 +266,7 @@ class VarchangeGridNode(object) :
     )
     value = Column(
         Float, 
-        doc = 'The value of the dependent variable at the node.'
+        doc = 'The value of the independent variable at the node.'
     )
 
 class VarchangeMetallicityNode(VarchangeGridNode, DataModelBase) :
