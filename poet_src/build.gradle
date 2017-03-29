@@ -224,7 +224,7 @@ def findLibraryLinux(String libNameStart)
             if(previousMatch) {
                 throw new ProjectConfigurationException(
                     "Multiple link candidates found for library " +
-                    "${libName}:\n" +
+                    "${libNameStart}:\n" +
                     "\t${previousMatch}\n" +
                     "\tand\n" +
                     "\t${libInfo}",
@@ -240,7 +240,7 @@ def findLibraryLinux(String libNameStart)
     }
     if(!previousMatch) {
         throw new ProjectConfigurationException(
-            "No candidate ${libName} library found!",
+            "No candidate ${libNameStart} library found!",
             new NullPointerException()
         );
     }
