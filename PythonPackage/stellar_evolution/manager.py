@@ -408,7 +408,9 @@ class ManagedInterpolator(VarChangingInterpolator) :
                              grid_masses = numpy.array([]),
                              grid_ages = numpy.array([]),
                              interpolator_fname = interpolator_fname)
+        print(70 * '=' + '\n\t Checking for grid.\n' + 70*'=')
         if not self._set_var_change_grid('default', db_session) :
+            print(70 * '=' + '\n\t Creating new grid.\n' + 70*'=')
             self._new_var_change_grid(
                 'default',
                 metallicities = numpy.linspace(
@@ -424,6 +426,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
                 ages = numpy.linspace(1e-2, 13.71, 412),
                 db_session = db_session
             )
+        print(70 * '=' + '\n\t Initialized interpolator.\n' + 70*'=')
 
     def __str__(self) :
         """Human readable representation of the interpolator."""
@@ -757,8 +760,11 @@ class StellarEvolutionManager :
         interp_fname = os.path.join(self._serialization_path, 
                                     interp_str)
 
-        db_interpolator = SerializedInterpolator(name = name or interp_str,
-                                                 filename = interp_str)
+        db_interpolator = SerializedInterpolator(
+            id = db_session.query(SerializedInterpolator).count() + 1,
+            name = name or interp_str,
+            filename = interp_str
+        )
 
         if (
                 db_session.query(
