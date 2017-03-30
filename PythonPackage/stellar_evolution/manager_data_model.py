@@ -97,7 +97,7 @@ class Track(DataModelBase) :
         doc = 'The stellar mass of the track contained in the given file.',
     )
     metallicity = Column(
-        Numeric(5, 3),
+        Numeric(5, 4),
         primary_key = True,
         doc = 'The metallicity ([Fe/H])of the track contained in the given '
         'file.',

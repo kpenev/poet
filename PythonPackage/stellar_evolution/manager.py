@@ -6,7 +6,8 @@ sys.path.append('..')
 from stellar_evolution.change_variables import VarChangingInterpolator
 from stellar_evolution.library_interface import\
     library_track_fname_rex,\
-    library_track_fname
+    library_track_fname,\
+    library
 from .manager_data_model import\
     DataModelBase,\
     SerializedInterpolator,\
@@ -818,6 +819,7 @@ class StellarEvolutionManager :
             actual_interpolator = ManagedInterpolator(
                 db_interpolator = db_interpolator,
                 serialization_path = self._serialization_path,
+                db_session = db_session,
                 mesa_dir = track_dir,
                 smoothing = interp_smoothing,
                 nodes = interp_nodes,
