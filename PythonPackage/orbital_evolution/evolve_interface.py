@@ -269,7 +269,9 @@ class Binary :
                             'core_angmom',
                             'evolution_mode',
                             'wind_saturation']
-    def evolution_quantity_c_type(self, quantity) :
+
+    @staticmethod
+    def evolution_quantity_c_type(quantity) :
         """Return the ctypes type of the given evolution quantity."""
 
         if quantity == 'evolution_mode' : return c_int
@@ -450,9 +452,9 @@ class Binary :
                 in the evolution_quantities property.
         
         Returns: 
-            A structure with mebers named the same way as the arguments
-            which were set to True containing the values of the
-            corresponding quantity at each evolution step.
+            A structure with mebers named the same way as the input list of
+            quantities containing the values of the corresponding quantity at
+            each evolution step. The order is always in increasing age.
         """
 
         result = Structure()
