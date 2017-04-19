@@ -13,10 +13,10 @@ class Structure :
     def format(self, prefix='') :
         """Generate a tree-like representation of self."""
 
-        result=''
+        result = ''
         for attr_name in dir(self) :
-            if attr_name[0]!='_' :
-                attribute=getattr(self, attr_name)
+            if attr_name[0] != '_' and attr_name != 'format' :
+                attribute = getattr(self, attr_name)
                 if isinstance(attribute, Structure) :
                     result+=(prefix
                              +
@@ -27,17 +27,17 @@ class Structure :
                              '\n'
                              +
                              attribute.format(prefix + '| '))
-                else : result+=(prefix
-                                +
-                                '|-'
-                                +
-                                attr_name
-                                +
-                                ': '
-                                +
-                                str(attribute)
-                                +
-                                '\n')
+                else : result += (prefix
+                                  +
+                                  '|-'
+                                  +
+                                  attr_name
+                                  +
+                                  ': '
+                                  +
+                                  str(attribute)
+                                  +
+                                  '\n')
         return result
 
 def semimajor(m1, m2, orbital_period) :
