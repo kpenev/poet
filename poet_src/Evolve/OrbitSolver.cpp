@@ -665,11 +665,11 @@ namespace Evolve {
                                      const BinarySystem &system, 
                                      const std::list<double> &required_ages)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Determining next stop age: " << std::endl;
 #endif
         double result = system.next_stop_age();
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Next system stop age: " << result << std::endl;
 #endif
         if(required_ages.size() == 0) return result;
@@ -680,14 +680,17 @@ namespace Evolve {
             next_required_age = required_ages.begin();
         if(
             next_required_age != required_ages.end()
+            &&
+            age == *next_required_age
+        )
+            ++next_required_age;
+        if(
+            next_required_age != required_ages.end()
             && 
             result > *next_required_age
-        ) {
-            if(age == *next_required_age) ++next_required_age;
-            if(next_required_age != required_ages.end()) 
-                result = *next_required_age;
-        }
-#ifdef DEBUG
+        ) 
+            result = *next_required_age;
+#ifndef NDEBUG
         std::cerr << "Required ages change that to: " << result << std::endl;
 #endif
         return result;
