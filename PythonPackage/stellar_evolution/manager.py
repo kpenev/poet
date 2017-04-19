@@ -149,11 +149,6 @@ class ManagedInterpolator(VarChangingInterpolator) :
         variable_db_id = db_session.query(
             VarchangeDependentVariable.id
         ).filter_by(name = variable).all()
-        print(77 * '='
-              +
-              '\nvar DB ID = ' + repr(variable_db_id) + '\n'
-              +
-              77 * '=')
         if must_exist or len(variable_db_id) > 0 :
             return variable_db_id[0][0]
         else :
@@ -408,9 +403,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
                              grid_masses = numpy.array([]),
                              grid_ages = numpy.array([]),
                              interpolator_fname = interpolator_fname)
-        print(70 * '=' + '\n\t Checking for grid.\n' + 70*'=')
         if not self._set_var_change_grid('default', db_session) :
-            print(70 * '=' + '\n\t Creating new grid.\n' + 70*'=')
             self._new_var_change_grid(
                 'default',
                 metallicities = numpy.linspace(
@@ -426,7 +419,6 @@ class ManagedInterpolator(VarChangingInterpolator) :
                 ages = numpy.linspace(1e-2, 13.71, 412),
                 db_session = db_session
             )
-        print(70 * '=' + '\n\t Initialized interpolator.\n' + 70*'=')
 
     def __str__(self) :
         """Human readable representation of the interpolator."""

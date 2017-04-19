@@ -294,14 +294,6 @@ class VarChangingInterpolator(MESAInterpolator) :
             weights have been previously initialized.
         """
 
-        print(77 * '=')
-        print('Defining grid with\n'
-              +
-              '\t[Fe/H] = ' + repr(metallicities) + '\n'
-              +
-              '\tM* = ' + repr(masses) + '\n'
-              +
-              '\tt = ' + repr(ages))
         self.grid = Structure(metallicities = metallicities,
                               masses = masses,
                               ages = ages)
