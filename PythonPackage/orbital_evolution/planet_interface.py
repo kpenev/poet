@@ -9,6 +9,7 @@ from orbital_evolution.evolve_interface import\
     library as orbital_evolution_library
 from ctypes import cdll, c_void_p, c_double
 from ctypes.util import find_library
+from astropy import units, constants
 
 def initialize_library() :
     """Prepare the planet library for use."""
@@ -39,16 +40,19 @@ class LockedPlanet(DissipatingBody) :
 
         Args:
             - mass:
-                The mass of the planet in Jovian masses.
+                The mass of the planet in solar masses.
             - radius:
-                The radius of the planet in Jovian radii. 
+                The radius of the planet in solar radii. 
 
         Returns: None
         """
 
         self.mass = mass
         self.radius = radius
-        self.c_body = library.create_planet(mass, radius)
+        self.c_body = library.create_planet(
+            (mass * constants.M_sun / constants.M_jup).to('').value,
+            (radius * constants.R_sun / constants.R_jup).to('').value
+        )
 
     def delete(self) :
         """
@@ -58,4 +62,5 @@ class LockedPlanet(DissipatingBody) :
         library.destroy_planet(self.c_body)
 
 if __name__ == '__main__' :
-    planet = LockedPlanet(1.0, 1.0)
+    planet = LockedPlanet((constants.M_jup / constants.M_sun).to(''),
+                          (constants.R_jup / constants.R_sun).to(''))
