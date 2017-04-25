@@ -296,29 +296,35 @@ namespace Evolve {
         switch(deriv) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (
-                    spin_power / spin_frequency()
+                    (spin_power ? spin_power / spin_frequency() : 0.0)
                     -
-                    spin_frequency_multiplier
-                    *
-                    tidal_power
-                    /
-                    forcing_frequency
+                    (
+                        tidal_power
+                        ? (spin_frequency_multiplier * tidal_power
+                           /
+                           forcing_frequency)
+                        : 0.0
+                    )
                 );
                 break;
             case Dissipation::ORBITAL_FREQUENCY :
                 result *= (
-                    orbital_frequency_multiplier
-                    * 
-                    tidal_power
-                    /
-                    forcing_frequency
+                    tidal_power 
+                    ? (orbital_frequency_multiplier * tidal_power
+                       /
+                       forcing_frequency)
+                    : 0.0
                 );
                 break;
             default :
                 assert(deriv == Dissipation::NO_DERIV);
         }
 
-        if(forcing_frequency == 0) above_lock_value  = -result;
+        if(forcing_frequency == 0) {
+            if(spin_frequency_multiplier < 0) result *= -1.0;
+            above_lock_value  = -result;
+            return result;
+        }
         return (forcing_frequency >= 0 ? result : -result);
 
     }//End BrokenPowerlawPhaseLagZone::modified_phase_lag definition.

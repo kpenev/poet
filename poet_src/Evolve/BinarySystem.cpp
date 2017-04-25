@@ -503,9 +503,11 @@ namespace Evolve {
                     -
                     deriv_body.tidal_torque(0, false)[2]
                 ) * coef;
-                rhs(deriv_zone_index) -= (deriv_body.tidal_torque(0, false)[2]
-                                          *
-                                          coef);
+                rhs(deriv_zone_index) -= (
+                    deriv_body.tidal_torque(0, false)[2]
+                    *
+                    coef
+                );
             } else if(deriv == Dissipation::MOMENT_OF_INERTIA) {
                 rhs(deriv_zone_index) -= (
                     deriv_zone.moment_of_inertia(1)
@@ -553,12 +555,13 @@ namespace Evolve {
                 body.tidal_torque(*zi, true, deriv)[2];
             tidal_torque_z_below[locked_zone_ind] =
                 body.tidal_torque(*zi, false, deriv)[2];
-            if(!zone_specific(deriv) || *zi == 0)
+            if(!zone_specific(deriv) || *zi == 0) {
                 tidal_power_difference[locked_zone_ind] = (
                     body.tidal_power(*zi, true, deriv)
                     -
                     body.tidal_power(*zi, false, deriv)
                 );
+            }
             ++locked_zone_ind;
         }
         Eigen::MatrixXd matrix(num_locked_zones, num_locked_zones);
@@ -589,13 +592,19 @@ namespace Evolve {
             DissipatingZone &zone = (i < __body1.number_locked_zones()
                                      ? __body1
                                      : __body2).zone(*zi);
-            matrix(i, i) += ((tidal_torque_z_above[i] - tidal_torque_z_below[i])
-                             /
-                             zone.angular_momentum());
+            matrix(i, i) += (
+                (tidal_torque_z_above[i] - tidal_torque_z_below[i])
+                /
+                zone.angular_momentum()
+            );
             if(deriv == Dissipation::NO_DERIV)
-                rhs(i) += zone.moment_of_inertia(1) / zone.moment_of_inertia();
+                rhs(i) += (zone.moment_of_inertia(1)
+                           /
+                           zone.moment_of_inertia());
             else if(deriv==Dissipation::AGE)
-                rhs(i) += zone.moment_of_inertia(2) / zone.moment_of_inertia();
+                rhs(i) += (zone.moment_of_inertia(2)
+                           /
+                           zone.moment_of_inertia());
             rhs(i) -= ((nontidal_torque[i] + tidal_torque_z_below[i])
                        /
                        zone.angular_momentum());
@@ -1942,10 +1951,13 @@ namespace Evolve {
                                                   -
                                                   __body1.number_zones()));
             if(zone.locked()) ++locked_zone_ind;
-            else spin_angmom[zone_ind-locked_zone_ind] = zone.angular_momentum();
+            else spin_angmom[zone_ind-locked_zone_ind] = (
+                zone.angular_momentum()
+            );
             inclinations[zone_ind] = zone.inclination();
             if(zone_ind) periapses[zone_ind - 1] = zone.periapsis();
         }
+        assert(locked_zone_ind == num_locked_zones);
         configure(false,
                   __age,
                   __semimajor,

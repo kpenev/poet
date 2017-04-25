@@ -447,15 +447,24 @@ namespace Evolve {
                         (deriv<Dissipation::END_PHASE_LAG_DERIV
                          ? static_cast<Dissipation::Derivative>(deriv)
                          : Dissipation::NO_DERIV);
-                    double tidal_frequency=forcing_frequency(mp, m,
-                                                             orbital_frequency),
+                    double tidal_frequency = 
+                               forcing_frequency(mp, m, orbital_frequency),
                            mod_phase_lag_above,
-                           mod_phase_lag_below=modified_phase_lag(mp, m,
-                                   tidal_frequency, phase_lag_deriv,
-                                   mod_phase_lag_above),
-                           love_coef=love_coefficient(mp, m,
-                                   (phase_lag_deriv==Dissipation::AGE
-                                    ? Dissipation::AGE : Dissipation::NO_DERIV)),
+                           mod_phase_lag_below = 
+                               modified_phase_lag(mp,
+                                                  m,
+                                                  tidal_frequency,
+                                                  phase_lag_deriv,
+                                                  mod_phase_lag_above),
+                           love_coef = love_coefficient(
+                               mp,
+                               m,
+                               (
+                                   phase_lag_deriv == Dissipation::AGE
+                                   ? Dissipation::AGE
+                                   : Dissipation::NO_DERIV
+                               )
+                           ),
                            U_mmp, U_mp1mp, U_mm1mp; 
                     if(deriv<Dissipation::END_PHASE_LAG_DERIV) {
                         U_mmp=U_mmp_value;
@@ -629,18 +638,14 @@ namespace Evolve {
                    +
                    (orbit_torque[2]*cos_inc + orbit_torque[0]*sin_inc)
                    /angular_momentum();
-#ifdef DEBUG
         else assert(false);
-#endif
         return Core::NaN;
     }
 
     void DissipatingZone::release_lock()
     {
         if(__lock.spin_frequency_multiplier()==2) {
-#ifdef DEBUG
             assert(__lock.orbital_frequency_multiplier()%2==1);
-#endif
             __other_lock.set_lock((__lock.orbital_frequency_multiplier()+1)/2,
                     1, -1);
             __lock.set_lock((__lock.orbital_frequency_multiplier()-1)/2, 1, -1);
@@ -655,14 +660,17 @@ namespace Evolve {
 
     void DissipatingZone::release_lock(short direction)
     {
-#ifdef DEBUG
         assert(__lock);
-        assert(direction==1 || direction==-1);
-#endif
+        assert(direction == 1 || direction == -1);
         __lock.lock_direction(direction);
-        int orbit_mult=(__lock.spin_frequency_multiplier()==2 ? 1 : 2)
-                       *__lock.orbital_frequency_multiplier()+direction;
-        if(orbit_mult%2) __other_lock.set_lock(orbit_mult, 2, -direction);
+        int orbit_mult=(
+            (__lock.spin_frequency_multiplier() == 2 ? 1 : 2)
+            *
+            __lock.orbital_frequency_multiplier()
+            +
+            direction
+        );
+        if(orbit_mult % 2) __other_lock.set_lock(orbit_mult, 2, -direction);
         else __other_lock.set_lock(orbit_mult/2, 1, -direction);
         update_lock_to_lower_e_order(__other_lock);
     }

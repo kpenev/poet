@@ -408,11 +408,9 @@ namespace Evolve {
 
         ///Locks the zone spin to the orbit in the given ratio.
         void set_lock(int orbital_frequency_multiplier,
-                int spin_frequency_multiplier)
+                      int spin_frequency_multiplier)
         {
-#ifdef DEBUG
             assert(!__lock);
-#endif
             __lock.set_lock(orbital_frequency_multiplier,
                     spin_frequency_multiplier);
         }
