@@ -5,6 +5,9 @@
 import sys
 sys.path.append('..')
 
+from orbital_evolution.star_interface import EvolvingStar
+from orbital_evolution.planet_interface import LockedPlanet
+
 from orbital_evolution.c_interface_util import ndpointer_or_null
 from basic_utils import Structure, semimajor, orbital_frequency
 from ctypes import\
@@ -47,6 +50,13 @@ def initialize_library() :
                                                   c_double,
                                                   c_double]
     library.create_star_planet_system.restype = c_binary_p
+
+    library.create_star_star_system.argtypes = (
+        library.create_star_planet_system.argtypes
+    )
+    library.create_star_star_system.restype = (
+        library.create_star_planet_system.restype
+    )
 
     library.destroy_binary.argtypes = [
         library.create_star_planet_system.restype
@@ -414,13 +424,20 @@ class Binary :
         Returns: None
         """
 
+        assert(isinstance(primary, EvolvingStar))
         self.primary = primary
         self.secondary = secondary
         if initial_semimajor is None :
             initial_semimajor = self.semimajor(initial_orbital_period)
         if secondary_formation_age is None :
             secondary_formation_age = disk_dissipation_age
-        self.c_binary = library.create_star_planet_system(
+        if isinstance(secondary, LockedPlanet) :
+            c_create_func = library.create_star_planet_system
+        else :
+            assert(isinstance(secondary, EvolvingStar))
+            c_create_func = library.create_star_star_system
+           
+        self.c_binary = c_create_func(
             primary.c_body,
             secondary.c_body,
             initial_semimajor,
