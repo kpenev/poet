@@ -113,7 +113,7 @@ def initialize_library() :
     library.num_evolution_steps.argtypes = [library.evolve_system.restype]
     library.num_evolution_steps.restype = c_uint
 
-    library.get_evolution.argtypes = [
+    library.get_star_planet_evolution.argtypes = [
         library.evolve_system.restype,
         library.create_star_planet_system.restype,
         c_dissipating_body_p,
@@ -151,9 +151,70 @@ def initialize_library() :
                           ndim = 1,
                           flags = 'C_CONTIGUOUS')
     ]
-    library.get_evolution.restype = None
+    library.get_star_planet_evolution.restype = None
 
-    library.get_final_state.argtypes = [
+    library.get_star_star_evolution.argtypes = [
+        library.evolve_system.restype,
+        library.create_star_planet_system.restype,
+        c_dissipating_body_p,
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_double,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_int,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_bool,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype = c_bool,
+                          ndim = 1,
+                          flags = 'C_CONTIGUOUS')
+    ]
+    library.get_star_star_evolution.restype = None
+
+    library.get_star_planet_final_state.argtypes = [
         library.evolve_system.restype,
         library.create_star_planet_system.restype,
         c_dissipating_body_p,
@@ -169,7 +230,32 @@ def initialize_library() :
         POINTER(c_int),
         POINTER(c_bool)
     ]
-    library.get_final_state.restype = None
+    library.get_star_planet_final_state.restype = None
+
+    library.get_star_star_final_state.argtypes = [
+        library.evolve_system.restype,
+        library.create_star_planet_system.restype,
+        c_dissipating_body_p,
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_double),
+        POINTER(c_int),
+        POINTER(c_bool),
+        POINTER(c_bool)
+    ]
+    library.get_star_star_final_state.restype = None
 
     return library
 
