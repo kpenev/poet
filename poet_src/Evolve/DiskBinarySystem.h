@@ -22,7 +22,7 @@ namespace Evolve {
      *
      * \ingroup StellarSystem_group
      */
-    class DiskPlanetSystem : virtual public BinarySystem {
+    class DiskBinarySystem : virtual public BinarySystem {
     private:
         ///The semimajor axis of the orbit at which the secondary forms.
         double __initial_semimajor,
@@ -50,7 +50,7 @@ namespace Evolve {
         void add_secondary();
     public:
         ///Create the system.
-        DiskPlanetSystem(
+        DiskBinarySystem(
                 ///The first body in the system. Assumed to always be there, so
                 ///for a star-planet system this should be the star.
                 DissipatingBody &body1, 
@@ -90,8 +90,8 @@ namespace Evolve {
         ///system change
         virtual double next_stop_age() const;
 
-        virtual ~DiskPlanetSystem() {}
-    }; //End DiskPlanetSystem class
+        virtual ~DiskBinarySystem() {}
+    }; //End DiskBinarySystem class
 
 } //End Evolve namespace.
 

@@ -35,7 +35,7 @@ int main(int, char **)
     set_dissipation(star, 0, 0, 0, NULL, NULL, &zero, &zero, 3e-7);
     set_dissipation(star, 1, 0, 0, NULL, NULL, &zero, &zero, 0.0);
 
-    StarPlanetSystem *system = create_star_planet_system(
+    DiskBinarySystem *system = create_star_planet_system(
         star,
         planet,
         5.0,

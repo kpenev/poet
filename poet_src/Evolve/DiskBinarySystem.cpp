@@ -1,8 +1,8 @@
-#include "DiskPlanetSystem.h"
+#include "DiskBinarySystem.h"
 
 namespace Evolve {
 
-    void DiskPlanetSystem::release_surface_spin()
+    void DiskBinarySystem::release_surface_spin()
     {
         unsigned nzones = primary().number_zones();
         std::valarray<double> angmom(nzones),
@@ -19,7 +19,7 @@ namespace Evolve {
                   Core::SINGLE);
     }
 
-    void DiskPlanetSystem::add_secondary()
+    void DiskBinarySystem::add_secondary()
     {
         unsigned nzones = primary().number_zones() + secondary().number_zones();
         std::valarray<double> angmom(nzones),
@@ -55,7 +55,7 @@ namespace Evolve {
         if(semimajor() < minimum_semimajor()) secondary_died();
     }
 
-    DiskPlanetSystem::DiskPlanetSystem(DissipatingBody &body1,
+    DiskBinarySystem::DiskBinarySystem(DissipatingBody &body1,
             DissipatingBody &body2, double initial_semimajor,
             double initial_eccentricity, double initial_inclination,
             double disk_lock_frequency,  double disk_dissipation_age,
@@ -71,13 +71,13 @@ namespace Evolve {
         if(initial_eccentricity<0 || initial_eccentricity>1) {
             std::ostringstream msg;
             msg << "Invalid initial eccentricity: " << initial_eccentricity
-                << " encountered in DiskPlanetSystem constructor!";
+                << " encountered in DiskBinarySystem constructor!";
             throw Core::Error::BadFunctionArguments(msg.str());
         }
         if(__initial_inclination<0 || __initial_inclination>M_PI) {
             std::ostringstream msg;
             msg << "Invalid initial inclination: " << initial_eccentricity
-                << " encountered in DiskPlanetSystem constructor, must be "
+                << " encountered in DiskBinarySystem constructor, must be "
                    "between 0 and pi!";
             throw Core::Error::BadFunctionArguments(msg.str());
         }
@@ -91,7 +91,7 @@ namespace Evolve {
         body1.set_surface_lock_frequency(__disk_lock_frequency);
     }
 
-    void DiskPlanetSystem::reached_critical_age(double age)
+    void DiskBinarySystem::reached_critical_age(double age)
     {
         if(age == __disk_dissipation_age)
             release_surface_spin();
@@ -100,7 +100,7 @@ namespace Evolve {
         BinarySystem::reached_critical_age(age);
     }
 
-    double DiskPlanetSystem::next_stop_age() const
+    double DiskBinarySystem::next_stop_age() const
     {
         double result;
         if(age() < __disk_dissipation_age)
