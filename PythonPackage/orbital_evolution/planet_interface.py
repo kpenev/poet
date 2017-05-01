@@ -2,7 +2,7 @@
 
 """An interface to the POET planet library."""
 
-from orbital_evolution.evolve_interface import\
+from orbital_evolution.dissipating_body import\
     c_dissipating_body_p,\
     DissipatingBody
 from orbital_evolution.evolve_interface import\

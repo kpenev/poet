@@ -7,7 +7,7 @@ sys.path.append('..')
 
 from stellar_evolution.library_interface import\
     library as stellar_evolution_library
-from orbital_evolution.evolve_interface import\
+from orbital_evolution.dissipating_body import\
     DissipatingBody,\
     c_dissipating_body_p
 from orbital_evolution.evolve_interface import\

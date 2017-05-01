@@ -193,7 +193,7 @@ inline void list_to_array(const std::list<T> &source, T *destination)
 }
 
 ///Fill the given arrays with the part of the evolution tracked by the star.
-void get_star_evolution(const EvolvingStar *star_arg
+void get_star_evolution(const EvolvingStar *star_arg,
                         double *envelope_inclination,
                         double *core_inclination,
                         double *envelope_periapsis,
@@ -335,36 +335,19 @@ void get_star_star_evolution(const OrbitSolver *solver,
                        secondary_wind_saturation);
 }
 
-void get_final_state(const OrbitSolver *solver_arg,
-                     const DiskBinarySystem *system_arg,
-                     const EvolvingStar *star_arg,
-                     double *age,
-                     double *semimajor,
-                     double *eccentricity,
-                     double *envelope_inclination,
-                     double *core_inclination,
-                     double *envelope_periapsis,
-                     double *core_periapsis,
-                     double *envelope_angmom,
-                     double *core_angmom,
-                     int *evolution_mode,
-                     bool *wind_saturation)
+///\brief Fill the given pointers with the state of the given star at the end
+///of the evolution.
+void get_star_final_state(const EvolvingStar *star_arg,
+                          double *envelope_inclination,
+                          double *core_inclination,
+                          double *envelope_periapsis,
+                          double *core_periapsis,
+                          double *envelope_angmom,
+                          double *core_angmom,
+                          bool *wind_saturation)
 {
-    const Evolve::OrbitSolver *solver =
-        reinterpret_cast<const Evolve::OrbitSolver*>(solver_arg);
-    const Evolve::DiskBinarySystem *system =
-        reinterpret_cast<const Evolve::DiskBinarySystem*>(system_arg);
     const Star::InterpolatedEvolutionStar *star = 
         reinterpret_cast<const Star::InterpolatedEvolutionStar*>(star_arg);
-
-    if(age)
-        *age = solver->evolution_ages().back();
-
-    if(semimajor)
-        *semimajor = system->semimajor_evolution().back();
-
-    if(eccentricity)
-        *eccentricity = system->eccentricity_evolution().back();
 
     if(envelope_inclination)
         *envelope_inclination = (
@@ -396,10 +379,115 @@ void get_final_state(const OrbitSolver *solver_arg,
             Evolve::ANGULAR_MOMENTUM
         ).back();
 
-    if(evolution_mode)
-        *evolution_mode = solver->mode_evolution().back();
-
     if(wind_saturation)
         *wind_saturation = star->wind_saturation_evolution().back();
 }
 
+///\brief Fill the given pointers with the final orbital state of a
+///previously evolved system.
+void get_binary_final_state(const DiskBinarySystem *system_arg,
+                            double *semimajor,
+                            double *eccentricity)
+{
+    const Evolve::DiskBinarySystem *system =
+        reinterpret_cast<const Evolve::DiskBinarySystem*>(system_arg);
+
+    if(semimajor)
+        *semimajor = system->semimajor_evolution().back();
+
+    if(eccentricity)
+        *eccentricity = system->eccentricity_evolution().back();
+}
+
+///\brief Fill the given pointers with the final state of an orbit solver
+///used to calculate an evolution.
+void get_solver_final_state(const OrbitSolver *solver_arg,
+                            double *age,
+                            int *evolution_mode)
+{
+    const Evolve::OrbitSolver *solver =
+        reinterpret_cast<const Evolve::OrbitSolver*>(solver_arg);
+
+    if(age)
+        *age = solver->evolution_ages().back();
+
+    if(evolution_mode)
+        *evolution_mode = solver->mode_evolution().back();
+}
+
+void get_star_planet_final_state(const OrbitSolver *solver,
+                                 const DiskBinarySystem *system,
+                                 const EvolvingStar *star,
+                                 double *age,
+                                 double *semimajor,
+                                 double *eccentricity,
+                                 double *envelope_inclination,
+                                 double *core_inclination,
+                                 double *envelope_periapsis,
+                                 double *core_periapsis,
+                                 double *envelope_angmom,
+                                 double *core_angmom,
+                                 int *evolution_mode,
+                                 bool *wind_saturation)
+{
+    get_solver_final_state(solver, age, evolution_mode);
+
+    get_binary_final_state(system, semimajor, eccentricity);
+
+    get_star_final_state(star, 
+                         envelope_inclination,
+                         core_inclination,
+                         envelope_periapsis,
+                         core_periapsis,
+                         envelope_angmom,
+                         core_angmom,
+                         wind_saturation);
+}
+
+void get_star_star_final_state(const OrbitSolver *solver,
+                               const DiskBinarySystem *system,
+                               const EvolvingStar *primary,
+                               const EvolvingStar *secondary,
+                               double *age,
+                               double *semimajor,
+                               double *eccentricity,
+
+                               double *primary_envelope_inclination,
+                               double *primary_core_inclination,
+                               double *primary_envelope_periapsis,
+                               double *primary_core_periapsis,
+                               double *primary_envelope_angmom,
+                               double *primary_core_angmom,
+
+                               double *secondary_envelope_inclination,
+                               double *secondary_core_inclination,
+                               double *secondary_envelope_periapsis,
+                               double *secondary_core_periapsis,
+                               double *secondary_envelope_angmom,
+                               double *secondary_core_angmom,
+                               int *evolution_mode,
+                               bool *primary_wind_saturation,
+                               bool *secondary_wind_saturation)
+{
+    get_solver_final_state(solver, age, evolution_mode);
+
+    get_binary_final_state(system, semimajor, eccentricity);
+
+    get_star_final_state(primary, 
+                         primary_envelope_inclination,
+                         primary_core_inclination,
+                         primary_envelope_periapsis,
+                         primary_core_periapsis,
+                         primary_envelope_angmom,
+                         primary_core_angmom,
+                         primary_wind_saturation);
+
+    get_star_final_state(secondary, 
+                         secondary_envelope_inclination,
+                         secondary_core_inclination,
+                         secondary_envelope_periapsis,
+                         secondary_core_periapsis,
+                         secondary_envelope_angmom,
+                         secondary_core_angmom,
+                         secondary_wind_saturation);
+}

@@ -20,6 +20,7 @@ model {
             if(buildType == buildTypes.release) {
                 cppCompiler.define "NDEBUG"
             } else if(buildType == buildTypes.debug) {
+                cppCompiler.define "DEBUG"
             }
 
             if (toolChain in Gcc || toolChain in Clang) {
@@ -160,11 +161,27 @@ model {
                 }
             }
         }
-        debug_orbital_evolution(NativeExecutableSpec) {
+        debug_planet_star_evolution(NativeExecutableSpec) {
             sources.cpp {
                 source {
                     srcDir "debug"
-                    include "**/orbital_evolution.c"
+                    include "**/planet_star_evolution.c"
+                }
+            }
+            binaries.all {
+                lib library: "alglib"
+                lib library: "eigen"
+                lib library: "stellarEvolution"
+                lib library: "star"
+                lib library: "planet"
+                lib library: "evolve"
+            }
+        }
+        debug_star_star_evolution(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "debug"
+                    include "**/star_star_evolution.c"
                 }
             }
             binaries.all {
