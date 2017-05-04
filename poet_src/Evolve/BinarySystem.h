@@ -693,7 +693,8 @@ namespace Evolve {
                 ///The name of the system.
                 const std::string &system_name="")
             : __name(system_name),
-            __above_lock_fractions(Dissipation::NUM_DERIVATIVES), __body1(body1),
+            __above_lock_fractions(Dissipation::NUM_DERIVATIVES), 
+            __body1(body1),
             __body2(body2) {}
 
         ///Returns the name of the system.
@@ -946,6 +947,8 @@ namespace Evolve {
         ///The tabulated evolution of the eccentricity so far.
         const std::list<double> &eccentricity_evolution() const
         {return __eccentricity_evolution;}
+
+        virtual ~BinarySystem() {}
 
     }; //End BinarySystem class.
 

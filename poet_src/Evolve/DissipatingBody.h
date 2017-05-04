@@ -95,7 +95,7 @@ namespace Evolve {
         ///
         ///The derivatives are only w.r.t. the non-zone specific quantities
         ///listed in __orbit_deriv.
-        std::valarray<Eigen::Vector3d> __orbit_torque,
+        std::vector<Eigen::Vector3d> __orbit_torque,
             
             ///\brief Corrections to __orbit_torque_below (undifferentiated)
             ///if single zones switch to above.
@@ -543,11 +543,12 @@ namespace Evolve {
         ///
         ///Must be deleted when no longer necessary.
         virtual CombinedStoppingCondition *stopping_conditions(
-                ///The system being evolved.
-                BinarySystem &system, 
+            ///The system being evolved.
+            BinarySystem &system, 
 
-                ///Is the body the primary in the system.
-                bool primary);
+            ///Is the body the primary in the system.
+            bool primary
+        );
         
         ///Notifies the body that its spin just discontinously jumped.
         virtual void spin_jumped() {zone(0).spin_jumped();}

@@ -41,15 +41,25 @@ namespace Evolve {
             cos_sin=cos_to*sin_from;
         }
         return Eigen::Vector3d(
-                (sin_sin+cos_cos*cos_dw)*vector[0] - cos_to*sin_dw*vector[1]
-                + (sin_cos-cos_sin*cos_dw)*vector[2],
+            (sin_sin + cos_cos * cos_dw) * vector[0]
+            -
+            cos_to * sin_dw * vector[1]
+            +
+            (sin_cos - cos_sin * cos_dw) * vector[2],
 
 
-                cos_from*sin_dw*vector[0] + cos_dw*vector[1]
-                - sin_from*sin_dw*vector[2],
+            cos_from * sin_dw * vector[0]
+            +
+            cos_dw * vector[1]
+            -
+            sin_from * sin_dw * vector[2],
 
-                (cos_sin-sin_cos*cos_dw)*vector[0] + sin_to*sin_dw*vector[1]
-                + (cos_cos+sin_sin*cos_dw)*vector[2]);
+            (cos_sin - sin_cos * cos_dw) * vector[0]
+            + 
+            sin_to * sin_dw * vector[1]
+            + 
+            (cos_cos + sin_sin * cos_dw) * vector[2]
+        );
     }
 
     /*

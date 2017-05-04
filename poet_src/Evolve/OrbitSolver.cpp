@@ -400,20 +400,30 @@ namespace Evolve {
                                            next_stop_deriv);
     }
 
-    void OrbitSolver::initialize_skip_history(const StoppingCondition &stop_cond,
-                StoppingConditionType stop_reason)
+    void OrbitSolver::initialize_skip_history(
+        const StoppingCondition &stop_cond,
+        StoppingConditionType stop_reason
+    )
     {
         __skip_history_zerocrossing.resize(stop_cond.num_subconditions(), 0);
         __skip_history_extremum.resize(stop_cond.num_subconditions(), 0);
-        for(size_t cond_ind=0; cond_ind<stop_cond.num_subconditions();
-                cond_ind++) {
+        for(
+            size_t cond_ind=0;
+            cond_ind<stop_cond.num_subconditions();
+            cond_ind++
+        ) {
             StoppingConditionType stop_cond_type=stop_cond.type(cond_ind);
-            if((stop_reason==BREAK_LOCK && stop_cond_type==SYNCHRONIZED) ||
-                    (stop_reason!=NO_STOP && stop_cond_type==stop_reason)
-                    ) {
+            if(
+                (stop_reason==BREAK_LOCK && stop_cond_type==SYNCHRONIZED)
+                ||
+                (stop_reason!=NO_STOP && stop_cond_type==stop_reason)
+            ) {
                 __skip_history_zerocrossing[cond_ind]=1;
-                __skip_history_extremum[cond_ind]=__stop_history_ages.front()*
-                    (1.0+std::numeric_limits<double>::epsilon());
+                __skip_history_extremum[cond_ind]=(
+                    __stop_history_ages.front()
+                    *
+                    (1.0+std::numeric_limits<double>::epsilon())
+                );
             }
         }
     }
@@ -436,12 +446,17 @@ namespace Evolve {
     }*/
 
     bool OrbitSolver::acceptable_step(double age,
-            const StopInformation &stop_info)
+                                      const StopInformation &stop_info)
     {
-        return stop_info.stop_age()>=age ||
-                (std::abs(stop_info.stop_condition_precision())<=__precision
-                 &&
-                 (stop_info.crossed_zero() || !stop_info.is_crossing()));
+        return (
+            stop_info.stop_age() >= age
+            ||
+            (
+                std::abs(stop_info.stop_condition_precision()) <= __precision
+                &&
+                (stop_info.crossed_zero() || !stop_info.is_crossing())
+            )
+        );
     }
 
     StopInformation OrbitSolver::update_stop_condition_history(
@@ -458,8 +473,10 @@ namespace Evolve {
                 ||
                 (evolution_mode == Core::BINARY && orbit[0] <= 0)
             )
-                return StopInformation(0.5 * (age + __stop_history_ages.back()),
-                                       Core::Inf);
+                return StopInformation(
+                    0.5 * (age + __stop_history_ages.back()),
+                    Core::Inf
+                );
         std::valarray<double> current_stop_cond(
             __stopping_conditions->num_subconditions()
         );
@@ -479,14 +496,17 @@ namespace Evolve {
 #endif
         for(
             size_t cond_ind = 0; 
-            __stop_cond_history.size() > 0 && cond_ind<current_stop_cond.size();
+            (
+                __stop_cond_history.size() > 0
+                &&
+                cond_ind < current_stop_cond.size()
+            );
             cond_ind++
         ) {
-            StoppingConditionType
-                stop_cond_type = __stopping_conditions->type(cond_ind);
             double stop_cond_value = current_stop_cond[cond_ind],
                    crossing_age = crossing_from_history(cond_ind),
-                   crossing_precision = __stop_cond_history.back()[cond_ind]; 
+                   crossing_precision = 
+                       __stop_cond_history.back()[cond_ind];
             bool crossed_zero = false;
             if(std::abs(crossing_precision) >= std::abs(stop_cond_value)) {
                 crossing_precision = stop_cond_value;
@@ -499,7 +519,9 @@ namespace Evolve {
                 extremum_precision = (
                     std::min(
                         std::abs(extremum.y() - stop_cond_value),
-                        std::abs(extremum.y() - __stop_cond_history.back()[cond_ind])
+                        std::abs(extremum.y()
+                                 -
+                                 __stop_cond_history.back()[cond_ind])
                     )
                     /
                     std::abs(extremum.y())
@@ -507,20 +529,25 @@ namespace Evolve {
             bool is_crossing = crossing_age<=extremum.x();
             short deriv_sign = 0;
             if(is_crossing) deriv_sign = (stop_cond_value > 0 ? 1 : -1);
-            StopInformation stop_info(
-                std::min(crossing_age, extremum.x()),
-                (is_crossing ? crossing_precision : extremum_precision),
-                stop_cond_type,
-                is_crossing,
-                crossed_zero,
-                cond_ind,
-                deriv_sign
-            );
+            StopInformation &stop_info = __stop_info[cond_ind];
+            stop_info.stop_age() = std::min(crossing_age, extremum.x());
+            stop_info.stop_condition_precision() = (is_crossing
+                                                    ? crossing_precision
+                                                    : extremum_precision);
+            stop_info.is_crossing() = is_crossing;
+            stop_info.crossed_zero() = crossed_zero;
+            stop_info.deriv_sign_at_crossing() = (is_crossing
+                                                  ? deriv_sign
+                                                  : 0.0);
 #ifdef DEBUG
     //		std::cerr << stop_info << std::endl;
 #endif
-            if((!acceptable_step(age, stop_info) || is_crossing) &&
-                    stop_info.stop_age()<result.stop_age()) result=stop_info;
+            if(
+                (!acceptable_step(age, stop_info) || is_crossing)
+                &&
+                stop_info.stop_age() < result.stop_age()
+            )
+                result = stop_info;
         }
         if(acceptable_step(age, result)) {
     //		update_skip_history(current_stop_cond, result);
@@ -604,14 +631,16 @@ namespace Evolve {
                         status << ")";
                     throw Core::Error::Runtime(msg.str());
                 }
-                if(status==GSL_SUCCESS) {
+                if(status == GSL_SUCCESS) {
                     stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
                                            sys_mode);
-                    stop=update_stop_condition_history(t, orbit, derivatives,
+                    stop=update_stop_condition_history(t,
+                                                       orbit,
+                                                       derivatives,
                                                        evolution_mode,
                                                        stop_reason);
                 }
-                if(status==GSL_EDOM || !acceptable_step(t, stop)) {
+                if(status == GSL_EDOM || !acceptable_step(t, stop)) {
                     double last_good_t=
                         go_back(stop.stop_age(), system, orbit, derivatives);
                     if(t<last_good_t
@@ -622,7 +651,8 @@ namespace Evolve {
                     if(stop.is_crossing())
                         stop.stop_condition_precision()=
                             __stop_cond_history.back()[
-                            stop.stop_condition_index()];
+                                stop.stop_condition_index()
+                            ];
                     max_next_t=stop.stop_age();
                     step_size=0.1*(max_next_t-t);
                     gsl_odeiv2_evolve_reset(evolve);
@@ -630,8 +660,11 @@ namespace Evolve {
                 } else step_rejected=false;
     //			std::cerr << "t=" << t << std::endl;
                 std::cerr.flush();
-            } while(step_rejected &&
-                    std::abs(stop.stop_condition_precision())>__precision);
+            } while(
+                step_rejected
+                &&
+                std::abs(stop.stop_condition_precision()) > __precision
+            );
             if(!step_rejected)
                 add_to_evolution(t, evolution_mode, system);
             if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
@@ -652,12 +685,19 @@ namespace Evolve {
 
     CombinedStoppingCondition *OrbitSolver::get_stopping_condition(
             BinarySystem &system
-    ) const
+    )
     {
         CombinedStoppingCondition *result = system.stopping_conditions();
 #ifdef EXTERNAL_CONDITION
         (*result) |= new EXTERNAL_CONDITION;
 #endif
+        __stop_info.clear();
+        __stop_info.resize(result->num_subconditions());
+        for(size_t cond_ind = 0; cond_ind < __stop_info.size(); ++cond_ind)
+        {
+            __stop_info[cond_ind].stop_reason() = result->type(cond_ind);
+            __stop_info[cond_ind].stop_condition_index() = cond_ind;
+        }
         return result;
     }
 
@@ -694,6 +734,47 @@ namespace Evolve {
         std::cerr << "Required ages change that to: " << result << std::endl;
 #endif
         return result;
+    }
+
+    void OrbitSolver::reached_stopping_condition(
+        double stop_age,
+        StoppingConditionType stop_reason
+    )
+    {
+#ifdef DEBUG
+        std::cerr << "Stoppped due to condition at t = " 
+                  << stop_age
+                  << std::endl;
+#endif
+        for(
+            std::vector<StopInformation>::const_iterator stop_i = 
+                __stop_info.begin();
+            stop_i != __stop_info.end();
+            ++stop_i
+        )
+            if(
+                stop_i->is_crossing()
+                && 
+                (
+                    stop_i->stop_age() < stop_age
+                    ||
+                    (
+                        stop_i->stop_reason() == stop_reason
+                        &&
+                        std::abs(
+                            stop_i->stop_condition_precision()
+                        ) <= __precision
+                    )
+                )
+            ) {
+                __stopping_conditions->reached(
+                    stop_i->deriv_sign_at_crossing(),
+                    stop_i->stop_condition_index()
+                );
+#ifdef DEBUG
+                std::cerr << "Triggered condition: " << *stop_i << std::endl;
+#endif
+            }
     }
 
     void OrbitSolver::reset(BinarySystem &system)
@@ -753,10 +834,7 @@ namespace Evolve {
                 if(stop_reason == NO_STOP) 
                     system.reached_critical_age(last_age);
                 else 
-                    __stopping_conditions->reached(
-                            stop_information.deriv_sign_at_crossing(),
-                            stop_information.stop_condition_index()
-                    );
+                    reached_stopping_condition(last_age, stop_reason);
             }
 #ifdef DEBUG 
             std::cerr

@@ -158,6 +158,10 @@ namespace Evolve {
         ///The current set of stopping conditions.
         StoppingCondition *__stopping_conditions;
 
+        ///The full information about the next age where each stopping 
+        ///condition indicates evolution should be stopped and why.
+        std::vector<StopInformation> __stop_info;
+
 #ifdef DEBUG
         ///\brief Generates a nicely formatted table of the contents of the
         ///discarded and history stopping condition information.
@@ -262,30 +266,31 @@ namespace Evolve {
         ///acceptable.
         bool acceptable_step(double age, const StopInformation &stop_info);
 
-        ///\brief Updates stop_cond_history and stop_deriv_history after a GSL
-        ///step, returning if/where the evolution needs to stop.
+        ///\brief Updates stop_cond_history and stop_deriv_history after a
+        ///GSL step, returning if/where the evolution needs to stop.
         ///
-        ///Returns the full information about the closest estimated age where a
-        ///condition is zero or has an extremum exists which might have crossed
-        ///zero.
+        ///Returns the index of the condition with the closest estimated age 
+        ///for zero crossing or an extremum exists which might have 
+        ///crossed zero.
         StopInformation update_stop_condition_history(
-                ///System age in Gyr.
-                double age,
-                
-                ///The values of the current evolution variables.
-                const std::valarray<double> &orbit,
+            ///System age in Gyr.
+            double age,
 
-                ///The rates of change of the evolution variables per Gyr.
-                const std::valarray<double> &derivatives,
+            ///The values of the current evolution variables.
+            const std::valarray<double> &orbit,
 
-                ///The current evolution mode.
-                Core::EvolModeType evolution_mode,
+            ///The rates of change of the evolution variables per Gyr.
+            const std::valarray<double> &derivatives,
 
-                ///For the first call of this function for an evolution stretch,
-                ///this should indicate the reason why the previous stretch was
-                ///stopped. For subsequent calls during the same evolution
-                ///stretch it should be NO_STOP.
-                StoppingConditionType stop_reason=NO_STOP);
+            ///The current evolution mode.
+            Core::EvolModeType evolution_mode,
+
+            ///For the first call of this function for an evolution 
+            ///stretch, this should indicate the reason why the previous 
+            ///stretch was stopped. For subsequent calls during the same 
+            ///evolution stretch it should be NO_STOP.
+            StoppingConditionType stop_reason=NO_STOP
+        );
 
         ///\brief Evolves a system until either some age cut-off is reached or
         ///some stopping condition crosses zero.
@@ -294,8 +299,8 @@ namespace Evolve {
         ///Appends each accepted step to tabulated_ages,
         ///tabulated_evolution_mode, tabulated_orbit and tabulated_deriv.
         ///
-        ///The return value is true if the last step finished after the stopping
-        ///condition crossed zero and false if it ended before that.
+        ///The return value is true if the last step finished after the 
+        ///stopping condition crossed zero and false if it ended before that.
         StopInformation evolve_until(
                 ///The planet-star system to evolve.
                 BinarySystem &system,
@@ -305,18 +310,18 @@ namespace Evolve {
                 ///step.
                 double &max_age,
                 
-                ///The initial conditions. The contents depends on the value of
-                ///evolution_mode. See #BinarySystem.differential equations for
-                ///details.			
+                ///The initial conditions. The contents depends on the value 
+                ///of evolution_mode. See #BinarySystem.differential 
+                ///equations for details.			
                 ///
                 ///On exit, it is overwritten with the orbit of the last
                 ///accepted step.
                 std::valarray<double> &orbit,
             
-                ///On input should be the reason why the last evolution stopped.
-                ///It should be NO_STOP if this is the first piece of evolution
-                ///being calculated. On exit it is overwritten with the value
-                ///appropriate for the next run.
+                ///On input should be the reason why the last evolution 
+                ///stopped. It should be NO_STOP if this is the first piece 
+                ///of evolution being calculated. On exit it is overwritten 
+                ///with the value appropriate for the next run.
                 StoppingConditionType &stop_reason,
 
                 ///The maximum step that GSL is allowed to take.
@@ -325,10 +330,12 @@ namespace Evolve {
                 ///The evolution mode for this part of the evolution.
                 Core::EvolModeType evolution_mode);
 
-        ///Returns the stopping conditions which end the given evolution mode.
+        ///\brief Returns the stopping conditions which end the given 
+        ///evolution mode and update __stop_info.
         CombinedStoppingCondition *get_stopping_condition(
-                ///The system being evolved.
-                BinarySystem &system) const;
+            ///The system being evolved.
+            BinarySystem &system
+        );
 
         ///\brief The age at which the evolution should stop next if no other
         ///stopping condition occurs.
@@ -341,6 +348,18 @@ namespace Evolve {
 
                 ///A sorted list of ages which must be stopped at.
                 const std::list<double> &required_ages);
+
+        ///\brief Handle a stop in the evolution due to at least one
+        ///condition reaching a critical value.
+        ///
+        ///Assumes that __stop_info was updated per the last accepted step.
+        void reached_stopping_condition(
+            ///The age of the last accepted evolution step.
+            double stop_age,
+
+            ///The type of condition which caused the stoppage.
+            StoppingConditionType stop_reason
+        );
 
         ///Clears any previously calculated evolution.
         void reset(BinarySystem &system);

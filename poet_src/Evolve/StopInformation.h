@@ -32,8 +32,12 @@ namespace Evolve {
         ///The reason for stopping.
         StoppingConditionType __stop_reason;
 
-        ///Is the reason for stopping that a condition actually crossed zero?
-        bool __is_crossing, __crossed_zero;
+        bool 
+            ///Is the reason for stopping that a condition actually crossed zero?
+            __is_crossing, 
+
+            ///Did the last step actually cross zero?
+             __crossed_zero;
 
         ///The index of the condition which caused us to stop.
         size_t __stop_condition_index;
@@ -101,6 +105,7 @@ namespace Evolve {
 
         ///The reason for stopping.
         StoppingConditionType stop_reason() const {return __stop_reason;}
+
         ///The reason for stopping.
         StoppingConditionType &stop_reason() {return __stop_reason;}
 
@@ -111,12 +116,14 @@ namespace Evolve {
 
         ///The index of the condition which caused us to stop.
         size_t stop_condition_index() const {return __stop_condition_index;}
+
         ///The index of the condition which caused us to stop.
         size_t &stop_condition_index() {return __stop_condition_index;}
 
         ///\brief Did we stop after the stopping condition crossed zero (always
         ///false for extrema).
         bool crossed_zero() const {return __crossed_zero;}
+
         ///\brief Did we stop after the stopping condition crossed zero (always
         ///false for extrema).
         bool &crossed_zero() {return __crossed_zero;}
@@ -142,6 +149,10 @@ namespace Evolve {
 #endif
             return __deriv_sign_at_crossing;
         }
+
+        ///The sign of the derivative at zero-crossing.
+        short &deriv_sign_at_crossing() {return __deriv_sign_at_crossing;}
+
     };//End StopInformation class.
 
     ///Civilized output of a StopInformation object.

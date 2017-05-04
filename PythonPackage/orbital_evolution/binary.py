@@ -278,13 +278,14 @@ class Binary :
                     numpy.empty(self.num_evolution_steps,
                                 dtype = self.evolution_quantity_c_type(q)))
 
-        self._c_get_evolution_func(
-            self.c_solver,
-            self.c_binary,
-            self.primary.c_body,
-            *[getattr(result, quantity, None)
-              for quantity in self.evolution_quantities]
-        )
+        get_evol_args = [self.c_solver,
+                         self.c_binary,
+                         self.primary.c_body]
+        if isinstance(self.secondary, EvolvingStar) :
+            get_evol_args.append(self.secondary.c_body)
+        get_evol_args.extend([getattr(result, quantity, None)
+                              for quantity in self.evolution_quantities])
+        self._c_get_evolution_func(*get_evol_args)
         return result
 
     def final_state(self) :

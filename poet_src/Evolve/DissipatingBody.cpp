@@ -133,18 +133,22 @@ namespace Evolve {
     {
         __orbit_energy_gain_correction.resize(__num_locked_zones);
         __orbit_torque_correction.resize(__num_locked_zones);
+        unsigned correction_index = 0;
         for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index)
             if(zone(zone_index).locked()) {
                 DissipatingZone &this_zone=zone(zone_index);
-                __orbit_energy_gain_correction[this_zone.locked_zone_index()]=
+                __orbit_energy_gain_correction[correction_index] = (
                     tidal_power(zone_index, false)
                     -
-                    tidal_power(zone_index, true);
-                __orbit_torque_correction[this_zone.locked_zone_index()]=
+                    tidal_power(zone_index, true)
+                );
+                __orbit_torque_correction[correction_index] = (
                     zone_to_zone_transform(this_zone, zone(0),
-                            tidal_torque(zone_index, false)
-                            -
-                            tidal_torque(zone_index, true));
+                                           tidal_torque(zone_index, false)
+                                           -
+                                           tidal_torque(zone_index, true))
+                );
+                ++correction_index;
             }
     }
 
@@ -295,6 +299,7 @@ namespace Evolve {
         __orbit_deriv(6),
         __orbit_energy_gain(__orbit_deriv.size()),
         __orbit_torque(Dissipation::NUM_DERIVATIVES),
+        __orbit_torque_correction(0),
         __num_locked_zones(0)
     {
         __orbit_deriv[0]=Dissipation::NO_DERIV;
@@ -311,13 +316,17 @@ namespace Evolve {
             Eigen::VectorXd &above_lock_fractions_eccentricity_deriv,
             Eigen::VectorXd &above_lock_fractions_radius_deriv)
     {
+        unsigned correction_index = 0;
         for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
             if(zone(zone_index).locked()) {
-                unsigned locked_zone_index=zone(zone_index).locked_zone_index();
-                __orbit_energy_gain_correction[locked_zone_index]=
+                unsigned locked_zone_index = (
+                    zone(zone_index).locked_zone_index()
+                );
+                __orbit_energy_gain_correction[correction_index] = (
                     tidal_power(zone_index, false)
                     -
-                    tidal_power(zone_index, true);
+                    tidal_power(zone_index, true)
+                );
                 for(unsigned deriv_ind=0; deriv_ind<__orbit_deriv.size();
                         ++deriv_ind) {
                     Dissipation::Derivative deriv=__orbit_deriv[deriv_ind];
@@ -345,10 +354,14 @@ namespace Evolve {
 #ifdef DEBUG
                         else assert(false);
 #endif
-                        __orbit_energy_gain[deriv_ind]+=frac_deriv*
-                            __orbit_energy_gain_correction[locked_zone_index];
+                        __orbit_energy_gain[deriv_ind] += (
+                            frac_deriv
+                            *
+                            __orbit_energy_gain_correction[correction_index]
+                        );
                     }
                 }
+                ++correction_index;
             }
         }
     }
@@ -357,6 +370,7 @@ namespace Evolve {
                 std::valarray<Eigen::VectorXd> &above_lock_fractions)
     {
         DissipatingZone &surface_zone=zone(0);
+        unsigned correction_index = 0;
         for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
             if(zone(zone_index).locked()) {
                 unsigned locked_zone_index=zone(zone_index).locked_zone_index();
@@ -376,21 +390,29 @@ namespace Evolve {
                         __orbit_torque[deriv]+=
                             zone_to_zone_transform(this_zone, surface_zone,
                                     correction);
-                        if(deriv==Dissipation::INCLINATION || 
-                                deriv==Dissipation::PERIAPSIS)
-                            __orbit_torque[deriv]+=zone_to_zone_transform(
-                                    this_zone, surface_zone,
-                                    above_lock_fractions[Dissipation::NO_DERIV]
+                        if(
+                            deriv==Dissipation::INCLINATION
+                            || 
+                            deriv==Dissipation::PERIAPSIS
+                        )
+                            __orbit_torque[deriv] += zone_to_zone_transform(
+                                this_zone,
+                                surface_zone,
+                                above_lock_fractions[Dissipation::NO_DERIV]
                                                         [locked_zone_index]
-                                    *
-                                    __orbit_torque_correction[locked_zone_index],
-                                    static_cast<Dissipation::Derivative>(deriv));
+                                *
+                                __orbit_torque_correction[correction_index],
+                                static_cast<Dissipation::Derivative>(deriv)
+                            );
                     } else __orbit_torque[deriv]+=correction;
                     if(deriv!=Dissipation::NO_DERIV)
-                        __orbit_torque[deriv]+=
+                        __orbit_torque[deriv] += (
                             above_lock_fractions[deriv][locked_zone_index]
-                            *__orbit_torque_correction[locked_zone_index];
+                            *
+                            __orbit_torque_correction[correction_index]
+                        );
                 }
+                ++correction_index;
             }
         }
 
@@ -623,9 +645,16 @@ namespace Evolve {
         assert(above_lock_fraction_deriv.size()==
                 __above_lock_fractions[Dissipation::NO_DERIV].size());
 #endif
-        for(unsigned i=0; i<above_lock_fraction_deriv.size(); ++i)
-            result+=
-                above_lock_fraction_deriv[i]*__orbit_energy_gain_correction[i];
+        unsigned correction_index = 0;
+        for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index)
+            if(zone(zone_index).locked()) {
+                result += (above_lock_fraction_deriv[
+                               zone(zone_index).locked_zone_index()
+                           ]
+                           *
+                           __orbit_energy_gain_correction[correction_index]);
+                ++correction_index;
+            }
         return result;
     }
 
@@ -647,9 +676,22 @@ namespace Evolve {
             assert(above_lock_fraction_deriv.size()==
                     __above_lock_fractions[Dissipation::NO_DERIV].size());
 #endif
-            for(unsigned i=0; i<above_lock_fraction_deriv.size(); ++i)
-                result+=
-                    above_lock_fraction_deriv[i]*__orbit_torque_correction[i];
+            unsigned correction_index = 0;
+            for(
+                unsigned zone_index=0;
+                zone_index<number_zones();
+                ++zone_index
+            )
+                if(zone(zone_index).locked()) {
+                    result += (
+                        above_lock_fraction_deriv[
+                            zone(zone_index).locked_zone_index()
+                        ]
+                        *
+                        __orbit_torque_correction[correction_index]
+                    );
+                    ++correction_index;
+                }
             if(deriv==Dissipation::INCLINATION ||
                     deriv==Dissipation::PERIAPSIS)
                 result+=zone_to_zone_transform(deriv_zone, zone(0),
@@ -665,10 +707,11 @@ namespace Evolve {
     }
 
     Eigen::Vector3d DissipatingBody::tidal_orbit_torque(
-            const DissipatingZone &reference_zone,
-            Dissipation::Derivative deriv, 
-            unsigned deriv_zone_index,
-            const Eigen::VectorXd &above_lock_fraction_deriv) const
+        const DissipatingZone &reference_zone,
+        Dissipation::Derivative deriv, 
+        unsigned deriv_zone_index,
+        const Eigen::VectorXd &above_lock_fraction_deriv
+    ) const
     {
         Eigen::Vector3d result=zone_to_zone_transform(
                 zone(0), reference_zone,

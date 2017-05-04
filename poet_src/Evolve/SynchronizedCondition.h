@@ -40,6 +40,7 @@ namespace Evolve {
 
         ///The binary system this locking condition is attached to.
         BinarySystem &__system;
+
     public:
         ///Create the synchronization condition for the given planet.
         SynchronizedCondition(

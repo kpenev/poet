@@ -12,7 +12,6 @@ const int AGE_DERIV = Evolve::Dissipation::AGE;
 const int SPIN_FREQUENCY_DERIV = Evolve::Dissipation::SPIN_FREQUENCY;
 const int ORBITAL_FREQUENCY_DERIV = Evolve::Dissipation::ORBITAL_FREQUENCY;
 
-///Converts lg(Q) to a tidal phase lag.
 double lag_from_lgQ(double lgQ)
 {
 	return 15.0 / (16.0 * M_PI * std::pow(10.0, lgQ));

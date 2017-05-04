@@ -832,7 +832,8 @@ namespace Evolve {
                     total_zone_torque
                 );
             if(!zone.locked()) 
-                angmom_rates[zone_index-angmom_skipped] = total_zone_torque[2];
+                angmom_rates[zone_index - angmom_skipped] =
+                    total_zone_torque[2];
         }
         evolution_rates[0] = semimajor_evolution(__orbit_energy_gain);
         if(!angmom_skipped) evolution_rates[0] *= 6.5 * std::pow(__semimajor,
@@ -862,7 +863,8 @@ namespace Evolve {
                              *
                              std::cos(__body1.zone(0).inclination()));
 
-        fill_binary_evolution_rates(global_orbit_torque, differential_equations);
+        fill_binary_evolution_rates(global_orbit_torque, 
+                                    differential_equations);
         return 0;
     }
 
@@ -1695,8 +1697,10 @@ namespace Evolve {
             ) {
                 DissipatingZone &zone = body.zone(zone_ind);
                 orbit[inclination_ind++] = zone.inclination();
-                if(body_ind || zone_ind) orbit[periapsis_ind++] = zone.periapsis();
-                if(!zone.locked()) orbit[angmom_ind++] = zone.angular_momentum();
+                if(body_ind || zone_ind)
+                    orbit[periapsis_ind++] = zone.periapsis();
+                if(!zone.locked())
+                    orbit[angmom_ind++] = zone.angular_momentum();
             }
         }
     }
@@ -1971,11 +1975,17 @@ namespace Evolve {
                                      [Dissipation::NO_DERIV]
                                      [locked_zone.locked_zone_index()];
         if(above_lock_fraction > 0 && above_lock_fraction < 1) return;
-        std::vector<double>::iterator check_zone_dest=
-            spin_angmom.begin() + zone_index - locked_zone.locked_zone_index();
-        if(body_index) check_zone_dest += (__body1.number_zones()
-                                           -
-                                           __body1.number_locked_zones());
+        std::vector<double>::iterator check_zone_dest = (
+            spin_angmom.begin()
+            +
+            (
+                zone_index
+                +
+                (body_index ? __body1.number_zones() : 0)
+                -
+                locked_zone.locked_zone_index()
+            )
+        );
         spin_angmom.insert(check_zone_dest, original_angmom);
         if(std::isfinite(above_lock_fraction) || direction == 0) {
 #ifdef DEBUG
@@ -2114,10 +2124,9 @@ namespace Evolve {
         CombinedStoppingCondition *result = new CombinedStoppingCondition();
         if(__evolution_mode == Core::BINARY)
             (*result) |= new SecondaryDeathCondition(*this);
-        for(unsigned body_ind = 0; body_ind < 2; ++body_ind) {
-            DissipatingBody &body=(body_ind == 0 ? __body1 : __body2);
-                (*result) |= body.stopping_conditions(*this, body_ind == 0);
-        }
+        (*result) |= __body1.stopping_conditions(*this, true);
+        if(__evolution_mode == Core::BINARY)
+            (*result) |= __body2.stopping_conditions(*this, false);
         return result;
     }
 

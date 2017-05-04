@@ -251,4 +251,7 @@ extern "C" {
         double *result
     );
 
+    ///Converts lg(Q) to a tidal phase lag.
+    double lag_from_lgQ(double lgQ);
+
 } //End extern "C"

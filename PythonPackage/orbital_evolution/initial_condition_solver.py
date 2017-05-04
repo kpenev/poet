@@ -1,4 +1,4 @@
-from orbital_evolution.evolve_interface import Binary
+from orbital_evolution.binary import Binary
 from basic_utils import Structure
 from math import pi
 from scipy.optimize import brentq

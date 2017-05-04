@@ -414,6 +414,7 @@ namespace StellarEvolution {
                                                     track_values,
                                                     __mass,
                                                     __metallicity);
+            delete track_derivatives;
             return (__log_quantity ? std::exp(result) : result);
         } else {
             *derivatives = new InterpolatedDerivatives(

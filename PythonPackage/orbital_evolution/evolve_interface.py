@@ -162,6 +162,7 @@ def initialize_library() :
         library.evolve_system.restype,
         library.create_star_planet_system.restype,
         c_dissipating_body_p,
+        c_dissipating_body_p,
         ndpointer_or_null(dtype = c_double,
                           ndim = 1,
                           flags = 'C_CONTIGUOUS'),

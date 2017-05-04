@@ -388,7 +388,8 @@ namespace Evolve {
         ///\brief Should return true iff the given term is presently locked.
         virtual bool locked(int orbital_frequency_multiplier,
                 int spin_frequency_multiplier) const
-        {return __lock(orbital_frequency_multiplier, spin_frequency_multiplier);}
+        {return __lock(orbital_frequency_multiplier, 
+                       spin_frequency_multiplier);}
 
         ///Should return true iff any tidal term is locked.
         virtual bool locked() const
@@ -746,14 +747,15 @@ namespace Evolve {
         ///
         ///Must be deleted when no longer necessary.
         virtual CombinedStoppingCondition *stopping_conditions(
-                ///The system being evolved.
-                BinarySystem &system, 
+            ///The system being evolved.
+            BinarySystem &system, 
 
-                ///Is the body this zone is part of, the primary in the system.
-                bool primary,
-                
-                ///The index of the zone in the body.
-                unsigned zone_index);
+            ///Is the body this zone is part of, the primary in the system.
+            bool primary,
+
+            ///The index of the zone in the body.
+            unsigned zone_index
+        );
 
         ///Notifies the zone that its spin just jumped discontinously.
         virtual void spin_jumped() {initialize_locks();}
