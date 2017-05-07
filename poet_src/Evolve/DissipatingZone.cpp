@@ -399,7 +399,7 @@ namespace Evolve {
         ZoneOrientation::configure(inclination, periapsis);
         __orbital_angmom = orbital_angmom;
         __orbital_frequency = orbital_frequency;
-        if(__lock) {
+        if(__lock && !initialize) {
             __spin_frequency = __lock.spin(orbital_frequency);
             __angular_momentum = __spin_frequency*moment_of_inertia();
         } else {
@@ -412,8 +412,8 @@ namespace Evolve {
                 else __spin_frequency = spin / moment_of_inertia();
             }
         }
-        if(std::isnan(orbital_frequency)) return;
         if(initialize) initialize_locks();
+        if(std::isnan(orbital_frequency)) return;
 
         fill_Umm();
         __power=0;
@@ -783,7 +783,7 @@ namespace Evolve {
     {
         CombinedStoppingCondition *result = new CombinedStoppingCondition();
         if(!dissipative()) return result;
-        if(__lock) 
+        if(__lock)
             (*result) |= new BreakLockCondition(system, __locked_zone_index);
         else if(system.evolution_mode() == Core::BINARY) {
             (*result) |= new SynchronizedCondition(

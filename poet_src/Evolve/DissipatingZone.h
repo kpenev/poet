@@ -404,8 +404,9 @@ namespace Evolve {
 
         ///Update the zone as necessary when the held lock is broken.
         void release_lock(
-                ///The direction that the spin will evolve toward in the future.
-                short direction);
+            ///The direction that the spin will evolve toward in the future.
+            short direction
+        );
 
         ///Locks the zone spin to the orbit in the given ratio.
         void set_lock(int orbital_frequency_multiplier,

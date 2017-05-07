@@ -449,6 +449,8 @@ namespace Evolve {
             true
         );
 
+        if(initialize) __num_locked_zones = 0;
+
         __tidal_torques_above.resize(number_zones());
         __tidal_torques_below.resize(number_zones());
         __angular_momentum_transfer.resize(number_zones()-1);
@@ -468,7 +470,7 @@ namespace Evolve {
             else zone_periapsis=periapsis[zone_index];
             if(locked_surface && zone_index==0)
                 zone_spin=surface_lock_frequency();
-            else if(current_zone.locked()) {
+            else if(current_zone.locked() && !initialize) {
                 zone_spin=Core::NaN;
                 ++angmom_offset;
             } else zone_spin=spin_angmom[zone_index-angmom_offset];

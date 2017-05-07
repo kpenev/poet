@@ -1761,7 +1761,6 @@ namespace Evolve {
                                                           m2,
                                                           semimajor,
                                                           eccentricity);
-        find_locked_zones();
         __body1.configure(initialize,
                           age,
                           m2,
@@ -1773,6 +1772,8 @@ namespace Evolve {
                           evolution_mode == Core::LOCKED_SURFACE_SPIN,
                           evolution_mode != Core::BINARY,
                           true);
+
+
         if(evolution_mode == Core::BINARY) {
             unsigned offset = __body1.number_zones();
             __body2.configure(initialize,
@@ -1783,8 +1784,10 @@ namespace Evolve {
                               spin_angmom + offset - __body1.number_locked_zones(),
                               inclination + offset,
                               periapsis + offset - 1);
+            find_locked_zones();
             update_above_lock_fractions();
-        }
+        } else
+            find_locked_zones();
 #ifdef DEBUG
     //	if(evolution_mode == BINARY)
     //		assert(__semimajor > minimum_semimajor());
