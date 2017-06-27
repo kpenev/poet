@@ -708,7 +708,8 @@ class StellarEvolutionManager :
         else :
             return ManagedInterpolator(
                 db_interpolator = result,
-                serialization_path = self._serialization_path
+                serialization_path = self._serialization_path,
+                db_session = db_session
             )
 
     def _create_new_interpolator(self,
