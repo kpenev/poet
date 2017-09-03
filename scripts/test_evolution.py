@@ -11,8 +11,7 @@ from matplotlib import pyplot
 from stellar_evolution.manager import StellarEvolutionManager
 from orbital_evolution.evolve_interface import library as\
     orbital_evolution_library
-from orbital_evolution.evolve_interface import initialize_library
-Binary = initialize_library()
+from orbital_evolution.binary import Binary
 from orbital_evolution.transformations import phase_lag
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
@@ -183,7 +182,7 @@ if __name__ == '__main__' :
     orbital_evolution_library.read_eccentricity_expansion_coefficients(
         b"eccentricity_expansion_coef.txt"
     )
-    serialized_dir = '../stellar_evolution_interpolators'
+    serialized_dir = '../../stellar_evolution_interpolators'
     manager = StellarEvolutionManager(serialized_dir)
     interpolator = manager.get_interpolator_by_name('default')
 
