@@ -18,4 +18,11 @@ namespace Evolve {
         );
     }
 
+    std::string RotFastCondition::describe(int index) const
+    {
+        std::ostringstream description;
+        description << "Critical spin of " << __spin_thres << " rad/day";
+        return description.str();
+    }
+
 } //End Evolve namespace.

@@ -6,10 +6,12 @@ namespace Evolve {
             const ZoneOrientation &to_zone, const Eigen::Vector3d &vector,
             Dissipation::Derivative deriv, bool with_respect_to_from)
     {
-#ifdef DEBUG
-        assert(deriv==Dissipation::NO_DERIV || deriv==Dissipation::INCLINATION
-                || deriv==Dissipation::PERIAPSIS);
-#endif
+        assert(deriv == Dissipation::NO_DERIV
+               ||
+               deriv == Dissipation::INCLINATION
+               ||
+               deriv == Dissipation::PERIAPSIS);
+
         double cos_dw=std::cos(to_zone.periapsis()-from_zone.periapsis()),
                sin_dw=std::sin(to_zone.periapsis()-from_zone.periapsis()),
                sin_from=std::sin(from_zone.inclination()),
@@ -72,10 +74,9 @@ namespace Evolve {
         inclination=std::atan2(-zone_z_dir[0], zone_z_dir[2]);
         if(zone_z_dir[1]==0 && zone_z_dir[0]==0) periapsis=0;
         else periapsis=M_PI/2+std::atan2(zone_z_dir[1], -zone_z_dir[0]);
-#ifdef DEBUG
+
         assert(inclination>=0);
         assert(inclination<M_PI);
-#endif
     }
     */
 

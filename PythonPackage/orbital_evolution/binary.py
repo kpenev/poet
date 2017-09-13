@@ -3,7 +3,11 @@
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 from orbital_evolution.evolve_interface import library
-from basic_utils import Structure, semimajor, orbital_frequency
+from basic_utils import\
+    Structure,\
+    semimajor,\
+    orbital_frequency,\
+    orbital_angular_momentum
 from ctypes import c_int, c_bool, c_double
 import numpy
 
@@ -354,3 +358,24 @@ class Binary :
         return semimajor(self.primary.mass,
                          self.secondary.mass,
                          orbital_period)
+
+    def orbital_angular_momentum(self, semimajor, eccentricity) :
+        """
+        The orbital agular momentum for the given semimajor/eccentricity.
+
+        Args:
+            - semimajor:
+                The semimajor axis of the system.
+
+            - eccentricity:
+                The orbital eccentricity.
+
+        Returns:
+            The orbital angular momentum if the two bodies are in an orbit
+            with the given semimajor axis and eccentricity in solar units.
+        """
+
+        return orbital_angular_momentum(self.primary.mass,
+                                        self.secondary.mass,
+                                        semimajor,
+                                        eccentricity)

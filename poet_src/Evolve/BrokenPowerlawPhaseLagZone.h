@@ -12,14 +12,16 @@
 #include "DissipatingZone.h"
 #include "DissipatingBody.h"
 #include "BinarySystem.h"
-#include "CriticalForcingFrequencyCondition.h"
-#include "CriticalSpinCondition.h"
+#include "LagForcingFrequencyBreakCondition.h"
+#include "LagSpinBreakCondition.h"
 
 namespace Evolve {
 
     class BrokenPowerlawPhaseLagZone : virtual public DissipatingZone {
+        friend class LagForcingFrequencyBreakCondition;
+        friend class LagSpinBreakCondition;
     private:
-        std::vector<double> 
+        std::vector<double>
             ///\brief The locations of the breaks in tidal frequency in rad/day.
             __tidal_frequency_breaks,
 
@@ -38,22 +40,74 @@ namespace Evolve {
             ///frequency breaks index changes slower.
             __break_phase_lags;
 
+        ///\brief The index within __spin_frequency_powers of the powerlaw
+        ///now in effect.
+        std::vector<double>::size_type __spin_index;
 
-        ///\brief The stopping condition monitoring for crossing of critical
-        ///spin frequencies.
-        CriticalSpinCondition *__spin_condition;
+        ///\brief The indices within __tidal_frequency_powers of the
+        ///powerlaw now in effect for each active tidal term.
+        ///
+        ///The index of the (m' * Worb - m * Wspin) term is given by:
+        /// * (2 + m) + 5 * m' if m' > 0
+        /// * (2 - m) - 5 * m' if m' < 0
+        ///This way changing the eccentricity expansion coefficient only
+        ///affects the tail of the vector.
+        std::vector< std::vector<double>::size_type > __tidal_indices;
 
-        ///Stoping conditions at the critical tidal frequencies for each
-        ///order in eccentricity.
-        std::list<CombinedStoppingCondition *> __tidal_frequency_conditions;
+        ///The index of the given tidal term within __tidal_indices.
+        inline std::vector< std::vector<double>::size_type >::size_type
+            tidal_term_index(
+                ///The orbital frequency multiplier of the forcing term being
+                ///monitored.
+                int orbital_frequency_multiplier,
 
-        ///Cleanup either during destruction or in preparation for changid
+                ///The spin frequency multiplier of the forcing term being
+                ///monitored.
+                int spin_frequency_multiplier
+            ) const
+            {
+                return (
+                    2
+                    + 
+                    (orbital_frequency_multiplier > 0 ? 1 : -1)
+                    *
+                    (
+                        spin_frequency_multiplier
+                        +
+                        5 * orbital_frequency_multiplier
+                    )
+                );
+            }
+
+        ///Return the current orbital frequency of the given system.
+        double get_orbital_frequency(const BinarySystem &system) const;
+
+        ///Cleanup either during destruction or in preparation for changing
         ///dissipation.
         void reset();
 
+        ///\brief Properly set the value of __spin_index per the current spin
+        ///of the zone.
+        ///
+        ///Should only be called once, when starting the evolution in a
+        ///two-body configuration. After that, this values should be updated
+        ///by stopping conditions.
+        void set_spin_index();
+
+        ///\brief The index within __tidal_frequency_powers to use for the
+        ///given forcing frequency.
+        ///
+        ///Should only be called when starting the evolution in a two-body
+        ///configuration. After that, this values should be updated by
+        ///stopping conditions.
+        std::vector<double>::size_type get_tidal_index(
+            ///The absolute value of the forcing frequency.
+            double abs_forcing_frequency
+        );
+
         ///\brief Make sure that the entries in __tidal_frequency_conditions
         ///are appropriate for the current eccentricity expansion order.
-        void fill_tidal_frequency_conditions(
+        void add_tidal_frequency_conditions(
             ///The system being evolved.
             BinarySystem &system, 
 
@@ -61,18 +115,19 @@ namespace Evolve {
             bool primary,
 
             ///The index of the zone in the body.
-            unsigned zone_index
+            unsigned zone_index,
+
+            ///The final stopping condition returned by stopping_conditions()
+            ///The newly constructed conditions get added to this argument.
+            CombinedStoppingCondition &result
         );
 
         ///Print the configuration of the zone to stdlog.
-        void print_configuration();
+        void print_configuration(std::ostream &out_stream = std::clog);
 
     public:
         ///\brief Create an unuseable zone. Must call setup() before use.
-        BrokenPowerlawPhaseLagZone() :
-            __spin_condition(NULL),
-            __tidal_frequency_conditions()
-        {}
+        BrokenPowerlawPhaseLagZone() {}
 
         ///\brief Seup the zone with the given breaks/powers imposing
         ///continuity accress all breaks. Must only be called before use.
@@ -100,6 +155,19 @@ namespace Evolve {
             ///The phase lag at the first tidal and first spin frequency 
             ///break. The rest are calculated by imposing continuity.
             double reference_phase_lag
+        );
+
+        ///See DissipatingZone::configure().
+        virtual void configure(
+            bool initialize,
+            double age,
+            double orbital_frequency,
+            double eccentricity,
+            double orbital_angmom,
+            double spin,
+            double inclination,
+            double periapsis,
+            bool spin_is_frequency
         );
         
         ///\brief Should return the tidal phase lag times the love number for
@@ -180,7 +248,27 @@ namespace Evolve {
         );
 
         ///Cleanup. 
-        ~BrokenPowerlawPhaseLagZone() {reset();}
+        ~BrokenPowerlawPhaseLagZone() {
+            std::cerr << "Destroying powerlaw lag zone:"
+                      << "Tidal breaks:";
+            for(
+                std::vector<double>::const_iterator
+                    br_i = __tidal_frequency_breaks.begin();
+                br_i != __tidal_frequency_breaks.end();
+                ++br_i
+            )
+                std::cerr << " " << *br_i;
+            std::cerr << "Spin breaks: ";
+            for(
+                std::vector<double>::const_iterator
+                    br_i = __spin_frequency_breaks.begin();
+                br_i != __spin_frequency_breaks.end();
+                ++br_i
+            )
+                std::cerr << " " << *br_i;
+            std::cerr << std::endl;
+            reset();
+        }
 
     }; //End BrokenPowerlawPhaseLagZone class.
 

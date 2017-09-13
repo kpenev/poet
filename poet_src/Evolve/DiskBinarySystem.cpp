@@ -21,6 +21,9 @@ namespace Evolve {
 
     void DiskBinarySystem::add_secondary()
     {
+#ifndef NDEBUG
+        std::cerr << "Adding secondary" << std::endl;
+#endif
         unsigned nzones = primary().number_zones() + secondary().number_zones();
         std::valarray<double> angmom(nzones),
                               inclination(nzones), 

@@ -107,8 +107,9 @@ namespace Evolve {
 
                 ///The multiple of the spin frequency to consider.
                 int spin_freq_mult) const
-        {return orbital_freq_mult*__spin_freq_mult==
-            spin_freq_mult*__orbital_freq_mult;}
+        {return (orbital_freq_mult * __spin_freq_mult
+                 ==
+                 spin_freq_mult * __orbital_freq_mult);}
 
         ///Should this lock be assumed.
         operator bool() const {return __lock_direction==0;}

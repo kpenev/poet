@@ -74,7 +74,7 @@ namespace Core {
         if(linear_solution<x0 || linear_solution>x1)
             linear_solution=x1 - y1*slope_inv;
         if(std::isnan(dy0) || std::isnan(dy1)) {
-#ifdef DEBUG
+#ifndef NDEBUG
             /*		std::cerr << "Linear zerocrossing between ("
              		<< x0 << ", " << y0
                     << ") and (" << x1 << ", " << y1 << ")="
@@ -89,7 +89,7 @@ namespace Core {
                    c=dy0 - 3.0*a*x0_2 - 2.0*b*x0,
                    d=y0 - a*x0*x0_2 - b*x0_2 - c*x0;
             std::valarray<double> solutions=solve_cubic(d, c, b, a);
-#ifdef DEBUG
+#ifndef NDEBUG
             /*		std::cerr << "Cubic zerocrossing between ("
              		<< x0 << ", " << y0
                     << ", " << dy0 << ") and ("
@@ -99,14 +99,14 @@ namespace Core {
 #endif
             for(size_t i=0; i<solutions.size(); i++) 
                 if(solutions[i]>=x0 && solutions[i]<=x1) {
-#ifdef DEBUG
+#ifndef NDEBUG
                     /*				std::cerr << ", selected: "
                       				<< solutions[i] << std::endl;*/
 #endif
                     return solutions[i];
                 }
             if(y0*y1<=0) {
-#ifdef DEBUG
+#ifndef NDEBUG
                 /*			std::cerr << ", fallback to linear: " 
                   			<< linear_solution
                             << std::endl;*/
@@ -162,7 +162,7 @@ namespace Core {
             require_range_low=x0;
             require_range_high=x2;
         }
-#ifdef DEBUG
+#ifndef NDEBUG
         /*	std::cerr << "Quadratic zerocrossing between (" << x0 << ", "
           	<< y0 
             << "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
@@ -174,13 +174,13 @@ namespace Core {
         for(size_t i=0; i<solutions.size(); i++) 
             if(solutions[i]>=require_range_low &&
                solutions[i]<=require_range_high) {
-#ifdef DEBUG
+#ifndef NDEBUG
                 /*			std::cerr << ", selected: " << solutions[i]
                   			<< std::endl;*/
 #endif
                 return solutions[i];
             }
-#ifdef DEBUG
+#ifndef NDEBUG
         //	std::cerr << ", fallback to linear: ";
 #endif
         return estimate_zerocrossing(xpre, ypre, xpost, ypost);
@@ -220,7 +220,7 @@ namespace Core {
             require_range_low=x0;
             require_range_high=x3;
         }
-#ifdef DEBUG
+#ifndef NDEBUG
         /*	std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0 
             << "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
             << "), (" << x3 << ", " << y3 << ") in range ("
@@ -236,13 +236,13 @@ namespace Core {
         for(size_t i=0; i<solutions.size(); i++) 
             if(solutions[i]>=require_range_low &&
                solutions[i]<=require_range_high) {
-#ifdef DEBUG
+#ifndef NDEBUG
                 /*			std::cerr << ", selected: " << solutions[i]
                   			<< std::endl;*/
 #endif
                 return solutions[i];
             }
-#ifdef DEBUG
+#ifndef NDEBUG
         //	std::cerr << ", fallback to linear: ";
 #endif
         return estimate_zerocrossing(xpre, ypre, xpost, ypost);
@@ -265,7 +265,7 @@ namespace Core {
                                   y0+dy0*(linear_extremum_x-x0) :
                                   y1-dy1*(x1-linear_extremum_x));
         std::valarray<double> solutions=solve_cubic(c, 2.0*b, 3.0*a, 0);
-#ifdef DEBUG
+#ifndef NDEBUG
         /*	std::cerr << "Cubic extrema between (" << x0 << ", "
           	<< y0 << ", " << dy0
             << ") and (" << x1 << ", " << y1 << ", " << dy1 << "), coef=("
@@ -291,7 +291,7 @@ namespace Core {
                             std::max(std::abs(cx), std::abs(d)))<1e-10)
                         *extremum_y=linear_extremum_y;
                 }
-#ifdef DEBUG
+#ifndef NDEBUG
                 /*			std::cerr << ", selected: (" << x;
                             if(extremum_y) std::cerr << ", " << *extremum_y;
                             std::cerr << ")" << std::endl;*/
@@ -300,7 +300,7 @@ namespace Core {
             }
         }
         if(extremum_y!=NULL) *extremum_y=linear_extremum_y;
-#ifdef DEBUG
+#ifndef NDEBUG
         /*	std::cerr << ", falling back to linear: ("
           	<< linear_extremum_x << ", "
             << linear_extremum_y << ")" << std::endl;*/
@@ -321,12 +321,12 @@ namespace Core {
     double quadratic_extremum(double x0, double y0, double x1,
                               double y1, double x2, double y2, double *extremum_y)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         assert((y1-y0)*(y2-y1)<=0);
 #endif
         if(indistinguishable(x0, y0, x1, y1) ||
            indistinguishable(x1, y1, x2, y2)) {
-#ifdef DEBUG
+#ifndef NDEBUG
             /*		std::cerr << "Quandratic extremum with indistinguisable two points. "
                     "Returing middle point as answer." << std::endl;*/
 #endif
@@ -338,7 +338,7 @@ namespace Core {
         if(extremum_y)
             *extremum_y=y0 - s02*s02/(2.0*a) + s02*x2 
                 - a*(x0*x0 + x2*x2)/2.0;
-#ifdef DEBUG
+#ifndef NDEBUG
         /*	double b=-2.0*a*extremum_x;
             std::cerr << "Quadratic extremum between (" << x0 << ", "
             << y0 << "), ("
@@ -356,12 +356,12 @@ namespace Core {
                           double *extremum_y, double require_range_low,
                           double require_range_high)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         assert((y1-y0)*(y2-y1)<=0 || (y2-y1)*(y3-y2)<=0);
 #endif
         double extremum_x;
         if(indistinguishable(x0, y0, x1, y1)) {
-#ifdef DEBUG
+#ifndef NDEBUG
             /*		std::cerr << "Cubic extremum with indistinguishable first two "
                     "points." << std::endl;*/
 #endif
@@ -372,7 +372,7 @@ namespace Core {
                 if(extremum_y) *extremum_y=y1;
             }
         } else if(indistinguishable(x1, y1, x2, y2)) {
-#ifdef DEBUG
+#ifndef NDEBUG
             /*		std::cerr << "Cubic extremum with indistinguishable middle two "
                     "points." << std::endl;*/
 #endif
@@ -388,7 +388,7 @@ namespace Core {
                 if(extremum_y) *extremum_y=y2;
             }
         } else if(indistinguishable(x2, y2, x3, y3)) {
-#ifdef DEBUG
+#ifndef NDEBUG
             /*		std::cerr << "Cubic extremum with indistinguishable last two "
                     "points." << std::endl;*/
 #endif
@@ -404,7 +404,7 @@ namespace Core {
             double a=3.0*gsl_vector_get(cubic_coef, 3),
                    b=2.0*gsl_vector_get(cubic_coef, 2),
                    c=gsl_vector_get(cubic_coef, 1), sqrtD=std::sqrt(b*b-4.0*a*c);
-#ifdef DEBUG
+#ifndef NDEBUG
             /*		double extremum_x1=(-b-sqrtD)/(2.0*a),
                     extremum_x2=(-b+sqrtD)/(2.0*a),
                     d=y0 - a*x0*x0*x0/3.0 - b*x0*x0/2.0 - c*x0;*/
@@ -447,7 +447,7 @@ namespace Core {
             gsl_vector_free(cubic_coef);
         }
         if(extremum_x<require_range_low || extremum_x>require_range_high) {
-#ifdef DEBUG
+#ifndef NDEBUG
             //		std::cerr << ", fallback to quadratic: ";
 #endif
             if((y1-y0)*(y2-y1)<=0)
@@ -482,7 +482,7 @@ namespace Core {
                 throw Error::BadFunctionArguments(msg.str());
             }
         }
-#ifdef DEBUG
+#ifndef NDEBUG
         /*	std::cerr << ", selected: (" << extremum_x;
             if(extremum_y) std::cerr << ", " << *extremum_y;
             std::cerr << ")" << std::endl;*/

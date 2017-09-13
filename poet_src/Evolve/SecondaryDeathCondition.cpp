@@ -5,7 +5,7 @@ namespace Evolve {
 
     std::valarray<double> SecondaryDeathCondition::operator()(
             Core::EvolModeType
-#ifdef DEBUG
+#ifndef NDEBUG
             evol_mode
 #endif
             ,
@@ -13,7 +13,6 @@ namespace Evolve {
             const std::valarray<double> &derivatives,
             std::valarray<double> &stop_deriv) const
     {
-#ifdef DEBUG
         assert(evol_mode == Core::BINARY);
         assert(orbit.size() == (1
                                 +
@@ -21,7 +20,7 @@ namespace Evolve {
                                 -
                                 __system.number_locked_zones()));
         assert(orbit.size() == derivatives.size());
-#endif
+
         double min_semimajor = __system.minimum_semimajor(),
                semimajor = __system.semimajor(),
                dsemimajor_dt = derivatives[0];
@@ -39,19 +38,22 @@ namespace Evolve {
                                      1);
     }
 
-    void SecondaryDeathCondition::reached(
-#ifdef DEBUG
-            short deriv_sign, unsigned index
-#else 
-            short, unsigned
-#endif
-            )
+    void SecondaryDeathCondition::reached(short deriv_sign,
+                                          unsigned index)
     {
-#ifdef DEBUG
         assert(index == 0);
         assert(deriv_sign == -1);
-#endif
+
+        StoppingCondition::reached(deriv_sign, index);
         __system.secondary_died();
+    }
+
+    std::string SecondaryDeathCondition::describe(int index) const
+    {
+        std::ostringstream description;
+        description << "Semimajor axis crossing death boundary of "
+                    << __system.minimum_semimajor();
+        return description.str();
     }
 
 } //End Evolve namespace.

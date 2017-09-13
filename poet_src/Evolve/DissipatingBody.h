@@ -373,9 +373,8 @@ namespace Evolve {
                 ///Which derivative of the tidal torque is required.
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
             assert(zone_index<number_zones());
-#endif
+
             return (above ? __tidal_torques_above : __tidal_torques_below)
                 [zone_index][deriv];
         }

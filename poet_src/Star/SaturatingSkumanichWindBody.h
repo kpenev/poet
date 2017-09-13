@@ -33,16 +33,24 @@ namespace Star {
 
         ///The saturation states recorded by add_to_evolution() so far.
         std::list<bool> __saturation_evolution;
+
+#ifndef NDEBUG
+        bool __detected_saturation;
+#endif
     public:
         SaturatingSkumanichWindBody(
-                ///The strength of the wind.
-                double wind_strength,
+            ///The strength of the wind.
+            double wind_strength,
 
-                ///The frequency at which the wind loss saturates in rad/day.
-                double saturation_frequency
-        )
-            : __wind_strength(wind_strength), 
-              __saturation_freq(saturation_frequency) {}
+            ///The frequency at which the wind loss saturates in rad/day.
+            double saturation_frequency
+        ) :
+            __wind_strength(wind_strength), 
+            __saturation_freq(saturation_frequency)
+#ifndef NDEBUG
+            , __detected_saturation(false)
+#endif
+            {}
 
         ///See DissipatingBody::angular_momentum_loss().
         double angular_momentum_loss(
@@ -54,7 +62,12 @@ namespace Star {
 
         ///Sets the saturation based on the currently configured spin frequency.
         void detect_saturation() 
-        {__saturated = (std::abs(spin_frequency()) > __saturation_freq);}
+        {
+            __saturated = (std::abs(spin_frequency()) > __saturation_freq);
+#ifndef NDEBUG
+            __detected_saturation = true;
+#endif
+        }
 
         ///Is the wind loss currently saturated?
         bool saturated() {return __saturated;}
@@ -64,14 +77,13 @@ namespace Star {
                 ///The sign of the rate of change of the spin frequency when it
                 ///was equal to the saturation frequency.
                 short
-#ifdef DEBUG
+#ifndef NDEBUG
                 deriv_sign
 #endif
                 )
         {
-#ifdef DEBUG
             assert(deriv_sign == (__saturated ? -1 : 1));
-#endif
+
             __saturated = !__saturated;
         }
 

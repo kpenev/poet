@@ -25,12 +25,11 @@ namespace Star {
             bool with_respect_to_top
     ) const
     {
-#ifdef DEBUG
         assert(deriv != Evolve::Dissipation::ORBITAL_FREQUENCY);
         assert(deriv != Evolve::Dissipation::ECCENTRICITY);
         assert(deriv != Evolve::Dissipation::SEMIMAJOR);
         assert(top_zone_index < number_zones()-1);
-#endif
+
         std::valarray<Eigen::Vector3d> &zone_torque=__torque[top_zone_index];
         switch(deriv) {
             case Evolve::Dissipation::NO_DERIV :
@@ -88,9 +87,8 @@ namespace Star {
         bool with_respect_to_top
     ) const
     {
-#ifdef DEBUG
         assert(top_zone_index<number_zones()-1);
-#endif
+
         if(
             deriv == Evolve::Dissipation::ORBITAL_FREQUENCY
             || deriv == Evolve::Dissipation::ECCENTRICITY

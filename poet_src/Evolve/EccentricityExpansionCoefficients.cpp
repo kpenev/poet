@@ -6,9 +6,8 @@ namespace Evolve {
                                                        int s,
                                                        int epower) const
     {
-#ifdef DEBUG
         assert(std::abs(msign) < 2);
-#endif
+
         return (epower - s + 2 * std::min(msign, s - msign)) / 2;
     }
 

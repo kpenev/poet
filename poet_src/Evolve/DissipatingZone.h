@@ -229,7 +229,7 @@ namespace Evolve {
                 double &forcing_frequency
         ) const;
 
-#ifdef DEBUG
+#ifndef NDEBUG
         ///\brief Runs a bunch of asserts to check the consistency of __lock and
         ///__other_lock.
         void check_locks_consistency() const;
@@ -250,41 +250,52 @@ namespace Evolve {
         ///The spin frequency and orbital frequency must already be set.
         void initialize_locks();
 
+    protected:
+        ///Configures only the spin of the zone.
+        void configure_spin(
+            ///See same name argument to configure().
+            double spin,
+
+            ///See same name argument to configure().
+            bool spin_is_frequency
+        );
+
+
     public:
         DissipatingZone();
 
         ///\brief Defines the current orbit, triggering re-calculation of all
         ///quantities.
         virtual void configure(
-                ///Is this the first time the zone is configure() -ed?
-                bool initialize,
+            ///Is this the first time the zone is configure() -ed?
+            bool initialize,
 
-                ///The age to set the zone to.
-                double age,
+            ///The age to set the zone to.
+            double age,
 
-                ///The angular velocity of the orbit in rad/day.
-                double orbital_frequency,
+            ///The angular velocity of the orbit in rad/day.
+            double orbital_frequency,
 
-                ///The eccentricity of the orbit
-                double eccentricity,
-                
-                ///The absolute value of the angular momentum of the orbit.
-                double orbital_angmom,
+            ///The eccentricity of the orbit
+            double eccentricity,
 
-                ///The angular momentum or spin frequency of the zone
-                ///if the zone is not in a spin--orbit lock (ignored it if is).
-                double spin,
-                
-                ///The inclination of the zone relative to the orbit.
-                double inclination,
-                
-                ///The argument of periapsis of the orbit in the equatorial
-                ///planet of the zone.
-                double periapsis,
-                
-                ///Should the spin argument be interpreted as an angular momentum
-                ///or a spin frequency?
-                bool spin_is_frequency
+            ///The absolute value of the angular momentum of the orbit.
+            double orbital_angmom,
+
+            ///The angular momentum or spin frequency of the zone
+            ///if the zone is not in a spin--orbit lock (ignored it if is).
+            double spin,
+
+            ///The inclination of the zone relative to the orbit.
+            double inclination,
+
+            ///The argument of periapsis of the orbit in the equatorial
+            ///planet of the zone.
+            double periapsis,
+
+            ///Should the spin argument be interpreted as an angular momentum
+            ///or a spin frequency?
+            bool spin_is_frequency
         );
 
         ///\brief The tidal forcing frequency for the given term and orbital
@@ -501,10 +512,9 @@ namespace Evolve {
                 ///What to return
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
             assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2*deriv+1<static_cast<int>(__power.size()));
-#endif
+
             return __power[2*deriv+(above? 1 : 0)];
         }
 
@@ -519,11 +529,10 @@ namespace Evolve {
                 ///above_fraction).
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
-            if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+            assert(!locked() || (above_fraction>=0 && above_fraction<=1));
             assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2*deriv+1<static_cast<int>(__power.size()));
-#endif
+
             return above_fraction*__power[2*deriv+1]
                    +
                    (1.0-above_fraction)*__power[2*deriv];
@@ -535,10 +544,9 @@ namespace Evolve {
         double tidal_torque_x(bool above,
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
             assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2*deriv+1<static_cast<int>(__torque_x.size()));
-#endif
+
             return __torque_x[2*deriv+(above? 1 : 0)];
         }
 
@@ -553,14 +561,15 @@ namespace Evolve {
                 ///above_fraction).
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
-            if(locked()) assert(above_fraction>=0 && above_fraction<=1);
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__torque_x.size()));
-#endif
-            return above_fraction*__torque_x[2*deriv+1]
+            assert(
+                !locked() || (above_fraction >= 0 && above_fraction <= 1)
+            );
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1<static_cast<int>(__torque_x.size()));
+
+            return above_fraction * __torque_x[2 * deriv + 1]
                    +
-                   (1.0-above_fraction)*__torque_x[2*deriv];
+                   (1.0 - above_fraction) * __torque_x[2 * deriv];
         }
 
         ///\brief The dimensionless torque along y.
@@ -569,11 +578,10 @@ namespace Evolve {
         double tidal_torque_y(bool above,
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__torque_y.size()));
-#endif
-            return __torque_y[2*deriv+(above? 1 : 0)];
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1<static_cast<int>(__torque_y.size()));
+
+            return __torque_y[2 * deriv + (above? 1 : 0)];
         }
 
         ///\brief Same as tidal_torque_y(bool, Dissipation::Derivative) but
@@ -587,11 +595,10 @@ namespace Evolve {
                 ///above_fraction).
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
-            if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+            assert(!locked() || (above_fraction>=0 && above_fraction<=1));
             assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2*deriv+1<static_cast<int>(__torque_y.size()));
-#endif
+
             return above_fraction*__torque_y[2*deriv+1]
                    +
                    (1.0-above_fraction)*__torque_y[2*deriv];
@@ -603,10 +610,9 @@ namespace Evolve {
         double tidal_torque_z(bool above,
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
             assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2*deriv+1<static_cast<int>(__torque_z.size()));
-#endif
+
             return __torque_z[2*deriv+(above? 1 : 0)];
         }
 
@@ -621,11 +627,10 @@ namespace Evolve {
                 ///above_fraction).
                 Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
         {
-#ifdef DEBUG
-            if(locked()) assert(above_fraction>=0 && above_fraction<=1);
+            assert(!locked() || (above_fraction>=0 && above_fraction<=1));
             assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2*deriv+1<static_cast<int>(__torque_z.size()));
-#endif
+
             return above_fraction*__torque_z[2*deriv+1]
                    +
                    (1.0-above_fraction)*__torque_z[2*deriv];
@@ -704,9 +709,8 @@ namespace Evolve {
         const std::list<double> &get_evolution_real(
                 ZoneEvolutionQuantities quantity) const
         {
-#ifdef DEBUG
             assert(quantity<NUM_REAL_EVOL_QUANTITIES);
-#endif
+
             return __evolution_real[quantity];
         }
 
@@ -714,9 +718,8 @@ namespace Evolve {
         const std::list<int> &get_evolution_integer(
                 ZoneEvolutionQuantities quantity) const
         {
-#ifdef DEBUG
             assert(quantity>=NUM_REAL_EVOL_QUANTITIES);
-#endif
+
             return __evolution_integer[quantity-NUM_REAL_EVOL_QUANTITIES];
         }
 
@@ -725,18 +728,16 @@ namespace Evolve {
         ///if locked).
         unsigned locked_zone_index() const
         {
-#ifdef DEBUG
             assert(__lock);
-#endif
+
             return __locked_zone_index;
         }
 
         ///\brief Reference to the locked_zone_index() of this zone.
         unsigned &locked_zone_index()
         {
-#ifdef DEBUG
             assert(__lock);
-#endif
+
             return __locked_zone_index;
         }
 

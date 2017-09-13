@@ -93,3 +93,33 @@ def orbital_frequency(m1, m2, semimajor) :
             (semimajor * units.R_sun)**3
         )**0.5
     ).to(1 / units.day).value
+
+def orbital_angular_momentum(m1, m2, semimajor, eccentricity) :
+    """
+    Return the angular momentum of the given orbit.
+
+    Args:
+        - m1:
+            Mass of the first body in the system
+
+        - m2:
+            Mass of the second body in the system.
+
+        - semimajor:
+            The semimajor axis of the binary in solar radii.
+
+        - eccentricity:
+            The eccentricity of the orbit.
+
+    Returns:
+        The orbital angular momentum in solar units for a binary with the
+        given bodies in the given orbit.
+    """
+
+    return (
+        m1 * m2 / (m1 + m2) * semimajor**2
+        *
+        orbital_frequency(m1, m2, semimajor)
+        *
+        (1.0 - eccentricity**2)**0.5
+    )

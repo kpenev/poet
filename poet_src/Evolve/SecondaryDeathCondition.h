@@ -18,7 +18,10 @@ namespace Evolve {
     public:
         ///\brief Create a condition watching for the death of the secondary body
         ///in a system due to tidal disruption of engulfment.
-        SecondaryDeathCondition(BinarySystem &system) : __system(system) {}
+        SecondaryDeathCondition(BinarySystem &system) :
+            StoppingCondition(-1),
+            __system(system) 
+        {}
 
         ///\brief The difference between the semimajor axis and the larger of
         ///the roche radius and the stellar radius divided by the latter.
@@ -39,6 +42,10 @@ namespace Evolve {
 
         ///See StoppingCondition::reached().
         void reached(short deriv_sign, unsigned index=0);
+
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index = -1) const;
+
     }; //End SecondaryDeathCondition class.
 
 } //End Evolve namespace.

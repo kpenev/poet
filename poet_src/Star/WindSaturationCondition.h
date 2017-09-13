@@ -39,8 +39,12 @@ namespace Star {
             const Evolve::DissipatingBody &other_body,
 
             ///Is the body we are monitoring the primary?
-            bool primary
+            bool primary,
+
+            ///Is the wind currently saturated or not?
+            bool saturated
         ) :
+            StoppingCondition((saturated ? -1 : 1)),
             __saturation_freq(body.saturation_frequency()),
             __body(body),
             __other_body(other_body),
@@ -66,6 +70,10 @@ namespace Star {
             Evolve::StoppingCondition::reached(deriv_sign, index);
             __body.saturation_freq_crossed(deriv_sign);
         }
+
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index = 0) const;
+
     };//End WindSaturationCondition class.
 
 }//End Star namespace.

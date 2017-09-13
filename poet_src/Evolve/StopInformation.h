@@ -59,17 +59,18 @@ namespace Evolve {
 
                 ///Is the reason for stopping that a condition actually crossed
                 ///zero?
-                bool is_crossing=false,
+                bool is_crossing = false,
 
                 ///Did we stop after a zero-crossing.
-                bool crossed_zero=false,
+                bool crossed_zero = false,
                 
                 ///The index of the condition which caused us to stop.
-                size_t stop_condition_index=0,
+                size_t stop_condition_index = 0,
                 
                 ///The sign of the derivative of the condition at zero-crossing
                 ///(undefined for extrema.
-                short deriv_sign_at_crossing=0) :
+                short deriv_sign_at_crossing = 0
+        ) :
             __stop_age(stop_age),
             __stop_condition_precision(stop_precision),
             __stop_reason(stop_reason),
@@ -144,9 +145,8 @@ namespace Evolve {
         ///The sign of the derivative at zero-crossing.
         short deriv_sign_at_crossing() const
         {
-#ifdef DEBUG
             assert(__is_crossing);
-#endif
+
             return __deriv_sign_at_crossing;
         }
 

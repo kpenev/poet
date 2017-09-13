@@ -55,29 +55,34 @@ namespace Evolve {
         short __expected_crossing_deriv_sign;
     public:
         ///Create a generic stopping condition.
-        StoppingCondition() : __expected_crossing_deriv_sign(0) {}
+        StoppingCondition(
+            short expected_crossing_deriv_sign = 0
+        )
+            : __expected_crossing_deriv_sign(expected_crossing_deriv_sign)
+        {}
 
         ///\brief The values of quantities which should cross zero when the
         ///condition(s) is(are) satisfied.
         ///
         ///The input stellar system must already have its age set.
         virtual std::valarray<double> operator()(
-                ///The evolution mode for which the orbit and derivatives are
-                ///given. For some conditions some EvolModeType values will not
-                ///make sense and will result in an exception.
-                Core::EvolModeType evol_mode,
+            ///The evolution mode for which the orbit and derivatives are
+            ///given. For some conditions some EvolModeType values will not
+            ///make sense and will result in an exception.
+            Core::EvolModeType evol_mode,
 
-                ///The variables which are currently being evolved. The content
-                ///depends on the evol_mode argument.
-                const std::valarray<double> &orbit, 
+            ///The variables which are currently being evolved. The content
+            ///depends on the evol_mode argument.
+            const std::valarray<double> &orbit, 
 
-                ///The rate of change of the entries in orbit per the relevant
-                ///system of differential equations.
-                const std::valarray<double> &derivatives,
+            ///The rate of change of the entries in orbit per the relevant
+            ///system of differential equations.
+            const std::valarray<double> &derivatives,
 
-                ///On output contains the rate of change of the stopping
-                ///sub-conditions if known, or NaN if not.
-                std::valarray<double> &stop_deriv) const=0;
+            ///On output contains the rate of change of the stopping
+            ///sub-conditions if known, or NaN if not.
+            std::valarray<double> &stop_deriv
+        ) const = 0;
 
         ///The number of subconditions in the current condition.
         virtual size_t num_subconditions() const {return 1;}
@@ -92,39 +97,42 @@ namespace Evolve {
         ///switch wind saturation state or check if a spin-orbit lock can be held
         ///and lock it if so etc.).
         virtual void reached(
-                ///The sign of the first derivative when the condition was
-                ///reached.
-                short deriv_sign,
+            ///The sign of the first derivative when the condition was
+            ///reached.
+            short deriv_sign,
 
-                ///The sub-condition reached for composite conditions.
-                unsigned 
-#ifdef DEBUG
-                index
+            ///The sub-condition reached for composite conditions.
+            unsigned 
+#ifndef NDEBUG
+            index
 #endif
-                =0)
+            =0)
         {
-#ifdef DEBUG
             assert(index == 0);
-#endif
-            __expected_crossing_deriv_sign=-deriv_sign;
+            assert(__expected_crossing_deriv_sign == deriv_sign);
+
+            __expected_crossing_deriv_sign = -deriv_sign;
         }
 
         ///\brief The expected sign of the derivative at the next zero-crossing.
         ///
         ///Zero if unknown.
         virtual short expected_crossing_deriv_sign(
-                ///Which sub-condition.
-                unsigned 
-#ifdef DEBUG
-                index
+            ///Which sub-condition.
+            unsigned 
+#ifndef NDEBUG
+            index
 #endif
-                =0)
+            =0) const
         {
-#ifdef DEBUG
             assert(index == 0);
-#endif
+
             return __expected_crossing_deriv_sign;
         }
+
+        ///\brief Overwrite with something returning a description of what
+        ///the stopping condition is monitoring.
+        virtual std::string describe(int index = -1) const = 0;
 
         virtual ~StoppingCondition() {}
     };//End StoppingCondition class.
@@ -149,11 +157,7 @@ namespace Evolve {
 
         ///See StoppingCondition::reached().
         void reached(short, unsigned=0)
-        {
-#ifdef DEBUG
-            assert(false);
-#endif
-        }
+        {assert(false);}
     }; //End NoStopCondition class.
 
     ///\brief A base class for all external stopping conditions.

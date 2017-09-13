@@ -16,27 +16,13 @@
 
 namespace Evolve {
 
-    class DissipatingZone;
+    class BrokenPowerlawPhaseLagZone;
 
     ///\brief Satisfied when some zone reaches a critical spin.
-    class CriticalSpinCondition : public StoppingCondition {
+    class LagSpinBreakCondition : public StoppingCondition {
     private:
-        ///The critical spin frequencies to watch for in rad/day.
-        std::vector<double> __critical_spins;
-
         ///The zone being monitored (for more convenient access).
-        const DissipatingZone &__zone;
-
-        std::vector<double>::const_iterator
-            ///\brief The __critical_spins entry immediately above the
-            ///current spin of the monitored zone. If all entries are below,
-            ///the value is __critical_spins.end()
-            __critical_above_iter,
-
-            ///\brief The __critical_spins entry immediately below the
-            ///current spin of the monitored zone. If all entries are above,
-            ///the value is __critical_spins.end()
-            __critical_below_iter;
+        BrokenPowerlawPhaseLagZone &__zone;
 
         const DissipatingBody 
             ///The body this condition is monitoring.
@@ -51,6 +37,10 @@ namespace Evolve {
         ///\brief The index (within __body) of the zone whose spin is being
         ///monitored.
         unsigned __zone_index;
+
+        ///\brief The index of the currently active powerlaw within
+        /// __zone.__spin_frequency_powers.
+        std::vector<double>::size_type __powerlaw_index;
 
         ///\brief See num_subcondition().
         unsigned __num_subconditions;
@@ -94,7 +84,10 @@ namespace Evolve {
 
     public:
         ///Create a critical spin condition for the given zone.
-        CriticalSpinCondition(
+        LagSpinBreakCondition(
+            ///The zone being monitored.
+            BrokenPowerlawPhaseLagZone &zone,
+
 			///The body whose spin to monitor.
 			const DissipatingBody &body,
 
@@ -106,10 +99,7 @@ namespace Evolve {
 
             ///The index (within body) of the zone for which to monitor the
             ///spin.
-            unsigned zone_index,
-
-            ///The critical spin frequency to watch for.
-            std::vector<double> critical_spins
+            unsigned zone_index
         );
 
         ///\brief Return the differences between the current spin of the zone
@@ -143,7 +133,16 @@ namespace Evolve {
         virtual StoppingConditionType type(unsigned =0) const
         {return Evolve::EXTERNAL;}
 
-    };//End CriticalSpinCondition class.
+        ///See StoppingCondition::expected_crossing_deriv_sign().
+        virtual short expected_crossing_deriv_sign(
+            ///Which sub-condition.
+            unsigned index = 0
+        ) const;
+
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index = -1) const;
+
+    };//End LagSpinBreakCondition class.
 
 }//End Evolve namespace.
 

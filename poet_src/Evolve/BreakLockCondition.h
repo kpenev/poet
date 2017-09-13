@@ -61,14 +61,18 @@ namespace Evolve {
 
         ///\brief See StoppingCondition::expected_crossing_deriv_sign().
         virtual short expected_crossing_deriv_sign(
-                ///Which sub-condition.
-                unsigned index=0)
+            ///Which sub-condition.
+            unsigned index = 0
+        ) const
         {
-#ifdef DEBUG
             assert(index <= 1);
-#endif
+
             return (index == 0 ? -1 : 1);
         }
+
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index = 0) const;
+
     }; //End BreakLockCondition class.
 
 } //End Evolve namespace.

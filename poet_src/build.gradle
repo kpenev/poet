@@ -19,8 +19,6 @@ model {
 
             if(buildType == buildTypes.release) {
                 cppCompiler.define "NDEBUG"
-            } else if(buildType == buildTypes.debug) {
-                cppCompiler.define "DEBUG"
             }
 
             if (toolChain in Gcc || toolChain in Clang) {
@@ -43,8 +41,6 @@ model {
             } else if (toolChain in VisualCpp ) {
                 if(buildType == buildTypes.debug) {
                     cppCompiler.args '/Zi'
-                    cppCompiler.define 'DEBUG'
-                    linker.args '/DEBUG'
                 }
             }
 

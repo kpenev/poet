@@ -59,15 +59,15 @@ namespace Star {
             __current_age = age;
             reset_current_quantities();
         }
-        DissipatingZone::configure(initialize,
-                                   age,
-                                   orbital_frequency,
-                                   eccentricity,
-                                   orbital_angmom,
-                                   spin,
-                                   inclination,
-                                   periapsis,
-                                   spin_is_frequency);
+        BrokenPowerlawPhaseLagZone::configure(initialize,
+                                              age,
+                                              orbital_frequency,
+                                              eccentricity,
+                                              orbital_angmom,
+                                              spin,
+                                              inclination,
+                                              periapsis,
+                                              spin_is_frequency);
     }
 
     EvolvingStellarZone::~EvolvingStellarZone() 

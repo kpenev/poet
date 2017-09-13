@@ -30,7 +30,7 @@ int main(int, char **)
                      true);
 
     MESAInterpolator *interpolator = load_interpolator(
-        "../stellar_evolution_interpolators/"
+        "../../stellar_evolution_interpolators/"
         "93878c27-baa3-4cbe-8f78-0ad2a21e121f"
 //        "30b6d5cc-4ae8-43da-899d-740eefd18638"
     );
@@ -41,7 +41,10 @@ int main(int, char **)
                                      1.0e-3,
                                      interpolator);
     select_interpolation_region(star, core_formation_age(star));
-    set_dissipation(star, 0, 0, 0, NULL, NULL, &zero, &zero, 0.0 * 3e-7);
+
+    double break_frequency = 2.0 * M_PI / 4.33;
+    double powerlaws[] = {0.0, -3.1};
+    set_dissipation(star, 0, 1, 0, &break_frequency, NULL, powerlaws, &zero, 3e-7);
     set_dissipation(star, 1, 0, 0, NULL, NULL, &zero, &zero, 0.0);
 
     DiskBinarySystem *system = create_star_planet_system(

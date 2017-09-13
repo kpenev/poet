@@ -42,9 +42,10 @@ namespace Star {
             bool primary
         )
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         if(primary) assert(this == &(system.primary()));
         else assert(this == &(system.secondary()));
+        assert(__detected_saturation);
 #endif
         Evolve::CombinedStoppingCondition *result = 
             new Evolve::CombinedStoppingCondition();
@@ -52,7 +53,8 @@ namespace Star {
             (*result) |= new WindSaturationCondition(
                 *this,
                 (primary ? system.secondary() : system.primary()),
-                primary
+                primary,
+                __saturated
             );
         (*result) |= Evolve::DissipatingBody::stopping_conditions(system,
                                                                   primary);

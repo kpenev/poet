@@ -3,20 +3,19 @@
 
 namespace Evolve {
 
+    double BrokenPowerlawPhaseLagZone::get_orbital_frequency(
+        const BinarySystem &system
+    ) const
+    {
+        return Core::orbital_angular_velocity(
+            system.primary().mass(),
+            system.secondary().mass(),
+            system.semimajor()
+        );
+    }
+
     void BrokenPowerlawPhaseLagZone::reset()
     {
-        if(__spin_condition) {
-            delete __spin_condition;
-            __spin_condition = NULL;
-        }
-        for(
-            std::list<CombinedStoppingCondition *>::iterator
-                condition = __tidal_frequency_conditions.begin();
-            condition != __tidal_frequency_conditions.end();
-            ++condition
-        )
-            delete *condition;
-        __tidal_frequency_conditions.clear();
         __tidal_frequency_breaks.clear();
         __spin_frequency_breaks.clear();
         __tidal_frequency_powers.clear();
@@ -24,112 +23,141 @@ namespace Evolve {
         __break_phase_lags.clear();
     }
 
-    void BrokenPowerlawPhaseLagZone::fill_tidal_frequency_conditions(
-        BinarySystem &system, 
-        bool primary,
-        unsigned zone_index
-    )
+    void BrokenPowerlawPhaseLagZone::set_spin_index()
     {
-        if(eccentricity_order() < __tidal_frequency_conditions.size()) {
-            for(
-                unsigned e_order = __tidal_frequency_conditions.size() - 1;
-                e_order > eccentricity_order();
-                --e_order
-            ) {
-                delete __tidal_frequency_conditions.back();
-                __tidal_frequency_conditions.pop_back();
-            }
-            return;
+        if(__spin_frequency_breaks.size() != 0) {
+            double abs_spin_frequency = std::abs(spin_frequency());
+            __spin_index = (
+                std::lower_bound(
+                    __spin_frequency_breaks.begin(),
+                    __spin_frequency_breaks.end(),
+                    abs_spin_frequency
+                )
+                -
+                __spin_frequency_breaks.begin()
+            );
+            if(
+                __spin_index < __spin_frequency_breaks.size()
+                &&
+                __spin_frequency_breaks[__spin_index] == abs_spin_frequency
+            )
+                throw Core::Error::BadFunctionArguments(
+                    "Starting evolution from exactly a critical spin "
+                    "frequency is not currently supported."
+                );
+        } else
+            __spin_index = 0;
+
+
+    }
+
+    std::vector<double>::size_type 
+        BrokenPowerlawPhaseLagZone::get_tidal_index(
+            double abs_forcing_frequency
+        )
+        {
+            assert(abs_forcing_frequency >= 0);
+            if(__tidal_frequency_breaks.size() != 0)
+                return (
+                    std::lower_bound(
+                        __tidal_frequency_breaks.begin(),
+                        __tidal_frequency_breaks.end(),
+                        abs_forcing_frequency
+                    )
+                    -
+                    __tidal_frequency_breaks.begin()
+                );
+            else
+                return 0;
         }
 
+    void BrokenPowerlawPhaseLagZone::add_tidal_frequency_conditions(
+        BinarySystem &system, 
+        bool primary,
+        unsigned zone_index,
+        CombinedStoppingCondition &result
+    )
+    {
         const DissipatingBody 
             &this_body = (primary ? system.primary() : system.secondary()),
             &other_body = (primary ? system.secondary() : system.primary());
-        double orbital_frequency = Core::orbital_angular_velocity(
-            this_body.mass(),
-            other_body.mass(),
-            system.semimajor()
-        );
+        double orbital_frequency = get_orbital_frequency(system);
 
         for(
-            int e_order = __tidal_frequency_conditions.size(); 
+            int e_order = 0; 
             e_order <= static_cast<int>(eccentricity_order());
             ++e_order
         )
         {
-            CombinedStoppingCondition *condition = 
-                new CombinedStoppingCondition();
+
             int mp_step = (e_order == 0 ? 1 : 4 + 2 * e_order);
 
-            for(int mp = -e_order - 2; mp <= e_order + 2;  mp += mp_step)
+            for(int mp = 0; mp <= e_order + 2;  mp += mp_step)
                 for(int m = -2; m <= 2; ++m)
-                    (*condition) |= new CriticalForcingFrequencyCondition(
+                    result |= new LagForcingFrequencyBreakCondition(
+                        *this,
                         this_body,
                         other_body,
                         primary,
-                        zone_index,
                         mp,
-                        m,
-                        __tidal_frequency_breaks,
-                        orbital_frequency
+                        m
                     );
-            __tidal_frequency_conditions.push_back(condition);
         }
 
     }
 
-    void BrokenPowerlawPhaseLagZone::print_configuration()
+    void BrokenPowerlawPhaseLagZone::print_configuration(std::ostream &out_stream)
     {
         return;
-        std::clog << "Tidal breaks: ";
+        out_stream << "Tidal breaks: ";
         for(
             std::vector<double>::const_iterator
                 i = __tidal_frequency_breaks.begin();
             i != __tidal_frequency_breaks.end();
             ++i
         )
-            std::clog << *i << " ";
-        std::clog << std::endl;
+            out_stream << *i << " ";
+        out_stream << std::endl;
 
-        std::clog << "Tidal powers: ";
+        out_stream << "Tidal powers: ";
         for(
             std::vector<double>::const_iterator
                 i = __tidal_frequency_powers.begin();
             i != __tidal_frequency_powers.end();
             ++i
         )
-            std::clog << *i << " ";
-        std::clog << std::endl;
+            out_stream << *i << " ";
+        out_stream << std::endl;
 
-        std::clog << "Spin breaks: ";
+        out_stream << "Spin breaks: ";
         for(
             std::vector<double>::const_iterator
                 i = __spin_frequency_breaks.begin();
             i != __spin_frequency_breaks.end();
             ++i
         )
-            std::clog << *i << " ";
-        std::clog << std::endl;
+            out_stream << *i << " ";
+        out_stream << std::endl;
 
-        std::clog << "Spin powers: ";
+        out_stream << "Spin powers: ";
         for(
             std::vector<double>::const_iterator
                 i = __spin_frequency_powers.begin();
             i != __spin_frequency_powers.end();
             ++i
         )
-            std::clog << *i << " ";
-        std::clog << std::endl;
+            out_stream << *i << " ";
+        out_stream << std::endl;
 
-        std::clog << "Break lags: ";
+        out_stream << "Break lags: ";
         for(
             std::vector<double>::const_iterator
                 i = __break_phase_lags.begin();
             i != __break_phase_lags.end();
             ++i
         )
-            std::clog << *i << " ";
-        std::clog << std::endl;
+            out_stream << *i << " ";
+        out_stream << std::endl;
     }
 
     void BrokenPowerlawPhaseLagZone::setup(
@@ -228,6 +256,78 @@ namespace Evolve {
 #endif
     }//End BrokenPowerlawPhaseLagZone::BrokenPowerlawPhaseLagZone definition.
 
+    void BrokenPowerlawPhaseLagZone::configure(
+        bool initialize,
+        double age,
+        double orbital_frequency,
+        double eccentricity,
+        double orbital_angmom,
+        double spin,
+        double inclination,
+        double periapsis,
+        bool spin_is_frequency
+    )
+    {
+
+        if(initialize and !std::isnan(orbital_frequency)) {
+
+            std::cerr << "Initializing broken powerlaw lag zone"
+                      << (initialize ? " for the first time." : ".")
+                      << std::endl;
+
+
+            configure_spin(spin, spin_is_frequency);
+
+            set_spin_index();
+
+            __tidal_indices.resize(5 * (eccentricity_order() + 3));
+            std::cerr << "__tidal_indices size = "
+                      << __tidal_indices.size()
+                      << std::endl;
+
+            std::vector< std::vector<double>::size_type >::iterator
+                destination = __tidal_indices.begin();
+
+            for(
+                int mp = 0;
+                mp <= static_cast<int>(eccentricity_order()) + 2;
+                ++mp
+            ) {
+                for(int m = -2; m <= 2; ++m) {
+                    double abs_forcing_frequency = std::abs(
+                        forcing_frequency(mp, m, orbital_frequency)
+                    );
+                    *destination = get_tidal_index(abs_forcing_frequency);
+                    if(
+                        *destination < __tidal_frequency_breaks.size()
+                        &&
+                        (
+                            __tidal_frequency_breaks[*destination]
+                            ==
+                            abs_forcing_frequency
+                        )
+                    )
+                        throw Core::Error::BadFunctionArguments(
+                            "Starting evolution from exactly a critical tidal "
+                            "forcing frequency is not currently supported."
+                        );
+                    ++destination;
+                }
+            }
+        }
+
+        DissipatingZone::configure(initialize,
+                                   age,
+                                   orbital_frequency,
+                                   eccentricity,
+                                   orbital_angmom,
+                                   spin,
+                                   inclination,
+                                   periapsis,
+                                   spin_is_frequency);
+
+    }
+
     double BrokenPowerlawPhaseLagZone::modified_phase_lag(
         int orbital_frequency_multiplier,
         int spin_frequency_multiplier,
@@ -240,37 +340,33 @@ namespace Evolve {
         double abs_forcing_frequency = std::abs(forcing_frequency),
                abs_spin_frequency = std::abs(spin_frequency());
 
-        int tidal_index = 0, spin_index = 0;
+        std::vector<double>::size_type tidal_index
+            = __tidal_indices[tidal_term_index(orbital_frequency_multiplier,
+                                               spin_frequency_multiplier)];
 
-        if(__tidal_frequency_breaks.size() != 0) 
-            tidal_index = (
-                std::lower_bound(
-                    __tidal_frequency_breaks.begin(),
-                    __tidal_frequency_breaks.end(),
-                    abs_forcing_frequency
-                )
-                -
-                __tidal_frequency_breaks.begin()
-            );
-        if(__spin_frequency_breaks.size() != 0)
-            spin_index = (
-                std::lower_bound(
-                    __spin_frequency_breaks.begin(),
-                    __spin_frequency_breaks.end(),
-                    abs_spin_frequency
-                )
-                -
-                __spin_frequency_breaks.begin()
-            );
         double tidal_power = __tidal_frequency_powers[tidal_index],
-               spin_power = __spin_frequency_powers[spin_index];
-        if(spin_index > 0 && spin_index >= __spin_frequency_breaks.size())
-            --spin_index;
-        if(tidal_index > 0 && tidal_index >= __tidal_frequency_breaks.size())
-            --tidal_index;
-        int lag_index = (spin_index * __tidal_frequency_breaks.size()
+               spin_power = __spin_frequency_powers[__spin_index];
+
+        std::vector<double>::size_type tidal_break_index = tidal_index,
+                                       spin_break_index = __spin_index;
+        if(
+            spin_break_index > 0
+            &&
+            spin_break_index >= __spin_frequency_breaks.size()
+        )
+            --spin_break_index;
+
+        if(
+            tidal_break_index > 0
+            &&
+            tidal_break_index >= __tidal_frequency_breaks.size()
+        )
+            --tidal_break_index;
+
+        std::vector<double>::size_type 
+            lag_index = (spin_break_index * __tidal_frequency_breaks.size()
                          +
-                         tidal_index);
+                         tidal_break_index);
         double result = (
             __break_phase_lags[lag_index]
             *
@@ -279,7 +375,7 @@ namespace Evolve {
                 ? 1.0
                 : std::pow(abs_forcing_frequency
                            /
-                           __tidal_frequency_breaks[tidal_index]
+                           __tidal_frequency_breaks[tidal_break_index]
                            ,
                            tidal_power)
             )
@@ -288,7 +384,11 @@ namespace Evolve {
                 spin_power == 0
                 ? 1.0
                 : std::pow(
-                    abs_spin_frequency / __spin_frequency_breaks[spin_index],
+                    (
+                        abs_spin_frequency
+                        /
+                        __spin_frequency_breaks[spin_break_index]
+                    ),
                     spin_power
                 )
             )
@@ -319,13 +419,13 @@ namespace Evolve {
             default :
                 assert(deriv == Dissipation::NO_DERIV);
         }
-
+        
         if(forcing_frequency == 0) {
-            if(spin_frequency_multiplier < 0) result *= -1.0;
-            above_lock_value  = -result;
-            return result;
+            above_lock_value  = result;
+            return -result;
+        } else {
+            return (forcing_frequency > 0 ? result : -result);
         }
-        return (forcing_frequency >= 0 ? result : -result);
 
     }//End BrokenPowerlawPhaseLagZone::modified_phase_lag definition.
 
@@ -344,29 +444,20 @@ namespace Evolve {
         if(system.evolution_mode() != Core::BINARY) return result;
 
         if(__spin_frequency_breaks.size() != 0) {
-            if(__spin_condition == NULL)
-                __spin_condition = new CriticalSpinCondition(
-                    (primary ? system.primary() : system.secondary()),
-                    (primary ? system.secondary() : system.primary()),
-                    primary,
-                    zone_index,
-                    __spin_frequency_breaks
-                );
-
-            (*result) |= __spin_condition;
+            *result |= new LagSpinBreakCondition(
+                *this,
+                (primary ? system.primary() : system.secondary()),
+                (primary ? system.secondary() : system.primary()),
+                primary,
+                zone_index
+            );
         }
 
-        if(__tidal_frequency_breaks.size() != 0) {
-            fill_tidal_frequency_conditions(system, primary, zone_index);
-
-            for(
-                std::list<CombinedStoppingCondition *>::const_iterator 
-                    tidal_cond_iter = __tidal_frequency_conditions.begin();
-                tidal_cond_iter != __tidal_frequency_conditions.end();
-                ++tidal_cond_iter
-            )
-                (*result) |= *tidal_cond_iter;
-        }
+        if(__tidal_frequency_breaks.size() != 0)
+            add_tidal_frequency_conditions(system,
+                                           primary,
+                                           zone_index, 
+                                           *result);
 
         return result;
     }//End BrokenPowerlawPhaseLagZone::stopping_conditions definition.
@@ -378,13 +469,31 @@ namespace Evolve {
         unsigned zone_index
     )
     {
-        assert(eccentricity_order() + 1 == __tidal_frequency_conditions.size());
+        __tidal_indices.resize(5 * (new_e_order + 3));
+
+        double orbital_frequency = get_orbital_frequency(system);
+
+        std::vector< std::vector<double>::size_type >::iterator
+            destination = (__tidal_indices.begin()
+                           +
+                           5 * (eccentricity_order() + 3));
+        for(
+            int mp = static_cast<int>(eccentricity_order()) + 3;
+            mp <= static_cast<int>(new_e_order) + 2;
+            ++mp
+        ) {
+            for(int m = -2; m <= 2; ++m) {
+                *destination = get_tidal_index(
+                    forcing_frequency(mp, m, orbital_frequency)
+                );
+                ++destination;
+            }
+        }
 
         DissipatingZone::change_e_order(new_e_order,
                                         system,
                                         primary,
                                         zone_index);
-        fill_tidal_frequency_conditions(system, primary, zone_index);
     }
 
 } //End BinarySystem namespace.

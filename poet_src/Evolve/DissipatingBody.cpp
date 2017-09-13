@@ -159,10 +159,12 @@ namespace Evolve {
             Eigen::Vector3d &inner_angmom_gain,
             Dissipation::Derivative deriv, bool with_respect_to_outer) const
     {
-#ifdef DEBUG
-        assert(deriv==Dissipation::NO_DERIV || deriv==Dissipation::INCLINATION
-                || deriv==Dissipation::PERIAPSIS);
-#endif
+        assert(deriv == Dissipation::NO_DERIV
+               ||
+               deriv == Dissipation::INCLINATION
+               ||
+               deriv == Dissipation::PERIAPSIS);
+
         double dm_dt=inner_zone.outer_mass(1),
                lost_spin=(dm_dt>=0 ? outer_zone : inner_zone).spin_frequency(),
                angmom_transfer=-2.0/3.0*std::pow(inner_zone.outer_radius(), 2)*
@@ -188,9 +190,8 @@ namespace Evolve {
             unsigned zone_index, Dissipation::Derivative deriv, 
             bool with_respect_to_outer) const
     {
-#ifdef DEBUG
-        assert(zone_index>0);
-#endif
+        assert(zone_index > 0);
+
         const DissipatingZone &this_zone=zone(zone_index),
                               &zone_above=zone(zone_index-1);
         double scaling=Core::NaN, dm_dt=this_zone.outer_mass(1);
@@ -223,10 +224,8 @@ namespace Evolve {
                         deriv, with_respect_to_outer);
                 return result;
             }
-        }
-#ifdef DEBUG
-        else assert(false);
-#endif
+        } else
+            assert(false);
         return scaling*__angular_momentum_transfer[zone_index-1][1];
     }
 
@@ -234,9 +233,8 @@ namespace Evolve {
             unsigned zone_index, Dissipation::Derivative deriv, 
             bool with_respect_to_inner) const
     {
-#ifdef DEBUG
         assert(zone_index<number_zones()-1);
-#endif
+
         const DissipatingZone &this_zone=zone(zone_index),
                               &zone_below=zone(zone_index+1);
         double scaling=Core::NaN, dm_dt=zone_below.outer_mass(1);
@@ -268,10 +266,9 @@ namespace Evolve {
                 angular_momentum_transfer(this_zone, zone_below, result, dummy,
                         deriv, !with_respect_to_inner);
             }
-        }
-#ifdef DEBUG
-        else assert(false);
-#endif
+        } else
+            assert(false);
+
         return scaling*__angular_momentum_transfer[zone_index][0];
     }
 
@@ -351,9 +348,9 @@ namespace Evolve {
                         else if(deriv==Dissipation::SEMIMAJOR) 
                             frac_deriv=above_lock_fractions_semimajor_deriv
                                 [locked_zone_index];
-#ifdef DEBUG
-                        else assert(false);
-#endif
+                        else
+                            assert(false);
+
                         __orbit_energy_gain[deriv_ind] += (
                             frac_deriv
                             *
@@ -449,7 +446,10 @@ namespace Evolve {
             true
         );
 
-        if(initialize) __num_locked_zones = 0;
+        if(initialize) {
+            __num_locked_zones = 0;
+            std::cerr << "Initializing DissipatingBody" << std::endl;
+        }
 
         __tidal_torques_above.resize(number_zones());
         __tidal_torques_below.resize(number_zones());
@@ -575,9 +575,8 @@ namespace Evolve {
     double DissipatingBody::tidal_power(unsigned zone_index,
             bool above, Dissipation::Derivative deriv) const
     {
-#ifdef DEBUG
         assert(zone_index<number_zones());
-#endif
+
         const DissipatingZone &this_zone=zone(zone_index);
         double result=(deriv<Dissipation::END_DIMENSIONLESS_DERIV
                        ? __power_norm*this_zone.tidal_power(above, deriv)
@@ -596,14 +595,12 @@ namespace Evolve {
     void DissipatingBody::set_above_lock_fractions(
             std::valarray<Eigen::VectorXd> &above_lock_fractions)
     {
-#ifdef DEBUG
         assert(above_lock_fractions.size()==Dissipation::NUM_DERIVATIVES);
-#endif
+
         __above_lock_fractions.resize(Dissipation::NUM_DERIVATIVES);
         for(unsigned i=0; i<Dissipation::NUM_DERIVATIVES; ++i) {
-#ifdef DEBUG
             assert(above_lock_fractions[i].size()>=__num_locked_zones);
-#endif
+
             __above_lock_fractions[i].resize(above_lock_fractions[i].size());
         }
         __above_lock_fractions=above_lock_fractions;
@@ -628,9 +625,8 @@ namespace Evolve {
                 for(unsigned i=0; i<__orbit_deriv.size(); ++i)
                     if(deriv==__orbit_deriv[i]) 
                         return __orbit_energy_gain[i];
-#ifdef DEBUG
+
                 assert(false);
-#endif
             }
             if(__above_lock_fractions.size()==0) return result;
         } else {
@@ -643,10 +639,11 @@ namespace Evolve {
                    (1.0-above_frac)
                    *tidal_power(deriv_zone_index, false, deriv);
         }
-#ifdef DEBUG
-        assert(above_lock_fraction_deriv.size()==
-                __above_lock_fractions[Dissipation::NO_DERIV].size());
-#endif
+
+        assert(above_lock_fraction_deriv.size()
+               ==
+               __above_lock_fractions[Dissipation::NO_DERIV].size());
+
         unsigned correction_index = 0;
         for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index)
             if(zone(zone_index).locked()) {
@@ -674,10 +671,10 @@ namespace Evolve {
                     *__tidal_torques_below[deriv_zone_index][deriv]
                     -
                     above_frac*__tidal_torques_above[deriv_zone_index][deriv]);
-#ifdef DEBUG
+
             assert(above_lock_fraction_deriv.size()==
                     __above_lock_fractions[Dissipation::NO_DERIV].size());
-#endif
+
             unsigned correction_index = 0;
             for(
                 unsigned zone_index=0;
@@ -752,7 +749,8 @@ namespace Evolve {
     {
         CombinedStoppingCondition *result=new CombinedStoppingCondition();
         for(unsigned zone_ind=0; zone_ind<number_zones(); ++zone_ind)
-            (*result)|=zone(zone_ind).stopping_conditions(system, primary,
+            (*result)|=zone(zone_ind).stopping_conditions(system,
+                                                          primary,
                                                           zone_ind);
         return result;
     }

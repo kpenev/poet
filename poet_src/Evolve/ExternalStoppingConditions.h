@@ -33,10 +33,15 @@ namespace Evolve {
         ///\brief Returns the difference between the convective zone spin and
         ///the threshold divided by the latter.
         std::valarray<double> operator()(
-                Core::EvolModeType evol_mode,
-                const std::valarray<double> &orbit,
-                const std::valarray<double> &derivatives,
-                std::valarray<double> &stop_deriv) const;
+            Core::EvolModeType evol_mode,
+            const std::valarray<double> &orbit,
+            const std::valarray<double> &derivatives,
+            std::valarray<double> &stop_deriv
+        ) const;
+
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index = 0) const;
+
     }; //End RotFastCondition class.
 
     ///\brief How to construct the external stopping condition(s).

@@ -16,14 +16,11 @@
 #include <vector>
 
 namespace Evolve {
-    class DissipatingZone;
+    class BrokenPowerlawPhaseLagZone;
 
     ///\brief satisfied when a forcing frequency reaches a critical value.
-    class CriticalForcingFrequencyCondition : public StoppingCondition {
+    class LagForcingFrequencyBreakCondition : public StoppingCondition {
     private:
-        ///The critical forcing frequencies to watch for in rad/day.
-        std::vector<double> __critical_frequencies;
-
         int 
             ///The orbital frequency multiplier of the forcing term being
             ///monitored.
@@ -34,18 +31,7 @@ namespace Evolve {
             __spin_frequency_multiplier;
 
         ///The zone being monitored (for more convenient access).
-        const DissipatingZone &__zone;
-
-        std::vector<double>::const_iterator
-            ///\brief The __critical_frequencies entry immediately above the
-            ///current spin of the monitored zone. If all entries are below,
-            ///the value is __critical_spins.end()
-            __critical_above_iter,
-
-            ///\brief The __critical_frequencies entry immediately below the
-            ///current spin of the monitored zone. If all entries are above,
-            ///the value is __critical_spins.end()
-            __critical_below_iter;
+        BrokenPowerlawPhaseLagZone &__zone;
 
         const DissipatingBody 
             ///The body this condition is monitoring.
@@ -57,9 +43,14 @@ namespace Evolve {
         ///Is __body we are the primary in the system?
         bool __primary;
 
-        ///\brief The index (within __body) of the zone whose spin is being
-        ///monitored.
-        unsigned __zone_index;
+        ///\brief The index of the monitored tidal term within
+        /// __zone.__tidal_indices.
+        std::vector< std::vector<double>::size_type >::size_type
+            __term_index;
+
+        ///\brief The index of the currently active powerlaw within
+        /// __zone.__tidal_frequency_powers.
+        std::vector<double>::size_type __powerlaw_index;
 
         ///\brief See num_subcondition().
         unsigned __num_subconditions;
@@ -69,7 +60,10 @@ namespace Evolve {
     public:
         ///\brief Monitor a single forcing term of a single zone for a number
         ///of critical forcing frequencies.
-        CriticalForcingFrequencyCondition(
+        LagForcingFrequencyBreakCondition(
+            ///The zone being monitored.
+            BrokenPowerlawPhaseLagZone &zone,
+
             ///The body whose spin to monitor.
 			const DissipatingBody &body,
 
@@ -79,24 +73,13 @@ namespace Evolve {
 			///Is the body we are monitoring the primary?
 			bool primary,
 
-            ///The index (within body) of the zone for which to monitor the
-            ///spin.
-            unsigned zone_index,
-
             ///The orbital frequency multiplier of the forcing term being
             ///monitored.
             int orbital_frequency_multiplier,
 
             ///The spin frequency multiplier of the forcing term being
             ///monitored.
-            int spin_frequency_multiplier,
-
-            ///The critical spin frequency to watch for.
-            const std::vector<double> &critical_frequencies,
-
-            ///The current orbital frequency for which to initialize this
-            ///condition.
-            double orbital_frequency
+            int spin_frequency_multiplier
         );
 
         ///\brief Return the differences between the current forcing
@@ -129,7 +112,19 @@ namespace Evolve {
         ///Define stopping condition type as EXTERNAL.
         virtual StoppingConditionType type(unsigned =0) const
         {return Evolve::EXTERNAL;}
-    };//End CriticalForcingFrequencyCondition class.
+
+        ///See StoppingCondition::expected_crossing_deriv_sign().
+        virtual short expected_crossing_deriv_sign(
+            ///Which sub-condition.
+            unsigned index = 0
+        ) const;
+
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index = -1) const;
+
+        ~LagForcingFrequencyBreakCondition()
+        {std::cerr << "Destroying: " << describe() << std::endl;}
+    };//End LagForcingBreakFrequencyCondition class.
 } //End Evolve namespace.
 
 #endif

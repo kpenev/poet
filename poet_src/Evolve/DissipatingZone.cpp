@@ -26,11 +26,7 @@ namespace Evolve {
             case ORBITAL_FREQ_MULTIPLIER : os << "ORBITAL_FREQ_MULTIPLIER";
                                            break;
             case SPIN_FREQ_MULTIPLIER : os << "SPIN_FREQ_MULTIPLIER"; break;
-            default :
-#ifdef DEBUG
-                             assert(false)
-#endif
-                                 ;
+            default : assert(false);
         };
         return os;
     }
@@ -146,27 +142,37 @@ namespace Evolve {
         double &forcing_frequency
     ) const
     {
-#ifdef DEBUG
         assert(limit.spin_frequency_multiplier()==1
                ||
                limit.spin_frequency_multiplier()==2);
-#endif
+
+        if(orbital_frequency_multiplier > 5)
+            std::cerr << "ofm" << std::endl;
+        if(spin_frequency_multiplier > 5)
+            std::cerr << "sfm" << std::endl;
+
         if(
             limit.term(orbital_frequency_multiplier,
                        spin_frequency_multiplier)
         ) {
             if(
                 spin_frequency_multiplier
-                * limit.lock_direction()
-                * forcing_frequency
+                *
+                limit.lock_direction()
+                *
+                forcing_frequency
                 >
                 0
             ) 
-                forcing_frequency =
-                    (spin_frequency_multiplier*limit.lock_direction() > 0
-                     ? -1
-                     : 1)
-                    *std::numeric_limits<double>::epsilon();
+                forcing_frequency = (
+                    (
+                        spin_frequency_multiplier*limit.lock_direction() > 0
+                        ? -1
+                        : 1
+                    )
+                    *
+                    std::numeric_limits<double>::epsilon()
+                );
             return;
         }
         int expected_sign = (
@@ -184,15 +190,15 @@ namespace Evolve {
         );
         if(expected_sign * limit.lock_direction() > 0) return;
         if(forcing_frequency * expected_sign > 0) return;
-#ifdef DEBUG
+
         assert(limit.lock_direction());
-#endif
+
         forcing_frequency = (std::numeric_limits<double>::epsilon()
                              *
                              limit.lock_direction());
     }
 
-#ifdef DEBUG
+#ifndef NDEBUG
     void DissipatingZone::check_locks_consistency() const
     {
         int max_abs_orb_mult = static_cast<int>(__e_order + 2);
@@ -271,7 +277,7 @@ namespace Evolve {
 
     void DissipatingZone::update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         assert(lock.lock_direction());
         check_locks_consistency();
 #endif
@@ -292,7 +298,7 @@ namespace Evolve {
             if(lock.lock_direction()>0) lock.set_lock(1, 0, 1);
             else lock.set_lock(-static_cast<int>(__e_order)-2, 1, -1);
         }
-#ifdef DEBUG
+#ifndef NDEBUG
         check_locks_consistency();
 #endif
     }
@@ -357,9 +363,22 @@ namespace Evolve {
             else __lock.set_lock(-max_abs_orb_mult, 1, -1);
             __other_lock.set_lock(1, 0, 1);
         }
-#ifdef DEBUG
+#ifndef NDEBUG
         check_locks_consistency();
 #endif
+    }
+
+    void DissipatingZone::configure_spin(double spin,
+                                         bool spin_is_frequency)
+    {
+        if(spin_is_frequency) {
+            __angular_momentum = spin * moment_of_inertia(); 
+            __spin_frequency = spin;
+        } else {
+            __angular_momentum = spin; 
+            if(spin == 0 && moment_of_inertia() == 0) __spin_frequency = 0;
+            else __spin_frequency = spin / moment_of_inertia();
+        }
     }
 
     DissipatingZone::DissipatingZone() :
@@ -381,7 +400,7 @@ namespace Evolve {
 
     void DissipatingZone::configure(bool initialize,
                                     double
-#ifdef DEBUG
+#ifndef NDEBUG
                                     age
 #endif
                                     ,
@@ -393,69 +412,90 @@ namespace Evolve {
                                     double periapsis,
                                     bool spin_is_frequency)
     {
-#ifdef DEBUG
-        assert(age>=0);
-#endif
+        assert(age >= 0);
+
+        if(initialize)
+            std::cerr << "Initializing DissipatingZone" << std::endl;
         ZoneOrientation::configure(inclination, periapsis);
         __orbital_angmom = orbital_angmom;
         __orbital_frequency = orbital_frequency;
         if(__lock && !initialize) {
             __spin_frequency = __lock.spin(orbital_frequency);
             __angular_momentum = __spin_frequency*moment_of_inertia();
-        } else {
-            if(spin_is_frequency) {
-                __angular_momentum = spin * moment_of_inertia(); 
-                __spin_frequency = spin;
-            } else {
-                __angular_momentum=spin; 
-                if(spin == 0 && moment_of_inertia() == 0) __spin_frequency = 0;
-                else __spin_frequency = spin / moment_of_inertia();
-            }
-        }
+        } else 
+            configure_spin(spin, spin_is_frequency);
+
         if(initialize) initialize_locks();
         if(std::isnan(orbital_frequency)) return;
 
         fill_Umm();
-        __power=0;
-        __torque_x=0;
-        __torque_y=0;
-        __torque_z=0;
+        __power = 0;
+        __torque_x = 0;
+        __torque_y = 0;
+        __torque_z = 0;
 
         if(!dissipative()) return;
 
-        for(int mp=-static_cast<int>(__e_order)-2;
-                mp<=static_cast<int>(__e_order)+2; ++mp) {
-            double U_mm1mp_value=0, U_mm1mp_i_deriv=0, U_mm1mp_e_deriv=0,
-                   U_mp1mp_value, U_mp1mp_i_deriv, U_mp1mp_e_deriv;
-            potential_term(eccentricity, -2, mp, U_mp1mp_value, U_mp1mp_i_deriv,
-                    U_mp1mp_e_deriv);
-            for(int m=-2; m<=2; ++m) {
-                int m_ind=m+2;
-                bool locked_term=locked(mp, m);
-                double U_mmp_value=U_mp1mp_value, 
-                       U_mmp_i_deriv=U_mp1mp_i_deriv, 
-                       U_mmp_e_deriv=U_mp1mp_e_deriv;
-                if(m<2)
-                    potential_term(eccentricity, m+1, mp, U_mp1mp_value,
-                            U_mp1mp_i_deriv, U_mp1mp_e_deriv);
-                else U_mp1mp_value=U_mp1mp_i_deriv=U_mp1mp_e_deriv=0;
+        for(
+            int mp = -static_cast<int>(__e_order) - 2;
+            mp <= static_cast<int>(__e_order) + 2; 
+            ++mp
+        ) {
+            double U_mm1mp_value = 0,
+                   U_mm1mp_i_deriv = 0,
+                   U_mm1mp_e_deriv = 0,
+                   U_mp1mp_value,
+                   U_mp1mp_i_deriv,
+                   U_mp1mp_e_deriv;
+            potential_term(eccentricity,
+                           -2,
+                           mp,
+                           U_mp1mp_value,
+                           U_mp1mp_i_deriv,
+                           U_mp1mp_e_deriv);
+            for(int m = -2; m <= 2; ++m) {
+                std::cerr << "Term: m' = "
+                          << mp
+                          << ", m = "
+                          << m;
+                int m_ind = m + 2;
+                bool locked_term = locked(mp, m);
+                double U_mmp_value = U_mp1mp_value, 
+                       U_mmp_i_deriv = U_mp1mp_i_deriv, 
+                       U_mmp_e_deriv = U_mp1mp_e_deriv;
+                if(m < 2)
+                    potential_term(eccentricity,
+                                   m + 1,
+                                   mp,
+                                   U_mp1mp_value,
+                                   U_mp1mp_i_deriv,
+                                   U_mp1mp_e_deriv);
+                else U_mp1mp_value = U_mp1mp_i_deriv = U_mp1mp_e_deriv = 0;
+                double tidal_frequency = forcing_frequency(mp,
+                                                           m,
+                                                           orbital_frequency);
 
-                for(int deriv=Dissipation::NO_DERIV; 
-                        (m!=0 || mp!=0) && 
-                        deriv<Dissipation::END_DIMENSIONLESS_DERIV; ++deriv) {
-                    Dissipation::Derivative phase_lag_deriv=
-                        (deriv<Dissipation::END_PHASE_LAG_DERIV
+                for(
+                    int deriv = Dissipation::NO_DERIV; 
+                    (
+                        (m != 0 || mp != 0)
+                        && 
+                        deriv < Dissipation::END_DIMENSIONLESS_DERIV
+                    );
+                    ++deriv
+                ) {
+                    Dissipation::Derivative phase_lag_deriv =
+                        (deriv < Dissipation::END_PHASE_LAG_DERIV
                          ? static_cast<Dissipation::Derivative>(deriv)
                          : Dissipation::NO_DERIV);
-                    double tidal_frequency = 
-                               forcing_frequency(mp, m, orbital_frequency),
-                           mod_phase_lag_above,
-                           mod_phase_lag_below = 
-                               modified_phase_lag(mp,
-                                                  m,
-                                                  tidal_frequency,
-                                                  phase_lag_deriv,
-                                                  mod_phase_lag_above),
+                    double mod_phase_lag_above,
+                           mod_phase_lag_below = modified_phase_lag(
+                               mp,
+                               m,
+                               tidal_frequency,
+                               phase_lag_deriv,
+                               mod_phase_lag_above
+                           ),
                            love_coef = love_coefficient(
                                mp,
                                m,
@@ -466,49 +506,76 @@ namespace Evolve {
                                )
                            ),
                            U_mmp, U_mp1mp, U_mm1mp; 
-                    if(deriv<Dissipation::END_PHASE_LAG_DERIV) {
-                        U_mmp=U_mmp_value;
-                        U_mp1mp=U_mp1mp_value;
-                        U_mm1mp=U_mm1mp_value;
-                    } else if(deriv==Dissipation::INCLINATION) {
-                        U_mmp=U_mmp_i_deriv;
-                        U_mp1mp=U_mp1mp_i_deriv;
-                        U_mm1mp=U_mm1mp_i_deriv;
+                    if(deriv < Dissipation::END_PHASE_LAG_DERIV) {
+                        U_mmp = U_mmp_value;
+                        U_mp1mp = U_mp1mp_value;
+                        U_mm1mp = U_mm1mp_value;
+                    } else if(deriv == Dissipation::INCLINATION) {
+                        U_mmp = U_mmp_i_deriv;
+                        U_mp1mp = U_mp1mp_i_deriv;
+                        U_mm1mp = U_mm1mp_i_deriv;
                     } else {
-                        U_mmp=U_mmp_e_deriv;
-                        U_mp1mp=U_mp1mp_e_deriv;
-                        U_mm1mp=U_mm1mp_e_deriv;
+                        U_mmp = U_mmp_e_deriv;
+                        U_mp1mp = U_mp1mp_e_deriv;
+                        U_mm1mp = U_mm1mp_e_deriv;
                     }
-                    double U_mmp_squared=std::pow(U_mmp, 2),
-                           term_power=U_mmp_squared*mp,
-                           term_torque_z=U_mmp_squared*m,
-                           term_torque_x=U_mmp*(
-                                    __torque_x_minus_coef[m_ind]*U_mm1mp+
-                                    __torque_x_plus_coef[m_ind]*U_mp1mp);
-                    if(!locked_term && (tidal_frequency!=0 ||
-                                        __lock.lock_direction()<0))
-                        mod_phase_lag_above=mod_phase_lag_below;
-                    else if(!locked_term && tidal_frequency==0
-                            && __lock.lock_direction()>0)
-                        mod_phase_lag_below=mod_phase_lag_above;
-                    int deriv_ind=2*deriv;
-                    __power[deriv_ind]+=term_power*mod_phase_lag_below;
-                    __torque_z[deriv_ind]+=term_torque_z*mod_phase_lag_below;
-                    __torque_x[deriv_ind]+=term_torque_x*mod_phase_lag_below;
-                    __torque_y[deriv_ind+1]=
-                        -(__torque_y[deriv_ind]-=term_torque_x*love_coef);
-                    __power[deriv_ind+1]+=term_power*mod_phase_lag_above;
-                    __torque_z[deriv_ind+1]+=term_torque_z*mod_phase_lag_above;
-                    __torque_x[deriv_ind+1]+=term_torque_x*mod_phase_lag_above;
-    /*                std::cout << "Umm'=" << U_mmp 
-                        << ", term_power=" << term_power 
-                        << ", mod_phase_lag(above=" << mod_phase_lag_above
-                        << ", below=" << mod_phase_lag_below
-                        << ")" << std::endl;*/
+                    double U_mmp_squared = std::pow(U_mmp, 2),
+                           term_power = U_mmp_squared*mp,
+                           term_torque_z = U_mmp_squared*m,
+                           term_torque_x = U_mmp*(
+                               __torque_x_minus_coef[m_ind] * U_mm1mp
+                               +
+                               __torque_x_plus_coef[m_ind] * U_mp1mp
+                           );
+                    if(
+                        !locked_term
+                        &&
+                        (tidal_frequency != 0 || __lock.lock_direction() < 0)
+                    )
+                        mod_phase_lag_above = mod_phase_lag_below;
+                    else if(
+                        !locked_term
+                        &&
+                        tidal_frequency == 0
+                        &&
+                        __lock.lock_direction() > 0
+                    )
+                        mod_phase_lag_below = mod_phase_lag_above;
+                    int deriv_ind = 2 * deriv;
+                    __power[deriv_ind] += term_power * mod_phase_lag_below;
+                    __torque_z[deriv_ind] += (term_torque_z
+                                              *
+                                              mod_phase_lag_below);
+                    __torque_x[deriv_ind] += (term_torque_x
+                                              *
+                                              mod_phase_lag_below);
+                    __torque_y[deriv_ind + 1] = -(
+                        __torque_y[deriv_ind] -= term_torque_x*love_coef
+                    );
+                    __power[deriv_ind + 1] += term_power * mod_phase_lag_above;
+                    __torque_z[deriv_ind + 1] += (term_torque_z
+                                                  *
+                                                  mod_phase_lag_above);
+                    __torque_x[deriv_ind + 1] += (term_torque_x
+                                                  *
+                                                  mod_phase_lag_above);
+                    if(deriv == Dissipation::NO_DERIV)
+                        std::cerr << ", Wzone = "
+                                  << spin_frequency()
+                                  << ", U(" << m << ", " << mp << ") = "
+                                  << U_mmp
+                                  << ", term_power="
+                                  << term_power 
+                                  << ", mod_phase_lag(above="
+                                  << mod_phase_lag_above
+                                  << ", below="
+                                  << mod_phase_lag_below
+                                  << ")";
                 }
-                U_mm1mp_value=U_mmp_value;
-                U_mm1mp_i_deriv=U_mmp_i_deriv;
-                U_mm1mp_e_deriv=U_mmp_e_deriv;
+                U_mm1mp_value = U_mmp_value;
+                U_mm1mp_i_deriv = U_mmp_i_deriv;
+                U_mm1mp_e_deriv = U_mmp_e_deriv;
+                std::cerr << std::endl;
             }
         }
     }
@@ -519,19 +586,27 @@ namespace Evolve {
         double orbital_frequency
     ) const
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         check_locks_consistency();
 #endif
         if(__lock(orbital_frequency_multiplier, spin_frequency_multiplier))
             return 0;
-        double forcing_freq=orbital_frequency_multiplier*orbital_frequency
-                            -
-                            spin_frequency_multiplier*spin_frequency();
-        fix_forcing_frequency(__lock, orbital_frequency_multiplier,
-                              spin_frequency_multiplier, forcing_freq);
+        double forcing_freq = (
+            orbital_frequency_multiplier * orbital_frequency
+            -
+            spin_frequency_multiplier * spin_frequency()
+        );
+
+        std::cerr << ", Wtide = " << forcing_freq << " -> ";
+
+        fix_forcing_frequency(__lock,
+                              orbital_frequency_multiplier,
+                              spin_frequency_multiplier,
+                              forcing_freq);
         if(!__lock && __other_lock.spin_frequency_multiplier()!=0)
             fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
                     spin_frequency_multiplier, forcing_freq);
+        std::cerr << forcing_freq;
         return forcing_freq;
     }
 
@@ -554,8 +629,8 @@ namespace Evolve {
             orbit_y_torque=orbit_torque_deriv[1];
             zone_y_torque=zone_torque_deriv[1];
         }
-#ifdef DEBUG
-        if(sin_inc==0) {
+#ifndef NDEBUG
+        if(sin_inc == 0) {
             assert(orbit_y_torque==0 || std::isnan(orbit_y_torque));
             assert(zone_y_torque==0 || std::isnan(zone_y_torque));
         }
@@ -587,9 +662,9 @@ namespace Evolve {
                         +
                         zone_torque[1]*cos_inc/angular_momentum()
                    )/std::pow(sin_inc, 2);
-#ifdef DEBUG
-        else assert(false);
-#endif
+        else
+            assert(false);
+
         return Core::NaN;
     }
 
@@ -663,7 +738,7 @@ namespace Evolve {
         assert(__lock);
         assert(direction == 1 || direction == -1);
         __lock.lock_direction(direction);
-        int orbit_mult=(
+        int orbit_mult = (
             (__lock.spin_frequency_multiplier() == 2 ? 1 : 2)
             *
             __lock.orbital_frequency_multiplier()
@@ -692,7 +767,7 @@ namespace Evolve {
                    static_cast<int>(__e_order)+2) release_lock();
            return;
         }
-#ifdef DEBUG
+#ifndef NDEBUG
         check_locks_consistency();
 #endif
         if(new_e_order>__e_order) {
@@ -707,7 +782,7 @@ namespace Evolve {
                 __other_lock.set_lock(1, 0, 1);
             }
         }
-#ifdef DEBUG
+#ifndef NDEBUG
         check_locks_consistency();
 #endif
     }

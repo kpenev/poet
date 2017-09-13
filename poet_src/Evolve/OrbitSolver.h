@@ -162,11 +162,11 @@ namespace Evolve {
         ///condition indicates evolution should be stopped and why.
         std::vector<StopInformation> __stop_info;
 
-#ifdef DEBUG
+#ifndef NDEBUG
         ///\brief Generates a nicely formatted table of the contents of the
         ///discarded and history stopping condition information.
         ///
-        ///Only exists if DEBUG is \#defined.
+        ///Only exists if NDEBUG is not \#defined.
         void output_history_and_discarded(std::ostream &os);
 #endif
 

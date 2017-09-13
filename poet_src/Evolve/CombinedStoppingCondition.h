@@ -56,8 +56,14 @@ namespace Evolve {
 
         ///\brief Finds the condition corresponding to the given index and 
         ///modifies the index to be the index within the given condition.
+        std::vector<StoppingCondition *>::const_iterator 
+            find_condition(unsigned &index) const;
+
+        ///\brief Finds the condition corresponding to the given index and 
+        ///modifies the index to be the index within the given condition.
         std::vector<StoppingCondition *>::iterator 
             find_condition(unsigned &index);
+
     public:
         ///Create an empty stopping condition (identical to NoStopCondition).
         CombinedStoppingCondition() :
@@ -92,7 +98,10 @@ namespace Evolve {
         virtual void reached(short deriv_sign, unsigned index=0);
 
         ///See StoppingCondition::expected_crossing_deriv_sign().
-        short expected_crossing_deriv_sign(unsigned index=0);
+        short expected_crossing_deriv_sign(unsigned index = 0) const;
+
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index) const;
 
         ///\brief Deletes all subconditions, unless no_delete_subcond has been
         ///previously called.

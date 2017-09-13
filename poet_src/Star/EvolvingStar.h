@@ -83,9 +83,8 @@ namespace Star {
         ///See Evolve::DissipatingBody::zone().
         Evolve::DissipatingZone &zone(unsigned zone_index)
         {
-#ifdef DEBUG
             assert(zone_index<=1);
-#endif
+
             if(zone_index == 0) return __envelope;
             else return __core;
         }
@@ -105,9 +104,8 @@ namespace Star {
         ///See Evolve::DissipatingBody::zone().
         const Evolve::DissipatingZone &zone(unsigned zone_index) const
         {
-#ifdef DEBUG
             assert(zone_index<=1);
-#endif
+
             if(zone_index==0) return __envelope;
             else return __core;
         }

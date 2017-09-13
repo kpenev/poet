@@ -51,4 +51,18 @@ namespace Star {
         return std::valarray<double>(result, 1);
     }
 
+    std::string WindSaturationCondition::describe(int index) const
+    {
+        std::ostringstream description;
+        description << (__primary ? "Primary" : "Secondary")
+                    << " surface spin "
+                    << (expected_crossing_deriv_sign() > 0
+                        ? "exceeding"
+                        : "falling below")
+                    << " the wind saturation threshold of"
+                    << __saturation_freq
+                    << " rad/day";
+        return description.str();
+    }
+
 }//End Star namespace.

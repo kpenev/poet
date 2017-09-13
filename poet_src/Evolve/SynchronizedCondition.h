@@ -32,9 +32,6 @@ namespace Evolve {
         ///Which zone is checked for locking.
         unsigned __zone_index;
 
-        ///The sign of the derivative expected at zerocrossing.
-        short __expected_crossing_deriv_sign;
-
         ///The zone whose spin is monitored.
         const DissipatingZone &__zone;
 
@@ -95,22 +92,9 @@ namespace Evolve {
         ///See StoppingCondition::reached().
         void reached(short deriv_sign, unsigned index=0);
 
-        ///\brief The expected sign of the derivative at the next zero-crossing.
-        ///
-        ///Zero if unknown.
-        virtual short expected_crossing_deriv_sign(
-                ///Which sub-condition.
-                unsigned
-#ifdef DEBUG
-                index
-#endif
-                =0)
-        {
-#ifdef DEBUG
-            assert(index==0);
-#endif
-            return __expected_crossing_deriv_sign;
-        }
+        ///See StoppingCondition::describe().
+        virtual std::string describe(int index = -1) const;
+
     };//End SynchronizedCondition class.
 
 }//End Evolve namespace.

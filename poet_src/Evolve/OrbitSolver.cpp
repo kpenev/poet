@@ -37,7 +37,7 @@ namespace Evolve {
                                age_derivs);
     }
 
-#ifdef DEBUG
+#ifndef NDEBUG
     void OrbitSolver::output_history_and_discarded(std::ostream &os)
     {
     //	return;
@@ -372,26 +372,37 @@ namespace Evolve {
 
     double OrbitSolver::crossing_from_history(size_t condition_index) const
     {
-        if(__stop_history_ages.size()==0 || 
-                __stop_history_ages.size()==
-                __skip_history_zerocrossing[condition_index]) return Core::Inf;
-        double prev_stop_cond=__stop_cond_history.back()[condition_index];
-        double next_stop_cond=__stop_cond_discarded.front()[condition_index];
         if(
-            next_stop_cond*prev_stop_cond>0 
+            __stop_history_ages.size() == 0
             || 
-            next_stop_cond
-            *
-            __stopping_conditions->expected_crossing_deriv_sign(
-                condition_index
-            )<0
-        ) return Core::Inf;
+            (
+                __stop_history_ages.size()
+                ==
+                __skip_history_zerocrossing[condition_index]
+            )
+        )
+            return Core::Inf;
+        double prev_stop_cond = __stop_cond_history.back()[condition_index];
+        double next_stop_cond = __stop_cond_discarded.front()[condition_index];
+        if(
+            next_stop_cond * prev_stop_cond > 0 
+            || 
+            (
+                next_stop_cond
+                *
+                __stopping_conditions->expected_crossing_deriv_sign(
+                    condition_index
+                ) < 0
+            )
+        )
+            return Core::Inf;
         if(std::isnan(__stop_deriv_history.back()[condition_index]))
             return crossing_from_history_no_deriv(condition_index);
-        double prev_stop_deriv=__stop_deriv_history.back()[condition_index],
-               prev_age=__stop_history_ages.back(),
-               next_stop_deriv=__stop_deriv_discarded.front()[condition_index],
-               next_age=__discarded_stop_ages.front();
+        double
+            prev_stop_deriv = __stop_deriv_history.back()[condition_index],
+            prev_age = __stop_history_ages.back(),
+            next_stop_deriv = __stop_deriv_discarded.front()[condition_index],
+            next_age = __discarded_stop_ages.front();
         return Core::estimate_zerocrossing(prev_age,
                                            prev_stop_cond,
                                            next_age,
@@ -472,11 +483,15 @@ namespace Evolve {
                 std::isnan(orbit[i])
                 ||
                 (evolution_mode == Core::BINARY && orbit[0] <= 0)
-            )
+            ) {
+#ifndef NDEBUG
+                std::cerr << "Bad orbit: " << orbit << std::endl;
+#endif
                 return StopInformation(
                     0.5 * (age + __stop_history_ages.back()),
                     Core::Inf
                 );
+            }
         std::valarray<double> current_stop_cond(
             __stopping_conditions->num_subconditions()
         );
@@ -490,9 +505,9 @@ namespace Evolve {
             initialize_skip_history(*__stopping_conditions, stop_reason);
         StopInformation result;
         insert_discarded(age, current_stop_cond, current_stop_deriv);
-#ifdef DEBUG
-    //	std::cerr << std::string(77, '@') << std::endl;
-    //	output_history_and_discarded(std::cerr);
+#ifndef NDEBUG
+//    	std::cerr << std::string(77, '@') << std::endl;
+//    	output_history_and_discarded(std::cerr);
 #endif
         for(
             size_t cond_ind = 0; 
@@ -539,9 +554,6 @@ namespace Evolve {
             stop_info.deriv_sign_at_crossing() = (is_crossing
                                                   ? deriv_sign
                                                   : 0.0);
-#ifdef DEBUG
-    //		std::cerr << stop_info << std::endl;
-#endif
             if(
                 (!acceptable_step(age, stop_info) || is_crossing)
                 &&
@@ -556,6 +568,14 @@ namespace Evolve {
             __stop_deriv_history.push_back(current_stop_deriv);
             __orbit_history.push_back(orbit);
             __orbit_deriv_history.push_back(derivatives);
+        } else {
+#ifndef NDEBUG
+    		std::cerr << "Step to age = "
+                      << age
+                      << " deemed unacceptable: "
+                      << result
+                      << std::endl;
+#endif
         }
         return result;
     }
@@ -568,7 +588,7 @@ namespace Evolve {
             Core::EvolModeType evolution_mode)
     {
         size_t nargs=orbit.size();
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Starting evolution leg in " << evolution_mode
             << " from t=" << system.age() << " with initial orbit=";
         for(size_t i=0; i<nargs; ++i) {
@@ -576,9 +596,8 @@ namespace Evolve {
             std::cerr << orbit[i];
         }
         std::cerr << std::endl;
-        std::cerr << "Stopping condition types:" << std::endl;
-        for(size_t i=0; i<__stopping_conditions->num_subconditions(); ++i)
-            std::cerr << i << ": " << __stopping_conditions->type(i) << std::endl;
+        std::cerr << "Stopping conditions:" << std::endl
+                  << __stopping_conditions->describe() << std::endl;
 #endif
 
     //	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
@@ -634,20 +653,45 @@ namespace Evolve {
                 if(status == GSL_SUCCESS) {
                     stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
                                            sys_mode);
-                    stop=update_stop_condition_history(t,
-                                                       orbit,
-                                                       derivatives,
-                                                       evolution_mode,
-                                                       stop_reason);
+
+                    stop = update_stop_condition_history(t,
+                                                         orbit,
+                                                         derivatives,
+                                                         evolution_mode,
+                                                         stop_reason);
                 }
                 if(status == GSL_EDOM || !acceptable_step(t, stop)) {
-                    double last_good_t=
+                    double last_good_t =
                         go_back(stop.stop_age(), system, orbit, derivatives);
-                    if(t<last_good_t
-                         *(1.0+10.0*std::numeric_limits<double>::epsilon())) {
+#ifndef NDEBUG
+                    std::cerr
+                        << "Reverting step from t = "
+                        << t
+                        << " to "
+                        << last_good_t
+                        << " due to "
+                        << (status == GSL_EDOM ? "EDOM error" : "bad step")
+                        << "Stop info: "
+                        << stop
+                        << std::endl;
+#endif
+
+                    if(
+                        t
+                        <
+                        (
+                            last_good_t
+                            *
+                            (
+                                1.0
+                                +
+                                10.0 * std::numeric_limits<double>::epsilon()
+                            )
+                        )
+                    ) {
                         throw Core::Error::NonGSLZeroStep();
                     }
-                    t=last_good_t;
+                    t = last_good_t;
                     if(stop.is_crossing())
                         stop.stop_condition_precision()=
                             __stop_cond_history.back()[
@@ -658,16 +702,15 @@ namespace Evolve {
                     gsl_odeiv2_evolve_reset(evolve);
                     step_rejected=true;
                 } else step_rejected=false;
-    //			std::cerr << "t=" << t << std::endl;
-                std::cerr.flush();
             } while(
                 step_rejected
                 &&
                 std::abs(stop.stop_condition_precision()) > __precision
             );
-            if(!step_rejected)
+            if(!step_rejected) {
+                std::cerr << "Stepped to t = " << t << std::endl;
                 add_to_evolution(t, evolution_mode, system);
-            if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
+            } if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
                 stop_reason=stop.stop_reason();
                 break;
             }
@@ -705,11 +748,11 @@ namespace Evolve {
                                      const BinarySystem &system, 
                                      const std::list<double> &required_ages)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Determining next stop age: " << std::endl;
 #endif
         double result = system.next_stop_age();
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Next system stop age: " << result << std::endl;
 #endif
         if(required_ages.size() == 0) return result;
@@ -730,7 +773,7 @@ namespace Evolve {
             result > *next_required_age
         ) 
             result = *next_required_age;
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Required ages change that to: " << result << std::endl;
 #endif
         return result;
@@ -741,8 +784,8 @@ namespace Evolve {
         StoppingConditionType stop_reason
     )
     {
-#ifdef DEBUG
-        std::cerr << "Stoppped due to condition at t = " 
+#ifndef NDEBUG
+        std::cerr << "Stopped due to condition at t = " 
                   << stop_age
                   << std::endl;
 #endif
@@ -751,7 +794,7 @@ namespace Evolve {
                 __stop_info.begin();
             stop_i != __stop_info.end();
             ++stop_i
-        )
+        ) {
             if(
                 stop_i->is_crossing()
                 && 
@@ -767,14 +810,20 @@ namespace Evolve {
                     )
                 )
             ) {
+#ifndef NDEBUG
+                std::cerr << "Triggered condition: "
+                          << __stopping_conditions->describe(
+                              stop_i->stop_condition_index()
+                          )
+                          << std::endl;
+#endif
                 __stopping_conditions->reached(
                     stop_i->deriv_sign_at_crossing(),
                     stop_i->stop_condition_index()
                 );
-#ifdef DEBUG
-                std::cerr << "Triggered condition: " << *stop_i << std::endl;
-#endif
             }
+        }
+        std::cerr << "Handled stop condition" << std::endl;
     }
 
     void OrbitSolver::reset(BinarySystem &system)
@@ -789,7 +838,7 @@ namespace Evolve {
         __precision(required_precision),
         __stopping_conditions(NULL)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         assert(max_age>0);
 #endif
     }
@@ -797,7 +846,7 @@ namespace Evolve {
     void OrbitSolver::operator()(BinarySystem &system, double max_step,
             const std::list<double> &required_ages)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Calculating evolution from t = " << system.age()
                   << " to t = " << __end_age << std::endl;
 #endif
@@ -816,7 +865,7 @@ namespace Evolve {
                                                          required_ages), 
                                             stop_evol_age);
             __stopping_conditions = get_stopping_condition(system);
-#ifdef DEBUG
+#ifndef NDEBUG
             std::cerr << "Next stop age: " << next_stop_age << std::endl;
 #endif
             StopInformation stop_information = evolve_until(system,
@@ -825,7 +874,10 @@ namespace Evolve {
                                                             stop_reason,
                                                             max_step,
                                                             evolution_mode);
-#ifdef DEBUG
+#ifndef NDEBUG
+            std::cerr << "Stop information: "
+                      << stop_information
+                      << std::endl;
             Core::EvolModeType old_evolution_mode = evolution_mode;
             unsigned old_locked_zones = system.number_locked_zones();
 #endif
@@ -836,7 +888,7 @@ namespace Evolve {
                 else 
                     reached_stopping_condition(last_age, stop_reason);
             }
-#ifdef DEBUG 
+#ifndef NDEBUG 
             std::cerr
                 << "At t=" << last_age
                 << ", changing evolution mode from " << old_evolution_mode
@@ -844,7 +896,7 @@ namespace Evolve {
                 << " zones locked ";
 #endif
             evolution_mode = system.evolution_mode();
-#ifdef DEBUG
+#ifndef NDEBUG
             std::cerr 
                 << "to " << evolution_mode
                 << " with " << system.number_locked_zones()
@@ -854,7 +906,7 @@ namespace Evolve {
             std::clog << orbit;
 #endif
             system.fill_orbit(orbit);
-#ifdef DEBUG
+#ifndef NDEBUG
             std::cerr << " to " << orbit << std::endl;
 #endif
             delete __stopping_conditions;

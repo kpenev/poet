@@ -37,10 +37,10 @@ namespace Evolve {
         ) {
             evolution_rates[zone_index - 1] = 
                 __body1.nontidal_torque(zone_index)[2];
-#ifdef DEBUG
+
             assert(__body1.nontidal_torque(zone_index)[0] == 0);
             assert(__body1.nontidal_torque(zone_index)[1] == 0);
-#endif
+
         }
         return 0;
     }
@@ -525,11 +525,11 @@ namespace Evolve {
     )
     {
         unsigned num_locked_zones = __locked_zones.size();
-#ifdef DEBUG
+
         assert(num_locked_zones == (__body1.number_locked_zones()
                                     +
                                     __body2.number_locked_zones()));
-#endif
+
         if(num_locked_zones == 0) {
             fractions.resize(0);
             return;
@@ -626,7 +626,6 @@ namespace Evolve {
             DissipatingBody &body,
             unsigned zone_index)
     {
-#ifdef DEBUG
         assert(deriv == Dissipation::INCLINATION
                ||
                deriv == Dissipation::PERIAPSIS
@@ -639,7 +638,7 @@ namespace Evolve {
         assert(number_locked_zones()
                ==
                __above_lock_fractions[Dissipation::NO_DERIV].size());
-#endif
+
         unsigned num_locked_zones = number_locked_zones();
         if(num_locked_zones == 0) return Eigen::VectorXd();
         DissipatingZone &deriv_zone = body.zone(zone_index);
@@ -1259,10 +1258,13 @@ namespace Evolve {
         std::valarray<Eigen::Vector3d> &zone_torque_deriv
     ) const
     {
-#ifdef DEBUG
-        if(body.zone(zone_ind).locked()) assert(zone_torque_deriv.size() == 4);
-        else assert(zone_torque_deriv.size() == 3);
+#ifndef NDEBUG
+        if(body.zone(zone_ind).locked())
+            assert(zone_torque_deriv.size() == 4);
+        else
+            assert(zone_torque_deriv.size() == 3);
 #endif
+
         zone_torque_deriv[0] = (zone_ind == 0
                                 ? Eigen::Vector3d::Zero()
                                 : body.nontidal_torque(zone_ind, deriv, -1));
@@ -1740,7 +1742,9 @@ namespace Evolve {
                                 const double *periapsis,
                                 Core::EvolModeType evolution_mode)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
+        if(initialize)
+            std::cerr << "Initializing BinarySystem." << std::endl;
         if(evolution_mode != Core::BINARY) {
             assert(std::isnan(semimajor));
             assert(std::isnan(eccentricity));
@@ -1788,7 +1792,7 @@ namespace Evolve {
             update_above_lock_fractions();
         } else
             find_locked_zones();
-#ifdef DEBUG
+#ifndef NDEBUG
     //	if(evolution_mode == BINARY)
     //		assert(__semimajor > minimum_semimajor());
 #endif
@@ -1820,9 +1824,8 @@ namespace Evolve {
             periapsis = NULL;
             spin_angmom = parameters;
         } else {
-#ifdef DEBUG
             assert(inclination != NULL);
-#endif
+
             periapsis = inclination+num_zones;
             if(evolution_mode == Core::SINGLE) --periapsis;
             spin_angmom = periapsis + num_zones - 1;
@@ -1991,7 +1994,7 @@ namespace Evolve {
         );
         spin_angmom.insert(check_zone_dest, original_angmom);
         if(std::isfinite(above_lock_fraction) || direction == 0) {
-#ifdef DEBUG
+#ifndef NDEBUG
     //		if(direction<0) assert(above_lock_fraction<0);
     //		else if(direction>0) assert(above_lock_fraction>0);
     //		else 
@@ -2028,7 +2031,7 @@ namespace Evolve {
 
     void BinarySystem::secondary_died()
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << "Handling secondary death!" << std::endl;
 #endif
         unsigned num_zones = __body1.number_zones();

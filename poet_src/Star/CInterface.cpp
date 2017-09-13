@@ -59,6 +59,17 @@ void set_dissipation(EvolvingStar *star,
     Evolve::BrokenPowerlawPhaseLagZone *zone;
     if(zone_index == 0) zone = &(real_star->envelope());
     else zone = &(real_star->core());
+
+#ifndef NDEBUG
+    std::cerr << "Setting zone "
+              << zone_index
+              << " dissipation with "
+              << num_tidal_frequency_breaks
+              << " tidal and "
+              << num_spin_frequency_breaks
+              << " spin frequency breaks."
+              << std::endl;
+#endif
     
     zone->setup(
         (

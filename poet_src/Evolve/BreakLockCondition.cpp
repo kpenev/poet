@@ -4,7 +4,7 @@
 namespace Evolve {
 
     std::valarray<double> BreakLockCondition::operator()(
-#ifdef DEBUG
+#ifndef NDEBUG
             Core::EvolModeType evol_mode,
             const std::valarray<double> &orbit,
 #else
@@ -14,7 +14,7 @@ namespace Evolve {
             const std::valarray<double> &derivatives,
             std::valarray<double> &stop_deriv) const
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         assert(evol_mode==Core::BINARY);
         assert(orbit.size()==1 + 3*__system.number_zones() -
                              __system.number_locked_zones());
@@ -94,15 +94,23 @@ namespace Evolve {
 
     void BreakLockCondition::reached(short deriv_sign, unsigned index)
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         if(index==0) assert(deriv_sign == -1);
         else {
             assert(index == 1);
             assert(deriv_sign == 1);
         }
 #endif
-        StoppingCondition::reached(deriv_sign, index);
         __system.release_lock(__locked_zone_index, deriv_sign);
+    }
+
+    std::string BreakLockCondition::describe(int index) const
+    {
+        std::ostringstream description;
+        description << "Locked zone #"
+                    << __locked_zone_index
+                    << " exiting its current lock";
+        return description.str();
     }
 
 }//End Evolve namespace.

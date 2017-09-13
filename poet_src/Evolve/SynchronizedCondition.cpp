@@ -10,11 +10,11 @@ namespace Evolve {
                                                  bool primary,
                                                  unsigned zone_index,
                                                  BinarySystem &system) :
+        StoppingCondition(deriv_sign),
         __orbital_freq_mult(orbital_freq_mult),
         __spin_freq_mult(spin_freq_mult),
         __primary(primary),
         __zone_index(zone_index), 
-        __expected_crossing_deriv_sign(deriv_sign),
         __zone((primary 
                 ? system.primary()
                 : system.secondary()).zone(zone_index)),
@@ -23,7 +23,7 @@ namespace Evolve {
 
     std::valarray<double> SynchronizedCondition::operator()(
         Core::EvolModeType
-#ifdef DEBUG
+#ifndef NDEBUG
         evol_mode
 #endif
         , const std::valarray<double> &orbit,
@@ -31,7 +31,7 @@ namespace Evolve {
         std::valarray<double> &stop_deriv
     ) const
     {
-#ifdef DEBUG
+#ifndef NDEBUG
         assert(evol_mode == Core::BINARY);
         if(__system.number_locked_zones())
             assert(orbit[0] == __system.semimajor());
@@ -81,7 +81,7 @@ namespace Evolve {
                           )
                           /
                           __orbital_freq_mult);
-#ifdef DEBUG
+#ifndef NDEBUG
         if(
             std::isnan((__orbital_freq_mult * worb - wspin * __spin_freq_mult)
                        /
@@ -104,16 +104,26 @@ namespace Evolve {
 
     void SynchronizedCondition::reached(short deriv_sign, unsigned index)
     {
-#ifdef DEBUG
-        if(__expected_crossing_deriv_sign)
-            assert(deriv_sign == __expected_crossing_deriv_sign);
-#endif
         StoppingCondition::reached(deriv_sign, index);
         __system.check_for_lock(__orbital_freq_mult,
                                 __spin_freq_mult,
                                 (__primary ? 0 : 1),
                                 __zone_index, 
                                 (__spin_freq_mult>0 ? -deriv_sign : deriv_sign));
+    }
+
+    std::string SynchronizedCondition::describe(int index) const
+    {
+        std::ostringstream description;
+        description << (__primary ? "Primary" : "Secondary")
+                    << " body, zone "
+                    << __zone_index
+                    << " satisfying "
+                    << __orbital_freq_mult
+                    << "(orbital frequency) = "
+                    << __spin_freq_mult
+                    << "(spin frequency)";
+        return description.str();
     }
 
 } //End Evolve namespace.
