@@ -249,6 +249,7 @@ namespace Evolve {
 
         ///Cleanup. 
         ~BrokenPowerlawPhaseLagZone() {
+#ifndef NDEBUG
             std::cerr << "Destroying powerlaw lag zone:"
                       << "Tidal breaks:";
             for(
@@ -267,6 +268,7 @@ namespace Evolve {
             )
                 std::cerr << " " << *br_i;
             std::cerr << std::endl;
+#endif
             reset();
         }
 

@@ -1,219 +1,268 @@
-#include "../Functions.h"
-#include "../StellarEvolution.h"
-#include "../StellarSystem.h"
-#include "../Star.h"
-#include "../Planet.h"
-#include "../OrbitSolver.h"
+#include "../Core/Functions.h"
+#include "../StellarEvolution/EvolvingStellarQuantity.h"
+#include "../StellarEvolution/Interpolator.h"
+
+#include "Common.h"
+//#include "../StellarSystem.h"
+//#include "../Star.h"
+//#include "../Planet.h"
+//#include "../OrbitSolver.h"
 #include <valarray>
 #include <gsl/gsl_roots.h>
-#include "YRECIO.h"
+//#include "YRECIO.h"
 #include <fstream>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
 
-///\brief An EvolvingStellar quantity that uses a polynomial instead of
-///interpolating.
-///
-///It also serves as its own derivative.
-///
-///\ingroup UnitTests_group
-class PolynomialEvolutionTrack : public EvolvingStellarQuantity,
-	FunctionDerivatives {
-private:
-	///The coefficients of the polynomial giving the evolution.
-	std::valarray<double> poly_coef;
+namespace StellarEvolution {
 
-	///The lower limit of the age at which this quantity can be evaluated.
-	double xmin,
+    ///\brief An EvolvingStellar quantity that uses a polynomial instead of
+    ///interpolating.
+    ///
+    ///It also serves as its own derivative.
+    ///
+    ///\ingroup UnitTests_group
+    class PolynomialEvolutionQuantity : public EvolvingStellarQuantity,
+        Core::FunctionDerivatives {
+    private:
+        ///The coefficients of the polynomial giving the evolution.
+        std::valarray<double> __poly_coef;
 
-		   ///\brief The upper limit of the age at which this quantity can be
-		   ///evaluated.
-		   xmax;
+        double 
+            ///\brief The lower limit of the age at which this quantity can
+            ///be evaluated.
+            __xmin,
 
-	///The location at which the derivative has been requested.
-	mutable	double deriv_x;
-public:
-	///Create an evolving quantity or its derivative.
-	PolynomialEvolutionTrack(
+            ///\brief The upper limit of the age at which this quantity
+            ///can be evaluated.
+            __xmax;
 
-			///The coefficients defining the polynomial that gives the
-			///evolution of the quantity.
-			const std::valarray<double> &coefficients,
+        ///The location at which the derivative has been requested.
+        mutable	double __deriv_x;
 
-			///The lower end of the range for which the quantity is defined.
-			double range_low,
+        ///An empty vector to serve as the list of discontinuities.
+        std::vector<double> __empty_vector;
 
-			///The upper end of the range for which the quantity is defined.
-			double range_high,
-			
-			///The abscissa at which the derivatives are to be evaluated.
-			double derivative_x=NaN) :
-		poly_coef(coefficients), xmin(range_low), xmax(range_high),
-		deriv_x(derivative_x) {}
+    public:
+        ///Create an evolving quantity or its derivative.
+        PolynomialEvolutionQuantity(
+            ///The coefficients defining the polynomial that gives the
+            ///evolution of the quantity.
+            const std::valarray<double> &coefficients,
 
-	///\brief Evaluates the polynomial at the given x.
-	///
-	///Throws an exception if x is outside the range over which the
-	///quantity is defined. 
-	double operator()(double x) const {deriv_x=x; return order(0);}
+            ///The lower end of the range for which the quantity is defined.
+            double range_low,
 
-	///The lower end of the range where the function is defined
-	double range_low() const {return xmin;}
+            ///The upper end of the range for which the quantity is defined.
+            double range_high,
 
-	///The upper end of the range where the function is defined
-	double range_high() const {return xmax;}
+            ///The abscissa at which the derivatives are to be evaluated.
+            double derivative_x=NaN
+        ) :
+            __poly_coef(coefficients),
+            __xmin(range_low),
+            __xmax(range_high),
+            __deriv_x(derivative_x)
+            {}
 
-	///The derivatives.
-	const PolynomialEvolutionTrack *deriv(double x) const
-	{return new PolynomialEvolutionTrack(poly_coef, xmin, xmax, x);}
+        void select_interpolation_region(double) const {}
 
-	///The order-th derivative
-	double order(unsigned deriv_order=1) const;
+        ///\brief Evaluates the polynomial at the given age.
+        ///
+        ///Throws an exception if age is outside the range over which the
+        ///quantity is defined.
+        double operator()(double x) const {__deriv_x = x; return order(0);}
 
-	///No crossing calculated.
-	InterpSolutionIterator crossings(double y=0) const
-	{return InterpSolutionIterator();}
+        ///The lower end of the range where the function is defined
+        double range_low() const {return __xmin;}
 
-	///Prints an expression of the polynomial that this track represents.
-	friend std::ostream &operator<<(std::ostream &os,
-			const PolynomialEvolutionTrack &track);
+        ///The upper end of the range where the function is defined
+        double range_high() const {return __xmax;}
 
-	///A string identifying the type of quantity this is.
-	std::string kind() const {return "PolynomialEvolutionTrack";}
-};
+        ///The ages at which the quantity may be discontinuous.
+        virtual const std::vector<double> &discontinuities() const
+        {return __empty_vector;}
 
-///\brief Implements a StellarEvolution based on polynomial evolution
-///quantities.
-///
-///\ingroup UnitTests_group
-class MockStellarEvolution : public StellarEvolution {
-private:
-	///The polynomial coefficients of the radius dependence on mass and age.
-	std::valarray< std::valarray<double> > R,
+        ///\brief See
+        ///StellarEvolution::EvolvingStellarQuantity::prevous_discontinuity()
+        virtual double previous_discontinuity() const {return __xmin;}
 
-		///\brief The polynomial coefficients of the convective zone moment
-		///of inertia dependence on stellar mass and age.
-		Iconv,
+        ///\brief See
+        ///StellarEvolution::EvolvingStellarQuantity::next_discontinuity()
+        virtual double next_discontinuity() const {return __xmax;}
 
-		///\brief The polynomial coefficients of the radiative zone moment of
-		///inertia dependence on stellar mass and age.
-		Irad,
+        ///\brief Set up the interpolation over the next interpolation region
+        ///(between consecutive discontinuities.)
+        virtual void enable_next_interpolation_region() const
+        {assert(false);}
 
-		///\brief The polynomial coefficients of total stellar moment of
-		///inertia dependence on stellar mass and age.
-		Itot,
+        ///The derivatives.
+        const Core::FunctionDerivatives *deriv(double x) const
+        {return new PolynomialEvolutionQuantity(__poly_coef,
+                                                __xmin,
+                                                __xmax,
+                                                x);}
 
-		///\brief The polynomial coefficients of the core radius dependence
-		///on stellar mass and age.
-		Rcore,
+        ///The order-th derivative
+        double order(unsigned deriv_order = 1) const;
 
-		///\brief The polynomial coefficients of the core mass dependence
-		///on stellar mass and age.
-		Mcore,
+        ///Prints an expression of the polynomial that this track represents.
+        friend std::ostream &operator<<(
+            std::ostream &os,
+            const PolynomialEvolutionQuantity &track
+        );
 
-		///\brief The polynomial coefficients of the envelope mass dependence
-		///on stellar mass and age.
-		Menv;
+        ///A string identifying the type of quantity this is.
+        std::string kind() const {return "PolynomialEvolutionQuantity";}
+    };//End PolynomialEvolutionQuantity class.
 
-	///The age in Gyr at which the core forms.
-	double core_formation;
-public:
-	///\brief Uses the given values and polynomials for the quantities.
-	///
-	///If empty polynomial coefficients are specified or NaN for constant
-	///quantities in which case random polynomials or values are used.
-	MockStellarEvolution(
-			///The age at which the core forms in Gyr.
-			double core_formation_age=NaN,
+    ///\brief Implements a StellarEvolution based on polynomial evolution
+    ///quantities.
+    ///
+    ///\ingroup UnitTests_group
+    class MockStellarEvolution : public StellarEvolution::Interpolator {
+    private:
+        std::valarray< std::valarray<double> >
+            ///\brief The polynomial coefficients of the radius dependence on
+            ///mass and age.
+            __R,
 
-			///The polynomial coefficients of the radius dependence on mass
-			///and age.
-			const std::valarray< std::valarray<double> > &radius=
-				std::valarray< std::valarray<double> >(),
+            ///\brief The polynomial coefficients of the convective zone
+            ///moment of inertia dependence on stellar mass and age.
+            __Iconv,
 
-			///The polynomial coefficients of the convective zone moment of
-			///inertia dependence on stellar mass and age.
-			const std::valarray< std::valarray<double> >
-				&conv_moment_of_inertia=
-				std::valarray< std::valarray<double> >(),
+            ///\brief The polynomial coefficients of the radiative zone
+            ///moment of inertia dependence on stellar mass and age.
+            __Irad,
 
-			///The polynomial coefficients of the radiative zone moment of
-			///inertia dependence on stellar mass and age.
-			const std::valarray< std::valarray<double> > 
-				&rad_moment_of_inertia=
-				std::valarray< std::valarray<double> >(),
+            ///\brief The polynomial coefficients of total stellar moment of
+            ///inertia dependence on stellar mass and age.
+            __Itot,
 
-			///The polynomial coefficients of the core radius dependence on
-			///stellar mass and age.
-			const std::valarray< std::valarray<double> > &core_radius=
-				std::valarray< std::valarray<double> >(),
+            ///\brief The polynomial coefficients of the core radius
+            ///dependence on stellar mass and age.
+            __Rcore,
 
-			///The polynomial coefficients of the core mass dependence on
-			///stellar mass and age.
-			const std::valarray< std::valarray<double> > &core_mass=
-				std::valarray< std::valarray<double> >());
+            ///\brief The polynomial coefficients of the core mass dependence
+            ///on stellar mass and age.
+            __Mcore,
 
-	///\brief The Moment of inertia of the specified zone of a star of the
-	///specified mass as a function of age.
-	///
-	///The result must be destroyed when it becomes obsolete.
-	const EvolvingStellarQuantity *interpolate_moment_of_inertia(
-			double stellar_mass, StellarZone zone, double present_age=-1)
-		const;
+            ///\brief The polynomial coefficients of the envelope mass
+            ///dependence on stellar mass and age.
+            __Menv,
+            
+            ///\brief The polynomial coefficients of the luminosity
+            ///dependence on stellar mass and age.
+            __Lum;
 
-	///\brief The radius of a  star of the specified mass as a function of
-	///age.
-	///
-	///The result must be destroyed when it becomes obsolete.
-	const EvolvingStellarQuantity *interpolate_radius(
-			double stellar_mass, double present_age=-1) const;
+        ///The age in Gyr at which the core forms.
+        double __core_formation_age;
+    public:
+        ///\brief Uses the given values and polynomials for the quantities.
+        ///
+        ///If empty polynomial coefficients are specified or NaN for constant
+        ///quantities in which case random polynomials or values are used.
+        MockStellarEvolution(
+            ///The age at which the core forms in Gyr.
+            double core_formation_age = Core::NaN,
 
-	///\brief The mass of of the specified zone of a star of the specified
-	///mass as a function of age.
-	///
-	///The result must be destroyed when it becomes obsolete.
-	const EvolvingStellarQuantity *interpolate_zone_mass(
-			double stellar_mass, StellarZone zone) const;
+            ///The polynomial coefficients of the radius dependence on mass
+            ///and age.
+            const std::valarray< std::valarray<double> > &
+                R = std::valarray< std::valarray<double> >(),
 
-	///\brief The radius of the core for a star of the specified mass as a
-	///function of age.
-	///
-	///The result must be destroyed when it becomes obsolete.
-	const EvolvingStellarQuantity *interpolate_core_boundary(
-			double stellar_mass, double present_age=-1) const;
+            ///The polynomial coefficients of the convective zone moment of
+            ///inertia dependence on stellar mass and age.
+            const std::valarray< std::valarray<double> > &
+                Iconv = std::valarray< std::valarray<double> >(),
 
-	///The age in Gyr at which the core forms.
-	double core_formation_age() const {return core_formation;}
-};
+            ///The polynomial coefficients of the radiative zone moment of
+            ///inertia dependence on stellar mass and age.
+            const std::valarray< std::valarray<double> > &
+                Irad = std::valarray< std::valarray<double> >(),
 
+            ///The polynomial coefficients of the core radius dependence on
+            ///stellar mass and age.
+            const std::valarray< std::valarray<double> > &
+                Rcore = std::valarray< std::valarray<double> >(),
 
-///\brief A messy class able to create random stars.
-///
-///\ingroup UnitTests_group
-class StarData {
-private:
-	unsigned num_stars_created;
-public:
-	double mass, radius, age, conv_spin, rad_spin, tidal_Q, wind_strength,
-		   wind_sat_freq, coupling_timescale, Q_trans_width, disk_lock_w,
-		   disk_lock_time;
-	PolynomialEvolutionTrack *Lrad_track, *Lconv_track;
-	std::valarray<double> evolution_masses, evolution_ages, Lrad, Lconv,
-		Iconv, Irad, Mrad_deriv, Lconv_deriv, Lrad_deriv, Rrad, all_radii;
-	std::valarray< std::valarray<double> > r_coef, Iconv_coef, Itot_coef,
-		Mrad_coef, Rcore_coef;
+            ///The polynomial coefficients of the core mass dependence on
+            ///stellar mass and age.
+            const std::valarray< std::valarray<double> > &
+                Mcore = std::valarray< std::valarray<double> >(),
 
-	StarData();
-	
-	///Creates a star with random properties (mass, radius, age, ..., random
-	///polynomial time functions as moments of inertia ...).
-	void create_random_star(Star **star);
+            ///The polynomial coefficients of the luminosity dependence on
+            ///stellar mass and age.
+            const std::valarray< std::valarray<double> > &
+                Lum = std::valarray< std::valarray<double> >()
+        );
 
-	///Deletes the convective and radiative angular momenta tracks if they
-	///were allocated.
-	~StarData();
-};
+        ///See StellarEvolutino::Interpolator::operator()()
+        EvolvingStellarQuantity *operator()(QuantityID quantity,
+                                            double mass,
+                                            double feh) const;
+
+        ///The age in Gyr at which the core forms.
+        double core_formation_age() const {return __core_formation_age;}
+    };
+
+}//End StellarEvolution namespace.
+
+#if 0
+    ///\brief A messy class able to create random stars.
+    ///
+    ///\ingroup UnitTests_group
+    class StarData {
+    private:
+        unsigned __num_stars_created;
+    public:
+        double mass,
+               feh,
+               radius,
+               age,
+               conv_spin,
+               rad_spin,
+               tidal_Q,
+               wind_strength,
+               wind_sat_freq,
+               coupling_timescale,
+               Q_trans_width,
+               disk_lock_w,
+               disk_lock_time;
+
+        PolynomialEvolutionTrack *Lrad_track,
+                                 *Lconv_track;
+
+        std::valarray<double> evolution_masses,
+                              evolution_ages,
+                              Lrad,
+                              Lconv,
+                              Iconv,
+                              Irad,
+                              Mrad_deriv,
+                              Lconv_deriv,
+                              Lrad_deriv,
+                              Rrad,
+                              all_radii;
+
+        std::valarray< std::valarray<double> > r_coef,
+                                               Iconv_coef,
+                                               Irad_coef,
+                                               Mrad_coef,
+                                               Rcore_coef;
+
+        StarData();
+
+        ///Creates a star with random properties (mass, radius, age, ...,
+        ///random polynomial time functions as moments of inertia ...).
+        void create_random_star(Star::EvolvingStar **star);
+
+        ///Deletes the convective and radiative angular momenta tracks if
+        ///they were allocated.
+        ~StarData();
+    };
+
 
 ///\brief A messy class able to create random planets.
 ///
@@ -261,26 +310,33 @@ public:
 		*system = new StellarSystem(*star, *planet, "");
 	}
 };
+#endif
 
-///\brief Returns an evolutionary track for a quantity that is polynomial in 
-///both mass and age.
-PolynomialEvolutionTrack *exact_track(
-		///The polynomial coefficients giving the mass and age dependence.
-		///The first index should be age and the second one mass.
-		const std::valarray< std::valarray<double> > &poly_coef, 
-		
-		///The stellar mass for which the tracks is necessary.
-		double mass,
-		
-		///The power to scale ages for low mass stars.
-		double low_mass_age_scaling=0,
+namespace StellarEvolution {
 
-		///The power to scale ages for high mass stars.
-		double high_mass_age_scaling=0,
-		
-		///The mass on which to base the scaling.
-		double scale_mass=NaN);
+    ///\brief Returns an evolutionary track for a quantity that is polynomial
+    ///in both mass and age.
+    PolynomialEvolutionQuantity *exact_track(
+        ///The polynomial coefficients giving the mass and age dependence.
+        ///The first index should be age and the second one mass.
+        const std::valarray< std::valarray<double> > &poly_coef, 
 
+        ///The stellar mass for which the tracks is necessary.
+        double mass,
+
+        ///The power to scale ages for low mass stars.
+        double low_mass_age_scaling = 0,
+
+        ///The power to scale ages for high mass stars.
+        double high_mass_age_scaling = 0,
+
+        ///The mass on which to base the scaling.
+        double scale_mass = NaN
+    );
+
+} //End StellarEvolution namespace.
+
+#if 0
 ///\brief A stellar evolution class that initializes itself from a set of
 ///coefficients.
 ///
@@ -322,33 +378,41 @@ public:
 			///The power to scale ages for high mass stars.
 			double high_mass_age_scaling);
 };
+#endif
 
 ///\brief Represents a function of the form offset + scale*exp(rate*x) as
 ///well as its derivative.
 ///
 ///\ingroup UnitTests_group
-class ExponentialPlusFunc : public OneArgumentDiffFunction,
-	FunctionDerivatives {
+class ExponentialPlusFunc : public Core::OneArgumentDiffFunction,
+	                               Core::FunctionDerivatives
+{
 private:
 	double __scale, __rate, __deriv_x;
-	OneArgumentDiffFunction *__offset;
+    Core::OneArgumentDiffFunction *__offset;
 public:
 	///Create the function with the given parameters.
-	ExponentialPlusFunc(OneArgumentDiffFunction *offset, double scale, double rate,
-			double deriv_x=NaN) :
-		__scale(scale), __rate(rate), __deriv_x(deriv_x), __offset(offset) {}
+	ExponentialPlusFunc(Core::OneArgumentDiffFunction *offset,
+                        double scale,
+                        double rate,
+                        double deriv_x = Core::NaN) :
+		__scale(scale),
+        __rate(rate),
+        __deriv_x(deriv_x),
+        __offset(offset)
+    {}
 
 	///Evaluate the function at the given x.
 	double operator()(double x) const
-	{return (*__offset)(x) + __scale*std::exp(__rate*x);}
+	{return (*__offset)(x) + __scale * std::exp(__rate * x);}
 
 	///Returns the derivatives at the given x.
-	const FunctionDerivatives *deriv(double x) const
+	const Core::FunctionDerivatives *deriv(double x) const
 	{return new ExponentialPlusFunc(__offset, __scale, __rate, x);}
 
 	///\brief Return the given order-th derivative at x set by previous call
 	///to deriv().
-	double order(unsigned deriv_order=1) const;
+	double order(unsigned deriv_order = 1) const;
 
 	///The upper end of the range over which the function is defined.
 	double range_high() const {return __offset->range_high();}
@@ -357,9 +421,11 @@ public:
 	double range_low() const {return __offset->range_low();}
 
 	///Iterator over the points at which the function takes the given value.
-	InterpSolutionIterator crossings(double) const
-	{return InterpSolutionIterator();}
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
 };
+
+#if 0
 ///\brief Represents the sum of two functions and the derivative.
 ///
 ///\ingroup UnitTests_group
@@ -578,13 +644,6 @@ public:
 	{return InterpSolutionIterator();}
 };
 
-///Fills the given valarray with a random set of polynomial coefficients.
-void rand_poly_coef(std::valarray< std::valarray<double> > &poly_coef,
-		double max_mass=-1);
-
-///Returns a random set of polynomial coefficients
-std::valarray< std::valarray<double> > rand_poly_coef(double max_mass=-1);
-
 ///Returns an array of the values of the track at the given ages.
 std::valarray<double> tabulate_track(PolynomialEvolutionTrack *track,
 		std::valarray<double> ages, unsigned deriv_order=0);
@@ -595,37 +654,11 @@ double eval_poly(const std::valarray< std::valarray<double> > &poly_coef,
 		double mass, double age, double low_mass_age_scaling=0,
 		double high_mass_age_scaling=0, double scale_mass=NaN);
 
-///\brief Outputs the mass and age polynomial defined by the given polynomial
-///coefficients array
-std::ostream &operator<<(std::ostream &os, 
-		const std::valarray< std::valarray<double> > &poly_coef);
-
-///A uniform random real value in the given range.
-double rand_value(double min, double max);
-
-///A uniform integer value in the given range.
-int rand_value(int min, int max);
-
-///Given n, m and (n)C(m) returns (n)C(m+1)
-unsigned next_binom_coef(unsigned n, unsigned m, unsigned nCm);
-
-///\brief Returns new polynomial coefficienst such that output
-///polynomial(mass, age+age_offset)=input polynomial(mass, age)
-std::valarray< std::valarray<double> > offset_age(
-		const std::valarray< std::valarray<double> > &poly_coef,
-		double age_offset);
-
-///\brief Returns new polynomial coefficienst such that output
-///polynomial(age+age_offset)=input polynomial(age)
-std::valarray< std::valarray<double> > offset_age(
-		const std::valarray< std::valarray<double> > &poly_coef,
-		double age_offset);
-
 ///Solves f(x)=0 for x.
 double solve(double guess_x, double abs_precision, double rel_precision,
 		double (*f)(double x, void *params),
 		double (*df) (double x, void *params),
 		void (*fdf) (double x, void *params, double *f, double *df),
 		void *params);
-
+#endif
 

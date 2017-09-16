@@ -271,19 +271,22 @@ namespace Evolve {
 
         if(initialize and !std::isnan(orbital_frequency)) {
 
+#ifndef NDEBUG
             std::cerr << "Initializing broken powerlaw lag zone"
                       << (initialize ? " for the first time." : ".")
                       << std::endl;
-
+#endif
 
             configure_spin(spin, spin_is_frequency);
 
             set_spin_index();
 
             __tidal_indices.resize(5 * (eccentricity_order() + 3));
+#ifndef NDEBUG
             std::cerr << "__tidal_indices size = "
                       << __tidal_indices.size()
                       << std::endl;
+#endif
 
             std::vector< std::vector<double>::size_type >::iterator
                 destination = __tidal_indices.begin();

@@ -28,18 +28,6 @@
 
 namespace StellarEvolution {
 
-    ///The primordial Helium fraction of the universe.
-    const double Yprimordial = 0.249;
-
-    ///The Helium fraction with which the Sun formed.
-    const double Yprotosun = 0.2612;
-
-    ///The metal fraction with which the Sun formed.
-    const double Zprotosun = 0.0150;
-
-    ///The hydrogen fraction with which the Sun formed.
-    const double Xprotosun = 1.0 - Yprotosun - Zprotosun;
-
     ///\brief A class that interpolates among stellar evolution tracks.
     ///
     ///Uses a  set of pre-computed evolution tracks to generate 
@@ -68,9 +56,9 @@ namespace StellarEvolution {
             /// \f$M_\odot\f$
             __track_masses,
 
-            ///\brief The stellar metallicities for which evolution tracks
-            ///are available in [Fe/H]
-            __track_metallicities;
+            ///\brief The stellar [Fe/H] values for which evolution tracks
+            ///are available.
+            __track_feh;
 
         ///\brief The interpolated stellar evolution quantities for each
         ///track.
@@ -106,7 +94,7 @@ namespace StellarEvolution {
         ///tabulated evolution tracks.
         Interpolator() :
             __track_masses(),
-            __track_metallicities(),
+            __track_feh(),
             __interpolated_quantities(NUM_QUANTITIES),
             __core_formation(Core::NaN)
         {}
@@ -117,12 +105,11 @@ namespace StellarEvolution {
             ///tracks are tabulated.
             const std::valarray<double> &tabulated_masses,
 
-            ///The stellar metallicities (in [Fe/H]) for which evolution
-            ///tracks are tabulated.
-            const std::valarray<double> &tabulated_metallicities,
+            ///The stellar [Fe/H] for which evolution tracks are tabulated.
+            const std::valarray<double> &tabulated_feh,
 
             ///A set of ages for each track in Gyr on the grid defined by 
-            ///\p track_masses and \p track_metallicities. The mass index
+            ///\p track_masses and \p track_feh. The mass index
             ///varies faster.
             const std::list< std::valarray<double> > &tabulated_ages,
 
@@ -157,7 +144,7 @@ namespace StellarEvolution {
         )
         {
             create_from(tabulated_masses,
-                        tabulated_metallicities,
+                        tabulated_feh,
                         tabulated_ages,
                         tabulated_quantities,
                         smoothing,
@@ -173,12 +160,12 @@ namespace StellarEvolution {
             ///tracks are tabulated.
             const std::valarray<double> &tabulated_masses,
 
-            ///The stellar metallicities (in [Fe/H]) for which evolution
-            ///tracks are tabulated.
-            const std::valarray<double> &tabulated_metallicities,
+            ///The stellar [Fe/H] values for which evolution tracks are
+            ///tabulated.
+            const std::valarray<double> &tabulated_feh,
 
             ///A set of ages for each track in Gyr on the grid defined by 
-            ///\p track_masses and \p track_metallicities. The mass index
+            ///\p track_masses and \p track_feh. The mass index
             ///varies faster.
             const std::list< std::valarray<double> > &tabulated_ages,
 
@@ -216,7 +203,7 @@ namespace StellarEvolution {
         ///[Fe/H].
         ///
         ///The result must be destroyed when it becomes obsolete.
-        EvolvingStellarQuantity *operator()(
+        virtual EvolvingStellarQuantity *operator()(
             ///The quantity for which to set-up the interpolation.
             QuantityID quantity,
 
@@ -281,7 +268,7 @@ namespace StellarEvolution {
     {
         if(!std::isfinite(__core_formation)) __core_formation = -1;
         ar & __track_masses;
-        ar & __track_metallicities;
+        ar & __track_feh;
 
         ar & __interpolated_quantities;
 
@@ -291,14 +278,6 @@ namespace StellarEvolution {
         ar & __core_formation;
         if(__core_formation < 0) __core_formation = Core::Inf;
     }
-
-    ///\brief Return the metallicity interpolation parameter corresponding to
-    ///the given [Fe/H] value.
-    double metallicity_from_feh(double feh);
-
-    ///\brief Return the [Fe/H] value corresponding to the given metallicity
-    //interpolation parameter.
-    double feh_from_metallicity(double metallicity);
 
 }//End of StellarEvolution namespace
 

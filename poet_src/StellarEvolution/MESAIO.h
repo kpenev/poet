@@ -35,6 +35,26 @@ namespace StellarEvolution {
     ///\todo Tune default nodes and smoothing for good interpolation.
     namespace MESA {
 
+        ///The primordial Helium fraction of the universe.
+        const double Yprimordial = 0.249;
+
+        ///The Helium fraction with which the Sun formed.
+        const double Yprotosun = 0.2612;
+
+        ///The metal fraction with which the Sun formed.
+        const double Zprotosun = 0.0150;
+
+        ///The hydrogen fraction with which the Sun formed.
+        const double Xprotosun = 1.0 - Yprotosun - Zprotosun;
+
+        ///\brief Return the metallicity interpolation parameter corresponding to
+        ///the given [Fe/H] value.
+        double metallicity_from_feh(double feh);
+
+        ///\brief Return the [Fe/H] value corresponding to the given metallicity
+        //interpolation parameter.
+        double feh_from_metallicity(double metallicity);
+
         ///Names for the interesting columns in a MESA track.
         enum Column {
             ///The total mass of the star in \f$M_\odot\f$.
@@ -125,7 +145,7 @@ namespace StellarEvolution {
             std::list<double>::iterator mass_iter;
 
             ///Iterator over the masses of the tracks.
-            std::list<double>::iterator metallicity_iter;
+            std::list<double>::iterator feh_iter;
 
             ///Iterator over the array of ages of the tracks.
             std::list< std::valarray<double> >::iterator age_iter;
@@ -137,7 +157,7 @@ namespace StellarEvolution {
             ///Copy orig to *this.
             EvolutionIterator(const EvolutionIterator &orig) :
                 mass_iter(orig.mass_iter),
-                metallicity_iter(orig.metallicity_iter),
+                feh_iter(orig.feh_iter),
                 age_iter(orig.age_iter),
                 quantity_iter(orig.quantity_iter)
             {}
@@ -200,8 +220,8 @@ namespace StellarEvolution {
             ///The masses of the available tracks in the order read.
             std::list<double> __mass_list;
 
-            ///The metallicities of the available tracks in the order read.
-            std::list<double> __metallicity_list;
+            ///The [Fe/H] values of the available tracks in the order read.
+            std::list<double> __feh_list;
 
             ///The ages at which each track is tabulated.
             std::list< std::valarray<double> > __track_ages;
@@ -224,9 +244,9 @@ namespace StellarEvolution {
             ///track filename.
             ///
             ///If the filaneme follows the expected pattern, add the parsed 
-            ///values to ::__mass_list and ::__metallicity_list respectively 
+            ///values to ::__mass_list and ::__feh_list respectively 
             ///and return true. If the filename is not formatted as expected
-            ///return false and leave ::__mass_list and ::__metallicity_list
+            ///return false and leave ::__mass_list and ::__feh_list
             ///unchanged.
             bool parse_model_file_name(const std::string &filename);
 
@@ -237,20 +257,20 @@ namespace StellarEvolution {
             void read_model_file(const std::string &filename);
 
 #ifndef NDEBUG
-            ///Output the current masses metallicities and age ranges.
+            ///Output the current masses [Fe/H] and age ranges.
             void log_current_age_ranges() const;
 #endif
 
-            ///\brief Verify that the track masses and metallicities form a
+            ///\brief Verify that the track masses and [Fe/H] form a
             ///grid and return the grid.
-            void get_mass_metallicity_grid(
+            void get_mass_feh_grid(
                 ///Output argument: the list of stellar masses in the grid
                 ///(sorted and unique values only).
                 std::valarray<double> &masses,
 
-                ///Output argument: the list of stellar metallicites in the
+                ///Output argument: the list of stellar [Fe/H] in the
                 ///grid (sorted and unique values only).
-                std::valarray<double> &metallicities
+                std::valarray<double> &feh
             );
 
             ///\brief Returns an EvolutionIterator pointing to the beginning
@@ -264,7 +284,7 @@ namespace StellarEvolution {
             ///Moves source to right before destination
             void move(EvolutionIterator &dest, EvolutionIterator &source);
 
-            ///Sorts the data by mass and metallicity.
+            ///Sorts the data by mass and [Fe/H].
             void sort_tracks();
         public:
             ///Default constructor, use load_state to get a working

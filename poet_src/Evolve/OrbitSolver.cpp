@@ -708,7 +708,9 @@ namespace Evolve {
                 std::abs(stop.stop_condition_precision()) > __precision
             );
             if(!step_rejected) {
+#ifndef NDEBUG
                 std::cerr << "Stepped to t = " << t << std::endl;
+#endif
                 add_to_evolution(t, evolution_mode, system);
             } if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
                 stop_reason=stop.stop_reason();

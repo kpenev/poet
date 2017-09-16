@@ -1,7 +1,7 @@
 #ifndef __INTERPOLATED_DERIVATIVES_H
 #define __INTERPOLATED_DERIVATIVES_H
 
-#include "mass_metallicity_interp.h"
+#include "mass_feh_interp.h"
 #include "../Core/LogDerivatives.h"
 #include "../Core/Functions.h"
 #include <vector>
@@ -9,7 +9,7 @@
 namespace StellarEvolution {
 
     ///\brief Derivative class for stellar quantities which are interpolated
-    ///age, mass and metallicity.
+    ///age, mass and [Fe/H].
     ///
     ///\ingroup StellarSystem_group
     class InterpolatedDerivatives : public LogDerivatives {
@@ -18,8 +18,8 @@ namespace StellarEvolution {
             ///The mass to interpolate to in \f$M_\odot\f$.
             __stellar_mass,
 
-            ///The metallicity to interpolate to in Solar metallicities;
-            __stellar_metallicity;
+            ///The [Fe/H] to interpolate to.
+            __stellar_feh;
 
         ///The age derivatives for each stellar model.
         std::vector<const FunctionDerivatives *> *__interp_deriv;
@@ -29,8 +29,8 @@ namespace StellarEvolution {
             ///The masses of the stelar models in \f$M_\odot\f$
             &__interp_masses,
 
-            ///The metallicities of the stellar models in Solar metallicities.
-            &__interp_metallicities;
+            ///The [Fe/H] of the stellar models.
+            &__interp_feh;
 
         ///Whether to delete the derivatives it was created with
         bool __delete_derivatives;
@@ -49,9 +49,9 @@ namespace StellarEvolution {
             ///derivatives.
             double mass,
 
-            ///The stellar metallicity at which to evaluate the interpolated
+            ///The stellar [Fe/H] at which to evaluate the interpolated
             ///derivatives.
-            double metallicity,
+            double feh,
 
             ///The derivatives at each grid intersection.
             std::vector<const FunctionDerivatives*> *derivatives,
@@ -59,8 +59,8 @@ namespace StellarEvolution {
             ///The masses of the grid intersections.
             const alglib::real_1d_array &interp_masses,
 
-            ///The sorted metallicities of the grid intersections.
-            const alglib::real_1d_array &interp_metallicities,
+            ///The sorted [Fe/H] of the grid intersections.
+            const alglib::real_1d_array &interp_feh,
 
             ///If not NaN, \p derivatives are assumed to calculate
             ///derivatives w.r.t. ln(age), whereas this object always returns

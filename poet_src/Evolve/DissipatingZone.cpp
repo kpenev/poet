@@ -414,8 +414,10 @@ namespace Evolve {
     {
         assert(age >= 0);
 
+#ifndef NDEBUG
         if(initialize)
             std::cerr << "Initializing DissipatingZone" << std::endl;
+#endif
         ZoneOrientation::configure(inclination, periapsis);
         __orbital_angmom = orbital_angmom;
         __orbital_frequency = orbital_frequency;
@@ -454,10 +456,12 @@ namespace Evolve {
                            U_mp1mp_i_deriv,
                            U_mp1mp_e_deriv);
             for(int m = -2; m <= 2; ++m) {
+#ifndef NDEBUG
                 std::cerr << "Term: m' = "
                           << mp
                           << ", m = "
                           << m;
+#endif
                 int m_ind = m + 2;
                 bool locked_term = locked(mp, m);
                 double U_mmp_value = U_mp1mp_value, 
@@ -559,6 +563,7 @@ namespace Evolve {
                     __torque_x[deriv_ind + 1] += (term_torque_x
                                                   *
                                                   mod_phase_lag_above);
+#ifndef NDEBUG
                     if(deriv == Dissipation::NO_DERIV)
                         std::cerr << ", Wzone = "
                                   << spin_frequency()
@@ -571,11 +576,14 @@ namespace Evolve {
                                   << ", below="
                                   << mod_phase_lag_below
                                   << ")";
+#endif
                 }
                 U_mm1mp_value = U_mmp_value;
                 U_mm1mp_i_deriv = U_mmp_i_deriv;
                 U_mm1mp_e_deriv = U_mmp_e_deriv;
+#ifndef NDEBUG
                 std::cerr << std::endl;
+#endif
             }
         }
     }
@@ -597,7 +605,9 @@ namespace Evolve {
             spin_frequency_multiplier * spin_frequency()
         );
 
+#ifndef NDEBUG
         std::cerr << ", Wtide = " << forcing_freq << " -> ";
+#endif
 
         fix_forcing_frequency(__lock,
                               orbital_frequency_multiplier,
@@ -606,7 +616,9 @@ namespace Evolve {
         if(!__lock && __other_lock.spin_frequency_multiplier()!=0)
             fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
                     spin_frequency_multiplier, forcing_freq);
+#ifndef NDEBUG
         std::cerr << forcing_freq;
+#endif
         return forcing_freq;
     }
 

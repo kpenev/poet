@@ -96,11 +96,10 @@ class Track(DataModelBase) :
         primary_key = True,
         doc = 'The stellar mass of the track contained in the given file.',
     )
-    metallicity = Column(
+    feh = Column(
         Numeric(5, 4),
         primary_key = True,
-        doc = 'The metallicity ([Fe/H])of the track contained in the given '
-        'file.',
+        doc = 'The [Fe/H] of the track contained in the given file.',
     )
     model_suite_id = Column(
         Integer,
@@ -121,7 +120,7 @@ class Track(DataModelBase) :
         return (repr(self.suite)
                 +
                 '(M = %g Msun, [Fe/H] = %g) [%s]' % (self.mass,
-                                                     self.metallicity,
+                                                     self.feh,
                                                      self.checksum))
 
 class InterpolationParameters(DataModelBase) :
@@ -269,10 +268,10 @@ class VarchangeGridNode(object) :
         doc = 'The value of the independent variable at the node.'
     )
 
-class VarchangeMetallicityNode(VarchangeGridNode, DataModelBase) :
+class VarchangeFeHNode(VarchangeGridNode, DataModelBase) :
     """The nodes in the mass dimension for a variable change grid."""
 
-    __tablename__ = 'varchange_metallicity_nodes'
+    __tablename__ = 'varchange_feh_nodes'
 
 class VarchangeMassNode(VarchangeGridNode, DataModelBase) :
     """The nodes in the mass dimension for a variable change grid."""
@@ -304,13 +303,13 @@ class VarchangeDependentValue(DataModelBase) :
         primary_key = True,
         doc = 'The grid at which this variable is tabulated.'
     )
-    metallicity_node_index = Column(
+    feh_node_index = Column(
         Integer,
-        ForeignKey('varchange_metallicity_nodes.index',
+        ForeignKey('varchange_feh_nodes.index',
                    onupdate = 'RESTRICT',
                    ondelete = 'RESTRICT'),
         primary_key = True,
-        doc = 'The metallicity index of the tabulated value.'
+        doc = 'The [Fe/H] index of the tabulated value.'
     )
     mass_node_index = Column(
         Integer,
@@ -357,7 +356,7 @@ class VarchangeGrid(DataModelBase) :
         primary_key = True,
         doc = 'The interpolator used to generat this grid.'
     )
-    metallicity_nodes = relationship('VarchangeMetallicityNode')
+    feh_nodes = relationship('VarchangeFeHNode')
     mass_nodes = relationship('VarchangeMassNode')
     age_nodes = relationship('VarchangeAgeNode')
     dependent_values = relationship('VarchangeDependentValue')

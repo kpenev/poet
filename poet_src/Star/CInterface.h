@@ -31,8 +31,8 @@ extern "C" {
         ///Mass of the star
         double mass,
 
-        ///The metallicity ([Fe/H]) of the star
-        double metallicity,
+        ///The [Fe/H] of the star
+        double feh,
 
         ///The strength of the wind.
         double wind_strength,

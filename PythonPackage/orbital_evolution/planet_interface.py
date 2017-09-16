@@ -41,6 +41,7 @@ class LockedPlanet(DissipatingBody) :
         Args:
             - mass:
                 The mass of the planet in solar masses.
+
             - radius:
                 The radius of the planet in solar radii. 
 

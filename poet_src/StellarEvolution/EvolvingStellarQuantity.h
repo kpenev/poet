@@ -13,7 +13,7 @@
 #include "RemoveLogDeriv.h"
 #include "SumDerivatives.h"
 #include "InterpolatedDerivatives.h"
-#include "mass_metallicity_interp.h"
+#include "mass_feh_interp.h"
 #include "../Core/Functions.h"
 #include "../Core/InterpSolutionIterator.h"
 #include "../Core/InterpolatingFunctionALGLIB.h"
@@ -40,8 +40,8 @@ namespace StellarEvolution {
             ///The mass to which to interpolate in \f$M_\odot\f$.
             __mass,
 
-            ///The mass to which to interpolate in Solar metallicities.
-            __metallicity;
+            ///The [Fe/H] to which to interpolate.
+            __feh;
 
 
         double 
@@ -64,8 +64,8 @@ namespace StellarEvolution {
             ///\brief The masses of the evolution tracks.
             __track_masses,
 
-            ///The metallicities of the evolution tracks.
-            __track_metallicities;
+            ///The [Fe/H] of the evolution tracks.
+            __track_feh;
 
         std::valarray<double> 
             ///\brief The minimum interpolation age for the current star to 
@@ -92,16 +92,16 @@ namespace StellarEvolution {
             ///The index of the largest track mass not exceeding ::__mass.
             __mass_index_below,
 
-            ///\brief The index of the smallest track metallicity not smaller
-            ///than ::__metallicity.
-            __metallicity_index_above,
+            ///\brief The index of the smallest track [Fe/H] not smaller
+            ///than ::__feh.
+            __feh_index_above,
 
-            ///\brief The index of the largest track metallicity not
-            ///exceeding ::__metallicity.
-            __metallicity_index_below;
+            ///\brief The index of the largest track [Fe/H] not
+            ///exceeding ::__feh.
+            __feh_index_below;
 
         ///\brief The model tracks for the evolution of the quantity on the
-        ///grid defined by ::__track_masses and ::__track_metallicities.
+        ///grid defined by ::__track_masses and ::__track_feh.
         ///
         ///The mass index varies faster.
         std::vector<const OneArgumentDiffFunction *> __evolution_tracks;
@@ -118,9 +118,9 @@ namespace StellarEvolution {
             ///The current track masses participating in the interpolation.
             __interp_masses,
 
-            ///\brief The current track metallicities participating in the
+            ///\brief The current track [Fe/H] values participating in the
             ///interpolation.
-            __interp_metallicities;
+            __interp_feh;
 
         mutable size_t 
             ///\brief The index within ::__track_masses of the lowest mass
@@ -131,24 +131,24 @@ namespace StellarEvolution {
             ///currently participating in the interpolation.
             __max_interp_mass_index,
 
-            ///\brief The index within ::__track_metallicities of the lowest
-            ///metallicity currently participating in the interpolation.
-            __min_interp_metallicity_index,
+            ///\brief The index within ::__track_feh of the lowest
+            ///[Fe/H] currently participating in the interpolation.
+            __min_interp_feh_index,
 
-            ///\brief The index within ::__track_metallicities of the highest
-            ///metallicity currently participating in the interpolation.
-            __max_interp_metallicity_index;
+            ///\brief The index within ::__track_feh of the highest
+            ///[Fe/H] currently participating in the interpolation.
+            __max_interp_feh_index;
 
         ///\brief Return the index within ::__evolution_tracks for the given 
-        ///mass and metallicity indices.
+        ///mass and [Fe/H] indices.
         inline size_t track_index(
             ///The index within ::__track_masses of the desired mass.
             size_t mass_index,
 
-            ///The index within ::__track_metallicities of the desired
-            ///metallicity.
-            size_t metallicity_index) const
-        {return metallicity_index * __track_masses.size() + mass_index;}
+            ///The index within ::__track_feh of the desired [Fe/H].
+            size_t feh_index
+        ) const
+        {return feh_index * __track_masses.size() + mass_index;}
 
         ///\brief Answer if a given track can participate in interpolating to 
         ///the given age.
@@ -173,15 +173,15 @@ namespace StellarEvolution {
             ///::__track_masses.
             size_t mass_i,
 
-            ///The index of the metallicity of the track to check within
-            ///::__track_metallicities.
-            size_t metallicity_i,
+            ///The index of the [Fe/H] of the track to check within
+            ///::__track_feh.
+            size_t feh_i,
 
             ///The age to which interpolation is desired.
             double age) const
-        {return track_in_range(track_index(mass_i, metallicity_i), age);}
+        {return track_in_range(track_index(mass_i, feh_i), age);}
 
-        ///\brief Verify that the stellar mass and metallicity are within 
+        ///\brief Verify that the stellar mass and [Fe/H] are within 
         ///range of the evolution tracks.
         void check_grid_range() const;
 
@@ -231,7 +231,7 @@ namespace StellarEvolution {
             const FunctionDerivatives **derivatives) const;
 
         ///\brief Figure out in which directions we can expand a
-        ///mass-metallicity interpolation grid, assuming a single direction
+        ///mass-[Fe/H] interpolation grid, assuming a single direction
         ///expansion.
         void check_grid_expansion_directions(
             ///The current state of the grid expansion possibilities. On
@@ -268,16 +268,16 @@ namespace StellarEvolution {
         ///\brief Return the interpoltaion parameter for the given age for
         ///the current star.
         inline double age_to_interp_param(double age) const
-        {return age_to_interp_param(age, __mass, __metallicity);}
+        {return age_to_interp_param(age, __mass, __feh);}
 
         ///\brief Return the age for the given interpoltaion parameter for
         ///the current star.
         inline double interp_param_to_age(double interp_param) const
-        {return interp_param_to_age(interp_param, __mass, __metallicity);}
+        {return interp_param_to_age(interp_param, __mass, __feh);}
 
     protected:
         ///\brief Return the interpoltaion parameter given age, mass and
-        ///metallicity.
+        ///[Fe/H].
         ///
         ///Must be an increasing monotonic function
         virtual double age_to_interp_param(
@@ -289,12 +289,13 @@ namespace StellarEvolution {
             ///needed in \f$M_\odot\f$.
             double mass,
 
-            ///The stellar metallicity for which the interpolation
+            ///The stellar [Fe/H] for which the interpolation
             ///parameter is needed in \f$[Fe/H]\f$.
-            double metallicity) const;
+            double feh
+        ) const;
 
         ///\brief Return the age in Gyrs given an interpolation parameter, 
-        ///mass, and metallicity.
+        ///mass, and [Fe/H].
         ///
         ///Must be an increasing monotonic function
         virtual double interp_param_to_age(
@@ -305,9 +306,10 @@ namespace StellarEvolution {
             ///needed in \f$M_\odot\f$.
             double mass,
 
-            ///The stellar metallicity for which the interpolation
+            ///The stellar [Fe/H] for which the interpolation
             ///parameter is needed in \f$[Fe/H]\f$.
-            double metallicity) const;
+            double feh
+        ) const;
 
     public:
         ///\brief Default constructor (only useful for derived classes which
@@ -319,19 +321,19 @@ namespace StellarEvolution {
             ///The stellar mass to interpolate to in \f$M_\odot\f$
             double mass, 
 
-            ///The stellar metallicity (\f$[Fe/H]f$) to interpolate to.
-            double metallicity, 
+            ///The stellar (\f$[Fe/H]f$) to interpolate to.
+            double feh, 
 
             ///The masses for which evolution tracks are given in
             /// \f$M_\odot\f$
             const std::valarray<double> &track_masses,
 
-            ///The metallicities (\f$[Fe/H]\f$) for which evolution tracks
+            ///The (\f$[Fe/H]\f$) for which evolution tracks
             ///are given.
-            const std::valarray<double> &track_metallicities,
+            const std::valarray<double> &track_feh,
 
             ///The evolution tracks of the relevant quantity on the grid
-            ///defined by \p track_masses and \p track_metallicities. The
+            ///defined by \p track_masses and \p track_feh. The
             //mass index varies faster.
             const std::vector<const OneArgumentDiffFunction *> 
             &evolution_tracks,

@@ -16,33 +16,31 @@ namespace StellarEvolution {
         if(
             __track_masses.size() != 1
             && 
-            __track_metallicities.size() != 1
+            __track_feh.size() != 1
             &&
             (
                 __mass < __track_masses[0]
                 ||
                 __mass > __track_masses[__track_masses.size() - 1]
                 ||
-                __metallicity < __track_metallicities[0]
+                __feh < __track_feh[0]
                 ||
-                __metallicity > __track_metallicities[
-                __track_metallicities.size() - 1
-                ]
+                __feh > __track_feh[__track_feh.size() - 1]
             )
         ) {
             std::ostringstream msg;
             msg << "Stellar mass: "
                 << __mass
-                << " and metallicity: "
-                << __metallicity
+                << " and [Fe/H]: "
+                << __feh
                 << " are outside the range of masses: "
                 << __track_masses[0] 
                 << " - "
                 << __track_masses[__track_masses.size() - 1]
-                << " and metallicities: "
-                << __track_metallicities[0]
+                << " and [Fe/H]: "
+                << __track_feh[0]
                 << " - "
-                << __track_metallicities[__track_metallicities.size() - 1]
+                << __track_feh[__track_feh.size() - 1]
                 << " covered by the stellar evolution grid.";
             throw Core::Error::BadFunctionArguments(msg.str());
         }
@@ -56,11 +54,32 @@ namespace StellarEvolution {
     ) const
     {
         const double *first_ptr = &boundaries[0],
-        *above_ptr = std::lower_bound(first_ptr,
-                                      first_ptr + boundaries.size(),
-                                      value),
-        *below_ptr = above_ptr;
+                     *last_ptr = first_ptr + boundaries.size(),
+                     *above_ptr = std::lower_bound(first_ptr,
+                                                   last_ptr,
+                                                   value),
+                     *below_ptr = above_ptr;
+#ifndef NDEBUG
+        if(above_ptr >= last_ptr )
+            std::cerr << "Value: "
+                      << value
+                      << " out of bounds: ["
+                      << boundaries[0]
+                      << ", "
+                      << boundaries[boundaries.size() - 1]
+                      << "]"
+                      << std::endl;
+#endif
+
+        assert( above_ptr < last_ptr );
+
         if( value < *below_ptr) --below_ptr;
+#ifndef NDEBUG
+        if(*above_ptr < value)
+            std::cerr << "Value: " << value
+                      << " not in [" << *below_ptr << ", " << *above_ptr << "]"
+                      << std::endl;
+#endif
         assert(*above_ptr >= value);
         assert(value >= *below_ptr);
         below_index = below_ptr - first_ptr;
@@ -71,11 +90,11 @@ namespace StellarEvolution {
     {
         size_t track_i = 0;
         for(
-            size_t metallicity_i = 0;
-            metallicity_i < __track_metallicities.size();
-            ++metallicity_i
+            size_t feh_i = 0;
+            feh_i < __track_feh.size();
+            ++feh_i
         ) {
-            double track_metallicity = __track_metallicities[metallicity_i];
+            double track_feh = __track_feh[feh_i];
             for(
                 size_t mass_i = 0; 
                 mass_i < __track_masses.size();
@@ -93,13 +112,23 @@ namespace StellarEvolution {
                 __min_interp_ages[track_i] = interp_param_to_age(
                     age_to_interp_param(min_track_age,
                                         track_mass,
-                                        track_metallicity)
+                                        track_feh)
                 );
                 __max_interp_ages[track_i] = interp_param_to_age(
                     age_to_interp_param(max_track_age,
                                         track_mass,
-                                        track_metallicity)
+                                        track_feh)
                 );
+#ifndef NDEBUG
+                std::cerr << "Track "
+                          << track_i
+                          << " age range: ["
+                          << __min_interp_ages[track_i]
+                          << ", "
+                          << __max_interp_ages[track_i]
+                          << "]"
+                          << std::endl;
+#endif
                 ++track_i;
             }
         }
@@ -139,25 +168,25 @@ namespace StellarEvolution {
             grow.block_lighter();
         if(__max_interp_mass_index == __track_masses.size())
             grow.block_heavier();
-        if(__min_interp_metallicity_index == 0)
+        if(__min_interp_feh_index == 0)
             grow.block_poorer();
-        if(__max_interp_metallicity_index == __track_metallicities.size())
+        if(__max_interp_feh_index == __track_feh.size())
             grow.block_richer();
 
         for(
-            size_t metallicity_index = __min_interp_metallicity_index;
+            size_t feh_index = __min_interp_feh_index;
             (
                 (grow.lighter() || grow.heavier())
                 &&
-                metallicity_index < __max_interp_metallicity_index
+                feh_index < __max_interp_feh_index
             );
-            ++metallicity_index
+            ++feh_index
         ) {
             if(
                 grow.lighter()
                 &&
                 !track_in_range(__min_interp_mass_index - 1,
-                                metallicity_index,
+                                feh_index,
                                 age)
             )
                 grow.block_lighter();
@@ -166,7 +195,7 @@ namespace StellarEvolution {
                 grow.heavier()
                 &&
                 !track_in_range(__max_interp_mass_index,
-                                metallicity_index,
+                                feh_index,
                                 age)
             )
                 grow.block_heavier();
@@ -185,7 +214,7 @@ namespace StellarEvolution {
                 grow.poorer()
                 &&
                 !track_in_range(mass_index,
-                                __min_interp_metallicity_index - 1,
+                                __min_interp_feh_index - 1,
                                 age)
             )
                 grow.block_poorer();
@@ -193,7 +222,7 @@ namespace StellarEvolution {
                 grow.richer()
                 &&
                 !track_in_range(mass_index,
-                                __max_interp_metallicity_index,
+                                __max_interp_feh_index,
                                 age)
             )
                 grow.block_richer();
@@ -208,12 +237,12 @@ namespace StellarEvolution {
             &&
             track_in_range(__min_interp_mass_index - 1,
                            std::max(size_t(1),
-                                    __min_interp_metallicity_index) - 1,
+                                    __min_interp_feh_index) - 1,
                            age)
             &&
             track_in_range(__min_interp_mass_index - 1,
-                           std::min(__track_metallicities.size() - 1,
-                                    __max_interp_metallicity_index),
+                           std::min(__track_feh.size() - 1,
+                                    __max_interp_feh_index),
                            age)
         ) {
             --__min_interp_mass_index;
@@ -225,12 +254,12 @@ namespace StellarEvolution {
             &&
             track_in_range(__max_interp_mass_index,
                            std::max(size_t(1),
-                                    __min_interp_metallicity_index) - 1,
+                                    __min_interp_feh_index) - 1,
                            age)
             &&
             track_in_range(__max_interp_mass_index,
-                           std::min(__track_metallicities.size() - 1,
-                                    __max_interp_metallicity_index),
+                           std::min(__track_feh.size() - 1,
+                                    __max_interp_feh_index),
                            age)
         ) {
             ++__max_interp_mass_index;
@@ -241,15 +270,15 @@ namespace StellarEvolution {
             grow.poorer()
             &&
             track_in_range(std::max(size_t(1), __min_interp_mass_index) - 1,
-                           __min_interp_metallicity_index - 1,
+                           __min_interp_feh_index - 1,
                            age)
             &&
             track_in_range(std::min(__max_interp_mass_index,
                                     __track_masses.size() - 1),
-                           __min_interp_metallicity_index - 1,
+                           __min_interp_feh_index - 1,
                            age)
         ) {
-            --__min_interp_metallicity_index;
+            --__min_interp_feh_index;
             return true;
         }
 
@@ -257,25 +286,25 @@ namespace StellarEvolution {
             grow.richer()
             &&
             track_in_range(std::max(size_t(1), __min_interp_mass_index) - 1,
-                           __max_interp_metallicity_index,
+                           __max_interp_feh_index,
                            age)
             &&
             track_in_range(std::min(__max_interp_mass_index,
                                     __track_masses.size() - 1),
-                           __max_interp_metallicity_index,
+                           __max_interp_feh_index,
                            age)
         ) {
-            ++__max_interp_metallicity_index;
+            ++__max_interp_feh_index;
             return true;
         }
 
         std::valarray<size_t> padding(4);
         padding[0] = __min_interp_mass_index - __mass_index_below;
-        padding[1] = (__min_interp_metallicity_index
+        padding[1] = (__min_interp_feh_index
                       -
-                      __metallicity_index_below);
+                      __feh_index_below);
         padding[2] =
-            __max_interp_metallicity_index - __metallicity_index_above - 1;
+            __max_interp_feh_index - __feh_index_above - 1;
         padding[3] = __max_interp_mass_index - __mass_index_above - 1;
 
         if(grow.lighter() && padding[0] == padding.min()) {
@@ -284,12 +313,12 @@ namespace StellarEvolution {
         }
         padding[0] = std::numeric_limits<size_t>::max();
         if(grow.poorer() && padding[1] == padding.min()) {
-            --__min_interp_metallicity_index;
+            --__min_interp_feh_index;
             return true;
         }
         padding[1] = std::numeric_limits<size_t>::max();
         if(grow.richer() && padding[2] == padding.min()) {
-            ++__max_interp_metallicity_index;
+            ++__max_interp_feh_index;
             return true;
         }
         if(grow.heavier()) {
@@ -307,10 +336,10 @@ namespace StellarEvolution {
             assert(__initially_zero);
             __min_interp_mass_index = 0;
             __max_interp_mass_index = 0;
-            __min_interp_metallicity_index = 0;
-            __max_interp_metallicity_index = 0;
+            __min_interp_feh_index = 0;
+            __max_interp_feh_index = 0;
             __interp_masses.setlength(0);
-            __interp_metallicities.setlength(0);
+            __interp_feh.setlength(0);
             return;
         }
         --lower_age;
@@ -319,21 +348,21 @@ namespace StellarEvolution {
         if(__min_interp_ages.max() < age && __max_interp_ages.min() > age) {
             __min_interp_mass_index = 0;
             __max_interp_mass_index = __track_masses.size();
-            __min_interp_metallicity_index = 0;
-            __max_interp_metallicity_index = __track_metallicities.size();
+            __min_interp_feh_index = 0;
+            __max_interp_feh_index = __track_feh.size();
         } else {
 
             AllowedGridGrowth grow;
 
             if(__mass_index_above == __mass_index_below) 
                 grow.block_lighter().block_heavier();
-            if(__metallicity_index_above == __metallicity_index_below)
+            if(__feh_index_above == __feh_index_below)
                 grow.block_poorer().block_richer();
 
             __max_interp_mass_index = __mass_index_above + 1;
             __min_interp_mass_index = __mass_index_below;
-            __max_interp_metallicity_index = __metallicity_index_above + 1;
-            __min_interp_metallicity_index = __metallicity_index_below;
+            __max_interp_feh_index = __feh_index_above + 1;
+            __min_interp_feh_index = __feh_index_below;
             while(grow) {
                 check_grid_expansion_directions(grow, age);
                 if(grow && !expand_grid(grow, age)) break;
@@ -344,9 +373,9 @@ namespace StellarEvolution {
             __max_interp_mass_index - __min_interp_mass_index,
             &__track_masses[__min_interp_mass_index]
         );
-        __interp_metallicities.setcontent(
-            __max_interp_metallicity_index - __min_interp_metallicity_index,
-            &__track_metallicities[__min_interp_metallicity_index]
+        __interp_feh.setcontent(
+            __max_interp_feh_index - __min_interp_feh_index,
+            &__track_feh[__min_interp_feh_index]
         );
     }
 
@@ -359,6 +388,12 @@ namespace StellarEvolution {
             if(derivatives) *derivatives=new Core::ZeroDerivatives;
             return 0.0;
         }
+#ifndef NDEBUG
+        if(age < __min_age || age > __max_age)
+            std::cerr << "Age: " << age
+                      << " not in [" << __min_age << ", " << __max_age << "]"
+                      << std::endl;
+#endif
         assert(__min_age <= age && age <= __max_age);
         assert(__next_grid_change_age != __interp_grid_change_ages.begin());
 #ifndef NDEBUG
@@ -370,7 +405,7 @@ namespace StellarEvolution {
 
         double interp_param = age_to_interp_param(age);
         size_t num_interp_tracks = (
-            (__max_interp_metallicity_index - __min_interp_metallicity_index)
+            (__max_interp_feh_index - __min_interp_feh_index)
             *
             (__max_interp_mass_index - __min_interp_mass_index)
         );
@@ -382,12 +417,12 @@ namespace StellarEvolution {
             new std::vector<const FunctionDerivatives *>(num_interp_tracks);
         size_t value_index = 0;
         for(
-            size_t metallicity_index = __min_interp_metallicity_index;
-            metallicity_index < __max_interp_metallicity_index;
-            ++metallicity_index
+            size_t feh_index = __min_interp_feh_index;
+            feh_index < __max_interp_feh_index;
+            ++feh_index
         ) {
             double
-                track_metallicity = __track_metallicities[metallicity_index];
+                track_feh = __track_feh[feh_index];
             for(
                 size_t mass_index = __min_interp_mass_index;
                 mass_index < __max_interp_mass_index;
@@ -396,11 +431,11 @@ namespace StellarEvolution {
                 double track_mass = __track_masses[mass_index];
                 double track_age = interp_param_to_age(interp_param,
                                                        track_mass,
-                                                       track_metallicity);
+                                                       track_feh);
                 track_values[value_index] = evaluate_track(
                     track_age,
                     *__evolution_tracks[track_index(mass_index,
-                                                    metallicity_index)],
+                                                    feh_index)],
                     (derivatives
                      ? &((*track_derivatives)[value_index])
                      : NULL)
@@ -409,20 +444,20 @@ namespace StellarEvolution {
             }
         }
         if(derivatives == NULL) {
-            double result = mass_metallicity_interp(__interp_masses,
-                                                    __interp_metallicities,
-                                                    track_values,
-                                                    __mass,
-                                                    __metallicity);
+            double result = mass_feh_interp(__interp_masses,
+                                            __interp_feh,
+                                            track_values,
+                                            __mass,
+                                            __feh);
             delete track_derivatives;
             return (__log_quantity ? std::exp(result) : result);
         } else {
             *derivatives = new InterpolatedDerivatives(
                 __mass,
-                __metallicity,
+                __feh,
                 track_derivatives,
                 __interp_masses,
-                __interp_metallicities,
+                __interp_feh,
                 NaN,
                 __log_quantity,
                 true
@@ -434,65 +469,72 @@ namespace StellarEvolution {
     double EvolvingStellarQuantity::age_to_interp_param(
         double age,
         double mass,
-        double metallicity
+        double feh
     ) const
     {
         //t * (1.0 + (t / 5.0) * m**5 * 10.0**(-0.2*feh))* m**2.3 * 10.0**(-0.4*feh)
-        double metallicity_factor = std::pow(10.0, -metallicity / 5.0);
+        double feh_factor = std::pow(10.0, -feh / 5.0);
         return std::log(
             age 
             *
-            (1.0 + age / 5.0 * std::pow(mass, 5) * metallicity_factor)
+            (1.0 + age / 5.0 * std::pow(mass, 5) * feh_factor)
             *
             std::pow(mass, 2.3)
             *
-            std::pow(metallicity_factor, 2)
+            std::pow(feh_factor, 2)
         );
     }
 
     double EvolvingStellarQuantity::interp_param_to_age(
         double interp_param,
         double mass,
-        double metallicity
+        double feh
     ) const
     {
-        double metallicity_factor = std::pow(10.0, -metallicity / 5.0),
+        double feh_factor = std::pow(10.0, -feh / 5.0),
                c = (std::exp(interp_param)
                     *
                     std::pow(mass, -2.3)
                     /
-                    std::pow(metallicity_factor, 2)),
-               a = 0.2 * std::pow(mass, 5) * metallicity_factor,
+                    std::pow(feh_factor, 2)),
+               a = 0.2 * std::pow(mass, 5) * feh_factor,
                discr = 1.0 + 4.0 * a * c;
         return (std::sqrt(discr) - 1.0) / (2.0 * a);
     }
 
     EvolvingStellarQuantity::EvolvingStellarQuantity(
         double mass,
-        double metallicity,
+        double feh,
         const std::valarray<double> &track_masses,
-        const std::valarray<double> &track_metallicities,
+        const std::valarray<double> &track_feh,
         const std::vector<const OneArgumentDiffFunction *> &evolution_tracks,
         bool log_age,
         bool log_quantity,
         bool starts_zero
     ) :
         __mass(mass), 
-        __metallicity(metallicity),
+        __feh(feh),
         __log_age(log_age),
         __log_quantity(log_quantity),
         __initially_zero(starts_zero),
         __track_masses(track_masses),
-        __track_metallicities(track_metallicities),
+        __track_feh(track_feh),
         __min_interp_ages(evolution_tracks.size()),
         __max_interp_ages(evolution_tracks.size()),
         __evolution_tracks(evolution_tracks)
     {
         assert(evolution_tracks.size() == (track_masses.size()
                                            *
-                                           track_metallicities.size()));
+                                           track_feh.size()));
         check_grid_range();
         set_interp_age_ranges();
+#ifndef NDEBUG
+        std::cerr << "Creating quantity with mass: " << mass
+                  << ", [Fe/H]: " << feh
+                  << ", with track masses: " << track_masses
+                  << " and track [Fe/H]: " << track_feh
+                  << std::endl;
+#endif
 
         if(starts_zero) {
             __interp_grid_change_ages.reserve(2 * evolution_tracks.size()
@@ -525,48 +567,48 @@ namespace StellarEvolution {
                   mass,
                   __mass_index_below,
                   __mass_index_above);
-        find_cell(__track_metallicities,
-                  metallicity,
-                  __metallicity_index_below,
-                  __metallicity_index_above);
+        find_cell(__track_feh,
+                  feh,
+                  __feh_index_below,
+                  __feh_index_above);
 
         __min_age = __min_interp_ages[
-            track_index(__mass_index_below, __metallicity_index_below)
+            track_index(__mass_index_below, __feh_index_below)
         ];
         __max_age = __max_interp_ages[
-            track_index(__mass_index_below, __metallicity_index_below)
+            track_index(__mass_index_below, __feh_index_below)
         ];
         __min_age = std::max(
             __min_age,
             __min_interp_ages[track_index(__mass_index_above,
-                                          __metallicity_index_below)]
+                                          __feh_index_below)]
         );
         __max_age = std::min(
             __max_age,
             __max_interp_ages[track_index(__mass_index_above,
-                                          __metallicity_index_below)]
+                                          __feh_index_below)]
         );
 
         __min_age = std::max(
             __min_age,
             __min_interp_ages[track_index(__mass_index_below,
-                                          __metallicity_index_above)]
+                                          __feh_index_above)]
         );
         __max_age = std::min(
             __max_age,
             __max_interp_ages[track_index(__mass_index_below,
-                                          __metallicity_index_above)]
+                                          __feh_index_above)]
         );
 
         __min_age = std::max(
             __min_age,
             __min_interp_ages[track_index(__mass_index_above,
-                                          __metallicity_index_above)]
+                                          __feh_index_above)]
         );
         __max_age = std::min(
             __max_age,
             __max_interp_ages[track_index(__mass_index_above,
-                                          __metallicity_index_above)]
+                                          __feh_index_above)]
         );
     }
 

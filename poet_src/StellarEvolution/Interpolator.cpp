@@ -11,36 +11,6 @@
 
 namespace StellarEvolution {
 
-    ///\brief A scaling constant used when transforming between different
-    ///metallicity quantities.
-    const double scaling = Yprotosun - Yprimordial + Zprotosun;
-
-    double metallicity_from_feh(double feh)
-    {
-        return (
-            feh
-            +
-            std::log10(
-                (1 - Yprimordial)
-                /
-                (Xprotosun + scaling * std::pow(10.0, feh))
-            )
-        );
-    }
-
-    double feh_from_metallicity(double metallicity)
-    {
-        return (
-            metallicity
-            -
-            std::log10(
-                (1.0 - Yprimordial - scaling * std::pow(10.0, metallicity))
-                /
-                Xprotosun
-            )
-        );
-    }
-
     int Interpolator::find_first_core_index(
         const std::valarray<double> &core_mass
     ) const
@@ -75,7 +45,7 @@ namespace StellarEvolution {
 
     void Interpolator::create_from(
         const std::valarray<double> &tabulated_masses,
-        const std::valarray<double> &tabulated_metallicities,
+        const std::valarray<double> &tabulated_feh,
         const std::list< std::valarray<double> > &tabulated_ages,
         const std::vector< std::list< std::valarray<double> > >
         &tabulated_quantities,
@@ -87,14 +57,14 @@ namespace StellarEvolution {
     )
     {
         __track_masses = tabulated_masses;
-        __track_metallicities = tabulated_metallicities;
+        __track_feh = tabulated_feh;
         __core_formation = Core::Inf;
         __vs_log_age = vs_log_age;
         __log_quantity = log_quantity;
 
         size_t num_tracks = (tabulated_masses.size()
                              *
-                             tabulated_metallicities.size());
+                             tabulated_feh.size());
 
         assert(tabulated_ages.size() == num_tracks);
         assert(tabulated_quantities.size() == NUM_QUANTITIES);
@@ -135,9 +105,9 @@ namespace StellarEvolution {
                 << ": M = "
                 << tabulated_masses[grid_index % tabulated_masses.size()]
                 << ", [Fe/H] = " 
-                << tabulated_metallicities[grid_index
-                                           /
-                                           tabulated_masses.size()]
+                << tabulated_feh[grid_index
+                                 /
+                                 tabulated_masses.size()]
                 << std::endl;
 
             int first_core_index = (
@@ -233,9 +203,9 @@ namespace StellarEvolution {
     {
         return new EvolvingStellarQuantity(
             mass,
-            metallicity_from_feh(feh),
+            feh,
             __track_masses, 
-            __track_metallicities,
+            __track_feh,
             __interpolated_quantities[quantity],
             __vs_log_age[quantity],
             __log_quantity[quantity],
@@ -247,7 +217,7 @@ namespace StellarEvolution {
     {
         size_t num_tracks = (__track_masses.size()
                              *
-                             __track_metallicities.size());
+                             __track_feh.size());
 
         for(
             std::vector< 

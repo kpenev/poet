@@ -16,12 +16,12 @@ import scipy.optimize
 class QuantityEvaluator :
     """Evaluate stellar quantities fixing out of range issues etc."""
 
-    def __init__(self, interpolator, metallicity, min_mass = 0.0, max_mass
+    def __init__(self, interpolator, feh, min_mass = 0.0, max_mass
                  = scipy.inf, **reference_values) :
         """Set-up to use the given interpolator."""
 
         self.interp = interpolator
-        self.metallicity = metallicity
+        self.feh = feh
         self.reference_values = reference_values
         self.min_mass = min_mass
         self.max_mass = max_mass
@@ -42,8 +42,8 @@ class QuantityEvaluator :
 
         if mass < self.min_mass or mass > self.max_mass : return scipy.nan
         return self._evaluate(
-            TeffK(self.interp('radius', mass, self.metallicity), 
-                  self.interp('lum', mass, self.metallicity)),
+            TeffK(self.interp('radius', mass, self.feh), 
+                  self.interp('lum', mass, self.feh)),
             age
         ) - self.reference_values['teff']
 
@@ -52,7 +52,7 @@ class QuantityEvaluator :
 
         if mass < self.min_mass or mass > self.max_mass : return scipy.nan
         return self._evaluate(
-            RhoCGS(mass, self.interp('radius', mass, self.metallicity)), 
+            RhoCGS(mass, self.interp('radius', mass, self.feh)), 
             age
         ) - self.reference_values['rho']
 
@@ -61,7 +61,7 @@ class QuantityEvaluator :
 
         if mass < self.min_mass or mass > self.max_mass : return scipy.nan
         return self._evaluate(
-            LogGCGS(mass, self.interp('radius', mass, self.metallicity)), 
+            LogGCGS(mass, self.interp('radius', mass, self.feh)), 
             age
         ) - self.reference_values['logg']
 
@@ -70,7 +70,7 @@ class QuantityEvaluator :
 
         if mass < self.min_mass or mass > self.max_mass : return scipy.nan
         return self._evaluate(
-            self.interp('lum', mass, self.metallicity), 
+            self.interp('lum', mass, self.feh), 
             age
         ) - self.reference_values['lum']
 
@@ -87,12 +87,12 @@ class VarChangingInterpolator(MESAInterpolator) :
                 - ages:
                     Stellar ages of the grid nodes at which the dependent
                     variables are known.
-                - metallicities:
-                    Metallicities of the grid nodes at which the dependent
+                - feh:
+                    [Fe/H] values of the grid nodes at which the dependent
                     variables are known.
                 - weights:
                     The weights to use when interpolating the grid to a
-                    specified metallicity.
+                    specified [Fe/H].
                 - teff (may not be present):
                     The stellar effective temperature in Kelvin at the grid
                     nodes.
@@ -105,23 +105,23 @@ class VarChangingInterpolator(MESAInterpolator) :
                     The stellar density in cgs at the grid nodes.
 
             The first index for each variable or the weights attribute is
-            mass, followed by age and finally metallicity.
+            mass, followed by age and finally [Fe/H].
 
             The grid must be fine enough to ensure that no grid cell entirely
             contains an iso-contour of either dependent variable where
             interpolation will be attempted.
     """
 
-    def _get_quantity(self, name, mass, metallicity) :
+    def _get_quantity(self, name, mass, feh) :
         """
-        Return a quantity at the given mass and metallicity.
+        Return a quantity at the given mass and [Fe/H].
 
         Args:
             - name:
                 The name of the quantity to return.
             - mass:
                 The stellar mass for which this quantity should apply
-            - metallicity:
+            - feh:
                 The [Fe/H] for which this quantity should apply.
 
         Returns:
@@ -131,18 +131,18 @@ class VarChangingInterpolator(MESAInterpolator) :
         """
 
         if name == 'teff' :
-            return TeffK(self('radius', mass, metallicity),
-                         self('lum', mass, metallicity))
+            return TeffK(self('radius', mass, feh),
+                         self('lum', mass, feh))
         elif name == 'logg' :
             return LogGCGS(mass,
-                           self('radius', mass, metallicity))
+                           self('radius', mass, feh))
         elif name == 'rho' :
             return RhoCGS(mass,
-                          self('radius', mass, metallicity))
+                          self('radius', mass, feh))
         else :
-            return self(name, mass, metallicity)
+            return self(name, mass, feh)
 
-    def search_near(self, mass, age, metallicity, **kwargs) :
+    def search_near(self, mass, age, feh, **kwargs) :
         """
         Search for mass & age near the given ones to match two other vars.
 
@@ -151,7 +151,7 @@ class VarChangingInterpolator(MESAInterpolator) :
                 The value of the mass to search near.
             - age:
                 The value of the age to search near.
-            - metallicity:
+            - feh:
                 The value of [Fe/H] at which the variable change is taking
                 place.
 
@@ -173,7 +173,7 @@ class VarChangingInterpolator(MESAInterpolator) :
 
         assert(len(kwargs) == 2)
         evaluator = QuantityEvaluator(self,
-                                      metallicity,
+                                      feh,
                                       min_mass = self.grid.masses[0],
                                       max_mass = self.grid.masses[-1],
                                       **kwargs)
@@ -205,14 +205,12 @@ class VarChangingInterpolator(MESAInterpolator) :
             variable,
             scipy.zeros((self.grid.masses.size,
                          self.grid.ages.size,
-                         self.grid.metallicities.size))
+                         self.grid.feh.size))
         )
 
-        for metallicity_index, metallicity in enumerate(
-                self.grid.metallicities
-        ) :
+        for feh_index, feh in enumerate(self.grid.feh) :
             for mass_index, mass in enumerate(self.grid.masses) :
-                quantity = self._get_quantity(variable, mass, metallicity)
+                quantity = self._get_quantity(variable, mass, feh)
                 age_in_range = scipy.logical_and(
                     self.grid.ages > quantity.min_age,
                     self.grid.ages < quantity.max_age
@@ -220,29 +218,29 @@ class VarChangingInterpolator(MESAInterpolator) :
                 getattr(self.grid, variable)[
                     mass_index,
                     age_in_range,
-                    metallicity_index
+                    feh_index
                 ] = quantity(self.grid.ages[age_in_range])
 
                 if not self._defined_weights :
                     self.grid.weights[mass_index,
                                       :,
-                                      metallicity_index] = age_in_range
+                                      feh_index] = age_in_range
                 else : 
                     assert(
-                        (self.grid.weights[mass_index, :, metallicity_index]
+                        (self.grid.weights[mass_index, :, feh_index]
                          ==
                          age_in_range).all()
                     )
         self._defined_weights = True
 
-    def _interpolate_grid_variable(self, var_name, metallicity) :
+    def _interpolate_grid_variable(self, var_name, feh) :
         """
-        Interpolate one of the grid variables to a specified metallicity.
+        Interpolate one of the grid variables to a specified [Fe/H].
 
         Args:
             - var_name:
                 The name of the variable to interpolate.
-            - metallicity:
+            - feh:
                 The [Fe/H] value to inteprolate to.
 
         Returns: A 2-D scipy array contaning the interepolated variable at
@@ -263,18 +261,18 @@ class VarChangingInterpolator(MESAInterpolator) :
                         mass_index,
                         age_index
                     ] = scipy.interpolate.InterpolatedUnivariateSpline(
-                        x = self.grid.metallicities,
+                        x = self.grid.feh,
                         y = interp_y,
                         k = 1
-                    )(metallicity)
+                    )(feh)
         return result
 
-    def _define_var_change_grid(self, metallicities, masses, ages) :
+    def _define_var_change_grid(self, feh, masses, ages) :
         """
         Create a new grid with the given locations of the nodes.
 
         Args:
-            - metallicities:
+            - feh:
                 The [Fe/H] values at which to tabulate the dependent
                 variables.
 
@@ -294,17 +292,17 @@ class VarChangingInterpolator(MESAInterpolator) :
             weights have been previously initialized.
         """
 
-        self.grid = Structure(metallicities = metallicities,
+        self.grid = Structure(feh = feh,
                               masses = masses,
                               ages = ages)
         self.grid.weights = scipy.empty((self.grid.masses.size,
                                          self.grid.ages.size,
-                                         self.grid.metallicities.size),
+                                         self.grid.feh.size),
                                         dtype = bool)
         self._defined_weights = False
                              
     def __init__(self, 
-                 grid_metallicities,
+                 grid_feh,
                  grid_masses,
                  grid_ages,
                  **kwargs) :
@@ -318,17 +316,17 @@ class VarChangingInterpolator(MESAInterpolator) :
 
         super().__init__(**kwargs)
         self._define_var_change_grid(
-            metallicities = grid_metallicities,
+            feh = grid_feh,
             masses = grid_masses,
             ages = grid_ages
         )
 
-    def change_variables(self, metallicity, **kwargs) :
+    def change_variables(self, feh, **kwargs) :
         """
         Change from two of (lum, rho, logg, Teff) to mass & age.
 
         Args:
-            - metallicity:
+            - feh:
                 The value of [Fe/H] at which this variable change is taking
                 place.
 
@@ -375,7 +373,7 @@ class VarChangingInterpolator(MESAInterpolator) :
                     self._add_grid_variable(var_name)
                 var_diff[var_index] = self._interpolate_grid_variable(
                     var_name,
-                    metallicity
+                    feh
                 ) - var_value
                 sign_change_right = (
                     (var_diff[var_index][1:, :]
@@ -517,7 +515,7 @@ class VarChangingInterpolator(MESAInterpolator) :
                 ) :
                     solution = self.search_near(mass = mass,
                                                 age = age,
-                                                metallicity = metallicity,
+                                                feh = feh,
                                                 **kwargs)
                     if solution is not None : 
                         result.append(solution)

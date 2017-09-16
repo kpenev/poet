@@ -18,7 +18,7 @@ double lag_from_lgQ(double lgQ)
 }
 
 EvolvingStar *create_star(double mass,
-                          double metallicity,
+                          double feh,
                           double wind_strength,
                           double wind_saturation_frequency,
                           double diff_rot_coupling_timescale,
@@ -27,7 +27,7 @@ EvolvingStar *create_star(double mass,
     return reinterpret_cast<EvolvingStar*>(
         new Star::InterpolatedEvolutionStar(
             mass,
-            metallicity,
+            feh,
             wind_strength,
             wind_saturation_frequency,
             diff_rot_coupling_timescale,

@@ -20,6 +20,36 @@ std::ostream &operator<<(std::ostream &os,
 namespace StellarEvolution {
     namespace MESA {
 
+        ///\brief A scaling constant used when transforming between different
+        ///metallicity quantities.
+        const double scaling = Yprotosun - Yprimordial + Zprotosun;
+
+        double metallicity_from_feh(double feh)
+        {
+            return (
+                feh
+                +
+                std::log10(
+                    (1 - Yprimordial)
+                    /
+                    (Xprotosun + scaling * std::pow(10.0, feh))
+                )
+            );
+        }
+
+        double feh_from_metallicity(double metallicity)
+        {
+            return (
+                metallicity
+                -
+                std::log10(
+                    (1.0 - Yprimordial - scaling * std::pow(10.0, metallicity))
+                    /
+                    Xprotosun
+                )
+            );
+        }
+
         const std::vector<QuantityID> Interpolator::__column_to_quantity(
                 {
                 StellarEvolution::NUM_QUANTITIES, //MTRACK - no quantity
@@ -183,7 +213,7 @@ namespace StellarEvolution {
             const EvolutionIterator &rhs)
         {
             mass_iter = rhs.mass_iter;
-            metallicity_iter = rhs.metallicity_iter;
+            feh_iter = rhs.feh_iter;
             age_iter = rhs.age_iter;
             quantity_iter = rhs.quantity_iter;
             return *this;
@@ -192,7 +222,7 @@ namespace StellarEvolution {
         EvolutionIterator &EvolutionIterator::operator++()
         {
             ++mass_iter;
-            ++metallicity_iter;
+            ++feh_iter;
             ++age_iter;
             for(size_t i=0; i<quantity_iter.size(); ++i) ++quantity_iter[i];
             return *this;
@@ -201,18 +231,18 @@ namespace StellarEvolution {
 #ifndef NDEBUG
         void Interpolator::log_current_age_ranges() const
         {
-            assert(__mass_list.size() == __metallicity_list.size());
+            assert(__mass_list.size() == __feh_list.size());
             std::list<double>::const_iterator 
                 mass_iter = __mass_list.begin(),
-                metallicity_iter = __metallicity_list.begin();
+                feh_iter = __feh_list.begin();
 
             std::list< std::valarray<double> >::const_iterator
                 age_iter = __track_ages.begin();
             while(mass_iter != __mass_list.end()) {
-                assert(metallicity_iter != __metallicity_list.end());
+                assert(feh_iter != __feh_list.end());
                 assert(age_iter != __track_ages.end());
                 ++mass_iter;
-                ++metallicity_iter;
+                ++feh_iter;
                 ++age_iter;
             }
         }
@@ -220,7 +250,6 @@ namespace StellarEvolution {
 
         bool Interpolator::parse_model_file_name(const std::string &filename)
         {
-            const double SOLAR_Z = 0.015;
             const double PRECISION = 1000.0;
             std::istringstream fname_stream(filename);
             if(fname_stream.get() != 'M' || !fname_stream.good())
@@ -239,8 +268,12 @@ namespace StellarEvolution {
             fname_stream >> metallicity;
             if(!fname_stream.good() || metallicity <= 0) return false;
 
-            __metallicity_list.push_back(
-                std::round(PRECISION * std::log10(metallicity / SOLAR_Z))
+            __feh_list.push_back(
+                std::round(
+                    PRECISION
+                    *
+                    feh_from_metallicity(std::log10(metallicity / Zprotosun))
+                )
                 /
                 PRECISION
             );
@@ -314,7 +347,7 @@ namespace StellarEvolution {
             );
             std::clog
                 << "Model: M = " << __mass_list.back()
-                << ", [Fe/H] = " << __metallicity_list.back()
+                << ", [Fe/H] = " << __feh_list.back()
                 << ", t_max = "
                 << __track_ages.back()[__track_ages.back().size() - 1]
                 << std::endl;
@@ -341,76 +374,69 @@ namespace StellarEvolution {
             sort_last_track_by_age();
         }
 
-        void Interpolator::get_mass_metallicity_grid(
+        void Interpolator::get_mass_feh_grid(
             std::valarray<double> &masses,
-            std::valarray<double> &metallicities
+            std::valarray<double> &feh
         )
         {
-            assert(__mass_list.size() == __metallicity_list.size());
+            assert(__mass_list.size() == __feh_list.size());
             std::list<double>::const_iterator 
                 mass_iter = __mass_list.begin(),
-                metallicity_iter = __metallicity_list.begin();
+                feh_iter = __feh_list.begin();
 
             std::list< std::valarray<double> >::const_iterator
                 age_iter = __track_ages.begin();
 
             size_t num_masses = 0;
             for(
-                double first_metallicity = *metallicity_iter;
-                *metallicity_iter == first_metallicity;
-                ++metallicity_iter
-            ) ++num_masses;
-            metallicity_iter = __metallicity_list.begin();
+                double first_feh = *feh_iter;
+                *feh_iter == first_feh;
+                ++feh_iter
+            )
+                ++num_masses;
+            feh_iter = __feh_list.begin();
             assert(__mass_list.size() % num_masses == 0);
-            size_t num_metallicities = __mass_list.size() / num_masses;
+            size_t num_feh = __mass_list.size() / num_masses;
 
             masses.resize(num_masses);
-            metallicities.resize(num_metallicities);
+            feh.resize(num_feh);
 
-            for(
-                size_t metallicity_index = 0;
-                metallicity_index < num_metallicities;
-                ++metallicity_index
-            ) {
+            for(size_t feh_index = 0; feh_index < num_feh; ++feh_index) {
                 for(
                     size_t mass_index = 0;
                     mass_index < num_masses;
                     ++mass_index
                 ) {
                     assert(mass_iter != __mass_list.end());
-                    assert(metallicity_iter != __metallicity_list.end());
+                    assert(feh_iter != __feh_list.end());
                     std::cerr
                         << "M = " << *mass_iter
-                        << ", [Fe/H] = " << *metallicity_iter
+                        << ", [Fe/H] = " << *feh_iter
                         << ", age range = " << (*age_iter)[0]
                         << " - " << (*age_iter)[age_iter->size() -1]
                         << std::endl;
-                    if(metallicity_index == 0) 
+                    if(feh_index == 0) 
                         masses[mass_index] = *mass_iter;
                     else if(masses[mass_index] != *mass_iter)
                         throw Core::Error::IO(
                             "Input MESA tracks do not lie on a grid of "
-                            "masses and metallicities."
+                            "masses and [Fe/H]."
                         );
 
                     if(mass_index == 0) 
-                        metallicities[metallicity_index] = *metallicity_iter;
-                    else if(
-                        metallicities[metallicity_index]
-                        !=
-                        *metallicity_iter
-                    )
+                        feh[feh_index] = *feh_iter;
+                    else if(feh[feh_index] != *feh_iter)
                         throw Core::Error::IO(
                             "Input MESA tracks do not lie on a grid of "
-                            "masses and metallicities."
+                            "masses and [Fe/H]."
                         );
 
                     ++mass_iter;
-                    ++metallicity_iter;
+                    ++feh_iter;
                     ++age_iter;
                 }
             }
-            assert(metallicity_iter == __metallicity_list.end());
+            assert(feh_iter == __feh_list.end());
             assert(mass_iter == __mass_list.end());
         }
 
@@ -418,7 +444,7 @@ namespace StellarEvolution {
         {
             EvolutionIterator result;
             result.mass_iter = __mass_list.begin();
-            result.metallicity_iter = __metallicity_list.begin();
+            result.feh_iter = __feh_list.begin();
             result.age_iter = __track_ages.begin();
             for(size_t quantity = 0; quantity < NUM_QUANTITIES; ++quantity)
                 result.quantity_iter[quantity] =
@@ -430,7 +456,7 @@ namespace StellarEvolution {
         {
             EvolutionIterator result;
             result.mass_iter = __mass_list.end();
-            result.metallicity_iter = __metallicity_list.end();
+            result.feh_iter = __feh_list.end();
             result.age_iter = __track_ages.end();
             for(size_t quantity = 0; quantity < NUM_QUANTITIES; ++quantity)
                 result.quantity_iter[quantity] =
@@ -445,9 +471,9 @@ namespace StellarEvolution {
                                __mass_list,
                                source.mass_iter);
 
-            __metallicity_list.splice(dest.metallicity_iter,
-                                      __metallicity_list,
-                                      source.metallicity_iter);
+            __feh_list.splice(dest.feh_iter,
+                              __feh_list,
+                              source.feh_iter);
 
             __track_ages.splice(dest.age_iter,
                                 __track_ages,
@@ -468,33 +494,33 @@ namespace StellarEvolution {
         {
             EvolutionIterator iter = begin(), stop_iter = end();
             double last_sorted_mass = *iter.mass_iter,
-                   last_sorted_metallicity = *iter.metallicity_iter;
+                   last_sorted_feh = *iter.feh_iter;
             while(iter != stop_iter) {
                 while(
                     iter != stop_iter
                     &&
                     (
-                        *iter.metallicity_iter > last_sorted_metallicity
+                        *iter.feh_iter > last_sorted_feh
                         ||
                         (
-                            *iter.metallicity_iter == last_sorted_metallicity
+                            *iter.feh_iter == last_sorted_feh
                             &&
                             *iter.mass_iter >= last_sorted_mass
                         )
                     )
                 ) {
                     last_sorted_mass = *iter.mass_iter;
-                    last_sorted_metallicity = *iter.metallicity_iter;
+                    last_sorted_feh = *iter.feh_iter;
                     ++iter;
                 }
                 if(iter == stop_iter) break;
                 EvolutionIterator dest = begin();
 
                 while(
-                    *(dest.metallicity_iter) < *(iter.metallicity_iter)
+                    *(dest.feh_iter) < *(iter.feh_iter)
                     ||
                     (
-                        *(dest.metallicity_iter) == *(iter.metallicity_iter)
+                        *(dest.feh_iter) == *(iter.feh_iter)
                         &&
                         *(dest.mass_iter) <= *(iter.mass_iter)
                     )
@@ -554,14 +580,14 @@ namespace StellarEvolution {
                 " in MESA::Evolution constructor."
             );
             sort_tracks();
-            std::valarray<double> masses, metallicities;
-            get_mass_metallicity_grid(masses, metallicities);
+            std::valarray<double> masses, feh;
+            get_mass_feh_grid(masses, feh);
             std::cout
                 << "Done reading tracks." << std::endl
                 << "Starting interpolation" << std::endl;
 
             create_from(masses,
-                        metallicities,
+                        feh,
                         __track_ages,
                         __track_quantities,
                         smoothing,

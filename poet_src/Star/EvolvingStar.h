@@ -43,8 +43,8 @@ namespace Star {
             ///Mass of the star
             double mass,
 
-            ///The metallicity ([Fe/H]) of the star
-            double metallicity,
+            ///The [Fe/H] of the star
+            double feh,
 
             ///The strength of the wind.
             double wind_strength,
@@ -61,20 +61,20 @@ namespace Star {
             SaturatingSkumanichWindBody(wind_strength,
                                         wind_saturation_frequency),
             ExponentialDecayDiffRotBody(diff_rot_coupling_timescale),
-            __luminosity(interpolator(StellarEvolution::LUM, mass, metallicity)),
+            __luminosity(interpolator(StellarEvolution::LUM, mass, feh)),
             __lifetime(__luminosity->range_high()),
             __envelope(mass,
                        interpolator(StellarEvolution::RADIUS,
                                     mass,
-                                    metallicity),
+                                    feh),
                        interpolator(StellarEvolution::ICONV,
                                     mass,
-                                    metallicity)),
+                                    feh)),
             __core(std::max(__envelope.min_interp_age(),
                             interpolator.core_formation_age()),
-                   interpolator(StellarEvolution::MRAD, mass, metallicity),
-                   interpolator(StellarEvolution::RRAD, mass, metallicity),
-                   interpolator(StellarEvolution::IRAD, mass, metallicity))
+                   interpolator(StellarEvolution::MRAD, mass, feh),
+                   interpolator(StellarEvolution::RRAD, mass, feh),
+                   interpolator(StellarEvolution::IRAD, mass, feh))
             {}
 
         ///The number of zones the body consists of.

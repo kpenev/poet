@@ -53,7 +53,7 @@ const EvolvingStellarQuantity* create_quantity(
     const MESAInterpolator* interpolator,
     int quantityID,
     double mass,
-    double metallicity
+    double feh
 )
 {
     assert(quantityID >= 0 && quantityID < NUM_QUANTITIES);
@@ -66,7 +66,7 @@ const EvolvingStellarQuantity* create_quantity(
             (*actual_interpolator)(
                 static_cast<StellarEvolution::QuantityID>(quantityID),
                 mass,
-                metallicity
+                feh
             )
         );
 }
@@ -234,15 +234,24 @@ bool default_log_quantity(int quantityID)
 
 double metallicity_from_feh(double feh)
 {
-    return StellarEvolution::metallicity_from_feh(feh);
+    return StellarEvolution::MESA::metallicity_from_feh(feh);
 }
 
 double feh_from_metallicity(double metallicity)
 {
-    return StellarEvolution::feh_from_metallicity(metallicity);
+    return StellarEvolution::MESA::feh_from_metallicity(metallicity);
 }
 
 double feh_from_z(double z)
 {
-    return feh_from_metallicity(std::log10(z/StellarEvolution::Zprotosun));
+    return feh_from_metallicity(
+        std::log10(z/StellarEvolution::MESA::Zprotosun)
+    );
+}
+
+double z_from_feh(double feh)
+{
+    return (std::pow(10.0, metallicity_from_feh(feh))
+            *
+            StellarEvolution::MESA::Zprotosun);
 }

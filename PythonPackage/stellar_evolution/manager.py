@@ -19,7 +19,7 @@ from .manager_data_model import\
     VarchangeDependentValue,\
     VarchangeAgeNode,\
     VarchangeMassNode,\
-    VarchangeMetallicityNode,\
+    VarchangeFeHNode,\
     VarchangeDependentVariable
 from stellar_evolution import Session
 from stellar_evolution.basic_utils import db_session_scope, tempdir_scope
@@ -72,7 +72,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
 
     def _new_var_change_grid(self,
                              grid_name,
-                             metallicities,
+                             feh,
                              masses,
                              ages,
                              db_session) :
@@ -83,7 +83,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
             - grid_name:
                 The name to assign to the new grid in the database.
 
-            - metallicities:
+            - feh:
                 The [Fe/H] values at which to tabulate the dependent
                 variables.
 
@@ -102,7 +102,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
         """
 
         self._varchange_grid_name = grid_name
-        self._define_var_change_grid(metallicities, masses, ages)
+        self._define_var_change_grid(feh, masses, ages)
 
         self._grid_db_id = db_session.query(VarchangeGrid).count() + 1
         db_grid = VarchangeGrid(
@@ -110,9 +110,9 @@ class ManagedInterpolator(VarChangingInterpolator) :
             name = grid_name,
             interpolator_id = self._db_id
         )
-        db_grid.metallicity_nodes = [
-            VarchangeMetallicityNode(index = index, value = value)
-            for index, value in enumerate(metallicities)
+        db_grid.feh_nodes = [
+            VarchangeFeHNode(index = index, value = value)
+            for index, value in enumerate(feh)
         ]
         db_grid.mass_nodes = [
             VarchangeMassNode(index = index, value = value)
@@ -124,7 +124,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
         ]
 
         db_session.add(db_grid)
-        db_session.add_all(db_grid.metallicity_nodes)
+        db_session.add_all(db_grid.feh_nodes)
         db_session.add_all(db_grid.mass_nodes)
         db_session.add_all(db_grid.age_nodes)
 
@@ -183,12 +183,12 @@ class ManagedInterpolator(VarChangingInterpolator) :
             variable,
             numpy.empty((self.grid.masses.size,
                          self.grid.ages.size,
-                         self.grid.metallicities.size),
+                         self.grid.feh.size),
                         dtype = bool if variable == 'weights' else float)
         )
         grid_var = getattr(self.grid, variable)
-        for metallicity_i, mass_i, age_i, value in db_session.query(
-                VarchangeDependentValue.metallicity_node_index,
+        for feh_i, mass_i, age_i, value in db_session.query(
+                VarchangeDependentValue.feh_node_index,
                 VarchangeDependentValue.mass_node_index,
                 VarchangeDependentValue.age_node_index,
                 VarchangeDependentValue.value
@@ -196,7 +196,7 @@ class ManagedInterpolator(VarChangingInterpolator) :
             variable_id = variable_db_id,
             grid_id = self._grid_db_id
         ) :
-            grid_var[mass_i, age_i, metallicity_i] = value
+            grid_var[mass_i, age_i, feh_i] = value
 
     def _add_variable_to_db(self, variable, db_session) :
         """Add pre-calculated node values of a variable to DB."""
@@ -208,12 +208,12 @@ class ManagedInterpolator(VarChangingInterpolator) :
                 VarchangeDependentValue(
                     variable_id = variable_db_id,
                     grid_id = self._grid_db_id,
-                    metallicity_node_index = metallicity_i,
+                    feh_node_index = feh_i,
                     mass_node_index = mass_i,
                     age_node_index = age_i,
-                    value = grid_var[mass_i, age_i, metallicity_i]
+                    value = grid_var[mass_i, age_i, feh_i]
                 )
-                for metallicity_i in range(self.grid.metallicities.size)
+                for feh_i in range(self.grid.feh.size)
                 for mass_i in range(self.grid.masses.size)
                 for age_i in range(self.grid.ages.size)
             )
@@ -281,13 +281,13 @@ class ManagedInterpolator(VarChangingInterpolator) :
         else :
             self._grid_db_id = grid_db_id[0][0]
             self._define_var_change_grid(
-                metallicities = numpy.array(
+                feh = numpy.array(
                     db_session.query(
-                        VarchangeMetallicityNode.value
+                        VarchangeFeHNode.value
                     ).filter_by(
                         grid_id = self._grid_db_id,
                     ).order_by(
-                        VarchangeMetallicityNode.index
+                        VarchangeFeHNode.index
                     ).all()
                 ).flatten(),
                 masses = numpy.array(
@@ -345,9 +345,9 @@ class ManagedInterpolator(VarChangingInterpolator) :
                 List of stellar masses on whose tracks the interpolation is
                 based.
 
-            - track_metallicities:
-                List of stellar metallicities on whose tracks the
-                interpolation is based.
+            - track_feh:
+                List of stellar [Fe/H] on whose tracks the interpolation is
+                based.
 
         Args:
             - db_interpolator:
@@ -390,26 +390,26 @@ class ManagedInterpolator(VarChangingInterpolator) :
         self.track_masses = sorted(
             {track.mass  for track in db_interpolator.tracks}
         )
-        self.track_metallicities = sorted(
-            {track.metallicity for track in db_interpolator.tracks}
+        self.track_feh = sorted(
+            {track.feh for track in db_interpolator.tracks}
         )
         if kwargs :
-            super().__init__(grid_metallicities = numpy.array([]),
+            super().__init__(grid_feh = numpy.array([]),
                              grid_masses = numpy.array([]),
                              grid_ages = numpy.array([]),
                              **kwargs)
         else :
-            super().__init__(grid_metallicities = numpy.array([]),
+            super().__init__(grid_feh = numpy.array([]),
                              grid_masses = numpy.array([]),
                              grid_ages = numpy.array([]),
                              interpolator_fname = interpolator_fname)
         if not self._set_var_change_grid('default', db_session) :
             self._new_var_change_grid(
                 'default',
-                metallicities = numpy.linspace(
-                    float(self.track_metallicities[0]) * 0.99,
-                    float(self.track_metallicities[-1]) * 0.99,
-                    3 * len(self.track_metallicities)
+                feh = numpy.linspace(
+                    float(self.track_feh[0]) * 0.99,
+                    float(self.track_feh[-1]) * 0.99,
+                    3 * len(self.track_feh)
                 ),
                 masses = numpy.linspace(
                     float(self.track_masses[0]),
@@ -436,9 +436,9 @@ class ManagedInterpolator(VarChangingInterpolator) :
                 +
                 ', '.join([str(m) for m in self.track_masses])
                 +
-                '], metallicites: ['
+                '], [Fe/H]: ['
                 +
-                ', '.join([str(feh) for feh in self.track_metallicities])
+                ', '.join([str(feh) for feh in self.track_feh])
                 +
                 ']')
 
@@ -500,7 +500,7 @@ class StellarEvolutionManager :
     def _add_track(self,
                    track_fname,
                    mass,
-                   metallicity,
+                   feh,
                    model_suite,
                    db_session) :
         """Add a track to the database."""
@@ -508,7 +508,7 @@ class StellarEvolutionManager :
         db_track = Track(id = self._new_track_id,
                          filename = os.path.abspath(track_fname),
                          mass = mass,
-                         metallicity = metallicity,
+                         feh = feh,
                          checksum = checksum_filename(track_fname),
                          suite = db_session.query(
                              ModelSuite
@@ -534,7 +534,7 @@ class StellarEvolutionManager :
 
         Returns:
             A dictionary with keys the masses of tracks and values
-            further dictionaries with keys the metallicities of tracks
+            further dictionaries with keys the [Fe/H] of tracks
             and values the filename of each track.
         """
 
@@ -550,28 +550,28 @@ class StellarEvolutionManager :
             verify_checksum(fname, db_track.checksum, 'track')
 
             mass_key = db_track.mass
-            metallicity_key = db_track.metallicity
+            feh_key = db_track.feh
             if mass_key not in track_grid : track_grid[mass_key] = dict()
-            assert(metallicity_key not in track_grid[mass_key])
-            track_grid[mass_key][metallicity_key] = (fname, db_track.id)
+            assert(feh_key not in track_grid[mass_key])
+            track_grid[mass_key][feh_key] = (fname, db_track.id)
         return track_grid
 
     def _track_grid_from_grid(self,
-                              masses,
-                              metallicities,
+                              mass_list,
+                              feh_list,
                               model_suite,
                               db_session) :
         """
         Return a mass - [Fe/H] grid with filenames and checksums.
 
-        Fails if multiple tracks are registered for some (mass, metallicity,
+        Fails if multiple tracks are registered for some (mass, [Fe/H],
         model suite) combination.
 
         Args:
-            - masses:
+            - mass_list:
                 The masses for which to include tracks.
-            - metallicities:
-                The metallicities for which to include tracks.
+            - feh_list:
+                The [Fe/H values for which to include tracks.
             - model_suite:
                 The software suite from whose tracks to choose.
             - db_session:
@@ -581,28 +581,28 @@ class StellarEvolutionManager :
             The structure as _track_grid_from_files.
         """
 
-        if masses is None :
-            masses = [
+        if mass_list is None :
+            mass_list = [
                 record[0]
                 for record in db_session.query(Track.mass).filter(
                     Track.model_suite_id == ModelSuite.id,
                     ModelSuite.name == model_suite
                 ).distinct().order_by(Track.mass).all()
             ]
-        if metallicities is None :
-            metallicities = [
+        if feh_list is None :
+            feh_list = [
                 record[0]
-                for record in db_session.query(Track.metallicity).filter(
+                for record in db_session.query(Track.feh).filter(
                     Track.model_suite_id == ModelSuite.id,
                     ModelSuite.name == model_suite
-                ).distinct().order_by(Track.metallicity).all()
+                ).distinct().order_by(Track.feh).all()
             ]
-        track_grid = {m: dict() for m in masses}
-        for m in masses :
-            for feh in metallicities :
+        track_grid = {m: dict() for m in mass_list}
+        for m in mass_list :
+            for feh in feh_list :
                 db_track = db_session.query(Track).filter(
                     Track.mass == self._get_decimal(m),
-                    Track.metallicity == self._get_decimal(feh),
+                    Track.feh == self._get_decimal(feh),
                     Track.model_suite_id == ModelSuite.id,
                     ModelSuite.name == model_suite
                 ).one()
@@ -689,7 +689,7 @@ class StellarEvolutionManager :
             [
                 SerializedInterpolator.tracks.any(Track.id == track_id)
                 for mass, mass_row in track_grid.items()
-                for metallicity, (track_fname, track_id) in mass_row.items()
+                for feh, (track_fname, track_id) in mass_row.items()
             ]
             +
             [track_counts.c.num_tracks == num_tracks]
@@ -770,7 +770,7 @@ class StellarEvolutionManager :
 
         with tempdir_scope() as track_dir :
             for mass, mass_row in track_grid.items() :
-                for metallicity, (track_fname, track_id) in mass_row.items():
+                for feh, (track_fname, track_id) in mass_row.items():
                     track = db_session.query(
                         Track
                     ).filter_by(
@@ -780,7 +780,7 @@ class StellarEvolutionManager :
                     shutil.copy(
                         track_fname, 
                         os.path.join(track_dir,
-                                     library_track_fname(mass, metallicity))
+                                     library_track_fname(mass, feh))
                     )
             interp_smoothing = numpy.empty(
                 len(VarChangingInterpolator.quantity_list),
@@ -868,7 +868,7 @@ class StellarEvolutionManager :
             log_quantity = VarChangingInterpolator.default_log_quantity,
             track_fnames = None,
             masses = None,
-            metallicities = None,
+            feh = None,
             model_suite = 'MESA',
             new_interp_name = None,
             num_threads = 1
@@ -878,10 +878,10 @@ class StellarEvolutionManager :
 
         All tracks that the interpolator should be based on must be
         pre-registered with the manager. Two ways are supported for
-        identifying tracks: as a list of filenames or as a mass-metallicity
+        identifying tracks: as a list of filenames or as a mass-[Fe/H]
         grid combined with a suite. The first case always works, while the
         second requires that the set of identified tracks is unique, i.e. for
-        none of the mass - metallicity combinations there are two or more
+        none of the mass - [Fe/H] combinations there are two or more
         tracks registered for the given suite.
 
         Args:
@@ -910,17 +910,17 @@ class StellarEvolutionManager :
             - masses:
                 A list of the stellar masses to include in the interpolation.
                 Unique tracks with those masses and all selected
-                metallicities (see next argument) must already be registered
+                [Fe/H] (see next argument) must already be registered
                 with the database for the given suite. If None, all track
                 masses from the given suite are used.
-            - metallicities:
-                A list of the stellar metallicities to include in the
-                interpolation. If None, all track metallicities from the
+            - feh:
+                A list of the stellar [Fe/H] values to include in the
+                interpolation. If None, all track [Fe/H] from the
                 given suite are used.
             - model_suite:
                 The software suite used to generate the stellar evolution
                 tracks. May be omitted if tracks are specified by filename,
-                but must be supplied if using masses and metallicities.
+                but must be supplied if using masses and [Fe/H].
             - new_interp_name:
                 Name to assign to the a newly generated interolator. Ignored
                 if an interpolator matching all other arguments already
@@ -940,7 +940,7 @@ class StellarEvolutionManager :
         with db_session_scope() as db_session :
             if track_fnames is None :
                 track_grid = self._track_grid_from_grid(masses,
-                                                        metallicities,
+                                                        feh,
                                                         model_suite,
                                                         db_session)
             else :
@@ -1012,14 +1012,14 @@ class StellarEvolutionManager :
     def register_track(self,
                        track_fname,
                        mass,
-                       metallicity,
+                       feh,
                        model_suite = 'MESA') :
         """Register a track for use in creating interpolators."""
 
         with db_session_scope() as db_session :
             self._add_track(track_fname,
                             self._get_decimal(mass),
-                            self._get_decimal(metallicity),
+                            self._get_decimal(feh),
                             model_suite,
                             db_session)
 
@@ -1048,15 +1048,15 @@ class StellarEvolutionManager :
             ).groupdict()
             mass = self._get_decimal(parsed_fname['MASS'])
             if 'Z' in parsed_fname :
-                metallicity = self._get_decimal(
+                feh = self._get_decimal(
                     library.feh_from_z(float(parsed_fname['Z']))
                 )
             else :
-                metallicity = self._get_decimal(parsed_fname['FeH'])
+                feh = self._get_decimal(parsed_fname['FeH'])
 
             with db_session_scope() as db_session :
                 self._add_track(fname,
                                 mass,
-                                metallicity,
+                                feh,
                                 model_suite,
                                 db_session)

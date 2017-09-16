@@ -146,6 +146,28 @@ model {
             }
 
         }
+
+        testOrbitSolver(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "unit_tests"
+                    include "**/shared/*.cpp"
+                    include "**/testOrbitSolver.cpp"
+                }
+            }
+            binaries.all {
+                cppCompiler.define "STANDALONE"
+                linker.args "-l" + ensureLibraryVersion("cpptest")
+
+                lib library: "alglib"
+                lib library: "eigen"
+                lib library: "stellarEvolution"
+                lib library: "star"
+                lib library: "planet"
+                lib library: "evolve"
+            }
+        }
+
         debug_stellar_evolution(NativeExecutableSpec) {
             sources.cpp {
                 lib library: "alglib"
@@ -189,7 +211,6 @@ model {
                 lib library: "evolve"
             }
         }
-
 
 //        poet(NativeExecutableSpec) {
 //            sources.cpp {

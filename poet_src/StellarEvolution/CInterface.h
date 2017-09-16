@@ -91,8 +91,8 @@ extern "C" {
         ///The stellar mass for which to interpolate the quantity.
         double mass,
 
-        ///The stellar metallicity for which to interpolate the quantity.
-        double metallicity
+        ///The stellar [Fe/H] for which to interpolate the quantity.
+        double feh
     );
 
     ///Destroy a previously created evolving stellar quantity.
@@ -236,5 +236,8 @@ extern "C" {
 
     ///Calculate [Fe/H] given Z (metal mass fraction) for a star.
     double feh_from_z(double z);
+
+    ///Calculate Z (metal mass fraction) given [Fe/H] for a star.
+    double z_from_feh(double feh);
 
 } //End extern "C"

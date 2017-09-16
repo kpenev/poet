@@ -448,7 +448,9 @@ namespace Evolve {
 
         if(initialize) {
             __num_locked_zones = 0;
+#ifndef NDEBUG
             std::cerr << "Initializing DissipatingBody" << std::endl;
+#endif
         }
 
         __tidal_torques_above.resize(number_zones());

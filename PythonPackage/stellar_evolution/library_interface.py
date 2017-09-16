@@ -112,6 +112,9 @@ def initialize_library() :
     library.default_smoothing.argtypes = [c_int]
     library.default_smoothing.restype = c_double
 
+    library.default_vs_log_age.argtypes = [c_int]
+    library.default_vs_log_age.restype = c_bool
+
     library.default_nodes.argtypes = [c_int]
     library.default_nodes.restype = c_int
 
@@ -124,6 +127,9 @@ def initialize_library() :
     library.feh_from_z.argtypes = [c_double]
     library.feh_from_z.restype = c_double
 
+    library.z_from_feh.argtypes = [c_double]
+    library.z_from_feh.restype = c_double
+
     return library
 
 library = initialize_library()
@@ -132,15 +138,16 @@ library_track_fname_rex = re.compile(
     'M(?P<MASS>[0-9.E+-]+)_Z(?P<Z>[0-9.E+-]+).csv'
 )
 
-def library_track_fname(mass, metallicity) :
+def library_track_fname(mass, feh) :
     """
     Returns the base name expected by library for a track.
 
     Args:
         - mass:
             The mass of the star whose evolution is stored in the track.
-        - metallicity:
-            The metallicity ([Fe/H]) of the star whose evolution is stored
+
+        - feh:
+            The [Fe/H] value of the star whose evolution is stored
             in the track.
 
     Returns:
@@ -148,10 +155,8 @@ def library_track_fname(mass, metallicity) :
         for the given track.
     """
 
-    solarZ = 0.015
-
     return 'M%s_Z%s.csv' % (repr(float(mass)),
-                            repr(solarZ * 10.0**float(metallicity)))
+                            repr(library.z_from_feh(feh)))
 
 class MESAInterpolator :
     """A class for interpolating among a set of MESA tracks."""
@@ -242,7 +247,7 @@ class MESAInterpolator :
         library.save_interpolator(self.interpolator,
                                   filename.encode('ascii'))
 
-    def __call__(self, quantity, mass, metallicity) :
+    def __call__(self, quantity, mass, feh) :
         """
         Return a stellar quantity interpolated to the given mass and [Fe/H].
 
@@ -254,9 +259,9 @@ class MESAInterpolator :
             - mass:
                 The mass of the star for which this quantity should be
                 defined in solar masses.
-            - metallicity:
-                The metallicity of the star for which this  quantity  should
-                be defined as [Fe/H].
+            - feh:
+                The [Fe/H] of the star for which this  quantity  should
+                be defined.
 
         Returns: A Quantity instance, callable with an age parameter.
         """
@@ -265,7 +270,7 @@ class MESAInterpolator :
             library.create_quantity(self.interpolator,
                                     self.quantity_ids[quantity.upper()],
                                     c_double(mass),
-                                    c_double(metallicity))
+                                    c_double(feh))
         )
 
 class Quantity :
