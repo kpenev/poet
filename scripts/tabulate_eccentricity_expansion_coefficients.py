@@ -4,7 +4,12 @@ from fractions import Fraction
 from math import factorial
 from os.path import exists
 from os import rename
-from multiprocessing.pool import Pool, cpu_count
+try:
+    from multiprocessing.pool import Pool, cpu_count
+except:
+    from multiprocessing.pool import Pool
+    from multiprocessing import cpu_count
+
 from argparse import ArgumentParser
 from math import pi
 
@@ -26,8 +31,8 @@ def parse_fraction(frac_str) :
     return Fraction(*map(eval, frac_str.split('/')))
 
 def compute_alpha_beta(task) :
-    """ Computes the alpha} and beta coefficients without the 2pi/omega. 
-    
+    """ Computes the alpha} and beta coefficients without the 2pi/omega.
+
     Arguments:
         - task: a tuple of (s, n[, l]) values. If l is omitted computes
                 alpha_{s,n}, else computes beta_{s,n,l}
@@ -237,6 +242,11 @@ def parse_command_line() :
     return parser.parse_args()
 
 if __name__=='__main__' :
+    '''
+    usage example:
+
+    >>> python tabulate_eccentricity_expansion_coefficients.py -c 16 > eccentricity_expansion_coef.txt
+    '''
     options=parse_command_line()
     coef=ExpansionCoefficients(options.max_power, options.ab_file,
                                options.cpus)
@@ -244,7 +254,7 @@ if __name__=='__main__' :
     for epower in range(options.max_power+1) :
         for m in [-2, 0, 2] :
             for s in range(-epower+m, epower+m+1, 2) :
-                if m==0 or s!=0 : 
+                if m==0 or s!=0 :
                     print("%25.16e"%(coef(m,s,epower)), end='')
         print()
 
