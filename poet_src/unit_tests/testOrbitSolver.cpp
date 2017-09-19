@@ -175,19 +175,88 @@ namespace Evolve {
             zone = &(__star->core());
         }
     }
+    StellarEvolution::MockStellarEvolution *
+        test_OrbitSolver::make_no_evolution()
+    {
+        return new StellarEvolution::MockStellarEvolution(
+            0.0,
+            std::valarray< std::valarray<double> >(//R
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Iconv
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Irad
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Rcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Mcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Lum
+                std::valarray<double>(1.0, 1),
+                1
+            )
+        );
+    }
+
+    StellarEvolution::MockStellarEvolution *
+        test_OrbitSolver::make_linear_I_evolution()
+    {
+        return new StellarEvolution::MockStellarEvolution(
+            0.0,
+            std::valarray< std::valarray<double> >(//R
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Iconv
+                std::valarray<double>(1.0, 1),
+                2
+            ),
+            std::valarray< std::valarray<double> >(//Irad
+                std::valarray<double>(1.0, 1),
+                2
+            ),
+            std::valarray< std::valarray<double> >(//Rcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Mcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Lum
+                std::valarray<double>(1.0, 1),
+                1
+            )
+        );
+    }
 
     void test_OrbitSolver::evolve(double wdisk,
                                   double tdisk,
                                   double initial_a,
-                                  double initial_Lrad,
-                                  double initial_incl)
+                                  double *initial_Lstar,
+                                  double initial_incl,
+                                  double planet_mass,
+                                  double tplanet,
+                                  double max_age)
     {
         __star->select_interpolation_region(TSTART);
+        
+
+        if(std::isnan(tplanet)) tplanet = tdisk;
 
         double zero = 0.0;
-        Planet::LockedPlanet planet(1.0, 1.0);
+        Planet::LockedPlanet planet(planet_mass, (planet_mass ? 1.0 : 0.0));
         planet.configure(true, //init
-                         tdisk, //age
+                         tplanet, //age
                          __star->mass(), //mass
                          initial_a, //semimajor
                          0.0, //eccentricity
@@ -206,20 +275,43 @@ namespace Evolve {
             initial_incl, //inclination
             wdisk, //Wdisk
             tdisk, //disk dissipation age
-            tdisk //planet formation age
+            tplanet //planet formation age
         );
-        __system->configure(true, //init
-                            TSTART,
-                            Core::NaN, //semimajor
-                            Core::NaN, //eccentricity
-                            &initial_Lrad, //spin angmom
-                            NULL, //inclination
-                            NULL, //periapsis
-                            Core::LOCKED_SURFACE_SPIN);
+        if(tdisk <= TSTART) {
+            double zeros[] = {0.0, 0.0};
+            if(tplanet <= TSTART) {
+                __system->configure(true, //init
+                                    TSTART,
+                                    initial_a, //semimajor
+                                    0.0, //eccentricity
+                                    initial_Lstar, //spin angmom
+                                    zeros, //inclination
+                                    zeros, //periapsis
+                                    Core::BINARY);
+            } else {
+                __system->configure(true, //init
+                                    TSTART,
+                                    Core::NaN, //semimajor
+                                    Core::NaN, //eccentricity
+                                    initial_Lstar, //spin angmom
+                                    zeros, //inclination
+                                    zeros, //periapsis
+                                    Core::SINGLE);
+            }
+        } else {
+            __system->configure(true, //init
+                                TSTART,
+                                Core::NaN, //semimajor
+                                Core::NaN, //eccentricity
+                                initial_Lstar, //spin angmom
+                                NULL, //inclination
+                                NULL, //periapsis
+                                Core::LOCKED_SURFACE_SPIN);
+        }
         __star->detect_saturation();
-        __solver = new Evolve::OrbitSolver(MAX_AGE, 1e-6);
+        __solver = new Evolve::OrbitSolver(max_age, 1e-6);
         (*__solver)(*__system,
-                    (MAX_AGE - __system->age()) / 1000.0, //time step
+                    (max_age - __system->age()) / 1000.0, //time step
                     std::list<double>()); //no required ages
     }
 
@@ -345,23 +437,6 @@ namespace Evolve {
             Core::EvolModeType expected_mode = expected_evol_mode(*age_i);
             bool expected_wind_sat = expected_wind_mode(*age_i);
 
-            /*
-            for(std::list<double>::const_iterator next_age_i=age_i;
-                    ++next_age_i!=tabulated_ages->end() &&
-                    (*next_age_i)==(*age_i);) {
-                mode_iter++; a_iter++; Lconv_iter++; Lrad_iter++;
-                da_dt_iter++; dLconv_dt_iter++; dLrad_dt_iter++; age_i++;
-                if(mode_value==*mode_iter) {
-                    mode=*mode_iter;
-                    a=*a_iter;
-                    Lconv=*Lconv_iter;
-                    Lrad=*Lrad_iter;
-                    da_dt=*da_dt_iter;
-                    dLconv_dt=*dLconv_dt_iter;
-                    dLrad_dt=*dLrad_dt_iter;
-                }
-            }*/
-
             std::ostringstream age_msg_start;
             age_msg_start.precision(16);
             age_msg_start << msg_start.str()
@@ -396,8 +471,14 @@ namespace Evolve {
             if(!expected_wind_sat) msg << " not ";
             msg << "be.";
             if(debug_mode) std::cout << msg.str() << std::endl;
-            TEST_ASSERT_MSG(expected_mode == *tabulated_mode_iter,
-                            msg.str().c_str());
+            TEST_ASSERT_MSG(
+                (
+                    expected_wind_sat == *tabulated_wind_sat_iter
+                    ||
+                    expected_wind_mode.near_break(*age_i)
+                ),
+                msg.str().c_str()
+            );
 
             for(unsigned q = 0; q < AGE; ++q) {
                 msg.str("");
@@ -424,37 +505,115 @@ namespace Evolve {
         }
     }
 
+    void test_OrbitSolver::test_no_planet_scenario(
+        const StellarEvolution::Interpolator &stellar_evol,
+        double *initial_Lstar,
+        double windK,
+        double wind_sat_freq,
+        double core_env_coupling_time,
+        std::vector<const Core::OneArgumentDiffFunction *>
+            &expected_real_quantities,
+        const ExpectedEvolutionMode<bool> &expected_wind_mode,
+        double max_age,
+        bool debug_mode
+    ) {
+            ExpectedEvolutionMode<Core::EvolModeType> single_mode,
+                                                      binary_mode;
+            single_mode.add_break(TSTART, Core::SINGLE);
+            binary_mode.add_break(TSTART, Core::BINARY);
+
+            make_const_lag_star(stellar_evol,
+                                windK,
+                                wind_sat_freq,
+                                core_env_coupling_time,
+                                1.0);//phase lag
+            evolve(0.0,//Wdisk
+                   0.0,//tdisk
+                   1.0,//initial semimajor
+                   initial_Lstar,
+                   0.0,//initial inclination
+                   1.0,//planet mass
+                   max_age,//planet formation age.
+                   max_age);//end evolution age
+            expected_real_quantities[SEMIMAJOR] = &nan_func;
+            expected_real_quantities[ECCENTRICITY] = &nan_func;
+            expected_real_quantities[CONV_INCLINATION] = &zero_func;
+            expected_real_quantities[RAD_INCLINATION] = &zero_func;
+            expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
+            expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
+
+            test_solution(expected_real_quantities,
+                          single_mode,
+                          expected_wind_mode,
+                          TSTART,
+                          max_age,
+                          debug_mode);
+            delete __star;
+            delete __system;
+            delete __solver;
+
+            if(initial_Lstar[0] == 0) return;
+
+            for(double phase_lag = 0.0; phase_lag < 1.5; phase_lag += 1.0)
+                for(
+                    double mplanet = 0.0;
+                    mplanet < 1.5 - phase_lag;
+                    mplanet += 1.0
+                ) {
+                    make_const_lag_star(stellar_evol,
+                                        windK,
+                                        wind_sat_freq,
+                                        core_env_coupling_time,
+                                        phase_lag);
+                    evolve(0.0,//Wdisk
+                           0.0,//tdisk
+                           1.0,//initial semimajor
+                           initial_Lstar,
+                           0.0,//initial inclination
+                           mplanet,//planet mass
+                           TSTART,//planet formation age.
+                           max_age);//end evolution age
+
+                    expected_real_quantities[SEMIMAJOR] = &one_func;
+                    expected_real_quantities[ECCENTRICITY] = &zero_func;
+                    test_solution(expected_real_quantities,
+                                  binary_mode,
+                                  expected_wind_mode,
+                                  TSTART,
+                                  max_age,
+                                  debug_mode);
+                    delete __system;
+                    delete __solver;
+
+                    evolve(0.0,//Wdisk
+                           0.0,//tdisk
+                           200.0,//initial semimajor
+                           initial_Lstar,
+                           0.0,//initial inclination
+                           mplanet,//planet mass
+                           TSTART,//planet formation age.
+                           max_age);//end evolution age
+
+                    expected_real_quantities[SEMIMAJOR] = &two_hundred_func;
+                    test_solution(expected_real_quantities,
+                                  binary_mode,
+                                  expected_wind_mode,
+                                  TSTART,
+                                  max_age,
+                                  debug_mode);
+
+                    delete __star;
+                    delete __system;
+                    delete __solver;
+                }
+    }
+
     void test_OrbitSolver::test_disk_locked_no_stellar_evolution()
     {
         try {
-            StellarEvolution::MockStellarEvolution no_evol(
-                0.0,
-                std::valarray< std::valarray<double> >(//R
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Iconv
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Irad
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Rcore
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Mcore
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Lum
-                    std::valarray<double>(1.0, 1),
-                    1
-                )
-            );
-            make_const_lag_star(no_evol,
+            StellarEvolution::MockStellarEvolution *no_evol =
+                make_no_evolution();
+            make_const_lag_star(*no_evol,
                                 1.0,
                                 1.0,
                                 1.0);
@@ -476,7 +635,8 @@ namespace Evolve {
             expected_real_quantities[CONV_ANGMOM] = &one_func;
             expected_real_quantities[RAD_ANGMOM] = &one_func;
 
-            evolve(1.0, MAX_AGE, 1.0, 1.0);
+            double zero = 0.0, one = 1.0;
+            evolve(1.0, MAX_AGE, 1.0, &one);
             test_solution(expected_real_quantities,
                           expected_evol_mode,
                           expected_wind_mode,
@@ -486,7 +646,7 @@ namespace Evolve {
             delete __solver;
             delete __system;
 
-            evolve(1.0, MAX_AGE, 1.0, 0.0);
+            evolve(1.0, MAX_AGE, 1.0, &zero);
             expected_real_quantities[RAD_ANGMOM] = new ExponentialPlusFunc(
                 &one_func,
                 -std::exp(TSTART/2.0),
@@ -502,6 +662,7 @@ namespace Evolve {
             delete __solver;
             delete __system;
             delete __star;
+            delete no_evol;
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
                         ex.what()+": "+ex.get_message()).c_str());
@@ -514,35 +675,10 @@ namespace Evolve {
     void test_OrbitSolver::test_disk_locked_with_stellar_evolution()
     {
         try {
-            StellarEvolution::MockStellarEvolution evol1(
-                -1,
-                std::valarray< std::valarray<double> >(//R
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Iconv
-                    std::valarray<double>(1.0, 1),
-                    2
-                ),
-                std::valarray< std::valarray<double> >(//Irad
-                    std::valarray<double>(1.0, 1),
-                    2
-                ),
-                std::valarray< std::valarray<double> >(//Rcore
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Mcore
-                    std::valarray<double>(1.0, 1),
-                    1
-                ),
-                std::valarray< std::valarray<double> >(//Lum
-                    std::valarray<double>(1.0, 1),
-                    1
-                )
-            );
+            StellarEvolution::MockStellarEvolution *evol1 =
+                make_linear_I_evolution();
 
-            make_const_lag_star(evol1, 1.0, 1.0, 1.0);
+            make_const_lag_star(*evol1, 1.0, 1.0, 1.0);
 
             ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
             expected_evol_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
@@ -574,10 +710,11 @@ namespace Evolve {
             expected_real_quantities[RAD_ANGMOM] =
                 new ExponentialPlusFunc(temp_poly, 1, -0.5);
 
+            double initial_Lrad = TSTART - 1 + std::exp(-TSTART / 2.0);
             evolve(1.0,
                    MAX_AGE,
                    1.0,
-                   TSTART - 1 + std::exp(-TSTART / 2.0));
+                   &initial_Lrad);
             test_solution(expected_real_quantities,
                           expected_evol_mode,
                           expected_wind_mode,
@@ -590,6 +727,7 @@ namespace Evolve {
             delete __solver;
             delete __system;
             delete __star;
+            delete evol1;
 
             std::valarray< std::valarray<double> > Ic_arr(
                 std::valarray<double>(1.0, 1),
@@ -602,16 +740,16 @@ namespace Evolve {
                     std::valarray<double>(1.0, 1),
                     1
                 ),
-                Ic_arr,
-                std::valarray< std::valarray<double> >(
+                Ic_arr,                                //Iconv
+                std::valarray< std::valarray<double> >(//Irad
                     std::valarray<double>(1.0/6.0, 1),
                     2
                 ),
-                std::valarray< std::valarray<double> >(
+                std::valarray< std::valarray<double> >(//Rcore
                     std::valarray<double>(0.5, 1),
                     1
                 ),
-                std::valarray< std::valarray<double> >(
+                std::valarray< std::valarray<double> >(//Mcore
                     std::valarray<double>(1.0, 1),
                     2
                 )
@@ -637,10 +775,11 @@ namespace Evolve {
                         TSTART,
                         MAX_AGE
                 );
+            initial_Lrad = (TSTART / 2.0 + 1.0) / 6.0;
             evolve(1.0,
                    MAX_AGE,
                    1.0, 
-                   (TSTART / 2.0 + 1.0) / 6.0);
+                   &initial_Lrad);
             test_solution(expected_real_quantities,
                           expected_evol_mode,
                           expected_wind_mode,
@@ -663,200 +802,163 @@ namespace Evolve {
         }
     }
 
-#if 0
     void test_OrbitSolver::test_no_planet_evolution()
     {
         try {
-            ExpectedEvolutionMode no_planet_mode, slow_planet_mode,
-                                  fast_planet_mode;
-            no_planet_mode.add_break(TSTART, NO_PLANET);
-            slow_planet_mode.add_break(TSTART, SLOW_PLANET);
-            fast_planet_mode.add_break(TSTART, FAST_PLANET);
-            const double rt2=std::sqrt(2.0);
-            MockStellarEvolution evol1(-1,std::valarray< std::valarray<double> >(
-                                            std::valarray<double>(1.0, 1), 1),
-                                        std::valarray< std::valarray<double> >(
-                                            std::valarray<double>(1.0, 1), 1),
-                                        std::valarray< std::valarray<double> >(
-                                            std::valarray<double>(1.0, 1), 1),
-                                        std::valarray< std::valarray<double> >(
-                                            std::valarray<double>(1.0, 1), 1),
-                                        std::valarray< std::valarray<double> >(
-                                            std::valarray<double>(1.0, 1), 1)),
-                                 evol2(-1,std::valarray< std::valarray<double> >(
-                                             std::valarray<double>(1.0, 1), 1),
-                                         std::valarray< std::valarray<double> >(
-                                             std::valarray<double>(1.0, 1), 2),
-                                         std::valarray< std::valarray<double> >(
-                                             std::valarray<double>(1.0, 1), 2),
-                                         std::valarray< std::valarray<double> >(
-                                             std::valarray<double>(1.0, 1), 1),
-                                         std::valarray< std::valarray<double> >(
-                                             std::valarray<double>(1.0, 1), 1));
-            Star star_no_wind_no_coupling(1.0, 1.0, 0.0, 2.0, Inf, 0.0, 0.0,
-                    0.0, evol1, 1.0, 1.0, 1.0);
-            Planet planet0(&star_no_wind_no_coupling, 0.0, 0.0, 1.0);
-            Planet planet1(&star_no_wind_no_coupling, 1.0, 1.0, 1.0);
-            StellarSystem system0(&star_no_wind_no_coupling, &planet0);
-            StellarSystem system1(&star_no_wind_no_coupling, &planet1);
-            OrbitSolver solver(TSTART, 1.0, 5e-7);
+            const double rt2 = std::sqrt(2.0);
+
+            StellarEvolution::MockStellarEvolution 
+                *stellar_evol = make_no_evolution();
+            double initial_Lstar[] = {0.0, 0.0};
+
+            std::vector<const Core::OneArgumentDiffFunction *>
+                expected_real_quantities(NUM_REAL_EVOL_QUANTITIES - 1);
+            expected_real_quantities[CONV_ANGMOM] = &zero_func;
+            expected_real_quantities[RAD_ANGMOM] = &zero_func;
+            ExpectedEvolutionMode<bool> unsat_wind_mode, sat_wind_mode;
+            unsat_wind_mode.add_break(TSTART, false);
+            sat_wind_mode.add_break(TSTART, true);
+
+            test_no_planet_scenario(*stellar_evol,
+                                    initial_Lstar,
+                                    1.0,//Wind K
+                                    2.0,//wind sat freq.
+                                    Core::Inf,//core-env coupling timescale
+                                    expected_real_quantities,
+                                    unsat_wind_mode);
+
+            delete stellar_evol;
+            stellar_evol = make_linear_I_evolution();
+            
+            initial_Lstar[0] = 1.0;
+            expected_real_quantities[CONV_ANGMOM] = &one_func;
+            test_no_planet_scenario(*stellar_evol,
+                                    initial_Lstar,
+                                    0.0,//Wind K
+                                    2.0,//wind sat freq.
+                                    Core::Inf,//core-env coupling timescale
+                                    expected_real_quantities,
+                                    unsat_wind_mode);
 
 
-            std::valarray<double> initial_orbit(0.0, 3);
-            solver(system1, Inf, Inf, 2.0, TSTART, NO_PLANET,
-                    std::valarray<double>(0.0, 2));
-            test_solution(solver, nan_func, zero_func, zero_func, TSTART, 1.0,
-                    no_planet_mode);
-            initial_orbit[0]=std::pow(2.0, 6.5);
-            solver(system0, Inf, 0.0, 2.0, TSTART, FAST_PLANET, initial_orbit);
-            test_solution(solver, two_func, zero_func, zero_func, TSTART, 1.0,
-                    fast_planet_mode);
+            initial_Lstar[0] = 0.5 * (1.0 + std::exp(-TSTART));
+            initial_Lstar[1] = 0.5 * (1.0 - std::exp(-TSTART));
 
-            solver(system1, Inf, Inf, 2.0, TSTART, NO_PLANET,
-                    std::valarray<double>(1.0, 2));
-            test_solution(solver, nan_func, one_func, one_func, TSTART, 1.0,
-                    no_planet_mode);
-            initial_orbit.resize(3, 1.0); initial_orbit[0]=std::pow(2.0, 6.5);
-            solver(system0, Inf, 0.0, 2.0, TSTART, FAST_PLANET, initial_orbit);
-            test_solution(solver, two_func, one_func, one_func, TSTART, 1.0,
-                    fast_planet_mode);
-            initial_orbit[0]=std::pow(200.0, 6.5);
-            solver(system0, Inf, 0.0, 200.0, TSTART, SLOW_PLANET, initial_orbit);
-            test_solution(solver, two_hundred_func, one_func, one_func, TSTART, 1.0,
-                    slow_planet_mode);
+            StellarEvolution::PolynomialEvolutionQuantity half_func(
+                std::valarray<double>(0.5, 1),
+                TSTART,
+                MAX_AGE
+            );
+            expected_real_quantities[CONV_ANGMOM] = new ExponentialPlusFunc(
+                &half_func,
+                0.5,
+                -1.0
+            );
+            expected_real_quantities[RAD_ANGMOM] = new ExponentialPlusFunc(
+                &half_func,
+                -0.5,
+                -1.0
+            );
+            test_no_planet_scenario(*stellar_evol,
+                                    initial_Lstar,
+                                    0.0,//Wind K
+                                    1.0,//wind sat freq.
+                                    1.0,//core-env coupling timescale
+                                    expected_real_quantities,
+                                    unsat_wind_mode);
 
-            initial_orbit.resize(2, 0.0); initial_orbit[0]=1;
-            solver(system1, Inf, Inf, 2.0, TSTART, NO_PLANET,
-                    initial_orbit);
-            test_solution(solver, nan_func, one_func, zero_func, TSTART, 1.0,
-                    no_planet_mode);
-            initial_orbit.resize(3, 1.0);
-            initial_orbit[0]=std::pow(2.0, 6.5);
-            initial_orbit[2]=0.0;
-            solver(system0, Inf, 0.0, 2.0, TSTART, FAST_PLANET,
-                    initial_orbit);
-            test_solution(solver, two_func, one_func, zero_func, TSTART, 1.0,
-                    fast_planet_mode);
-            initial_orbit.resize(3, 1.0);
-            initial_orbit[0]=std::pow(200.0, 6.5);
-            initial_orbit[2]=0.0;
-            solver(system0, Inf, 0.0, 200.0, TSTART, SLOW_PLANET,
-                    initial_orbit);
-            test_solution(solver, two_hundred_func, one_func, zero_func, TSTART,
-                    1.0, slow_planet_mode);
+            delete expected_real_quantities[CONV_ANGMOM];
+            delete expected_real_quantities[RAD_ANGMOM];
 
-            Star star_no_wind(1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0,
-                    0.0, evol1, 1.0, 1.0, 1.0);
-            initial_orbit.resize(2);
-            initial_orbit[0]=0.5*(1.0+std::exp(-TSTART));
-            initial_orbit[1]=0.5*(1.0-std::exp(-TSTART));
-            StellarSystem system2(&star_no_wind, &planet1);
-            StellarSystem system2_0(&star_no_wind, &planet0);
-            PolynomialEvolutionTrack half_func(std::valarray<double>(0.5, 1),
-                    TSTART, 1.0);
-            solver(system2, Inf, Inf, 2.0, TSTART, NO_PLANET, initial_orbit);
-            test_solution(solver, nan_func,
-                    ExponentialPlusFunc(&half_func, 0.5, -1.0),
-                    ExponentialPlusFunc(&half_func, -0.5, -1.0), TSTART, 1.0,
-                    no_planet_mode);
-            initial_orbit.resize(3);
-            initial_orbit[0]=std::pow(2.0, 6.5);
-            initial_orbit[1]=0.5*(1.0+std::exp(-TSTART));
-            initial_orbit[2]=0.5*(1.0-std::exp(-TSTART));
-            solver(system2_0, Inf, 0.0, 2.0, TSTART, FAST_PLANET, initial_orbit);
-            test_solution(solver, two_func,
-                    ExponentialPlusFunc(&half_func, 0.5, -1.0),
-                    ExponentialPlusFunc(&half_func, -0.5, -1.0), TSTART, 1.0,
-                    fast_planet_mode);
-            initial_orbit[0]=std::pow(200.0, 6.5);
-            solver(system2_0, Inf, 0.0, 200.0, TSTART, SLOW_PLANET, initial_orbit);
-            test_solution(solver, two_hundred_func,
-                    ExponentialPlusFunc(&half_func, 0.5, -1.0),
-                    ExponentialPlusFunc(&half_func, -0.5, -1.0), TSTART, 1.0,
-                    slow_planet_mode);
+            initial_Lstar[0] = 1.0/(1.0+TSTART);
+            initial_Lstar[1] = 1.0;
 
-            Star star_no_coupling(1.0, 1.0, 2.0, std::sqrt(0.5), Inf, 0.0, 1.0,
-                    0.0, evol2, 1.0, 1.0, 1.0);
-            initial_orbit.resize(2);
-            initial_orbit[0]=1.0/(1.0+TSTART);
-            initial_orbit[1]=1.0;
-            StellarSystem system3(&star_no_coupling, &planet1);
-            StellarSystem system3_0(&star_no_coupling, &planet0);
+            double wind_sat_age = std::pow(2.0, 0.25) - 1;
             std::valarray<double> late_denom_coef(3);
-            late_denom_coef[0]=2.0*rt2-2.0;
-            late_denom_coef[1]=4.0*rt2;
-            late_denom_coef[2]=2.0*rt2;
-            PolynomialEvolutionTrack one_func_early(std::valarray<double>(1.0,1),
-                    TSTART, std::pow(2.0,0.25)-1),
-                    one_plus_t(std::valarray<double>(1.0, 2), TSTART, 1.0),
-                    late_denom2(late_denom_coef, std::pow(2.0, 0.25)-1, 1.0);
+            late_denom_coef[0] = 2.0 * rt2 - 2.0;
+            late_denom_coef[1] = 4.0 * rt2;
+            late_denom_coef[2] = 2.0 * rt2;
+            StellarEvolution::PolynomialEvolutionQuantity
+                one_func_early(std::valarray<double>(1.0, 1),
+                               TSTART, wind_sat_age),
+                one_plus_t(std::valarray<double>(1.0, 2), TSTART, MAX_AGE),
+                late_denom2(late_denom_coef, wind_sat_age, MAX_AGE);
             FunctionToPower late_denom(&late_denom2, 0.5);
             FunctionRatio early_solution(&one_func_early, &one_plus_t),
                           late_solution(&one_plus_t, &late_denom);
             PiecewiseFunction full_solution;
             full_solution.add_piece(&early_solution);
             full_solution.add_piece(&late_solution);
-            solver(system3, Inf, Inf, 2.0, TSTART, NO_PLANET, initial_orbit);
-            test_solution(solver, nan_func, full_solution, one_func,
-                    TSTART, 1.0, no_planet_mode);
-            initial_orbit.resize(3, 1.0);
-            initial_orbit[0]=std::pow(2.0, 6.5);
-            initial_orbit[1]=1.0/(1.0+TSTART);
-            solver(system3_0, Inf, 0.0, 2.0, TSTART, FAST_PLANET,
-                    initial_orbit);
-            test_solution(solver, two_func, full_solution, one_func,
-                    TSTART, 1.0, fast_planet_mode);
-            initial_orbit[0]=std::pow(200.0, 6.5);
-            solver(system3_0, Inf, 0.0, 200.0, TSTART, SLOW_PLANET,
-                    initial_orbit);
-            test_solution(solver, two_hundred_func, full_solution, one_func,
-                    TSTART, 1.0, slow_planet_mode);
 
-            Star star(1.0, 1.0, 100.0, 0.1, 1.0, 0.0, 0.0, 0.0, evol1, 1.0, 1.0,
-                    1.0);
-            double b1=(std::sqrt(2)-1)/(2.0*rt2),
-                   b2=(std::sqrt(2)+1)/(2.0*rt2);
-            initial_orbit.resize(2);
-            initial_orbit[0]=b1*std::exp(-TSTART/(2.0+rt2)) +
-                b2*std::exp(-TSTART/(2.0-rt2));
-            initial_orbit[1]=0.5/rt2*std::exp(-1.0/(2.0+rt2)*(TSTART))-
-                    0.5/rt2*std::exp(-1.0/(2.0-rt2)*(TSTART));
-            StellarSystem system4(&star, &planet1);
-            StellarSystem system4_0(&star, &planet0);
+            expected_real_quantities[CONV_ANGMOM] = &full_solution;
+            expected_real_quantities[RAD_ANGMOM] = &one_func;
+            ExpectedEvolutionMode<bool> changing_wind_mode;
+            changing_wind_mode.add_break(TSTART, true);
+            changing_wind_mode.add_break(wind_sat_age, false);
+
+            test_no_planet_scenario(*stellar_evol,
+                                    initial_Lstar,
+                                    2.0,//Wind K
+                                    1.0 / rt2, //wind sat freq.
+                                    Core::Inf,//core-env coupling timescale
+                                    expected_real_quantities,
+                                    changing_wind_mode);
+
+            double b1 = (std::sqrt(2) - 1) / (2.0 * rt2),
+                   b2 = (std::sqrt(2) + 1) / (2.0 * rt2);
+            initial_Lstar[0] = (b1 * std::exp(-TSTART / (2.0 + rt2))
+                                +
+                                b2 * std::exp(-TSTART / (2.0 - rt2)));
+            initial_Lstar[1] = (
+                0.5 / rt2 * std::exp(-1.0 / (2.0 + rt2) * (TSTART))
+                -
+                0.5 / rt2 * std::exp(-1.0 / (2.0 - rt2) * (TSTART))
+            );
 
             ExponentialPlusFunc 
-                Lc1(&zero_func, b1, -1.0/(2.0+rt2)),
-                Lc2(&zero_func, b2, -1.0/(2.0-rt2)),
-                Lr1(&zero_func, 0.5/rt2, -1.0/(2.0+rt2)),
-                Lr2(&zero_func, -0.5/rt2, -1.0/(2.0-rt2));
+                Lc1(&zero_func, b1, -1.0 / (2.0 + rt2)),
+                Lc2(&zero_func, b2, -1.0 / (2.0 - rt2)),
+                Lr1(&zero_func, 0.5 / rt2, -1.0 / (2.0 + rt2)),
+                Lr2(&zero_func, -0.5 / rt2, -1.0 / (2.0 - rt2));
 
-            solver(system4, Inf, Inf, 2.0, TSTART, NO_PLANET,
-                    initial_orbit);
-            test_solution(solver, nan_func, FuncPlusFunc(&Lc1, &Lc2),
-                    FuncPlusFunc(&Lr1, &Lr2), TSTART, 1.0, no_planet_mode);
-            initial_orbit.resize(3);
-            initial_orbit[0]=std::pow(2.0, 6.5);
-            initial_orbit[1]=b1*std::exp(-TSTART/(2.0+rt2)) +
-                b2*std::exp(-TSTART/(2.0-rt2));
-            initial_orbit[2]=0.5/rt2*std::exp(-1.0/(2.0+rt2)*(TSTART))-
-                    0.5/rt2*std::exp(-1.0/(2.0-rt2)*(TSTART));
-            solver(system4_0, Inf, 0.0, 2.0, TSTART, FAST_PLANET,
-                    initial_orbit);
-            test_solution(solver, two_func, FuncPlusFunc(&Lc1, &Lc2),
-                    FuncPlusFunc(&Lr1, &Lr2), TSTART, 1.0, fast_planet_mode);
-            initial_orbit[0]=std::pow(200.0, 6.5);
-            solver(system4_0, Inf, 0.0, 200.0, tstart, SLOW_PLANET,
-                    initial_orbit);
-            test_solution(solver, two_hundred_func, FuncPlusFunc(&Lc1, &Lc2),
-                    FuncPlusFunc(&Lr1, &Lr2), tstart, 1.0, slow_planet_mode);
-        } catch (Error::General &ex) {
+            expected_real_quantities[CONV_ANGMOM] = new FuncPlusFunc(&Lc1,
+                                                                     &Lc2);
+            expected_real_quantities[RAD_ANGMOM] = new FuncPlusFunc(&Lr1,
+                                                                    &Lr2);
+            std::cerr << "Lc1(" << TSTART << ") = "
+                      << Lc1(TSTART)
+                      << std::endl;
+            std::cerr << "Lc2(" << TSTART << ") = "
+                      << Lc2(TSTART)
+                      << std::endl;
+            std::cerr << "Lconv(" << TSTART << ") = "
+                      << (*(expected_real_quantities[CONV_ANGMOM]))(TSTART)
+                      << std::endl;
+            delete stellar_evol;
+            stellar_evol = make_no_evolution();
+            test_no_planet_scenario(*stellar_evol,
+                                    initial_Lstar,
+                                    100.0,//Wind K
+                                    0.1,//wind sat freq.
+                                    1.0,//core-env coupling timescale
+                                    expected_real_quantities,
+                                    sat_wind_mode,
+                                    2.0);
+            delete expected_real_quantities[CONV_ANGMOM];
+            delete expected_real_quantities[RAD_ANGMOM];
+
+            delete stellar_evol;
+        } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()+": "+ex.get_message()).c_str());
+                                    ex.what()+": "+ex.get_message()).c_str());
         } catch (std::exception &ex) {
             TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()).c_str());
+                                    ex.what()).c_str());
         }
     }
+
+
+#if 0
 
     void test_OrbitSolver::test_unlocked_evolution()
     {
@@ -1615,7 +1717,7 @@ namespace Evolve {
     {
         TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
-//        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
+        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
 //        TEST_ADD(test_OrbitSolver::test_unlocked_evolution); 
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);

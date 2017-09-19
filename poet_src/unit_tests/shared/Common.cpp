@@ -137,4 +137,7 @@ unsigned next_binom_coef(unsigned n, unsigned m, unsigned nCm)
 	return (nCm*(n-m))/(m+1);
 }
 
-
+double lag_from_lgQ(double lgQ)
+{
+    return 15.0 / (16.0 * M_PI * std::pow(10.0, lgQ));
+}

@@ -35,7 +35,7 @@ namespace Planet {
                      Core::AstroConst::solar_radius)
         {}
 
-        ///See DissipatingZone::modified_phase_lag(), very large constant value.
+        ///See DissipatingZone::modified_phase_lag(), set to zero.
         virtual double modified_phase_lag(
                 ///orbital_frequency_multiplier
                 int ,
@@ -101,9 +101,9 @@ namespace Planet {
             ///The absolute value of the angular momentum of the orbit.
             double orbital_angmom,
 
-            ///The angular momentum/frequency of the spin of the zone if the
-            ///zone is not locked (ignored it if is).
-            double spin_angmom,
+            ///The angular momentum/frequency of the spin of the zone
+            ///(ignored).
+            double ,
 
             ///The inclination of the zone relative to the orbit.
             double ,
@@ -112,18 +112,18 @@ namespace Planet {
             ///planet of the zone.
             double ,
 
-            ///Is spin_angmom angular momentum of freuqency? 
-            bool spin_is_frequency
+            ///Is spin_angmom angular momentum of freuqency? (ignored)
+            bool
         )
         {DissipatingZone::configure(initialize,
                                     age,
                                     orbital_frequency,
                                     eccentricity,
                                     orbital_angmom,
-                                    spin_angmom,
+                                    orbital_frequency,
                                     0,
                                     0,
-                                    spin_is_frequency);}
+                                    true);}
     }; //End LockedPlanetZone class.
 
 }//End Planet namespace.

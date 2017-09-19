@@ -169,6 +169,14 @@ namespace Evolve {
                 );
             } else reference_torque = torque;
         }
+#ifdef VERBOSE_DEBUG
+        std::cerr << "rates: ";
+        for(unsigned i = 0; i < 3 * nzones - 2; ++i) {
+            if(i) std::cerr << ", ";
+            std::cerr << evolution_rates[i];
+        }
+        std::cerr << std::endl;
+#endif
         return 0;
     }
 
@@ -356,8 +364,12 @@ namespace Evolve {
     ) const
     {
         if(std::isnan(orbit_energy_gain_deriv))
-            return -__semimajor * orbit_energy_gain / __orbital_energy;
+            return (orbit_energy_gain == 0
+                    ? 0
+                    : -__semimajor * orbit_energy_gain / __orbital_energy);
         else
+            if(orbit_energy_gain == 0 && orbit_energy_gain_deriv == 0)
+                return 0;
             return (
                 -(2.0 * orbit_energy_gain
                   +
@@ -864,6 +876,19 @@ namespace Evolve {
 
         fill_binary_evolution_rates(global_orbit_torque, 
                                     differential_equations);
+#ifdef VERBOSE_DEBUG
+        std::cerr << "rates: ";
+        for(
+            unsigned i = 0;
+            i < 3 * (__body1.number_zones() + __body2.number_zones()) + 1;
+            ++i
+        ) {
+            if(i) std::cerr << ", ";
+            std::cerr << differential_equations[i];
+        }
+        std::cerr << std::endl;
+#endif
+
         return 0;
     }
 
@@ -2015,11 +2040,17 @@ namespace Evolve {
     double BinarySystem::minimum_semimajor(bool deriv) const
     {
         double rroche = (
-            2.44
-            *
             __body2.radius()
-            *
-            std::pow(__body1.mass() / __body2.mass(), 1.0 / 3.0)
+            ?(
+                2.44
+                *
+                __body2.radius()
+                *
+                std::pow(__body1.mass() / __body2.mass(), 1.0 / 3.0)
+            )
+            :(
+                0.0
+            )
         );
         if(rroche > __body1.radius()) {
             if(deriv) return rroche * __body2.radius(1) / __body2.radius();

@@ -142,6 +142,7 @@ namespace Evolve {
         double &forcing_frequency
     ) const
     {
+        if(__initializing) return;
         assert(limit.spin_frequency_multiplier()==1
                ||
                limit.spin_frequency_multiplier()==2);
@@ -201,6 +202,7 @@ namespace Evolve {
 #ifndef NDEBUG
     void DissipatingZone::check_locks_consistency() const
     {
+        if(__initializing) return;
         int max_abs_orb_mult = static_cast<int>(__e_order + 2);
         assert(
             __lock
@@ -334,6 +336,9 @@ namespace Evolve {
 
     void DissipatingZone::initialize_locks()
     {
+#ifndef NDEBUG
+        std::cerr << "Initializing locks" << std::endl;
+#endif
         int below_orb_mult=std::floor(2.0*__spin_frequency/__orbital_frequency),
             max_abs_orb_mult=static_cast<int>(__e_order+2);
         if(below_orb_mult%2) {
@@ -390,7 +395,8 @@ namespace Evolve {
         __torque_y(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
         __torque_z(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
         __evolution_real(NUM_REAL_EVOL_QUANTITIES),
-        __evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES)
+        __evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES),
+        __initializing(false)
     {
         for(int i=0; i<5; ++i) {
             __Ummp[i].resize(3);
@@ -414,10 +420,12 @@ namespace Evolve {
     {
         assert(age >= 0);
 
+        if(initialize) {
+            __initializing = true;
 #ifndef NDEBUG
-        if(initialize)
             std::cerr << "Initializing DissipatingZone" << std::endl;
 #endif
+        }
         ZoneOrientation::configure(inclination, periapsis);
         __orbital_angmom = orbital_angmom;
         __orbital_frequency = orbital_frequency;
@@ -427,7 +435,10 @@ namespace Evolve {
         } else 
             configure_spin(spin, spin_is_frequency);
 
-        if(initialize) initialize_locks();
+        if(initialize) {
+            initialize_locks();
+            __initializing = false;
+        }
         if(std::isnan(orbital_frequency)) return;
 
         fill_Umm();
@@ -456,7 +467,7 @@ namespace Evolve {
                            U_mp1mp_i_deriv,
                            U_mp1mp_e_deriv);
             for(int m = -2; m <= 2; ++m) {
-#ifndef NDEBUG
+#ifdef VERBOSE_DEBUG
                 std::cerr << "Term: m' = "
                           << mp
                           << ", m = "
@@ -563,7 +574,7 @@ namespace Evolve {
                     __torque_x[deriv_ind + 1] += (term_torque_x
                                                   *
                                                   mod_phase_lag_above);
-#ifndef NDEBUG
+#ifdef VERBOSE_DEBUG
                     if(deriv == Dissipation::NO_DERIV)
                         std::cerr << ", Wzone = "
                                   << spin_frequency()
@@ -581,7 +592,7 @@ namespace Evolve {
                 U_mm1mp_value = U_mmp_value;
                 U_mm1mp_i_deriv = U_mmp_i_deriv;
                 U_mm1mp_e_deriv = U_mmp_e_deriv;
-#ifndef NDEBUG
+#ifdef VERBOSE_DEBUG
                 std::cerr << std::endl;
 #endif
             }
@@ -605,7 +616,7 @@ namespace Evolve {
             spin_frequency_multiplier * spin_frequency()
         );
 
-#ifndef NDEBUG
+#ifdef VERBOSE_DEBUG
         std::cerr << ", Wtide = " << forcing_freq << " -> ";
 #endif
 
@@ -616,7 +627,7 @@ namespace Evolve {
         if(!__lock && __other_lock.spin_frequency_multiplier()!=0)
             fix_forcing_frequency(__other_lock, orbital_frequency_multiplier,
                     spin_frequency_multiplier, forcing_freq);
-#ifndef NDEBUG
+#ifdef VERBOSE_DEBUG
         std::cerr << forcing_freq;
 #endif
         return forcing_freq;
@@ -701,9 +712,14 @@ namespace Evolve {
             orbit_z_torque=orbit_torque_deriv[2];
             zone_x_torque=zone_torque_deriv[0];
         }
-        double result=((orbit_x_torque * cos_inc - orbit_z_torque*sin_inc)
-                       /
-                       __orbital_angmom);
+        double result;
+        if(orbit_x_torque == 0 && orbit_z_torque == 0)
+            result = 0.0;
+        else 
+            result = ((orbit_x_torque * cos_inc - orbit_z_torque*sin_inc)
+                      /
+                      __orbital_angmom);
+
         if(zone_x_torque!=0 && moment_of_inertia()!=0)
             result -= zone_x_torque / __angular_momentum;
         if(		deriv==Dissipation::NO_DERIV 

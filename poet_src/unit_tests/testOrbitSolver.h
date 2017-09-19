@@ -157,14 +157,32 @@ namespace Evolve {
 
             ///The evolution modes that apply between consecutive __age_breaks.
             std::list<MODE_TYPE> __expected_mode;
+
+            ///The precision with which breaks should be detected
+            double __break_precision;
         public:
             ///Create.
-            ExpectedEvolutionMode() {}
+            ExpectedEvolutionMode(double break_precision = 1e-5) :
+                __break_precision(break_precision)
+            {}
 
             ///Add an evolution mode that applies up to the given age.
             void add_break(double age, MODE_TYPE mode)
             {__age_breaks.push_back(age); __expected_mode.push_back(mode);}
 
+            ///Is the given age close to a break (hence ambigous mode).
+            bool near_break(double age) const
+            {
+                for(
+                    std::list<double>::const_iterator 
+                        break_i = __age_breaks.begin();
+                    break_i != __age_breaks.end();
+                    ++break_i
+                )
+                    if(check_diff(age, *break_i, 0.0, __break_precision))
+                        return true;
+                return false;
+            }
 
             ///The evolution mode that corresponds to the given age.
             MODE_TYPE operator()(double age) const
@@ -230,13 +248,20 @@ namespace Evolve {
             double phase_lag = 0
         );
 
+        StellarEvolution::MockStellarEvolution *make_no_evolution();
+        StellarEvolution::MockStellarEvolution *make_linear_I_evolution();
+
         ///Add a planet to the given star and evolve, returning the solver.
         void evolve(
             double wdisk,
             double tdisk,
             double initial_a,
-            double initial_Lrad,
-            double initial_incl = 0
+            double *initial_Lstar,
+            double initial_incl = 0.0,
+            double planet_mass = 1.0,
+            ///If NaN defaults to tdisk.
+            double tplanet = Core::NaN,
+            double max_age = MAX_AGE
         );
 
         ///\brief Tests the latest evolution calculated by the solver against
@@ -249,6 +274,21 @@ namespace Evolve {
             const ExpectedEvolutionMode<bool> &expected_wind_mode,
             double min_age,
             double max_age,
+            bool debug_mode = false
+        );
+
+        ///\brief Test a planet-less scenario computed in 3 different ways:
+        ///1) withou a planet 2) without dissipation 3) with massless planet
+        void test_no_planet_scenario(
+            const StellarEvolution::Interpolator &stellar_evol,
+            double *initial_Lstar,
+            double windK,
+            double wind_sat_freq,
+            double core_env_coupling_time,
+            std::vector<const Core::OneArgumentDiffFunction *>
+                &expected_evolution,
+            const ExpectedEvolutionMode<bool> &expected_wind_mode,
+            double max_age = MAX_AGE,
             bool debug_mode = false
         );
     protected:
@@ -274,7 +314,7 @@ namespace Evolve {
         ///
         ///Calculates each evolution with NO_PLANET evolution mode, and with
         ///FAST_PLANET/SLOW_PLANET evolution mode, but zero planet mass.
-//        void test_no_planet_evolution();
+        void test_no_planet_evolution();
 
         ///\brief Tests the evolution of the orbit plus stellar rotation,
         ///starting with the planet already present and ensuring it does not

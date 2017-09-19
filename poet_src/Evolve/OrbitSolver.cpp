@@ -505,9 +505,9 @@ namespace Evolve {
             initialize_skip_history(*__stopping_conditions, stop_reason);
         StopInformation result;
         insert_discarded(age, current_stop_cond, current_stop_deriv);
-#ifndef NDEBUG
-//    	std::cerr << std::string(77, '@') << std::endl;
-//    	output_history_and_discarded(std::cerr);
+#ifdef VERBOSE_DEBUG
+    	std::cerr << std::string(77, '@') << std::endl;
+    	output_history_and_discarded(std::cerr);
 #endif
         for(
             size_t cond_ind = 0; 
@@ -708,7 +708,7 @@ namespace Evolve {
                 std::abs(stop.stop_condition_precision()) > __precision
             );
             if(!step_rejected) {
-#ifndef NDEBUG
+#ifdef VERBOSE_DEBUG
                 std::cerr << "Stepped to t = " << t << std::endl;
 #endif
                 add_to_evolution(t, evolution_mode, system);

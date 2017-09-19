@@ -111,5 +111,6 @@ std::valarray< std::valarray<double> > offset_age(
 ///Given n, m and (n)C(m) returns (n)C(m+1)
 unsigned next_binom_coef(unsigned n, unsigned m, unsigned nCm);
 
+double lag_from_lgQ(double lgQ);
 
 #endif

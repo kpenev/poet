@@ -368,108 +368,165 @@ double ExponentialPlusFunc::order(unsigned deriv_order) const
 	return result;
 }
 
-#if 0
 double FuncPlusFunc::order(unsigned deriv_order) const
 {
-	if(deriv_order==0) return (*this)(__deriv_x);
-	const FunctionDerivatives *f1_deriv=__f1->deriv(__deriv_x),
-		  *f2_deriv=__f2->deriv(__deriv_x);
-	double result=f1_deriv->order(deriv_order)+f2_deriv->order(deriv_order);
+	if(deriv_order == 0) return (*this)(__deriv_x);
+	const FunctionDerivatives *f1_deriv = __f1->deriv(__deriv_x),
+                              *f2_deriv = __f2->deriv(__deriv_x);
+	double result = (f1_deriv->order(deriv_order)
+                     +
+                     f2_deriv->order(deriv_order));
 	delete f1_deriv;
 	delete f2_deriv;
 	return result;
 }
 
+
 PiecewiseFunction::PiecewiseFunction(
-		const std::list<const OneArgumentDiffFunction *> &pieces,
-		double deriv_x) :
-	__deriv_x(deriv_x), __range_low(Inf), __range_high(-Inf),__pieces(pieces)
+    const std::list<const OneArgumentDiffFunction *> &pieces,
+    double deriv_x
+) :
+	__deriv_x(deriv_x),
+    __range_low(Core::Inf),
+    __range_high(-Core::Inf),
+    __pieces(pieces)
 {
-	for(std::list<const OneArgumentDiffFunction *>::const_iterator
-			piece_i=__pieces.begin(); piece_i!=__pieces.end(); piece_i++) {
-		if((*piece_i)->range_low()<__range_low)
-			__range_low=(*piece_i)->range_low();
+	for(
+        std::list<const OneArgumentDiffFunction *>::const_iterator
+			piece_i = __pieces.begin();
+        piece_i!=__pieces.end();
+        piece_i++
+    ) {
+		if((*piece_i)->range_low() < __range_low)
+			__range_low = (*piece_i)->range_low();
 		if((*piece_i)->range_high()>__range_high)
-			__range_high=(*piece_i)->range_high();
+			__range_high = (*piece_i)->range_high();
 	}
 }
 
 void PiecewiseFunction::add_piece(const OneArgumentDiffFunction *piece)
 {
 	__pieces.push_back(piece);
-	if(piece->range_low()<__range_low)
-		__range_low=piece->range_low();
-	if(piece->range_high()>__range_high)
-		__range_high=piece->range_high();
+	if(piece->range_low() < __range_low)
+		__range_low = piece->range_low();
+	if(piece->range_high() > __range_high)
+		__range_high = piece->range_high();
 }
 
 double PiecewiseFunction::operator()(double x) const
 {
-	double deriv_x=__deriv_x;
-	const_cast<PiecewiseFunction*>(this)->__deriv_x=x;
-	double result=order(0);
-	const_cast<PiecewiseFunction*>(this)->__deriv_x=deriv_x;
+	double deriv_x = __deriv_x;
+	const_cast<PiecewiseFunction*>(this)->__deriv_x = x;
+	double result = order(0);
+	const_cast<PiecewiseFunction*>(this)->__deriv_x = deriv_x;
 	return result;
 }
 
 double PiecewiseFunction::order(unsigned deriv_order) const
 {
-	unsigned index=0;
-	if(std::isnan(__deriv_x)) return NaN;
-	for(std::list<const OneArgumentDiffFunction *>::const_iterator
-			fi=__pieces.begin(); fi!=__pieces.end(); fi++) { 
-		if(__deriv_x>=(*fi)->range_low() && __deriv_x<=(*fi)->range_high()) {
-			if(deriv_order==0) return (**fi)(__deriv_x);
-			const FunctionDerivatives *df=(*fi)->deriv(__deriv_x);
-			double result=df->order(deriv_order);
+	unsigned index = 0;
+	if(std::isnan(__deriv_x)) return Core::NaN;
+	for(
+        std::list<const OneArgumentDiffFunction *>::const_iterator
+            fi = __pieces.begin();
+        fi != __pieces.end();
+        fi++
+    ) { 
+		if(
+            __deriv_x >= (*fi)->range_low()
+            &&
+            __deriv_x <= (*fi)->range_high()
+        ) {
+			if(deriv_order == 0) return (**fi)(__deriv_x);
+			const FunctionDerivatives *df = (*fi)->deriv(__deriv_x);
+			double result = df->order(deriv_order);
 			delete df;
 			return result;
 		}
-		index++;
+		++index;
 	}
 	std::ostringstream msg;
-	msg << "Requested derivative or function value at age=" << __deriv_x
+	msg << "Requested derivative or function value at age="
+        << __deriv_x
 		<< ", outside the range of any piece in PiecewiseFunction::order.";
-	throw Error::BadFunctionArguments(msg.str());
+	throw Core::Error::BadFunctionArguments(msg.str());
 }
 
 double FunctionRatio::order(unsigned deriv_order) const
 {
-	if(deriv_order==0) return (*this)(__deriv_x);
+	if(deriv_order == 0)
+        return (*this)(__deriv_x);
 	else {
-		const FunctionDerivatives *df1=__f1->deriv(__deriv_x),
-			  *df2=__f2->deriv(__deriv_x);
+		const FunctionDerivatives *df1 = __f1->deriv(__deriv_x),
+                                  *df2 = __f2->deriv(__deriv_x);
 		double result;
-		if(deriv_order==1) result=df1->order(1)/df2->order(0) -
-			df1->order(0)*df2->order(1)/std::pow(df2->order(0), 2);
-		else if(deriv_order==2)
-			result=df1->order(2)/df2->order(0) -
-				2.0*df1->order(1)*df2->order(1)/std::pow(df2->order(0), 2) -
-				df1->order(0)*df2->order(2)/std::pow(df2->order(0), 2) +
-				df1->order(0)*std::pow(df2->order(1), 2)/
-					std::pow(df2->order(0), 3);
-		else throw Error::BadFunctionArguments("Function ratio derivatives "
-				"are only implemneted up to and including order 2.");
-		delete df1; delete df2;
+		if(deriv_order == 1)
+            result = (
+                df1->order(1) / df2->order(0)
+                -
+                df1->order(0) * df2->order(1) / std::pow(df2->order(0), 2)
+            );
+		else if(deriv_order == 2)
+			result = (
+                df1->order(2) / df2->order(0)
+                -
+                (
+                    2.0 * df1->order(1) * df2->order(1)
+                    /
+                    std::pow(df2->order(0), 2) 
+                )
+                -
+				df1->order(0) * df2->order(2) / std::pow(df2->order(0), 2)
+                +
+				(
+                    df1->order(0) * std::pow(df2->order(1), 2)
+                    /
+					std::pow(df2->order(0), 3)
+                )
+            );
+		else
+            throw Core::Error::BadFunctionArguments(
+                "Function ratio derivatives are only implemneted up to and "
+                "including order 2."
+            );
+		delete df1;
+        delete df2;
 		return result;
 	}
 }
 
 double FunctionToPower::order(unsigned deriv_order) const
 {
-	if(deriv_order==0) return (*this)(__deriv_x);
+	if(deriv_order == 0)
+        return (*this)(__deriv_x);
 	else {
-		const FunctionDerivatives *df=__f->deriv(__deriv_x);
+		const FunctionDerivatives *df = __f->deriv(__deriv_x);
 		double result;
-		if(deriv_order==1)
-			result=__power*std::pow(df->order(0), __power-1)*df->order(1);
-		else if(deriv_order==2)
-			result=__power*((__power-1)*std::pow(df->order(0), __power-2)*
-					std::pow(df->order(1), 2) +
-					std::pow(df->order(0), __power-1)*df->order(2));
-		else throw Error::BadFunctionArguments("Function to power "
-				"derivatives are only implemneted up to and including order "
-				"2.");
+		if(deriv_order == 1)
+			result = (__power
+                      *
+                      std::pow(df->order(0), __power-1)
+                      *
+                      df->order(1));
+		else if(deriv_order == 2)
+			result = (
+                __power
+                *
+                (
+                    (__power-1)
+                    *
+                    std::pow(df->order(0), __power-2)
+                    *
+                    std::pow(df->order(1), 2) 
+                    +
+                    std::pow(df->order(0), __power - 1) * df->order(2)
+                )
+            );
+		else 
+            throw Core::Error::BadFunctionArguments(
+                "Function to power derivatives are only implemneted up to "
+                "and including order 2."
+            );
 		delete df;
 		return result;
 	}
@@ -477,29 +534,36 @@ double FunctionToPower::order(unsigned deriv_order) const
 
 double ScaledFunction::order(unsigned deriv_order) const
 {
-	if(deriv_order==0) return (*this)(__deriv_x);
-	const FunctionDerivatives *f_deriv=__f->deriv(__deriv_x);
-	double result=__scale*f_deriv->order(deriv_order);
+	if(deriv_order == 0) return (*this)(__deriv_x);
+	const FunctionDerivatives *f_deriv = __f->deriv(__deriv_x);
+	double result = __scale*f_deriv->order(deriv_order);
 	delete f_deriv;
 	return result;
 }
 
 double LogFunction::order(unsigned deriv_order) const
 {
-	if(deriv_order==0) return (*this)(__deriv_x);
+	if(deriv_order == 0) return (*this)(__deriv_x);
 	else {
 		const FunctionDerivatives *f_deriv=__f->deriv(__deriv_x);
 		double result;
-		if(deriv_order==1) result=f_deriv->order(1)/f_deriv->order(0);
-		else if(deriv_order==2)
-			result=f_deriv->order(2)/f_deriv->order(0) -
-				std::pow(f_deriv->order(1)/f_deriv->order(0), 2);
-		else throw Error::BadFunctionArguments("Log(Function) derivatives "
-				"are only implemneted up to and including order 2.");
+		if(deriv_order == 1)
+            result = f_deriv->order(1) / f_deriv->order(0);
+		else if(deriv_order == 2)
+			result = (f_deriv->order(2) / f_deriv->order(0)
+                      -
+                      std::pow(f_deriv->order(1) / f_deriv->order(0), 2));
+		else
+            throw Core::Error::BadFunctionArguments(
+                "Log(Function) derivatives are only implemneted up to and "
+                "including order 2."
+            );
 		delete f_deriv;
 		return result;
 	}
 }
+
+#if 0
 
 double solve(double guess_x, double abs_precision, double rel_precision,
 		double (*f)(double x, void *params),

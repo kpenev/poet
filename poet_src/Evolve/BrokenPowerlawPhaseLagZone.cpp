@@ -74,14 +74,13 @@ namespace Evolve {
     void BrokenPowerlawPhaseLagZone::add_tidal_frequency_conditions(
         BinarySystem &system, 
         bool primary,
-        unsigned zone_index,
+        unsigned,
         CombinedStoppingCondition &result
     )
     {
         const DissipatingBody 
             &this_body = (primary ? system.primary() : system.secondary()),
             &other_body = (primary ? system.secondary() : system.primary());
-        double orbital_frequency = get_orbital_frequency(system);
 
         for(
             int e_order = 0; 
@@ -270,6 +269,7 @@ namespace Evolve {
     {
 
         if(initialize and !std::isnan(orbital_frequency)) {
+            initializing(true);
 
 #ifndef NDEBUG
             std::cerr << "Initializing broken powerlaw lag zone"
@@ -317,6 +317,8 @@ namespace Evolve {
                     ++destination;
                 }
             }
+
+            initializing(false);
         }
 
         DissipatingZone::configure(initialize,

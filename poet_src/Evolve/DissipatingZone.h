@@ -179,6 +179,9 @@ namespace Evolve {
         ///zones in the system.
         unsigned __locked_zone_index;
 
+        ///Is the zone in the middle of initializing (disable lock check)?
+        bool __initializing;
+
         ///Computes the \f$\mathcal{U}_{m,m'}\f$ values and their derivatives. 
         void fill_Umm();
 
@@ -229,12 +232,6 @@ namespace Evolve {
                 double &forcing_frequency
         ) const;
 
-#ifndef NDEBUG
-        ///\brief Runs a bunch of asserts to check the consistency of __lock and
-        ///__other_lock.
-        void check_locks_consistency() const;
-#endif
-
         ///\brief Updates a SpinOrbitLockInfo variable as appropriate when 
         ///decreasing the eccentricity expansion order.
         ///
@@ -250,7 +247,16 @@ namespace Evolve {
         ///The spin frequency and orbital frequency must already be set.
         void initialize_locks();
 
+#ifndef NDEBUG
+        ///\brief Runs a bunch of asserts to check the consistency of __lock and
+        ///__other_lock.
+        virtual void check_locks_consistency() const;
+#endif
+
     protected:
+        ///Notify the zone that it is in the process of initializing or not.
+        void initializing(bool flag) {__initializing = flag;}
+
         ///Configures only the spin of the zone.
         void configure_spin(
             ///See same name argument to configure().
@@ -259,7 +265,6 @@ namespace Evolve {
             ///See same name argument to configure().
             bool spin_is_frequency
         );
-
 
     public:
         DissipatingZone();

@@ -425,29 +425,31 @@ public:
 	{return Core::InterpSolutionIterator();}
 };
 
-#if 0
 ///\brief Represents the sum of two functions and the derivative.
 ///
 ///\ingroup UnitTests_group
-class FuncPlusFunc : public OneArgumentDiffFunction, FunctionDerivatives {
+class FuncPlusFunc : public Core::OneArgumentDiffFunction,
+                            Core::FunctionDerivatives {
 private:
 	const OneArgumentDiffFunction *__f1, *__f2;
 	double __deriv_x;
 public:
 	///Creates the function.
 	FuncPlusFunc(const OneArgumentDiffFunction *f1,
-			const OneArgumentDiffFunction *f2, double deriv_x=NaN) :
-		__f1(f1), __f2(f2), __deriv_x(deriv_x) {}
+                 const OneArgumentDiffFunction *f2,
+                 double deriv_x = Core::NaN) :
+		__f1(f1), __f2(f2), __deriv_x(deriv_x)
+    {}
 
 	///Evaluates the function at the given x.
-	double operator()(double x) const {return (*__f1)(x)+(*__f2)(x);}
+	double operator()(double x) const {return (*__f1)(x) + (*__f2)(x);}
 
 	///Returns the derivative.
 	const FunctionDerivatives *deriv(double x) const
 	{return new FuncPlusFunc(__f1, __f2, x);}
 
 	///For a derivative returns the given order.
-	double order(unsigned deriv_order=1) const;
+	double order(unsigned deriv_order = 1) const;
 
 	///The upper end of the range where the function is defined.
 	double range_high() const
@@ -458,22 +460,23 @@ public:
 	{return std::max(__f1->range_low(), __f2->range_low());}
 
 	///Iterator over the x values where the function takes the given value.
-	InterpSolutionIterator crossings(double) const
-	{return InterpSolutionIterator();}
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
 };
 
 ///\brief Several functions stiched together.
 ///
 ///\ingroup UnitTests_group
-class PiecewiseFunction : public OneArgumentDiffFunction,FunctionDerivatives{
+class PiecewiseFunction : public Core::OneArgumentDiffFunction,
+                                 Core::FunctionDerivatives{
 private:
 	double __deriv_x, __range_low, __range_high;
 	std::list<const OneArgumentDiffFunction *> __pieces;
 public:
 	///Create the function.
 	PiecewiseFunction(const std::list<const OneArgumentDiffFunction *>
-			&pieces=std::list<const OneArgumentDiffFunction *>(),
-			double deriv_x=NaN);
+                      &pieces = std::list<const OneArgumentDiffFunction *>(),
+                      double deriv_x = Core::NaN);
 
 	///\brief Adds another piece of the function, where it applies is defined
 	///by its range.
@@ -497,25 +500,27 @@ public:
 
 	///\brief An iterator over the x values where the function takes the
 	///given value.
-	InterpSolutionIterator crossings(double) const
-	{return InterpSolutionIterator();}
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
 };
 
 ///\brief The ratio of two functions;
 ///
 ///\ingroup UnitTests_group
-class FunctionRatio: public OneArgumentDiffFunction,FunctionDerivatives {
+class FunctionRatio: public Core::OneArgumentDiffFunction,
+                            Core::FunctionDerivatives {
 private:
 	double __deriv_x;
 	const OneArgumentDiffFunction *__f1, *__f2;
 public:
 	///Create the function
 	FunctionRatio(const OneArgumentDiffFunction *f1,
-			const OneArgumentDiffFunction *f2, double deriv_x=NaN) :
+                  const OneArgumentDiffFunction *f2,
+                  double deriv_x = Core::NaN) :
 		__deriv_x(deriv_x), __f1(f1), __f2(f2) {}
 
 	///Evaluates the function at the given x.
-	double operator()(double x) const {return (*__f1)(x)/(*__f2)(x);}
+	double operator()(double x) const {return (*__f1)(x) / (*__f2)(x);}
 
 	///Returns the derivatives at the given x.
 	const FunctionDerivatives *deriv(double x) const
@@ -534,21 +539,23 @@ public:
 
 	///\brief An iterator over the x values where the function takes the
 	///given value.
-	InterpSolutionIterator crossings(double) const
-	{return InterpSolutionIterator();}
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
 };
 
 ///\brief A function raised to some power
 ///
 ///\ingroup UnitTests_group
-class FunctionToPower : public OneArgumentDiffFunction, FunctionDerivatives {
+class FunctionToPower : public Core::OneArgumentDiffFunction,
+                               Core::FunctionDerivatives {
 private:
 	const OneArgumentDiffFunction *__f;
 	double __power, __deriv_x;
 public:
 	///Create the function.
-	FunctionToPower(const OneArgumentDiffFunction *f, double power,
-			double deriv_x=NaN) :
+	FunctionToPower(const OneArgumentDiffFunction *f,
+                    double power,
+                    double deriv_x = Core::NaN) :
 		__f(f), __power(power), __deriv_x(deriv_x) {}
 
 	///Evaluates the function at the given x.
@@ -570,21 +577,23 @@ public:
 
 	///\brief An iterator over the x values where the function takes the
 	///given value.
-	InterpSolutionIterator crossings(double) const
-	{return InterpSolutionIterator();}
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
 };
 
 ///\brief A function scaled by some constant
 ///
 ///\ingroup UnitTests_group
-class ScaledFunction : public OneArgumentDiffFunction, FunctionDerivatives {
+class ScaledFunction : public Core::OneArgumentDiffFunction,
+                              Core::FunctionDerivatives {
 private:
 	const OneArgumentDiffFunction *__f;
 	double __scale, __deriv_x;
 public:
 	///Create the function.
-	ScaledFunction(const OneArgumentDiffFunction *f, double scale,
-			double deriv_x=NaN) :
+	ScaledFunction(const OneArgumentDiffFunction *f,
+                   double scale,
+                   double deriv_x = Core::NaN) :
 		__f(f), __scale(scale), __deriv_x(deriv_x) {}
 
 	///Evaluates the function at the given x.
@@ -606,20 +615,22 @@ public:
 
 	///\brief An iterator over the x values where the function takes the
 	///given value.
-	InterpSolutionIterator crossings(double) const
-	{return InterpSolutionIterator();}
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
 };
 
 ///\brief The natural logarithm of a function.
 ///
 ///\ingroup UnitTests_group
-class LogFunction : public OneArgumentDiffFunction, FunctionDerivatives {
+class LogFunction : public Core::OneArgumentDiffFunction,
+                           Core::FunctionDerivatives {
 private:
 	const OneArgumentDiffFunction *__f;
 	double __deriv_x;
 public: 
 	///Create the function.
-	LogFunction(const OneArgumentDiffFunction *f, double deriv_x=NaN) :
+	LogFunction(const OneArgumentDiffFunction *f,
+                double deriv_x = Core::NaN) :
 		__f(f), __deriv_x(deriv_x) {}
 
 	///Evaluates the function at the given x.
@@ -640,10 +651,11 @@ public:
 
 	///\brief An iterator over the x values where the function takes the
 	///given value.
-	InterpSolutionIterator crossings(double) const
-	{return InterpSolutionIterator();}
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
 };
 
+#if 0
 ///Returns an array of the values of the track at the given ages.
 std::valarray<double> tabulate_track(PolynomialEvolutionTrack *track,
 		std::valarray<double> ages, unsigned deriv_order=0);
@@ -651,7 +663,7 @@ std::valarray<double> tabulate_track(PolynomialEvolutionTrack *track,
 ///\brief Returns the value of the polynomial with the given coefficients at
 ///the given mass and age.
 double eval_poly(const std::valarray< std::valarray<double> > &poly_coef,
-		double mass, double age, double low_mass_age_scaling=0,
+                 double mass, double age, double low_mass_age_scaling=0,
 		double high_mass_age_scaling=0, double scale_mass=NaN);
 
 ///Solves f(x)=0 for x.
