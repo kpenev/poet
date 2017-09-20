@@ -176,12 +176,12 @@ namespace Evolve {
         }
     }
     StellarEvolution::MockStellarEvolution *
-        test_OrbitSolver::make_no_evolution()
+        test_OrbitSolver::make_no_evolution(double Rstar)
     {
         return new StellarEvolution::MockStellarEvolution(
             0.0,
             std::valarray< std::valarray<double> >(//R
-                std::valarray<double>(1.0, 1),
+                std::valarray<double>(Rstar, 1),
                 1
             ),
             std::valarray< std::valarray<double> >(//Iconv
@@ -246,7 +246,8 @@ namespace Evolve {
                                   double initial_incl,
                                   double planet_mass,
                                   double tplanet,
-                                  double max_age)
+                                  double max_age,
+                                  double planet_radius)
     {
         __star->select_interpolation_region(TSTART);
         
@@ -254,7 +255,8 @@ namespace Evolve {
         if(std::isnan(tplanet)) tplanet = tdisk;
 
         double zero = 0.0;
-        Planet::LockedPlanet planet(planet_mass, (planet_mass ? 1.0 : 0.0));
+        Planet::LockedPlanet planet(planet_mass,
+                                    (planet_mass ? planet_radius : 0.0));
         planet.configure(true, //init
                          tplanet, //age
                          __star->mass(), //mass
@@ -957,105 +959,179 @@ namespace Evolve {
         }
     }
 
-
-#if 0
-
     void test_OrbitSolver::test_unlocked_evolution()
     {
         try {
-            ExpectedEvolutionMode slow_planet_mode,
-                                  fast_planet_mode;
-            slow_planet_mode.add_break(tstart, SLOW_PLANET);
-            fast_planet_mode.add_break(tstart, FAST_PLANET);
-            MockStellarEvolution no_evol_highI(-1,
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1)),
-                                 no_evol_lowI(-1,
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0e-9, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1));
-            const double mplanet=100;
-            double Q=1e8*mplanet, alpha=-4.5*std::sqrt(AstroConst::G/
-                    (AstroConst::solar_radius*AstroConst::solar_mass))*
-                mplanet*AstroConst::jupiter_mass/Q*AstroConst::Gyr/
-                AstroConst::solar_radius,
-                a6p5_offset=std::pow(2.0, 6.5)-6.5*alpha,
-                a0=std::pow(a6p5_offset, 1.0/6.5),
-                Lscale=-AstroConst::jupiter_mass*mplanet/
-                    std::pow(AstroConst::solar_radius, 1.5)*
-                    std::sqrt(AstroConst::G/
-                            (mplanet*AstroConst::jupiter_mass+
-                             AstroConst::solar_mass))*
-                    AstroConst::day;
-            Star star_highI_no_wind_no_coupling(1.0, Q, 0.0, 1.0, Inf, 0.0, 0.0,
-                    0.0, no_evol_highI, 1.0, 1.0, 1.0);
-            Star star_lowI_no_wind_no_coupling(1.0, Q, 0.0, 1.0, Inf, 0.0, 0.0,
-                    0.0, no_evol_lowI, 1.0, 1.0, 1.0);
-            Planet planet_highI(&star_highI_no_wind_no_coupling, mplanet,
-                    0.0001, 1.0),
-                   planet_lowI(&star_lowI_no_wind_no_coupling, mplanet,
-                           0.0001, 1.0);
-            StellarSystem system_highI(&star_highI_no_wind_no_coupling,
-                                    &planet_highI),
-                          system_lowI(&star_lowI_no_wind_no_coupling,
-                                  &planet_lowI);
-            OrbitSolver solver(tstart, 1.0, 1e-7);
-            std::valarray<double> initial_orbit(3);
-            initial_orbit[0]=a6p5_offset+6.5*tstart*alpha;
-            initial_orbit[1]=Lscale*(std::pow(initial_orbit[0], 1.0/13.0) -
-                    std::sqrt(a0));
-            initial_orbit[2]=0.0;
-            std::valarray<double> a6p5_poly_coef(2);
-            a6p5_poly_coef[0]=a6p5_offset; a6p5_poly_coef[1]=6.5*alpha;
-            PolynomialEvolutionTrack a6p5_evol(a6p5_poly_coef, tstart, 1.0);
-            FunctionToPower a_evol(&a6p5_evol, 1.0/6.5),
-                            sqrta_evol(&a6p5_evol, 1.0/13.0);
-            ExponentialPlusFunc Lconv_unscaled(&sqrta_evol, -std::sqrt(a0), 0);
-            solver(system_highI, Inf, tstart, a0, tstart, FAST_PLANET, initial_orbit);
-            test_solution(solver, a_evol,
-                    ScaledFunction(&Lconv_unscaled, Lscale), zero_func,
-                    tstart, 1.0, fast_planet_mode);
+            ExpectedEvolutionMode<Core::EvolModeType> binary_mode;
+            binary_mode.add_break(TSTART, Core::BINARY);
+            ExpectedEvolutionMode<bool> unsat_wind_mode, sat_wind_mode;
+            unsat_wind_mode.add_break(TSTART, false);
+            sat_wind_mode.add_break(TSTART, true);
 
-            a0=2.6;
-            a6p5_offset=std::pow(a0, 6.5);
-            initial_orbit[0]=a6p5_offset-6.5*tstart*alpha;
-            initial_orbit[1]=Lscale*(std::pow(initial_orbit[0], 1.0/13.0) -
-                    std::sqrt(a0));
-            initial_orbit[2]=0.0;
-            a6p5_poly_coef[0]=a6p5_offset; a6p5_poly_coef[1]=-6.5*alpha;
-            PolynomialEvolutionTrack a6p5_evol_slow(a6p5_poly_coef, tstart, 1.0);
-            FunctionToPower a_evol_slow(&a6p5_evol_slow, 1.0/6.5),
-                            sqrta_evol_slow(&a6p5_evol_slow, 1.0/13.0);
+            StellarEvolution::MockStellarEvolution 
+                *no_evol = make_no_evolution(1.0);
+
+            std::vector<const Core::OneArgumentDiffFunction *>
+                expected_real_quantities(NUM_REAL_EVOL_QUANTITIES - 1);
+
+            const double mplanet = 100;
+            double lag = 1e-8 / mplanet,
+                   mplanet_si = mplanet * Core::AstroConst::jupiter_mass,
+                   mstar_si = Core::AstroConst::solar_mass,
+                   alpha = (
+                       -2.4 * M_PI
+                       *
+                       std::sqrt(
+                           Core::AstroConst::G * (mplanet_si + mstar_si)
+                           /
+                           Core::AstroConst::solar_radius
+                       )
+                       *
+                       mplanet_si / mstar_si
+                       *
+                       lag * Core::AstroConst::Gyr
+                       /
+                       Core::AstroConst::solar_radius
+                   ),
+                   a6p5_offset = std::pow(2.0, 6.5) - 6.5 * alpha,
+                   a0 = std::pow(a6p5_offset, 1.0 / 6.5),
+                   Lscale = (
+                       -Core::AstroConst::jupiter_mass*mplanet
+                       /
+                       std::pow(Core::AstroConst::solar_radius, 1.5)
+                       *
+                       std::sqrt(
+                           Core::AstroConst::G
+                           /
+                           (
+                               mplanet * Core::AstroConst::jupiter_mass
+                               +
+                               Core::AstroConst::solar_mass
+                           )
+                       )
+                       *
+                       Core::AstroConst::day
+                   );
+
+            std::valarray<double> a6p5_poly_coef(2);
+            a6p5_poly_coef[0] = a6p5_offset;
+            a6p5_poly_coef[1] = 6.5 * alpha;
+            StellarEvolution::PolynomialEvolutionQuantity a6p5_evol(
+                a6p5_poly_coef,
+                TSTART,
+                1.0
+            );
+            FunctionToPower sqrta_evol(&a6p5_evol, 1.0/13.0);
+            ExponentialPlusFunc Lconv_unscaled(&sqrta_evol,
+                                               -std::sqrt(a0),
+                                               0);
+
+            expected_real_quantities[SEMIMAJOR] = new FunctionToPower(
+                &a6p5_evol,
+                1.0 / 6.5
+            );
+            expected_real_quantities[ECCENTRICITY] = &zero_func;
+            expected_real_quantities[CONV_INCLINATION] = &zero_func;
+            expected_real_quantities[RAD_INCLINATION] = &zero_func;
+            expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
+            expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
+            expected_real_quantities[CONV_ANGMOM] = new ScaledFunction(
+                &Lconv_unscaled,
+                Lscale
+            );
+            expected_real_quantities[RAD_ANGMOM] = &zero_func;
+
+            double initial_a = (*expected_real_quantities[SEMIMAJOR])(TSTART);
+
+            std::valarray<double> initial_L(3);
+            initial_L[0] = (*expected_real_quantities[CONV_ANGMOM])(
+                TSTART
+            );
+            initial_L[1] = 0.0;
+            initial_L[2] = 0.0;
+
+            make_const_lag_star(*no_evol,
+                                0.0,//wind K
+                                100.0,//wsat
+                                Core::Inf,//tcoup
+                                lag);
+
+            evolve(0.0,//wdisk
+                   0.0,//tdisk
+                   (*expected_real_quantities[SEMIMAJOR])(TSTART),
+                   &(initial_L[0]),
+                   0.0,//initial inclination
+                   mplanet,//planet mass
+                   Core::NaN,//tplanet
+                   1.0,//stop evolution age
+                   0.0001);//Rplanet
+            test_solution(expected_real_quantities,
+                          binary_mode,
+                          unsat_wind_mode,
+                          TSTART,
+                          1.0,
+                          true);
+
+            delete __system;
+            delete __solver;
+            delete expected_real_quantities[SEMIMAJOR];
+            delete expected_real_quantities[CONV_ANGMOM];
+
+            a0 = 2.6;
+            a6p5_offset = std::pow(a0, 6.5);
+            a6p5_poly_coef[0] = a6p5_offset;
+            a6p5_poly_coef[1] = -6.5*alpha;
+            StellarEvolution::PolynomialEvolutionQuantity a6p5_evol_slow(
+                a6p5_poly_coef,
+                TSTART,
+                1.0
+            );
+            FunctionToPower a_evol_slow(&a6p5_evol_slow, 1.0 / 6.5),
+                            sqrta_evol_slow(&a6p5_evol_slow, 1.0 / 13.0);
             ExponentialPlusFunc Lconv_unscaled_slow(&sqrta_evol_slow,
-                    -std::sqrt(a0), 0);
-            solver(system_highI, Inf, tstart, a0, tstart, SLOW_PLANET,
-                    initial_orbit, true);
-            test_solution(solver, a_evol_slow,
-                    ScaledFunction(&Lconv_unscaled_slow, Lscale), zero_func,
-                    tstart, 1.0, slow_planet_mode);
-        } catch (Error::General &ex) {
-            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()+": "+ex.get_message()).c_str());
+                                                    -1e5-std::sqrt(a0),
+                                                    0);
+            expected_real_quantities[SEMIMAJOR] = &a_evol_slow;
+            expected_real_quantities[CONV_ANGMOM] = new ScaledFunction(
+                &Lconv_unscaled_slow,
+                Lscale
+            );
+
+            initial_a = (*expected_real_quantities[SEMIMAJOR])(TSTART);
+            initial_L[0] = (*expected_real_quantities[CONV_ANGMOM])(TSTART);
+
+            evolve(0.0,//wdisk
+                   0.0,//tdisk
+                   (*expected_real_quantities[SEMIMAJOR])(TSTART),
+                   &(initial_L[0]),
+                   0.0,//initial inclination
+                   mplanet,//planet mass
+                   Core::NaN,//tplanet
+                   1.0,//stop evolution age
+                   0.0001);//Rplanet
+            test_solution(expected_real_quantities,
+                          binary_mode,
+                          sat_wind_mode,
+                          TSTART,
+                          1.0);
+
+            delete __star;
+            delete __system;
+            delete __solver;
+            delete expected_real_quantities[CONV_ANGMOM];
+            delete no_evol;
+        } catch (Core::Error::General &ex) {
+            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")
+                                    +
+                                    ex.what()+": "+ex.get_message()).c_str());
         } catch (std::exception &ex) {
-            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()).c_str());
+            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")
+                                    +
+                                    ex.what()).c_str());
         }
     }
+
+#if 0
 
     ///\brief The equation that should be solved in order to get the semimamjor
     ///axis at a gien time.
@@ -1715,10 +1791,10 @@ namespace Evolve {
 
     test_OrbitSolver::test_OrbitSolver()
     {
-        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
-        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
-//        TEST_ADD(test_OrbitSolver::test_unlocked_evolution); 
+        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_unlocked_evolution); 
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
 //        TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);

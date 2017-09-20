@@ -455,27 +455,31 @@ namespace Evolve {
 
         __tidal_torques_above.resize(number_zones());
         __tidal_torques_below.resize(number_zones());
-        __angular_momentum_transfer.resize(number_zones()-1);
-        unsigned angmom_offset=(locked_surface ? 1 : 0);
-        for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
-            DissipatingZone &current_zone=zone(zone_index);
+        __angular_momentum_transfer.resize(number_zones() - 1);
+        unsigned angmom_offset = (locked_surface ? 1 : 0);
+        for(
+            unsigned zone_index = 0;
+            zone_index < number_zones();
+            ++zone_index
+        ) {
+            DissipatingZone &current_zone = zone(zone_index);
             double zone_inclination, zone_periapsis, zone_spin;
-            if(!inclination) zone_inclination=0;
+            if(!inclination) zone_inclination = 0;
             else if(zero_outer_inclination) 
-                zone_inclination=(zone_index
-                                  ? inclination[zone_index-1]
-                                  : 0);
-            else zone_inclination=inclination[zone_index];
-            if(!periapsis) zone_periapsis=0;
+                zone_inclination = (zone_index
+                                    ? inclination[zone_index - 1]
+                                    : 0);
+            else zone_inclination = inclination[zone_index];
+            if(!periapsis) zone_periapsis = 0;
             else if(zero_outer_periapsis)
-                zone_periapsis=(zone_index ? periapsis[zone_index-1] : 0);
-            else zone_periapsis=periapsis[zone_index];
-            if(locked_surface && zone_index==0)
-                zone_spin=surface_lock_frequency();
+                zone_periapsis = (zone_index ? periapsis[zone_index-1] : 0);
+            else zone_periapsis = periapsis[zone_index];
+            if(locked_surface && zone_index == 0)
+                zone_spin = surface_lock_frequency();
             else if(current_zone.locked() && !initialize) {
-                zone_spin=Core::NaN;
+                zone_spin = Core::NaN;
                 ++angmom_offset;
-            } else zone_spin=spin_angmom[zone_index-angmom_offset];
+            } else zone_spin = spin_angmom[zone_index-angmom_offset];
             current_zone.configure(initialize,
                                    age,
                                    __orbital_frequency,
@@ -484,35 +488,48 @@ namespace Evolve {
                                    zone_spin,
                                    zone_inclination,
                                    zone_periapsis,
-                                   locked_surface && zone_index==0);
+                                   locked_surface && zone_index == 0);
         }
-        for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index) {
-            DissipatingZone &current_zone=zone(zone_index);
-            if(zone_index<number_zones()-1) {
+        for(
+            unsigned zone_index = 0;
+            zone_index < number_zones();
+            ++zone_index
+        ) {
+            DissipatingZone &current_zone = zone(zone_index);
+            if(zone_index < number_zones() - 1) {
                 __angular_momentum_transfer[zone_index].resize(2);
-                angular_momentum_transfer(current_zone, zone(zone_index+1),
-                        __angular_momentum_transfer[zone_index][0],
-                        __angular_momentum_transfer[zone_index][1]);
+                angular_momentum_transfer(
+                    current_zone,
+                    zone(zone_index + 1),
+                    __angular_momentum_transfer[zone_index][0],
+                    __angular_momentum_transfer[zone_index][1]
+                );
             }
-            bool above=false;
+            bool above = false;
             do {
-                std::valarray<Eigen::Vector3d> &tidal_torque=
+                std::valarray<Eigen::Vector3d> &tidal_torque =
                     (above ? __tidal_torques_above : __tidal_torques_below)
                     [zone_index];
                 tidal_torque.resize(Dissipation::NUM_DERIVATIVES);
-                for(int deriv=Dissipation::NO_DERIV;
-                    deriv<Dissipation::END_DIMENSIONLESS_DERIV; ++deriv) {
-                    tidal_torque[deriv][0]=
-                        current_zone.tidal_torque_x(above,
-                                static_cast<Dissipation::Derivative>(deriv));
-                    tidal_torque[deriv][1]=
-                        current_zone.tidal_torque_y(above,
-                                static_cast<Dissipation::Derivative>(deriv));
-                    tidal_torque[deriv][2]=
-                        current_zone.tidal_torque_z(above,
-                                static_cast<Dissipation::Derivative>(deriv));
+                for(
+                    int deriv = Dissipation::NO_DERIV;
+                    deriv < Dissipation::END_DIMENSIONLESS_DERIV;
+                    ++deriv
+                ) {
+                    tidal_torque[deriv][0] = current_zone.tidal_torque_x(
+                        above,
+                        static_cast<Dissipation::Derivative>(deriv)
+                    );
+                    tidal_torque[deriv][1] = current_zone.tidal_torque_y(
+                        above,
+                        static_cast<Dissipation::Derivative>(deriv)
+                    );
+                    tidal_torque[deriv][2] = current_zone.tidal_torque_z(
+                        above,
+                        static_cast<Dissipation::Derivative>(deriv)
+                    );
                 }
-                above=!above;
+                above = !above;
             } while(above);
         }
         collect_orbit_rates(__orbital_frequency, 

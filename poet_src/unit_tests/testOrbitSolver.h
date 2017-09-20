@@ -248,7 +248,9 @@ namespace Evolve {
             double phase_lag = 0
         );
 
-        StellarEvolution::MockStellarEvolution *make_no_evolution();
+        StellarEvolution::MockStellarEvolution *make_no_evolution(
+            double Rstar = 1.0
+        );
         StellarEvolution::MockStellarEvolution *make_linear_I_evolution();
 
         ///Add a planet to the given star and evolve, returning the solver.
@@ -261,7 +263,8 @@ namespace Evolve {
             double planet_mass = 1.0,
             ///If NaN defaults to tdisk.
             double tplanet = Core::NaN,
-            double max_age = MAX_AGE
+            double max_age = MAX_AGE,
+            double planet_radius = 1.0
         );
 
         ///\brief Tests the latest evolution calculated by the solver against
@@ -319,7 +322,7 @@ namespace Evolve {
         ///\brief Tests the evolution of the orbit plus stellar rotation,
         ///starting with the planet already present and ensuring it does not
         ///die or lock to the star.
-//        void test_unlocked_evolution();
+        void test_unlocked_evolution();
 
         ///\brief Tests the evolution of the orbit plus stellar rotation for
         ///the case where the star is locked in synchronous rotation with the
