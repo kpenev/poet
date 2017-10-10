@@ -631,11 +631,17 @@ namespace Evolve {
                                       stop_reason);
         clear_discarded();
         double step_size=0.01*(max_age-t);
+        const double MIN_RELATIVE_STEP = (
+            1.0
+            +
+            10.0 * std::numeric_limits<double>::epsilon()
+        );
 
         stop_reason=NO_STOP;
         StopInformation stop;
         while(t<max_age) {
-            double max_next_t=std::min(t + max_step, max_age); 
+            double max_next_t = std::min(t + max_step, max_age),
+                   from_t = t;
             int status=GSL_SUCCESS;
             bool step_rejected=false;
             do {
@@ -643,7 +649,7 @@ namespace Evolve {
                         evolve, step_control, step, &ode_system,
                         &t, max_next_t, &step_size, &(orbit[0]));
                 if (status == GSL_FAILURE)
-                    throw Core::Error::GSLZeroStep("rfk45");
+                    throw Core::Error::GSLZeroStep("rkf45");
                 else if (status != GSL_SUCCESS && status != GSL_EDOM) {
                     std::ostringstream msg;
                     msg << "GSL signaled failure while evolving (error code " <<
@@ -679,15 +685,7 @@ namespace Evolve {
                     if(
                         t
                         <
-                        (
-                            last_good_t
-                            *
-                            (
-                                1.0
-                                +
-                                10.0 * std::numeric_limits<double>::epsilon()
-                            )
-                        )
+                        last_good_t * MIN_RELATIVE_STEP
                     ) {
                         throw Core::Error::NonGSLZeroStep();
                     }
@@ -701,7 +699,11 @@ namespace Evolve {
                     step_size=0.1*(max_next_t-t);
                     gsl_odeiv2_evolve_reset(evolve);
                     step_rejected=true;
-                } else step_rejected=false;
+                } else {
+                    if(t < from_t * MIN_RELATIVE_STEP)
+                        throw Core::Error::GSLZeroStep("rkf45");
+                    step_rejected=false;
+                }
             } while(
                 step_rejected
                 &&

@@ -141,3 +141,12 @@ double lag_from_lgQ(double lgQ)
 {
     return 15.0 / (16.0 * M_PI * std::pow(10.0, lgQ));
 }
+
+double lag_from_lgQ(double lgQ, double mass_ratio)
+{
+    return (
+        15.0
+        /
+        (8.0 * M_PI * std::sqrt(1.0 + mass_ratio) * std::pow(10.0, lgQ))
+    );
+}

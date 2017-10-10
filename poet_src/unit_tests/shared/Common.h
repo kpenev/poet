@@ -113,4 +113,13 @@ unsigned next_binom_coef(unsigned n, unsigned m, unsigned nCm);
 
 double lag_from_lgQ(double lgQ);
 
+///Transform Penev et. al 2012 lg(Q*) to phase lag.
+double lag_from_lgQ(
+    ///The old-style quality factor (log10)
+    double lgQ,
+    
+    ///The planet to star mass ratio
+    double mass_ratio
+);
+
 #endif

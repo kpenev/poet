@@ -891,8 +891,9 @@ namespace Evolve {
         /// - primary radius.
         /// - 2.44*(secondary radius)*((primary mass)/(secondary mass))^(1/3)
         virtual double minimum_semimajor(
-                ///If true the rate of change (per Gyr) is returned.
-                bool deriv=false) const;
+            ///If true the rate of change (per Gyr) is returned.
+            bool deriv=false
+        ) const;
 
         ///The evolution mode of last call to configure().
         Core::EvolModeType evolution_mode() {return __evolution_mode;}

@@ -1835,7 +1835,17 @@ namespace Evolve {
         if(evolution_mode == Core::BINARY) {
             if(__body1.number_locked_zones() || __body2.number_locked_zones()) {
                 semimajor = parameters[0];
-            } else if(parameters[0] < 0) return GSL_EDOM;
+            } else if(parameters[0] < 0) {
+#ifndef DEBUG
+                std::cerr << "At t = " << age << " param: ";
+                for(unsigned i = 0; i < 3 * num_zones + 1; ++i) {
+                    if(i) std::cerr << ", ";
+                    std::cerr << parameters[i];
+                }
+                std::cerr << std::endl;
+#endif
+                return GSL_EDOM;
+            }
             else semimajor = std::pow(parameters[0], 1.0 / 6.5);
             eccentricity = parameters[1];
             inclination = parameters+2;
@@ -2005,6 +2015,11 @@ namespace Evolve {
         double above_lock_fraction = __above_lock_fractions
                                      [Dissipation::NO_DERIV]
                                      [locked_zone.locked_zone_index()];
+#ifndef NDEBUG
+        std::cerr << "Holding lock requireds above lock fraction of: "
+                  << above_lock_fraction
+                  << std::endl;
+#endif
         if(above_lock_fraction > 0 && above_lock_fraction < 1) return;
         std::vector<double>::iterator check_zone_dest = (
             spin_angmom.begin()

@@ -19,6 +19,8 @@ model {
 
             if(buildType == buildTypes.release) {
                 cppCompiler.define "NDEBUG"
+            } else if(buildType == buildTypes.debug) {
+                cppCompiler.define "VERBOSE_DEBUG"
             }
 
             if (toolChain in Gcc || toolChain in Clang) {

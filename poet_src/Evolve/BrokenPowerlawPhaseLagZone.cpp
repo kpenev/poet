@@ -426,8 +426,13 @@ namespace Evolve {
         }
         
         if(forcing_frequency == 0) {
-            above_lock_value  = result;
-            return -result;
+            if(spin_frequency_multiplier >= 0) {
+                above_lock_value = -result;
+                return result;
+            } else {
+                above_lock_value = result;
+                return -result;
+            }
         } else {
             return (forcing_frequency > 0 ? result : -result);
         }
