@@ -20,7 +20,20 @@
 
 namespace Evolve {
 
-#if 0
+    ///Define identifiers for the quantities whose evolution we check.
+    enum RealEvolutionQuantity {
+        SEMIMAJOR,
+        ECCENTRICITY,
+        CONV_INCLINATION,
+        RAD_INCLINATION,
+        CONV_PERIAPSIS,
+        RAD_PERIAPSIS,
+        CONV_ANGMOM,
+        RAD_ANGMOM,
+        AGE,
+        NUM_REAL_QUANTITIES
+    };
+
     /**\brief A class that can be passed to the solution testing function
      * instead of the solver that transforms the solutions before testing.
      *
@@ -35,115 +48,81 @@ namespace Evolve {
     class TransformedSolution {
     private:
         ///The transformed orbit values.
-        std::vector< std::list<double> > __transformed_orbit,
+        std::vector< const std::list<double> *> __transformed_orbit;
 
-            ///The transformed derivatives.
-            __transformed_deriv;
+        ///The transformed derivatives.
+//        std::vector< const std::list<double> *>  __transformed_deriv;
 
-        ///The functions to use to transform the semimajor axis.
-        std::list<const OneArgumentDiffFunction *> __a_transforms,
-
-            ///\brief The function to use  to transfom the convective zone
-            ///angular momentum.
-            __Lconv_transforms,
-            
-            ///\brief The function to use  to transfom the radiative zone
-            ///angular momentum.
-            __Lrad_transforms;
-
-        ///The ages at which the orbit was tabulated.
-        const std::list<double> *__ages;
+        ///\brief The functions to use to transform the solution.
+        ///
+        ///Each vector entry corresponds to one quantity in the order defined
+        ///by RealEvolutionQuantity and the inner list contains the various
+        ///patches to apply.
+        std::vector< std::list<const Core::OneArgumentDiffFunction *> >
+            __transforms;
 
         ///The boundaries between consecutive trasformation functions.
         std::list<double> __change_ages;
 
-        ///The evolution mode at each tabulated age
-        const std::list<EvolModeType> *__evolution_mode;
-
-        ///Applies a list of transformations to a variable.
-        void transform(
-                ///The variable to transform.
-                const std::list<double>* var,
-
-                ///The derivative of the variable to transform.
-                const std::list<double>* deriv,
-                
-                ///The list of trasformation functions.
-                const std::list<const OneArgumentDiffFunction*> &transforms,
-                
-                ///Which variable is being transformed.
-                EvolVarType var_type);
-    public:
+     public:
         ///\brief Default constructor, use add_transformation repeatedly to
         ///build the final solution.
         TransformedSolution() :
-            __transformed_orbit(3),
-            __transformed_deriv(3)
+            __transformed_orbit(NUM_REAL_QUANTITIES, NULL),
+//            __transformed_deriv(NUM_REAL_QUANTITIES)
+            __transforms(AGE)
         {};
 
         ///Create a single piece transformed solution.
         TransformedSolution(
-            ///The function to use to transform the semimajor axis.
-            const OneArgumentDiffFunction &a_transform,
-
-            ///The function to use to transform the convective zone
-            ///angular momentum.
-            const OneArgumentDiffFunction &Lconv_transform,
-
-            ///The function to use to transform the radiative zone
-            ///angular momentum.
-            const OneArgumentDiffFunction &Lrad_transform,
+            ///See transforms argument to add_transformation()
+            const std::vector<const Core::OneArgumentDiffFunction *> &
+                transforms,
 
             ///The age at which this transformation starts to apply
             double start_age
         ) :
-            __transformed_orbit(3),
-            __transformed_deriv(3)
+            __transformed_orbit(NUM_REAL_QUANTITIES, NULL),
+//            __transformed_deriv(NUM_REAL_QUANTITIES)
+            __transforms(AGE)
         {
-            add_transformation(a_transform,
-                               Lconv_transform,
-                               Lrad_transform,
-                               start_age);
+            add_transformation(transforms, start_age);
         }
 
         ///Add more pieces to the transformation.
         void add_transformation(
-            ///The function to use to transform the semimajor axis after the
-            ///last change age up to the given one.
-            const OneArgumentDiffFunction &a_transform,
-
-            ///The function to use to transform the convective zone angular
-            ///momentum after the last change age up to the given one.
-            const OneArgumentDiffFunction &Lconv_transform,
-
-            ///The function to use to transform the radiative zone angular
-            ///momentum after the last change age up to the given one.
-            const OneArgumentDiffFunction &Lrad_transform,
+            ///The functions to use to transform the real valued quantities.
+            //The order is defined by RealEvolutionQuantity.
+            const std::vector<const Core::OneArgumentDiffFunction *> &
+                transforms,
 
             ///The age up to which this transformation applies.
             double change_age
         );
 
-        ///\brief The solver to apply this transformation to.
+        ///\brief Apply this transformatiot to the given solution.
         ///
-        ///It should already have a solution stored.
-        void operator()(const OrbitSolver &solver);
+        ///Returns a reference to member variable, so either copy the result
+        ///or do not destroy this object before use.
+        const std::vector< const std::list<double> * > &operator()(
+            ///Entries are assumed ordered by RealEvolutionQuantity
+            const std::vector< const std::list<double> * > &solution
+        );
 
-        ///The value of a transformed variable at the tabulated ages.
-        const std::list<double>
-            *get_tabulated_var(
-                    ///Which variable to return.
-                    EvolVarType var_type) const;
+        ///\brief The last transformed solution.
+        ///
+        ///Returns a reference to member variable, so either copy the result
+        ///or do not destroy this object before use.
+        const std::vector< const std::list<double> * > 
+            &get_transformed_solution() const
+            {return __transformed_orbit;}
 
         ///The derivative of a transformed variable at the tabulated ages.
-        const std::list<double> *get_tabulated_var_deriv(
-                EvolVarType var_type) const;
+/*        const std::list<double> *get_tabulated_var_deriv(
+                EvolVarType var_type) const;*/
 
-        ///Returns a list of the evolution modes.
-        const std::list<EvolModeType> *get_tabulated_evolution_mode() const
-        {return __evolution_mode;} 
+        ~TransformedSolution();
     };
-#endif
 
     /**\brief Some evolution mode that changes at specified ages.
      *
@@ -199,7 +178,7 @@ namespace Evolve {
                     if(
                         *age_i <= age
                         &&
-                        (next_age_i == __age_breaks.end() || *next_age_i >= age)
+                        (next_age_i == __age_breaks.end() || *next_age_i > age)
                     )
                         return *mode_i;
                     ++mode_i;
@@ -214,19 +193,6 @@ namespace Evolve {
      */
     class test_OrbitSolver : public Test::Suite {
     private:
-        enum RealEvolutionQuantity {
-            SEMIMAJOR,
-            ECCENTRICITY,
-            CONV_INCLINATION,
-            RAD_INCLINATION,
-            CONV_PERIAPSIS,
-            RAD_PERIAPSIS,
-            CONV_ANGMOM,
-            RAD_ANGMOM,
-            AGE,
-            NUM_REAL_EVOL_QUANTITIES
-        };
-
         ///The solver used for the current test.
         Evolve::OrbitSolver *__solver;
 
@@ -235,9 +201,6 @@ namespace Evolve {
 
         ///The star used in the current test.
         Star::InterpolatedEvolutionStar *__star;
-
-        friend std::ostream &operator<<(std::ostream &os,
-                                        RealEvolutionQuantity q);
 
         ///Make __star a non-dissipative star with the given properties.
         void make_const_lag_star(
@@ -249,7 +212,8 @@ namespace Evolve {
         );
 
         StellarEvolution::MockStellarEvolution *make_no_evolution(
-            double Rstar = 1.0
+            double Rstar = 1.0,
+            double Iconv = 1.0
         );
         StellarEvolution::MockStellarEvolution *make_linear_I_evolution();
 
@@ -267,9 +231,14 @@ namespace Evolve {
             double planet_radius = 1.0
         );
 
+        ///Return the last calculated evolution.
+        std::vector< const std::list<double> *> get_evolution() const;
+
         ///\brief Tests the latest evolution calculated by the solver against
         ///the given tracks.
         void test_solution(
+            const std::vector< const std::list<double> * > &
+                tabulated_real_quantities,
             std::vector<const Core::OneArgumentDiffFunction *>
                 expected_real_quantities,
             const ExpectedEvolutionMode<Core::EvolModeType> &
@@ -327,12 +296,12 @@ namespace Evolve {
         ///\brief Tests the evolution of the orbit plus stellar rotation for
         ///the case where the star is locked in synchronous rotation with the
         ///orbit.
-//        void test_locked_evolution();
+        void test_locked_evolution();
 
         ///\brief Tests an evolution that starts locked to a disk then
         ///immediately is locked to the planet, which then falls below the
         ///Roche radius.
-//        void test_disklocked_to_locked_to_noplanet();
+        void test_disklocked_to_locked_to_noplanet();
 
         ///\brief Tests an evolution that starts locked to a disk then
         ///the orbital period is shorter than the stellar spin period and

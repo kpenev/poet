@@ -12,26 +12,26 @@ namespace Evolve {
     const double TSTART = 2.0 * MIN_AGE;
 
     std::ostream &operator<<(std::ostream &os,
-                             test_OrbitSolver::RealEvolutionQuantity q)
+                             RealEvolutionQuantity q)
     {
         switch(q) {
-            case test_OrbitSolver::SEMIMAJOR :
+            case SEMIMAJOR :
                 os << "SEMIMAJOR"; break;
-            case test_OrbitSolver::ECCENTRICITY:
+            case ECCENTRICITY:
                 os << "ECCENTRICITY"; break;
-            case test_OrbitSolver::CONV_INCLINATION:
+            case CONV_INCLINATION:
                 os << "CONV_INCLINATION"; break;
-            case test_OrbitSolver::RAD_INCLINATION:
+            case RAD_INCLINATION:
                 os << "RAD_INCLINATION"; break;
-            case test_OrbitSolver::CONV_PERIAPSIS:
+            case CONV_PERIAPSIS:
                 os << "CONV_PERIAPSIS"; break;
-            case test_OrbitSolver::RAD_PERIAPSIS:
+            case RAD_PERIAPSIS:
                 os << "RAD_PERIAPSIS"; break;
-            case test_OrbitSolver::CONV_ANGMOM:
+            case CONV_ANGMOM:
                 os << "CONV_ANGMOM"; break;
-            case test_OrbitSolver::RAD_ANGMOM:
+            case RAD_ANGMOM:
                 os << "RAD_ANGMOM"; break;
-            case test_OrbitSolver::AGE:
+            case AGE:
                 os << "AGE"; break;
             default :
                 assert(false);
@@ -74,82 +74,64 @@ namespace Evolve {
                             /
                             Core::AstroConst::solar_radius);
 
-#if 0
-
-    void TransformedSolution::transform(const std::list<double>* var,
-            const std::list<double>* deriv,
-            const std::list<const OneArgumentDiffFunction*> &transforms,
-            EvolVarType var_type)
-    {
-        std::list<double>::const_iterator change_i=__change_ages.begin();
-        change_i++;
-        std::list<const OneArgumentDiffFunction *>::const_iterator
-            transform_i=transforms.begin();
-        for(
-            std::list<double>::const_iterator
-                var_i = var->begin(),
-                deriv_i = deriv->begin(),
-                t_i = __ages->begin();
-            var_i != var->end();
-            ++var_i, ++deriv_i, ++t_i
-        ) {
-            if(change_i != __change_ages.end() && *t_i > *change_i) {
-                ++transform_i;
-                ++change_i;
-            }
-            const FunctionDerivatives *dvar = (*transform_i)->deriv(*var_i);
-            __transformed_orbit[var_type].push_back(dvar->order(0));
-            __transformed_deriv[var_type].push_back(dvar->order(1)
-                                                    *
-                                                    (*deriv_i));
-        }
-    }
-
     void TransformedSolution::add_transformation(
-            const OneArgumentDiffFunction &a_transform,
-            const OneArgumentDiffFunction &Lconv_transform,
-            const OneArgumentDiffFunction &Lrad_transform,
-            double change_age)
+        const std::vector<const Core::OneArgumentDiffFunction *> &transforms,
+        double change_age
+    )
     {
-        __a_transforms.push_back(&a_transform);
-        __Lconv_transforms.push_back(&Lconv_transform);
-        __Lrad_transforms.push_back(&Lrad_transform);
+        for(unsigned q = 0; q < NUM_REAL_QUANTITIES - 1; ++q)
+            __transforms[q].push_back(transforms[q]);
+
         __change_ages.push_back(change_age);
     }
 
-    void TransformedSolution::operator()(const OrbitSolver &solver)
+    const std::vector< const std::list<double> * > &
+        TransformedSolution::operator()(
+            const std::vector< const std::list<double> * > &solution
+        )
     {
-        __evolution_mode=solver.get_tabulated_evolution_mode();
-        __ages=solver.get_tabulated_var(AGE);
+        if(__transformed_orbit[AGE]) delete __transformed_orbit[AGE];
+        __transformed_orbit[AGE] = solution[AGE];
 
-        transform(solver.get_tabulated_var(SEMIMAJOR),
-                solver.get_tabulated_var_deriv(SEMIMAJOR),
-                __a_transforms, SEMIMAJOR);
-
-        transform(solver.get_tabulated_var(LCONV),
-                solver.get_tabulated_var_deriv(LCONV),
-                __Lconv_transforms, LCONV);
-
-        transform(solver.get_tabulated_var(LRAD),
-                solver.get_tabulated_var_deriv(LRAD),
-                __Lrad_transforms, LRAD);
-
+        for(unsigned q = 0; q < NUM_REAL_QUANTITIES - 1; ++q) {
+            std::list<double>::const_iterator
+                change_i = __change_ages.begin();
+            change_i++;
+            std::list<const Core::OneArgumentDiffFunction *>::const_iterator
+                transform_i = __transforms[q].begin();
+            std::list<double> *transformed_quantity = new std::list<double>();
+            for(
+                std::list<double>::const_iterator
+                    var_i = solution[q]->begin(),
+//                    deriv_i = deriv->begin(),
+                    t_i = solution[AGE]->begin();
+                var_i != solution[q]->end();
+                ++var_i,
+//                ++deriv_i,
+                ++t_i
+            ) {
+                if(change_i != __change_ages.end() && *t_i >= *change_i) {
+                    ++transform_i;
+                    ++change_i;
+                }
+                transformed_quantity->push_back((**transform_i)(*var_i));
+/*                const FunctionDerivatives *dvar = (*transform_i)->deriv(*var_i);
+                __transformed_orbit[var_type].push_back(dvar->order(0));
+                __transformed_deriv[var_type].push_back(dvar->order(1)
+                                                        *
+                                                        (*deriv_i));*/
+            }
+            if(__transformed_orbit[q]) delete __transformed_orbit[q]; 
+            __transformed_orbit[q] = transformed_quantity;
+        }
+        return __transformed_orbit;
     }
 
-    const std::list<double> *TransformedSolution::get_tabulated_var(
-            EvolVarType var_type) const
+    TransformedSolution::~TransformedSolution()
     {
-        if(var_type==AGE) return __ages;
-        return &(__transformed_orbit[var_type]);
+        for(unsigned q = 0; q < NUM_REAL_QUANTITIES - 1; ++q)
+            if(__transformed_orbit[q]) delete __transformed_orbit[q];
     }
-
-    const std::list<double> *TransformedSolution::get_tabulated_var_deriv(
-            EvolVarType var_type) const
-    {
-        assert(var_type!=AGE);
-        return &(__transformed_deriv[var_type]);
-    }
-#endif
 
     void test_OrbitSolver::make_const_lag_star(
         const StellarEvolution::Interpolator &evolution,
@@ -176,7 +158,7 @@ namespace Evolve {
         }
     }
     StellarEvolution::MockStellarEvolution *
-        test_OrbitSolver::make_no_evolution(double Rstar)
+        test_OrbitSolver::make_no_evolution(double Rstar, double Iconv)
     {
         return new StellarEvolution::MockStellarEvolution(
             0.0,
@@ -185,7 +167,7 @@ namespace Evolve {
                 1
             ),
             std::valarray< std::valarray<double> >(//Iconv
-                std::valarray<double>(1.0, 1),
+                std::valarray<double>(Iconv, 1),
                 1
             ),
             std::valarray< std::valarray<double> >(//Irad
@@ -317,18 +299,11 @@ namespace Evolve {
                     std::list<double>()); //no required ages
     }
 
-    void test_OrbitSolver::test_solution(
-        std::vector<const Core::OneArgumentDiffFunction *>
-            expected_real_quantities,
-        const ExpectedEvolutionMode<Core::EvolModeType> &expected_evol_mode,
-        const ExpectedEvolutionMode<bool> &expected_wind_mode,
-        double min_age,
-        double max_age,
-        bool debug_mode
-    )
+    std::vector< const std::list<double> *> test_OrbitSolver::get_evolution()
+        const
     {
         std::vector< const std::list<double> *>
-            tabulated_real_quantities(NUM_REAL_EVOL_QUANTITIES);
+            tabulated_real_quantities(NUM_REAL_QUANTITIES);
 
             tabulated_real_quantities[AGE] = &(__solver->evolution_ages());
 
@@ -360,8 +335,22 @@ namespace Evolve {
             tabulated_real_quantities[RAD_ANGMOM] = &(
                 __star->core().get_evolution_real(Evolve::ANGULAR_MOMENTUM)
             );
+        return tabulated_real_quantities;
+    }
 
-        const std::list<Core::EvolModeType> & tabulated_modes =
+    void test_OrbitSolver::test_solution(
+        const std::vector< const std::list<double> * > &
+            tabulated_real_quantities,
+        std::vector<const Core::OneArgumentDiffFunction *>
+            expected_real_quantities,
+        const ExpectedEvolutionMode<Core::EvolModeType> &expected_evol_mode,
+        const ExpectedEvolutionMode<bool> &expected_wind_mode,
+        double min_age,
+        double max_age,
+        bool debug_mode
+    )
+    {
+        const std::list<Core::EvolModeType> &tabulated_modes =
             __solver->mode_evolution();
 
         const std::list<bool> &tabulated_wind_sat =
@@ -372,7 +361,9 @@ namespace Evolve {
         std::ostringstream msg_start;
         std::ostringstream msg;
         msg.precision(16);
+        msg.setf(std::ios_base::scientific);
         msg_start.precision(16);
+        msg_start.setf(std::ios_base::scientific);
         msg << msg_start.str()
             << num_ages
             << " tabulated ages, ";
@@ -425,6 +416,7 @@ namespace Evolve {
             tabulated_mode_iter = tabulated_modes.begin();
         std::list<bool>::const_iterator
             tabulated_wind_sat_iter = tabulated_wind_sat.begin();
+        double last_checked_age = Core::NaN;
 
         for(
             std::list<double>::const_iterator
@@ -441,6 +433,7 @@ namespace Evolve {
 
             std::ostringstream age_msg_start;
             age_msg_start.precision(16);
+            age_msg_start.setf(std::ios_base::scientific);
             age_msg_start << msg_start.str()
                           << "age = " << *age_i
                           << ", mode = " << *tabulated_mode_iter
@@ -458,13 +451,25 @@ namespace Evolve {
             TEST_ASSERT_MSG(*age_i >= min_age && *age_i <= max_age,
                             msg.str().c_str());
 
+            std::list<double>::const_iterator next_age_i = age_i;
+            ++next_age_i;
+            bool
+                can_skip = (
+                    next_age_i != tabulated_real_quantities[AGE]->end()
+                    &&
+                    *next_age_i == *age_i
+                ),
+                skipped = (*age_i == last_checked_age);
 
             msg.str("");
             msg << age_msg_start.str() << ": mode is not "
                 << expected_mode << ", but " << *tabulated_mode_iter;
+
             if(debug_mode) std::cout << msg.str() << std::endl;
-            TEST_ASSERT_MSG(expected_mode == *tabulated_mode_iter,
-                            msg.str().c_str());
+            if(!skipped && expected_mode != *tabulated_mode_iter) {
+                if(can_skip) skipped = true;
+                else TEST_ASSERT_MSG(false, msg.str().c_str());
+            }
 
             msg.str("");
             msg << age_msg_start.str() << ": wind is ";
@@ -473,14 +478,20 @@ namespace Evolve {
             if(!expected_wind_sat) msg << " not ";
             msg << "be.";
             if(debug_mode) std::cout << msg.str() << std::endl;
-            TEST_ASSERT_MSG(
+            if(!skipped && expected_wind_sat != *tabulated_wind_sat_iter) {
+                if(can_skip) skipped = true;
+                else TEST_ASSERT_MSG(false, msg.str().c_str());
+            }
+/*            TEST_ASSERT_MSG(
                 (
+                    skipped
+                    ||
                     expected_wind_sat == *tabulated_wind_sat_iter
                     ||
                     expected_wind_mode.near_break(*age_i)
                 ),
                 msg.str().c_str()
-            );
+            );*/
 
             for(unsigned q = 0; q < AGE; ++q) {
                 msg.str("");
@@ -493,14 +504,22 @@ namespace Evolve {
                     << ", difference = "
                     << (*real_tabulated_iter[q]) - expected_real_values[q];
                 if(debug_mode) std::cout << msg.str() << std::endl;
-                TEST_ASSERT_MSG(
-                    check_diff((*real_tabulated_iter[q]),
-                               expected_real_values[q],
-                               1e-5,
-                               0.0),
-                    msg.str().c_str()
-                );
+                if(
+                    !skipped
+                    &&
+                    !check_diff((*real_tabulated_iter[q]),
+                                expected_real_values[q],
+                                1e-5,
+                                0.0)
+                ) {
+                    if(can_skip) {
+                        skipped = true;
+                        break;
+                    }
+                    TEST_ASSERT_MSG(false, msg.str().c_str());
+                }
             }
+            if(!skipped) last_checked_age = *age_i;
             for(unsigned q = 0; q < AGE; ++q) ++(real_tabulated_iter[q]);
             ++tabulated_wind_sat_iter;
             ++tabulated_mode_iter;
@@ -544,7 +563,8 @@ namespace Evolve {
             expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
             expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
 
-            test_solution(expected_real_quantities,
+            test_solution(get_evolution(),
+                          expected_real_quantities,
                           single_mode,
                           expected_wind_mode,
                           TSTART,
@@ -578,7 +598,8 @@ namespace Evolve {
 
                     expected_real_quantities[SEMIMAJOR] = &one_func;
                     expected_real_quantities[ECCENTRICITY] = &zero_func;
-                    test_solution(expected_real_quantities,
+                    test_solution(get_evolution(),
+                                  expected_real_quantities,
                                   binary_mode,
                                   expected_wind_mode,
                                   TSTART,
@@ -597,7 +618,8 @@ namespace Evolve {
                            max_age);//end evolution age
 
                     expected_real_quantities[SEMIMAJOR] = &two_hundred_func;
-                    test_solution(expected_real_quantities,
+                    test_solution(get_evolution(),
+                                  expected_real_quantities,
                                   binary_mode,
                                   expected_wind_mode,
                                   TSTART,
@@ -627,7 +649,7 @@ namespace Evolve {
             expected_wind_mode.add_break(TSTART, false);
 
             std::vector<const Core::OneArgumentDiffFunction *>
-                expected_real_quantities(NUM_REAL_EVOL_QUANTITIES - 1);
+                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
             expected_real_quantities[SEMIMAJOR] = &nan_func;
             expected_real_quantities[ECCENTRICITY] = &nan_func;
             expected_real_quantities[CONV_INCLINATION] = &zero_func;
@@ -639,7 +661,8 @@ namespace Evolve {
 
             double zero = 0.0, one = 1.0;
             evolve(1.0, MAX_AGE, 1.0, &one);
-            test_solution(expected_real_quantities,
+            test_solution(get_evolution(),
+                          expected_real_quantities,
                           expected_evol_mode,
                           expected_wind_mode,
                           TSTART,
@@ -654,7 +677,8 @@ namespace Evolve {
                 -std::exp(TSTART/2.0),
                 -0.5
             );
-            test_solution(expected_real_quantities,
+            test_solution(get_evolution(),
+                          expected_real_quantities,
                           expected_evol_mode,
                           expected_wind_mode,
                           TSTART,
@@ -696,7 +720,7 @@ namespace Evolve {
                                                                   MAX_AGE);
 
             std::vector<const Core::OneArgumentDiffFunction *>
-                expected_real_quantities(NUM_REAL_EVOL_QUANTITIES - 1);
+                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
             expected_real_quantities[SEMIMAJOR] = &nan_func;
             expected_real_quantities[ECCENTRICITY] = &nan_func;
             expected_real_quantities[CONV_INCLINATION] = &zero_func;
@@ -717,7 +741,8 @@ namespace Evolve {
                    MAX_AGE,
                    1.0,
                    &initial_Lrad);
-            test_solution(expected_real_quantities,
+            test_solution(get_evolution(),
+                          expected_real_quantities,
                           expected_evol_mode,
                           expected_wind_mode,
                           TSTART,
@@ -782,7 +807,8 @@ namespace Evolve {
                    MAX_AGE,
                    1.0, 
                    &initial_Lrad);
-            test_solution(expected_real_quantities,
+            test_solution(get_evolution(),
+                          expected_real_quantities,
                           expected_evol_mode,
                           expected_wind_mode,
                           TSTART,
@@ -814,7 +840,7 @@ namespace Evolve {
             double initial_Lstar[] = {0.0, 0.0};
 
             std::vector<const Core::OneArgumentDiffFunction *>
-                expected_real_quantities(NUM_REAL_EVOL_QUANTITIES - 1);
+                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
             expected_real_quantities[CONV_ANGMOM] = &zero_func;
             expected_real_quantities[RAD_ANGMOM] = &zero_func;
             ExpectedEvolutionMode<bool> unsat_wind_mode, sat_wind_mode;
@@ -972,7 +998,7 @@ namespace Evolve {
                 *no_evol = make_no_evolution(1.0);
 
             std::vector<const Core::OneArgumentDiffFunction *>
-                expected_real_quantities(NUM_REAL_EVOL_QUANTITIES - 1);
+                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
 
             const double mplanet = 100;
             double lag = 1e-8 / mplanet,
@@ -1065,7 +1091,8 @@ namespace Evolve {
                    Core::NaN,//tplanet
                    1.0,//stop evolution age
                    0.0001);//Rplanet
-            test_solution(expected_real_quantities,
+            test_solution(get_evolution(),
+                          expected_real_quantities,
                           binary_mode,
                           unsat_wind_mode,
                           TSTART,
@@ -1109,7 +1136,8 @@ namespace Evolve {
                    Core::NaN,//tplanet
                    1.0,//stop evolution age
                    0.0001);//Rplanet
-            test_solution(expected_real_quantities,
+            test_solution(get_evolution(),
+                          expected_real_quantities,
                           binary_mode,
                           sat_wind_mode,
                           TSTART,
@@ -1131,18 +1159,27 @@ namespace Evolve {
         }
     }
 
-#if 0
-
     ///\brief The equation that should be solved in order to get the semimamjor
     ///axis at a gien time.
     ///
     ///The paramaters should be: alpha, beta, kappa, C, t
     double locked_unsat_eq(double a, void *params)
     {
-        double *dbl_par=static_cast<double *>(params);
-        double alpha=dbl_par[0], beta=dbl_par[1], kappa=dbl_par[2],
-               c=dbl_par[3], t=dbl_par[4];
-        return 0.1*alpha*std::pow(a, 5) - 0.5*beta*std::pow(a, 3) + kappa*t - c;
+        double *dbl_par = static_cast<double *>(params);
+        double alpha = dbl_par[0],
+               beta = dbl_par[1],
+               kappa = dbl_par[2],
+               c = dbl_par[3],
+               t = dbl_par[4];
+        return (
+            0.1 * alpha * std::pow(a, 5)
+            -
+            0.5 * beta * std::pow(a, 3)
+            +
+            kappa*t
+            -
+            c
+        );
     }
 
     ///\brief The equation that should be solved in order to get the semimamjor
@@ -1151,10 +1188,21 @@ namespace Evolve {
     ///The paramaters should be: alpha, beta, kappa, C, t
     double locked_sat_eq(double a, void *params)
     {
-        double *dbl_par=static_cast<double *>(params);
-        double alpha=dbl_par[0], beta=dbl_par[1], kappa=dbl_par[2],
-               c=dbl_par[3], t=dbl_par[4];
-        return alpha*a*a/4.0 - 1.5*beta*std::log(a) + kappa*t - c;
+        double *dbl_par = static_cast<double *>(params);
+        double alpha = dbl_par[0],
+               beta = dbl_par[1],
+               kappa = dbl_par[2],
+               c = dbl_par[3],
+               t = dbl_par[4];
+        return (
+            alpha * a * a / 4.0
+            -
+            1.5 * beta * std::log(a)
+            +
+            kappa * t
+            -
+            c
+        );
     }
 
     ///\brief The derivative of the equation that should be solved in order to
@@ -1164,9 +1212,10 @@ namespace Evolve {
     ///The paramaters should be: alpha, beta.
     double locked_unsat_deriv(double a, void *params)
     {
-        double *dbl_par=static_cast<double *>(params);
-        double alpha=dbl_par[0], beta=dbl_par[1];
-        return 0.5*alpha*std::pow(a, 4) - 1.5*beta*std::pow(a, 2);
+        double *dbl_par = static_cast<double *>(params);
+        double alpha = dbl_par[0],
+               beta = dbl_par[1];
+        return 0.5 * alpha * std::pow(a, 4) - 1.5 * beta * std::pow(a, 2);
     }
 
     ///\brief The derivative of the equation that should be solved in order to
@@ -1176,9 +1225,10 @@ namespace Evolve {
     ///The paramaters should be: alpha, beta.
     double locked_sat_deriv(double a, void *params)
     {
-        double *dbl_par=static_cast<double *>(params);
-        double alpha=dbl_par[0], beta=dbl_par[1];
-        return alpha*a/2.0 - 1.5*beta/a;
+        double *dbl_par = static_cast<double *>(params);
+        double alpha = dbl_par[0],
+               beta = dbl_par[1];
+        return alpha * a / 2.0 - 1.5 * beta / a;
     }
 
     ///\brief The equation and its derivative that should be solved in order to
@@ -1188,11 +1238,24 @@ namespace Evolve {
     ///The paramaters should be: alpha, beta, kappa, C, t
     void locked_unsat_eq_deriv(double a, void *params, double *f, double *df)
     {
-        double *dbl_par=static_cast<double *>(params);
-        double alpha=dbl_par[0], beta=dbl_par[1], kappa=dbl_par[2],
-               c=dbl_par[3], t=dbl_par[4];
-        *f=0.1*alpha*std::pow(a, 5) - 0.5*beta*std::pow(a, 3) + kappa*t - c;
-        *df=0.5*alpha*std::pow(a, 4) - 1.5*beta*std::pow(a, 2);
+        double *dbl_par = static_cast<double *>(params);
+        double alpha = dbl_par[0],
+               beta = dbl_par[1],
+               kappa = dbl_par[2],
+               c = dbl_par[3],
+               t = dbl_par[4];
+        *f = (
+            0.1 * alpha * std::pow(a, 5)
+            -
+            0.5 * beta * std::pow(a, 3)
+            +
+            kappa * t
+            -
+            c
+        );
+        *df = (0.5 * alpha * std::pow(a, 4)
+               -
+               1.5 * beta * std::pow(a, 2));
     }
 
     ///\brief The equation and its derivative that should be solved in order to
@@ -1202,68 +1265,148 @@ namespace Evolve {
     ///The paramaters should be: alpha, beta, kappa, C, t
     void locked_sat_eq_deriv(double a, void *params, double *f, double *df)
     {
-        double *dbl_par=static_cast<double *>(params);
-        double alpha=dbl_par[0], beta=dbl_par[1], kappa=dbl_par[2],
-               c=dbl_par[3], t=dbl_par[4];
-        *f=alpha*a*a/4.0 - 1.5*beta*std::log(a) + kappa*t - c;
-        *df=alpha*a/2.0 - 1.5*beta/a;
+        double *dbl_par = static_cast<double *>(params);
+        double alpha = dbl_par[0],
+               beta = dbl_par[1],
+               kappa = dbl_par[2],
+               c = dbl_par[3],
+               t = dbl_par[4];
+        *f = (
+            alpha * a * a / 4.0
+            -
+            1.5 * beta * std::log(a)
+            +
+            kappa * t
+            -
+            c
+        );
+        *df = alpha * a / 2.0 - 1.5 * beta / a;
     }
 
     void test_OrbitSolver::test_locked_evolution()
     {
         try {
-            ExpectedEvolutionMode expected_mode;
-            expected_mode.add_break(tstart, LOCKED_TO_PLANET);
-            const double Ic=0.001, Kwind=1e-3, Kwind_s=1;
-            MockStellarEvolution no_evol(-1,
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(Ic, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1));
-            double a1=3, Lscale=AstroConst::jupiter_mass/
-                std::pow(AstroConst::solar_radius, 1.5)*
-                std::sqrt(AstroConst::G/
-                        (AstroConst::jupiter_mass+AstroConst::solar_mass))*
-                AstroConst::day,
-                beta=Ic*std::sqrt(AstroConst::G*(AstroConst::solar_mass+
-                            AstroConst::jupiter_mass))*AstroConst::day/
-                    std::pow(AstroConst::solar_radius, 1.5),
-                wsat_s=0.1, //Must be adjusted if a1 is adjusted
-                wsat=Inf,
-                kappa=Kwind*std::pow(AstroConst::G*
-                        (AstroConst::solar_mass+AstroConst::jupiter_mass)/
-                        std::pow(AstroConst::solar_radius, 3), 1.5)*
-                    std::pow(AstroConst::day, 3),
-                kappa_s=Kwind_s*wsat_s*wsat_s*std::sqrt(AstroConst::G*
-                        (AstroConst::solar_mass+AstroConst::jupiter_mass)/
-                        std::pow(AstroConst::solar_radius, 3))*AstroConst::day,
-                int_const=Lscale/10.0*std::pow(a1, 5) - beta/2.0*std::pow(a1, 3)+
-                    kappa,
-                int_const_s=Lscale/4.0*std::pow(a1, 2) - 3.0*beta/2.0*std::log(a1)+
-                    kappa_s;
-            double solver_params[]={Lscale, beta, kappa, int_const, 0.0};
-            double a0=solve(a1, 0.0, 1e-9, &locked_unsat_eq, &locked_unsat_deriv,
-                    &locked_unsat_eq_deriv, static_cast<void*>(solver_params));
-            solver_params[4]=tstart;
-            double astart=solve(a0, 0.0, 1e-9, &locked_unsat_eq,
-                    &locked_unsat_deriv, &locked_unsat_eq_deriv,
-                    static_cast<void*>(solver_params));
-            solver_params[2]=kappa_s; solver_params[3]=int_const_s;
-            solver_params[4]=0;
-            double a0_s=solve(a1, 0.0, 1e-9, &locked_sat_eq,
-                    &locked_sat_deriv, &locked_sat_eq_deriv,
-                    static_cast<void*>(solver_params));
-            solver_params[4]=tstart;
-            double astart_s=solve(a1, 0.0, 1e-9, &locked_sat_eq,
-                    &locked_sat_deriv, &locked_sat_eq_deriv,
-                    static_cast<void*>(solver_params));
-            solver_params[4]=1.0;
+            ExpectedEvolutionMode<Core::EvolModeType> expected_mode;
+            expected_mode.add_break(TSTART, Core::BINARY);
+            ExpectedEvolutionMode<bool> expected_wind_mode;
+            expected_wind_mode.add_break(TSTART, false);
+            const double Ic = 0.001, Kwind = 1e-3, Kwind_s = 1;
+            StellarEvolution::MockStellarEvolution *
+                no_evol = make_no_evolution(1.0, Ic);
+
+            double a1 = 3,
+                   Lscale = (Core::AstroConst::jupiter_mass
+                             /
+                             std::pow(Core::AstroConst::solar_radius, 1.5)
+                             *
+                             std::sqrt(
+                                 Core::AstroConst::G
+                                 /
+                                 (Core::AstroConst::jupiter_mass
+                                  +
+                                  Core::AstroConst::solar_mass)
+                             )
+                             *
+                             Core::AstroConst::day),
+                   beta = (
+                       Ic * std::sqrt(
+                           Core::AstroConst::G
+                           *
+                           (
+                               Core::AstroConst::solar_mass
+                               +
+                               Core::AstroConst::jupiter_mass
+                           )
+                       )
+                       *
+                       Core::AstroConst::day
+                       /
+                       std::pow(Core::AstroConst::solar_radius, 1.5)
+                   ),
+                   wsat_s = 0.1, //Must be adjusted if a1 is adjusted
+                   wsat = Core::Inf,
+                   kappa=(
+                       Kwind
+                       *
+                       std::pow(
+                           (
+                               Core::AstroConst::G
+                               *
+                               (
+                                   Core::AstroConst::solar_mass
+                                   +
+                                   Core::AstroConst::jupiter_mass
+                               )
+                               /
+                               std::pow(Core::AstroConst::solar_radius, 3)
+                           ),
+                           1.5
+                       )
+                       *
+                       std::pow(Core::AstroConst::day, 3)
+                   ),
+                   kappa_s = (
+                       Kwind_s * wsat_s * wsat_s *
+                       std::sqrt(
+                           Core::AstroConst::G
+                           *
+                           (
+                               Core::AstroConst::solar_mass
+                               +
+                               Core::AstroConst::jupiter_mass
+                           )
+                           /
+                           std::pow(Core::AstroConst::solar_radius, 3)
+                       )
+                       *
+                       Core::AstroConst::day
+                   ),
+                   int_const = (Lscale / 10.0 * std::pow(a1, 5)
+                                -
+                                beta / 2.0 * std::pow(a1, 3)
+                                +
+                                kappa),
+                   int_const_s = (Lscale / 4.0 * std::pow(a1, 2)
+                                  -
+                                  3.0 * beta / 2.0 * std::log(a1)
+                                  +
+                                  kappa_s);
+            double solver_params[] = {Lscale, beta, kappa, int_const, 0.0};
+            double a0 = solve(a1,
+                              0.0,
+                              1e-9,
+                              &locked_unsat_eq,
+                              &locked_unsat_deriv,
+                              &locked_unsat_eq_deriv,
+                              static_cast<void*>(solver_params));
+            solver_params[4] = TSTART;
+            double astart = solve(a0,
+                                  0.0,
+                                  1e-9,
+                                  &locked_unsat_eq,
+                                  &locked_unsat_deriv,
+                                  &locked_unsat_eq_deriv,
+                                  static_cast<void*>(solver_params));
+            solver_params[2] = kappa_s;
+            solver_params[3] = int_const_s;
+            solver_params[4] = 0;
+            double a0_s = solve(a1,
+                                0.0,
+                                1e-9,
+                                &locked_sat_eq,
+                                &locked_sat_deriv,
+                                &locked_sat_eq_deriv,
+                                static_cast<void*>(solver_params));
+            solver_params[4] = TSTART;
+            double astart_s = solve(a1,
+                                    0.0,
+                                    1e-9,
+                                    &locked_sat_eq,
+                                    &locked_sat_deriv,
+                                    &locked_sat_eq_deriv,
+                                    static_cast<void*>(solver_params));
+            solver_params[4] = 1.0;
+
     /*		double w0=std::sqrt(
                            AstroConst::G*
                            (AstroConst::solar_mass+AstroConst::jupiter_mass)/
@@ -1284,38 +1427,51 @@ namespace Evolve {
                            (AstroConst::solar_mass+AstroConst::jupiter_mass)/
                            std::pow(a1_check_s*AstroConst::solar_radius, 3))*
                        AstroConst::day;*/
-            std::valarray<double> a_transform_coef(0.0, 6), t_coef(2), t_coef_s(2);
-            a_transform_coef[5]=Lscale/10.0; a_transform_coef[3]=-beta/2.0;
-            t_coef[0]=int_const; t_coef[1]=-kappa;
-            t_coef_s[0]=int_const_s; t_coef_s[1]=-kappa_s;
-            std::valarray<double> Lconv_term1_coef(0.0, 2), Lconv_term2_coef(0.0, 3),
-                identity_coef(0.0, 2), a_term1_coef_s(0.0, 3),
-                Lconv_term1_coef_s(0.0, 2), Lc_beta_coef_s(0.0, 2);
-            Lconv_term1_coef[1]=1.0/beta*std::pow(10.0/Lscale, 3.0/10.0);
-            Lconv_term2_coef[2]=-2.0/std::pow(beta, 3);
-            identity_coef[1]=1;
-            a_term1_coef_s[2]=Lscale/4.0;
-            Lconv_term1_coef_s[1]=1.0/beta*std::pow(4.0/Lscale, 3.0/4.0);
-            Lc_beta_coef_s[1]=1.0/beta;
-            PolynomialEvolutionTrack a_transform(a_transform_coef, 0.0, Inf),
-                                     a_transform1_s(a_term1_coef_s, 0.0, Inf),
-                                     transformed_a_evol(t_coef, tstart, 1.0),
-                                     transformed_a_evol_s(t_coef_s, tstart, 1.0),
-                                     Lconv_term1_poly(Lconv_term1_coef, 0.0,Inf),
-                                     Lconv_term2_poly(Lconv_term2_coef, 0.0,Inf),
-                                     Lconv_term1_poly_s(Lconv_term1_coef_s, 0.0,
-                                             Inf),
-                                     Lc_beta_s(Lc_beta_coef_s, 0.0, Inf),
-                                     identity(identity_coef, 0.0, Inf);
-            FunctionToPower L_transform1(&Lconv_term1_poly, -10.0/3.0),
+            std::valarray<double> a_transform_coef(0.0, 6),
+                                  t_coef(2),
+                                  t_coef_s(2);
+            a_transform_coef[5] = Lscale / 10.0;
+            a_transform_coef[3] = -beta / 2.0;
+            t_coef[0] = int_const;
+            t_coef[1] = -kappa;
+            t_coef_s[0] = int_const_s;
+            t_coef_s[1] = -kappa_s;
+            std::valarray<double> Lconv_term1_coef(0.0, 2),
+                                  Lconv_term2_coef(0.0, 3),
+                                  identity_coef(0.0, 2),
+                                  a_term1_coef_s(0.0, 3),
+                                  Lconv_term1_coef_s(0.0, 2),
+                                  Lc_beta_coef_s(0.0, 2);
+            Lconv_term1_coef[1] = 1.0 / beta * std::pow(10.0 / Lscale,
+                                                        3.0 / 10.0);
+            Lconv_term2_coef[2] = -2.0 / std::pow(beta, 3);
+            identity_coef[1] = 1;
+            a_term1_coef_s[2] = Lscale / 4.0;
+            Lconv_term1_coef_s[1] = 1.0 / beta * std::pow(4.0 / Lscale,
+                                                          3.0 / 4.0);
+            Lc_beta_coef_s[1] = 1.0 / beta;
+
+            StellarEvolution::PolynomialEvolutionQuantity
+                a_transform(a_transform_coef, 0.0, Core::Inf),
+                a_transform1_s(a_term1_coef_s, 0.0, Core::Inf),
+                transformed_a_evol(t_coef, TSTART, 1.0),
+                transformed_a_evol_s(t_coef_s, TSTART, 1.0),
+                Lconv_term1_poly(Lconv_term1_coef, 0.0, Core::Inf),
+                Lconv_term2_poly(Lconv_term2_coef, 0.0, Core::Inf),
+                Lconv_term1_poly_s(Lconv_term1_coef_s, 0.0, Core::Inf),
+                Lc_beta_s(Lc_beta_coef_s, 0.0, Core::Inf),
+                identity(identity_coef, 0.0, Core::Inf);
+            FunctionToPower L_transform1(&Lconv_term1_poly, -10.0 / 3.0),
                             L_transform2(&Lconv_term2_poly, -1.0),
-                            L_transform1_s(&Lconv_term1_poly_s, -4.0/3.0);
-            LogFunction log_a(&identity), log_Lc_beta_s(&Lc_beta_s);
-            ScaledFunction a_transform2_s(&log_a, -1.5*beta),
+                            L_transform1_s(&Lconv_term1_poly_s, -4.0 / 3.0);
+            LogFunction log_a(&identity),
+                        log_Lc_beta_s(&Lc_beta_s);
+            ScaledFunction a_transform2_s(&log_a, -1.5 * beta),
                            L_transform2_s(&log_Lc_beta_s, beta);
             FuncPlusFunc L_transform(&L_transform1, &L_transform2),
                          a_transform_s(&a_transform1_s, &a_transform2_s),
                          L_transform_s(&L_transform1_s, &L_transform2_s);
+#if 0
             std::valarray<double> initial_orbit(2);
 
             initial_orbit[0]=astart;
@@ -1346,63 +1502,284 @@ namespace Evolve {
             to_check_s(solver);
             test_solution(to_check_s, transformed_a_evol_s, transformed_a_evol_s,
                     zero_func, tstart, 1.0, expected_mode);
-        } catch (Error::General &ex) {
-            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()+": "+ex.get_message()).c_str());
+#endif
+            delete no_evol;
+        } catch (Core::Error::General &ex) {
+            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")
+                                    +
+                                    ex.what()+": "+ex.get_message()).c_str());
         } catch (std::exception &ex) {
-            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()).c_str());
+            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")
+                                    +
+                                    ex.what()).c_str());
         }
     }
 
     void test_OrbitSolver::test_disklocked_to_locked_to_noplanet()
     {
         try {
-            const double Ic=0.001, Kwind=8e-6, tdisk=1, tfinal=2;
-            MockStellarEvolution no_evol(-1,
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(Ic, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1));
-            double afinal=1.75, Lscale=AstroConst::jupiter_mass/
-                std::pow(AstroConst::solar_radius, 1.5)*
-                std::sqrt(AstroConst::G/
-                        (AstroConst::jupiter_mass+AstroConst::solar_mass))*
-                AstroConst::day,
-                beta=Ic*std::sqrt(AstroConst::G*(AstroConst::solar_mass+
-                            AstroConst::jupiter_mass))*AstroConst::day/
-                    std::pow(AstroConst::solar_radius, 1.5),
-                wsat=Inf,
-                kappa=Kwind*std::pow(AstroConst::G*
-                        (AstroConst::solar_mass+AstroConst::jupiter_mass)/
-                        std::pow(AstroConst::solar_radius, 3), 1.5)*
-                    std::pow(AstroConst::day, 3),
-                int_const=Lscale/10.0*std::pow(afinal, 5) -
-                    beta/2.0*std::pow(afinal, 3) + kappa*tfinal;
+            const double Ic = 0.001,
+                         Kwind = 2e-4,
+                         tdisk = 1,
+                         tfinal = 2;
+            StellarEvolution::MockStellarEvolution *
+                no_evol = make_no_evolution(1.0, Ic);
+
+            double afinal = 1.75,
+                   Lscale = (Core::AstroConst::jupiter_mass
+                             /
+                             std::pow(Core::AstroConst::solar_radius, 1.5)
+                             *
+                             std::sqrt(
+                                 Core::AstroConst::G
+                                 /
+                                 (
+                                     Core::AstroConst::jupiter_mass
+                                     +
+                                     Core::AstroConst::solar_mass
+                                 )
+                             )
+                             *
+                             Core::AstroConst::day),
+                   beta = (
+                       Ic
+                       *
+                       std::sqrt(
+                           Core::AstroConst::G
+                           *
+                           (
+                               Core::AstroConst::solar_mass
+                               +
+                               Core::AstroConst::jupiter_mass
+                           )
+                       )
+                       *
+                       Core::AstroConst::day
+                       /
+                       std::pow(Core::AstroConst::solar_radius, 1.5)
+                   ),
+                   wsat = 1e100,
+                   kappa = (
+                       Kwind
+                       *
+                       std::pow(
+                           Core::AstroConst::G
+                           *
+                           (
+                               Core::AstroConst::solar_mass
+                               +
+                               Core::AstroConst::jupiter_mass
+                           )
+                           /
+                           std::pow(Core::AstroConst::solar_radius, 3), 
+                           1.5
+                       )
+                       *
+                       std::pow(Core::AstroConst::day, 3)
+                   ),
+                   int_const = (Lscale / 10.0 * std::pow(afinal, 5) 
+                                -
+                                beta / 2.0 * std::pow(afinal, 3)
+                                +
+                                kappa * tfinal);
             double solver_params[]={Lscale, beta, kappa, int_const, tdisk};
-            double ainitial=solve(afinal, 0.0, 1e-9, &locked_unsat_eq,
-                    &locked_unsat_deriv, &locked_unsat_eq_deriv,
-                    static_cast<void*>(solver_params)),
-                   wdisk=std::sqrt(
-                           AstroConst::G*
-                           (AstroConst::solar_mass+AstroConst::jupiter_mass)/
-                           std::pow(ainitial*AstroConst::solar_radius, 3))*
-                       AstroConst::day;
-            Star star_not_saturated_wind_no_coupling(1.0, 1.0e-10, Kwind, wsat, Inf,
-                    0.0, wdisk, tdisk, no_evol);
+            double ainitial = solve(2.0 * afinal,
+                                    0.0,
+                                    1e-9,
+                                    &locked_unsat_eq,
+                                    &locked_unsat_deriv,
+                                    &locked_unsat_eq_deriv,
+                                    static_cast<void*>(solver_params)),
+                   wdisk = (
+                       std::sqrt(
+                           Core::AstroConst::G
+                           *
+                           (
+                               Core::AstroConst::solar_mass
+                               +
+                               Core::AstroConst::jupiter_mass
+                           )
+                           /
+                           std::pow(ainitial * Core::AstroConst::solar_radius, 3)
+                       )
+                       *
+                       Core::AstroConst::day
+                   );
+
+            make_const_lag_star(*no_evol,
+                                Kwind,
+                                wsat,
+                                Core::Inf,//core-env coupling timescale
+                                lag_from_lgQ(1, (Core::AstroConst::jupiter_mass
+                                                 /
+                                                 Core::AstroConst::solar_mass)));
+            double zero = 0.0;
+            Planet::LockedPlanet planet(1.0, 1.0);
+            planet.configure(true, //init
+                             tdisk, //age
+                             __star->mass(), //mass
+                             ainitial * (1.0 - 1e-14),//planet formation semimajor
+                             0.0, //eccentricity
+                             &zero, //spin angmom
+                             NULL, //inclination
+                             NULL, //periapsis
+                             false, //locked surface
+                             true, //zero outer inclination
+                             true);//zero outer periapsis
+
+            __system = new Evolve::DiskBinarySystem(
+                *__star,
+                planet,
+                ainitial * (1.0 - 1e-14), //semimajor
+                0.0, //eccentricity
+                0, //inclination
+                wdisk, //Wdisk
+                tdisk, //disk dissipation age
+                tdisk //planet formation age
+            );
+
+            __system->configure(true, //init
+                                TSTART,
+                                Core::NaN, //semimajor
+                                Core::NaN, //eccentricity
+                                &zero, //spin angmom
+                                NULL, //inclination
+                                NULL, //periapsis
+                                Core::LOCKED_SURFACE_SPIN);
+
+
+            double adestr = __system->minimum_semimajor(),
+                   tdestr = ((beta / 2.0 * std::pow(adestr, 3)
+                              +
+                              int_const
+                              -
+                              Lscale / 10.0 * std::pow(adestr, 5)) / kappa),
+                   Lc_at_destr = (beta / std::pow(adestr, 1.5) 
+                                  +
+                                  Lscale * std::sqrt(adestr));
+
+
+            std::cerr << "C_L = " << Lscale << std::endl;
+            std::cerr << "beta = " << beta << std::endl;
+            std::cerr << "C_i = " << int_const << std::endl;
+            std::cerr << "kappa = " << kappa << std::endl;
+            std::cerr << "Initial semimajor axis: " << ainitial << std::endl;
+            std::cerr << "Destruction semimajor: " << adestr << std::endl;
+            std::cerr << "Destruction age: " << tdestr << std::endl;
+
+            std::valarray<double> a_transform_coef(0.0, 6), t_coef(2);
+            a_transform_coef[5] = Lscale / 10.0;
+            a_transform_coef[3] = -beta / 2.0;
+            t_coef[0] = int_const;
+            t_coef[1] = -kappa;
+            std::valarray<double> Lconv_term1_coef(0.0, 2),
+                                  Lconv_term2_coef(0.0, 3),
+                                  identity_coef(0.0, 2),
+                                  noplanet_Lconv_m2_coef(2);
+            Lconv_term1_coef[1] = 1.0 / beta * std::pow(10.0 / Lscale, 0.3);
+            Lconv_term2_coef[2] = -2.0 / std::pow(beta, 3);
+            noplanet_Lconv_m2_coef[0] = (
+                std::pow(Lc_at_destr, -2)
+                -
+                2.0 * Kwind * tdestr / std::pow(Ic, 3)
+            );
+            noplanet_Lconv_m2_coef[1] = 2.0 * Kwind / std::pow(Ic, 3);
+            identity_coef[1] = 1;
+            StellarEvolution::PolynomialEvolutionQuantity
+                identity(identity_coef, -Core::Inf, Core::Inf),
+                disk_nan_evol(std::valarray<double>(Core::NaN, 2),
+                              TSTART,
+                              tdisk),
+                locked_a_transform(a_transform_coef, -Core::Inf, Core::Inf),
+                locked_aLconv_evol(t_coef, tdisk, tdestr),
+                locked_e_evol(std::valarray<double>(), tdisk, tdestr),
+                noplanet_nan_evol(std::valarray<double>(Core::NaN, 2),
+                                  tdestr,
+                                  tfinal),
+                disk_Lconv_evol(std::valarray<double>(wdisk * Ic, 1),
+                                TSTART,
+                                tdisk),
+                noplanet_Lconv_m2_evol(noplanet_Lconv_m2_coef, tdestr, tfinal),
+                Lconv_term1_poly(Lconv_term1_coef, -Core::Inf, Core::Inf),
+                Lconv_term2_poly(Lconv_term2_coef, -Core::Inf, Core::Inf),
+                Lrad_evol(std::valarray<double>(), TSTART, tfinal);
+            FunctionToPower L_transform1(&Lconv_term1_poly, -10.0 / 3.0),
+                            L_transform2(&Lconv_term2_poly, -1.0),
+                            noplanet_Lconv_evol(&noplanet_Lconv_m2_evol, -0.5);
+            LogFunction log_a(&identity);
+            FuncPlusFunc locked_Lconv_transform(&L_transform1, &L_transform2);
+            PiecewiseFunction a_evol, e_evol, Lconv_evol;
+            a_evol.add_piece(&disk_nan_evol);
+            a_evol.add_piece(&locked_aLconv_evol);
+            a_evol.add_piece(&noplanet_nan_evol);
+            e_evol.add_piece(&disk_nan_evol);
+            e_evol.add_piece(&locked_e_evol);
+            e_evol.add_piece(&noplanet_nan_evol);
+            Lconv_evol.add_piece(&disk_Lconv_evol);
+            Lconv_evol.add_piece(&locked_aLconv_evol);
+            Lconv_evol.add_piece(&noplanet_Lconv_evol);
+
+            std::vector< const Core::OneArgumentDiffFunction * >
+                transformations(NUM_REAL_QUANTITIES - 1, &identity);
+            TransformedSolution to_check(transformations, TSTART);
+            transformations[SEMIMAJOR] = &locked_a_transform;
+            transformations[CONV_ANGMOM] = &locked_Lconv_transform;
+            to_check.add_transformation(transformations, tdisk);
+            transformations[SEMIMAJOR] = &identity;
+            transformations[CONV_ANGMOM] = &identity;
+            to_check.add_transformation(transformations, tdestr);
+
+            ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
+            expected_evol_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
+            expected_evol_mode.add_break(tdisk, Core::BINARY);
+            expected_evol_mode.add_break(tdestr, Core::SINGLE);
+
+            ExpectedEvolutionMode<bool> expected_wind_mode;
+            expected_wind_mode.add_break(TSTART, false);
+
+            __star->detect_saturation();
+            __solver = new Evolve::OrbitSolver(tfinal, 1e-8);
+            (*__solver)(*__system,
+                        (tfinal - __system->age()) / 1000.0, //time step
+                        std::list<double>()); //no required ages*/
+
+            std::vector< const std::list<double> * > 
+                tabulated_evolution = get_evolution();
+            const std::vector< const std::list<double> * > &
+                transformed_evolution = to_check(tabulated_evolution);
+
+            std::vector<const Core::OneArgumentDiffFunction *>
+                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
+            expected_real_quantities[SEMIMAJOR] = &a_evol;
+            expected_real_quantities[ECCENTRICITY] = &e_evol;
+            expected_real_quantities[CONV_INCLINATION] = &zero_func;
+            expected_real_quantities[RAD_INCLINATION] = &zero_func;
+            expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
+            expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
+            expected_real_quantities[CONV_ANGMOM] = &Lconv_evol;
+            expected_real_quantities[RAD_ANGMOM] = &Lrad_evol;
+
+            test_solution(transformed_evolution,
+                          expected_real_quantities,
+                          expected_evol_mode,
+                          expected_wind_mode,
+                          TSTART,
+                          tfinal,
+                          true);
+
+#if 0
+            Star star_not_saturated_wind_no_coupling(
+                1.0,//M*
+                1.0e-10,//Q*
+                Kwind,
+                wsat,
+                Inf,//core-env coupling timescale
+                0.0,//Q transition width
+                wdisk,
+                tdisk,
+                no_evol);
             Planet planet1(&star_not_saturated_wind_no_coupling, 1.0, 1.0, 1.0);
             StellarSystem system1(&star_not_saturated_wind_no_coupling, &planet1);
-            double adestr=planet1.minimum_semimajor(tdisk)*AU_Rsun,
-                   tdestr=(beta/2.0*std::pow(adestr, 3) + int_const -
-                           Lscale/10.0*std::pow(adestr, 5))/kappa,
-                   Lc_at_destr=beta/std::pow(adestr, 1.5) +
-                       Lscale*std::sqrt(adestr);
     /*		std::cout << std::endl << "alpha=" << Lscale
                 << std::endl << "beta=" << beta
                 << std::endl << "kappa=" << kappa 
@@ -1415,69 +1792,37 @@ namespace Evolve {
                         beta*(std::pow(adestr, 3)-std::pow(afinal, 3))/2.0)/kappa
                 << std::endl;*/
 
-            std::valarray<double> a_transform_coef(0.0, 6), t_coef(2);
-            a_transform_coef[5]=Lscale/10.0; a_transform_coef[3]=-beta/2.0;
-            t_coef[0]=int_const; t_coef[1]=-kappa;
-            std::valarray<double> Lconv_term1_coef(0.0, 2), Lconv_term2_coef(0.0, 3),
-                identity_coef(0.0, 2), noplanet_Lconv_m2_coef(2);
-            Lconv_term1_coef[1]=1.0/beta*std::pow(10.0/Lscale, 3.0/10.0);
-            Lconv_term2_coef[2]=-2.0/std::pow(beta, 3);
-            noplanet_Lconv_m2_coef[0]=std::pow(Lc_at_destr, -2) -
-                2.0*Kwind*tdestr/std::pow(Ic, 3);
-            noplanet_Lconv_m2_coef[1]=2.0*Kwind/std::pow(Ic, 3);
-            identity_coef[1]=1;
-            PolynomialEvolutionTrack
-                identity(identity_coef, -Inf, Inf),
-                disk_a_evol(std::valarray<double>(NaN, 2), tstart, tdisk),
-                locked_a_transform(a_transform_coef, -Inf, Inf),
-                locked_aLconv_evol(t_coef, tdisk, tdestr),
-                noplanet_a_evol(std::valarray<double>(NaN, 2), tdestr,
-                        tfinal),
-
-                disk_Lconv_evol(std::valarray<double>(wdisk*Ic, 1), tstart,
-                        tdisk),
-                noplanet_Lconv_m2_evol(noplanet_Lconv_m2_coef, tdestr, tfinal),
-                Lconv_term1_poly(Lconv_term1_coef, -Inf, Inf),
-                Lconv_term2_poly(Lconv_term2_coef, -Inf, Inf),
-                Lrad_evol(std::valarray<double>(), tstart, tfinal);
-            FunctionToPower L_transform1(&Lconv_term1_poly, -10.0/3.0),
-                            L_transform2(&Lconv_term2_poly, -1.0),
-                            noplanet_Lconv_evol(&noplanet_Lconv_m2_evol, -0.5);
-            LogFunction log_a(&identity);
-            FuncPlusFunc locked_Lconv_transform(&L_transform1, &L_transform2);
-            PiecewiseFunction a_evol, Lconv_evol;
-            a_evol.add_piece(&disk_a_evol);
-            a_evol.add_piece(&locked_aLconv_evol);
-            a_evol.add_piece(&noplanet_a_evol);
-            Lconv_evol.add_piece(&disk_Lconv_evol);
-            Lconv_evol.add_piece(&locked_aLconv_evol);
-            Lconv_evol.add_piece(&noplanet_Lconv_evol);
-
             OrbitSolver solver(tstart, tfinal, 1e-8);
-            solver(system1, Inf, 0.0, ainitial/AU_Rsun, tstart);
-            TransformedSolution to_check(identity, identity, identity, tstart);
-            to_check.add_transformation(locked_a_transform,
-                    locked_Lconv_transform, identity, tdisk);
-            to_check.add_transformation(identity, identity, identity, tdestr);
-            to_check(solver);
+            solver(system1,
+                   Inf,//Max step
+                   0.0,//Planet formation age
+                   ainitial/AU_Rsun,//planet formation semimajor
+                   tstart);//Start age
 
-            ExpectedEvolutionMode expected_mode;
-            expected_mode.add_break(tstart, LOCKED_TO_DISK);
-            expected_mode.add_break(tdisk, LOCKED_TO_PLANET);
-            expected_mode.add_break(tdestr, NO_PLANET);
-
-            test_solution(to_check, a_evol, Lconv_evol, Lrad_evol, tstart, tfinal,
-                    expected_mode);
-        } catch (Error::General &ex) {
-            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()+": "+ex.get_message()).c_str());
+            test_solution(to_check,
+                          a_evol,
+                          Lconv_evol,
+                          Lrad_evol,
+                          tstart,
+                          tfinal,
+                          expected_mode);
+#endif
+            delete __star;
+            delete __system;
+            delete __solver;
+        } catch (Core::Error::General &ex) {
+            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")
+                                    +
+                                    ex.what()+": "+ex.get_message()).c_str());
         } catch (std::exception &ex) {
-            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")+
-                    ex.what()).c_str());
+            TEST_ASSERT_MSG(false, (std::string("Unexpected exception thrown: ")
+                                    +
+                                    ex.what()).c_str());
         }
 
     }
 
+#if 0
     void test_OrbitSolver::test_disklocked_to_fast_to_noplanet()
     {
         try {
@@ -1793,10 +2138,10 @@ namespace Evolve {
     {
 /*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
-        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);*/
-        TEST_ADD(test_OrbitSolver::test_unlocked_evolution); 
-//        TEST_ADD(test_OrbitSolver::test_locked_evolution);
-//        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
+        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_locked_evolution);
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
 //        TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
 //        TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked); 
 //        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
@@ -1811,6 +2156,8 @@ int main()
 
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);
+	std::cerr.setf(std::ios_base::scientific);
+	std::cerr.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
     Evolve::test_OrbitSolver tests;
 	return (tests.run(output) ? EXIT_SUCCESS : EXIT_FAILURE);

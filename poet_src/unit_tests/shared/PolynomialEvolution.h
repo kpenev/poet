@@ -665,12 +665,13 @@ std::valarray<double> tabulate_track(PolynomialEvolutionTrack *track,
 double eval_poly(const std::valarray< std::valarray<double> > &poly_coef,
                  double mass, double age, double low_mass_age_scaling=0,
 		double high_mass_age_scaling=0, double scale_mass=NaN);
-
-///Solves f(x)=0 for x.
-double solve(double guess_x, double abs_precision, double rel_precision,
-		double (*f)(double x, void *params),
-		double (*df) (double x, void *params),
-		void (*fdf) (double x, void *params, double *f, double *df),
-		void *params);
 #endif
 
+///Solves f(x)=0 for x.
+double solve(double guess_x,
+             double abs_precision,
+             double rel_precision,
+             double (*f)(double x, void *params),
+             double (*df) (double x, void *params),
+             void (*fdf) (double x, void *params, double *f, double *df),
+             void *params);

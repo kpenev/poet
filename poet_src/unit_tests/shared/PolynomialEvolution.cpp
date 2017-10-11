@@ -430,12 +430,12 @@ double PiecewiseFunction::order(unsigned deriv_order) const
         std::list<const OneArgumentDiffFunction *>::const_iterator
             fi = __pieces.begin();
         fi != __pieces.end();
-        fi++
+        ++fi
     ) { 
 		if(
             __deriv_x >= (*fi)->range_low()
             &&
-            __deriv_x <= (*fi)->range_high()
+            __deriv_x < (*fi)->range_high()
         ) {
 			if(deriv_order == 0) return (**fi)(__deriv_x);
 			const FunctionDerivatives *df = (*fi)->deriv(__deriv_x);
@@ -445,6 +445,13 @@ double PiecewiseFunction::order(unsigned deriv_order) const
 		}
 		++index;
 	}
+    if(__deriv_x == __pieces.back()->range_high()) {
+        if(deriv_order == 0) return (*(__pieces.back()))(__deriv_x);
+        const FunctionDerivatives *df = __pieces.back()->deriv(__deriv_x);
+        double result = df->order(deriv_order);
+        delete df;
+        return result;
+    }
 	std::ostringstream msg;
 	msg << "Requested derivative or function value at age="
         << __deriv_x
@@ -563,13 +570,13 @@ double LogFunction::order(unsigned deriv_order) const
 	}
 }
 
-#if 0
-
-double solve(double guess_x, double abs_precision, double rel_precision,
-		double (*f)(double x, void *params),
-		double (*df) (double x, void *params),
-		void (*fdf) (double x, void *params, double *f, double *df),
-		void *params)
+double solve(double guess_x,
+             double abs_precision,
+             double rel_precision,
+             double (*f)(double x, void *params),
+             double (*df) (double x, void *params),
+             void (*fdf) (double x, void *params, double *f, double *df),
+             void *params)
 {
 	int status;
 	int iter = 0;
@@ -598,4 +605,3 @@ double solve(double guess_x, double abs_precision, double rel_precision,
 	gsl_root_fdfsolver_free (s);
 	return x;
 }
-#endif
