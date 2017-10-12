@@ -306,7 +306,7 @@ namespace Evolve {
         ///\brief Tests an evolution that starts locked to a disk then
         ///the orbital period is shorter than the stellar spin period and
         ///eventually the planet falls below the Roche radius.
-//        void test_disklocked_to_fast_to_noplanet();
+        void test_disklocked_to_fast_to_noplanet();
 
         ///\brief Tests an evolution that starts locked to a disk then
         ///the orbital period is shorter than the stellar spin period and
