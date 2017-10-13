@@ -222,7 +222,7 @@ namespace Evolve {
             double wdisk,
             double tdisk,
             double initial_a,
-            double *initial_Lstar,
+            const double *initial_Lstar,
             double initial_incl = 0.0,
             double planet_mass = 1.0,
             ///If NaN defaults to tdisk.
@@ -311,7 +311,7 @@ namespace Evolve {
         ///\brief Tests an evolution that starts locked to a disk then
         ///the orbital period is shorter than the stellar spin period and
         ///then is locked.
-//        void test_disklocked_to_fast_to_locked();
+        void test_disklocked_to_fast_to_locked();
 
         ///\brief Tests an evolution that starts locked to a disk then
         ///immediately is locked to the planet and then the lock is broken
