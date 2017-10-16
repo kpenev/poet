@@ -2067,23 +2067,23 @@ namespace Evolve {
                          ),
                          wdisk = 0.5 * beta / std::pow(a_formation, 1.5),
                          wlocked = beta / std::pow(async, 1.5);
-    /*		std::cout << std::endl << "arate=" << -alpha
+    		std::cout << std::endl << "arate=" << -alpha
                 << std::endl << "alpha=" << Lscale
                 << std::endl << "beta=" << beta
                 << std::endl << "Ic=" << Ic
                 << std::endl << "wdisk=" << wdisk
                 << std::endl << "wlocked=" << wlocked
                 << std::endl << "a0=" << a_formation
-                << std::endl;*/
+                << std::endl;
 
             StellarEvolution::MockStellarEvolution *
                 no_evol = make_no_evolution(1.0, Ic);
 
             make_const_lag_star(
-                *no_evol,
-                0.0,
-                1.0,
-                Core::Inf,
+                *no_evol,//evolution
+                0.0,//Kwind
+                100.0,//wsat
+                Core::Inf,//tcoup
                 lag_from_lgQ(lgQ,
                              (Core::AstroConst::jupiter_mass
                               /
@@ -2091,13 +2091,13 @@ namespace Evolve {
             );
             evolve(wdisk,//wdisk,
                    tdisk,//tdisk
-                   1.0,//initial semimajor
+                   a_formation,//initial semimajor
                    &zero,//initial L*
                    0.0,//initial inclination
                    1.0,//planet_mass
                    Core::NaN,//form the planet when disk dissipates
                    tend,//max evolution age
-                   0.0);//planet radius
+                   0.01);//planet radius
 
             ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
             expected_evol_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
@@ -2169,25 +2169,6 @@ namespace Evolve {
                           tend,
                           true);
 
-/*            Star star_no_wind_no_coupling(1.0,//M*
-                                          Q,//Q*
-                                          0.0,//K
-                                          1.0,//wsat
-                                          Inf,//tcoup
-                                          0.0,//dQ_w
-                                          wdisk,
-                                          tdisk,
-                                          no_evol,
-                                          1.0,//current age
-                                          0.0,//current conv spin
-                                          0.0);//current rad spin
-            Planet planet1(&star_no_wind_no_coupling, 1.0, 0.0, 1.0 - semimajor);
-            StellarSystem system1(&star_no_wind_no_coupling, &planet1);
-
-            OrbitSolver solver(tstart, tend, 5e-8);
-            solver(system1, Inf, 0.0, a_formation/AU_Rsun, tstart);
-            test_solution(solver, a_evol, Lconv_evol, Lrad_evol, tstart, tend,
-                    expected_mode);*/
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(
                 false,
