@@ -228,7 +228,9 @@ namespace Evolve {
             ///If NaN defaults to tdisk.
             double tplanet = Core::NaN,
             double max_age = MAX_AGE,
-            double planet_radius = 1.0
+            double planet_radius = 1.0,
+            double precision = 1e-6,
+            double max_step_factor = 1e-3
         );
 
         ///Return the last calculated evolution.
@@ -316,7 +318,7 @@ namespace Evolve {
         ///\brief Tests an evolution that starts locked to a disk then
         ///immediately is locked to the planet and then the lock is broken
         ///leaving the orbital period shorter than the stellar spin period.
-//        void test_disklocked_to_locked_to_fast();
+        void test_disklocked_to_locked_to_fast();
     };//End test_OrbitSolver class.
 
 }//End Evolve namespace.
