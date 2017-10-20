@@ -250,6 +250,6 @@ namespace StellarEvolution {
         boost::archive::text_oarchive oa(ofs);
         oa << (*this);
     }
+#endif
 
 } //End StellarEvolution namespace.
-#endif

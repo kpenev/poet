@@ -2,6 +2,7 @@
 #define __INTERP_SOLUTION_ITERATOR_H
 
 #include "SerializableSpline1dInterpolant.h"
+
 #include "Common.h"
 #include <valarray>
 
@@ -61,7 +62,7 @@ namespace Core {
 
         ///Start iterating over the solutions of the given spline.
         InterpSolutionIterator(
-            const SerializableSpline1dInterpolant &spline_var,
+            const alglib::spline1dinterpolant &spline_var,
             double offset, double min_sol_distance=1e-8
         );
 

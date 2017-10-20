@@ -185,20 +185,23 @@ void quantity_continuous_range(const EvolvingStellarQuantity* quantity,
     *range_max = actual_quantity->next_discontinuity();
 }
 
-void save_interpolator(MESAInterpolator *interpolator, const char *filename)
-{
-    reinterpret_cast<const StellarEvolution::MESA::Interpolator*>(
-        interpolator
-    )->save_state(filename);
-}
 
-MESAInterpolator *load_interpolator(const char *filename)
-{
-    StellarEvolution::MESA::Interpolator *interpolator = 
-        new StellarEvolution::MESA::Interpolator();
-    interpolator->load_state(filename);
-    return reinterpret_cast<MESAInterpolator*>(interpolator);
-}
+#ifndef NO_SERIALIZE
+    void save_interpolator(MESAInterpolator *interpolator, const char *filename)
+    {
+        reinterpret_cast<const StellarEvolution::MESA::Interpolator*>(
+            interpolator
+        )->save_state(filename);
+    }
+
+    MESAInterpolator *load_interpolator(const char *filename)
+    {
+        StellarEvolution::MESA::Interpolator *interpolator = 
+            new StellarEvolution::MESA::Interpolator();
+        interpolator->load_state(filename);
+        return reinterpret_cast<MESAInterpolator*>(interpolator);
+    }
+#endif
 
 double default_smoothing(int quantityID)
 {

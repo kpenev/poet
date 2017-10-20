@@ -217,6 +217,7 @@ namespace StellarEvolution {
         ///The age at which the core begins to form in Gyr.
         virtual double core_formation_age() const {return __core_formation;}
 
+#ifndef NO_SERIALIZE
         ///\brief Serializes the interpolation state to file.
         ///
         ///Only call this on objects initialized with the default
@@ -249,6 +250,7 @@ namespace StellarEvolution {
             ///The name of a file previously created using save_state()
             const std::string &filename="../interp_state_data"
         );
+#endif
 
         ///\brief Free all evolution tracks, rendering all created quantities
         ///unuseable!
@@ -262,6 +264,7 @@ namespace StellarEvolution {
         virtual ~Interpolator() {}
     }; //End of Interpolator class declaration.
 
+#ifndef NO_SERIALIZE
     ///Serialize the current interpolation.
     template<class Archive> void Interpolator::serialize(Archive & ar,
                                                          const unsigned int)
@@ -278,6 +281,7 @@ namespace StellarEvolution {
         ar & __core_formation;
         if(__core_formation < 0) __core_formation = Core::Inf;
     }
+#endif
 
 }//End of StellarEvolution namespace
 

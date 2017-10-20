@@ -185,6 +185,7 @@ extern "C" {
                                    double *range_min,
                                    double *range_max);
 
+#ifndef NO_SERIALIZE
     ///Save the state of an interpolator for faster creation.
     void save_interpolator(
         ///The interpolator to save. Must have previously been created
@@ -200,6 +201,7 @@ extern "C" {
         ///The name of the file to save the state to.
         const char *filename
     );
+#endif
 
     ///Return the default smoothing argument used for the given quantity.
     double default_smoothing(

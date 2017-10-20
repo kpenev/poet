@@ -36,7 +36,7 @@ namespace Core {
     {}
 
     InterpSolutionIterator::InterpSolutionIterator(
-        const SerializableSpline1dInterpolant &spline_var,
+        const alglib::spline1dinterpolant &spline_var,
         double offset,
         double min_sol_distance
     ) : 

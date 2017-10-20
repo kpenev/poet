@@ -3,12 +3,10 @@
 
 #include "alglib/src/interpolation.h"
 
-#ifndef NO_SERIALIZE
 	#include <boost/serialization/base_object.hpp>
 	#include <boost/archive/text_oarchive.hpp>
 	#include <boost/archive/text_iarchive.hpp>
 	#include <boost/serialization/export.hpp>
-#endif
 
 namespace Core {
 
