@@ -319,6 +319,12 @@ namespace Evolve {
         ///immediately is locked to the planet and then the lock is broken
         ///leaving the orbital period shorter than the stellar spin period.
         void test_disklocked_to_locked_to_fast();
+
+        ///\brief Tests an evolution with only the 1-0 component in a polar
+        ///orbit.
+        ///
+        ///Expectations are that no evolution will occur.
+        void test_polar_1_0_evolution();
     };//End test_OrbitSolver class.
 
 }//End Evolve namespace.

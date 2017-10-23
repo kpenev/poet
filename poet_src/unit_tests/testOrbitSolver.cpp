@@ -155,7 +155,7 @@ namespace Evolve {
                         std::vector<double>(),//W* breaks
                         std::vector<double>(1, 0.0),//Wtide pow.
                         std::vector<double>(1, 0.0),//W* pow.
-                        phase_lag);
+                        (i==0 ? phase_lag : 0.0));
             zone = &(__star->core());
         }
     }
@@ -1897,9 +1897,17 @@ namespace Evolve {
                 2.44
                 *
                 std::pow(
-                    __star->mass() / Core::AstroConst::jupiter_mass,
+                    (
+                        __star->mass() * Core::AstroConst::solar_mass
+                        /
+                        Core::AstroConst::jupiter_mass
+                    ),
                     1.0 / 3.0
                 )
+                *
+                Core::AstroConst::jupiter_radius
+                /
+                Core::AstroConst::solar_radius
             );
             double a6p5_offset = (std::pow(adestr, 6.5)
                                   -
@@ -1907,7 +1915,15 @@ namespace Evolve {
                    a_formation = std::pow(a6p5_offset + 6.5 * alpha * TDISK,
                                           1.0 / 6.5);
 
-            evolve(WDISK, TDISK, a_formation, &zero);
+            std::cerr << "a0 = " << a_formation << std::endl
+                      << "a_death = " << adestr << std::endl
+                      << "formation age = " << TDISK << std::endl
+                      << "destruction age = " << TDESTR << std::endl; 
+
+            evolve(WDISK,
+                   TDISK,
+                   a_formation,
+                   &zero);//Initial L*
 
             ExpectedEvolutionMode<Core::EvolModeType> expected_mode;
             expected_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
@@ -2512,47 +2528,6 @@ namespace Evolve {
                           TSTART,
                           tend,
                           true);
-
-/*            MockStellarEvolution no_evol(-1,
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(Ic, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1),
-                    std::valarray< std::valarray<double> >(
-                        std::valarray<double>(1.0, 1), 1));
-            Star star_no_coupling(
-                1.0,//M*
-                Q,//Q*
-                Kwind,//Kw
-                Inf,//wsat
-                Inf,//tcoup 
-                0.0,//Q transition
-                wdisk,
-                tdisk,
-                no_evol
-            );
-            Planet planet1(&star_no_coupling, 1.0, Rp, 1.0);
-            StellarSystem system1(&star_no_coupling, &planet1);
-
-            OrbitSolver solver(tstart, tend, 1e-9);
-            solver(system1, Inf, 0.0, a0/AU_Rsun, tstart);
-
-            TransformedSolution to_check(a_disk_transform, Lconv_disk_transform,
-                    Lrad_transform, tstart);
-            to_check.add_transformation(a_locked_transform,
-                    Lconv_locked_transform, Lrad_transform, tdisk);
-            to_check.add_transformation(a_fast_transform, Lconv_fast_transform,
-                    Lrad_transform, tbreak);
-            to_check.add_transformation(a_noplanet_transform,
-                    Lconv_noplanet_transform, Lrad_transform, tdeath);
-            to_check(solver);
-
-            test_solution(to_check, a_evol, Lconv_evol, Lrad_evol, tstart, tend,
-                    expected_mode);*/
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(
                 false,
@@ -2575,17 +2550,30 @@ namespace Evolve {
 
     }
 
+    void test_OrbitSolver::test_polar_1_0_evolution()
+    {
+        StellarEvolution::MockStellarEvolution *
+            no_evol = make_no_evolution();
+        make_const_lag_star(*no_evol,
+                            0.0,//Kw
+                            1.0,//Wsat
+                            Core::Inf);//tcoup
+
+        delete no_evol;
+    }
+
     test_OrbitSolver::test_OrbitSolver()
     {
-/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
-        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
-/*        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
-        TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);*/
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
+        TEST_ADD(test_OrbitSolver::test_polar_1_0_evolution);
     }
 
 }//End Evolve namespace.
@@ -2593,7 +2581,9 @@ namespace Evolve {
 #ifdef STANDALONE
 int main()
 {
-    Evolve::DissipatingZone::read_eccentricity_expansion("eccentricity_expansion_coef.txt");
+    Evolve::DissipatingZone::read_eccentricity_expansion(
+        "eccentricity_expansion_coef.txt"
+    );
 
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);
