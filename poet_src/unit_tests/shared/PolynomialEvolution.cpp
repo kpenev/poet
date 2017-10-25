@@ -84,7 +84,9 @@ namespace StellarEvolution {
             case IRAD: return exact_track(__Irad, mass);
             case MRAD: return exact_track(__Mcore, mass);
             case RRAD: return exact_track(__Rcore, mass);
-            default: assert(false);
+            default: throw Core::Error::BadFunctionArguments(
+                         "Unknown quantity ID"
+                     );
         };
     }
     

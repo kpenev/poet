@@ -51,6 +51,10 @@ namespace StellarEvolution {
                     __deriv_values[1] * __deriv_values[1] / __deriv_values[0]
                 );
             }
+        } else {
+            throw Core::Error::BadFunctionArguments(
+                "Requesting derivative of roder > 2 not supported!"
+            );
         }
     }
 

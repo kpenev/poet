@@ -72,10 +72,6 @@ namespace Evolve {
         MAX_AGE
     );
 
-    const double AU_Rsun = (Core::AstroConst::AU
-                            /
-                            Core::AstroConst::solar_radius);
-
     void TransformedSolution::add_transformation(
         const std::vector<const Core::OneArgumentDiffFunction *> &transforms,
         double change_age
@@ -159,6 +155,61 @@ namespace Evolve {
             zone = &(__star->core());
         }
     }
+
+    void test_OrbitSolver::make_single_component_star(
+        const StellarEvolution::Interpolator &evolution,
+        double wind_strength,
+        double wind_sat_freq,
+        double coupling_timescale,
+        double min_frequency,
+        double max_frequency,
+        double decay_scale,
+        double phase_lag
+    )
+    {
+        //phase lag(min_frequency - decay_scale)
+        //= 
+        //phase lag(max_frequency + decay_scale)
+        //=
+        //suppression_factor * phase_lag
+        const double suppression_factor = 0.01;
+
+        __star = new Star::InterpolatedEvolutionStar(1.0,//mass
+                                                     0.0,//feh
+                                                     wind_strength,
+                                                     wind_sat_freq,
+                                                     coupling_timescale,
+                                                     evolution);
+        __star->core().setup(std::vector<double>(),//Wtide breaks
+                             std::vector<double>(),//W* breaks
+                             std::vector<double>(1, 0.0),//Wtide pow.
+                             std::vector<double>(1, 0.0),//W* pow.
+                             0.0);//Phase lag (no dissipation in the core).
+
+        std::vector<double> breaks(2);
+        breaks[0] = min_frequency;
+        breaks[1] = max_frequency;
+
+        std::vector<double> powerlaw_indices(3);
+        powerlaw_indices[0] = (
+            std::log(suppression_factor)
+            /
+            std::log(1.0 - decay_scale / min_frequency)
+        );
+        powerlaw_indices[1] = 0.0;
+        powerlaw_indices[2] = (
+            std::log(suppression_factor)
+            /
+            std::log(1.0 + decay_scale / max_frequency)
+        );
+
+        __star->envelope().setup(breaks,
+                                 std::vector<double>(),
+                                 powerlaw_indices,
+                                 std::vector<double>(1, 0.0),
+                                 phase_lag);
+    }
+
     StellarEvolution::MockStellarEvolution *
         test_OrbitSolver::make_no_evolution(double Rstar, double Iconv)
     {
@@ -2554,25 +2605,66 @@ namespace Evolve {
     {
         StellarEvolution::MockStellarEvolution *
             no_evol = make_no_evolution();
-        make_const_lag_star(*no_evol,
-                            0.0,//Kw
-                            1.0,//Wsat
-                            Core::Inf);//tcoup
 
+        const double TDISK = 0.1,
+                     WSTAR = 0.01,
+                     WORB = 0.1,
+                     SEMIMAJOR = std::pow(
+                         (
+                             Core::AstroConst::G
+                             *
+                             (
+                                 Core::AstroConst::solar_mass
+                                 +
+                                 Core::AstroConst::jupiter_mass
+                             )
+                         )
+                         /
+                         std::pow(
+                             WORB / Core::AstroConst::day,
+                             2
+                         ),
+                         1.0 / 3.0
+                     ) / Core::AstroConst::solar_radius,
+                     ZERO = 0.0;
+
+        std::cerr << "Polar orbit inertial mode only:" << std::endl
+                  << "TDISK = " << TDISK << std::endl
+                  << "W* = " << WSTAR << std::endl
+                  << "WORB = " << WORB << std::endl
+                  << "a = " << SEMIMAJOR << std::endl;
+
+        make_single_component_star(*no_evol,
+                                   0.0,//Kw
+                                   1.0,//Wsat
+                                   Core::Inf,
+                                   0.9 * WSTAR,
+                                   1.1 * WSTAR,
+                                   0.1 * WSTAR);//tcoup
+
+        evolve(WSTAR,//wdisk
+               TDISK,//tdisk
+               SEMIMAJOR,//initial semimajor
+               &ZERO,//initial L*
+               M_PI / 2.0);//initial inclination
+
+        delete __star;
+        delete __system;
+        delete __solver;
         delete no_evol;
     }
 
     test_OrbitSolver::test_OrbitSolver()
     {
-        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
-        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
+        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);*/
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
-        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+/*        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
-        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);*/
         TEST_ADD(test_OrbitSolver::test_polar_1_0_evolution);
     }
 

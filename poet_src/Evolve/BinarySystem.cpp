@@ -845,6 +845,13 @@ namespace Evolve {
             if(!zone.locked()) 
                 angmom_rates[zone_index - angmom_skipped] =
                     total_zone_torque[2];
+#ifdef VERBOSE_DEBUG
+            std::cerr << "Zone " << zone_index << " torque: "
+                      << total_zone_torque
+                      << std::endl;
+#endif
+            assert(!std::isnan(total_zone_torque.sum()));
+
         }
         evolution_rates[0] = semimajor_evolution(__orbit_energy_gain);
         if(!angmom_skipped) evolution_rates[0] *= 6.5 * std::pow(__semimajor,

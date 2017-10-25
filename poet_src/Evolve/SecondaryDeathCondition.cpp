@@ -48,7 +48,7 @@ namespace Evolve {
         __system.secondary_died();
     }
 
-    std::string SecondaryDeathCondition::describe(int index) const
+    std::string SecondaryDeathCondition::describe(int ) const
     {
         std::ostringstream description;
         description << "Semimajor axis crossing death boundary of "
