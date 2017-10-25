@@ -642,51 +642,77 @@ namespace Evolve {
             const Eigen::Vector3d &orbit_torque_deriv,
             const Eigen::Vector3d &zone_torque_deriv)
     {
-        double sin_inc=std::sin(inclination()),
-               cos_inc=std::cos(inclination()),
-               zone_y_torque, orbit_y_torque;
-        if(deriv==Dissipation::NO_DERIV) {
-            orbit_y_torque=orbit_torque[1];
-            zone_y_torque=zone_torque[1];
+        double sin_inc = std::sin(inclination()),
+               cos_inc = std::cos(inclination()),
+               zone_y_torque,
+               orbit_y_torque;
+        if(deriv == Dissipation::NO_DERIV) {
+            orbit_y_torque = orbit_torque[1];
+            zone_y_torque = zone_torque[1];
         } else {
-            orbit_y_torque=orbit_torque_deriv[1];
-            zone_y_torque=zone_torque_deriv[1];
+            orbit_y_torque = orbit_torque_deriv[1];
+            zone_y_torque = zone_torque_deriv[1];
         }
 #ifndef NDEBUG
         if(sin_inc == 0) {
-            assert(orbit_y_torque==0 || std::isnan(orbit_y_torque));
-            assert(zone_y_torque==0 || std::isnan(zone_y_torque));
+            assert(orbit_y_torque == 0 || std::isnan(orbit_y_torque));
+            assert(zone_y_torque == 0 || std::isnan(zone_y_torque));
+        } else {
+            assert(!std::isnan(orbit_y_torque));
+            assert(!std::isnan(zone_y_torque));
         }
 #endif
-        double result=(sin_inc==0
-                       ? 0
-                       : -orbit_y_torque*cos_inc/(__orbital_angmom*sin_inc)
-                         +
-                         zone_y_torque/(angular_momentum()*sin_inc));
-        if(		deriv==Dissipation::NO_DERIV 
-                || deriv==Dissipation::AGE 
-                || deriv==Dissipation::ECCENTRICITY
-                || deriv==Dissipation::PERIAPSIS
-                || deriv==Dissipation::RADIUS
-                || deriv==Dissipation::MOMENT_OF_INERTIA
-                || deriv==Dissipation::SEMIMAJOR)
+        double result = (
+            sin_inc == 0
+            ? 0
+            : (
+                -orbit_y_torque * cos_inc / (__orbital_angmom * sin_inc)
+                +
+                zone_y_torque / (angular_momentum() * sin_inc)
+            )
+        );
+        assert(!std::isnan(result));
+
+        if(
+            deriv == Dissipation::NO_DERIV 
+            || deriv == Dissipation::AGE 
+            || deriv == Dissipation::ECCENTRICITY
+            || deriv == Dissipation::PERIAPSIS
+            || deriv == Dissipation::RADIUS
+            || deriv == Dissipation::MOMENT_OF_INERTIA
+            || deriv == Dissipation::SEMIMAJOR
+        )
             return result;
-        else if(deriv==Dissipation::SPIN_FREQUENCY ||
-                deriv==Dissipation::SPIN_ANGMOM)
-            return result
-                   -
-                   zone_torque[1]/(std::pow(angular_momentum(), 2)*sin_inc)
-                   *(deriv==Dissipation::SPIN_FREQUENCY ? moment_of_inertia():1);
-        else if(deriv==Dissipation::INCLINATION) 
-            return result
-                   -
-                   (
-                        orbit_torque[1]/__orbital_angmom
-                        +
-                        zone_torque[1]*cos_inc/angular_momentum()
-                   )/std::pow(sin_inc, 2);
-        else
+        else if(
+            deriv == Dissipation::SPIN_FREQUENCY ||
+            deriv == Dissipation::SPIN_ANGMOM
+        ) {
+            if(sin_inc == 0) return 0.0;
+            else return (
+                result
+                -
+                zone_torque[1]
+                /
+                (std::pow(angular_momentum(), 2) * sin_inc)
+                *
+                (deriv == Dissipation::SPIN_FREQUENCY ? moment_of_inertia() : 1)
+            );
+        } else if(deriv == Dissipation::INCLINATION) {
+            if(sin_inc == 0) return 0.0;
+            else return (
+                result
+                -
+                (
+                    orbit_torque[1] / __orbital_angmom
+                    +
+                    zone_torque[1] * cos_inc / angular_momentum()
+                )
+                /
+                std::pow(sin_inc, 2)
+            );
+        } else {
             assert(false);
+        }
 
         return Core::NaN;
     }

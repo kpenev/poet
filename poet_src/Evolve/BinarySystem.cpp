@@ -832,19 +832,25 @@ namespace Evolve {
                 zone_orbit_torque,
                 total_zone_torque
             );
-            if(zone_index)
+            assert(!std::isnan(inclination_rates[zone_index]));
+            if(zone_index) {
                 periapsis_rates[zone_index - 1] = zone.periapsis_evolution(
                     zone_orbit_torque,
                     total_zone_torque
                 ) - reference_periapsis_rate;
-            else
+                assert(!std::isnan(periapsis_rates[zone_index - 1]));
+            } else {
                 reference_periapsis_rate = zone.periapsis_evolution(
                     zone_orbit_torque,
                     total_zone_torque
                 );
-            if(!zone.locked()) 
+                assert(!std::isnan(reference_periapsis_rate));
+            }
+            if(!zone.locked()) {
                 angmom_rates[zone_index - angmom_skipped] =
                     total_zone_torque[2];
+                assert(!std::isnan(angmom_rates[zone_index - angmom_skipped]));
+            }
 #ifdef VERBOSE_DEBUG
             std::cerr << "Zone " << zone_index << " torque: "
                       << total_zone_torque

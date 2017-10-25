@@ -72,7 +72,7 @@ namespace Star {
         }
 
         ///See StoppingCondition::describe().
-        virtual std::string describe(int index = 0) const;
+        virtual std::string describe(int index = -1) const;
 
     };//End WindSaturationCondition class.
 

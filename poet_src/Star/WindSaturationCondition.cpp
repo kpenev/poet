@@ -58,7 +58,7 @@ namespace Star {
 #endif
     ) const
     {
-        assert(index == 0);
+        assert(index <= 0);
         std::ostringstream description;
         description << (__primary ? "Primary" : "Secondary")
                     << " surface spin "
