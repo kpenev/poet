@@ -655,6 +655,43 @@ public:
 	{return Core::InterpSolutionIterator();}
 };
 
+///\brief The cosine of a function.
+///
+///\ingroup UnitTests_group
+class CosFunction : public Core::OneArgumentDiffFunction,
+                           Core::FunctionDerivatives {
+private:
+	const OneArgumentDiffFunction *__f;
+	double __deriv_x;
+public: 
+	///Create the function.
+	CosFunction(const OneArgumentDiffFunction *f,
+                double deriv_x = Core::NaN) :
+		__f(f), __deriv_x(deriv_x) {}
+
+	///Evaluates the function at the given x.
+	double operator()(double x) const {return std::cos((*__f)(x));}
+
+	///Returns the derivatives at the given x.
+	const FunctionDerivatives *deriv(double x) const
+	{return new CosFunction(__f, x);}
+
+	///For a derivative object returns the derivative of the given order.
+	double order(unsigned deriv_order=1) const;
+
+	///The upper end of the range over which the function is defined.
+	double range_high() const {return __f->range_high();}
+
+	///The lower end of the range over which the function is defined.
+	double range_low() const {return __f->range_low();}
+
+	///\brief An iterator over the x values where the function takes the
+	///given value.
+    Core::InterpSolutionIterator crossings(double) const
+	{return Core::InterpSolutionIterator();}
+};
+
+
 #if 0
 ///Returns an array of the values of the track at the given ages.
 std::valarray<double> tabulate_track(PolynomialEvolutionTrack *track,

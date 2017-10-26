@@ -361,6 +361,14 @@ namespace Evolve {
         ///Expectations are that no evolution will occur.
         void test_polar_1_0_evolution();
 
+        ///\brief Tests an evolution with only the 2-0 component starting
+        ///in a polar orbit.
+        ///
+        ///Approximately the expected evolution has the star spinning down
+        ///linearly with time and the inclination should follow from angular
+        ///momentum conservation with the orbit approximately not changing.
+        void test_polar_2_0_evolution();
+
         ///\brief Test an evolution with only the 1-0 component but in an
         ///arbitrarily inclined orbit.
         ///
