@@ -20,7 +20,7 @@ model {
             if(buildType == buildTypes.release) {
                 cppCompiler.define "NDEBUG"
             } else if(buildType == buildTypes.debug) {
-                cppCompiler.define "VERBOSE_DEBUG"
+//                cppCompiler.define "VERBOSE_DEBUG"
             }
 
             if (toolChain in Gcc || toolChain in Clang) {
@@ -151,9 +151,12 @@ model {
         testOrbitSolver(NativeExecutableSpec) {
             sources.cpp {
                 source {
-                    srcDir "unit_tests"
-                    include "**/shared/*.cpp"
-                    include "**/testOrbitSolver.cpp"
+                    srcDir "unit_tests/testEvolve"
+                    source {
+                        srcDir "unit_tests/shared"
+                        include "**/*.cpp"
+                    }
+                    include "**/*.cpp"
                 }
             }
             binaries.all {
@@ -315,6 +318,7 @@ def findLibrary(String libNameStart)
     else if(OperatingSystem.current().isMacOsX())
         return findLibraryMacOS(libNameStart)
     else {
+        return [libNameStart, "0.0.0", ""]
         throw new ProjectConfigurationException(
             "Compiling on non-linux or Mac operating systems not currently "
             +
