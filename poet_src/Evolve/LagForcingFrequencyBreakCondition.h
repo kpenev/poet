@@ -37,11 +37,8 @@ namespace Evolve {
             ///The body this condition is monitoring.
             &__body, 
 
-            ///The primary body in the system if not __body.
+            ///The other body in the system.
             &__other_body;
-
-        ///Is __body we are the primary in the system?
-        bool __primary;
 
         ///\brief The index of the monitored tidal term within
         /// __zone.__tidal_indices.
@@ -70,9 +67,6 @@ namespace Evolve {
 			///The other body in the system.
 			const DissipatingBody &other_body,
 			
-			///Is the body we are monitoring the primary?
-			bool primary,
-
             ///The orbital frequency multiplier of the forcing term being
             ///monitored.
             int orbital_frequency_multiplier,

@@ -97,7 +97,6 @@ namespace Evolve {
                         *this,
                         this_body,
                         other_body,
-                        primary,
                         mp,
                         m
                     );

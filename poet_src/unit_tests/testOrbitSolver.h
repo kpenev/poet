@@ -183,7 +183,12 @@ namespace Evolve {
                         return *mode_i;
                     ++mode_i;
                 }
-                assert(false);
+                std::ostringstream msg;
+                msg << "Age "
+                    << age
+                    << " outside the range for which expected evolution modes "
+                    << "are defined.";
+                throw Core::Error::BadFunctionArguments(msg.str());
             }
         };
 
@@ -209,6 +214,36 @@ namespace Evolve {
             double wind_sat_freq,
             double coupling_timescale,
             double phase_lag = 0
+        );
+
+        ///\brief Create __star with constant dissipation in a range, quickly
+        ///decaying outside of that.
+        void make_single_component_star(
+            ///The stellar evolution to use.
+            const StellarEvolution::Interpolator &evolution,
+
+            ///The strength of the wind.
+            double wind_strength,
+
+            ///The wind saturation frequency.
+            double wind_sat_freq,
+
+            ///The core-envelope coupling timescale.
+            double coupling_timescale,
+
+            ///The minimum frequency at which the dissipation should be at its
+            ///maximum value.
+            double min_frequnecy,
+
+            ///The maximum frequency at which the dissipation should be at its
+            ///maximum value.
+            double max_frequnecy,
+
+            ///The scale on which frequnecy should decay.
+            double decay_scale,
+
+            ///The phase lag of the only dissipative tidal component.
+            double phase_lag = 1.0e-5
         );
 
         StellarEvolution::MockStellarEvolution *make_no_evolution(
@@ -325,6 +360,32 @@ namespace Evolve {
         ///
         ///Expectations are that no evolution will occur.
         void test_polar_1_0_evolution();
+
+        ///\brief Tests an evolution with only the 2-0 component starting
+        ///in a polar orbit.
+        ///
+        ///Approximately the expected evolution has the star spinning down
+        ///linearly with time and the inclination should follow from angular
+        ///momentum conservation with the orbit approximately not changing.
+        void test_polar_2_0_evolution();
+
+        ///\brief Test an evolution with only the 1-0 component but in an
+        ///arbitrarily inclined orbit.
+        ///
+        ///From angular momentum conservation, the obliquity should satisfy:
+        /// \f$ \cos\theta  = \frac{T^2 - S^2 - L^2}{2 S L} \f$
+        ///Where:
+        /// - S: stellar spin angular momentum
+        /// - L: orbital angular momentum
+        /// - T: total angular momentum (stellar and orbital)
+        ///
+        ///From Lai 2012:
+        ///  - \f$ \dot{S} = -\sigma c^2 (1 - c^2) \f$
+        ///  - \f$ \dot{c} = \frac{\sigma}{S} c^2 (1 - c^2)\left[c + \frac{S}{L} \right] \f$
+        ///
+        ///Per mathematica, the evolution of S is given by:
+        /// \f$ \frac{1}{2} L^3 \left(-\frac{4}{L^2+S^2-T^2}-\frac{2 \log \left(L^2+S^2-T^2\right)}{L^2-T^2}-\frac{-\frac{2 L^3 \log \left(-L^2+S^2+T^2\right)}{L^2-T^2}+(L+T) \log (-L+S-T)+(L-T) (\log (L+S-T)+\log (-L+S+T))+(L+T) \log (L+S+T)}{L T^2}\right) \f$
+        void test_oblique_1_0_evolution();
     };//End test_OrbitSolver class.
 
 }//End Evolve namespace.

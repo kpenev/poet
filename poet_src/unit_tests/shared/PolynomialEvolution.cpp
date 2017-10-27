@@ -84,7 +84,9 @@ namespace StellarEvolution {
             case IRAD: return exact_track(__Irad, mass);
             case MRAD: return exact_track(__Mcore, mass);
             case RRAD: return exact_track(__Rcore, mass);
-            default: assert(false);
+            default: throw Core::Error::BadFunctionArguments(
+                         "Unknown quantity ID"
+                     );
         };
     }
     
@@ -563,6 +565,30 @@ double LogFunction::order(unsigned deriv_order) const
 		else
             throw Core::Error::BadFunctionArguments(
                 "Log(Function) derivatives are only implemneted up to and "
+                "including order 2."
+            );
+		delete f_deriv;
+		return result;
+	}
+}
+
+double CosFunction::order(unsigned deriv_order) const
+{
+	if(deriv_order == 0) return (*this)(__deriv_x);
+	else {
+		const FunctionDerivatives *f_deriv=__f->deriv(__deriv_x);
+		double result;
+		if(deriv_order == 1)
+            result = - std::sin(f_deriv->order(0)) * f_deriv->order(1);
+		else if(deriv_order == 2)
+			result = - (
+                std::cos(f_deriv->order(0)) * std::pow(f_deriv->order(1), 2)
+                +
+                std::sin(f_deriv->order(1)) * f_deriv->order(2)
+            );
+		else
+            throw Core::Error::BadFunctionArguments(
+                "Cos(Function) derivatives are only implemneted up to and "
                 "including order 2."
             );
 		delete f_deriv;

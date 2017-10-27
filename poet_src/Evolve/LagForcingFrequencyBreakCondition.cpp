@@ -27,7 +27,6 @@ namespace Evolve {
         BrokenPowerlawPhaseLagZone &zone,
         const DissipatingBody &body,
         const DissipatingBody &other_body,
-        bool primary,
         int orbital_frequency_multiplier,
         int spin_frequency_multiplier
     ) :
@@ -36,7 +35,6 @@ namespace Evolve {
         __zone(zone),
         __body(body),
         __other_body(other_body),
-        __primary(primary),
         __term_index(
             __zone.tidal_term_index(orbital_frequency_multiplier,
                                     spin_frequency_multiplier)
@@ -47,7 +45,11 @@ namespace Evolve {
     }
 
     std::valarray<double> LagForcingFrequencyBreakCondition::operator()(
-        Core::EvolModeType evol_mode,
+        Core::EvolModeType
+#ifndef NDEBUG
+        evol_mode
+#endif
+        ,
         const std::valarray<double> &orbit,
         const std::valarray<double> &,
         std::valarray<double> &stop_deriv
@@ -105,8 +107,14 @@ namespace Evolve {
         return result;
     }
 
-    void LagForcingFrequencyBreakCondition::reached(short deriv_sign,
-                                                    unsigned index)
+    void LagForcingFrequencyBreakCondition::reached(
+        short
+#ifndef NDEBUG
+        deriv_sign
+#endif
+        ,
+        unsigned index
+    )
     {
         assert(index < __num_subconditions);
 
@@ -165,7 +173,7 @@ namespace Evolve {
             (
                 index < 0
                 || 
-                index == __num_subconditions - 1
+                index == static_cast<int>(__num_subconditions) - 1
             )
         ) {
             description << " < "

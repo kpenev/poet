@@ -215,10 +215,6 @@ namespace StellarEvolution {
 
     void Interpolator::delete_tracks()
     {
-        size_t num_tracks = (__track_masses.size()
-                             *
-                             __track_feh.size());
-
         for(
             std::vector< 
                 std::vector<const OneArgumentDiffFunction*>

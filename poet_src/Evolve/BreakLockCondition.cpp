@@ -92,7 +92,13 @@ namespace Evolve {
         return result;
     }
 
-    void BreakLockCondition::reached(short deriv_sign, unsigned index)
+    void BreakLockCondition::reached(
+        short deriv_sign,
+        unsigned 
+#ifndef NDEBUG
+        index
+#endif
+    )
     {
 #ifndef NDEBUG
         if(index==0) assert(deriv_sign == -1);
@@ -104,7 +110,7 @@ namespace Evolve {
         __system.release_lock(__locked_zone_index, deriv_sign);
     }
 
-    std::string BreakLockCondition::describe(int index) const
+    std::string BreakLockCondition::describe(int ) const
     {
         std::ostringstream description;
         description << "Locked zone #"

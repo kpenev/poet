@@ -157,7 +157,13 @@ namespace Evolve {
         return result;
     }
 
-    void LagSpinBreakCondition::reached(short deriv_sign, unsigned index)
+    void LagSpinBreakCondition::reached(
+        short
+#ifndef NDEBUG
+        deriv_sign
+#endif
+        ,
+        unsigned index)
     {
         assert(index < __num_subconditions);
 
@@ -208,7 +214,7 @@ namespace Evolve {
             (
                 index < 0
                 ||
-                index == __num_subconditions - 1
+                index == static_cast<int>(__num_subconditions) - 1
             )
         )
             description << " < "

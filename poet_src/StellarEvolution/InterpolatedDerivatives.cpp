@@ -36,7 +36,7 @@ namespace StellarEvolution {
         __interp_feh(interp_feh),
         __delete_derivatives(delete_derivatives)
     {
-        assert(derivatives->size()
+        assert(static_cast<long>(derivatives->size())
                == 
                interp_masses.length() * interp_feh.length());
     }

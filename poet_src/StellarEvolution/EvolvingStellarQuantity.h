@@ -106,14 +106,6 @@ namespace StellarEvolution {
         ///The mass index varies faster.
         std::vector<const OneArgumentDiffFunction *> __evolution_tracks;
 
-        ///\brief How far to extrapolate past the last tabulated age for
-        ///a model.
-        ///
-        ///Models are included in the mass interpolation only if
-        ///the required age is no larger than the maximum tabulated age 
-        ///times this factor.
-        double __extrapolate;
-
         mutable alglib::real_1d_array
             ///The current track masses participating in the interpolation.
             __interp_masses,

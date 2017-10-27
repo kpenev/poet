@@ -51,8 +51,14 @@ namespace Star {
         return std::valarray<double>(result, 1);
     }
 
-    std::string WindSaturationCondition::describe(int index) const
+    std::string WindSaturationCondition::describe(
+        int
+#ifndef NDEBUG
+        index
+#endif
+    ) const
     {
+        assert(index <= 0);
         std::ostringstream description;
         description << (__primary ? "Primary" : "Secondary")
                     << " surface spin "

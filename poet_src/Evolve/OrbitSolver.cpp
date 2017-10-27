@@ -871,13 +871,14 @@ namespace Evolve {
             __stopping_conditions = get_stopping_condition(system);
 #ifndef NDEBUG
             std::cerr << "Next stop age: " << next_stop_age << std::endl;
+            StopInformation stop_information = 
 #endif
-            StopInformation stop_information = evolve_until(system,
-                                                            next_stop_age,
-                                                            orbit,
-                                                            stop_reason,
-                                                            max_step,
-                                                            evolution_mode);
+                evolve_until(system,
+                             next_stop_age,
+                             orbit,
+                             stop_reason,
+                             max_step,
+                             evolution_mode);
 #ifndef NDEBUG
             std::cerr << "Stop information: "
                       << stop_information

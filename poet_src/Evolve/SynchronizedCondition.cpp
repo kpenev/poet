@@ -112,7 +112,7 @@ namespace Evolve {
                                 (__spin_freq_mult>0 ? -deriv_sign : deriv_sign));
     }
 
-    std::string SynchronizedCondition::describe(int index) const
+    std::string SynchronizedCondition::describe(int ) const
     {
         std::ostringstream description;
         description << (__primary ? "Primary" : "Secondary")
