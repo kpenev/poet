@@ -35,15 +35,21 @@ namespace StellarEvolution {
     void InterpolationQueue::interpolate_thread()
     {
         while(true) {
+#ifndef WINDOWS
             pthread_mutex_lock(&__sync_mutex);
+#endif
 
             if(__x.size() == 0) {
                 assert(__y.size() == 0);
                 assert(__npoints.size() == 0);
                 assert(__nodes.size() == 0);
                 assert(__smoothing.size() == 0);
+#ifdef WINDOWS
+                return;
+#else
                 pthread_mutex_unlock(&__sync_mutex);
                 pthread_exit(NULL);
+#endif
                 assert(false);
             }
 
@@ -70,7 +76,9 @@ namespace StellarEvolution {
             ++__quantity_id_iter;
 #endif
 
+#ifndef WINDOWS
             pthread_mutex_unlock(&__sync_mutex);
+#endif
             Core::InterpolatingFunctionALGLIB *quantity = 
                 new Core::InterpolatingFunctionALGLIB(x,
                                                       y,
@@ -79,26 +87,36 @@ namespace StellarEvolution {
                                                       smoothing,
                                                       nodes);
 
+#ifndef WINDOWS
             pthread_mutex_lock(&__sync_mutex);
+#endif
 #ifndef NDEBUG
             std::clog << "Created result @: " << quantity << std::endl;
 #endif
             __result[destination] = quantity;
+#ifndef WINDOWS
             pthread_mutex_unlock(&__sync_mutex);
+#endif
         }
     }
 
     void InterpolationQueue::calculate(unsigned num_threads)
     {
+#ifdef WINDOWS
+        assert(num_threads == 1);
+#else
         pthread_attr_t thread_attributes;
         pthread_attr_init(&thread_attributes);
         pthread_attr_setdetachstate(&thread_attributes,
                                     PTHREAD_CREATE_JOINABLE);
         std::vector<pthread_t> threads(num_threads);
+#endif
         __result.resize(__x.size());
 #ifndef NDEBUG
         __quantity_id_iter = __quantity_id.begin();
 #endif
+#ifdef WINDOWS
+#else
         for(unsigned i = 0; i < num_threads; ++i)
             pthread_create(&threads[i],
                            &thread_attributes,
@@ -106,6 +124,7 @@ namespace StellarEvolution {
                            reinterpret_cast<void*>(this));
         for(unsigned i = 0; i < num_threads; ++i)
             pthread_join(threads[i], NULL);
+#endif
     }
 
     void InterpolationQueue::pop_front()

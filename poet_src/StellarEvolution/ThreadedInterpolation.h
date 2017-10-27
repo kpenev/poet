@@ -9,9 +9,7 @@
 #include "InterpolationQuantities.h"
 #include "../Core/InterpolatingFunctionALGLIB.h"
 
-#ifdef WINDOWS
-    #include <pthreads.h>
-#else
+#ifndef WINDOWS
     #include <pthread.h>
 #endif
 
@@ -48,9 +46,11 @@ namespace StellarEvolution {
         ///The interpolation results.
         std::vector<Core::InterpolatingFunctionALGLIB*> __result;
 
+#ifndef WINDOWS
         ///\brief A pthread mutex used to ensure that only one thread is
         ///extracting the next quantity for interpolation.
         pthread_mutex_t __sync_mutex;
+#endif
 
 #ifndef NDEBUG
         std::list<int>::const_iterator __quantity_id_iter;
@@ -62,7 +62,12 @@ namespace StellarEvolution {
 
     public:
         ///Create an empty queue.
-        InterpolationQueue() {pthread_mutex_init(&__sync_mutex, NULL);}
+        InterpolationQueue()
+        {
+#ifndef WINDOWS
+            pthread_mutex_init(&__sync_mutex, NULL);
+#endif
+        }
 
         ///Add an interpolation taks to the queue.
         void push_back(const double *x,
