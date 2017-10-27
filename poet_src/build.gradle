@@ -156,6 +156,7 @@ model {
                 lib library: "eigen"
                 lib library: "evolve"
                 lib library: "stellarEvolution"
+                lib library: "dirent"
                 source {
                     srcDir "Star"
                     include "**/*.cpp"
