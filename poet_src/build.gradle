@@ -319,12 +319,6 @@ def findLibrary(String libNameStart)
         return findLibraryMacOS(libNameStart)
     else {
         return [libNameStart, "0.0.0", ""]
-        throw new ProjectConfigurationException(
-            "Compiling on non-linux or Mac operating systems not currently "
-            +
-            "supported!",
-            new NullPointerException()
-        );
     }
 }
 
