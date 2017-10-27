@@ -14,9 +14,9 @@
 #include "StellarEvolution.h"
 #include "Common.h"
 #include "AstronomicalConstants.h"
+#include "dirent.h"
 #include "Error.h"
 #include <fstream>
-#include <dirent.h>
 #include <string>
 #include <cassert>
 #include <boost/archive/text_oarchive.hpp>
