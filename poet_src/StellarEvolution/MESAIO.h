@@ -14,10 +14,10 @@
 #include "../Core/Common.h"
 #include "../Core/AstronomicalConstants.h"
 #include "../Core/Error.h"
+#include "dirent.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <dirent.h>
 #include <string>
 #include <cassert>
 #include <vector>

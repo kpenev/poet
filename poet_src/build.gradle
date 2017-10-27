@@ -82,6 +82,17 @@ model {
                 }
             }
         }
+        dirent(NativeLibrarySpec) {
+            sources.cpp {
+                source {
+                    srcDir "third_party_libs/dirent"
+                    include "**/*.c"
+                }
+                exportedHeaders {
+                    srcDir "third_party_lisb/dirent"
+                }
+            }
+        }
         stellarEvolution(NativeLibrarySpec) {
             sources.cpp {
                 lib library: "alglib"
