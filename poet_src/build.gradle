@@ -58,7 +58,9 @@ model {
 
         }
         withType(StaticLibraryBinarySpec) {
-            cppCompiler.args '-fPIC'
+            if(toolChain in Gcc || toolChain in Clang) {
+                cppCompiler.args '-fPIC'
+            }
         }
 
     }
@@ -118,6 +120,7 @@ model {
             sources.cpp{
                 lib library: "alglib"
                 lib library: "eigen"
+                lib library: "dirent"
                 source {
                     srcDir "Evolve"
                     include "**/*.cpp"
@@ -136,6 +139,7 @@ model {
                 lib library: "alglib"
                 lib library: "eigen"
                 lib library: "evolve"
+                lib library: "dirent"
                 source {
                     srcDir "Planet"
                     include "**/*.cpp"
@@ -193,6 +197,7 @@ model {
                 lib library: "star"
                 lib library: "planet"
                 lib library: "evolve"
+                lib library: "dirent"
             }
         }
 
@@ -201,6 +206,7 @@ model {
                 lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
+                lib library: "dirent"
                 source {
                     srcDir "debug"
                     include "**/stellar_evolution.c"
@@ -221,6 +227,7 @@ model {
                 lib library: "star"
                 lib library: "planet"
                 lib library: "evolve"
+                lib library: "dirent"
             }
         }
         debug_star_star_evolution(NativeExecutableSpec) {
@@ -237,6 +244,7 @@ model {
                 lib library: "star"
                 lib library: "planet"
                 lib library: "evolve"
+                lib library: "dirent"
             }
         }
 
