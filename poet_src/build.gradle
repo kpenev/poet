@@ -315,12 +315,7 @@ def findLibrary(String libNameStart)
     else if(OperatingSystem.current().isMacOsX())
         return findLibraryMacOS(libNameStart)
     else {
-        throw new ProjectConfigurationException(
-            "Compiling on non-linux or Mac operating systems not currently "
-            +
-            "supported!",
-            new NullPointerException()
-        );
+	 return [libNameStart, "0.0.0", ""]
     }
 }
 
