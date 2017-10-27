@@ -8,7 +8,13 @@
 
 #include "InterpolationQuantities.h"
 #include "../Core/InterpolatingFunctionALGLIB.h"
-#include <pthread.h>
+
+#ifdef WINDOWS
+    #include <pthreads.h>
+#else
+    #include <pthread.h>
+#endif
+
 #include <vector>
 #include <list>
 
