@@ -92,7 +92,7 @@ model {
                     include "**/*.c"
                 }
                 exportedHeaders {
-                    srcDir "third_party_lisb/dirent"
+                    srcDir "third_party_libs/dirent"
                 }
             }
         }
