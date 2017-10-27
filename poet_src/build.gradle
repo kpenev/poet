@@ -43,17 +43,17 @@ model {
             } else if (toolChain in VisualCpp ) {
                 if(buildType == buildTypes.debug) {
                     cppCompiler.args '/Zi'
-                    cppCompiler.args '/FS'
-                    cppCompiler.args '/EHsc'
-                    cppCompiler.args '/IC:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\include'
-                    cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\shared'
-                    cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um'
-                    cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.16299.0\\ucrt'
-                    cppCompiler.args '/IC:\\cygwin64\\usr\\include'
-                    cppCompiler.args '/IC:\\Users\\Briana\\Downloads\\Phys lab\\boost_1_65_1\\boost_1_65_1'
-                    cppCompiler.args '/DWINDOWS'
-                    cppCompiler.args '/std:c++14'
                 }
+                cppCompiler.args '/FS'
+                cppCompiler.args '/EHsc'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\include'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\shared'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.16299.0\\ucrt'
+                cppCompiler.args '/IC:\\cygwin64\\usr\\include'
+                cppCompiler.args '/IC:\\Users\\Briana\\Downloads\\Phys lab\\boost_1_65_1\\boost_1_65_1'
+                cppCompiler.args '/DWINDOWS'
+                cppCompiler.args '/std:c++14'
             }
 
         }
