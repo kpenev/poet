@@ -98,6 +98,7 @@ model {
             sources.cpp {
                 lib library: "alglib"
                 lib library: "eigen"
+                lib library: "dirent"
                 source {
                     srcDir "StellarEvolution"
                     include "**/*.cpp"
