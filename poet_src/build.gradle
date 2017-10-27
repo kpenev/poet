@@ -50,6 +50,7 @@ model {
                     cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um'
                     cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.16299.0\\ucrt'
                     cppCompiler.args '/IC:\\cygwin64\\usr\\include'
+                    cppCompiler.args '/IC:\\Users\\Briana\\Downloads\\Phys lab\\boost_1_65_1\\boost_1_65_1'
 
                 }
             }

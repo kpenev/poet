@@ -16,6 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <cassert>
+#include <algorithm>
 
 namespace Evolve {
 

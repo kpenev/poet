@@ -267,7 +267,7 @@ namespace Evolve {
     )
     {
 
-        if(initialize and !std::isnan(orbital_frequency)) {
+        if(initialize && !std::isnan(orbital_frequency)) {
             initializing(true);
 
 #ifndef NDEBUG
