@@ -14,7 +14,7 @@
 #include "StellarEvolution.h"
 #include "Common.h"
 #include "AstronomicalConstants.h"
-#include "dirent.h"
+#include "dirent_hacked.h"
 #include "Error.h"
 #include <fstream>
 #include <string>

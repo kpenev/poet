@@ -1,7 +1,8 @@
+#ifdef WINDOWS
+
 #ifndef DIRENT_INCLUDED
 #define DIRENT_INCLUDED
 
-#ifdef WINDOWS
 
 /*
 
@@ -45,10 +46,10 @@ void          rewinddir(DIR *);
 
 }
 
+#endif
+
 #else
 
 #include <dirent.h>
-
-#endif
 
 #endif

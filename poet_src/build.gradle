@@ -88,11 +88,11 @@ model {
         dirent(NativeLibrarySpec) {
             sources.cpp {
                 source {
-                    srcDir "third_party_libs/dirent"
+                    srcDir "third_party_libs/dirent_hacked"
                     include "**/*.c"
                 }
                 exportedHeaders {
-                    srcDir "third_party_libs/dirent"
+                    srcDir "third_party_libs/dirent_hacked"
                 }
             }
         }
