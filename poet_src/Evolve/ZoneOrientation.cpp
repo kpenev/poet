@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "ZoneOrientation.h"
 
 namespace Evolve {

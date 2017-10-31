@@ -7,6 +7,7 @@
  * \ingroup OrbitSolver_group
  */
 
+#define BUILDING_LIBRARY
 #include "OrbitSolver.h"
 #include <iostream>
 #include <iomanip>

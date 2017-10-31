@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "DissipatingZone.h"
 #include "BinarySystem.h"
 

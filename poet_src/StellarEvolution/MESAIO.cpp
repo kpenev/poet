@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "MESAIO.h"
 
 std::ostream &operator<<(std::ostream &os,

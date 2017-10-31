@@ -5,6 +5,7 @@
  * \ingroup Evolve_group
  */
 
+#define BUILDING_LIBRARY
 #include "CInterface.h"
 
 LIB_PUBLIC const int LOCKED_SURFACE_SPIN_EVOL_MODE = Core::LOCKED_SURFACE_SPIN;

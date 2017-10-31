@@ -6,6 +6,7 @@
  * \ingroup StellarEvolution_group
  */
 
+#define BUILDING_LIBRARY
 #include "ThreadedInterpolation.h"
 
 namespace StellarEvolution {

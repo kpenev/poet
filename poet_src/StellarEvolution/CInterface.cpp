@@ -5,6 +5,7 @@
  * \ingroup StellarEvolution_group
  */
 
+#define BUILDING_LIBRARY
 #include "CInterface.h"
 
 LIB_PUBLIC const int RADIUS = StellarEvolution::RADIUS;

@@ -6,6 +6,7 @@
  * \ingroup Evolve_group
  */
 
+#define BUILDING_LIBRARY
 #include "LagForcingFrequencyBreakCondition.h"
 #include "BrokenPowerlawPhaseLagZone.h"
 

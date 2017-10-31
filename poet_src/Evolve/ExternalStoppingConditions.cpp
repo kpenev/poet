@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "ExternalStoppingConditions.h"
 
 namespace Evolve {

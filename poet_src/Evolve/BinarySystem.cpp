@@ -5,6 +5,7 @@
  * \ingroup StellarSystem_group
  */
 
+#define BUILDING_LIBRARY
 #include "BinarySystem.h"
 
 namespace Evolve {

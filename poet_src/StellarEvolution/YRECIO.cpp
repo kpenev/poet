@@ -6,6 +6,7 @@
  * \ingroup StellarSystem_group
  */
 
+#define BUILDING_LIBRARY
 #include "YRECIO.h"
 #include <string>
 #include <sstream>

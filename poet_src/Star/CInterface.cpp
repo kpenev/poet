@@ -5,6 +5,7 @@
  * \ingroup Star_group
  */
 
+#define BUILDING_LIBRARY
 #include "CInterface.h"
 
 LIB_PUBLIC const int NO_DERIV = Evolve::Dissipation::NO_DERIV;

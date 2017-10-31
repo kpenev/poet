@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "LagSpinBreakCondition.h"
 #include "BrokenPowerlawPhaseLagZone.h"
 

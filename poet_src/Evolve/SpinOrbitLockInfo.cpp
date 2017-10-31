@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "DissipatingBody.h"
 
 namespace Evolve {

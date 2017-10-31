@@ -5,6 +5,7 @@
  * \ingroup OrbitSolver_group
  */
 
+#define BUILDING_LIBRARY
 #include "StoppingCondition.h"
 
 namespace Evolve {

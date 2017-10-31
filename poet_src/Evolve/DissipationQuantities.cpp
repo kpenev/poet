@@ -6,6 +6,7 @@
  * \ingroup Evolve
  */
 
+#define BUILDING_LIBRARY
 #include "DissipationQuantities.h"
 
 namespace Evolve {

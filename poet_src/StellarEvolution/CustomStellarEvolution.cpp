@@ -3,6 +3,7 @@
  * \brief The definitions of the CustomStellarEvolution::Evolution methods.
  */
 
+#define BUILDING_LIBRARY
 #include "CustomStellarEvolution.h"
 
 namespace CustomStellarEvolution {

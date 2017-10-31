@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "BrokenPowerlawPhaseLagZone.h"
 #include <iostream>
 
