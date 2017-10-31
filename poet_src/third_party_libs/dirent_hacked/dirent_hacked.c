@@ -10,6 +10,8 @@
 
 #ifdef WINDOWS
 
+#define BUILDING_LIBRARY
+
 #include "dirent.h"
 #include <errno.h>
 #include <io.h> /* _findfirst and _findnext set errno iff they return -1 */

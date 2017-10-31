@@ -1,3 +1,6 @@
+
+#include "../../Core/SharedLibraryExportMacros.h"
+
 #ifdef WINDOWS
 
 #ifndef DIRENT_INCLUDED
@@ -19,15 +22,15 @@ extern "C"
 
 typedef struct DIR DIR;
 
-struct dirent
+struct LIB_PUBLIC dirent
 {
     char *d_name;
 };
 
-DIR           *opendir(const char *);
-int           closedir(DIR *);
-struct dirent *readdir(DIR *);
-void          rewinddir(DIR *);
+LIB_PUBLIC DIR           *opendir(const char *);
+LIB_PUBLIC int           closedir(DIR *);
+LIB_PUBLIC struct dirent *readdir(DIR *);
+LIB_PUBLIC void          rewinddir(DIR *);
 
 /*
 

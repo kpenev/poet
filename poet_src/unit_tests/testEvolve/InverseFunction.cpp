@@ -9,12 +9,12 @@
 
 double gsl_f(double x, void *params)
 {
-    return reinterpret_cast<InverseFunction*>(params)->__to_invert(x);
+    InverseFunction *func_object = reinterpret_cast<InverseFunction*>(params);
+    return (func_object->__to_invert(x) - func_object->__target);
 }
 
 double gsl_df(double x, void *params)
 {
-    assert(params == NULL);
     const Core::FunctionDerivatives *deriv = 
         reinterpret_cast<InverseFunction*>(params)->__to_invert.deriv(x);
     double result = deriv->order(1);
@@ -24,22 +24,25 @@ double gsl_df(double x, void *params)
 
 void gsl_fdf(double x, void *params, double *f, double *df)
 {
-    const Core::FunctionDerivatives *deriv =
-        reinterpret_cast<InverseFunction*>(params)->__to_invert.deriv(x);
-    *f = deriv->order(0);
+    InverseFunction *func_object = reinterpret_cast<InverseFunction*>(params);
+    const Core::FunctionDerivatives *deriv = func_object->__to_invert.deriv(x);
+    *f = deriv->order(0) - func_object->__target;
     *df = deriv->order(1);
     delete deriv;
 }
 
 InverseFunction::InverseFunction(const OneArgumentDiffFunction &to_invert,
+                                 double initial_guess,
                                  double tolerance) :
     __to_invert(to_invert),
     __tolerance(tolerance),
-    __solver(gsl_root_fdfsolver_alloc(gsl_root_fdfsolver_newton))
+    __solver(gsl_root_fdfsolver_alloc(gsl_root_fdfsolver_steffenson)),
+    __guess(initial_guess)
 {
     __solver_fdf.f = gsl_f;
     __solver_fdf.df = gsl_df;
     __solver_fdf.fdf = gsl_fdf;
+    __solver_fdf.params = reinterpret_cast<void*>(this);
 
     if(__solver == NULL)
         throw Core::Error::Runtime(
@@ -50,6 +53,7 @@ InverseFunction::InverseFunction(const OneArgumentDiffFunction &to_invert,
 
 double InverseFunction::operator()(double x) const
 {
+    __target = x;
     if(
         gsl_root_fdfsolver_set(__solver,
                                const_cast<gsl_function_fdf*>(&__solver_fdf),

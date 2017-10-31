@@ -12,6 +12,7 @@
 #include "TransformedSolution.h"
 #include "RealEvolutionQuantity.h"
 #include "ExpectedEvolutionMode.h"
+#include "InverseFunction.h"
 #include "../../Evolve/OrbitSolver.h"
 #include "../../Star/EvolvingStar.h"
 #include "../../Planet/LockedPlanet.h"

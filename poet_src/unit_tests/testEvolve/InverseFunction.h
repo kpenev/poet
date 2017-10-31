@@ -41,6 +41,9 @@ private:
     ///The guess to use for the next solution.
     mutable double __guess;
 
+    ///The value we are trying to match the function to.
+    mutable double __target;
+
     ///GLS format function to invert.
     friend double gsl_f(double x, void *params);
 
@@ -53,6 +56,7 @@ private:
 public:
     ///Invert the given function.
     InverseFunction(const OneArgumentDiffFunction &to_invert,
+                    double initial_guess,
                     double tolerance = 1e-10);
 
     ///The value of the function at the given abscissa.
