@@ -10,6 +10,7 @@
 #ifndef __SATURATING_SKUMANICH_WIND_BODY_H
 #define __SATURATING_SKUMANICH_WIND_BODY_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Evolve/DissipatingBody.h"
 #include "../Evolve/BinarySystem.h"
 
@@ -19,7 +20,7 @@ namespace Star {
     /// \f$\propto\omega\min(\omega, \omega_{sat})^2\f$
     ///
     ///\ingroup StellarSystem_group
-    class SaturatingSkumanichWindBody : 
+    class LIB_PUBLIC SaturatingSkumanichWindBody : 
         virtual public Evolve::DissipatingBody {
     private:
         ///The strength of the magnetic wind

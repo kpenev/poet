@@ -14,13 +14,14 @@
  * \ingroup StellarSystem_group
  */
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "DissipationQuantities.h"
 #include "Eigen/Dense"
 #include "../Core/Common.h"
 
 namespace Evolve {
 
-    class ZoneOrientation {
+    class LIB_PUBLIC ZoneOrientation {
     private:
 
         ///The inclination of the zone relative to the orbit.
@@ -45,7 +46,7 @@ namespace Evolve {
     }; //End ZoneOrientation class.
 
     ///Transforms a vector betwen the coordinates systems of two zones.
-    Eigen::Vector3d zone_to_zone_transform(
+    LIB_PUBLIC Eigen::Vector3d zone_to_zone_transform(
             ///The zone whose coordinate system the vectors are currently in.
             const ZoneOrientation &from_zone,
 

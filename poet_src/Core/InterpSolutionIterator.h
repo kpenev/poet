@@ -1,6 +1,7 @@
 #ifndef __INTERP_SOLUTION_ITERATOR_H
 #define __INTERP_SOLUTION_ITERATOR_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "SerializableSpline1dInterpolant.h"
 
 #include "Common.h"
@@ -16,7 +17,7 @@ namespace Core {
     ///Works by adding solutions between later and later pairs of consecutive
     ///interpolation nodes whenever it runs out of found solutions and the
     ///next solution is requested.
-    class InterpSolutionIterator : 
+    class LIB_LOCAL InterpSolutionIterator : 
         public std::iterator<std::input_iterator_tag, double, ptrdiff_t, 
         const double*, const double&>
     {

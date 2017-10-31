@@ -8,6 +8,7 @@
 #ifndef __SPIN_ORBIT_LOCK_INFO
 #define __SPIN_ORBIT_LOCK_INFO
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include <iostream>
 
 namespace Evolve {
@@ -21,7 +22,7 @@ namespace Evolve {
     ///has the appropriate frequency dependence.
     ///
     ///\ingroup StellarSystem_group
-    class SpinOrbitLockInfo {
+    class LIB_LOCAL SpinOrbitLockInfo {
     private:
         ///The mutiplier in front of the orbital frequency in the lock.
         int __orbital_freq_mult,
@@ -133,7 +134,8 @@ namespace Evolve {
     };//End SpinOrbitLockInfo class.
 
     ///Civilized output for locks.
-    std::ostream &operator<<(std::ostream &os, const SpinOrbitLockInfo &lock);
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
+                                       const SpinOrbitLockInfo &lock);
 
 } //End Evolve namespace.
 

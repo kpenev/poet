@@ -1,6 +1,15 @@
+/**\file
+ *
+ * \brief Declares a class for a stopping condition that combines other stopping
+ * conditions.
+ *
+ * \ingroup Evolve_group
+ */
+
 #ifndef __COMBINED_STOPPING_CONDITION_H
 #define __COMBINED_STOPPING_CONDITION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
 #include <vector>
 
@@ -9,7 +18,7 @@ namespace Evolve {
     ///\brief A class combining the the outputs of multiple stopping conditions.
     ///
     ///\ingroup OrbitSolver_group
-    class CombinedStoppingCondition : public StoppingCondition {
+    class LIB_PUBLIC CombinedStoppingCondition : public StoppingCondition {
     private:
         ///The conditions that are combined.
         std::vector<StoppingCondition *> __sub_conditions;

@@ -5,6 +5,7 @@
  * \ingroup Planet_group
  */
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "LockedPlanet.h"
 
 extern "C" {
@@ -14,7 +15,7 @@ extern "C" {
     ///\brief Create a planet to use in a evolution calculation.
     ///
     ///The result must be de-allocated by the caller.
-    LockedPlanet *create_planet(
+    LIB_PUBLIC LockedPlanet *create_planet(
         ///The mass of the planet to create.
         double mass,
 
@@ -23,6 +24,6 @@ extern "C" {
     );
 
     ///Destroy a planet previously allocated using create_planet.
-    void destroy_planet(LockedPlanet *planet);
+    LIB_PUBLIC void destroy_planet(LockedPlanet *planet);
 
 }; //End extern "C"

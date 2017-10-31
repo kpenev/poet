@@ -9,6 +9,7 @@
 #ifndef __SUM_DERIVATIVES_H
 #define __SUM_DERIVATIVES_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../../Core/Functions.h"
 
 namespace StellarEvolution {
@@ -17,7 +18,7 @@ namespace StellarEvolution {
     ///quantities.
     ///
     ///\ingroup StellarSystem_group
-    class SumDerivatives : public FunctionDerivatives {
+    class LIB_LOCAL SumDerivatives : public FunctionDerivatives {
     private:
         ///The derivatives of the first quantity in the sum.
         const FunctionDerivatives *q1_deriv,

@@ -1,7 +1,8 @@
 #ifndef __SERIALIZABLE_SPLINE_1D_INTERPOLANT_H
 #define __SERIALIZABLE_SPLINE_1D_INTERPOLANT_H
 
-#include "alglib/src/interpolation.h"
+#include "../Core/SharedLibraryExportMacros.h"
+#include "../third_party_libs/alglib/alglib/src/interpolation.h"
 
 	#include <boost/serialization/base_object.hpp>
 	#include <boost/archive/text_oarchive.hpp>
@@ -11,7 +12,7 @@
 namespace Core {
 
     ///A serializable (using boost serialization) alglib 1D interpolant.
-    class SerializableSpline1dInterpolant : 
+    class LIB_LOCAL SerializableSpline1dInterpolant : 
         public alglib::spline1dinterpolant
     {
     private:

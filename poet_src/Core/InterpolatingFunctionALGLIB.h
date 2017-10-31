@@ -1,6 +1,7 @@
 #ifndef __INTERPOLATING_FUNCTION_ALGLIB_H
 #define __INTERPOLATING_FUNCTION_ALGLIB_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "Functions.h"
 #include "SerializableSpline1dInterpolant.h"
 #include "InterpSolutionIterator.h"
@@ -8,7 +9,8 @@
 namespace Core {
 
     ///Function which interpolates, with possible smoothing, between points.
-    class InterpolatingFunctionALGLIB : public OneArgumentDiffFunction {
+    class LIB_LOCAL InterpolatingFunctionALGLIB :
+        public OneArgumentDiffFunction {
     private:
 #ifndef NO_SERIALIZE
         ///Needed for serialization to work.

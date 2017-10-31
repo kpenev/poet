@@ -8,13 +8,14 @@
 #ifndef __ORBITAL_EXPRESSIONS_H
 #define __ORBITAL_EXPRESSIONS_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include <cmath>
 #include "AstronomicalConstants.h"
 
 namespace Core {
 
     ///Returns the orbital angular velocity of the given orbit in rad/day.
-    double orbital_angular_velocity(
+    LIB_PUBLIC double orbital_angular_velocity(
             ///The mass of the first body in \f$M_\odot\f$.
             double m1,
 
@@ -30,7 +31,7 @@ namespace Core {
 
     ///\brief The energy of the orbit (assuming 0 gravitational potential at
     ///infinity) in \f$\frac{M_\odot R_\odot^2 rad^2}{day^2}\f$.
-    double orbital_energy(
+    LIB_PUBLIC double orbital_energy(
             ///The mass of the first body in \f$M_\odot\f$.
             double m1,
 
@@ -45,7 +46,7 @@ namespace Core {
 
     ///\brief The angular momentum of the orbit in 
     /// \f$\frac{M_\odot R_\odot^2 rad}{day}\f$.
-    double orbital_angular_momentum(
+    LIB_PUBLIC double orbital_angular_momentum(
             ///The mass of the first body in \f$M_\odot\f$.
             double m1,
 

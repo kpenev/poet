@@ -9,6 +9,7 @@
 #ifndef __DISSIPATION_QUANTITIES_H
 #define __DISSIPATION_QUANTITIES_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include <ostream>
 #include <cassert>
 
@@ -19,7 +20,7 @@ namespace Evolve {
     ///\ingroup StellarSystem_group
     namespace Dissipation {
         ///The quantities which evolve due to tidal dissipation
-        enum Quantity {
+        enum LIB_LOCAL Quantity {
             ///The rate at which energy is deposited into the body.
             ///Units: \f$\frac{M_\odot R_\odot^2 rad^2}{day^2\,Gyr}\f$
             POWER, 
@@ -55,7 +56,7 @@ namespace Evolve {
         }; //End Quantity enumeration.
 
         ///\brief All evolving quantities also have derivatives.
-        enum Derivative {
+        enum LIB_LOCAL Derivative {
 
             ///The quantity itself, undifferentiated.
             NO_DERIV, 
@@ -120,7 +121,7 @@ namespace Evolve {
 
     } //End Dissipation namespace.
 
-    inline bool zone_specific(Dissipation::Derivative deriv)
+    LIB_LOCAL inline bool zone_specific(Dissipation::Derivative deriv)
     {
         return (deriv==Dissipation::SPIN_FREQUENCY ||
                 deriv==Dissipation::INCLINATION ||
@@ -130,11 +131,11 @@ namespace Evolve {
     }
 
     ///More civilized output for Dissipation::Quantity variables.
-    std::ostream &operator<<(std::ostream &os,
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
             const Dissipation::Quantity &quantity);
 
     ///More civilized output for Dissipation::Derivative variables.
-    std::ostream &operator<<(std::ostream &os,
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
             const Dissipation::Derivative &deriv);
 
 } //End Evolve namespace.

@@ -9,6 +9,7 @@
 #ifndef __CRITICAL_SPIN_CONDITION_H
 #define __CRITICAL_SPIN_CONDITION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
 #include "DissipatingBody.h"
 #include "../Core/Error.h"
@@ -19,7 +20,7 @@ namespace Evolve {
     class BrokenPowerlawPhaseLagZone;
 
     ///\brief Satisfied when some zone reaches a critical spin.
-    class LagSpinBreakCondition : public StoppingCondition {
+    class LIB_LOCAL LagSpinBreakCondition : public StoppingCondition {
     private:
         ///The zone being monitored (for more convenient access).
         BrokenPowerlawPhaseLagZone &__zone;

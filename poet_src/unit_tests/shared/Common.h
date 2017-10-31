@@ -74,7 +74,7 @@ const double MIN_STELLAR_MASS = 0.4,
 double uniform_rand(double min, double max);
 
 ///Create a string with a description of the given stop info.
-std::string stop_info_to_str(const Evolve::StopInformation &stop);
+//std::string stop_info_to_str(const Evolve::StopInformation &stop);
 
 ///\brief Outputs the mass and age polynomial defined by the given polynomial
 ///coefficients array

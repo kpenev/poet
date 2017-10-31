@@ -8,6 +8,7 @@
 #ifndef __ECCENTRICITY_EXPANSION_COEFFICIENTS_H
 #define __ECCENTRICITY_EXPANSION_COEFFICIENTS_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Core/Error.h"
 #include <vector>
 #include <fstream>
@@ -22,7 +23,7 @@ namespace Evolve {
 
     ///\brief A class which reads-in and provides a convenient interface to the 
     /// \f$p_{m,s}\f$ coefficients
-    class EccentricityExpansionCoefficients {
+    class LIB_PUBLIC EccentricityExpansionCoefficients {
     private:
         ///Maximum eccentricity power with all necessary coefficients known.
         unsigned __max_e_power;

@@ -9,6 +9,7 @@
 #ifndef __CUSTOM_STELLAR_EVOLUTION_H
 #define __CUSTOM_STELLAR_EVOLUTION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StellarEvolution.h"
 #include "IOUtil.h"
 #include <fstream>
@@ -57,7 +58,7 @@ namespace StellarEvolution {
 
         ///\brief A stellar evolution interpolator using only a single track,
         ///assumed to apply to all stars.
-        class Interpolator : public StellarEvolution::Interpolator {
+        class LIB_PUBLIC Interpolator : public StellarEvolution::Interpolator {
         private:
             ///\brief Reads the stellar evolution track from a file returning
             ///the array of the quantities indexed by the column tag.

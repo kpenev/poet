@@ -8,6 +8,7 @@
 #ifndef __BINARY_SYSTEM_H
 #define __BINARY_SYSTEM_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "DissipatingBody.h"
 #include "CombinedStoppingCondition.h"
 #include "SecondaryDeathCondition.h"
@@ -52,7 +53,7 @@ namespace Evolve {
     ///from the orbit and deposited into the bodies.
     ///
     ///\ingroup BinarySystem_group
-    class BinarySystem {
+    class LIB_PUBLIC BinarySystem {
     private:
         ///The name of the binary system (e.g. "HAT-P-20")
         std::string __name;

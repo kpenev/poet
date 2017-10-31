@@ -8,6 +8,7 @@
 #ifndef __STOP_INFORMATION_H
 #define __STOP_INFORMATION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
 
 namespace Evolve {
@@ -15,7 +16,7 @@ namespace Evolve {
     ///\brief The information about why and where the evolution should stop.
     ///
     ///\ingroup OrbitSolver_group
-    class StopInformation {
+    class LIB_LOCAL StopInformation {
     private:
         ///The target stopping age in Gyr.
         double __stop_age,
@@ -156,7 +157,8 @@ namespace Evolve {
     };//End StopInformation class.
 
     ///Civilized output of a StopInformation object.
-    std::ostream &operator<<(std::ostream &os, const StopInformation &stop);
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
+                                       const StopInformation &stop);
 
 }//End Evolve namespaec.
 #endif

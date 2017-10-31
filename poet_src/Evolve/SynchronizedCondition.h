@@ -9,6 +9,7 @@
 #ifndef __SYNCHRONIZED_CONDITION_H
 #define __SYNCHRONIZED_CONDITION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
 
 namespace Evolve {
@@ -18,7 +19,7 @@ namespace Evolve {
 
     ///\brief Satisfied when some multiples of the orbit and stellar rotation are
     ///synchronized.
-    class SynchronizedCondition : public StoppingCondition{
+    class LIB_LOCAL SynchronizedCondition : public StoppingCondition{
     private:
         ///The mutiplier in front of the orbital frequency in the lock.
         int __orbital_freq_mult,

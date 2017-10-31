@@ -9,6 +9,7 @@
 #ifndef __ORBIT_SOLVER_H
 #define __ORBIT_SOLVER_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Core/AstronomicalConstants.h"
 #include "../Core/Common.h"
 #include "../Core/OrbitalExpressions.h"
@@ -41,7 +42,7 @@ namespace Evolve {
 
     ///\brief A wrapper tha allows the stellar system differential equation to be
     ///passed to the GSL ODE solver.
-    int stellar_system_diff_eq(
+    LIB_LOCAL int stellar_system_diff_eq(
             ///System age in Gyr.
             double age,
             
@@ -59,7 +60,7 @@ namespace Evolve {
 
     ///\brief A wrapper tha allows the stellar system jacobian to be passed
     ///to the GSL ODE solver.
-    int stellar_system_jacobian(
+    LIB_LOCAL int stellar_system_jacobian(
             ///System age in Gyr.
             double age,
             
@@ -81,7 +82,7 @@ namespace Evolve {
     ///\brief Infomation about an extremum of a function.
     ///
     ///\ingroup OrbitSolver_group
-    class ExtremumInformation {
+    class LIB_LOCAL ExtremumInformation {
     private:
         ///The value of the argument where the extremum occurs.
         double __x,
@@ -112,7 +113,7 @@ namespace Evolve {
     ///single planet around a single star.
     ///
     ///\ingroup OrbitSolver_group
-    class OrbitSolver {
+    class LIB_PUBLIC OrbitSolver {
     private:
         double __end_age, ///< The last  age for which evolution is required.
                __precision;///< The precision required of the solution

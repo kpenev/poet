@@ -51,12 +51,12 @@ double uniform_rand(double min, double max)
 	return (max-min)*static_cast<double>(std::rand())/RAND_MAX+min;
 }
 
-std::string stop_info_to_str(const Evolve::StopInformation &stop)
+/*std::string stop_info_to_str(const Evolve::StopInformation &stop)
 {
 	std::ostringstream result;
 	result << stop << std::endl;
 	return result.str();
-}
+}*/
 
 double rand_value(double min, double max)
 {

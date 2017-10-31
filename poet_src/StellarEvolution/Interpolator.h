@@ -9,6 +9,7 @@
 #ifndef __INTERPOLATOR_H
 #define __INTERPOLATOR_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "EvolvingStellarQuantity.h"
 #include "InterpolationQuantities.h"
 #include "ThreadedInterpolation.h"
@@ -38,7 +39,7 @@ namespace StellarEvolution {
     ///a set of MESA tracks.
     ///
     ///\ingroup StellarSystem_group
-    class Interpolator {
+    class LIB_PUBLIC Interpolator {
     private:
         friend class boost::serialization::access;
 
@@ -266,8 +267,10 @@ namespace StellarEvolution {
 
 #ifndef NO_SERIALIZE
     ///Serialize the current interpolation.
-    template<class Archive> void Interpolator::serialize(Archive & ar,
-                                                         const unsigned int)
+    template<class Archive> void Interpolator::serialize(
+        Archive & ar,
+        const unsigned int
+    )
     {
         if(!std::isfinite(__core_formation)) __core_formation = -1;
         ar & __track_masses;

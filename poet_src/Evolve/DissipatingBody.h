@@ -9,6 +9,8 @@
 #ifndef __DISSIPATING_BODY_H
 #define __DISSIPATING_BODY_H
 
+#include "../Core/SharedLibraryExportMacros.h"
+
 #include "DissipatingZone.h"
 #include "../Core/OrbitalExpressions.h"
 #include "../Core/AstronomicalConstants.h"
@@ -34,7 +36,7 @@ namespace Evolve {
     ///Angular velocities are in rad/day.
     ///
     ///\ingroup StellarSystem_group
-    class DissipatingBody {
+    class LIB_PUBLIC DissipatingBody {
     private:
         double
             ///The coefficient used to normalize tidal power.
