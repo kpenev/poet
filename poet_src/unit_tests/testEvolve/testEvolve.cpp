@@ -44,11 +44,13 @@ public:
 
 int main()
 {
+    std::cout.setf(std::ios_base::scientific);
+    std::cout.precision(16);
+
     /*
     SinFunction sin_function;
     InverseFunction arcsin_function(sin_function, -1.0);
-    std::cout.setf(std::ios_base::scientific);
-    std::cout.precision(16);
+
     std::cout << std::setw(25) << "x"
               << std::setw(25) << "f(x)"
               << std::setw(25) << "inverted"
@@ -67,6 +69,16 @@ int main()
                   << std::setw(25) << expected
                   << std::endl;
     }
+    return 0;
+
+    Oblique10LinearQuantity q(1.05 * M_PI, M_PI, 0.1 * M_PI);
+    std::cerr << std::setw(25) << "S"
+              << std::setw(25) << "L(S)"
+              << std::endl;
+    for(double s = 0.05 * M_PI; s <= 0.1 * M_PI; s+= 0.01 * M_PI)
+        std::cerr << std::setw(25) << s
+                  << std::setw(25) << q(s)
+                  << std::endl;
     return 0;
     */
 

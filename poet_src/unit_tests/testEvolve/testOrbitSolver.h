@@ -13,6 +13,7 @@
 #include "RealEvolutionQuantity.h"
 #include "ExpectedEvolutionMode.h"
 #include "InverseFunction.h"
+#include "Oblique10LinearQuantity.h"
 #include "../../Evolve/OrbitSolver.h"
 #include "../../Star/EvolvingStar.h"
 #include "../../Planet/LockedPlanet.h"
