@@ -36,7 +36,7 @@ namespace StellarEvolution {
     void InterpolationQueue::interpolate_thread()
     {
         while(true) {
-#ifndef WINDOWS
+#ifndef TOOLCHAIN_MSVC
             pthread_mutex_lock(&__sync_mutex);
 #endif
 
@@ -45,7 +45,7 @@ namespace StellarEvolution {
                 assert(__npoints.size() == 0);
                 assert(__nodes.size() == 0);
                 assert(__smoothing.size() == 0);
-#ifdef WINDOWS
+#ifdef TOOLCHAIN_MSVC
                 return;
 #else
                 pthread_mutex_unlock(&__sync_mutex);
@@ -77,7 +77,7 @@ namespace StellarEvolution {
             ++__quantity_id_iter;
 #endif
 
-#ifndef WINDOWS
+#ifndef TOOLCHAIN_MSVC
             pthread_mutex_unlock(&__sync_mutex);
 #endif
             Core::InterpolatingFunctionALGLIB *quantity = 
@@ -88,14 +88,14 @@ namespace StellarEvolution {
                                                       smoothing,
                                                       nodes);
 
-#ifndef WINDOWS
+#ifndef TOOLCHAIN_MSVC
             pthread_mutex_lock(&__sync_mutex);
 #endif
 #ifndef NDEBUG
             std::clog << "Created result @: " << quantity << std::endl;
 #endif
             __result[destination] = quantity;
-#ifndef WINDOWS
+#ifndef TOOLCHAIN_MSVC
             pthread_mutex_unlock(&__sync_mutex);
 #endif
         }
@@ -103,7 +103,7 @@ namespace StellarEvolution {
 
     void InterpolationQueue::calculate(unsigned num_threads)
     {
-#ifdef WINDOWS
+#ifdef TOOLCHAIN_MSVC
         assert(num_threads == 1);
 #else
         pthread_attr_t thread_attributes;
@@ -116,7 +116,7 @@ namespace StellarEvolution {
 #ifndef NDEBUG
         __quantity_id_iter = __quantity_id.begin();
 #endif
-#ifdef WINDOWS
+#ifdef TOOLCHAIN_MSVC
 #else
         for(unsigned i = 0; i < num_threads; ++i)
             pthread_create(&threads[i],

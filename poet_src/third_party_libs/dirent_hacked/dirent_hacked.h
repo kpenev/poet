@@ -1,7 +1,7 @@
 
 #include "../../Core/SharedLibraryExportMacros.h"
 
-#ifdef WINDOWS
+#ifdef TOOLCHAIN_MSVC
 
 #ifndef DIRENT_INCLUDED
 #define DIRENT_INCLUDED

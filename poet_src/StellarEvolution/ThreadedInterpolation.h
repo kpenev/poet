@@ -10,7 +10,7 @@
 #include "InterpolationQuantities.h"
 #include "../Core/InterpolatingFunctionALGLIB.h"
 
-#ifndef WINDOWS
+#ifndef TOOLCHAIN_MSVC
     #include <pthread.h>
 #endif
 
@@ -47,7 +47,7 @@ namespace StellarEvolution {
         ///The interpolation results.
         std::vector<Core::InterpolatingFunctionALGLIB*> __result;
 
-#ifndef WINDOWS
+#ifndef TOOLCHAIN_MSVC
         ///\brief A pthread mutex used to ensure that only one thread is
         ///extracting the next quantity for interpolation.
         pthread_mutex_t __sync_mutex;
@@ -65,7 +65,7 @@ namespace StellarEvolution {
         ///Create an empty queue.
         InterpolationQueue()
         {
-#ifndef WINDOWS
+#ifndef TOOLCHAIN_MSVC
             pthread_mutex_init(&__sync_mutex, NULL);
 #endif
         }
