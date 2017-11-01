@@ -8,11 +8,11 @@
 
 */
 
-#ifdef WINDOWS
+#ifdef TOOLCHAIN_MSVC
 
 #define BUILDING_LIBRARY
 
-#include "dirent.h"
+#include "dirent_hacked.h"
 #include <errno.h>
 #include <io.h> /* _findfirst and _findnext set errno iff they return -1 */
 #include <stdlib.h>
