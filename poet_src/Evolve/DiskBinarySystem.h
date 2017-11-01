@@ -10,6 +10,7 @@
 #ifndef __DISK_PLANET_SYSTEM_H
 #define __DISK_PLANET_SYSTEM_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "BinarySystem.h"
 #include "../Core/Error.h"
 #include <sstream>
@@ -22,7 +23,7 @@ namespace Evolve {
      *
      * \ingroup StellarSystem_group
      */
-    class DiskBinarySystem : virtual public BinarySystem {
+    class LIB_PUBLIC DiskBinarySystem : virtual public BinarySystem {
     private:
         ///The semimajor axis of the orbit at which the secondary forms.
         double __initial_semimajor,

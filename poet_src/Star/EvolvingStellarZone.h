@@ -8,6 +8,7 @@
 #ifndef __EVOLVING_STELLAR_ZONE_H
 #define __EVOLVING_STELLAR_ZONE_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Evolve/BrokenPowerlawPhaseLagZone.h"
 #include "../Core/Functions.h"
 #include "../StellarEvolution/EvolvingStellarQuantity.h"
@@ -17,7 +18,8 @@
 namespace Star {
 
     ///\brief Base class for zones of low mass evolving stars.
-    class EvolvingStellarZone : virtual public Evolve::BrokenPowerlawPhaseLagZone
+    class LIB_PUBLIC EvolvingStellarZone :
+        virtual public Evolve::BrokenPowerlawPhaseLagZone
     {
     private:
         ///The age for the last configure() call.

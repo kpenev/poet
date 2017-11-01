@@ -8,12 +8,13 @@
 #ifndef __REMOVE_LOG_DERIV_H
 #define __REMOVE_LOG_DERIV_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Core/LogDerivatives.h"
 
 namespace StellarEvolution {
 
     ///\brief Return dy/dx given dy/dln(x), dln(y)/dx or dln(y)/dln(x).
-    class RemoveLogDeriv : public LogDerivatives {
+    class LIB_LOCAL RemoveLogDeriv : public LogDerivatives {
     private:
         ///The original logarithmic derivative 
         const FunctionDerivatives *__log_deriv;

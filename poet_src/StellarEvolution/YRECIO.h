@@ -11,10 +11,11 @@
 #ifndef __YRECIO_H
 #define __YRECIO_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StellarEvolution.h"
 #include "Common.h"
 #include "AstronomicalConstants.h"
-#include "dirent.h"
+#include "dirent_hacked.h"
 #include "Error.h"
 #include <fstream>
 #include <string>
@@ -26,7 +27,7 @@
 ///\brief A class which parses the header of a YREC evolution track.
 ///
 ///\ingroup StellarSystem_group
-class YRECHeader {
+class LIB_LOCAL YRECHeader {
 private:
 	///The masss of the tracks provided on construction in \f$M_\odot\f$.
 	double track_mass;
@@ -81,7 +82,7 @@ public:
 ///\brief An iterator over the list of extracted tracks.
 ///
 ///\ingroup StellarSystem_group
-class EvolutionIterator {
+class LIB_LOCAL EvolutionIterator {
 public:
 	///\brief Create an iterator, which must have all its *_iter members set
 	///before it can be used.
@@ -144,7 +145,7 @@ public:
 ///0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.05, 1.1, 1.15, and 1.2. 
 ///
 ///\ingroup StellarSystem_group
-class YRECEvolution : public StellarEvolution {
+class LIB_PUBLIC YRECEvolution : public StellarEvolution {
 private:
 	///The masses of the available tracks.
 	std::list<double> mass_list;

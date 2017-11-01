@@ -5,6 +5,7 @@
  * \ingroup StellarEvolution_group
  */
 
+#define BUILDING_LIBRARY
 #include "Interpolator.h"
 #include "SumQuantity.h"
 #include "../Core/Functions.h"

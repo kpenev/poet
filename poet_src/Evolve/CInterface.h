@@ -6,6 +6,7 @@
  * \ingroup Evolve_group
  */
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "DiskBinarySystem.h"
 #include "OrbitSolver.h"
 #include "../Star/CInterface.h"
@@ -14,33 +15,35 @@
 extern "C" {
     ///\brief Evolution mode ID for when the surface rotation of one of the
     ///bodies is locked to a prescribed value.
-    extern const int LOCKED_SURFACE_SPIN_EVOL_MODE;
+    LIB_PUBLIC extern const int LOCKED_SURFACE_SPIN_EVOL_MODE;
 
     ///\brief Evolution mode ID for when the two bodies orbit each other.
-    extern const int BINARY_EVOL_MODE;
+    LIB_PUBLIC extern const int BINARY_EVOL_MODE;
 
     ///\brief Evolution mode ID for when there is only one body in the system
     ///(only its rotation evolves).
-    extern const int SINGLE_EVOL_MODE;
+    LIB_PUBLIC extern const int SINGLE_EVOL_MODE;
 
     ///\brief Evolution mode ID used as the mode to transform to from all
     ///other modes when storing the computed evolution.
-    extern const int TABULATION_EVOL_MODE;
+    LIB_PUBLIC extern const int TABULATION_EVOL_MODE;
 
     ///Not a number.
     extern const double NaN;
 
     ///Opaque struct to cast to/from Evolve::DiskBinarySystem.
-    struct DiskBinarySystem;
+    struct LIB_PUBLIC DiskBinarySystem;
 
     ///Opaque struct to cast to/from Evolve::OrbitSolver.
-    struct OrbitSolver;
+    struct LIB_PUBLIC OrbitSolver;
 
     ///Read eccentricity expansion coefficients from a file.
-    void read_eccentricity_expansion_coefficients(const char *filename);
+    LIB_PUBLIC void read_eccentricity_expansion_coefficients(
+        const char *filename
+    );
 
     ///Create a binary system out of a star and a planet.
-    DiskBinarySystem *create_star_planet_system(
+    LIB_PUBLIC DiskBinarySystem *create_star_planet_system(
         ///The first body in the system. Assumed to always be there, so
         ///for a star-planet system this should be the star.
         EvolvingStar *star, 
@@ -72,7 +75,7 @@ extern "C" {
     );
 
     ///Create a binary system out of two stars.
-    DiskBinarySystem *create_star_star_system(
+    LIB_PUBLIC DiskBinarySystem *create_star_star_system(
         ///The first body in the system. Assumed to always be there, so
         ///for a star-planet system this should be the star.
         EvolvingStar *primary, 
@@ -104,7 +107,7 @@ extern "C" {
     );
 
     ///Destroy a previously created binary system.
-    void destroy_binary(
+    LIB_PUBLIC void destroy_binary(
         ///The system to destroy.
         DiskBinarySystem *system
     );
@@ -113,7 +116,7 @@ extern "C" {
     ///
     ///The inclinations and arguments of periapsis must be already set for
     ///all zones.
-    void configure_planet(
+    LIB_PUBLIC void configure_planet(
         ///The body to configure.
         LockedPlanet *planet,
 
@@ -161,7 +164,7 @@ extern "C" {
     ///
     ///The inclinations and arguments of periapsis must be already set for
     ///all zones.
-    void configure_star(
+    LIB_PUBLIC void configure_star(
         ///The body to configure.
         EvolvingStar *star,
 
@@ -206,7 +209,7 @@ extern "C" {
     );
 
     ///Sets the current state of a system.
-    void configure_system(
+    LIB_PUBLIC void configure_system(
         ///The system to set the state of.
         DiskBinarySystem *system,
 
@@ -239,7 +242,7 @@ extern "C" {
     );
 
     ///Calculate the evolution of a previously configured binary system.
-    OrbitSolver *evolve_system(
+    LIB_PUBLIC OrbitSolver *evolve_system(
         ///The system to evolve.
         DiskBinarySystem *system,
 
@@ -261,13 +264,13 @@ extern "C" {
     );
 
     ///Destroy a solver created by evolve_system.
-    void destroy_solver(
+    LIB_PUBLIC void destroy_solver(
         ///The solver to destroy.
         OrbitSolver *solver
     );
 
     ///At how many points was the evolution saved.
-    unsigned num_evolution_steps(
+    LIB_PUBLIC unsigned num_evolution_steps(
         ///The solver used to follow the evolution.
         OrbitSolver *solver
     );
@@ -277,7 +280,7 @@ extern "C" {
     ///
     ///All return arrays must either be allocated to the correct size or be
     ///NULL. In the latter case, the corresponding quantity is not returned.
-    void get_star_planet_evolution(
+    LIB_PUBLIC void get_star_planet_evolution(
         ///The solver which was used to calculate the orbital evolution.
         const OrbitSolver *solver,
 
@@ -337,7 +340,7 @@ extern "C" {
     ///
     ///All return arrays must either be allocated to the correct size or be
     ///NULL. In the latter case, the corresponding quantity is not returned.
-    void get_star_star_evolution(
+    LIB_PUBLIC void get_star_star_evolution(
         ///The solver which was used to calculate the orbital evolution.
         const OrbitSolver *solver,
 
@@ -429,7 +432,7 @@ extern "C" {
     ///
     ///All return variables must either be allocated or be NULL. In the
     ///latter case, the corresponding quantity is not returned.
-    void get_star_planet_final_state(
+    LIB_PUBLIC void get_star_planet_final_state(
         ///The solver which was used to calculate the orbital evolution.
         const OrbitSolver *solver,
 
@@ -489,7 +492,7 @@ extern "C" {
     ///
     ///All return variables must either be allocated or be NULL. In the
     ///latter case, the corresponding quantity is not returned.
-    void get_star_star_final_state(
+    LIB_PUBLIC void get_star_star_final_state(
         ///The solver which was used to calculate the orbital evolution.
         const OrbitSolver *solver,
 

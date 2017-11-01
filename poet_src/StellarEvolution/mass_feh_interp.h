@@ -8,13 +8,14 @@
 #ifndef __MASS_METALLICITY_INTERP
 #define __MASS_METALLICITY_INTERP
 
-#include "alglib/src/interpolation.h"
+#include "../Core/SharedLibraryExportMacros.h"
+#include "../third_party_libs/alglib/alglib/src/interpolation.h"
 #include <cassert>
 
 namespace StellarEvolution {
 
     ///Perform a bi-cubic spline interpolation of a single quantity.
-    double mass_feh_interp(
+    LIB_LOCAL double mass_feh_interp(
         ///The masses of the stelar models on which to base the 
         ///interpolation in \f$M_\odot\f$
         const alglib::real_1d_array &interp_masses,

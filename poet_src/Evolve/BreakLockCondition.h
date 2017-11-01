@@ -1,8 +1,16 @@
+/**\file
+ *
+ * \brief Declares a class for a stopping condition monitoring when a locked
+ * zone loses the lock.
+ *
+ * \ingroup Evolve_group
+ */
+
 #ifndef __BREAK_LOCK_CONDITION_H
 #define __BREAK_LOCK_CONDITION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
-
 
 namespace Evolve {
 
@@ -12,7 +20,7 @@ namespace Evolve {
     ///on the star is no longer sufficient to keep the lock.
     ///
     ///\ingroup OrbitSolver_group
-    class BreakLockCondition : public StoppingCondition {
+    class LIB_LOCAL BreakLockCondition : public StoppingCondition {
     private:
         ///The binary system this condition is attached to.
         BinarySystem &__system;

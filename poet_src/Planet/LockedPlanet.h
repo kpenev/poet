@@ -8,6 +8,7 @@
 #ifndef __LOCKED_PLANET_H
 #define __LOCKED_PLANET_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "LockedPlanetZone.h"
 #include "../Evolve/DissipatingBody.h"
 
@@ -16,7 +17,7 @@ namespace Planet {
     /**\brief Single zone non-evolving planets with huge dissipation, so they
      * always remain locked to the disk.
      */
-    class LockedPlanet : virtual public Evolve::DissipatingBody {
+    class LIB_PUBLIC LockedPlanet : virtual public Evolve::DissipatingBody {
     private:
         ///The only zone of the planet.
         LockedPlanetZone __zone;

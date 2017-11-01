@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "StopInformation.h"
 
 namespace Evolve {

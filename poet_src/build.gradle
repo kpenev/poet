@@ -25,7 +25,14 @@ model {
             }
 
             if (toolChain in Gcc || toolChain in Clang) {
-                cppCompiler.args "-W", "-Wall", "-std=c++11"
+                if (toolChain in Gcc)
+                    cppCompiler.define "TOOLCHAIN_GCC"
+                else
+                    cppCompiler.define "TOOLCHAIN_CLANG"
+
+                cppCompiler.args "-W", "-Wall",
+                                 "-std=c++11",
+                                 "-fvisibility=hidden"
 
                 getGSLLinkerArgs().each{linker.args it}
                 linker.args "-l" + ensureLibraryVersion(
@@ -41,6 +48,7 @@ model {
                     if(buildType == buildTypes.debug) cppCompiler.args "-O0"
                 }
             } else if (toolChain in VisualCpp ) {
+                cppCompiler.define 'TOOLCHAIN_MSVC'
                 if(buildType == buildTypes.debug) {
                     cppCompiler.args '/Zi'
                 }
@@ -52,7 +60,6 @@ model {
                 cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.16299.0\\ucrt'
                 cppCompiler.args '/IC:\\cygwin64\\usr\\include'
                 cppCompiler.args '/IC:\\Users\\Briana\\Downloads\\Phys lab\\boost_1_65_1\\boost_1_65_1'
-                cppCompiler.args '/DWINDOWS'
                 cppCompiler.args '/std:c++14'
             }
 
@@ -66,17 +73,17 @@ model {
     }
 
     components {
-        alglib(NativeLibrarySpec) {
-            sources.cpp {
-                source {
-                    srcDir "third_party_libs/alglib/alglib/src"
-                    include "**/*.cpp"
-                }
-                exportedHeaders {
-                    srcDir "third_party_libs/alglib"
-                }
-            }
-        }
+//        alglib(NativeLibrarySpec) {
+//            sources.cpp {
+//                source {
+//                    srcDir "third_party_libs/alglib/alglib/src"
+//                    include "**/*.cpp"
+//                }
+//                exportedHeaders {
+//                    srcDir "third_party_libs/alglib"
+//                }
+//            }
+//        }
         eigen(NativeLibrarySpec) {
             sources.cpp {
                 source {}
@@ -88,17 +95,17 @@ model {
         dirent(NativeLibrarySpec) {
             sources.cpp {
                 source {
-                    srcDir "third_party_libs/dirent"
+                    srcDir "third_party_libs/dirent_hacked"
                     include "**/*.c"
                 }
                 exportedHeaders {
-                    srcDir "third_party_libs/dirent"
+                    srcDir "third_party_libs/dirent_hacked"
                 }
             }
         }
         stellarEvolution(NativeLibrarySpec) {
             sources.cpp {
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "dirent"
                 source {
@@ -111,6 +118,10 @@ model {
                     srcDir "Core"
                     include "**/*.cpp"
                 }
+                source {
+                    srcDir "third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
                 exportedHeaders {
                     srcDir "StellarEvolution/"
                 }
@@ -118,7 +129,7 @@ model {
         }
         evolve(NativeLibrarySpec) {
             sources.cpp{
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "dirent"
                 source {
@@ -129,6 +140,10 @@ model {
                     srcDir "Core"
                     include "**/*.cpp"
                 }
+                source {
+                    srcDir "third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
                 exportedHeaders {
                     srcDir "Evolve/"
                 }
@@ -136,7 +151,7 @@ model {
         }
         planet(NativeLibrarySpec) {
             sources.cpp {
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "evolve"
                 lib library: "dirent"
@@ -148,6 +163,10 @@ model {
                     srcDir "Core"
                     include "**/*.cpp"
                 }
+                source {
+                    srcDir "third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
                 exportedHeaders {
                     srcDir "Planet/"
                 }
@@ -156,7 +175,7 @@ model {
         }
         star(NativeLibrarySpec) {
             sources.cpp {
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "evolve"
                 lib library: "stellarEvolution"
@@ -167,6 +186,10 @@ model {
                 }
                 source {
                     srcDir "Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "third_party_libs/alglib/alglib/src"
                     include "**/*.cpp"
                 }
                 exportedHeaders {
@@ -186,12 +209,20 @@ model {
                     }
                     include "**/*.cpp"
                 }
+                source {
+                    srcDir "Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
             }
             binaries.all {
                 cppCompiler.define "STANDALONE"
                 linker.args "-l" + ensureLibraryVersion("cpptest")
 
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "star"
@@ -203,7 +234,7 @@ model {
 
         debug_stellar_evolution(NativeExecutableSpec) {
             sources.cpp {
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "dirent"
@@ -221,7 +252,7 @@ model {
                 }
             }
             binaries.all {
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "star"
@@ -238,7 +269,7 @@ model {
                 }
             }
             binaries.all {
-                lib library: "alglib"
+//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "star"

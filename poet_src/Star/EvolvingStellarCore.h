@@ -8,6 +8,7 @@
 #ifndef __EVOLVING_STELLAR_CORE_H
 #define __EVOLVING_STELLAR_CORE_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "EvolvingStellarZone.h"
 
 #include "../Core/Functions.h"
@@ -16,7 +17,7 @@
 namespace Star {
 
     ///\brief Radiative core for low mass evolving stars.
-    class EvolvingStellarCore : public EvolvingStellarZone {
+    class LIB_PUBLIC EvolvingStellarCore : public EvolvingStellarZone {
     private:
         ///The age at which the core first forms.
         double __formation_age;

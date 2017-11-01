@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "BreakLockCondition.h"
 #include "BinarySystem.h"
 

@@ -1,6 +1,3 @@
-#ifndef __BROKEN_POWERLAW_PHASE_LAG_ZONE
-#define __BROKEN_POWERLAW_PHASE_LAG_ZONE
-
 /**\file
  *
  * \brief Declares the class that provides the phase lag function to
@@ -9,6 +6,10 @@
  * \ingroup StellarSystem_group
  */
 
+#ifndef __BROKEN_POWERLAW_PHASE_LAG_ZONE
+#define __BROKEN_POWERLAW_PHASE_LAG_ZONE
+
+#include "../Core/SharedLibraryExportMacros.h"
 #include "DissipatingZone.h"
 #include "DissipatingBody.h"
 #include "BinarySystem.h"
@@ -17,7 +18,7 @@
 
 namespace Evolve {
 
-    class BrokenPowerlawPhaseLagZone : virtual public DissipatingZone {
+    class LIB_PUBLIC BrokenPowerlawPhaseLagZone : virtual public DissipatingZone {
         friend class LagForcingFrequencyBreakCondition;
         friend class LagSpinBreakCondition;
     private:

@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "SynchronizedCondition.h"
 #include "BinarySystem.h"
 #include "DissipatingZone.h"

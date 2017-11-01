@@ -8,11 +8,12 @@
 #ifndef __ZERO_QUANTITY_H
 #define __ZERO_QUANTITY_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "EvolvingStellarQuantity.h"
 
 namespace StellarEvolution {
 
-    class ZeroQuantity : public EvolvingStellarQuantity {
+    class LIB_LOCAL ZeroQuantity : public EvolvingStellarQuantity {
     public:
         ///Do nothing. See EvolvingStellarQuantity::select_interpolation_region.
         void select_interpolation_region(double age) {}

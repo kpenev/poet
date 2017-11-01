@@ -5,6 +5,7 @@
  * \ingroup Star_group
  */
 
+#define BUILDING_LIBRARY
 #include "EvolvingStellarZone.h"
 
 namespace Star {

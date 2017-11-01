@@ -10,6 +10,7 @@
 #ifndef __ERROR_H
 #define __ERROR_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include <iostream>
 #include <exception>
 #include <string>
@@ -23,7 +24,7 @@ namespace Core {
         ///
         ///Supports what() which should return the type of error and a
         ///separate get_message() which gives details about the error.
-        class General : public std::exception {
+        class LIB_PUBLIC General : public std::exception {
         private:
             std::string message;
         public:
@@ -45,7 +46,7 @@ namespace Core {
         };
 
         ///%Error detected by the ALGLIB library.
-        class ALGLIB : public General {
+        class LIB_PUBLIC ALGLIB : public General {
         public:
             ///Create an exception for an error detected inside ALGLIB.
             ALGLIB(const std::string &error_message="") : 
@@ -57,7 +58,7 @@ namespace Core {
         };
 
         ///Any runtime error.
-        class Runtime : public General {
+        class LIB_PUBLIC Runtime : public General {
         public:
             ///Create a runtime exception.
             Runtime(const std::string &error_message="") :
@@ -69,7 +70,7 @@ namespace Core {
         };
 
         ///Function arguments do not satisfy some requirement.
-        class BadFunctionArguments : public Runtime {
+        class LIB_PUBLIC BadFunctionArguments : public Runtime {
         public:
             ///Create bad function arguments exception.
             BadFunctionArguments(const std::string &error_message="") :
@@ -82,7 +83,7 @@ namespace Core {
         };
 
         ///Exception indicating unrecognized or unsuitable stellar zone.
-        class BadStellarZone : public BadFunctionArguments {
+        class LIB_PUBLIC BadStellarZone : public BadFunctionArguments {
         public:
             ///Create a bad stellar zone exception.
             BadStellarZone(const std::string &error_message="") :
@@ -94,7 +95,7 @@ namespace Core {
         };
 
         ///Exception indicating that a file or a directory was not found.
-        class PathNotFound : public Runtime {
+        class LIB_PUBLIC PathNotFound : public Runtime {
         private:
             ///Whether the problem was with a directory and not a file.
             bool directory;
@@ -106,13 +107,15 @@ namespace Core {
                 Runtime(filename+", "+message), directory(isdir) {}
 
             ///Reports "File/Directory not found" as the error type.
-            virtual const char *what() const throw() {return (directory ?
-                                                              "Directory not found." : 
-                                                              "File not found.");}
+            virtual const char *what() const throw() {
+                return (directory ?
+                        "Directory not found." : 
+                        "File not found.");
+            }
         };
 
         ///Input/Output exception.
-        class IO : public Runtime {
+        class LIB_PUBLIC IO : public Runtime {
         public:
             ///Create an Input/Ouput exception.
             IO(const std::string &filename="", 
@@ -124,7 +127,7 @@ namespace Core {
         };
 
         ///%Error related to parsing the command line.
-        class CommandLine : public Runtime {
+        class LIB_PUBLIC CommandLine : public Runtime {
         public:
             ///Create command line parsing exception.
             CommandLine(const std::string &error_message="") :
@@ -136,7 +139,7 @@ namespace Core {
         };
 
         ///Encountered an unimplemented feature.
-        class NotImplemented : public Runtime {
+        class LIB_PUBLIC NotImplemented : public Runtime {
         public:
             ///Create a not-implemented exception.
             NotImplemented(const std::string &feature_name="") :
@@ -148,7 +151,7 @@ namespace Core {
         };
 
         ///GSL step size decreased below machine precision.
-        class GSLZeroStep : public Runtime {
+        class LIB_PUBLIC GSLZeroStep : public Runtime {
         public:
             ///Create a too-small GSL step size exception.
             GSLZeroStep(const std::string &gsl_step_type) :
@@ -161,7 +164,7 @@ namespace Core {
         };
 
         ///Maximum allowed step size decreased below machine precision.
-        class NonGSLZeroStep : public Runtime {
+        class LIB_PUBLIC NonGSLZeroStep : public Runtime {
         public:
             ///Create a too-small GSL step size exception.
             NonGSLZeroStep() :

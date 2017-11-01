@@ -1,6 +1,3 @@
-#ifndef __EVOLVING_STAR_H
-#define __EVOLVING_STAR_H
-
 /**\file
  *
  * \brief Declares the class for stars that user pre-tabulated stellar
@@ -9,6 +6,10 @@
  * \ingroup Star_group
  */
 
+#ifndef __EVOLVING_STAR_H
+#define __EVOLVING_STAR_H
+
+#include "../Core/SharedLibraryExportMacros.h"
 #include "SaturatingSkumanichWindBody.h"
 #include "ExponentialDecayDiffRotBody.h"
 #include "../StellarEvolution/Interpolator.h"
@@ -17,7 +18,7 @@
 
 namespace Star {
 
-    class InterpolatedEvolutionStar : 
+    class LIB_PUBLIC InterpolatedEvolutionStar : 
         public SaturatingSkumanichWindBody,
         public ExponentialDecayDiffRotBody {
     private:

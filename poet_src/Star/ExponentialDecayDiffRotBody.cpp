@@ -5,6 +5,7 @@
  * \ingroup Star_group
  */
 
+#define BUILDING_LIBRARY
 #include "ExponentialDecayDiffRotBody.h"
 
 namespace Star {

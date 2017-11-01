@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "CombinedStoppingCondition.h"
 
 namespace Evolve {

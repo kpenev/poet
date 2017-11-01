@@ -9,6 +9,7 @@
 #ifndef __SUM_QUANTITY_H
 #define __SUM_QUANTITY_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "EvolvingStellarQuantity.h"
 
 namespace StellarEvolution {
@@ -17,7 +18,7 @@ namespace StellarEvolution {
     ///quantities.
     ///
     ///\ingroup StellarSystem_group
-    class SumQuantity : public EvolvingStellarQuantity {
+    class LIB_LOCAL SumQuantity : public EvolvingStellarQuantity {
     private:
         ///This quantity will be q1+q2
         EvolvingStellarQuantity *q1, *q2;

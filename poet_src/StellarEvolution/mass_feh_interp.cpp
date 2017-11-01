@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "mass_feh_interp.h"
 
 namespace StellarEvolution {

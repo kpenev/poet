@@ -9,6 +9,7 @@
 #ifndef __WIND_SATURATION_CONDITION_H
 #define __WIND_SATURATION_CONDITION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Evolve/StoppingCondition.h"
 #include "SaturatingSkumanichWindBody.h"
 
@@ -17,7 +18,7 @@ namespace Star {
     ///the wind saturation frequency.
     ///
     ///\ingroup OrbitSolver_group
-    class WindSaturationCondition : public Evolve::StoppingCondition {
+    class LIB_LOCAL WindSaturationCondition : public Evolve::StoppingCondition {
     private:
         ///The frequency at which the wind saturates.
         double __saturation_freq;

@@ -5,12 +5,14 @@
  * \ingroup Star_group
  */
 
+#define BUILDING_LIBRARY
 #include "CInterface.h"
 
-const int NO_DERIV = Evolve::Dissipation::NO_DERIV;
-const int AGE_DERIV = Evolve::Dissipation::AGE;
-const int SPIN_FREQUENCY_DERIV = Evolve::Dissipation::SPIN_FREQUENCY;
-const int ORBITAL_FREQUENCY_DERIV = Evolve::Dissipation::ORBITAL_FREQUENCY;
+LIB_PUBLIC const int NO_DERIV = Evolve::Dissipation::NO_DERIV;
+LIB_PUBLIC const int AGE_DERIV = Evolve::Dissipation::AGE;
+LIB_PUBLIC const int SPIN_FREQUENCY_DERIV = Evolve::Dissipation::SPIN_FREQUENCY;
+LIB_PUBLIC const int 
+    ORBITAL_FREQUENCY_DERIV = Evolve::Dissipation::ORBITAL_FREQUENCY;
 
 double lag_from_lgQ(double lgQ)
 {

@@ -9,12 +9,13 @@
 #ifndef __MESAIO_H
 #define __MESAIO_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "Interpolator.h"
 #include "../IO/IOUtil.h"
 #include "../Core/Common.h"
 #include "../Core/AstronomicalConstants.h"
 #include "../Core/Error.h"
-#include "dirent.h"
+#include "dirent_hacked.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -49,11 +50,11 @@ namespace StellarEvolution {
 
         ///\brief Return the metallicity interpolation parameter corresponding to
         ///the given [Fe/H] value.
-        double metallicity_from_feh(double feh);
+        LIB_LOCAL double metallicity_from_feh(double feh);
 
         ///\brief Return the [Fe/H] value corresponding to the given metallicity
         //interpolation parameter.
-        double feh_from_metallicity(double metallicity);
+        LIB_LOCAL double feh_from_metallicity(double metallicity);
 
         ///Names for the interesting columns in a MESA track.
         enum Column {
@@ -97,7 +98,7 @@ namespace StellarEvolution {
         ///\brief A class which parses the header of a MESA evolution track.
         ///
         ///\ingroup StellarSystem_group
-        class Header {
+        class LIB_LOCAL Header {
             private:
                 ///\brief The names of the columns in the track, indexed by
                 ///MESA::Column.
@@ -135,7 +136,7 @@ namespace StellarEvolution {
         ///\brief An iterator over the list of extracted tracks.
         ///
         ///\ingroup StellarSystem_group
-        class EvolutionIterator {
+        class LIB_LOCAL EvolutionIterator {
         public:
             ///\brief Create an iterator, which must have all its *_iter 
             ///members set before it can be used.
@@ -188,7 +189,7 @@ namespace StellarEvolution {
         ///\brief A stellar evolution interpolator based on the MESA tracks.
         ///
         ///\ingroup StellarSystem_group
-        class Interpolator : public StellarEvolution::Interpolator {
+        class LIB_PUBLIC Interpolator : public StellarEvolution::Interpolator {
         private:
 
             ///\brief The value at the indexed from Column is the

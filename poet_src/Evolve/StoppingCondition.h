@@ -8,6 +8,7 @@
 #ifndef __STOPPING_CONDITION_H
 #define __STOPPING_CONDITION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Core/Common.h"
 
 #include <cassert>
@@ -39,7 +40,7 @@ namespace Evolve {
     }; //End StoppingConditionType enumeration.
 
     ///More civilized output for StoppingConditionType variables.
-    std::ostream &operator<<(std::ostream &os,
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
             const StoppingConditionType &stop_cond_type);
 
     ///\brief A base class for all stopping conditions.
@@ -48,7 +49,7 @@ namespace Evolve {
     ///is necessary are given in the \ref stop_cond section.
     ///
     ///\ingroup OrbitSolver_group
-    class StoppingCondition {
+    class LIB_LOCAL StoppingCondition {
     private:
         ///\brief The sign of the first derivative at the next zero-crossing of
         ///this condition.
@@ -140,7 +141,7 @@ namespace Evolve {
     ///\brief A stopping condition that is never satisfied.
     ///
     ///\ingroup OrbitSolver_group
-    class NoStopCondition : public StoppingCondition {
+    class LIB_LOCAL NoStopCondition : public StoppingCondition {
     public:
         ///A single value is reternud that is always 1.
         ///
@@ -163,7 +164,7 @@ namespace Evolve {
     ///\brief A base class for all external stopping conditions.
     ///
     ///\ingroup OrbitSolver_group
-    class ExternalStoppingCondition : public StoppingCondition {
+    class LIB_LOCAL ExternalStoppingCondition : public StoppingCondition {
     public:
         ///Identify this as an EXTERNAL condition.
         StoppingConditionType type(unsigned =0) const {return EXTERNAL;}

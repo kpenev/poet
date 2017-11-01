@@ -1,3 +1,4 @@
+#define BUILDING_LIBRARY
 #include "SecondaryDeathCondition.h"
 #include "BinarySystem.h"
 

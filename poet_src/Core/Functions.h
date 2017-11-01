@@ -8,6 +8,7 @@
 #ifndef __FUNCTIONS_H
 #define __FUNCTIONS_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "Common.h"
 #include "Error.h"
 //#include <solve_polynomial.h>
@@ -32,7 +33,7 @@ namespace Core {
     ///\brief The base class for functions which take a single argument and
     ///return a single value.
     template<class InputDataType, class OutputDataType>
-        class OneArgumentFunction {
+        class LIB_LOCAL OneArgumentFunction {
 #ifndef NO_SERIALIZE
             ///Needed for serialization to work.
             friend class boost::serialization::access;
@@ -62,7 +63,7 @@ namespace Core {
         };
 
     ///A class representing arbitrary order derivatives of a function.
-    class FunctionDerivatives {
+    class LIB_LOCAL FunctionDerivatives {
     public:
         ///\brief Derivative of the given order of the function with respect
         ///to its argument.
@@ -73,7 +74,7 @@ namespace Core {
     };
 
     ///A class for the derivatives of a cubic spline (=0 for order>2).
-    class CubicSplineDerivatives : public FunctionDerivatives {
+    class LIB_LOCAL CubicSplineDerivatives : public FunctionDerivatives {
     private:
         double zeroth, ///< The value of the function
                first, ///< The first derivative
@@ -100,7 +101,7 @@ namespace Core {
 
     ///\brief A class representing a once differentiable function of a single
     ///argument
-    class OneArgumentDiffFunction 
+    class LIB_LOCAL OneArgumentDiffFunction 
         : public OneArgumentFunction<double,double> {
     private :
 #ifndef NO_SERIALIZE
@@ -129,7 +130,7 @@ namespace Core {
     ///\brief The derivatives of an identically zero quantity.
     ///
     ///\ingroup StellarSystem_group
-    class ZeroDerivatives : public FunctionDerivatives {
+    class LIB_LOCAL ZeroDerivatives : public FunctionDerivatives {
     public:
         ///Create a derivative of an identically zero quantity.
         ZeroDerivatives() {}
@@ -139,7 +140,7 @@ namespace Core {
     };
 
     ///A class representing a function that is identically zero.
-    class ZeroFunction : public OneArgumentDiffFunction {
+    class LIB_LOCAL ZeroFunction : public OneArgumentDiffFunction {
     private :
 #ifndef NO_SERIALIZE
         ///Needed for serialization to work.

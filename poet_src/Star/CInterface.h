@@ -6,28 +6,29 @@
  * \ingroup Star_group
  */
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "EvolvingStar.h"
 #include "../StellarEvolution/CInterface.h"
 #include "../Evolve/DissipationQuantities.h"
 
 extern "C" {
     ///Identifier for not differentiating the phase lag.
-    extern const int NO_DERIV;
+    LIB_PUBLIC extern const int NO_DERIV;
 
     ///Identifier for differentiating the phase lag w.r.t. age.
-    extern const int AGE_DERIV;
+    LIB_PUBLIC extern const int AGE_DERIV;
 
     ///Identifier for differentiating the phase lag w.r.t. spin freuqency.
-    extern const int SPIN_FREQUENCY_DERIV;
+    LIB_PUBLIC extern const int SPIN_FREQUENCY_DERIV;
 
     ///Identifier for differentiating the phase lag w.r.t. orbital freuqency.
-    extern const int ORBITAL_FREQUENCY_DERIV;
+    LIB_PUBLIC extern const int ORBITAL_FREQUENCY_DERIV;
 
     ///Opaque struct to cast to/from Star::InterpolatedEvolutionStar.
-    struct EvolvingStar;
+    struct LIB_PUBLIC EvolvingStar;
 
     ///Create a star to participate in the orbital evolution calculation.
-    EvolvingStar *create_star(
+    LIB_PUBLIC EvolvingStar *create_star(
         ///Mass of the star
         double mass,
 
@@ -48,14 +49,14 @@ extern "C" {
     );
 
     ///Destroy a previously created star.
-    void destroy_star(
+    LIB_PUBLIC void destroy_star(
         ///The star to destroy. Must have previously been created using
         ///create_star.
         EvolvingStar *star
     );
 
     ///Set the dissipative properties of one of the zones of a star.
-    void set_dissipation(
+    LIB_PUBLIC void set_dissipation(
         ///The star to set the dissipation for.
         EvolvingStar *star,
 
@@ -95,7 +96,7 @@ extern "C" {
 
     ///Tell the star to detect its wind saturation state per its current
     ///configuration.
-    void detect_stellar_wind_saturation(
+    LIB_PUBLIC void detect_stellar_wind_saturation(
         ///The star to detect the saturation state of.
         EvolvingStar *star
     );
@@ -104,7 +105,7 @@ extern "C" {
     ///given age.
     ///
     ///See EvolvingStar::select_interpolation_region() for details.
-    void select_interpolation_region(
+    LIB_PUBLIC void select_interpolation_region(
         ///The star to select the interpolation region for.
         const EvolvingStar *star,
 
@@ -114,7 +115,7 @@ extern "C" {
 
     ///\brief See Evolve::BrokenPowerlawPhaseLagZone::modified_phase_lag for
     ///details.
-    double modified_phase_lag(
+    LIB_PUBLIC double modified_phase_lag(
         ///The star to get the modified phase lag for.
         const EvolvingStar *star,
 
@@ -143,19 +144,19 @@ extern "C" {
     );
 
     ///The age at which the core of a star forms.
-    double core_formation_age(
+    LIB_PUBLIC double core_formation_age(
         ///The star for which to return the core formation age.
         const EvolvingStar *star
     );
 
     ///The lifetime of a star (the maximum age at which it can be queried)
-    double lifetime(
+    LIB_PUBLIC double lifetime(
         ///The star whose lifetime to return.
         const EvolvingStar *star
     );
 
     ///The luminosity of a star at a given age.
-    double luminosity(
+    LIB_PUBLIC double luminosity(
         ///The star whose luminosity to return.
         EvolvingStar *star,
 
@@ -164,7 +165,7 @@ extern "C" {
     );
 
     ///The luminosity of a star at a given array of ages.
-    void luminosity_array(
+    LIB_PUBLIC void luminosity_array(
         ///The star whose luminosity to return.
         EvolvingStar *star,
 
@@ -179,7 +180,7 @@ extern "C" {
     );
 
     ///The moment of inertia of the stellar core at a given age.
-    double core_inertia(
+    LIB_PUBLIC double core_inertia(
         ///The star whose luminosity to return.
         EvolvingStar *star,
 
@@ -188,7 +189,7 @@ extern "C" {
     );
 
     ///The moment of inertia of the stellar core at a given array of ages.
-    void core_inertia_array(
+    LIB_PUBLIC void core_inertia_array(
         ///The star whose luminosity to return.
         EvolvingStar *star,
 
@@ -203,7 +204,7 @@ extern "C" {
     );
 
     ///The moment of inertia of the stellar envelope at a given age.
-    double envelope_inertia(
+    LIB_PUBLIC double envelope_inertia(
         ///The star whose luminosity to return.
         EvolvingStar *star,
 
@@ -213,7 +214,7 @@ extern "C" {
 
     ///\brief The moment of inertia of the stellar envelope at a given array
     ///of ages.
-    void envelope_inertia_array(
+    LIB_PUBLIC void envelope_inertia_array(
         ///The star whose luminosity to return.
         EvolvingStar *star,
 
@@ -228,7 +229,7 @@ extern "C" {
     );
 
     ///The radius of the star at a given age.
-    double star_radius(
+    LIB_PUBLIC double star_radius(
         ///The star whose radius to return.
         EvolvingStar *star,
 
@@ -237,7 +238,7 @@ extern "C" {
     );
 
     ///The radius of the star at an array of ages.
-    void star_radius_array(
+    LIB_PUBLIC void star_radius_array(
         ///The star whose radius to return.
         EvolvingStar *star,
 
@@ -252,6 +253,6 @@ extern "C" {
     );
 
     ///Converts lg(Q) to a tidal phase lag.
-    double lag_from_lgQ(double lgQ);
+    LIB_PUBLIC double lag_from_lgQ(double lgQ);
 
 } //End extern "C"

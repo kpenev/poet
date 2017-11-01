@@ -8,13 +8,14 @@
 #ifndef __LOCKED_PLANET_ZONE_H
 #define __LOCKED_PLANET_ZONE_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Evolve/DissipatingZone.h"
 #include "../Core/AstronomicalConstants.h"
 
 namespace Planet {
 
     ///\brief The only zone of a LockedPlanet.
-    class LockedPlanetZone : virtual public Evolve::DissipatingZone {
+    class LIB_LOCAL LockedPlanetZone : virtual public Evolve::DissipatingZone {
     private:
         ///The mass of the planet.
         double __mass,

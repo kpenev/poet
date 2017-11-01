@@ -10,6 +10,7 @@
 #ifndef __EXTERNAL_STOPPING_CONDITIONS_H
 #define __EXTERNAL_STOPPING_CONDITIONS_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
 #include "DissipatingZone.h"
 
@@ -18,7 +19,7 @@ namespace Evolve {
     ///\brief Satisfied when a zone is rotating faster than a threshold.
     ///
     ///\ingroup OrbitSolver_group
-    class RotFastCondition : public ExternalStoppingCondition {
+    class LIB_LOCAL RotFastCondition : public ExternalStoppingCondition {
     private:
         ///The spin threshold in rad/day.
         double __spin_thres;

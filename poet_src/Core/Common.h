@@ -8,6 +8,7 @@
 #ifndef __COMMON_DEFINITIONS_H
 #define __COMMON_DEFINITIONS_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "Error.h"
 #include "AstronomicalConstants.h"
 #include "Eigen/Dense"
@@ -27,10 +28,10 @@
 namespace Core {
 
     ///Not a number.
-    const double NaN=std::numeric_limits<double>::quiet_NaN();
+    const double NaN = std::numeric_limits<double>::quiet_NaN();
 
     ///Infinity
-    const double Inf=std::numeric_limits<double>::infinity();
+    const double Inf = std::numeric_limits<double>::infinity();
 
     ///\brief The various evolution modes.
     ///
@@ -68,15 +69,15 @@ namespace Core {
         }
 
     ///Creates a valarray containing the values in the given list.
-    inline std::valarray<double> list_to_valarray(
+    LIB_LOCAL inline std::valarray<double> list_to_valarray(
         const std::list<double> &inlist
     ) {return valarray_from_iterator(inlist.begin(), inlist.size());}
 
     ///Solves the cubic equation \f$ \sum_{i=0}^3 c_i x^i=0 \f$
-    std::valarray<double> solve_cubic(double c0,
-                                      double c1,
-                                      double c2,
-                                      double c3);
+    LIB_LOCAL std::valarray<double> solve_cubic(double c0,
+                                                double c1,
+                                                double c2,
+                                                double c3);
 
     ///\brief Finds a zero of a smooth curve defined by the given points and
     ///derivatives.
@@ -89,7 +90,7 @@ namespace Core {
     ///and having specified values of its derivatives at those points.
     ///
     ///The two function values (y0 and y1) must have opposite sign.
-    double estimate_zerocrossing(
+    LIB_LOCAL double estimate_zerocrossing(
         ///The abscissa of the first point though which the function
         ///should pass.
         double x0,
@@ -119,22 +120,22 @@ namespace Core {
     ///
     ///The three points are (x0, y0), (x1, y1), (x2, y2). 
     ///Two of the function values must have opposite sign.
-    double quadratic_zerocrossing(double x0, double y0,
-                                  double x1, double y1,
-                                  double x2, double y2,
-                                  double require_range_low = NaN,
-                                  double require_range_high = NaN);
+    LIB_LOCAL double quadratic_zerocrossing(double x0, double y0,
+                                            double x1, double y1,
+                                            double x2, double y2,
+                                            double require_range_low = NaN,
+                                            double require_range_high = NaN);
 
     ///\brief Finds the abscissa of a zero of a cubic defined by four points.
     ///
     ///The four points are (x0, y0), (x1, y1), (x2, y2), (x3, y3). 
     ///Two of the function values must have opposite sign.
-    double cubic_zerocrossing(double x0, double y0,
-                              double x1, double y1,
-                              double x2, double y2,
-                              double x3, double y3,
-                              double require_range_low = NaN,
-                              double require_range_high = NaN);
+    LIB_LOCAL double cubic_zerocrossing(double x0, double y0,
+                                        double x1, double y1,
+                                        double x2, double y2,
+                                        double x3, double y3,
+                                        double require_range_low = NaN,
+                                        double require_range_high = NaN);
 
 
     ///\brief Finds an extremum of a cubic defined by two points and
@@ -145,7 +146,7 @@ namespace Core {
     ///overwritten with the value of the function at the extremum.
     ///
     ///The two derivatives must have an opposite sign.
-    double estimate_extremum(
+    LIB_LOCAL double estimate_extremum(
         ///The abscissa of the first point though which the function
         ///should pass.	
         double x0,
@@ -180,10 +181,10 @@ namespace Core {
     ///
     ///If the optional last argument is not NULL, the location it points to
     ///gets overwritten with the value of the function at the extremum.
-    double quadratic_extremum(double x0, double y0,
-                              double x1, double y1,
-                              double x2, double y2,
-                              double *extremum_y = NULL);
+    LIB_LOCAL double quadratic_extremum(double x0, double y0,
+                                        double x1, double y1,
+                                        double x2, double y2,
+                                        double *extremum_y = NULL);
 
     ///\brief Finds the abscissa of an extremum of the cubic function passing
     ///through four points.
@@ -195,13 +196,13 @@ namespace Core {
     ///If the optional extremum_y argument is not NULL, the location it
     ///points to gets overwritten with the value of the function at the
     ///extremum.
-    double cubic_extremum(double x0, double y0,
-                          double x1, double y1,
-                          double x2, double y2,
-                          double x3, double y3,
-                          double *extremum_y = NULL,
-                          double require_range_low = NaN,
-                          double require_range_high = NaN);
+    LIB_LOCAL double cubic_extremum(double x0, double y0,
+                                    double x1, double y1,
+                                    double x2, double y2,
+                                    double x3, double y3,
+                                    double *extremum_y = NULL,
+                                    double require_range_low = NaN,
+                                    double require_range_high = NaN);
 
     ///\brief Returns the polynomial coefficients of the cubic going through
     ///four points.
@@ -213,10 +214,10 @@ namespace Core {
     /// \f$x^i\f$.
     ///
     ///The vector must be freed when no longer needed.
-    gsl_vector *cubic_coefficients(double x0, double y0,
-                                   double x1, double y1,
-                                   double x2, double y2,
-                                   double x3, double y3);
+    LIB_LOCAL gsl_vector *cubic_coefficients(double x0, double y0,
+                                             double x1, double y1,
+                                             double x2, double y2,
+                                             double x3, double y3);
 
     ///\brief Finds the polynomial that goes through the points iterated over
     ///by x_i and y_i.
@@ -284,18 +285,19 @@ namespace Core {
         }
 
     ///More civilized output for EvolModeType variables.
-    std::ostream &operator<<(std::ostream &os,
-                             const Core::EvolModeType &evol_mode);
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
+                                       const Core::EvolModeType &evol_mode);
 
 } //End Core namespace.
 
 namespace std {
     ///Outputs a valarray as a sequence of ', ' separated values.
-    std::ostream &operator<<(std::ostream &os,
-                             const std::valarray<double> &arr);
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
+                                       const std::valarray<double> &arr);
 
     ///Outputs a list as a sequence of ', ' separated values.
-    std::ostream &operator<<(std::ostream &os, const std::list<double> &l);
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
+                                       const std::list<double> &l);
 }
 
 #endif

@@ -6,6 +6,7 @@
  * \ingroup StellarSystem_group
  */
 
+#define BUILDING_LIBRARY
 #include "EvolvingStellarQuantity.h"
 #include <memory>
 

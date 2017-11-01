@@ -8,6 +8,7 @@
 #ifndef __STOP_HISTORY_INTERVAL_H
 #define __STOP_HISTORY_INTERVAL_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "../Core/Error.h"
 #include <valarray>
 #include <list>
@@ -21,7 +22,7 @@ namespace Evolve {
     ///contain some reason to stop.
     ///
     ///\ingroup OrbitSolver_group
-    class StopHistoryInterval {
+    class LIB_LOCAL StopHistoryInterval {
     private:
         size_t __num_points,///< Number of points in the interval
                __point_i;///< The index of the current point
@@ -241,7 +242,8 @@ namespace Evolve {
     }; //End StopHistoryInternval class.
 
     ///Civilized output of a StopHistoryInterval.
-    std::ostream &operator<<(std::ostream &os, StopHistoryInterval interval);
+    LIB_LOCAL std::ostream &operator<<(std::ostream &os,
+                                       StopHistoryInterval interval);
 
 }//End Evolve namespace.
 

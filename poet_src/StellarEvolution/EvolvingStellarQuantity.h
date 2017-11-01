@@ -9,6 +9,7 @@
 #ifndef __EVOLVING_STELLAR_QUANTITY_H
 #define __EVOLVING_STELLAR_QUANTITY_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "AllowedGridGrowth.h"
 #include "RemoveLogDeriv.h"
 #include "SumDerivatives.h"
@@ -34,7 +35,7 @@ namespace StellarEvolution {
     ///\brief A class for stellar properties that depend on age.
     ///
     ///\ingroup StellarSystem_group
-    class EvolvingStellarQuantity : public OneArgumentDiffFunction {
+    class LIB_PUBLIC EvolvingStellarQuantity : public OneArgumentDiffFunction {
     private:
         double 
             ///The mass to which to interpolate in \f$M_\odot\f$.

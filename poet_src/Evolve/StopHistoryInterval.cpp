@@ -5,6 +5,7 @@
  * \ingroup OrbitSolver_group
  */
 
+#define BUILDING_LIBRARY
 #include "StopHistoryInterval.h"
 
 namespace Evolve {

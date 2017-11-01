@@ -7,10 +7,12 @@
 #ifndef __ALLOWED_GRID_GROWTH_H
 #define __ALLOWED_GRID_GROWTH_H
 
+#include "../Core/SharedLibraryExportMacros.h"
+
 namespace StellarEvolution {
 
     ///The four directions in which an interpolation grid can grow.
-    class AllowedGridGrowth {
+    class LIB_LOCAL AllowedGridGrowth {
     private:
         bool 
             ///Can grow toward lower masses?

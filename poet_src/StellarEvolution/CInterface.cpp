@@ -5,15 +5,16 @@
  * \ingroup StellarEvolution_group
  */
 
+#define BUILDING_LIBRARY
 #include "CInterface.h"
 
-const int RADIUS = StellarEvolution::RADIUS;
-const int ICONV = StellarEvolution::ICONV;
-const int LUM = StellarEvolution::LUM;
-const int IRAD = StellarEvolution::IRAD;
-const int MRAD = StellarEvolution::MRAD;
-const int RRAD = StellarEvolution::RRAD;
-const int NUM_QUANTITIES = StellarEvolution::NUM_QUANTITIES;
+LIB_PUBLIC const int RADIUS = StellarEvolution::RADIUS;
+LIB_PUBLIC const int ICONV = StellarEvolution::ICONV;
+LIB_PUBLIC const int LUM = StellarEvolution::LUM;
+LIB_PUBLIC const int IRAD = StellarEvolution::IRAD;
+LIB_PUBLIC const int MRAD = StellarEvolution::MRAD;
+LIB_PUBLIC const int RRAD = StellarEvolution::RRAD;
+LIB_PUBLIC const int NUM_QUANTITIES = StellarEvolution::NUM_QUANTITIES;
 
 MESAInterpolator* create_interpolator(const char *mesa_dir,
                                       double *smoothing,

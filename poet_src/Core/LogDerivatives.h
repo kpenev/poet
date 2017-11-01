@@ -9,6 +9,7 @@
 #ifndef __LOG_ARG_DERIVATIVES_H
 #define __LOG_ARG_DERIVATIVES_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "Functions.h"
 #include "Error.h"
 #include <vector>
@@ -22,7 +23,7 @@ namespace StellarEvolution {
     ///dln(y)/dln(x).
     ///
     ///\ingroup StellarSystem_group
-    class LogDerivatives : public FunctionDerivatives {
+    class LIB_LOCAL LogDerivatives : public FunctionDerivatives {
     private:
         ///The value of the argument at which derivatives are calculated.
         double __x;

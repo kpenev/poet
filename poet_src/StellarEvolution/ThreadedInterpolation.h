@@ -6,6 +6,7 @@
  * \ingroup StellarEvolution_group
  */
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "InterpolationQuantities.h"
 #include "../Core/InterpolatingFunctionALGLIB.h"
 
@@ -20,7 +21,7 @@ namespace StellarEvolution {
 
     ///\brief A class that handles a queue of interpolation tasks. Also
     ///functions as an iterator over the results.
-    class InterpolationQueue {
+    class LIB_LOCAL InterpolationQueue {
     private:
         ///The array of x values to use in the interpolation.
         std::list<const double *> __x;

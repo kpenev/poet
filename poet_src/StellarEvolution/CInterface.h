@@ -6,45 +6,46 @@
  * \ingroup StellarEvolution_group
  */
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "MESAIO.h"
 
 extern "C" {
     ///Identifier for the stellar radius as an interpolation quantity.
-    extern const int RADIUS;
+    LIB_PUBLIC extern const int RADIUS;
 
     ///\brief Identifier for the convective zone moment of inertia as an
     ///interpolation quantity.
-    extern const int ICONV;
+    LIB_PUBLIC extern const int ICONV;
 
     ///Identifier for the stellar luminosity as an interpolation quantity.
-    extern const int LUM;
+    LIB_PUBLIC extern const int LUM;
 
     ///\brief Identifier for the radiative zone moment of inertia as an
     ///interpolation quantity.
-    extern const int IRAD;
+    LIB_PUBLIC extern const int IRAD;
 
     ///\brief Identifier for the radiative zone mass of inertia as an
     ///interpolation quantity.
-    extern const int MRAD;
+    LIB_PUBLIC extern const int MRAD;
 
     ///\brief Identifier for the convective-radiative boundary as an
     ///interpolation quantity.
-    extern const int RRAD;
+    LIB_PUBLIC extern const int RRAD;
 
     ///The number of interpolation quantities currentyl supported.
-    extern const int NUM_QUANTITIES;
+    LIB_PUBLIC extern const int NUM_QUANTITIES;
 
     ///Opaque struct to cast to/from StellarEvolution::Interpolator pointers.
-    struct MESAInterpolator;
+    struct LIB_PUBLIC MESAInterpolator;
 
     ///\brief Opaque struct to cast to/from
     ///StellarEvolution::EvolvingStellarQuantity pointers.
-    struct EvolvingStellarQuantity;
+    struct LIB_PUBLIC EvolvingStellarQuantity;
 
     ///\brief Create an interpolator from a directory containing MESA tracks.
     ///
     ///The result must be de-allocated when no longer necessary.
-    MESAInterpolator* create_interpolator(
+    LIB_PUBLIC MESAInterpolator* create_interpolator(
         ///The directory containing all and only the MESA tracks to include
         ///in the interpolation.
         const char *mesa_dir,
@@ -71,7 +72,7 @@ extern "C" {
     );
 
     ///\brief Destroy a previously created interpolator.
-    void destroy_interpolator(
+    LIB_PUBLIC void destroy_interpolator(
         ///The interpolator to destroy. Must have previously been created
         ///using create_interpolator()
         MESAInterpolator *interpolator
@@ -80,7 +81,7 @@ extern "C" {
     ///\brief Create a single quantity interpolation for a given star.
     ///
     ///The result must be de-allocated when no longer needed.
-    const EvolvingStellarQuantity* create_quantity(
+    LIB_PUBLIC const EvolvingStellarQuantity* create_quantity(
         ///An interpolator previously created with create_interpolator().
         const MESAInterpolator* interpolator,
 
@@ -96,14 +97,14 @@ extern "C" {
     );
 
     ///Destroy a previously created evolving stellar quantity.
-    void destroy_quantity(
+    LIB_PUBLIC void destroy_quantity(
         ///The quantity to destroy. Must have previously been created using
         ///create_quantity().
         EvolvingStellarQuantity *quantity
     );
 
     ///Evaluate a stellar quantity at a given age.
-    double evaluate_quantity(
+    LIB_PUBLIC double evaluate_quantity(
         ///The quantity to evaluate. Must be previously created using
         ///interpolate().
         const EvolvingStellarQuantity* quantity,
@@ -113,7 +114,7 @@ extern "C" {
     );
 
     ///Evaluate a stellar quantity at an array of ages.
-    void evaluate_quantity_array(
+    LIB_PUBLIC void evaluate_quantity_array(
         ///The quantity to evaluate. Must be previously created using
         ///interpolate()
         const EvolvingStellarQuantity *quantity,
@@ -129,7 +130,7 @@ extern "C" {
     );
 
     ///Calculate the zeroth, first and second derivatives of a quantity.
-    void differentiate_quantity(
+    LIB_PUBLIC void differentiate_quantity(
         ///The quantity to differentiate. Must be previously created using
         ///interpolate().
         const EvolvingStellarQuantity* quantity,
@@ -148,7 +149,7 @@ extern "C" {
     ///consecutive nvalues entries are the function values at echo of the
     ///nvalues ages, the next nvalues entries are the first derivatives at
     ///each age etc. 
-    void differentiate_quantity_array(
+    LIB_PUBLIC void differentiate_quantity_array(
         ///The quantity to differentiate. Must be previously created using
         ///interpolate()
         const EvolvingStellarQuantity *quantity,
@@ -165,14 +166,14 @@ extern "C" {
     );
 
     ///Return the minimum age for which the quantity is defined.
-    double quantity_min_age(
+    LIB_PUBLIC double quantity_min_age(
         ///The quantity to characterize. Must be previously created using
         ///interpolate().
         const EvolvingStellarQuantity* quantity
     );
 
     ///Return the maximum age for which the quantity is defined.
-    double quantity_max_age(
+    LIB_PUBLIC double quantity_max_age(
         ///The quantity to characterize. Must be previously created using
         ///interpolate().
         const EvolvingStellarQuantity* quantity
@@ -180,14 +181,16 @@ extern "C" {
 
     ///\brief Return the range of ages surrounding a given age over which a
     ///quantity is guaranteed continuous.
-    void quantity_continuous_range(const EvolvingStellarQuantity* quantity,
-                                   double age,
-                                   double *range_min,
-                                   double *range_max);
+    LIB_PUBLIC void quantity_continuous_range(
+        const EvolvingStellarQuantity* quantity,
+        double age,
+        double *range_min,
+        double *range_max
+    );
 
 #ifndef NO_SERIALIZE
     ///Save the state of an interpolator for faster creation.
-    void save_interpolator(
+    LIB_PUBLIC void save_interpolator(
         ///The interpolator to save. Must have previously been created
         ///using create_interpolator()
         MESAInterpolator *interpolator,
@@ -204,42 +207,42 @@ extern "C" {
 #endif
 
     ///Return the default smoothing argument used for the given quantity.
-    double default_smoothing(
+    LIB_PUBLIC double default_smoothing(
         ///The quantity to return the default smoothing for.
         int quantityID
     );
 
     ///\brief Return the default number of interpolation nodes used for the
     ///given quantity.
-    int default_nodes(
+    LIB_PUBLIC int default_nodes(
         ///The quantity to return the default nodes for.
         int quantityID
     );
 
     ///\brief Return whether by default the given quantity is interpolated
     ///vs. log(age).
-    bool default_vs_log_age(
+    LIB_PUBLIC bool default_vs_log_age(
         ///The quantity to return the default nodes for.
         int quantityID
     );
 
     ///\brief Return whether by default the log(given quantity) is 
     ///interpolated vs. the quantity itself.
-    bool default_log_quantity(
+    LIB_PUBLIC bool default_log_quantity(
         ///The quantity to return the default nodes for.
         int quantityID
     );
 
     ///Alias for StellarEvolution::metallicity_from_feh()
-    double metallicity_from_feh(double feh);
+    LIB_PUBLIC double metallicity_from_feh(double feh);
 
     ///Alias for StellarEvolution::feh_from_metallicity()
-    double feh_from_metallicity(double metallicity);
+    LIB_PUBLIC double feh_from_metallicity(double metallicity);
 
     ///Calculate [Fe/H] given Z (metal mass fraction) for a star.
-    double feh_from_z(double z);
+    LIB_PUBLIC double feh_from_z(double z);
 
     ///Calculate Z (metal mass fraction) given [Fe/H] for a star.
-    double z_from_feh(double feh);
+    LIB_PUBLIC double z_from_feh(double feh);
 
 } //End extern "C"

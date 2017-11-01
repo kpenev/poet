@@ -1,6 +1,15 @@
+/**\file
+ *
+ * \brief Declares a stopping condition class monitoring for the death of the
+ * secondary object.
+ *
+ * \ingroup Evolve_group
+ */
+
 #ifndef __SECONDARY_DEATH_CONDITION_H
 #define __SECONDARY_DEATH_CONDITION_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
 
 namespace Evolve {
@@ -11,7 +20,7 @@ namespace Evolve {
     ///the stellar photosphere.
     ///
     ///\ingroup OrbitSolver_group
-    class SecondaryDeathCondition : public StoppingCondition {
+    class LIB_LOCAL SecondaryDeathCondition : public StoppingCondition {
     private:
         ///The system this condition is attached to.
         BinarySystem &__system;

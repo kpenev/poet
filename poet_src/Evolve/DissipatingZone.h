@@ -1,6 +1,3 @@
-#ifndef __DISSIPATING_ZONE_H
-#define __DISSIPATING_ZONE_H
-
 /**\file
  *
  * \brief Declares a class representing one zone of a body dissipative to
@@ -9,6 +6,10 @@
  * \ingroup Evolve_group
  */
 
+#ifndef __DISSIPATING_ZONE_H
+#define __DISSIPATING_ZONE_H
+
+#include "../Core/SharedLibraryExportMacros.h"
 #include "ZoneOrientation.h"
 #include "EccentricityExpansionCoefficients.h"
 #include "DissipationQuantities.h"
@@ -84,7 +85,7 @@ namespace Evolve {
 
     ///\brief A layer of a system body for which the tidal bulge is not exactly
     ///in phase with the tidal potential.
-    class DissipatingZone : public ZoneOrientation {
+    class LIB_PUBLIC DissipatingZone : public ZoneOrientation {
     private:
         ///The expansion order in eccentricity to use.
         unsigned __e_order;

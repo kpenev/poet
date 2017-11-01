@@ -1,6 +1,7 @@
 #ifndef __INTERPOLATED_DERIVATIVES_H
 #define __INTERPOLATED_DERIVATIVES_H
 
+#include "../Core/SharedLibraryExportMacros.h"
 #include "mass_feh_interp.h"
 #include "../Core/LogDerivatives.h"
 #include "../Core/Functions.h"
@@ -12,7 +13,7 @@ namespace StellarEvolution {
     ///age, mass and [Fe/H].
     ///
     ///\ingroup StellarSystem_group
-    class InterpolatedDerivatives : public LogDerivatives {
+    class LIB_LOCAL InterpolatedDerivatives : public LogDerivatives {
     private:
         double 
             ///The mass to interpolate to in \f$M_\odot\f$.

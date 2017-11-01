@@ -5,6 +5,7 @@
  * \ingroup Planet_group
  */
 
+#define BUILDING_LIBRARY
 #include "CInterface.h"
 
 LockedPlanet *create_planet(double mass, double radius)
