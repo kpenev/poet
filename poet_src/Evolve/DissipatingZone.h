@@ -95,15 +95,15 @@ namespace Evolve {
         ///
         ///The first index is m+2 (since m starts from -2) and the second index
         ///is m'/2+1 since the only allowed values are -2, 0 and 1.
-        static const double __Umm_coef[][3],
+        static const double __Umm_coef[][3];
 
-                     ///\brief \f$\kappa_{m,m'}^+/\kappa_{m,m'}\f$ as a function
-                     ///of \f$m=-2 \ldots 2\f$.
-                     __torque_x_plus_coef[],
+        ///\brief \f$\kappa_{m,m'}^+/\kappa_{m,m'}\f$ as a function
+        ///of \f$m=-2 \ldots 2\f$.
+        static const double __torque_x_plus_coef[];
 
-                     ///\brief \f$\kappa_{m,m'}^-/\kappa_{m,m'}\f$ as a function
-                     ///of \f$m=-2 \ldots 2\f$.
-                     __torque_x_minus_coef[];
+        ///\brief \f$\kappa_{m,m'}^-/\kappa_{m,m'}\f$ as a function
+        ///of \f$m=-2 \ldots 2\f$.
+        static const double __torque_x_minus_coef[];
 
         ///The eccentricity expansion of \f$p_{m,s}\f$.
         static EccentricityExpansionCoefficients __pms;
