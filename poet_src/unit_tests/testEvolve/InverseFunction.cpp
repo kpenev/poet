@@ -10,7 +10,10 @@
 double gsl_f(double x, void *params)
 {
     InverseFunction *func_object = reinterpret_cast<InverseFunction*>(params);
-    return (func_object->__to_invert(x) - func_object->__target);
+    double func_value = func_object->__to_invert(x);
+    if(std::isnan(func_value))
+        throw Core::Error::Runtime("NaN function value encountered.");
+    return (func_value - func_object->__target);
 }
 
 double gsl_df(double x, void *params)
@@ -19,6 +22,8 @@ double gsl_df(double x, void *params)
         reinterpret_cast<InverseFunction*>(params)->__to_invert.deriv(x);
     double result = deriv->order(1);
     delete deriv;
+    if(std::isnan(result))
+        throw Core::Error::Runtime("NaN derivative encountered.");
     return result;
 }
 
@@ -29,6 +34,8 @@ void gsl_fdf(double x, void *params, double *f, double *df)
     *f = deriv->order(0) - func_object->__target;
     *df = deriv->order(1);
     delete deriv;
+    if(std::isnan(deriv->order(0)) || std::isnan(deriv->order(1)))
+        throw Core::Error::Runtime("NaN encountered.");
 }
 
 InverseFunction::InverseFunction(const OneArgumentDiffFunction &to_invert,
@@ -64,10 +71,14 @@ double InverseFunction::operator()(double x) const
         );
     double evaluation_error = Core::Inf, result = Core::NaN;
     while(evaluation_error > __tolerance) {
-        if(gsl_root_fdfsolver_iterate(__solver))
-            throw Core::Error::Runtime("Error iterating function inversion.");
-        result = gsl_root_fdfsolver_root(__solver);
-        evaluation_error = std::abs(__to_invert(result) - x);
+        try {
+            if(gsl_root_fdfsolver_iterate(__solver))
+                throw Core::Error::Runtime("Error iterating function inversion.");
+            result = gsl_root_fdfsolver_root(__solver);
+            evaluation_error = std::abs(__to_invert(result) - x);
+        } catch(Core::Error::Runtime) {
+            return Core::NaN;
+        }
     }
     __guess = result;
     assert(!std::isnan(result));

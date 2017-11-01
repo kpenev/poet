@@ -15,7 +15,7 @@
 
 ///\brief A function of the stellar angular momentum expected to evolve linearly
 ///with time under the m = 1, m' = 0 term.
-class Oblique10LinearQuantity {
+class Oblique10LinearQuantity : public Core::OneArgumentDiffFunction {
 private:
     double 
         ///\brief The Magnitude of the total angular momentum in the system in
