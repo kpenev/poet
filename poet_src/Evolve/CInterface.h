@@ -29,7 +29,7 @@ extern "C" {
     LIB_PUBLIC extern const int TABULATION_EVOL_MODE;
 
     ///Not a number.
-    extern const double NaN;
+    LIB_PUBLIC extern const double NaN;
 
     ///Opaque struct to cast to/from Evolve::DiskBinarySystem.
     struct LIB_PUBLIC DiskBinarySystem;
