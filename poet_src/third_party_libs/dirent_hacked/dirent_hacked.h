@@ -20,7 +20,7 @@
 extern "C"
 {
 
-typedef struct DIR DIR;
+typedef struct LIB_PUBLIC DIR DIR;
 
 struct LIB_PUBLIC dirent
 {

@@ -23,7 +23,7 @@ extern "C"
 
 typedef ptrdiff_t handle_type; /* C99's intptr_t not sufficiently portable */
 
-struct DIR
+struct LIB_PUBLIC DIR
 {
     handle_type         handle; /* -1 for failed rewind */
     struct _finddata_t  info;
@@ -31,7 +31,7 @@ struct DIR
     char                *name;  /* null-terminated char string */
 };
 
-DIR *opendir(const char *name)
+LIB_PUBLIC DIR *opendir(const char *name)
 {
     DIR *dir = 0;
 
@@ -73,7 +73,7 @@ DIR *opendir(const char *name)
     return dir;
 }
 
-int closedir(DIR *dir)
+LIB_PUBLIC int closedir(DIR *dir)
 {
     int result = -1;
 
@@ -96,7 +96,7 @@ int closedir(DIR *dir)
     return result;
 }
 
-struct dirent *readdir(DIR *dir)
+LIB_PUBLIC struct dirent *readdir(DIR *dir)
 {
     struct dirent *result = 0;
 
@@ -116,7 +116,7 @@ struct dirent *readdir(DIR *dir)
     return result;
 }
 
-void rewinddir(DIR *dir)
+LIB_PUBLIC void rewinddir(DIR *dir)
 {
     if(dir && dir->handle != -1)
     {
