@@ -51,7 +51,7 @@ double Oblique10LinearQuantity::operator()(double star_angmom) const
 {
     return (indefinite_integral(star_angmom / __angmom_scale)
             -
-            __initial_indefinite_integral);
+            __initial_indefinite_integral) * __angmom_scale;
 }
 
 const Core::FunctionDerivatives *Oblique10LinearQuantity::deriv(
@@ -75,7 +75,7 @@ const Core::FunctionDerivatives *Oblique10LinearQuantity::deriv(
             std::pow(1.0 + s2 - t2, 2)
             /
             std::pow(4.0 * s2, 2)
-        ),
+        ) * __angmom_scale,
         (
             (1.0 - s2 - t2)
             *
@@ -84,6 +84,6 @@ const Core::FunctionDerivatives *Oblique10LinearQuantity::deriv(
             (1.0 + s2 * s2 - 2.0 * (1.0 + s2) * t2 + t2 * t2)
             /
             (4.0 * s2 * s2 * star_angmom)
-        )
+        ) * __angmom_scale
     );
 }

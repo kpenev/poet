@@ -49,7 +49,12 @@ public:
                                 std::pow(orbital_angmom, 2))
     {}
 
-    double operator()(double age) const {return value(__lconv_evol(age));}
+    double operator()(double age) const
+    {
+        return (age  < __lconv_evol.disk_lifetime()
+                ? 0.0
+                : value(__lconv_evol(age)));
+    }
 
     double range_high() const {return __lconv_evol.range_high();}
     double range_low() const {return __lconv_evol.range_low();}
@@ -72,6 +77,8 @@ public:
         throw Core::Error::Runtime(
             "Derivatives not implemented for 1-0 obliquity evolution."
         );
+        if(age < __lconv_evol.disk_lifetime())
+            return new Core::CubicSplineDerivatives(0.0, 0.0, 0.0);
         const Core::FunctionDerivatives *lconv_deriv = __lconv_evol.deriv(age);
         double obliquity = value(lconv_deriv->order(0)),
                order1 =  - 1.0 / std::sin(obliquity) * (
@@ -99,9 +106,12 @@ private:
     ///The orbital angular momentum magnitude (does not evolve).
     double __orbital_angmom;
 
+    ///The obliquity at the time the disk dissipates.
+    double __initial_obliquity;
+
     ///\brief The initial component of the convective zone angular momentum
     ///perpendicular to the orbital angular momentum.
-    double __projected_initial_lconv;
+    double __initial_lconv_perp;
 
     ///The radiative zone obliquity for the given parameters.
     double value(
@@ -113,22 +123,27 @@ private:
     ) const
     {
         double lconv_perp = lconv * std::sin(conv_obliq),
-               lconv_par = lconv * std::cos(conv_obliq);
+               lconv_par = lconv * std::cos(conv_obliq),
+               repeated = (std::pow(__orbital_angmom, 2)
+                           +
+                           std::pow(lconv, 2)
+                           +
+                           2.0 * __orbital_angmom * lconv_par);
                 
-        return std::acos(
-            (__orbital_angmom + lconv_par)
-            *
-            std::sqrt(
-                std::pow(__orbital_angmom, 2)
+        return __initial_obliquity - std::acos(
+            (
+                (__orbital_angmom + lconv_par)
+                *
+                std::sqrt(
+                    repeated
+                    -
+                    std::pow(__initial_lconv_perp, 2)
+                )
                 +
-                std::pow(lconv, 2)
-                -
-                std::pow(__projected_initial_lconv, 2)
-                +
-                2.0 * __orbital_angmom * lconv_par
+                __initial_lconv_perp * lconv_perp
             )
-            +
-            __projected_initial_lconv * lconv_perp
+            /
+            repeated
         );
     }
 
@@ -141,21 +156,25 @@ public:
         const Oblique10ConvObliquityEvolution &conv_obliq_evol,
 
         ///See __orbital_angmom member.
-        double orbital_angmom,
-
-        ///The disk lifetime
-        double tdisk
+        double orbital_angmom
     ) :
         __lconv_evol(lconv_evol),
         __conv_obliq_evol(conv_obliq_evol),
         __orbital_angmom(orbital_angmom),
-        __projected_initial_lconv(lconv_evol(tdisk)
-                                  *
-                                  std::sin(conv_obliq_evol(tdisk)))
-    {}
+        __initial_obliquity(conv_obliq_evol(__lconv_evol.disk_lifetime())),
+        __initial_lconv_perp(lconv_evol(__lconv_evol.disk_lifetime())
+                             *
+                             std::sin(__initial_obliquity))
+    {
+        std::cerr << "Initial obliquity = " << __initial_obliquity << std::endl;
+    }
 
     double operator()(double age) const
-    {return value(__lconv_evol(age), __conv_obliq_evol(age));}
+    {
+        return (age < __lconv_evol.disk_lifetime()
+                ? 0.0
+                : value(__lconv_evol(age), __conv_obliq_evol(age)));
+    }
 
     double range_high() const {return std::min(__lconv_evol.range_high(),
                                                __conv_obliq_evol.range_high());}

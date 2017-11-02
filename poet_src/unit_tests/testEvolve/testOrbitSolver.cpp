@@ -2942,8 +2942,8 @@ namespace Evolve {
                          *
                          WORB
                      ),
-                     INITIAL_INC = M_PI / 4.0,
-                     INITIAL_WSTAR = 0.1,
+                     INITIAL_INC = 0.25 * M_PI,
+                     INITIAL_WSTAR = 0.01,
                      LTOT = std::sqrt(
                          std::pow(INITIAL_WSTAR, 2)
                          +
@@ -3018,8 +3018,7 @@ namespace Evolve {
                                                         LTOT);
         Oblique10RadObliquityEvolution rad_obliq_evol(lconv_evol,
                                                       conv_obliq_evol,
-                                                      LORB,
-                                                      TDISK);
+                                                      LORB);
 
         std::vector<const Core::OneArgumentDiffFunction *>
             expected_real_quantities(NUM_REAL_QUANTITIES - 1);

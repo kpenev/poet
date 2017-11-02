@@ -33,16 +33,19 @@ private:
     double __tolerance;
 
     ///The GSL derivative-based solver.
-    gsl_root_fdfsolver *__solver;
+    gsl_root_fsolver *__solver;
 
     ///The fdf argument used by the GSL solver.
     gsl_function_fdf __solver_fdf;
 
-    ///The guess to use for the next solution.
-    mutable double __guess;
+    ///The f argument used by the GSL solver.
+    gsl_function __solver_f;
 
     ///The value we are trying to match the function to.
     mutable double __target;
+
+    ///The range which to search for a solution (must bracket a zero).
+    double __search_min, __search_max;
 
     ///GLS format function to invert.
     friend double gsl_f(double x, void *params);
@@ -56,7 +59,8 @@ private:
 public:
     ///Invert the given function.
     InverseFunction(const OneArgumentDiffFunction &to_invert,
-                    double initial_guess,
+                    double search_min,
+                    double search_max,
                     double tolerance = 1e-10);
 
     ///The value of the function at the given abscissa.

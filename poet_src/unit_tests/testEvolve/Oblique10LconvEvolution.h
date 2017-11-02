@@ -48,19 +48,22 @@ public:
         __disk_lifetime(disk_lifetime),
         __evolution_rate(evolution_rate),
         __linear_quantity(total_angmom, orbital_angmom, initial_conv_angmom),
-        __find_lconv(__linear_quantity, initial_conv_angmom)
+        __find_lconv(__linear_quantity,
+                     total_angmom - orbital_angmom,
+                     initial_conv_angmom)
     {}
 
     ///\brief Return the expected value for the stellar convective angular
     ///momentum at the given age.
     double operator()(double age) const
     {
-        return (
-            age < __disk_lifetime
-            ? Core::NaN
-            : __find_lconv(-(age - __disk_lifetime) * __evolution_rate)
+        return __find_lconv(
+            std::min(0.0, -(age - __disk_lifetime) * __evolution_rate)
         );
     }
+
+    ///The disk lifetime specified at construction.
+    double disk_lifetime() const {return __disk_lifetime;}
 
     double range_high() const
     {return __find_lconv.range_high() / __evolution_rate;}
@@ -85,10 +88,10 @@ public:
     ///opertaions.
     const Core::FunctionDerivatives *deriv(double age) const
     {
-        if(age < __disk_lifetime)
-            return new Core::CubicSplineDerivatives(Core::NaN,
-                                                    Core::NaN,
-                                                    Core::NaN);
+        if(age <= __disk_lifetime)
+            return new Core::CubicSplineDerivatives(__find_lconv(0.0),
+                                                    0.0,
+                                                    0.0);
         const Core::FunctionDerivatives *scaled_deriv = __find_lconv.deriv(
             -(age - __disk_lifetime) * __evolution_rate
         );

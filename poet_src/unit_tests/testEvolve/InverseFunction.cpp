@@ -39,17 +39,22 @@ void gsl_fdf(double x, void *params, double *f, double *df)
 }
 
 InverseFunction::InverseFunction(const OneArgumentDiffFunction &to_invert,
-                                 double initial_guess,
+                                 double search_min,
+                                 double search_max,
                                  double tolerance) :
     __to_invert(to_invert),
     __tolerance(tolerance),
-    __solver(gsl_root_fdfsolver_alloc(gsl_root_fdfsolver_steffenson)),
-    __guess(initial_guess)
+    __solver(gsl_root_fsolver_alloc(gsl_root_fsolver_brent)),
+    __search_min(search_min),
+    __search_max(search_max)
 {
     __solver_fdf.f = gsl_f;
     __solver_fdf.df = gsl_df;
     __solver_fdf.fdf = gsl_fdf;
     __solver_fdf.params = reinterpret_cast<void*>(this);
+
+    __solver_f.function = gsl_f;
+    __solver_f.params = reinterpret_cast<void*>(this);
 
     if(__solver == NULL)
         throw Core::Error::Runtime(
@@ -62,9 +67,10 @@ double InverseFunction::operator()(double x) const
 {
     __target = x;
     if(
-        gsl_root_fdfsolver_set(__solver,
-                               const_cast<gsl_function_fdf*>(&__solver_fdf),
-                               __guess)
+        gsl_root_fsolver_set(__solver,
+                             const_cast<gsl_function*>(&__solver_f),
+                             __search_min,
+                             __search_max)
     )
         throw Core::Error::Runtime(
             "Failed to initialize solver for inverse function."
@@ -72,15 +78,14 @@ double InverseFunction::operator()(double x) const
     double evaluation_error = Core::Inf, result = Core::NaN;
     while(evaluation_error > __tolerance) {
         try {
-            if(gsl_root_fdfsolver_iterate(__solver))
+            if(gsl_root_fsolver_iterate(__solver))
                 throw Core::Error::Runtime("Error iterating function inversion.");
-            result = gsl_root_fdfsolver_root(__solver);
+            result = gsl_root_fsolver_root(__solver);
             evaluation_error = std::abs(__to_invert(result) - x);
         } catch(Core::Error::Runtime) {
             return Core::NaN;
         }
     }
-    __guess = result;
     assert(!std::isnan(result));
     return result;
 }
@@ -97,5 +102,5 @@ const Core::FunctionDerivatives *InverseFunction::deriv(double x) const
 
 InverseFunction::~InverseFunction()
 {
-    gsl_root_fdfsolver_free(__solver);
+    gsl_root_fsolver_free(__solver);
 }
