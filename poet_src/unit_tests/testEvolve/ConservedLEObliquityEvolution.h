@@ -1,20 +1,22 @@
 /**\file
  *
- * \brief Declares a OneArgumentDiffFunction sub-class giving the evolution of
- * the obliquity under the m = 1, m' = 0 term.
+ * \brief Declares a OneArgumentDiffFunction sub-classes giving the evolution of
+ * the core and envelope obliquities under the assumpion of energy and angular
+ * momentum conservation.
  *
  * \ingroup UnitTests_group
  */
 
-#ifndef __OBLIQUE_1_0_OBLIQUITY_EVOLUTION_H
-#define __OBLIQUE_1_0_OBLIQUITY_EVOLUTION_H
+#ifndef __CONSERVED_LE_OBLIQUITY_EVOLUTION_H
+#define __CONSERVED_LE_OBLIQUITY_EVOLUTION_H
 
-#include "Oblique10LconvEvolution.h"
+#include "../../Core/Functions.h"
+#include "../../Core/InterpSolutionIterator.h"
 
-class Oblique10ConvObliquityEvolution : public Core::OneArgumentDiffFunction {
+class ConservedLEConvObliquityEvolution : public Core::OneArgumentDiffFunction {
 private:
     ///The evolution of the convective zone angular momentum.
-    const Oblique10LconvEvolution &__lconv_evol;
+    const Core::OneArgumentDiffFunction &__lconv_evol;
 
     ///The orbital angular momentum (does not evolve).
     double __orbital_angmom;
@@ -22,6 +24,9 @@ private:
     ///The difference between the squares of the total and orbital angular
     ///momenta.
     double __total2_minus_orbital2;
+
+    ///The lifetime to assume for the disk before evolution starts.
+    double __disk_lifetime;
 
     ///The value of the obliquity for the given convective angular momentum.
     double value(double lconv) const
@@ -32,26 +37,30 @@ private:
     }
 
 public:
-    Oblique10ConvObliquityEvolution(
+    ConservedLEConvObliquityEvolution(
         ///See __lconv_evol member.
-        const Oblique10LconvEvolution &lconv_evol,
+        const Core::OneArgumentDiffFunction &lconv_evol,
 
         ///See __orbital_angmom member.
         double orbital_angmom,
 
         ///The total angular momentum in the system (does not evolve).
-        double total_angmom
+        double total_angmom,
+
+        ///See __disk_lifetime member.
+        double disk_lifetime
     ) :
         __lconv_evol(lconv_evol),
         __orbital_angmom(orbital_angmom),
         __total2_minus_orbital2(std::pow(total_angmom, 2)
                                 -
-                                std::pow(orbital_angmom, 2))
+                                std::pow(orbital_angmom, 2)),
+        __disk_lifetime(disk_lifetime)
     {}
 
     double operator()(double age) const
     {
-        return (age  < __lconv_evol.disk_lifetime()
+        return (age  < __disk_lifetime
                 ? 0.0
                 : value(__lconv_evol(age)));
     }
@@ -62,7 +71,8 @@ public:
     Core::InterpSolutionIterator crossings(double = 0) const
     {
         throw Core::Error::Runtime(
-            "Finding all solutinos of Oblique10ObliquityEvolution not supported!"
+            "Finding all solutinos of ConservedLEConvObliquityEvolution "
+            "not supported!"
         );
     };
 
@@ -77,7 +87,7 @@ public:
         throw Core::Error::Runtime(
             "Derivatives not implemented for 1-0 obliquity evolution."
         );
-        if(age < __lconv_evol.disk_lifetime())
+        if(age < __disk_lifetime)
             return new Core::CubicSplineDerivatives(0.0, 0.0, 0.0);
         const Core::FunctionDerivatives *lconv_deriv = __lconv_evol.deriv(age);
         double obliquity = value(lconv_deriv->order(0)),
@@ -95,13 +105,13 @@ public:
 
 };
 
-class Oblique10RadObliquityEvolution : public Core::OneArgumentDiffFunction {
+class ConservedLERadObliquityEvolution : public Core::OneArgumentDiffFunction {
 private:
     ///The evolution of the convective zone angular momentum.
-    const Oblique10LconvEvolution &__lconv_evol;
+    const Core::OneArgumentDiffFunction &__lconv_evol;
 
     ///The evolution of the convective zone obliquity.
-    const Oblique10ConvObliquityEvolution &__conv_obliq_evol;
+    const ConservedLEConvObliquityEvolution &__conv_obliq_evol;
 
     ///The orbital angular momentum magnitude (does not evolve).
     double __orbital_angmom;
@@ -112,6 +122,9 @@ private:
     ///\brief The initial component of the convective zone angular momentum
     ///perpendicular to the orbital angular momentum.
     double __initial_lconv_perp;
+
+    ///See ConservedLEConvObliquityEvolution::__disk_lifetime.
+    double __disk_lifetime;
 
     ///The radiative zone obliquity for the given parameters.
     double value(
@@ -148,30 +161,34 @@ private:
     }
 
 public:
-    Oblique10RadObliquityEvolution(
+    ConservedLERadObliquityEvolution(
         ///See __lconv_evol member.
-        const Oblique10LconvEvolution &lconv_evol,
+        const Core::OneArgumentDiffFunction &lconv_evol,
 
         ///See __conv_obliq_evol member.
-        const Oblique10ConvObliquityEvolution &conv_obliq_evol,
+        const ConservedLEConvObliquityEvolution &conv_obliq_evol,
 
         ///See __orbital_angmom member.
-        double orbital_angmom
+        double orbital_angmom,
+
+        ///See ConservedLEConvObliquityEvolution::__disk_lifetime.
+        double disk_lifetime
     ) :
         __lconv_evol(lconv_evol),
         __conv_obliq_evol(conv_obliq_evol),
         __orbital_angmom(orbital_angmom),
-        __initial_obliquity(conv_obliq_evol(__lconv_evol.disk_lifetime())),
-        __initial_lconv_perp(lconv_evol(__lconv_evol.disk_lifetime())
+        __initial_obliquity(conv_obliq_evol(disk_lifetime)),
+        __initial_lconv_perp(lconv_evol(disk_lifetime)
                              *
-                             std::sin(__initial_obliquity))
+                             std::sin(__initial_obliquity)),
+        __disk_lifetime(disk_lifetime)
     {
         std::cerr << "Initial obliquity = " << __initial_obliquity << std::endl;
     }
 
     double operator()(double age) const
     {
-        return (age < __lconv_evol.disk_lifetime()
+        return (age < __disk_lifetime
                 ? 0.0
                 : value(__lconv_evol(age), __conv_obliq_evol(age)));
     }
@@ -186,7 +203,7 @@ public:
     Core::InterpSolutionIterator crossings(double = 0) const
     {
         throw Core::Error::Runtime(
-            "Solving Oblique10RadObliquityEvolution not implemented!"
+            "Solving ConservedLERadObliquityEvolution not implemented!"
         );
     };
 
@@ -199,7 +216,7 @@ public:
     const Core::FunctionDerivatives *deriv(double) const
     {
         throw Core::Error::Runtime(
-            "Differentiating Oblique10RadObliquityEvolution not implemented!"
+            "Differentiating ConservedLERadObliquityEvolution not implemented!"
         );
     }
 };

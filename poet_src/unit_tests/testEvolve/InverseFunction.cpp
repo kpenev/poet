@@ -65,6 +65,11 @@ InverseFunction::InverseFunction(const OneArgumentDiffFunction &to_invert,
 
 double InverseFunction::operator()(double x) const
 {
+    if(std::abs(__to_invert(__search_max) - x) < __tolerance)
+        return __search_max;
+    else if(std::abs(__to_invert(__search_min) - x) < __tolerance)
+        return __search_min;
+
     __target = x;
     if(
         gsl_root_fsolver_set(__solver,
@@ -75,7 +80,8 @@ double InverseFunction::operator()(double x) const
         throw Core::Error::Runtime(
             "Failed to initialize solver for inverse function."
         );
-    double evaluation_error = Core::Inf, result = Core::NaN;
+    double evaluation_error = Core::Inf,
+           result = Core::NaN;
     while(evaluation_error > __tolerance) {
         try {
             if(gsl_root_fsolver_iterate(__solver))

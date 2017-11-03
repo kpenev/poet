@@ -3007,28 +3007,32 @@ namespace Evolve {
         e_evol.add_piece(&disk_nan_evol);
         e_evol.add_piece(&fixed_e_evol);
 
-        Oblique10LconvEvolution lconv_evol(TDISK,
-                                           LTOT,
-                                           LORB,
-                                           INITIAL_WSTAR,
-                                           LINEAR_QUANTITY_RATE);
+        InverseLinearLconvEvolution<Oblique10LinearQuantity> lconv_evol10(
+            TDISK,
+            LTOT,
+            LORB,
+            INITIAL_WSTAR,
+            LINEAR_QUANTITY_RATE
+        );
 
-        Oblique10ConvObliquityEvolution conv_obliq_evol(lconv_evol,
-                                                        LORB,
-                                                        LTOT);
-        Oblique10RadObliquityEvolution rad_obliq_evol(lconv_evol,
-                                                      conv_obliq_evol,
-                                                      LORB);
+        ConservedLEConvObliquityEvolution conv_obliq_evol10(lconv_evol10,
+                                                            LORB,
+                                                            LTOT,
+                                                            TDISK);
+        ConservedLERadObliquityEvolution rad_obliq_evol10(lconv_evol10,
+                                                          conv_obliq_evol10,
+                                                          LORB,
+                                                          TDISK);
 
         std::vector<const Core::OneArgumentDiffFunction *>
             expected_real_quantities(NUM_REAL_QUANTITIES - 1);
         expected_real_quantities[SEMIMAJOR] = &a_evol;
         expected_real_quantities[ECCENTRICITY] = &e_evol;
-        expected_real_quantities[CONV_INCLINATION] = &conv_obliq_evol;
-        expected_real_quantities[RAD_INCLINATION] = &rad_obliq_evol;
+        expected_real_quantities[CONV_INCLINATION] = &conv_obliq_evol10;
+        expected_real_quantities[RAD_INCLINATION] = &rad_obliq_evol10;
         expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
         expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
-        expected_real_quantities[CONV_ANGMOM] = &lconv_evol;
+        expected_real_quantities[CONV_ANGMOM] = &lconv_evol10;
         expected_real_quantities[RAD_ANGMOM] = &one_func;
 
         ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
@@ -3045,6 +3049,56 @@ namespace Evolve {
             Core::Inf,//tcoup
             MIN_WSTAR - WSTAR_TOLERANCE,
             INITIAL_WSTAR + WSTAR_TOLERANCE,
+            0.1 * INITIAL_WSTAR,
+            PHASE_LAG
+        );
+
+        evolve(INITIAL_WSTAR,//wdisk
+               TDISK,//tdisk
+               AORB,//initial semimajor
+               &ONE,//initial L*
+               INITIAL_INC);//initial inclination
+
+        test_solution(get_evolution(),
+                      expected_real_quantities,
+                      expected_evol_mode,
+                      expected_wind_mode,
+                      TSTART,
+                      MAX_AGE,
+                      true);
+
+        delete __star;
+        delete __system;
+        delete __solver;
+
+        InverseLinearLconvEvolution<Oblique20LinearQuantity> lconv_evol20(
+            TDISK,
+            LTOT,
+            LORB,
+            INITIAL_WSTAR,
+            LINEAR_QUANTITY_RATE / 2.0
+        );
+
+        ConservedLEConvObliquityEvolution conv_obliq_evol20(lconv_evol20,
+                                                            LORB,
+                                                            LTOT,
+                                                            TDISK);
+        ConservedLERadObliquityEvolution rad_obliq_evol20(lconv_evol20,
+                                                          conv_obliq_evol20,
+                                                          LORB,
+                                                          TDISK);
+
+        expected_real_quantities[CONV_INCLINATION] = &conv_obliq_evol20;
+        expected_real_quantities[RAD_INCLINATION] = &rad_obliq_evol20;
+        expected_real_quantities[CONV_ANGMOM] = &lconv_evol20;
+
+        make_single_component_star(
+            *no_evol,
+            0.0,//Kw
+            1.0,//Wsat
+            Core::Inf,//tcoup
+            2.0 * MIN_WSTAR - WSTAR_TOLERANCE,
+            2.0 * INITIAL_WSTAR + WSTAR_TOLERANCE,
             0.1 * INITIAL_WSTAR,
             PHASE_LAG
         );

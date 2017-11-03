@@ -71,13 +71,16 @@ int main()
     }
     return 0;
 
-    Oblique10LinearQuantity q(1.05 * M_PI, M_PI, 0.1 * M_PI);
+    Oblique10LinearQuantity q10(1.05 * M_PI, M_PI, 0.1 * M_PI);
+    Oblique20LinearQuantity q20(1.05 * M_PI, M_PI, 0.1 * M_PI);
     std::cerr << std::setw(25) << "S"
-              << std::setw(25) << "L(S)"
+              << std::setw(25) << "L10(S)"
+              << std::setw(25) << "L20(S)"
               << std::endl;
     for(double s = 0.05 * M_PI; s <= 0.1 * M_PI; s+= 0.01 * M_PI)
         std::cerr << std::setw(25) << s
-                  << std::setw(25) << q(s)
+                  << std::setw(25) << q10(s)
+                  << std::setw(25) << q20(s)
                   << std::endl;
     return 0;
     */

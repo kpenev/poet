@@ -1,35 +1,37 @@
 /**\file
  *
  * \brief Declares a OneArgumentDiffFunction sub-class giving the evolution of
- * the stellar convective zone angular momentum under the m = 1, m' = 0 term.
+ * the stellar convective zone angular momentum when some function of it evolves
+ * linearly with time.
  *
  * \ingroup UnitTests_group
  */
 
-#ifndef __OBLIQUE_1_0_LCONV_EVOLUTION_H
-#define __OBLIQUE_1_0_LCONV_EVOLUTION_H
+#ifndef __INVERSE_LINEAR_LCONV_EVOLUTION_H
+#define __INVERSE_LINEAR_LCONV_EVOLUTION_H
 
-#include "Oblique10LinearQuantity.h"
 #include "InverseFunction.h"
 
-class Oblique10LconvEvolution : public Core::OneArgumentDiffFunction {
+template<class LINEAR_QUANTITY_TYPE>
+class InverseLinearLconvEvolution : public Core::OneArgumentDiffFunction {
 private:
     double 
         ///The lifetime of the protoplanetary disk.
         __disk_lifetime,
-        
+
         ///\brief The rate at which the linear quantity (see
-        ///Oblique10LinearQuantity) evolves.
+        ///for example Oblique10LinearQuantity) evolves.
         __evolution_rate;
 
-    ///See Oblique10LinearQuantity class.
-    Oblique10LinearQuantity __linear_quantity;
+    ///\brief A function of the convective zone angular momentum which evolves
+    ///linearly with time.
+    LINEAR_QUANTITY_TYPE __linear_quantity;
 
     ///Evaluates to Lconv given \f$ \frac{3\pi}{5} T_0 \Delta_{10}(t - tdisk)\f$
     InverseFunction __find_lconv;
 
 public:
-    Oblique10LconvEvolution(
+    InverseLinearLconvEvolution(
         ///See __disk_lifetime member.
         double disk_lifetime,
 
@@ -49,7 +51,11 @@ public:
         __evolution_rate(evolution_rate),
         __linear_quantity(total_angmom, orbital_angmom, initial_conv_angmom),
         __find_lconv(__linear_quantity,
-                     total_angmom - orbital_angmom,
+                     (
+                         (total_angmom - orbital_angmom)
+                         *
+                         (1.0 + 100.0 * std::numeric_limits<double>::epsilon())
+                     ),
                      initial_conv_angmom)
     {}
 
@@ -76,7 +82,7 @@ public:
     Core::InterpSolutionIterator crossings(double = 0) const
     {
         throw Core::Error::Runtime(
-            "Finding all solutinos of Oblique10LconvEvolution not supported!"
+            "Finding all solutinos of ConservedLELconvEvolution not supported!"
         );
     };
 
