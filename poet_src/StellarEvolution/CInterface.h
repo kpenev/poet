@@ -200,7 +200,7 @@ extern "C" {
     );
 
     ///Load a previously saved interpolator state (faster than creating it).
-    MESAInterpolator *load_interpolator(
+    LIB_PUBLIC MESAInterpolator *load_interpolator(
         ///The name of the file to save the state to.
         const char *filename
     );
