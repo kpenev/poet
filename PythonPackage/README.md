@@ -14,24 +14,23 @@ interface.
 ### Basic usage :
 
 The user requests an interpolator from the manager by specifying either the
-interpolator name (using the
-`StellarEvolutionManager.get_interpolator_by_name` method) or by specifying a
-configuration for the interpolator. In the former case, it is an error to
-request an intorpolator with a name not previously defined (POET comes with a
-pre-defined interpolator named `default`). In the latter case, if the user
-specifies a name to assign to the new interpolator, the manager will
-automatically generate an interpolator if one does not exist.
+interpolator name (using the `StellarEvolutionManager.get_interpolator_by_name`
+method) or by specifying a configuration for the interpolator. In the former
+case, it is an error to request an intorpolator with a name not previously
+defined (POET comes with a pre-defined interpolator named `default`). In the
+latter case, if the user specifies a name to assign to the new interpolator, the
+manager will automatically generate an interpolator if one does not exist.
 
     from poet.stellar_evolution.manager import StellarEvolutionManager
     import numpy
 
     %Create a manager
-    manager = StellarEvolutionManager()
+    manager = StellarEvolutionManager(<path to serialized interpolators>)
 
-    % construct an interpolator using the default configuration.
-    interpolator = manager.get_interpolator() 
+    %Find and use the default interpolator
+    interpolator = manager.get_interpolator_by_name('default')
 
-    % The convective zone moment of inertia for a 0.73 solar mass star with 
+    % The convective zone moment of inertia for a 0.73 solar mass star with
     % [Fe/H] = -0.13
     iconv = interpolator('ICONV', 0.73, -0.13)
 
@@ -48,12 +47,10 @@ metallicity is always done using a bi-cubic spline):
     % construct an interpolator using only a subset of the tracks, as well
     % as custom smoothing and number of nodes.
     interpolator = manager.get_interpolator(
-        masses = [<float>, ...],        %list of stellar masses to use
-        metallicities = [<float>, ...]  %list of stellar metallicities to use
         nodes = dict(RADIUS = <int>,    %number of nodes for the radius age
                                         %interpolation
                      ICONV  = <int>,    %convective moment of inertia nodes
-                     LUM    = <int>,      %luminosity nodes
+                     LUM    = <int>,    %luminosity nodes
                      IRAD   = <int>,    %radiative moment of inertia nodes
                      MRAD   = <int>,    %radiative mass nodes
                      RRAD   = <int>),   %tachocline radius nodes
@@ -66,6 +63,33 @@ metallicity is always done using a bi-cubic spline):
                                             %smoothing
                          MRAD   = <float>,  %radiative mass smoothing
                          RRAD   = <float>), %tachocline radius smoothing
+        vs_log_age = dict(RADIUS = <bool>,  %should the independent argument
+                                            %for radius interpolation be
+                                            %log(age) instead of age?
+                         ICONV  = <bool>,   %Same as RADIUS but for the
+                                            %convective moment of inertia.
+                         LUM    = <bool>,   %same as RADIUS but for luminosity.
+                         IRAD   = <float>,  %same as RADIUS but for radiative
+                                            %moment of inertia.
+                         MRAD   = <float>,  %same as RADIUS but for mass in the
+                                            %radiative core.
+                         RRAD   = <float>), %same as RADIUS but for radius in
+        log_quantity = dict(RADIUS = <bool>,  %should the log(radius) be used
+                                              %in the interpolation instead of
+                                              %radius?
+                            ICONV  = <bool>,  %Same as RADIUS but for the
+                                              %convective moment of inertia.
+                            LUM    = <bool>,  %same as RADIUS but for
+                                              %luminosity.
+                            IRAD   = <float>, %same as RADIUS but for radiative
+                                              %moment of inertia.
+                            MRAD   = <float>, %same as RADIUS but for mass in
+                                              %the radiative core.
+                            RRAD   = <float>),%same as RADIUS but for radius in
+                                              %the radiative core.
+<++>
+        masses = [<float>, ...],        %list of stellar masses to use
+        feh = [<float>, ...]            %list of stellar [Fe/H] values to use
         new_interp_name = <str> %A human-readable name to assign should an
                                 %interpolator matching the other arguments
                                 %does not exist.
