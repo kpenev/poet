@@ -66,10 +66,9 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
 
         tracks = self.get_suite_tracks(self.selected_suite.get())
         masses = sorted({t.mass for t in tracks})
-        metallicities = sorted({t.metallicity for t in tracks})
+        feh_list = sorted({t.feh for t in tracks})
         self.mass_selected = {m: Tk.IntVar() for m in masses}
-        self.metallicity_selected = {feh: Tk.IntVar()
-                                     for feh in metallicities}
+        self.feh_selected = {feh: Tk.IntVar() for feh in feh_list}
 
         row, column = 1, 1
         Tk.Label(self.track_selector_parent, text = 'M*').grid(
@@ -89,13 +88,13 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
         Tk.Label(self.track_selector_parent, text = '[Fe/H]').grid(
             row = row, column = column
         )
-        for feh in metallicities :
+        for feh in feh_list :
             if orientation == 'horizontal' : column += 1
             else : row += 1
             Tk.Checkbutton(
                 self.track_selector_parent,
                 text = str(feh),
-                variable = self.metallicity_selected[feh]
+                variable = self.feh_selected[feh]
             ).grid(row = row, column = column)
 
     def _add_interp_param_controls(self, parent, orientation = 'vertical') :
@@ -200,8 +199,8 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
         self._refresh_suite()
         for mass in self.interpolator.track_masses :
             self.mass_selected[mass].set(1)
-        for metallicity in self.interpolator.track_metallicities :
-            self.metallicity_selected[metallicity].set(1)
+        for feh in self.interpolator.track_feh :
+            self.feh_selected[feh].set(1)
 
     def _refresh_suite(self, *ignore) :
         """
@@ -215,7 +214,7 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
         
         self._add_track_selectors(orientation = self.orientation)
         for tkvar in self.mass_selected.values() : tkvar.set(0)
-        for tkvar in self.metallicity_selected.values() : tkvar.set(0)
+        for tkvar in self.feh_selected.values() : tkvar.set(0)
 
     def _match_config(self) :
         """
@@ -226,11 +225,9 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
         for mass, enabled in sorted(self.mass_selected.items()) :
             if enabled.get() : masses.append(mass)
 
-        metallicities = []
-        for metallicity, enabled in sorted(
-                self.metallicity_selected.items()
-        ) :
-            if enabled.get() : metallicities.append(metallicity)
+        feh_list = []
+        for feh, enabled in sorted(self.feh_selected.items()) :
+            if enabled.get() : feh_list.append(feh)
 
         nodes = {quantity: int(tkvar.get())
                  for quantity, tkvar in self.nodes.items()}
@@ -246,7 +243,7 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
 
         self.interpolator = self.get_interpolator(
             masses = masses,
-            metallicities = metallicities,
+            feh = feh_list,
             model_suite = self.selected_suite.get(),
             nodes = nodes,
             smoothing = smoothing,
@@ -259,7 +256,7 @@ class InterpolatorManagerGUI(StellarEvolutionManager) :
             if dialog.create :
                 self.interpolator = self.get_interpolator(
                     masses = masses,
-                    metallicities = metallicities,
+                    feh = feh_list,
                     model_suite = self.selected_suite.get(),
                     nodes = nodes,
                     smoothing = smoothing,

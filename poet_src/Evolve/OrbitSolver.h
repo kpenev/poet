@@ -13,6 +13,7 @@
 #include "../Core/AstronomicalConstants.h"
 #include "../Core/Common.h"
 #include "../Core/OrbitalExpressions.h"
+#include "../Core/Common.h"
 #include "BinarySystem.h"
 #include "CombinedStoppingCondition.h"
 #include "ExternalStoppingConditions.h"
@@ -31,9 +32,6 @@
 #include <iostream>
 #include <limits>
 
-///Outputs a valarray as a sequence of ', ' separated values.
-std::ostream &operator<<(std::ostream &os,
-                         const std::valarray<double> &arr);
 namespace Evolve {
 
     typedef int (*GSL_ODE_TYPE)(double, const double*, double*, void*);

@@ -524,18 +524,20 @@ namespace StellarEvolution {
         __max_interp_ages(evolution_tracks.size()),
         __evolution_tracks(evolution_tracks)
     {
+#ifndef NDEBUG
+        std::cerr << "Creating quantity with mass: " << mass
+                  << ", [Fe/H]: " << feh << std::endl
+                  << ", with track masses: " << track_masses << std::endl
+                  << " and track [Fe/H]: " << track_feh << std::endl
+                  << " with " << evolution_tracks.size() << " tracks"
+                  << std::endl;
+#endif
+
         assert(evolution_tracks.size() == (track_masses.size()
                                            *
                                            track_feh.size()));
         check_grid_range();
         set_interp_age_ranges();
-#ifndef NDEBUG
-        std::cerr << "Creating quantity with mass: " << mass
-                  << ", [Fe/H]: " << feh
-                  << ", with track masses: " << track_masses
-                  << " and track [Fe/H]: " << track_feh
-                  << std::endl;
-#endif
 
         if(starts_zero) {
             __interp_grid_change_ages.reserve(2 * evolution_tracks.size()

@@ -282,6 +282,24 @@ namespace StellarEvolution {
         ar & __log_quantity;
 
         ar & __core_formation;
+#ifndef NDEBUG
+        std::cerr << "Track masses: " << __track_masses << std::endl;
+        std::cerr << "Track [Fe/H]: " << __track_masses << std::endl;
+        std::cerr << "Quantities with sizes: ";
+        for(unsigned i = 0; i < __interpolated_quantities.size(); ++i)
+            std::cerr << (i ? ", " : "") << __interpolated_quantities[i].size();
+        std::cerr << std::endl;
+
+        std::cerr << "vs log(age): ";
+        for(unsigned i = 0; i < __vs_log_age.size(); ++i)
+            std::cerr << (i ? ", " : "") << __vs_log_age[i];
+        std::cerr << std::endl;
+
+        std::cerr << "log(quantity): ";
+        for(unsigned i = 0; i < __log_quantity.size(); ++i)
+            std::cerr << (i ? ", " : "") << __log_quantity[i];
+        std::cerr << std::endl;
+#endif
         if(__core_formation < 0) __core_formation = Core::Inf;
     }
 #endif

@@ -235,6 +235,10 @@ namespace StellarEvolution {
 #ifndef NO_SERIALIZE
     void Interpolator::load_state(const std::string &filename)
     {
+#ifndef NDEBUG
+        std::cerr << "Loading interpolator from " << filename << std::endl;
+#endif
+        __interpolated_quantities.clear();
         std::ifstream ifs(filename.c_str());
         boost::archive::text_iarchive ia(ifs);
         ia >> (*this);
@@ -243,6 +247,9 @@ namespace StellarEvolution {
 
     void Interpolator::save_state(const std::string &filename) const
     {
+#ifndef NDEBUG
+        std::cerr << "Saving interpolator to " << filename << std::endl;
+#endif
         std::ofstream ofs(filename.c_str());
         boost::archive::text_oarchive oa(ofs);
         oa << (*this);
