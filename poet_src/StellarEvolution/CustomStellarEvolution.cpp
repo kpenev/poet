@@ -1,6 +1,11 @@
 /**\file
  *
  * \brief The definitions of the CustomStellarEvolution::Evolution methods.
+ *
+ * \ingroup StellarEvolution_group
+ * \addtogroup StellarEvolution_group Stellar Evolution
+ *
+ * @{
  */
 
 #define BUILDING_LIBRARY
@@ -78,3 +83,5 @@ namespace CustomStellarEvolution {
 		);
 	}
 };
+
+/** @} */

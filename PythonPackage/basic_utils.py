@@ -1,3 +1,11 @@
+## \file
+#  \ingroup PythonPackage_group
+
+##
+# \addtogroup PythonPackage_group PythonPackage
+#
+#  @{
+
 from astropy import units, constants
 from math import pi
 
@@ -123,3 +131,5 @@ def orbital_angular_momentum(m1, m2, semimajor, eccentricity) :
         *
         (1.0 - eccentricity**2)**0.5
     )
+
+## @}

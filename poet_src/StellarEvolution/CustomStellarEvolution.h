@@ -3,7 +3,11 @@
  * \brief Defines the class which implements a custom single track stellar
  * evolution.
  *
- * \ingroup StellarSystem_group
+ * \ingroup StellarEvolution_group
+ *
+ * \addtogroup StellarEvolution_group Stellar Evolution
+ *
+ * @{
  */
 
 #ifndef __CUSTOM_STELLAR_EVOLUTION_H
@@ -20,10 +24,12 @@ namespace StellarEvolution {
 
     ///A namespace to isolate all custom stellar evolution related entities.
     ///
-    ///\ingroup StellarSystem_group
+    ///\ingroup StellarEvolution_group
     namespace CustomStellarEvolution {
 
         ///Tags for the columns in input stellar tracks.
+        ///
+        ///\ingroup StellarEvolution_group
         enum Columns {
             ///\brief Moment of inertia of the convective envelope of the 
             ///star in \f$M_\odot R_\odot^2\f$.
@@ -58,6 +64,8 @@ namespace StellarEvolution {
 
         ///\brief A stellar evolution interpolator using only a single track,
         ///assumed to apply to all stars.
+        ///
+        ///\ingroup StellarEvolution_group
         class LIB_PUBLIC Interpolator : public StellarEvolution::Interpolator {
         private:
             ///\brief Reads the stellar evolution track from a file returning
@@ -109,3 +117,5 @@ namespace StellarEvolution {
 } //End StellarEvolution namespace.
 
 #endif
+
+/** @} */

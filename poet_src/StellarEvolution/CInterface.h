@@ -4,6 +4,10 @@
  * StellarEvolution library.
  *
  * \ingroup StellarEvolution_group
+ *
+ * \addtogroup StellarEvolution_group Stellar Evolution
+ *
+ * @{
  */
 
 #include "../Core/SharedLibraryExportMacros.h"
@@ -246,3 +250,5 @@ extern "C" {
     LIB_PUBLIC double z_from_feh(double feh);
 
 } //End extern "C"
+
+/** @} */

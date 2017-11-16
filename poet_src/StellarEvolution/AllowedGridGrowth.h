@@ -2,6 +2,12 @@
  *
  * \brief Declares & defines a class describing how the mass-[Fe/H]
  * interpolation grid is allowed to grow.
+ *
+ * \ingroup StellarEvolution_group
+ *
+ * \addtogroup StellarEvolution_group Stellar Evolution
+ *
+ * @{
  */
 
 #ifndef __ALLOWED_GRID_GROWTH_H
@@ -12,6 +18,8 @@
 namespace StellarEvolution {
 
     ///The four directions in which an interpolation grid can grow.
+    ///
+    ///\ingroup StellarEvolution_group
     class LIB_LOCAL AllowedGridGrowth {
     private:
         bool 
@@ -64,3 +72,5 @@ namespace StellarEvolution {
 } //End StellarEvolution namespace.
 
 #endif
+
+/** @} */

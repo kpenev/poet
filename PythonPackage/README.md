@@ -1,9 +1,8 @@
-A set of modules exposing POET's functionality in python.
+A set of modules exposing POET's functionality in python. {#PythonPackageReadMe}
 =========================================================
  - [Stellar Evolution](#stellar_evolution)
 
 <h2 id = 'stellar_evolution'>Stellar Evolution (stellar_evolution)</h2>
--------------------------------------
 
 A module for interpolating among existing stellar evolution tracks. Since
 generating the interpolation is quite slow, POET supports "serializing"

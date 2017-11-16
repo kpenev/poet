@@ -8,11 +8,11 @@ The intention is to provide both a tool that can be used out of the box, as
 well as a well-documented code that can be extended and modified.
 
 At present the following effects are included in the evolution:
- * The evolution of the semimajor axis of the orbit due to the tidal
-   dissipation in the star.
+ * The evolution of the semimajor axis of the orbit due to tidal and spin
+   frequency dependenc tidal dissipation in the star.
 
- * The evolution of the angular momentum of the stellar convective envelope
-   by the tidal coupling.
+ * The evolution of the angular momentum vector of the stellar core and
+   envelope.
 
  * The transfer of angular momentum between the stellar convective and
    radiative zones.
@@ -25,3 +25,5 @@ At present the following effects are included in the evolution:
 
 Download from
 [http://www.astro.princeton.edu/~kpenev/tidal_orbital_evolution/poet.tgz](http://www.astro.princeton.edu/~kpenev/tidal_orbital_evolution/poet.tgz)
+
+The user interface is implement entirely in [python](@ref PythonPackageReadMe)

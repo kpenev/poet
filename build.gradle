@@ -74,127 +74,112 @@ model {
     }
 
     components {
-//        alglib(NativeLibrarySpec) {
-//            sources.cpp {
-//                source {
-//                    srcDir "third_party_libs/alglib/alglib/src"
-//                    include "**/*.cpp"
-//                }
-//                exportedHeaders {
-//                    srcDir "third_party_libs/alglib"
-//                }
-//            }
-//        }
         eigen(NativeLibrarySpec) {
             sources.cpp {
                 source {}
                 exportedHeaders {
-                    srcDir "third_party_libs/Eigen"
+                    srcDir "poet_src/third_party_libs/Eigen"
                 }
             }
         }
         dirent(NativeLibrarySpec) {
             sources.cpp {
                 source {
-                    srcDir "third_party_libs/dirent_hacked"
+                    srcDir "poet_src/third_party_libs/dirent_hacked"
                     include "**/*.c"
                 }
                 exportedHeaders {
-                    srcDir "third_party_libs/dirent_hacked"
+                    srcDir "poet_src/third_party_libs/dirent_hacked"
                 }
             }
         }
         stellarEvolution(NativeLibrarySpec) {
             sources.cpp {
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "dirent"
                 source {
-                    srcDir "StellarEvolution"
+                    srcDir "poet_src/StellarEvolution"
                     include "**/*.cpp"
                     exclude "**/CustomStellarEvolution.cpp"
                     exclude "**/YRECIO.cpp"
                 }
                 source {
-                    srcDir "Core"
+                    srcDir "poet_src/Core"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "third_party_libs/alglib/alglib/src"
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
                     include "**/*.cpp"
                 }
                 exportedHeaders {
-                    srcDir "StellarEvolution/"
+                    srcDir "poet_src/StellarEvolution/"
                 }
             }
         }
         evolve(NativeLibrarySpec) {
             sources.cpp{
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "dirent"
                 source {
-                    srcDir "Evolve"
+                    srcDir "poet_src/Evolve"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "Core"
+                    srcDir "poet_src/Core"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "third_party_libs/alglib/alglib/src"
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
                     include "**/*.cpp"
                 }
                 exportedHeaders {
-                    srcDir "Evolve/"
+                    srcDir "poet_src/Evolve/"
                 }
             }
         }
         planet(NativeLibrarySpec) {
             sources.cpp {
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "evolve"
                 lib library: "dirent"
                 source {
-                    srcDir "Planet"
+                    srcDir "poet_src/Planet"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "Core"
+                    srcDir "poet_src/Core"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "third_party_libs/alglib/alglib/src"
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
                     include "**/*.cpp"
                 }
                 exportedHeaders {
-                    srcDir "Planet/"
+                    srcDir "poet_src/Planet/"
                 }
             }
 
         }
         star(NativeLibrarySpec) {
             sources.cpp {
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "evolve"
                 lib library: "stellarEvolution"
                 lib library: "dirent"
                 source {
-                    srcDir "Star"
+                    srcDir "poet_src/Star"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "Core"
+                    srcDir "poet_src/Core"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "third_party_libs/alglib/alglib/src"
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
                     include "**/*.cpp"
                 }
                 exportedHeaders {
-                    srcDir "Star/"
+                    srcDir "poet_src/Star/"
                 }
             }
 
@@ -203,19 +188,19 @@ model {
         testOrbitSolver(NativeExecutableSpec) {
             sources.cpp {
                 source {
-                    srcDir "unit_tests/testEvolve"
+                    srcDir "poet_src/unit_tests/testEvolve"
                     source {
-                        srcDir "unit_tests/shared"
+                        srcDir "poet_src/unit_tests/shared"
                         include "**/*.cpp"
                     }
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "Core"
+                    srcDir "poet_src/Core"
                     include "**/*.cpp"
                 }
                 source {
-                    srcDir "third_party_libs/alglib/alglib/src"
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
                     include "**/*.cpp"
                 }
             }
@@ -223,7 +208,6 @@ model {
                 cppCompiler.define "STANDALONE"
                 linker.args "-l" + ensureLibraryVersion("cpptest")
 
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "star"
@@ -235,12 +219,11 @@ model {
 
         debug_stellar_evolution(NativeExecutableSpec) {
             sources.cpp {
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "dirent"
                 source {
-                    srcDir "debug"
+                    srcDir "poet_src/debug"
                     include "**/stellar_evolution.c"
                 }
             }
@@ -248,12 +231,11 @@ model {
         debug_planet_star_evolution(NativeExecutableSpec) {
             sources.cpp {
                 source {
-                    srcDir "debug"
+                    srcDir "poet_src/debug"
                     include "**/planet_star_evolution.c"
                 }
             }
             binaries.all {
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "star"
@@ -265,12 +247,11 @@ model {
         debug_star_star_evolution(NativeExecutableSpec) {
             sources.cpp {
                 source {
-                    srcDir "debug"
+                    srcDir "poet_src/debug"
                     include "**/star_star_evolution.c"
                 }
             }
             binaries.all {
-//                lib library: "alglib"
                 lib library: "eigen"
                 lib library: "stellarEvolution"
                 lib library: "star"
@@ -285,18 +266,22 @@ model {
 //                lib library: "eigen"
 //                lib library: "stellarEvolution"
 //                source {
-//                    srcDir "."
+//                    srcDir "poet_src"
 //                    exclude "**/unit_tests/"
 //                    exclude "**/StellarEvolution/"
 //                    exclude "**/third_party_libs/"
 //                    include "**/*.cpp"
 //                }
 //                source {
-//                    srcDir "Core"
+//                    srcDir "poet_src/Core"
 //                    include "**/*.cpp"
 //                }
 //                source {
-//                    srcDir "IO"
+//                    srcDir "poet_src/IO"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
 //                    include "**/*.cpp"
 //                }
 //            }
@@ -306,15 +291,17 @@ model {
 
 doxygen {
     generate_html true
-    template "../documentation/DoxygenConfig"
-    source "Core"
-    source "StellarEvolution"
-    source "Evolve"
-    source "Planet"
-    source "Star"
-    source "../documentation"
+    template "documentation/DoxygenConfig"
+    source "poet_src/Core"
+    source "poet_src/StellarEvolution"
+    source "poet_src/Evolve"
+    source "poet_src/Planet"
+    source "poet_src/Star"
+    source "documentation"
+    source "PythonPackage"
     include "**/*.h"
     include "**/*.cpp"
+    include "**/*.py"
     include "**/*.md"
 }
 
