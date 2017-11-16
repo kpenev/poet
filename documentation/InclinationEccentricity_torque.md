@@ -175,7 +175,7 @@ To get:
 				\int d^3 x 
 					\delta\bar{\rho}_{m,m'}(\mathbf{r})
 					r^2 \left(
-						\mu\cot\theta\exp(-i\phi) Y_{2,\mu}^*(\theta, \phi) +
+						\mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
 						 i\sin\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^*
 					\right)\\
 		&=& \frac{T_0}{MR^2}
@@ -184,7 +184,7 @@ To get:
 				\int d^3 x 
 					\delta\bar{\rho}_{m,m'}(\mathbf{r})
 					r^2 \left(
-						\mu\cot\theta\exp(-i\phi) Y_{2,\mu}^*(\theta, \phi) +
+						\mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
 						 \sqrt{(2-\mu)(3+\mu)}[\exp(2i\phi)-1] Y_{2,\mu+1}^*
 					\right)\\
 \f}
@@ -203,7 +203,7 @@ part of the above expression is:
 		&=& T_0
 			\sum_{m,m'} \mathcal{U}_{m,m'} \sin(\Delta_{m,m'})(
 				\kappa_{m,m'}^-\mathcal{U}_{m-1,m'}+
-				\kappa_{m,m'}^+\mathcal{U}_{m+i,m'})\\
+				\kappa_{m,m'}^+\mathcal{U}_{m+1,m'})\\
 	\kappa_{m,m'}^-&\equiv& \frac{\sqrt{(3-m)(2+m)}}{2MR^2}
 		\int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r})
 		r^2 Y_{2,m}^*=\frac{\sqrt{(3-m)(2+m)}}{2}\kappa_{m,m'}\\
@@ -326,7 +326,7 @@ Averaging over an orbit:
 			\int d^3 x 
 				\delta\bar{\rho}_{m,m'}(\mathbf{r})
 				r^2 \left[
-					\mu\cot\theta\exp(i\phi)\phi Y_{2,\mu}^*(\theta, \phi) +
+					\mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
 					\cos\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^*
 				\right]\\
 	&=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2
@@ -335,11 +335,26 @@ Averaging over an orbit:
 			\int d^3 x 
 				\delta\bar{\rho}_{m,m'}(\mathbf{r})
 				r^2 \left[
-					\mu\cot\theta\exp(i\phi)\phi Y_{2,\mu}^*(\theta, \phi) +
+					\mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
 					\frac{\sqrt{(2-\mu)(3+\mu)}}{2}(\exp(2i\phi)+1)
 					Y_{2,\mu+1}^*
 				\right]\\
+	&=& -\frac{T_0}{MR^2}
+		\sum_{m,m'} \mathcal{U}_{m,m'}
+						\left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+
+					     \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right)
+						\exp(i\Delta_{m,m'})
 \f}
+With the same \f$\kappa^+_{m,m'}\f$ and \f$\kappa^-_{m,m'}\f$ as for
+\f$T_x\f$. So taking the real part gives:
+\f[
+	T_y = -T_0
+		\sum_{m,m'} \mathcal{U}_{m,m'}
+						\left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+
+					     \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right)
+						\cos(\Delta_{m,m'})
+\f]
+
 So the real part is proportional to \f$\cos\Delta_{m,m'}\f$ and so for small
 tidal dissipation it is independent of the dissipation, as expected since
 this term is responsible for the precession.

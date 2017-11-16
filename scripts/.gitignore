@@ -1,0 +1,6 @@
+poet
+YREC
+*.txt
+*.evol
+serialized_evolution
+.*.swp

@@ -4,7 +4,7 @@ Implementation
 In order to facilitated modifying or extending the code we provide detailed
 implementation documentation.
 
-The code can be split in four parts:
+The C++ code can be split in five parts:
 
  * [Stellar system](\ref StellarSystem_group):
    describing the star and the planet, including the dependence of

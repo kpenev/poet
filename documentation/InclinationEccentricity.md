@@ -201,8 +201,8 @@ with a period of \f$2\pi/\Omega\f$, we can expand:
 \f]
 
 Expressions for the \f$p_{m',s}(e)\f$ coefficients are derived 
-(\ref InclinationEccentricity_pms1 "here") or 
-(\ref InclinationEccentricity_pms2 "here").
+[here](@ref InclinationEccentricity_pms1) or 
+[here](@ref InclinationEccentricity_pms2).
 
 Hence, our tidal potential can be written exactly as in Lai (2012), eq. 12,
 except with \f$m'\f$ not limited to only 0 and 2:
@@ -215,8 +215,8 @@ with
 	U_{m,m'} \equiv \frac{GM'}{a^3} \mathcal{U}_{m,m'}\equiv
 		\frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'}
 \f]
-where we have switched the \f$m'\f$ and \f$s\f$ coefficients. Here is a (\ref
-InclinationEccentricity_Ummtable "table") of \f$W_{2,m'}D_{m,m'}\f$.
+where we have switched the \f$m'\f$ and \f$s\f$ coefficients. Here is a
+[table](@ref InclinationEccentricity_Ummtable) of \f$W_{2,m'}D_{m,m'}\f$.
 
 From here we proceed following Lai (2012) again, but we have more than 6
 independent timelags if the orbit is eccentric (for circular orbits,
@@ -233,32 +233,124 @@ The ansatz:
 	\Delta_{m,s}&=&\tilde{\omega}_{m,s}t_{m,s}
 \f}
 with \f$\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})\f$,
-\f$\tilde{\omega}{m,s}=s\Omega-m\Omega_s\f$, where \f$\Omega_s\f$ is the
-spin angular velocity of \f$M\f$, and \f$\omega_0\equiv\sqrt{GM/R^3}\f$ is the
-dynamical frequency of \f$M\f$.
+\f$\tilde{\omega}_{m,s}=s\Omega-m\Omega_s\f$, where \f$\Omega_s\f$ is the
+spin angular velocity of \f$M\f$, and \f$\omega_0\equiv\sqrt{GM/R^3}\f$ is
+the dynamical frequency of \f$M\f$.
 
-Here are the detailed devirations of the tidal (\ref
-InclinationEccentricity_torque "torque") and (\ref
-InclinationEccentricity_power "power").
+Here are the detailed devirations of the tidal
+[torque](@ref InclinationEccentricity_torque) and
+[power](@ref InclinationEccentricity_power).
 
 As noted before, for general eccentric orbits, the number of timelags is not
 only six, like in Lai (2012), but could be arbitrarily large, depending on
-the precision required of the expansion and the value of the eccentricity.
-Luckily, the fully general solution can be preserved, except we will need to
-specify the dissipation as 3 timelags that are functions of frequency: one
-for each \f$m=0,1,2\f$. The negative \f$m\f$ values can be handled by
-inverting the sign of \f$m'\f$ and the forcing frequency.
+the precision required of the expansion and the value of the eccentricity. In
+order to preserve full generality, we allow the user to specify each tidal
+lag \f$\Delta'_{m,m'}\equiv\kappa_{m,m'}\sin(\Delta_{m,m'})\f$ and each love
+coefficient \f$\kappa'_{m,m'}\equiv\kappa_{m,m'}\cos(\Delta_{m,m'})\f$
+separately.
 
-Finally, we use the orbital energy and angular momentum:
+The variables evolved will be the usual orbital
+elements (the semimajor axis - \f$a\f$ and eccentricity \f$e\f$), and for
+each zone we will use the inclination relative to the orbit - \f$i\f$.
+Finally, one zone will be designated as a reference and for all other zones,
+we will follow the evolution of the difference between their argument of
+periapsis and that of the referenc zone - \f$\Delta\omega\f$. Thus, if the
+two bodies are split into n zones, the evolution of 1+2n variables will be
+followed. The equations for the evolution of these variables are derived 
+[here](@ref EccentricEvolutionEquations).
+
+The collected equations are:
 \f{eqnarray*}{
-	E_{orb}&=&-\frac{GMM'}{2a}\\
-	L_{orb}&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2}=GMM'\sqrt{\frac{(1-e^2)MM'}{2E(M+M')}}
+
+	\dot{a}&=&a\frac{-\dot{E}}{E}\\
+
+	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\
+
+	\dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} 
+					 - \frac{(T_x+\tilde{T}_x)\cos\theta}{L}
+					 - \frac{T_x+\mathscr{T}_x}{S}\\
+	\dot{\omega} &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
+				     + \frac{T_y+\mathscr{T}_y}{S\sin\theta}\\
+
+	\bhat{\tilde{x}}&=& \left(\sin\theta\sin\tilde{\theta}
+							  + \cos\theta\cos\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{x}
+						+ \cos\tilde{\theta}\sin\Delta\omega\bhat{y}
+						+ \left(\cos\theta\sin\tilde{\theta}
+								-
+								\sin\theta\cos\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{z}\\
+
+	\bhat{\tilde{y}}&=& -\cos\theta\sin\Delta\omega\bhat{x}
+					    + \cos\Delta\omega\bhat{y}
+					    + \sin\theta\sin\Delta\omega\bhat{z}\\
+
+	\bhat{\tilde{z}}&=& \left(\sin\theta\cos\tilde{\theta}
+							  - \cos\theta\sin\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{x}
+						- \sin\tilde{\theta}\sin\Delta\omega\bhat{y}
+						+ \left(\cos\theta\cos\tilde{\theta}
+								+
+								\sin\theta\sin\tilde{\theta}\cos\Delta\omega
+						\right)\bhat{z}
 \f}
-To derive the rate of change of the orbit and spin of \f$M\f$:
+
+If the system ever gets in a state where the forcing frequency
+\f$\tilde{\omega}\equiv m'\Omega-mS^{conv}/I_{conv}\f$ for some (m,m')
+combination from the expansion of the potential (see above), and the
+corresponding \f$\sin(\Delta_{m,m'}(\tilde{\omega})\kappa_{m,m'}\f$ is
+discontinuous at zero, it is possible that locks between the spin of some
+zones of the bodies and the orbit will be established. In that case, for each
+locked zone, let us  split the tidal dissipation torque and power into 
+components \f$T_x^\pm\f$, \f$T_z^\pm\f$ and \f$\dot{E}^\pm\f$ with the (+) 
+terms assuming that the spin frequency is just above the lock and the (-)
+terms assuming it is just below. Further, let \f$T_x^0\f$, \f$T_z^0\f$ and
+\f$\dot{E}^0\f$ be the tidal torques and power due to all other zones. We can
+imagine taking an infinitesimally small timestep, during which the 
+not-locked components will contribute as usual, but over a
+fraction (\f$\lambda\f$) the timestep the (+) locked components contribute
+and over the remaining fraction (\f$1-\lambda\f$) the (-) locked components
+contribute.
+
+In order to maintain the lock, we must have for each locked zone (denoted by
+index i):
 \f{eqnarray*}{
-	\dot{S}&=&T_z\\
-	\dot{a}&=&-\frac{GMM'}{2E^2}\dot{E}\\
-	\dot{\Theta}&=&-\frac{T_x}{S} - \frac{T_x\cos\Theta}{L} +
-					\frac{T_z\sin\Theta}{L}\\
-	\dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}
+	&&m'\frac{\partial}{\partial t}\sqrt{\frac{G(M+M')}{a^3}}=
+		m\frac{\partial}{\partial t}\frac{S_i}{I_i}\\
+	\Rightarrow && -\frac{3m'}{2}\sqrt{\frac{G(M+M')}{a^5}}\dot{a}=
+		m\frac{\dot{S}_i}{I_i}
+		-
+		m\frac{S_i\dot{I}_i}{I_i^2}\\
+	\Rightarrow && -\frac{3 m S_i}{2 I_i}\frac{\dot{a}}{a} =
+		m\frac{\dot{S}_i}{I_i}
+		-
+		m\frac{S_i\dot{I}_i}{I_i^2}\\
+	\Rightarrow && -\frac{3}{2}\frac{\dot{a}}{a}=
+		\frac{\dot{S}_i}{S_i} - \frac{\dot{I}_i}{I}\\
+	\Rightarrow && -\frac{3}{2}\frac{\dot{E}^0 + 
+									 \sum_k\left[\lambda_k\dot{E}_k^+ +
+									 (1-\lambda_k)\dot{E}_k^-\right]}{E}
+				   =
+				   \frac{\dot{I_i}}{I_i}
+				   -
+				   \frac{\dot{S}_i^0 + \lambda_i\dot{S}_i^+ 
+						 + (1-\lambda_i)\dot{S}_i^-}{S_i}\\
+	\Rightarrow && \lambda_i\left(\frac{\dot{S}_i^+ 
+								  -
+							      \dot{S}_i^-}{S_i}\right)
+								-\sum_k \lambda_k
+								\left(1.5\frac{\dot{E}_k^+ - \dot{E}_k^-}{E}
+								\right)
+					=\frac{\dot{I_i}}{I_i}
+				   -
+				   \frac{\dot{S}_i^0 + \dot{S}_i^-}{S_i}
+				   +\frac{3}{2}\frac{\dot{E}^0+\sum_k\dot{E}_k^-}{E}
+\f}
+And the lock is maintained as long as \f$0<\lambda<1\f$.
+
+The resulting evolution equations are then the same as before, but with:
+\f{eqnarray*}{
+	T_x&=&T_x^0 + \lambda T_x^+ + (1-\lambda)T_x^-\\
+	T_z&=&T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\
+	\dot{E}&=&\dot{E}^0 + \lambda\dot{E}^+ + (1-\lambda)\dot{E}^-
 \f}
