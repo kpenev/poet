@@ -1,0 +1,25 @@
+var Star_2CInterface_8h =
+[
+    [ "core_formation_age", "Star_2CInterface_8h.html#ad35475ce175e200399a8bc0de8cb84b1", null ],
+    [ "core_inertia", "Star_2CInterface_8h.html#a888b0b4c56880809a1135cbaf5b834f0", null ],
+    [ "core_inertia_array", "Star_2CInterface_8h.html#a7cab3722763c07824a2aa8492cfb8b2e", null ],
+    [ "create_star", "Star_2CInterface_8h.html#ada81c37e9ca610bd267aaf114ab8c6dc", null ],
+    [ "destroy_star", "Star_2CInterface_8h.html#ad797a3c6d50fc02f39056c4c11551dfc", null ],
+    [ "detect_stellar_wind_saturation", "Star_2CInterface_8h.html#a929d23d3343c3990ab2fd2fb2df930f8", null ],
+    [ "envelope_inertia", "Star_2CInterface_8h.html#abb9d8880a42da72a6710f80c76d84e1b", null ],
+    [ "envelope_inertia_array", "Star_2CInterface_8h.html#a0e0fad953edb9b3f82d90b1655b2d16b", null ],
+    [ "lag_from_lgQ", "Star_2CInterface_8h.html#ae36ff34e273fff8559f975c0af7c146e", null ],
+    [ "lifetime", "Star_2CInterface_8h.html#acd8b1a7299a33ee4b2b14a8401144861", null ],
+    [ "luminosity", "Star_2CInterface_8h.html#a49d5a57a72978518b98f4039a3080928", null ],
+    [ "luminosity_array", "Star_2CInterface_8h.html#ad87fe098a108d5b9f1ad55f7fc97db87", null ],
+    [ "modified_phase_lag", "Star_2CInterface_8h.html#a81c1e9a69798bdc67ca146a50770e34c", null ],
+    [ "select_interpolation_region", "Star_2CInterface_8h.html#ac4a2340985e2148305ad54eb1cf71972", null ],
+    [ "set_dissipation", "Star_2CInterface_8h.html#add771a5564a43bd6ce563a3e6fe1013b", null ],
+    [ "star_radius", "Star_2CInterface_8h.html#adb2b3ffe0a6892fddc5fd8f3e1494552", null ],
+    [ "star_radius_array", "Star_2CInterface_8h.html#a6ff348a923a3014b6b6593a81a4548a0", null ],
+    [ "AGE_DERIV", "Star_2CInterface_8h.html#a392ec0a73b4c258ddae5cb915557b2ad", null ],
+    [ "EvolvingStar", "Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195", null ],
+    [ "NO_DERIV", "Star_2CInterface_8h.html#a990ea4db1a54550cac7936e4ada27187", null ],
+    [ "ORBITAL_FREQUENCY_DERIV", "Star_2CInterface_8h.html#a1d6d2922ac88979eb54376ecbee1c5c1", null ],
+    [ "SPIN_FREQUENCY_DERIV", "Star_2CInterface_8h.html#afcb49a3f2cafa68bb76875c06240f315", null ]
+];

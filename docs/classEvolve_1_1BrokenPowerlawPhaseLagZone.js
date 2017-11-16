@@ -1,0 +1,27 @@
+var classEvolve_1_1BrokenPowerlawPhaseLagZone =
+[
+    [ "BrokenPowerlawPhaseLagZone", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a4b1a50b42f37c3350d1072b7935050e1", null ],
+    [ "~BrokenPowerlawPhaseLagZone", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#af9ca7a72b81b4fe8c8d362cc853206c7", null ],
+    [ "add_tidal_frequency_conditions", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a718800e78b5d42c75eb2a4e487f6a78d", null ],
+    [ "change_e_order", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ac2af6c71b9ecb9c3a6db3fff4421c1a5", null ],
+    [ "configure", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a1f5e046cfa3d81bb21884716195d2fd9", null ],
+    [ "get_orbital_frequency", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a6a1caa1a3158aecafde75bb04b7c4257", null ],
+    [ "get_tidal_index", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2ab0b84082c982482868ffc917348da7", null ],
+    [ "love_coefficient", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a5b6f832670f0bbaf0b6bf6199e67a3d6", null ],
+    [ "modified_phase_lag", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ab8c9ee81e85c77746e82b319f49e4441", null ],
+    [ "print_configuration", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a72ac4fee6e31fc26dc13e505fec2fcc3", null ],
+    [ "reset", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a4bf2370f48b8a4efe849434837f3af54", null ],
+    [ "set_spin_index", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#af34cb3028353fa9768d4e5726b849363", null ],
+    [ "setup", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8da2db9075046eaa2954427e0c316d59", null ],
+    [ "stopping_conditions", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a0519309f1f01dc58b2f9a9c579c7fbaa", null ],
+    [ "tidal_term_index", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#afdad4cf1df2266811c4d6caafd9d48e0", null ],
+    [ "LagForcingFrequencyBreakCondition", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a3f748f92cb4287ad4377b54e4c8b2201", null ],
+    [ "LagSpinBreakCondition", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a67829f2c5bebb973f9897cd67641c0f0", null ],
+    [ "__break_phase_lags", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#aa46203ed5b439b373a84d4bd6f97afca", null ],
+    [ "__spin_frequency_breaks", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ac53745a06b73e66c7620c61fa8f1de4a", null ],
+    [ "__spin_frequency_powers", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ad6bf3d7a9fc025f7b14aaf244bc17573", null ],
+    [ "__spin_index", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8e786f3dd96901062d02255804eca894", null ],
+    [ "__tidal_frequency_breaks", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a14bddb4af292713a5280d251df71aead", null ],
+    [ "__tidal_frequency_powers", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a5640b7144da95267c56a00b693e80500", null ],
+    [ "__tidal_indices", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a520d70af34e6ecbe1b970a5377fc3bbc", null ]
+];

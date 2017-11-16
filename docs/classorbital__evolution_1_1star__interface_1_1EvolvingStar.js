@@ -1,0 +1,25 @@
+var classorbital__evolution_1_1star__interface_1_1EvolvingStar =
+[
+    [ "__init__", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a1f9b4aaeb8d4f328b59448dfec2678f6", null ],
+    [ "_evaluate_stellar_property", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a32e73798908fbde45b5393cac1464946", null ],
+    [ "core_formation_age", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#abc010f62e9a088bd02c241646edf6c5f", null ],
+    [ "core_inertia", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a433a796b6ebb6e7cca89c21bc51bc8ec", null ],
+    [ "delete", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a9f3af71e02b1da910e299838966103d2", null ],
+    [ "detect_stellar_wind_saturation", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a512049bfbc3f964f0393d6141541f8a4", null ],
+    [ "envelope_inertia", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a69a9cf55e497184879eb7453ded32592", null ],
+    [ "lifetime", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a1409f6f33fcdd02f023dc1a6627deb9f", null ],
+    [ "luminosity", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a90751927722bbe261c29cb9a3171462a", null ],
+    [ "modified_phase_lag", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a542c13280abb0a85208e8968d1607514", null ],
+    [ "radius", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a587691de0cf662e6b9be79806846227b", null ],
+    [ "select_interpolation_region", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a9b655a9cbed43f2804446359687cf0d2", null ],
+    [ "set_dissipation", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#ad80ccd96919f0727468a58e8a30d85c1", null ],
+    [ "c_body", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a54f3578895e7dc5bf076a0ee89c2e900", null ],
+    [ "deriv_ids", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a349592d67399ffed746c0e3e3d859185", null ],
+    [ "deriv_list", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#ae93ec45245a21099652f6ecd8f49c8db", null ],
+    [ "diff_rot_coupling_timescale", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a7b7e8239d517280c3835f3d7e8213891", null ],
+    [ "lib_configure_body", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a5f5df79ea76934c7d3eafca58c3e441a", null ],
+    [ "mass", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a316eb6db584e801b34d028f70bc9a2c5", null ],
+    [ "metallicity", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a050dba0ed06d3697d507210e5923492b", null ],
+    [ "wind_saturation_frequency", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a90493bacbdb4acf0a59958347b7fda94", null ],
+    [ "wind_strength", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#adb28fa8832da56617332ecff44d5a9ae", null ]
+];
