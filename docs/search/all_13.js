@@ -2,6 +2,8 @@ var searchData=
 [
   ['tidal_20power_20for_20inclined_20and_20eccentric_20orbits',['Tidal Power for Inclined and Eccentric Orbits',['../InclinationEccentricity_power.html',1,'']]],
   ['tidal_20torque_20for_20inclined_20and_20eccentric_20orbits',['Tidal Torque for Inclined and Eccentric Orbits',['../InclinationEccentricity_torque.html',1,'']]],
+  ['the_20python_20orbital_20evolution_20module',['The Python Orbital Evolution Module',['../OrbitalEvolutionReadMe.html',1,'']]],
+  ['the_20python_20stellar_20evolution_20module',['The Python Stellar Evolution Module',['../StellarEvolutionReadMe.html',1,'']]],
   ['tabulation',['TABULATION',['../namespaceCore.html#a7953957c8a63c9c2d5c0def3988ff270a496e8896201ceff9d67fcb0200caded4',1,'Core']]],
   ['tabulation_5fevol_5fmode',['TABULATION_EVOL_MODE',['../Evolve_2CInterface_8h.html#ac75de17f99b1f2d0bb7c2154523fdda1',1,'TABULATION_EVOL_MODE():&#160;CInterface.cpp'],['../Evolve_2CInterface_8cpp.html#ac75de17f99b1f2d0bb7c2154523fdda1',1,'TABULATION_EVOL_MODE():&#160;CInterface.cpp']]],
   ['target',['target',['../classorbital__evolution_1_1initial__condition__solver_1_1InitialConditionSolver.html#a67f6dd6e85ef9653e536b60a4dda5208',1,'orbital_evolution::initial_condition_solver::InitialConditionSolver']]],

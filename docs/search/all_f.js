@@ -31,5 +31,6 @@ var searchData=
   ['primary',['primary',['../classorbital__evolution_1_1initial__condition__solver_1_1InitialConditionSolver.html#a5d2579c59622e4fd22960576b6fbf365',1,'orbital_evolution.initial_condition_solver.InitialConditionSolver.primary()'],['../classorbital__evolution_1_1binary_1_1Binary.html#aab3f33fcb9b6e9a794c1dce89e28f59d',1,'orbital_evolution.binary.Binary.primary()'],['../classEvolve_1_1BinarySystem.html#a8202c3f4d2746dd0949c8f44bb7a7101',1,'Evolve::BinarySystem::primary()']]],
   ['print_5fconfiguration',['print_configuration',['../classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a72ac4fee6e31fc26dc13e505fec2fcc3',1,'Evolve::BrokenPowerlawPhaseLagZone']]],
   ['push_5fback',['push_back',['../classStellarEvolution_1_1InterpolationQueue.html#a6247c835cff816a42d7b9698b3b9d503',1,'StellarEvolution::InterpolationQueue']]],
-  ['pythonpackage',['PythonPackage',['../group__PythonPackage__group.html',1,'']]]
+  ['pythonpackage',['PythonPackage',['../group__PythonPackage__group.html',1,'']]],
+  ['poet_20python_20interface',['POET Python Interface',['../PythonPackageReadMe.html',1,'']]]
 ];

@@ -12,7 +12,9 @@ var NAVTREE =
     [ "Acknowledgements", "md_documentation_Acknowledgements.html", null ],
     [ "Calculation of the Pm,s Coefficients", "InclinationEccentricity_pms1.html", null ],
     [ "Calculation of the Pm,s Coefficients", "InclinationEccentricity_pms2.html", null ],
-    [ "A set of modules exposing POET's functionality in python.", "PythonPackageReadMe.html", null ],
+    [ "The Python Orbital Evolution Module", "OrbitalEvolutionReadMe.html", null ],
+    [ "The Python Stellar Evolution Module", "StellarEvolutionReadMe.html", null ],
+    [ "POET Python Interface", "PythonPackageReadMe.html", null ],
     [ "Todo List", "todo.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Namespaces", null, [
@@ -55,13 +57,13 @@ var NAVTREEINDEX =
 [
 "AllowedGridGrowth_8h.html",
 "LagSpinBreakCondition_8cpp.html",
-"classCore_1_1Error_1_1NonGSLZeroStep.html#a7e4e92b91f00c595c701966b2b7b3c15",
-"classEvolve_1_1DissipatingBody.html#a1c37d1712f72998102a5050e687abe44",
-"classEvolve_1_1StopHistoryInterval.html#a17c2e82632c9ce34ad640b8daec6265c",
-"classStellarEvolution_1_1EvolvingStellarQuantity.html#a41d8399f7fced60cbf441a17906dee88",
-"classorbital__evolution_1_1initial__condition__solver_1_1InitialConditionSolver.html",
-"dir_933c94a385a94813ee58c302720c091a.html",
-"manager__data__model_8py.html#a932dd1e5383bc19616e42da7a613d502"
+"classCore_1_1Error_1_1NonGSLZeroStep.html",
+"classEvolve_1_1DissipatingBody.html#a0bf23e880014f9a5223d15d85372abef",
+"classEvolve_1_1StopHistoryInterval.html#a095e85cbdface4893ee6a9880341b483",
+"classStellarEvolution_1_1EvolvingStellarQuantity.html#a3fd3a2f3941b66b834d6215482f00083",
+"classorbital__evolution_1_1evolve__interface_1_1c__binary__p.html",
+"dir_758e9576fa64d8fee43a388a94765fa7.html",
+"manager__data__model_8py.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

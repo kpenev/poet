@@ -320,3 +320,8 @@
 \form#319:$10^{-6} M R^2$
 \form#320:$\propto\omega\min(\omega, \omega_{sat})^2$
 \form#321:$\dot{L}_1=\frac{I_1 L_2 - I_2 L_1}{\tau_c(I_1+I_2)}$
+\form#322:$Q'_\star = 10^6$
+\form#323:$T_{eff}$
+\form#324:$\log_{10}(g)$
+\form#325:$L_\star$
+\form#326:$\rho_\star$
