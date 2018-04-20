@@ -240,10 +240,8 @@ class InitialConditionSolver :
                     2.0 * pi / self.target.Psurf) 
         ) :
             self._best_initial_conditions.spin_frequency = spin_frequency
-            self._best_initial_conditions.orbital_period = orbital_period
-            self._best_initial_conditions.initial_orbital_period = (
-                porb_initial
-            )
+            self._best_initial_conditions.orbital_period = porb_final
+            self._best_initial_conditions.initial_orbital_period = porb_initial
             self._best_initial_conditions.disk_period = disk_period
         return result
 
