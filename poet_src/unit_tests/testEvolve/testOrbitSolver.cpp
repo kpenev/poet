@@ -957,15 +957,6 @@ namespace Evolve {
                                                                      &Lc2);
             expected_real_quantities[RAD_ANGMOM] = new FuncPlusFunc(&Lr1,
                                                                     &Lr2);
-            std::cerr << "Lc1(" << TSTART << ") = "
-                      << Lc1(TSTART)
-                      << std::endl;
-            std::cerr << "Lc2(" << TSTART << ") = "
-                      << Lc2(TSTART)
-                      << std::endl;
-            std::cerr << "Lconv(" << TSTART << ") = "
-                      << (*(expected_real_quantities[CONV_ANGMOM]))(TSTART)
-                      << std::endl;
             delete stellar_evol;
             stellar_evol = make_no_evolution();
             test_no_planet_scenario(*stellar_evol,
@@ -1100,8 +1091,7 @@ namespace Evolve {
                           binary_mode,
                           unsat_wind_mode,
                           TSTART,
-                          1.0,
-                          true);
+                          1.0);
 
             delete __system;
             delete __solver;
@@ -1662,14 +1652,6 @@ namespace Evolve {
                                   Lscale * std::sqrt(adestr));
 
 
-            std::cerr << "C_L = " << Lscale << std::endl;
-            std::cerr << "beta = " << beta << std::endl;
-            std::cerr << "C_i = " << int_const << std::endl;
-            std::cerr << "kappa = " << kappa << std::endl;
-            std::cerr << "Initial semimajor axis: " << ainitial << std::endl;
-            std::cerr << "Destruction semimajor: " << adestr << std::endl;
-            std::cerr << "Destruction age: " << tdestr << std::endl;
-
             std::valarray<double> a_transform_coef(0.0, 6), t_coef(2);
             a_transform_coef[5] = Lscale / 10.0;
             a_transform_coef[3] = -beta / 2.0;
@@ -1767,8 +1749,7 @@ namespace Evolve {
                           expected_evol_mode,
                           expected_wind_mode,
                           TSTART,
-                          tfinal,
-                          true);
+                          tfinal);
 
 #if 0
             Star star_not_saturated_wind_no_coupling(
@@ -1905,11 +1886,6 @@ namespace Evolve {
                    a_formation = std::pow(a6p5_offset + 6.5 * alpha * TDISK,
                                           1.0 / 6.5);
 
-            std::cerr << "a0 = " << a_formation << std::endl
-                      << "a_death = " << adestr << std::endl
-                      << "formation age = " << TDISK << std::endl
-                      << "destruction age = " << TDESTR << std::endl; 
-
             evolve(WDISK,
                    TDISK,
                    a_formation,
@@ -1990,8 +1966,7 @@ namespace Evolve {
                           expected_mode,
                           unsat_wind_mode,
                           TSTART,
-                          MAX_AGE,
-                          true);
+                          MAX_AGE);
 
             delete __star;
             delete __system;
@@ -2083,14 +2058,6 @@ namespace Evolve {
                          ),
                          wdisk = 0.5 * beta / std::pow(a_formation, 1.5),
                          wlocked = beta / std::pow(async, 1.5);
-    		std::cout << std::endl << "arate=" << -alpha
-                << std::endl << "alpha=" << Lscale
-                << std::endl << "beta=" << beta
-                << std::endl << "Ic=" << Ic
-                << std::endl << "wdisk=" << wdisk
-                << std::endl << "wlocked=" << wlocked
-                << std::endl << "a0=" << a_formation
-                << std::endl;
 
             StellarEvolution::MockStellarEvolution *
                 no_evol = make_no_evolution(1.0, Ic);
@@ -2182,8 +2149,7 @@ namespace Evolve {
                           expected_evol_mode,
                           expected_wind_mode,
                           TSTART,
-                          tend,
-                          true);
+                          tend);
 
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(
@@ -2335,17 +2301,6 @@ namespace Evolve {
                                       beta * Ic * std::pow(a0, 3) / 2.0
                                       +
                                       kappa * tdisk);
-    		std::cout << std::endl << "a0=" << a0
-                << std::endl << "alphaL=" << alphaL
-                << std::endl << "beta=" << beta
-                << std::endl << "gamma=" << gamma
-                << std::endl << "Ic=" << Ic
-                << std::endl << "wdisk=" << wdisk
-                << std::endl << "kappa=" << kappa
-                << std::endl << "Kwind=" << Kwind
-                << std::endl << "Q=" << Q
-                << std::endl << "Rp=" << Rp
-                << std::endl;
 
             StellarEvolution::MockStellarEvolution *
                 no_evol = make_no_evolution(1.0, Ic);
@@ -2516,8 +2471,7 @@ namespace Evolve {
                           expected_evol_mode,
                           expected_wind_mode,
                           TSTART,
-                          tend,
-                          true);
+                          tend);
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(
                 false,
@@ -2566,12 +2520,6 @@ namespace Evolve {
                          1.0 / 3.0
                      ) / Core::AstroConst::solar_radius,
                      ONE = 1.0;
-
-        std::cerr << "Polar orbit inertial mode only:" << std::endl
-                  << "TDISK = " << TDISK << std::endl
-                  << "W* = " << WSTAR << std::endl
-                  << "WORB = " << WORB << std::endl
-                  << "a = " << AORB << std::endl;
 
         StellarEvolution::PolynomialEvolutionQuantity
             disk_nan_evol(std::valarray<double>(Core::NaN, 1),
@@ -2738,13 +2686,6 @@ namespace Evolve {
                      ),
                      LCONV_OFFSET = LCONV_DECAY_RATE * TDISK;
 
-        std::cerr << "Polar orbit 2-0 component only:" << std::endl
-                  << "TDISK = " << TDISK << std::endl
-                  << "W* = " << WSTAR << std::endl
-                  << "WORB = " << WORB << std::endl
-                  << "a = " << AORB << std::endl
-                  << "Lc decay rate: " << LCONV_DECAY_RATE << std::endl;
-
         std::valarray<double> spindown_coef(2);
         spindown_coef[0] = WSTAR + LCONV_DECAY_RATE * TDISK;
         spindown_coef[1] = - LCONV_DECAY_RATE;
@@ -2891,8 +2832,7 @@ namespace Evolve {
                       expected_evol_mode,
                       expected_wind_mode,
                       TSTART,
-                      MAX_AGE,
-                      true);
+                      MAX_AGE);
 
         delete __star;
         delete __system;
@@ -3065,8 +3005,7 @@ namespace Evolve {
                       expected_evol_mode,
                       expected_wind_mode,
                       TSTART,
-                      MAX_AGE,
-                      true);
+                      MAX_AGE);
 
         delete __star;
         delete __system;
@@ -3115,8 +3054,7 @@ namespace Evolve {
                       expected_evol_mode,
                       expected_wind_mode,
                       TSTART,
-                      MAX_AGE,
-                      true);
+                      MAX_AGE);
 
         delete __star;
         delete __system;
@@ -3127,17 +3065,17 @@ namespace Evolve {
 
     test_OrbitSolver::test_OrbitSolver()
     {
-/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
-        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
-/*        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
         TEST_ADD(test_OrbitSolver::test_polar_1_0_evolution);
-        TEST_ADD(test_OrbitSolver::test_polar_2_0_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_polar_2_0_evolution);
         TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);
     }
 

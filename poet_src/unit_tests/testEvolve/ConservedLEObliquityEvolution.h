@@ -182,9 +182,7 @@ public:
                              *
                              std::sin(__initial_obliquity)),
         __disk_lifetime(disk_lifetime)
-    {
-        std::cerr << "Initial obliquity = " << __initial_obliquity << std::endl;
-    }
+    {}
 
     double operator()(double age) const
     {

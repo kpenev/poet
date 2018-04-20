@@ -618,6 +618,21 @@ namespace StellarEvolution {
     void EvolvingStellarQuantity::select_interpolation_region(double age)
         const
     {
+#ifndef NDEBUG
+        std::cerr << "Finding interpolation region for age = "
+                  << age
+                  << ", grid change ages: "
+                  << std::endl;
+        for(
+            std::vector<double>::const_iterator
+                change_age_i = __interp_grid_change_ages.begin();
+            change_age_i != __interp_grid_change_ages.end();
+            ++change_age_i
+        )
+            std::cerr << "\t" << *change_age_i << std::endl;
+#endif
+
+
         std::vector<double>::const_iterator new_grid_change_age =
             std::upper_bound(
                 __interp_grid_change_ages.begin(),
