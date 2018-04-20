@@ -104,7 +104,7 @@ namespace Evolve {
         std::vector<double>::size_type get_tidal_index(
             ///The absolute value of the forcing frequency.
             double abs_forcing_frequency
-        );
+        ) const;
 
         ///\brief Make sure that the entries in __tidal_frequency_conditions
         ///are appropriate for the current eccentricity expansion order.

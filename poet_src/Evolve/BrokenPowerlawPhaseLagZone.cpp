@@ -55,7 +55,7 @@ namespace Evolve {
     std::vector<double>::size_type 
         BrokenPowerlawPhaseLagZone::get_tidal_index(
             double abs_forcing_frequency
-        )
+        ) const
         {
             assert(abs_forcing_frequency >= 0);
             if(__tidal_frequency_breaks.size() != 0)
@@ -330,6 +330,7 @@ namespace Evolve {
                                    inclination,
                                    periapsis,
                                    spin_is_frequency);
+        set_spin_index();
 
     }
 
@@ -345,9 +346,13 @@ namespace Evolve {
         double abs_forcing_frequency = std::abs(forcing_frequency),
                abs_spin_frequency = std::abs(spin_frequency());
 
+        /*
         std::vector<double>::size_type tidal_index
             = __tidal_indices[tidal_term_index(orbital_frequency_multiplier,
                                                spin_frequency_multiplier)];
+        */
+        std::vector<double>::size_type
+            tidal_index = get_tidal_index(abs_forcing_frequency);
 
         double tidal_power = __tidal_frequency_powers[tidal_index],
                spin_power = __spin_frequency_powers[__spin_index];
@@ -450,6 +455,7 @@ namespace Evolve {
             DissipatingZone::stopping_conditions(system,
                                                  primary,
                                                  zone_index);
+        return result;
 
         if(system.evolution_mode() != Core::BINARY) return result;
 
