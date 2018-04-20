@@ -1850,7 +1850,7 @@ namespace Evolve {
             if(__body1.number_locked_zones() || __body2.number_locked_zones()) {
                 semimajor = parameters[0];
             } else if(parameters[0] < 0) {
-#ifndef DEBUG
+#ifndef NDEBUG
                 std::cerr << "At t = " << age << " param: ";
                 for(unsigned i = 0; i < 3 * num_zones + 1; ++i) {
                     if(i) std::cerr << ", ";

@@ -641,23 +641,35 @@ namespace Evolve {
         stop_reason=NO_STOP;
         StopInformation stop;
         while(t<max_age) {
-            double max_next_t = std::min(t + max_step, max_age),
-                   from_t = t;
+            double max_next_t = std::min(t + max_step, max_age);
             int status=GSL_SUCCESS;
             bool step_rejected=false;
             do {
+#ifndef NDEBUG
+                std::cerr << "Attempting step from t = " << t
+                          << " not to miss t = " << max_next_t
+                          << std::endl;
+#endif
+                double from_t = t;
                 status=gsl_odeiv2_evolve_apply(
                         evolve, step_control, step, &ode_system,
                         &t, max_next_t, &step_size, &(orbit[0]));
-                if (status == GSL_FAILURE)
+                if (status == GSL_FAILURE) {
+#ifndef NDEBUG
+                    std::cerr << "Failed, (presume zero step size)!"
+                              << std::endl;
+#endif
                     throw Core::Error::GSLZeroStep("rkf45");
-                else if (status != GSL_SUCCESS && status != GSL_EDOM) {
+                } else if (status != GSL_SUCCESS && status != GSL_EDOM) {
                     std::ostringstream msg;
                     msg << "GSL signaled failure while evolving (error code " <<
                         status << ")";
                     throw Core::Error::Runtime(msg.str());
                 }
                 if(status == GSL_SUCCESS) {
+#ifndef NDEBUG
+                    std::cerr << "Succeeded! Now t = " << t << std::endl;
+#endif
                     stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
                                            sys_mode);
 
@@ -701,8 +713,14 @@ namespace Evolve {
                     gsl_odeiv2_evolve_reset(evolve);
                     step_rejected=true;
                 } else {
-                    if(t < from_t * MIN_RELATIVE_STEP)
+                    if(t < from_t * MIN_RELATIVE_STEP) {
+#ifndef NDEBUG
+                        std::cerr << "Stepped only " << t - from_t
+                                  << "Gyr, aborting!"
+                                  << std::endl;
+#endif
                         throw Core::Error::GSLZeroStep("rkf45");
+                    }
                     step_rejected=false;
                 }
             } while(
@@ -828,7 +846,6 @@ namespace Evolve {
                 );
             }
         }
-        std::cerr << "Handled stop condition" << std::endl;
     }
 
     void OrbitSolver::reset(BinarySystem &system)

@@ -119,7 +119,11 @@ namespace Evolve {
             virtual std::string describe(int index = -1) const;
 
             ~LagForcingFrequencyBreakCondition()
-            {std::cerr << "Destroying: " << describe() << std::endl;}
+            {
+#ifndef NDEBUG
+                std::cerr << "Destroying: " << describe() << std::endl;
+#endif
+            }
         };//End LagForcingBreakFrequencyCondition class.
 
 } //End Evolve namespace.

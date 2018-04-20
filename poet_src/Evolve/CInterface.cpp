@@ -155,6 +155,8 @@ OrbitSolver *evolve_system(DiskBinarySystem *system,
                            double *required_ages,
                            unsigned num_required_ages)
 {
+	std::cerr.setf(std::ios_base::scientific);
+	std::cerr.precision(16);
     Evolve::OrbitSolver *solver = new Evolve::OrbitSolver(final_age,
                                                           precision);
 #ifdef NDEBUG
