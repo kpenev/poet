@@ -24,7 +24,7 @@ double eccentric_anomaly_equation(double eccentric_anomaly,
 }
 
 namespace testGravitationalPotential {
-    double EccentricOrbit::reduced_mass()
+    double EccentricOrbit::reduced_mass() const
     {
         return (
             (__primary_mass * __secondary_mass)
@@ -33,7 +33,7 @@ namespace testGravitationalPotential {
         );
     }
 
-    double EccentricOrbit::eccentric_anomaly(double orbital_phase)
+    double EccentricOrbit::eccentric_anomaly(double orbital_phase) const
     {
         const gsl_root_fsolver_type *FsolverType;
         gsl_root_fsolver *solver;
@@ -84,7 +84,9 @@ namespace testGravitationalPotential {
         return root;
     }
 
-    Eigen::Vector3d EccentricOrbit::secondary_position(double orbital_phase)
+    Eigen::Vector3d EccentricOrbit::secondary_position(
+        double orbital_phase
+    ) const
     {
         double current_eccentric_anomaly = eccentric_anomaly(orbital_phase);
         return Eigen::Vector3d(
@@ -98,7 +100,7 @@ namespace testGravitationalPotential {
         );
     }
 
-    double EccentricOrbit::orbital_angmom()
+    double EccentricOrbit::orbital_angmom() const
     {
         return (
             reduced_mass() * Core::AstroConst::solar_mass
@@ -111,7 +113,7 @@ namespace testGravitationalPotential {
         );
     }
 
-    double EccentricOrbit::orbital_energy()
+    double EccentricOrbit::orbital_energy() const
     {
         return (
             -Core::AstroConst::G
@@ -124,7 +126,7 @@ namespace testGravitationalPotential {
         );
     }
 
-    double EccentricOrbit::orbital_period()
+    double EccentricOrbit::orbital_period() const
     {
         return std::sqrt(
             4.0 * M_PI * M_PI

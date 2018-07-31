@@ -34,7 +34,7 @@ namespace testGravitationalPotential {
             __eccentricity;
 
         ///The reduced mass of the system in solar masses.
-        double reduced_mass();
+        double reduced_mass() const;
 
     public:
         ///Create an eccentric orbit.
@@ -87,7 +87,7 @@ namespace testGravitationalPotential {
             ///The phase angle of the orbit (\f$ \Omega t \f$). Zero is at
             ///periapsis
             double orbital_phase
-        );
+        ) const;
  
         ///\brief Secondary position vector in a coordinate system centered on
         ///the primary, with \f$ \hat{z} = \hat{L} \f$ and
@@ -95,17 +95,17 @@ namespace testGravitationalPotential {
         Eigen::Vector3d secondary_position(
             ///See same name argument to eccentric_anomaly().
             double orbital_phase
-        );
+        ) const;
 
         ///\brief The magnitude of the orbital angular momentum of the system in
         /// \f$ M_\odot R_\odot^2 \mathrm{rad} / \mathrm{Gyr} \f$
-        double orbital_angmom();
+        double orbital_angmom() const;
 
         ///\brief The magnitude of the orbital energy of the system in
         /// \f$ M_\odot R_\odot^2 / \mathrm{Gyr}^2 \f$
-        double orbital_energy();
+        double orbital_energy() const;
 
         ///\brief The orbital period of the system in days.
-        double orbital_period();
+        double orbital_period() const;
     }; //End EccentricOrbit class
 }//End testGravitationalPotential namespace
