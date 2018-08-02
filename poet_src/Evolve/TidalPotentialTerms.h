@@ -6,6 +6,9 @@
  * \ingroup Evolve_group
  */
 
+#ifndef __TIDAL_POTENTIAL_TERMS_H
+#define __TIDAL_POTENTIAL_TERMS_H
+
 #include <cmath>
 #include <valarray>
 #include "EccentricityExpansionCoefficients.h"
@@ -85,3 +88,5 @@ namespace Evolve {
         {__pms.read(fname);}
     }; //End TidalPotentialTerms class.
 } //End Evolve namespace
+
+#endif

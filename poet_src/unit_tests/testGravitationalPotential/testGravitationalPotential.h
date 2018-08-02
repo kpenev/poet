@@ -7,4 +7,8 @@
  */
 
 #include "EccentricOrbit.h"
+#include "TidalPotential.h"
+#include "TidalPotentialExpansion.h"
 #include <iostream>
+#include <iomanip>
+#include <sstream>

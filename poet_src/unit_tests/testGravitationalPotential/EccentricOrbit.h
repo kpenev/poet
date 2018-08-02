@@ -5,6 +5,9 @@
  * \ingroup UnitTests_group
  */
 
+#ifndef __UNIT_TESTS_ECCENTRIC_ORBIT_H
+#define __UNIT_TESTS_ECCENTRIC_ORBIT_H
+
 #include "../../Core/Common.h"
 #include "../../Core/AstronomicalConstants.h"
 
@@ -109,3 +112,5 @@ namespace testGravitationalPotential {
         double orbital_period() const;
     }; //End EccentricOrbit class
 }//End testGravitationalPotential namespace
+
+#endif

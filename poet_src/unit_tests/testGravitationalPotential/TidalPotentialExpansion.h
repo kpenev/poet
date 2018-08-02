@@ -6,11 +6,15 @@
  * \ingroup UnitTests_group
  */
 
+#ifndef __UNIT_TESTS_TIDAL_POTENTIAL_EXPANSION_H
+#define __UNIT_TESTS_TIDAL_POTENTIAL_EXPANSION_H
+
 #include "EccentricOrbit.h"
 
 #include "../../Evolve/TidalPotentialTerms.h"
 
 #include <boost/math/special_functions/spherical_harmonic.hpp>
+#include <cassert>
 
 namespace testGravitationalPotential {
     ///Evaluate the tidal potential using the expansion.
@@ -137,7 +141,11 @@ namespace testGravitationalPotential {
         )
         {
             double radial_distance = position.norm(),
-                   polar_angle = std::acos(position[2]/radial_distance),
+                   polar_angle = (
+                       radial_distance == 0
+                       ? 0
+                       : std::acos(position[2]/radial_distance)
+                   ),
                    azimuthal_angle = std::atan2(position[1], position[0]);
 
             if(azimuthal_angle < 0)
@@ -150,5 +158,5 @@ namespace testGravitationalPotential {
                 time
             );
         }
-
 } //End testGravitationalPotential namespace.
+#endif

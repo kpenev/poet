@@ -24,6 +24,7 @@ namespace testGravitationalPotential {
                              no_deriv,
                              inclination_deriv,
                              eccentricity_deriv);
+            assert(std::isfinite(no_deriv));
             result += (
                 no_deriv
                 *
@@ -33,9 +34,10 @@ namespace testGravitationalPotential {
                     2,
                     m,
                     polar_angle,
-                    azimuthal_angle - mprime * orbital_phase / m
+                    azimuthal_angle - mprime * orbital_phase / (m ? m : 1.0)
                 )
             );
+            assert(std::isfinite(result));
         }
         return result;
     }
@@ -69,8 +71,8 @@ namespace testGravitationalPotential {
             *
             __secondary_mass * Core::AstroConst::solar_mass
             /
-            std::pow(__semimajor * Core::AstroConst::solar_radius, 3)
-        );
+            std::pow(__semimajor, 3)
+        ) /  Core::AstroConst::solar_radius;
 
         double result = 0.0;
         int mprime_range = (static_cast<int>(__expansion_coef.current_e_order())

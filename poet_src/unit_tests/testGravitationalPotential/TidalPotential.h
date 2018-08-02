@@ -6,6 +6,9 @@
  * \ingroup UnitTests_group
  */
 
+#ifndef __UNIT_TESTS_TIDAL_POTENTIAL_H
+#define __UNIT_TESTS_TIDAL_POTENTIAL_H
+
 #include "EccentricOrbit.h"
 #include <cmath>
 
@@ -66,7 +69,7 @@ namespace testGravitationalPotential {
         double &arg_of_periapsis() {return __arg_of_periapsis;}
 
         ///An unmutable reference to the binary orbit.
-        const EccentricOrbit &orbit() const {return __arg_of_periapsis;}
+        const EccentricOrbit &orbit() const {return __orbit;}
 
         ///Mutable reference to the binary orbit.
         EccentricOrbit &orbit() {return __orbit;}
@@ -97,6 +100,7 @@ namespace testGravitationalPotential {
                 2.0 * M_PI * time / __orbit.orbital_period()
             );
 
+
             //Rotate along L_hat to a coordinate system with z along L and y
             //along SxL
             double z_rotated_secondary_x = (
@@ -104,43 +108,47 @@ namespace testGravitationalPotential {
                 -
                 secondary_position[1] * std::sin(__arg_of_periapsis)
             );
-            double secondary_y = (
-                secondary_position[0] * std::sin(__arg_of_periapsis)
-                +
-                secondary_position[1] * std::cos(__arg_of_periapsis)
+
+            Eigen::Vector3d transformed_secondary_position(
+                (
+                    z_rotated_secondary_x * std::cos(__inclination)
+                    +
+                    secondary_position[2] * std::sin(__inclination)
+                ),
+                (
+                    secondary_position[0] * std::sin(__arg_of_periapsis)
+                    +
+                    secondary_position[1] * std::cos(__arg_of_periapsis)
+                ),
+                (
+                    -z_rotated_secondary_x * std::sin(__inclination)
+                    +
+                    secondary_position[2] * std::cos(__inclination)
+                )
             );
 
-            //Rotate along SxL to the final coordinate system.
-            double secondary_x = (
-                z_rotated_secondary_x * std::cos(__inclination)
-                +
-                secondary_position[2] * std::sin(__inclination)
-            );
-            double secondary_z = (
-                -z_rotated_secondary_x * std::sin(__inclination)
-                +
-                secondary_position[2] * std::cos(__inclination)
-            );
-
-            double center_to_secondary = secondary_position.squaredNorm();
+            double center_to_secondary = secondary_position.norm();
             double position_to_secondary = (
-                std::pow(position[0] - secondary_x, 2)
-                +
-                std::pow(position[1] - secondary_y, 2)
-                +
-                std::pow(position[2] - secondary_z, 2)
-            );
+                position
+                -
+                transformed_secondary_position
+            ).norm();
             return (
                 Core::AstroConst::G
                 *
                 __orbit.secondary_mass() * Core::AstroConst::solar_mass
                 *
                 (
-                    1.0 / center_to_secondary
+                    position.dot(transformed_secondary_position)
+                    /
+                    std::pow(center_to_secondary, 3)
                     -
                     1.0 / position_to_secondary
+                    +
+                    1.0 / center_to_secondary
                 ) / Core::AstroConst::solar_radius
             );
         }
-
 } //End testGravitationalPotential namespace
+
+#endif
