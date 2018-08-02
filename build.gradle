@@ -229,6 +229,7 @@ model {
                 linker.args "-l" + ensureLibraryVersion("cpptest")
 
                 lib library: "eigen"
+                lib library: "evolve"
             }
         }
 

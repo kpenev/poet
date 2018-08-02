@@ -6,9 +6,11 @@
  * \ingroup UnitTests_group
  */
 
+#include "EccentricOrbit.h"
+
 #include "../../Evolve/TidalPotentialTerms.h"
 
-#include <boost/math/special_functions/spheric_harmonic.hpp>
+#include <boost/math/special_functions/spherical_harmonic.hpp>
 
 namespace testGravitationalPotential {
     ///Evaluate the tidal potential using the expansion.
@@ -16,7 +18,7 @@ namespace testGravitationalPotential {
     private:
         ///\brief The coefficients of the expansion of the tidal potential.
         ///(\f$ \mathcal{U}_{m,m'} \f$)
-        TidalPotentialTerms __expansion_coef;
+        Evolve::TidalPotentialTerms __expansion_coef;
 
         double
             ///The mass of the tidally perturbed object in solar masses.
@@ -47,7 +49,7 @@ namespace testGravitationalPotential {
             int mprime,
             
             ///See same name argument to evaluate_spherical_coords()
-            double radiual_distance,
+            double radial_distance,
 
             ///See same name argument to evaluate_spherical_coords()
             double azimuthal_angle,
@@ -55,8 +57,9 @@ namespace testGravitationalPotential {
             ///See same name argument to evaluate_spherical_coords()
             double polar_angle,
 
-            ///See same name argument to evaluate_spherical_coords()
-            double time
+            ///The orbital phase of the secondary body
+            ///(\f$ 2 \pi n \f$ is periapsis).
+            double orbital_phase
         );
     public:
         TidalPotentialExpansion(
@@ -91,7 +94,7 @@ namespace testGravitationalPotential {
         double evaluate_spherical_coords(
             ///The radial distance from the origin of the point to where to
             ///evaluate the tidal potential.
-            double radiual_distance,
+            double radial_distance,
 
             ///The azimuthal angle of the point to where to evaluate the tidal
             ///potential, should be in the range of \f$ [0, 2\pi) \f$.
@@ -122,6 +125,9 @@ namespace testGravitationalPotential {
                 ///system is in periapsis at time = 0.
                 double time
             );
+
+        void set_eccentricity_order(unsigned e_order)
+        {__expansion_coef.change_e_order(e_order);}
     }; //End TidalPotentialExpansion class.
 
     template<class POSITION_TYPE>

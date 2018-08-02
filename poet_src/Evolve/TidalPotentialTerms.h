@@ -46,6 +46,9 @@ namespace Evolve {
         void change_e_order(unsigned new_e_order)
         {__e_order = new_e_order;}
 
+        unsigned current_e_order() const
+        {return __e_order;}
+
         ///Set the inclination relative to the orbit.
         void configure(double inclination);
 
