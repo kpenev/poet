@@ -85,7 +85,7 @@ int main()
     return 0;
     */
 
-    Evolve::DissipatingZone::read_eccentricity_expansion(
+    Evolve::TidalPotentialTerms::read_eccentricity_expansion(
         "eccentricity_expansion_coef.txt"
     );
 

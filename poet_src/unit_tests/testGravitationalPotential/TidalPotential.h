@@ -17,9 +17,15 @@ namespace testGravitationalPotential {
         EccentricOrbit __orbit;
 
         double
-            ///The angle from \f$ \hat{y} = \hat{S} \times \hat{L} \f$ to the
-            ///direction of periapsis in radians.
+            ///The angle between the orbital angular momentum and the spin
+            ///angular momentum of the primary.;
+            __inclination,
+
+            ///90 degrees less than the angle from
+            /// \f$ \hat{y} = \hat{S} \times \hat{L} \f$
+            ///to the direction of periapsis in radians.
             __arg_of_periapsis;
+            
     public:
         ///\brief Define the boundary for which to calculate the tidal
         ///potential.
@@ -35,16 +41,32 @@ namespace testGravitationalPotential {
 
             ///See same name argument to EccentricOrbit.
             double eccentricity=Core::NaN,
+
+            ///See __inclination attribute.
+            double inclination=Core::NaN,
             
             ///See __arg_of_periapsis attribute.
             double arg_of_periapsis=Core::NaN
         ) :
             __orbit(primary_mass, secondary_mass, semimajor, eccentricity),
+            __inclination(inclination),
             __arg_of_periapsis(arg_of_periapsis)
         {}
 
+        ///See __inclination attribute.
+        double inclination() const {return __inclination;}
+
+        ///A mutable reference to the inclination of the system.
+        double &inclination() {return __inclination;}
+
+        ///The argument of periapsis of the system.
+        double arg_of_periapsis() const {return __arg_of_periapsis;}
+
+        ///A mutable reference to the argument of periapsis of the system.
+        double &arg_of_periapsis() {return __arg_of_periapsis;}
+
         ///An unmutable reference to the binary orbit.
-        const EccentricOrbit &orbit() const {return __orbit;}
+        const EccentricOrbit &orbit() const {return __arg_of_periapsis;}
 
         ///Mutable reference to the binary orbit.
         EccentricOrbit &orbit() {return __orbit;}
@@ -54,7 +76,7 @@ namespace testGravitationalPotential {
             double operator()(
                 ///The position to evaluate the potential at in a coordinate
                 ///system centered on the primary body with
-                /// \f$ \hat{z} = \hat{L} \f$,
+                /// \f$ \hat{z} = \hat{S} \f$,
                 /// \f$ \hat{y} = \hat{S} \times \hat{L} \f$.
                 ///
                 ///Must provide indexing with indices 0, 1, 2 for the three
@@ -74,7 +96,10 @@ namespace testGravitationalPotential {
             Eigen::Vector3d secondary_position = __orbit.secondary_position(
                 2.0 * M_PI * time / __orbit.orbital_period()
             );
-            double secondary_x = (
+
+            //Rotate along L_hat to a coordinate system with z along L and y
+            //along SxL
+            double z_rotated_secondary_x = (
                 secondary_position[0] * std::cos(__arg_of_periapsis)
                 -
                 secondary_position[1] * std::sin(__arg_of_periapsis)
@@ -84,11 +109,26 @@ namespace testGravitationalPotential {
                 +
                 secondary_position[1] * std::cos(__arg_of_periapsis)
             );
+
+            //Rotate along SxL to the final coordinate system.
+            double secondary_x = (
+                z_rotated_secondary_x * std::cos(__inclination)
+                +
+                secondary_position[2] * std::sin(__inclination)
+            );
+            double secondary_z = (
+                -z_rotated_secondary_x * std::sin(__inclination)
+                +
+                secondary_position[2] * std::cos(__inclination)
+            );
+
             double center_to_secondary = secondary_position.squaredNorm();
             double position_to_secondary = (
                 std::pow(position[0] - secondary_x, 2)
                 +
                 std::pow(position[1] - secondary_y, 2)
+                +
+                std::pow(position[2] - secondary_z, 2)
             );
             return (
                 Core::AstroConst::G
