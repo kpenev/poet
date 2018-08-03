@@ -1,5 +1,14 @@
 var NAVTREEINDEX6 =
 {
+"classorbital__evolution_1_1binary_1_1Binary.html#aab3f33fcb9b6e9a794c1dce89e28f59d":[17,0,3,0,0,19],
+"classorbital__evolution_1_1binary_1_1Binary.html#ac04f9ab53fe0098be3ebe2ea83f09ebb":[17,0,3,0,0,1],
+"classorbital__evolution_1_1binary_1_1Binary.html#ae081a56bcf445283ea92e82dc4940adb":[17,0,3,0,0,12],
+"classorbital__evolution_1_1binary_1_1Binary.html#ae2372b13bf69dd4364ab8e445b5a2ddf":[17,0,3,0,0,14],
+"classorbital__evolution_1_1binary_1_1Binary.html#ae7e51881af40221110e5d7869ed91de8":[17,0,3,0,0,4],
+"classorbital__evolution_1_1binary_1_1Binary.html#af37ea9338792da9ca938fab26de18af4":[17,0,3,0,0,11],
+"classorbital__evolution_1_1dissipating__body_1_1DissipatingBody.html":[17,0,3,1,1],
+"classorbital__evolution_1_1dissipating__body_1_1DissipatingBody.html#a337624f74831e74ede3cb91d60359e43":[17,0,3,1,1,0],
+"classorbital__evolution_1_1dissipating__body_1_1c__dissipating__body__p.html":[17,0,3,1,0],
 "classorbital__evolution_1_1evolve__interface_1_1c__binary__p.html":[17,0,3,2,0],
 "classorbital__evolution_1_1evolve__interface_1_1c__solver__p.html":[17,0,3,2,1],
 "classorbital__evolution_1_1initial__condition__solver_1_1InitialConditionSolver.html":[17,0,3,3,0],
@@ -240,14 +249,5 @@ var NAVTREEINDEX6 =
 "classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#aad483367ff4b4f20a4d78749ad79e44b":[17,0,7,4,9,3],
 "classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#ab7c0fff24b4f8f60ad82ceffcab8aa3e":[17,0,7,4,9,1],
 "classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#ac93d759cd9ba81ad67e9d3611e7ecfc0":[17,0,7,4,9,4],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#ace49d0a7dd2659ef93441e976f3ab61e":[17,0,7,4,9,5],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGridNode.html":[17,0,7,4,10],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGridNode.html#a102ab20e1ed42def2968ab02aa013ac7":[17,0,7,4,10,2],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGridNode.html#a25c15d60d183524cefcb7060d91bdb1b":[17,0,7,4,10,0],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGridNode.html#a61d49f8892eb10e57d67b6da972af539":[17,0,7,4,10,1],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeMassNode.html":[17,0,7,4,11],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeMassNode.html#a77a85ff5ced1c8076883a8d94700f6f1":[17,0,7,4,11,0],
-"derived__stellar__quantities_8py.html":[18,0,1,1,3],
-"dir_08389f9c72fab3fa939892ce5a81a233.html":[18,0,0,0],
-"dir_4676ceff05f71a508bb4cf796d7af063.html":[18,0,0,2]
+"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#ace49d0a7dd2659ef93441e976f3ab61e":[17,0,7,4,9,5]
 };

@@ -16,7 +16,7 @@ LIB_PUBLIC const double NaN = Core::NaN;
 
 void read_eccentricity_expansion_coefficients(const char *filename)
 {
-    Evolve::DissipatingZone::read_eccentricity_expansion(filename);
+    Evolve::TidalPotentialTerms::read_eccentricity_expansion(filename);
 }
 
 DiskBinarySystem *create_star_planet_system(EvolvingStar *star, 

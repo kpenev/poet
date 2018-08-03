@@ -4,8 +4,6 @@
 
 namespace Evolve {
 
-    EccentricityExpansionCoefficients DissipatingZone::__pms;
-
     std::ostream &operator<<(std::ostream &os,
                              const ZoneEvolutionQuantities &evol_var)
     {
@@ -32,27 +30,6 @@ namespace Evolve {
         return os;
     }
 
-    const double DissipatingZone::__Umm_coef[][3]={
-        {std::sqrt(3.0*M_PI/10.0)/4.0,
-         -std::sqrt(6.0*M_PI/5.0)/4.0,
-         std::sqrt(3.0*M_PI/10.0)/4.0},
-
-        {-std::sqrt(3.0*M_PI/10.0)/2.0,
-         -std::sqrt(6.0*M_PI/5.0)/2.0,
-         std::sqrt(3.0*M_PI/10.0)/2.0},
-
-        {3.0*std::sqrt(M_PI/5.0)/4.0,
-         -std::sqrt(M_PI/5.0)/2.0,
-         3.0*std::sqrt(M_PI/5.0)/4.0},
-
-        {-std::sqrt(3.0*M_PI/10.0)/2.0,
-         std::sqrt(6.0*M_PI/5.0)/2.0,
-         std::sqrt(3.0*M_PI/10.0)/2.0},
-                                           
-        {std::sqrt(3.0*M_PI/10.0)/4.0,
-         -std::sqrt(6.0*M_PI/5.0)/4.0,
-         std::sqrt(3.0*M_PI/10.0)/4.0}};
-
     const double DissipatingZone::__torque_x_plus_coef[]={1.0, 
                                                           std::sqrt(1.5),
                                                           std::sqrt(1.5),
@@ -64,77 +41,6 @@ namespace Evolve {
                                                            std::sqrt(1.5),//m=0
                                                            std::sqrt(1.5),//m=1
                                                            1.0};          //m=2
-
-    void DissipatingZone::fill_Umm()
-    {
-        if(__Ummp_inclination==inclination()) return;
-        __Ummp_inclination=inclination();
-        double c=std::cos(__Ummp_inclination), s=std::sin(__Ummp_inclination),
-               s2=std::pow(s, 2), sc=s*c, cp1=c+1.0, cm1=c-1.0;
-
-        __Ummp[0][0]=__Umm_coef[0][0]*std::pow(cp1, 2);
-        __Ummp_deriv[0][0]=-__Umm_coef[0][0]*2.0*s*cp1;
-
-        __Ummp[1][0]=__Umm_coef[1][0]*s*cp1;
-        __Ummp_deriv[1][0]=__Umm_coef[1][0]*(cp1+2.0*s2);
-
-        __Ummp[2][0]=__Umm_coef[2][0]*s2;
-        __Ummp_deriv[2][0]=__Umm_coef[2][0]*2.0*sc;
-
-        __Ummp[3][0]=-__Umm_coef[3][0]*s*cm1;
-        __Ummp_deriv[3][0]=-__Umm_coef[3][0]*(c*cm1-s2);
-
-        __Ummp[4][0]=__Umm_coef[4][0]*std::pow(cm1, 2);
-        __Ummp_deriv[4][0]=-__Umm_coef[4][0]*2.0*s*cm1;
-
-
-
-        __Ummp[0][1]=__Umm_coef[0][1]*s2;
-        __Ummp_deriv[0][1]=__Umm_coef[0][1]*2.0*sc;
-
-        __Ummp[1][1]=__Umm_coef[1][1]*sc;
-        __Ummp_deriv[1][1]=__Umm_coef[1][1]*(1.0-2.0*s2);
-
-        __Ummp[2][1]=__Umm_coef[2][1]*(2.0-3.0*s2);
-        __Ummp_deriv[2][1]=-__Umm_coef[2][1]*6.0*sc;
-
-        __Ummp[3][1]=__Umm_coef[3][1]*sc;
-        __Ummp_deriv[3][1]=__Umm_coef[3][1]*(1.0-2.0*s2);
-
-        __Ummp[4][1]=__Umm_coef[4][1]*s2;
-        __Ummp_deriv[4][1]=__Umm_coef[4][1]*2.0*sc;
-
-
-
-        __Ummp[0][2]=__Umm_coef[0][2]*std::pow(cm1, 2);
-        __Ummp_deriv[0][2]=-__Umm_coef[0][2]*2.0*cm1*s;
-
-        __Ummp[1][2]=-__Umm_coef[1][2]*s*cm1;
-        __Ummp_deriv[1][2]=-__Umm_coef[1][2]*(c*cm1-s2);
-
-        __Ummp[2][2]=__Umm_coef[2][2]*s2;
-        __Ummp_deriv[2][2]=__Umm_coef[2][2]*2.0*sc;
-
-        __Ummp[3][2]=__Umm_coef[3][2]*s*cp1;
-        __Ummp_deriv[3][2]=__Umm_coef[3][2]*(c*cp1-s2);
-
-        __Ummp[4][2]=__Umm_coef[4][2]*std::pow(cp1, 2);
-        __Ummp_deriv[4][2]=-__Umm_coef[4][2]*2.0*cp1*s;
-    }
-
-    void DissipatingZone::potential_term(double e, int m, int mp, 
-            double &no_deriv, double &inclination_deriv,
-            double &eccentricity_deriv)
-    {
-        no_deriv=inclination_deriv=eccentricity_deriv=0;
-        for(int i=0; i<3; ++i) {
-            double pms=__pms(2*(i-1), mp, e, __e_order, false);
-            no_deriv+=pms*__Ummp[m+2][i];
-            inclination_deriv+=pms*__Ummp_deriv[m+2][i];
-            eccentricity_deriv+=
-                __pms(2*(i-1), mp, e, __e_order, true)*__Ummp[m+2][i];
-        }
-    }
 
     void DissipatingZone::fix_forcing_frequency(
         const SpinOrbitLockInfo &limit, 
@@ -389,8 +295,6 @@ namespace Evolve {
 
     DissipatingZone::DissipatingZone() :
         __e_order(0),
-        __Ummp_inclination(Core::NaN),
-        __Ummp(5), __Ummp_deriv(5),
         __power(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
         __torque_x(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
         __torque_y(0.0, 2*Dissipation::END_DIMENSIONLESS_DERIV),
@@ -398,12 +302,7 @@ namespace Evolve {
         __evolution_real(NUM_REAL_EVOL_QUANTITIES),
         __evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES),
         __initializing(false)
-    {
-        for(int i=0; i<5; ++i) {
-            __Ummp[i].resize(3);
-            __Ummp_deriv[i].resize(3);
-        }
-    }
+    {}
 
     void DissipatingZone::configure(bool initialize,
                                     double
@@ -442,7 +341,7 @@ namespace Evolve {
         }
         if(std::isnan(orbital_frequency)) return;
 
-        fill_Umm();
+        __potential_term.configure(inclination);
         __power = 0;
         __torque_x = 0;
         __torque_y = 0;
@@ -461,12 +360,12 @@ namespace Evolve {
                    U_mp1mp_value,
                    U_mp1mp_i_deriv,
                    U_mp1mp_e_deriv;
-            potential_term(eccentricity,
-                           -2,
-                           mp,
-                           U_mp1mp_value,
-                           U_mp1mp_i_deriv,
-                           U_mp1mp_e_deriv);
+            __potential_term(eccentricity,
+                             -2,
+                             mp,
+                             U_mp1mp_value,
+                             U_mp1mp_i_deriv,
+                             U_mp1mp_e_deriv);
             for(int m = -2; m <= 2; ++m) {
 #ifdef VERBOSE_DEBUG
                 std::cerr << "Term: m' = "
@@ -480,12 +379,12 @@ namespace Evolve {
                        U_mmp_i_deriv = U_mp1mp_i_deriv, 
                        U_mmp_e_deriv = U_mp1mp_e_deriv;
                 if(m < 2)
-                    potential_term(eccentricity,
-                                   m + 1,
-                                   mp,
-                                   U_mp1mp_value,
-                                   U_mp1mp_i_deriv,
-                                   U_mp1mp_e_deriv);
+                    __potential_term(eccentricity,
+                                     m + 1,
+                                     mp,
+                                     U_mp1mp_value,
+                                     U_mp1mp_i_deriv,
+                                     U_mp1mp_e_deriv);
                 else U_mp1mp_value = U_mp1mp_i_deriv = U_mp1mp_e_deriv = 0;
                 double tidal_frequency = forcing_frequency(mp,
                                                            m,
@@ -812,6 +711,7 @@ namespace Evolve {
         unsigned
     )
     {
+        __potential_term.change_e_order(new_e_order);
         if(__lock.spin_frequency_multiplier()==0) {
             __e_order=new_e_order;
             return;

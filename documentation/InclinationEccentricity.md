@@ -7,18 +7,21 @@ the formalism of Lai 2012, hence we will use the same notation.
 The first thing is to derive the spherical harmonic expansion of the tidal
 potential. 
 \f[
-	U(\mathbf{r}, t) = \frac{GM'}{r(t)}\left(
-		1-\frac{r(t)}{\left|\mathbf{r}_{M'}\right|}\right)
+	U(\mathbf{r}, t) = \frac{GM'}{|\mathbf{r}_{M'}|}\left(
+		\frac{\mathbf{r}\cdot\mathbf{r}_{M'}}{\left|\mathbf{r}_{M'}\right|^2}
+        -
+        \frac{\left|\mathbf{r_{M'}}\right|}{\left|\mathbf{r} - \mathbf{r}_{M'}\right|}
+    \right)
 \f]
 
-where \f$r(t)\f$ is the distance between the centers of \f$M\f$ and \f$M'\f$
-and \f$\left|\mathbf{r}_{M'}\right|\f$ is the distance between \f$M'\f$ and
-the point \f$\mathbf{r}\f$ where the potential is being evaluated. Obviously
-for a circular orbit \f$r(t)\f$ is a constant.
+where \f$\mathbf{r}_{M'}(t)\f$ is the vector from the centers of \f$M\f$ to
+\f$M'\f$ and \f$\mathbf{r}\f$ is the point where the potential is being
+evaluated. Obviously for a circular orbit \f$\left|\mathbf{r}_{M'}(t)\right|\f$
+is a constant.
 
-We start with the expansion in a coordinate system with
-\f$\mathbf{\hat{z}}=\mathbf{\hat{L}}\f$, and
-\f$\mathbf{\hat{y}}=\mathbf{\hat{S}}\times\mathbf{\hat{L}}\f$.
+Letting \f$r(t) \equiv \left|\mathbf{r}_{M'}(t)\right| \f$ We start with the
+expansion in a coordinate system with \f$\mathbf{\hat{z}}=\mathbf{\hat{L}}\f$,
+and \f$\mathbf{\hat{y}}=\mathbf{\hat{S}}\times\mathbf{\hat{L}}\f$.
 
 Let us define this expansion as:
 \f[
@@ -40,7 +43,7 @@ system where \f$\hat{\tilde{z}}\f$ points from \f$M\f$ to \f$M'\f$. Tilde
 will be used to identify coordinates in that system.
 
 \f[
-	\tilde{U}(\mathbf{r}, t) = 1 - \frac{1}{\sqrt{(1-\tilde{z})^2 +
+	\tilde{U}(\mathbf{r}, t) = \tilde{z} - \frac{1}{\sqrt{(1-\tilde{z})^2 +
 		\tilde{x}^2 + \tilde{y}^2}}
 \f]
 where \f$\tilde{x}\f$, \f$\tilde{y}\f$ and \f$\tilde{z}\f$ are the
@@ -56,8 +59,11 @@ with \f$\tilde{\rho}\f$ also scaled by \f$r(t)\f$.
 
 With these we have:
 \f[
-	\tilde{U}(\tilde{\rho}, \tilde{\theta}, t) = 1 - \frac{1}{
-		\sqrt{1-2\tilde{\rho}\cos\tilde{\theta} + \tilde{\rho}^2}}
+	\tilde{U}(\tilde{\rho}, \tilde{\theta}, t)
+    =
+    \tilde{\rho}\cos\tilde{\theta}
+    -
+    \frac{1}{\sqrt{1-2\tilde{\rho}\cos\tilde{\theta} + \tilde{\rho}^2}}
 \f]
 
 As expected there is no \f$\tilde{\phi}\f$ dependence.

@@ -1,7 +1,7 @@
 var DissipationQuantities_8h =
 [
-    [ "operator<<", "DissipationQuantities_8h.html#a43e4c41f38140027af661107ea46c3f7", null ],
-    [ "operator<<", "DissipationQuantities_8h.html#a6a31ea8870b5ad8897683b4d367feb8c", null ],
+    [ "operator<<", "DissipationQuantities_8h.html#aee7ef5e9057dab6eca681e247692526c", null ],
+    [ "operator<<", "DissipationQuantities_8h.html#a57cbfc19ad06091e4f70f2a7ac99a47a", null ],
     [ "zone_specific", "DissipationQuantities_8h.html#a21fb2ba2c72774f1390786989ce15284", null ],
     [ "AGE", "DissipationQuantities_8h.html#a57416cfb43732078f79903e4646daf16", null ],
     [ "ECCENTRICITY", "DissipationQuantities_8h.html#afce6eef9cc458e169f00885d8701dabc", null ],
