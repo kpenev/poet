@@ -278,27 +278,27 @@ The collected equations are:
 	\dot{\omega} &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
 				     + \frac{T_y+\mathscr{T}_y}{S\sin\theta}\\
 
-	\bhat{\tilde{x}}&=& \left(\sin\theta\sin\tilde{\theta}
+	\mathbf{\hat{\tilde{x}}}&=& \left(\sin\theta\sin\tilde{\theta}
 							  + \cos\theta\cos\tilde{\theta}\cos\Delta\omega
-						\right)\bhat{x}
-						+ \cos\tilde{\theta}\sin\Delta\omega\bhat{y}
+						\right)\mathbf{\hat{x}}
+						+ \cos\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
 						+ \left(\cos\theta\sin\tilde{\theta}
 								-
 								\sin\theta\cos\tilde{\theta}\cos\Delta\omega
-						\right)\bhat{z}\\
+						\right)\mathbf{\hat{z}}\\
 
-	\bhat{\tilde{y}}&=& -\cos\theta\sin\Delta\omega\bhat{x}
-					    + \cos\Delta\omega\bhat{y}
-					    + \sin\theta\sin\Delta\omega\bhat{z}\\
+	\mathbf{\hat{\tilde{y}}}&=& -\cos\theta\sin\Delta\omega\mathbf{\hat{x}}
+					    + \cos\Delta\omega\mathbf{\hat{y}}
+					    + \sin\theta\sin\Delta\omega\mathbf{\hat{z}}\\
 
-	\bhat{\tilde{z}}&=& \left(\sin\theta\cos\tilde{\theta}
+	\mathbf{\hat{\tilde{z}}}&=& \left(\sin\theta\cos\tilde{\theta}
 							  - \cos\theta\sin\tilde{\theta}\cos\Delta\omega
-						\right)\bhat{x}
-						- \sin\tilde{\theta}\sin\Delta\omega\bhat{y}
+						\right)\mathbf{\hat{x}}
+						- \sin\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
 						+ \left(\cos\theta\cos\tilde{\theta}
 								+
 								\sin\theta\sin\tilde{\theta}\cos\Delta\omega
-						\right)\bhat{z}
+						\right)\mathbf{\hat{z}}
 \f}
 
 If the system ever gets in a state where the forcing frequency
