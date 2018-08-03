@@ -1,4 +1,4 @@
 #include "TidalPotential.h"
 
-namespace testGravitationalPotential {
+namespace Evolve {
 } //End testGravitationalPotential namespace.

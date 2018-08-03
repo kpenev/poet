@@ -1,6 +1,6 @@
 #include "testGravitationalPotential.h"
 
-namespace testGravitationalPotential {
+namespace Evolve {
 
     void print_orbit()
     {
@@ -80,5 +80,5 @@ int main(int argc, char **argv)
     );
     std::cout.precision(16);
     std::cerr.precision(16);
-    testGravitationalPotential::print_tidal_potential();
+    Evolve::print_tidal_potential();
 }

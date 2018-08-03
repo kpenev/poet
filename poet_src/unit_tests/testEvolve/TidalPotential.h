@@ -12,7 +12,7 @@
 #include "EccentricOrbit.h"
 #include <cmath>
 
-namespace testGravitationalPotential {
+namespace Evolve {
     ///Calculate the tidal potential over one component of an eccentric binary.
     class TidalPotential {
     private:
@@ -149,6 +149,6 @@ namespace testGravitationalPotential {
                 ) / Core::AstroConst::solar_radius
             );
         }
-} //End testGravitationalPotential namespace
+} //End Evolve namespace
 
 #endif
