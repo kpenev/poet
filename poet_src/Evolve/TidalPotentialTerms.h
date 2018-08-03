@@ -78,7 +78,7 @@ namespace Evolve {
 
             ///Set to the eccentricity_derivative.
             double &eccentricity_deriv
-        );
+        ) const;
 
         ///\brief Reads the eccentricity expansion coefficients of \f$p_{m,s}\f$.
         ///

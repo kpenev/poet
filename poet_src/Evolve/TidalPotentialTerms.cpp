@@ -113,7 +113,7 @@ namespace Evolve {
                                          int mp, 
                                          double &no_deriv,
                                          double &inclination_deriv,
-                                         double &eccentricity_deriv)
+                                         double &eccentricity_deriv) const
     {
         no_deriv=inclination_deriv=eccentricity_deriv=0;
         for(int i=0; i<3; ++i) {

@@ -64,7 +64,7 @@ namespace Evolve {
             ///The orbital phase of the secondary body
             ///(\f$ 2 \pi n \f$ is periapsis).
             double orbital_phase
-        );
+        ) const;
     public:
         TidalPotentialExpansion(
             ///See same name argument to EccentricOrbit.

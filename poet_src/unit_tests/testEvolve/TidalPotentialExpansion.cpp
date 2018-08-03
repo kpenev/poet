@@ -13,7 +13,7 @@ namespace Evolve {
                                                double radial_distance,
                                                double azimuthal_angle,
                                                double polar_angle,
-                                               double orbital_phase)
+                                               double orbital_phase) const
     {
         double result = 0.0;
         for(int m=-2; m<=2; ++m) {

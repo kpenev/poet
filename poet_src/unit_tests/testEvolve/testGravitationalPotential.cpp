@@ -2,9 +2,10 @@
 
 namespace Evolve {
 
-    void print_orbit()
+    void test_GravitationalPotential::print_orbit(
+        const EccentricOrbit &orbit
+    ) const
     {
-        EccentricOrbit orbit(1.0, 0.1, M_PI, 0.8);
         std::cout << std::setw(25) << "phase"
                   << std::setw(25) << "x"
                   << std::setw(25) << "y"
@@ -20,31 +21,13 @@ namespace Evolve {
         }
     }
 
-    void print_tidal_potential()
+    void test_GravitationalPotential::print_tidal_potential(
+        TidalPotentialExpansion &approx_potential,
+        const TidalPotential &exact_potential,
+        const Eigen::Vector3d &position
+    ) const
     {
-        double mprimary=1.0,
-               msecondary=0.1,
-               semimajor=M_PI,
-               eccentricity=0.0,
-               inclination=0.0,
-               periapsis=0.0;
-        TidalPotential exact_potential(mprimary,
-                                       msecondary,
-                                       semimajor,
-                                       eccentricity,
-                                       inclination,
-                                       periapsis);
-        TidalPotentialExpansion approx_potential(mprimary,
-                                                 msecondary,
-                                                 semimajor,
-                                                 eccentricity,
-                                                 inclination,
-                                                 periapsis);
-        double orbital_period = EccentricOrbit(mprimary,
-                                               msecondary,
-                                               semimajor,
-                                               eccentricity).orbital_period();
-        Eigen::Vector3d position(1.0e-3, 0.0, 0.0);
+        double orbital_period = exact_potential.orbit().orbital_period();
         std::ostringstream Uexact_label, Uapprox_label;
         Uexact_label << "Uexact("
                      << "x=" << position[0]
@@ -71,14 +54,126 @@ namespace Evolve {
                       << std::endl;
         }
     }
-}
 
-int main(int argc, char **argv)
-{
-    Evolve::TidalPotentialTerms::read_eccentricity_expansion(
-        "eccentricity_expansion_coef.txt"
-    );
-    std::cout.precision(16);
-    std::cerr.precision(16);
-    Evolve::print_tidal_potential();
-}
+
+    double test_GravitationalPotential::abs_expected_precision(
+        const Eigen::Vector3d &position,
+        const EccentricOrbit &orbit
+    ) const
+    {
+        const double safety = 1.1;
+        return safety * (
+            (
+                Core::AstroConst::G
+                *
+                orbit.secondary_mass() * Core::AstroConst::solar_mass
+                /
+                (orbit.semimajor() * Core::AstroConst::solar_radius)
+            )
+            *
+            std::pow(
+                (
+                    position.norm()
+                    /
+                    (orbit.semimajor() * (1.0 - orbit.eccentricity()))
+                ),
+                3
+            )
+        );
+    }
+
+    void test_GravitationalPotential::test_single_point(
+        TidalPotentialExpansion &approx_potential,
+        const TidalPotential &exact_potential,
+        const Eigen::Vector3d &position
+    )
+    {
+        double orbital_period = exact_potential.orbit().orbital_period(),
+               abs_tolerance = abs_expected_precision(position,
+                                                      exact_potential.orbit());
+
+        std::ostringstream message_start;
+        message_start << "M = " << exact_potential.orbit().primary_mass()
+                      << "; M' = " << exact_potential.orbit().secondary_mass()
+                      << "; a = " << exact_potential.orbit().semimajor()
+                      << "; e = " << exact_potential.orbit().eccentricity()
+                      << "; inclination = " << exact_potential.inclination()
+                      << "; periapsis = " << exact_potential.arg_of_periapsis()
+                      << "; U(x = " << position[0]
+                      << ", y = " << position[1]
+                      << ", z = " << position[2];
+
+        for(
+            double time = 0;
+            time < 5.0 * orbital_period;
+            time += 0.01 * M_PI * orbital_period
+        ) {
+            double expected = exact_potential(position, time);
+            double got = approx_potential(position, time);
+
+            std::ostringstream message;
+            message << message_start.str()
+                    << ", t = " << time
+                    << " = " << time / orbital_period
+                    << " Porb): expected " << expected
+                    << "; got " << got
+                    << "; difference " << got - expected
+                    << " > " << abs_tolerance;
+
+            TEST_ASSERT_MSG(
+                check_diff(got,
+                           expected,
+                           0.0,
+                           abs_tolerance),
+                message.str().c_str()
+            );
+        }
+    }
+
+    void test_GravitationalPotential::test_system(
+        double primary_mass,
+        double secondary_mass,
+        double semimajor,
+        double eccentricity,
+        double inclination,
+        double arg_of_periapsis
+    )
+    {
+
+        TidalPotential exact_potential(primary_mass,
+                                       secondary_mass,
+                                       semimajor,
+                                       eccentricity,
+                                       inclination,
+                                       arg_of_periapsis);
+        TidalPotentialExpansion approx_potential(primary_mass,
+                                                 secondary_mass,
+                                                 semimajor,
+                                                 eccentricity,
+                                                 inclination,
+                                                 arg_of_periapsis);
+
+        double test_offsets[]= {-0.01, -0.001, 0.0, 0.001, 0.01};
+        unsigned num_offsets = sizeof(test_offsets) / sizeof(double);
+        for(unsigned z_index = 0; z_index < num_offsets; ++z_index)
+            for(unsigned y_index = 0; y_index < num_offsets; ++y_index)
+                for(unsigned x_index = 0; x_index < num_offsets; ++x_index) {
+                    test_single_point(approx_potential,
+                                      exact_potential,
+                                      Eigen::Vector3d(test_offsets[x_index],
+                                                      test_offsets[y_index],
+                                                      test_offsets[z_index]));
+                }
+    }
+
+    void test_GravitationalPotential::test_expansion()
+    {
+        test_system(1.0, 0.1, M_PI, 0.0, 0.0, 0.0);
+    }
+
+    test_GravitationalPotential::test_GravitationalPotential()
+    {
+        TEST_ADD(test_GravitationalPotential::test_expansion);
+    }
+
+} //End Evolve namespace.

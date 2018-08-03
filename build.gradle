@@ -185,7 +185,7 @@ model {
 
         }
 
-        testOrbitSolver(NativeExecutableSpec) {
+        testEvolve(NativeExecutableSpec) {
             sources.cpp {
                 source {
                     srcDir "poet_src/unit_tests/testEvolve"
@@ -214,22 +214,6 @@ model {
                 lib library: "planet"
                 lib library: "evolve"
                 lib library: "dirent"
-            }
-        }
-
-        testGravitationalPotential(NativeExecutableSpec) {
-            sources.cpp {
-                source {
-                    srcDir "poet_src/unit_tests/testGravitationalPotential"
-                    include "**/*.cpp"
-                }
-            }
-            binaries.all {
-                cppCompiler.define "STANDALONE"
-                linker.args "-l" + ensureLibraryVersion("cpptest")
-
-                lib library: "eigen"
-                lib library: "evolve"
             }
         }
 
