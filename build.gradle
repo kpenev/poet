@@ -217,6 +217,22 @@ model {
             }
         }
 
+        testGravitationalPotential(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "poet_src/unit_tests/testGravitationalPotential"
+                    include "**/*.cpp"
+                }
+            }
+            binaries.all {
+                cppCompiler.define "STANDALONE"
+                linker.args "-l" + ensureLibraryVersion("cpptest")
+
+                lib library: "eigen"
+                lib library: "evolve"
+            }
+        }
+
         debug_stellar_evolution(NativeExecutableSpec) {
             sources.cpp {
                 lib library: "eigen"

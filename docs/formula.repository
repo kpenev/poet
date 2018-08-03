@@ -1,327 +1,329 @@
-\form#0:\begin{eqnarray*} E&=&-\frac{GMM'}{2a}\\ L&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2} =GMM'\sqrt{\frac{(1-e^2)MM'}{(-2E)(M+M')}} \end{eqnarray*}
-\form#1:\begin{eqnarray*} \dot{a}&=&a\frac{-\dot{E}}{E}\\ \dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\ \end{eqnarray*}
-\form#2:$\mathbf{S}$
-\form#3:$S$
-\form#4:$\mathbf{L}$
-\form#5:$L$
-\form#6:$\theta$
-\form#7:$\omega$
-\form#8:$\mathbf{T}$
-\form#9:$\mathbf{\tilde{T}}$
-\form#10:$\mathbf{\mathscr{T}}$
-\form#11:$\bhat{p}$
-\form#12:$\bhat{z}$
-\form#13:$\bhat{y}$
-\form#14:$\bhat{x}$
-\form#15:$\bhat{y}\times\bhat{z}$
-\form#16:\begin{eqnarray*} \mathbf{S} &=& S\bhat{z}\\ \mathbf{L} &=& L\sin\theta\bhat{x}+L\cos\theta\bhat{z}\\ \bhat{y} &=& \frac{\mathbf{S}\times\mathbf{L}}{LS\sin\theta}\\ \bhat{p} &=& - \sin\omega\cos\theta\bhat{x} + \cos\omega\bhat{y} + \sin\omega\sin\theta\bhat{z}\\ \mathbf{S}' &=& (T_x+\mathscr{T}_x)dt\bhat{x} + (T_y+\mathscr{T}_y)dt\bhat{y} + (S+T_zdt+\mathscr{T}_zdt)\bhat{z}\\ \mathbf{L}' &=& (L\sin\theta-T_xdt-\tilde{T}_xdt)\bhat{x} - (T_y+\tilde{T}_y)dt\bhat{y} + (L\cos\theta-T_zdt-\tilde{T}_zdt)\bhat{z}\\ \frac{1}{S'} &=& \frac{1}{S} - \frac{T_z+\mathscr{T}_z}{S^2}dt\\ \frac{1}{L'} &=& \frac{1}{L} + \frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L^2}dt\\ \frac{1}{L'S'} &=& \frac{1}{LS}\left(1 - \frac{T_z+\mathscr{T}_z}{S}dt + \frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L}dt \right)\\ \Rightarrow \frac{d}{dt}\left(\frac{1}{LS}\right) &=& \frac{1}{LS}\left(\frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z+\mathscr{T}_z}{S} \right) \end{eqnarray*}
-\form#17:\begin{eqnarray*} \cos\theta &=& \frac{\mathbf{S}\cdot\mathbf{L}}{LS}\\ \cos\theta' &=& \frac{\mathbf{S}'\cdot\mathbf{L}'}{L'S'}\\ &=& \frac{L\sin\theta(T_x+\mathscr{T}_x)dt + LS\cos\theta + L\cos\theta(T_z+\mathscr{T}_z)dt - S(T_z+\tilde{T}_z)dt}{LS} \left(1 - \frac{T_z+\mathscr{T}_z}{S}dt + \frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L}dt \right)\\ &=& \cos\theta -\frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt + \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta + (T_z+\tilde{T}_z)\cos^2\theta}{L}dt +\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt + \frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt - \frac{T_z+\tilde{T}_z}{L}dt\\ &=& \cos\theta + \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta - (T_z+\tilde{T}_z)\sin^2\theta}{L}dt +\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt\\ \Rightarrow \dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} - \frac{(T_x+\tilde{T}_x)\cos\theta}{L} - \frac{T_x+\mathscr{T}_x}{S} \end{eqnarray*}
-\form#18:\[ \dot{\omega} = -\frac{1}{\sin\omega}\frac{d(\bhat{p}\cdot\bhat{y})}{dt} = -\frac{1}{\sin\omega}\left( \bhat{y}\cdot\frac{d\bhat{p}}{dt} + \bhat{p}\cdot\frac{d\bhat{y}}{dt} \right) \]
-\form#19:\begin{eqnarray*} \frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right) &=& - S(T_x+\tilde{T}_x)\bhat{y} + S(T_y+\tilde{T}_y)\bhat{x} - L\cos\theta(T_x+\mathscr{T}_x)\bhat{y} + L\cos\theta(T_y+\mathscr{T}_y)\bhat{x} - L\sin\theta(T_y+\mathscr{T}_y)\bhat{z} + L\sin\theta(T_z+\mathscr{T}_z)\bhat{y}\\ &=& \left[S(T_y+\tilde{T}_y) + L\cos\theta(T_y+\mathscr{T}_y)\right]\bhat{x} + \left[L\sin\theta(T_z+\mathscr{T}_z) - L\cos\theta(T_x+\mathscr{T}_x) - S(T_x+\tilde{T}_x) \right]\bhat{y} - L\sin\theta(T_y+\mathscr{T}_y)\bhat{z} \end{eqnarray*}
-\form#20:$\dot{\theta}$
-\form#21:\begin{eqnarray*} \frac{d}{dt}\left(\frac{1}{\sin\theta}\right) &=& \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin^2\theta} + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin^2\theta} - \frac{(T_z+\tilde{T}_z)\cos\theta}{L\sin\theta} \end{eqnarray*}
-\form#22:$\frac{d}{dt}\left(\frac{1}{LS}\right)$
-\form#23:$\frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)$
-\form#24:$\frac{d}{dt}\left(\frac{1}{\sin\theta}\right)$
-\form#25:\begin{eqnarray*} \frac{d}{dt}\bhat{y} &=& \left\{\frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z+\mathscr{T}_z}{S} \right\}\bhat{y}\\ && + \frac{1}{LS\sin\theta}\left\{ \left[S(T_y+\tilde{T}_y) + L\cos\theta(T_y+\mathscr{T}_y)\right]\bhat{x} + \left[L\sin\theta(T_z+\mathscr{T}_z) - L\cos\theta(T_x+\mathscr{T}_x) - S(T_x+\tilde{T}_x) \right]\bhat{y} - L\sin\theta(T_y+\mathscr{T}_y)\bhat{z} \right\}\\ && + \left\{\frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta} + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta} - \frac{(T_z+\tilde{T}_z)\cos\theta}{L} \right\}\bhat{y}\\ &=& \left[\frac{T_y+\tilde{T}_y}{L\sin\theta} + \frac{\cos\theta(T_y+\mathscr{T}_y)}{S\sin\theta} \right]\bhat{x}\\ && + \left[\frac{(T_x+\tilde{T}_x)\sin\theta}{L} + \frac{(T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z+\mathscr{T}_z}{S} - \frac{\cos\theta(T_x+\mathscr{T}_x)}{S\sin\theta} + \frac{T_z+\mathscr{T}_z}{S} - \frac{T_x+\tilde{T}_x}{L\sin\theta} + \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta} + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta} - \frac{(T_z+\tilde{T}_z)\cos\theta}{L} \right]\bhat{y}\\ && - \frac{T_y+\mathscr{T}_y}{S}\bhat{z}\\ &=& \left[\frac{T_y+\tilde{T}_y}{L\sin\theta} + \frac{(T_y+\mathscr{T}_y)\cos\theta}{S\sin\theta} \right]\bhat{x} - \frac{T_y+\mathscr{T}_y}{S}\bhat{z}\\ \Rightarrow -\frac{\bhat{p}}{\sin\omega}\cdot\frac{d}{dt}\bhat{y} &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{(T_y+\mathscr{T}_y)\cos^2\theta}{S\sin\theta} + \frac{(T_y+\mathscr{T}_y)\sin\theta}{S}\\ &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{T_y+\mathscr{T}_y}{S\sin\theta} \end{eqnarray*}
-\form#26:\begin{eqnarray*} \frac{d}{dt}\bhat{p} &=& -(\mathbf{T}+\mathbf{\tilde{T}}) \cdot\bhat{p}\frac{\mathbf{L}}{L^2}\\ &=& \left(\frac{(T_x+\tilde{T}_x)\sin\omega\cos\theta}{L} - \frac{(T_y+\tilde{T}_y)\cos\omega}{L} - \frac{(T_z+\tilde{T}_z)\sin\omega\sin\theta}{L} \right) \left(\sin\theta\bhat{x}+\cos\theta\bhat{z}\right)\\ \Rightarrow -\frac{\bhat{y}}{\sin\omega}\cdot\frac{d}{dt}\bhat{p} &=& 0 \end{eqnarray*}
-\form#27:\[ \dot{\omega} = \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{T_y+\mathscr{T}_y}{S\sin\theta} \]
-\form#28:\begin{eqnarray*} \dot{S} &=& T_z+\mathscr{T}_z\\ \dot{L} &=& -T_x\sin\theta - T_z\cos\theta \end{eqnarray*}
-\form#29:$\tilde{T}_x$
-\form#30:$\tilde{T}_y$
-\form#31:$\tilde{T}_z$
-\form#32:$\bhat{\tilde{x}}$
-\form#33:$\bhat{\tilde{y}}$
-\form#34:$\bhat{\tilde{z}}$
-\form#35:$\Delta\omega$
-\form#36:\[ \bhat{\tilde{y}}=-\cos\theta\sin\Delta\omega\bhat{x} + \cos\Delta\omega\bhat{y} + \sin\theta\sin\Delta\omega\bhat{z} \]
-\form#37:\begin{eqnarray*} \bhat{\tilde{z}}&=&\cos\tilde{\theta}\bhat{L}+ \sin\tilde{\theta}\bhat{L}\times\bhat{\tilde{y}}\\ &=&\sin\theta\cos\tilde{\theta}\bhat{x} + \cos\theta\cos\tilde{\theta}\bhat{z} + \sin\tilde{\theta}\left( \sin\theta\cos\Delta\omega\bhat{z} - \sin^2\theta\sin\Delta\omega\bhat{y} - \cos^2\theta\sin\Delta\omega\bhat{y} - \cos\theta\cos\Delta\omega\bhat{x} \right)\\ &=& \left(\sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{x} - \sin\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
-\form#38:\begin{eqnarray*} \bhat{\tilde{x}}&=& \sin\tilde{\theta}\bhat{L} - \cos\tilde{\theta}\bhat{L}\times\bhat{\tilde{y}}\\ &=& \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{x} + \cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
-\form#39:$\bhat{\tilde{x}}\times\bhat{\tilde{y}}=\bhat{\tilde{z}}$
-\form#40:\begin{eqnarray*} \bhat{\tilde{x}}\times\bhat{\tilde{y}} &=& \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\cos\Delta\omega\bhat{z} - \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\sin\theta\sin\Delta\omega\bhat{y}\\ && + \cos\tilde{\theta}\sin\Delta\omega \cos\theta\sin\Delta\omega \bhat{z} + \cos\tilde{\theta}\sin\Delta\omega \sin\theta\sin\Delta\omega \bhat{x}\\ && - \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\cos\theta\sin\Delta\omega\bhat{y} - \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\cos\Delta\omega\bhat{x}\\ &=& \left( \sin\theta\cos\tilde{\theta}\sin^2\Delta\omega - \cos\theta\sin\tilde{\theta}\cos\Delta\omega + \sin\theta\cos\tilde{\theta}\cos^2\Delta\omega\right)\bhat{x} -\left(\sin^2\theta\sin\tilde{\theta}\sin\Delta\omega + \sin\theta\cos\theta\cos\tilde{\theta} \sin\Delta\omega\cos\Delta\omega + \cos^2\theta\sin\tilde{\theta}\sin\Delta\omega - \sin\theta\cos\theta\cos\tilde{\theta} \sin\Delta\omega\cos\Delta\omega \right)\bhat{y} +\left(\sin\theta\sin\tilde{\theta}\cos\Delta\omega + \cos\theta\cos\tilde{\theta}\cos^2\Delta\omega + \cos\theta\cos\tilde{\theta}\sin^2\Delta\omega \right)\bhat{z}\\ &=& \left( \sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega\right)\bhat{x} -\sin\tilde{\theta}\sin\Delta\omega\bhat{y} +\left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
-\form#41:$ \sin\tilde{\theta}\bhat{\tilde{x}}+\cos\tilde{\theta}\bhat{\tilde{z}}= \sin\theta\bhat{x}+\cos\theta\bhat{z} $
-\form#42:\begin{eqnarray*} \sin\tilde{\theta}\bhat{\tilde{x}}+\cos\tilde{\theta}\bhat{\tilde{z}} &=& \left(\sin\theta\sin^2\tilde{\theta} + \cos\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{x} + \sin\tilde{\theta}\cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\sin^2\tilde{\theta} - \sin\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{z}\\ && + \left(\sin\theta\cos^2\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{x} - \sin\tilde{\theta}\cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\cos^2\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{z}\\ &=& \sin\theta\bhat{x} + \cos\theta\bhat{z} \end{eqnarray*}
-\form#43:\[ - \sin(\omega-\Delta\omega)\cos\tilde{\theta}\bhat{\tilde{x}} + \cos(\omega-\Delta\omega)\bhat{\tilde{y}} + \sin(\omega-\Delta\omega)\sin\tilde{\theta}\bhat{\tilde{z}}= - \sin\omega\cos\theta\bhat{x} + \cos\omega\bhat{y} + \sin\omega\sin\theta\bhat{z} \]
-\form#44:\begin{eqnarray*} \bhat{\tilde{p}}\cdot\bhat{x} &=& -\sin(\omega-\Delta\omega)\cos\tilde{\theta} \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\\ && - \cos(\omega-\Delta\omega)\cos\theta\sin\Delta\omega\\ && + \sin(\omega-\Delta\omega)\sin\tilde{\theta} \left(\sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega \right)\\ &=& -\cos\theta\cos^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega - \cos\theta\cos(\omega-\Delta\omega)\sin\Delta\omega - \cos\theta\sin^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega\\ &=& - \cos\theta\sin(\omega-\Delta\omega)\cos\Delta\omega - \cos\theta\cos(\omega-\Delta\omega)\sin\Delta\omega\\ &=& - \sin\omega\cos\theta\\ &=& \bhat{p}\cdot\bhat{x} \end{eqnarray*}
-\form#45:\begin{eqnarray*} \bhat{\tilde{p}}\cdot\bhat{y} &=& - \sin(\omega-\Delta\omega)\cos\tilde{\theta} \cos\tilde{\theta}\sin\Delta\omega + \cos(\omega-\Delta\omega)\cos\Delta\omega - \sin(\omega-\Delta\omega)\sin\tilde{\theta} \sin\tilde{\theta}\sin\Delta\omega\\ &=& - \sin(\omega-\Delta\omega)\sin\Delta\omega + \cos(\omega-\Delta\omega)\cos\Delta\omega\\ &=& \cos\omega\\ &=& \bhat{p}\cdot\bhat{y} \end{eqnarray*}
-\form#46:\begin{eqnarray*} \bhat{\tilde{p}}\cdot\bhat{z} &=& - \sin(\omega-\Delta\omega)\cos\tilde{\theta} \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\\ && + \cos(\omega-\Delta\omega)\sin\theta\sin\Delta\omega\\ && + \sin(\omega-\Delta\omega)\sin\tilde{\theta} \left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\\ &=& + \sin\theta\cos^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega + \cos(\omega-\Delta\omega)\sin\theta\sin\Delta\omega + \sin\theta\sin^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega\\ &=& \sin\theta\sin(\omega-\Delta\omega)\cos\Delta\omega + \sin\theta\cos(\omega-\Delta\omega)\sin\Delta\omega\\ &=& \sin\theta\sin\omega\\ &=& \bhat{p}\cdot\bhat{z} \end{eqnarray*}
-\form#47:\begin{eqnarray*} \mathcal{U}_{-2,-2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1+cos\theta)^2\\ \mathcal{U}_{-1,-2}&=&-\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1+\cos\theta)\\ \mathcal{U}_{0,-2}&=&\sqrt{\frac{\pi}{5}}\frac{3}{4}\sin^2\theta\\ \mathcal{U}_{1,-2}&=&-\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1-\cos\theta)\\ \mathcal{U}_{2,-2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1-\cos\theta)^2\\ \end{eqnarray*}
-\form#48:\begin{eqnarray*} \mathcal{U}_{-2,0}&=&-\sqrt{\frac{6\pi}{5}}\frac{1}{4}\sin^2\theta\\ \mathcal{U}_{-1,0}&=&-\sqrt{\frac{6\pi}{5}}\frac{1}{2} \sin\theta\cos\theta\\ \mathcal{U}_{0,0}&=&-\sqrt{\frac{\pi}{5}}\frac{1}{2}(3\cos^2\theta-1)\\ \mathcal{U}_{1,0}&=&\sqrt{\frac{6\pi}{5}}\frac{1}{2} \sin\theta\cos\theta\\ \mathcal{U}_{2,0}&=&-\sqrt{\frac{6\pi}{5}}\frac{1}{4}\sin^2\theta \end{eqnarray*}
-\form#49:\begin{eqnarray*} \mathcal{U}_{-2,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1-\cos\theta)^2\\ \mathcal{U}_{-1,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1-\cos\theta)\\ \mathcal{U}_{0,2}&=&\sqrt{\frac{\pi}{5}}\frac{3}{4}\sin^2\theta\\ \mathcal{U}_{1,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1+\cos\theta)\\ \mathcal{U}_{2,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1+\cos\theta)^2\\ \end{eqnarray*}
-\form#50:\begin{eqnarray*} \mathbf{T}&=&-\int d^3 x \delta\rho(\mathbf{r}, t) \mathbf{r}\times \nabla U*(\mathbf{r}, t)\\ &=&-\left(\frac{G M'}{a^3 \omega_0}\right)^2 \int d^3 x \left\{ \sum_{m,m'}\mathcal{U}_{m,m'} \delta\bar{\rho}_{m,m'}(\mathbf{r}) \exp(-im'\Omega t + i\Delta_{m,m'}) \right\} \mathbf{r}\times \left\{ \sum_{\mu,\mu'}\mathcal{U}_{\mu,\mu'} \exp(i \mu'\Omega t) \nabla \left[r^2 Y_{2,\mu}^*(\theta, \phi)\right] \right\} \end{eqnarray*}
-\form#51:$\mathbf{r}\times\nabla r^2=0$
-\form#52:\begin{eqnarray*} \mathbf{T}&=&-\left(\frac{G M'}{a^3 \omega_0}\right)^2 \int d^3 x \left\{ \sum_{m,m'}\mathcal{U}_{m,m'} \delta\bar{\rho}_{m,m'}(\mathbf{r}) \exp(-im'\Omega t + i\Delta_{m,m'}) \right\} \mathbf{r}\times \left\{ \sum_{\mu,\mu'}\mathcal{U}_{\mu,\mu'} \exp(i \mu'\Omega t) r^2 \nabla Y_{2,\mu}^*(\theta, \phi) \right\}\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
-\form#53:$\hat{z}=\cos\theta \hat{r} - \sin\theta \hat{\theta}$
-\form#54:$\hat{r}$
-\form#55:$\hat{z}$
-\form#56:$\mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi)$
-\form#57:\begin{eqnarray*} T_z&=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \sin\theta \hat{\theta}\cdot \left[ \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \right]\\ &=& \left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \sin \theta (\mathbf{r}\times\hat{\theta})\cdot \nabla Y_{2,\mu}^*(\theta, \phi)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^3 \sin\theta \hat{\phi}\cdot\nabla Y_{2,\mu}^*(\theta, \phi)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \frac{\partial Y_{2,\mu}^*(\theta, \phi)}{\partial\phi}\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} i\mu\mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
-\form#58:$\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp(im\phi)$
-\form#59:$m=\mu$
-\form#60:$m'=\mu'$
-\form#61:\[ T_z= -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m'} i m \mathcal{U}_{m,m'}^2 \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi) \]
-\form#62:\begin{eqnarray*} T_z&=&\frac{G R^3}{M}\left(\frac{M'}{a^3}\right)^2 \sum_{m,m'} m \mathcal{U}_{m,m'}^2 \sin(\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi)\\ T_z&=&T_0 \sum_{m,m'} \mathcal{U}_{m,m'}^2 m \kappa_{m,m'} \sin(\Delta_{m,m'})\\ T_0&\equiv& G R^5\left(\frac{M'}{a^3}\right)^2\\ \kappa&\equiv&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi) \end{eqnarray*}
-\form#63:$\hat{x}=\sin\theta\cos\phi\hat{r} + \cos\theta\cos\phi\hat{\theta} - \sin\phi \hat{\phi}$
-\form#64:\begin{eqnarray*} T_x &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 (\cos\theta\cos\phi\hat{\theta} - \sin\phi\hat{\phi}) \left[ \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \right]\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^3 (\cos\theta\cos\phi\hat{\phi} + \sin\phi\hat{\theta})\cdot \nabla Y_{2,\mu}^*(\theta, \phi)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \cot\theta\cos\phi\frac{\partial}{\partial \phi} + \sin\phi\frac{\partial}{\partial \theta} \right) Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
-\form#65:\begin{eqnarray*} T_x &=& \left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( i\mu\cot\theta\cos\phi Y_{2,\mu}^*(\theta, \phi) - \sin\phi\frac{\partial Y_{2,\mu}^*(\theta, \phi)} {\partial \theta} \right)\\ \end{eqnarray*}
-\form#66:\[ \frac{\partial Y_{2,\mu}^*}{\partial \theta}=\mu\cot\theta Y_{2,\mu}^* + \sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \]
-\form#67:\begin{eqnarray*} T_x &=& \frac{T_0}{MR^2} \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} i\exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + i\sin\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \right)\\ &=& \frac{T_0}{MR^2} \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} i\exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \sqrt{(2-\mu)(3+\mu)}[\exp(2i\phi)-1] Y_{2,\mu+1}^* \right)\\ \end{eqnarray*}
-\form#68:\begin{eqnarray*} T_x &=& -\frac{T_0}{MR^2} \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \sin(\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \frac{\sqrt{(2-\mu)(3+\mu)}}{2}[\exp(2i\phi)-1] Y_{2,\mu+1}^* \right)\\ &=& T_0 \sum_{m,m'} \mathcal{U}_{m,m'} \sin(\Delta_{m,m'})( \kappa_{m,m'}^-\mathcal{U}_{m-1,m'}+ \kappa_{m,m'}^+\mathcal{U}_{m+1,m'})\\ \kappa_{m,m'}^-&\equiv& \frac{\sqrt{(3-m)(2+m)}}{2MR^2} \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*=\frac{\sqrt{(3-m)(2+m)}}{2}\kappa_{m,m'}\\ \kappa_{m,m'}^+&\equiv&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2\left[ (m+1)\cot\theta\exp(i\phi) Y_{2,m+1}^*(\theta,\phi)+ \frac{\sqrt{(1-m)(4+m)}}{2}\exp(2i\phi) Y_{2,m+2}^* \right] \end{eqnarray*}
-\form#69:$\kappa_{m,m'}^-$
-\form#70:$\kappa_{m,m'}$
-\form#71:$\kappa_{m,m'}^+$
-\form#72:$m=0, \pm 1, 2$
-\form#73:\begin{eqnarray*} \kappa_{0,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2\left[ \cot\theta\exp(i\phi) Y_{2,1}^*(\theta,\phi)+ \exp(2i\phi) Y_{2,2}^*(\theta,\phi) \right]\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2\left[ -\frac{1}{2}\sqrt{\frac{15}{2\pi}}\cos^2\theta+ \frac{1}{4}\sqrt{\frac{15}{2\pi}}\sin^2\theta \right]\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2 \frac{1}{4}\sqrt{\frac{15}{2\pi}}(3\cos^2\theta-1)\\ &=&\frac{\sqrt{3/2}}{MR^2}\int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2 Y_{2,0}^*(\theta, \phi)\\ \Rightarrow \kappa_{0,m'}^+&=&\sqrt{3/2}\kappa_{0,m'}\\ \kappa_{-1,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-1,m'}(\mathbf{r}) r^2 \frac{\sqrt{6}}{2}\exp(2i\phi) Y_{2,1}^*\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-1,m'}(\mathbf{r}) r^2 \frac{\sqrt{6}}{2}\exp(2i\phi) Y_{2,-1}^*\\ \Rightarrow\kappa_{-1,m'}^+&=&\sqrt{3/2}\kappa_{-1,m'}\\ \kappa_{1,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{1,m'}(\mathbf{r}) r^2 2\cot\theta\exp(i\phi) Y_{2,2}^*(\theta,\phi)\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{1,m'}(\mathbf{r}) r^2 \frac{1}{2}\sqrt{\frac{15}{2\pi}}\sin\theta\cos\theta\exp(-i\phi)\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{1,m'}(\mathbf{r}) r^2 Y_{2,1}^*(\theta,\phi)\\ \Rightarrow\kappa_{1,m'}^+&=&\kappa_{1,m'}\\ \kappa_{-2,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2\left[ -\cot\theta\exp(i\phi) Y_{2,-1}^*(\theta,\phi)+ \sqrt{\frac{3}{2}}\exp(2i\phi) Y_{2,0}^* \right]\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2\left[ -\frac{1}{2}\sqrt{\frac{15}{2\pi}}\cos^2\theta\exp(2i\phi)+ \frac{1}{4}\sqrt{\frac{15}{2\pi}}\exp(2i\phi)(3\cos^2\theta-1) \right]\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2 \frac{1}{4}\sqrt{\frac{15}{2\pi}}\exp(2i\phi)\left[ -\cos^2\theta+3\cos^2\theta-1 \right]\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2 Y_{-2,m}^*(\theta, phi)\\ \Rightarrow \kappa_{-2,m'}^+&=&\kappa_{-2,m'}\\ \end{eqnarray*}
-\form#74:$\hat{y}=\sin\theta\sin\phi\hat{r} + \cos\theta\sin\phi\hat{\theta} - \cos\phi \hat{\phi}$
-\form#75:\begin{eqnarray*} T_y &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 (\cos\theta\sin\phi\hat{\theta} - \cos\phi\hat{\phi}) \left[ \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \right]\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \cot\theta\sin\phi\frac{\partial}{\partial \phi} + \cos\phi\frac{\partial}{\partial \theta} \right) Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
-\form#76:\begin{eqnarray*} T_y &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( i\mu\cot\theta\sin\phi Y_{2,\mu}^*(\theta, \phi) + \cos\phi\frac{\partial Y_{2,\mu}^*(\theta, \phi)} {\partial \theta} \right)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left\{ i\mu\cot\theta\sin\phi Y_{2,\mu}^*(\theta, \phi) + \cos\phi\left[\mu\cot\theta Y_{2,\mu}^* + \sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \right] \right\}\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left[ \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \cos\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \right]\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left[ \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \frac{\sqrt{(2-\mu)(3+\mu)}}{2}(\exp(2i\phi)+1) Y_{2,\mu+1}^* \right]\\ &=& -\frac{T_0}{MR^2} \sum_{m,m'} \mathcal{U}_{m,m'} \left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+ \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right) \exp(i\Delta_{m,m'}) \end{eqnarray*}
-\form#77:$\kappa^+_{m,m'}$
-\form#78:$\kappa^-_{m,m'}$
-\form#79:$T_x$
-\form#80:\[ T_y = -T_0 \sum_{m,m'} \mathcal{U}_{m,m'} \left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+ \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right) \cos(\Delta_{m,m'}) \]
-\form#81:$\cos\Delta_{m,m'}$
-\form#82:\begin{eqnarray} \frac{da}{dt}&=&\mathrm{sign}(\omega_\mathrm{conv}-\omega_\mathrm{orb}) \frac{9}{2}\sqrt{\frac{G}{aM_*}}\left( \frac{R_*}{a} \right)^5\frac{m_p}{Q_*} \\ \left(\frac{dL}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \left(\frac{dL}{dt}\right)_\mathrm{wind}&=& -K\omega_\mathrm{conv} \min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} \\ \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray}
-\form#83:$M_*$
-\form#84:$R_*$
-\form#85:$m_p$
-\form#86:$Q_*$
-\form#87:$\omega_\mathrm{conv}-\omega_\mathrm{orb}$
-\form#88:$\mathrm{sign}(\omega_\mathrm{conv}-\omega_\mathrm{orb})$
-\form#89:$K$
-\form#90:$\omega_\mathrm{sat}$
-\form#91:$I_\mathrm{conv}$
-\form#92:$L_\mathrm{conv}$
-\form#93:$I_\mathrm{rad}$
-\form#94:$L_\mathrm{rad}$
-\form#95:$\tau_c$
-\form#96:$M_\mathrm{rad}$
-\form#97:$R_\mathrm{rad}$
-\form#98:$\omega_\mathrm{conv}\equiv L_\mathrm{conv}/I_\mathrm{conv}$
-\form#99:$K=0.35\ \frac{M_{\odot}R_{\odot}^2 \mathrm{day}^2}{\mathrm{rad}^2\mathrm{Gyr}}$
-\form#100:$\omega_\mathrm{sat}=1.84\ \mathrm{rad}/\mathrm{day}$
-\form#101:$\tau_c=5\ \mathrm{Myr}$
-\form#102:$\omega_\mathrm{conv}=\omega_\mathrm{orb}$
-\form#103:$\omega_\mathrm{conv}=\omega_\mathrm{sat}$
-\form#104:\[ \left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{wind}=\left\{ \begin{array}{l@{\quad\mathrm{if}\quad}l} -K\omega_\mathrm{conv}^3 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} & \mathrm{NOT\_SATURATED}\\ -K\omega_\mathrm{conv} \min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} & \mathrm{UNKNOWN}\\ -K\omega_\mathrm{conv} \omega_\mathrm{sat}^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} & \mathrm{SATURATED} \end{array} \right. \]
-\form#105:$\omega_\mathrm{disk}$
-\form#106:\begin{eqnarray} \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \Delta \\ L&=&\frac{I_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \left(L_\mathrm{rad}-I_\mathrm{rad}\omega_\mathrm{disk}\right) \end{eqnarray}
-\form#107:$a^{6.5}$
-\form#108:\begin{eqnarray*} \frac{da^{6.5}}{dt}&=& -\frac{9}{13}\sqrt{\frac{G}{M_*}}R_*^5\frac{m_p}{Q_*} \\ \left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
-\form#109:$a$
-\form#110:\begin{eqnarray*} \frac{da}{dt}&=&2\frac{T - \dot{I}_\mathrm{conv}/a} {M_*m_p/(M_*+m_p) - 3I_\mathrm{conv}/a^2} \\ \left(\frac{dL}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \left(\frac{dL}{dt}\right)_\mathrm{wind}&=& -K\omega_\mathrm{conv} \min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} \\ \left(\frac{dL}{dt}\right)_\mathrm{coup}&=& \frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ T&=&\frac{a}{(M_*+m_p)G}\left[\left(\frac{dL}{dt}\right)_\mathrm{coup} + \left(\frac{dL}{dt}\right)_\mathrm{wind}\right] \\ \frac{dL_\mathrm{conv}}{dt}&=& \left(\frac{dL}{dt}\right)_\mathrm{coup} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
-\form#111:\begin{eqnarray*} \frac{da^{6.5}}{dt}&=& \frac{9}{13}\sqrt{\frac{G}{M_*}}R_*^5\frac{m_p}{Q_*} \\ \left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
-\form#112:\begin{eqnarray*} \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
-\form#113:\begin{eqnarray*} \dot{E}&=&-\int d^3 x \rho(\mathbf{r}) \frac{\partial \mathbf{\xi}(\mathbf{r}, t)}{\partial t} \cdot\nabla U*(\mathbf{r}, t)\\ &=& \int d^3 x \nabla\cdot \left(\rho(\mathbf{r}) \frac{\partial \mathbf{\xi}(\mathbf{r}, t)}{\partial t} \right)U*(\mathbf{r},t) \end{eqnarray*}
-\form#114:\[ \dot{E}=-\left(\frac{GM'}{\omega_0 a^3}\right)^2\Omega \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'}\mathcal{U}_{\mu,\mu'}im' \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,\mu}^*(\theta, \phi) \]
-\form#115:$\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp{im\phi}$
-\form#116:$\Rightarrow \mu'=m'$
-\form#117:\begin{eqnarray*} \dot{E}&=&-\left(\frac{GM'}{\omega_0 a^3}\right)^2\Omega \sum_{m,m'} \mathcal{U}_{m,m'}^2 im' \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi)\\ &=&-T_0\Omega \sum_{m,m'} \mathcal{U}_{m,m'}^2im'\exp(i\Delta_{m,m'}) \kappa_{m,m'}\\ \end{eqnarray*}
-\form#118:\[ \dot{E}=T_0\Omega \sum_{m,m'} \mathcal{U}_{m,m'}^2m'\sin(\Delta_{m,m'}) \kappa_{m,m'}\\ \]
-\form#119:\[ U(\mathbf{r}, t) = \frac{GM'}{r(t)}\left( 1-\frac{r(t)}{\left|\mathbf{r}_{M'}\right|}\right) \]
-\form#120:$r(t)$
-\form#121:$M$
-\form#122:$M'$
-\form#123:$\left|\mathbf{r}_{M'}\right|$
-\form#124:$\mathbf{r}$
-\form#125:$\mathbf{\hat{z}}=\mathbf{\hat{L}}$
-\form#126:$\mathbf{\hat{y}}=\mathbf{\hat{S}}\times\mathbf{\hat{L}}$
-\form#127:\[ U(\mathbf{r}, t) = \frac{GM'}{r(t)}\sum_{l,m} c_{l,m}(\rho) Y_{l,m}(\theta, \phi) \]
-\form#128:$ \mathbf{r}=(\rho, \theta, \phi)$
-\form#129:\[ c_{l,m}(\rho, t) = \int_{0}^{2\pi} d\phi \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi) \]
-\form#130:$\tilde{U}(\mathbf{r}, t)\equiv U(\mathbf{r}, t)r(t)/(GM')$
-\form#131:$U(\mathbf{r}, t)$
-\form#132:$Y_{l,m}(\theta, \phi)$
-\form#133:$\hat{\tilde{z}}$
-\form#134:\[ \tilde{U}(\mathbf{r}, t) = 1 - \frac{1}{\sqrt{(1-\tilde{z})^2 + \tilde{x}^2 + \tilde{y}^2}} \]
-\form#135:$\tilde{x}$
-\form#136:$\tilde{y}$
-\form#137:$\tilde{z}$
-\form#138:\begin{eqnarray*} \tilde{x}&=&\tilde{\rho}\sin\tilde{\theta}\cos\tilde{\phi}\\ \tilde{y}&=&\tilde{\rho}\sin\tilde{\theta}\sin\tilde{\phi}\\ \tilde{z}&=&\tilde{\rho}\cos\tilde{\theta} \end{eqnarray*}
-\form#139:$\tilde{\rho}$
-\form#140:\[ \tilde{U}(\tilde{\rho}, \tilde{\theta}, t) = 1 - \frac{1}{ \sqrt{1-2\tilde{\rho}\cos\tilde{\theta} + \tilde{\rho}^2}} \]
-\form#141:$\tilde{\phi}$
-\form#142:$Y_{l,m}$
-\form#143:\begin{eqnarray*} x_{rot} &=& \tilde{z}\\ y_{rot} &=& \tilde{y}\\ z_{rot} &=& -\tilde{x}\\ \rho=\rho_{rot} &=& \tilde{\rho}\\ \theta = \theta_{rot} &\Rightarrow& \sin\theta = \sqrt{ \sin^2\tilde{\theta}\sin^2\tilde{\phi} + \cos^2\tilde{\theta}},\quad \cos\theta = -\sin\tilde{\theta}\cos\tilde{\phi}\\ \phi&=&\phi_{rot}-\Delta\phi(t)\\ \sin\phi_{rot}&=& \frac{\sin\tilde{\theta}\sin\tilde{\phi}} { \sqrt{\sin^2\tilde{\theta}\sin^2\tilde{\phi} + \cos^2\tilde{\theta}} }\\ \cos\phi_{rot}&=& \frac{\cos\tilde{\theta}} { \sqrt{\sin^2\tilde{\theta}\sin^2\tilde{\phi} + \cos^2\tilde{\theta}} } \end{eqnarray*}
-\form#144:$\mathbf{\hat{z}_{rot}}=\mathbf{\hat{L}}$
-\form#145:$\hat{x}_{rot}$
-\form#146:$\Delta\phi(t)$
-\form#147:$\hat{x}$
-\form#148:$\Delta\phi(t)=\Omega t$
-\form#149:$\Omega$
-\form#150:\begin{eqnarray*} c_{l,m}(\rho, t) &=& \int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta,\phi_{rot}-\Delta\phi(t))\\ &=& exp(-im\Delta\phi(t))\int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot})\\ &=& \exp(-im\Delta\phi(t))\left\{ \int_{\Delta\phi(t)}^{2\pi} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}) + \int_{2\pi}^{2\pi+\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot})\right\}\\ &=& \exp(-im\Delta\phi(t))\left\{ \int_{\Delta\phi(t)}^{2\pi} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}) + \int_{0}^{\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}+2\pi)\right\}\\ &=& \exp(-im\Delta\phi(t)) \int_{0}^{2\pi} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}) \end{eqnarray*}
-\form#151:\[ c_{0,0}=c_{1,0}=c_{2,\pm1}=0\quad, \quad c_{1,\pm 1}=\pm\sqrt{\frac{2\pi}{3}}\tilde{\rho} \exp(-im\Delta\phi(t))\quad, \quad c_{2,0}=\sqrt{\frac{\pi}{5}}\rho^2\exp(-im\Delta\phi(t))\quad, \quad c_{2,\pm 2}=-\sqrt{\frac{3\pi}{10}}\rho^2\exp(-im\Delta\phi(t)) \]
-\form#152:$c_{1,\pm 1}$
-\form#153:$m$
-\form#154:$c_{2,*}$
-\form#155:$Y_{2,m}$
-\form#156:$z$
-\form#157:$\hat{S}$
-\form#158:$y$
-\form#159:$\hat{S}\times\hat{L}$
-\form#160:\begin{eqnarray*} y&=&y'=\rho'\sin\theta'\sin\phi'\\ z&=&x'\sin\Theta + z'\cos\Theta =\rho'\sin\theta'\cos\phi'\sin\Theta + \rho'\cos\theta'\cos\Theta\\ x&=&x'\cos\Theta - z'\sin\Theta =\rho'\sin\theta'\cos\phi'\cos\Theta - \rho'\cos\theta'\sin\Theta\\ \rho&=&\rho'\\ \cos\theta&=&z/\rho=\sin\theta'\cos\phi'\sin\Theta+\cos\theta'\cos\Theta\\ \exp(i\phi)&=&\frac{x+iy}{\rho\sin\theta} =\frac{\sin\theta'\sin\phi'+i\left(\sin\theta'\cos\phi'\cos\Theta - \cos\theta'\sin\Theta\right)} {\sqrt{1-\cos^2\theta}} \end{eqnarray*}
-\form#161:\[ U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi') \frac{\exp\left(-im'\Delta\phi(t)\right)a^3}{r^3(t)} \]
-\form#162:\[ U_{m,m'} \equiv \frac{GM'}{a^3}W_{2,m'}D_{m,m'}(\Theta) \]
-\form#163:$t=0$
-\form#164:$\Delta\phi(t)=\phi(t)+\phi_0$
-\form#165:$\phi(0)=0$
-\form#166:$\phi_0$
-\form#167:$90^\circ$
-\form#168:\begin{eqnarray*} r(t)&=&a(1-e\cos u)\\ \tan\left(\frac{\phi}{2}\right)&=&\sqrt{\frac{1+e}{1-e}} \tan\left(\frac{u}{2}\right)\\ \Rightarrow 1+\tan^2\left(\frac{\phi}{2}\right)&=&\frac{1-e\cos u} {(1-e)\cos^2\left(\frac{u}{2}\right)}\\ 1-\tan^2\left(\frac{\phi}{2}\right)&=&\frac{\cos u - e} {(1-e)\cos^2\left(\frac{u}{2}\right)}\\ \Rightarrow \cos\phi &=& \frac{\cos u - e}{1 - e\cos u}\\ \sin\phi &=& \frac{\sqrt{1-e^2}\sin u}{1 - e\cos u} \end{eqnarray*}
-\form#169:$u$
-\form#170:\[ u-e\sin u = \Omega t,\quad\Omega=\sqrt{\frac{G(M+M')}{a^3}} \]
-\form#171:\[ dt=\frac{1-e\cos u}{\Omega}du \]
-\form#172:$\Delta \phi(t)$
-\form#173:$2\pi/\Omega$
-\form#174:\[ \frac{a^3\exp(-im'\Delta \phi(t))}{r^3(t)}=\sum_s p_{m',s} \exp\left(-i s \Omega t\right) \]
-\form#175:$p_{m',s}(e)$
-\form#176:$m'$
-\form#177:\[ U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi') \exp\left(-im'\Omega t\right) \]
-\form#178:\[ U_{m,m'} \equiv \frac{GM'}{a^3} \mathcal{U}_{m,m'}\equiv \frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'} \]
-\form#179:$s$
-\form#180:$W_{2,m'}D_{m,m'}$
-\form#181:$p_{m',s}=\delta_{m',s}$
-\form#182:\begin{eqnarray*} \mathbf{\xi}_{m,s}(\mathbf{r},t)&=& \frac{U_{m,s}}{\omega_0^2}\mathbf{\bar{\xi}}_{m,s}(\mathbf{r}) \exp(-is\Omega t + i\Delta_{m,s})\\ \delta\rho(\mathbf{r},t)&=&\frac{U_{m,s}}{\omega_0^2} \delta\bar{\rho}_{m,s}(\mathbf{r}) \exp(-is\Omega t + i\Delta_{m,s})\\ \Delta_{m,s}&=&\tilde{\omega}_{m,s}t_{m,s} \end{eqnarray*}
-\form#183:$\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})$
-\form#184:$\tilde{\omega}_{m,s}=s\Omega-m\Omega_s$
-\form#185:$\Omega_s$
-\form#186:$\omega_0\equiv\sqrt{GM/R^3}$
-\form#187:$\Delta'_{m,m'}\equiv\kappa_{m,m'}\sin(\Delta_{m,m'})$
-\form#188:$\kappa'_{m,m'}\equiv\kappa_{m,m'}\cos(\Delta_{m,m'})$
-\form#189:$e$
-\form#190:$i$
-\form#191:\begin{eqnarray*} \dot{a}&=&a\frac{-\dot{E}}{E}\\ \dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\ \dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} - \frac{(T_x+\tilde{T}_x)\cos\theta}{L} - \frac{T_x+\mathscr{T}_x}{S}\\ \dot{\omega} &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{T_y+\mathscr{T}_y}{S\sin\theta}\\ \bhat{\tilde{x}}&=& \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{x} + \cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{z}\\ \bhat{\tilde{y}}&=& -\cos\theta\sin\Delta\omega\bhat{x} + \cos\Delta\omega\bhat{y} + \sin\theta\sin\Delta\omega\bhat{z}\\ \bhat{\tilde{z}}&=& \left(\sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{x} - \sin\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
-\form#192:$\tilde{\omega}\equiv m'\Omega-mS^{conv}/I_{conv}$
-\form#193:$\sin(\Delta_{m,m'}(\tilde{\omega})\kappa_{m,m'}$
-\form#194:$T_x^\pm$
-\form#195:$T_z^\pm$
-\form#196:$\dot{E}^\pm$
-\form#197:$T_x^0$
-\form#198:$T_z^0$
-\form#199:$\dot{E}^0$
-\form#200:$\lambda$
-\form#201:$1-\lambda$
-\form#202:\begin{eqnarray*} &&m'\frac{\partial}{\partial t}\sqrt{\frac{G(M+M')}{a^3}}= m\frac{\partial}{\partial t}\frac{S_i}{I_i}\\ \Rightarrow && -\frac{3m'}{2}\sqrt{\frac{G(M+M')}{a^5}}\dot{a}= m\frac{\dot{S}_i}{I_i} - m\frac{S_i\dot{I}_i}{I_i^2}\\ \Rightarrow && -\frac{3 m S_i}{2 I_i}\frac{\dot{a}}{a} = m\frac{\dot{S}_i}{I_i} - m\frac{S_i\dot{I}_i}{I_i^2}\\ \Rightarrow && -\frac{3}{2}\frac{\dot{a}}{a}= \frac{\dot{S}_i}{S_i} - \frac{\dot{I}_i}{I}\\ \Rightarrow && -\frac{3}{2}\frac{\dot{E}^0 + \sum_k\left[\lambda_k\dot{E}_k^+ + (1-\lambda_k)\dot{E}_k^-\right]}{E} = \frac{\dot{I_i}}{I_i} - \frac{\dot{S}_i^0 + \lambda_i\dot{S}_i^+ + (1-\lambda_i)\dot{S}_i^-}{S_i}\\ \Rightarrow && \lambda_i\left(\frac{\dot{S}_i^+ - \dot{S}_i^-}{S_i}\right) -\sum_k \lambda_k \left(1.5\frac{\dot{E}_k^+ - \dot{E}_k^-}{E} \right) =\frac{\dot{I_i}}{I_i} - \frac{\dot{S}_i^0 + \dot{S}_i^-}{S_i} +\frac{3}{2}\frac{\dot{E}^0+\sum_k\dot{E}_k^-}{E} \end{eqnarray*}
-\form#203:$0<\lambda<1$
-\form#204:\begin{eqnarray*} T_x&=&T_x^0 + \lambda T_x^+ + (1-\lambda)T_x^-\\ T_z&=&T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\ \dot{E}&=&\dot{E}^0 + \lambda\dot{E}^+ + (1-\lambda)\dot{E}^- \end{eqnarray*}
-\form#205:$m=0$
-\form#206:$m=\pm2$
-\form#207:\begin{eqnarray*} p_{m,s}&=&\frac{a^3}{2\pi}\int_0^{2\pi/\omega} \frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\ &=& a^3\int_0^{2\pi/\omega} e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} e^{i s \omega t}dt \end{eqnarray*}
-\form#208:\begin{eqnarray*} p_{0,s}&=& \frac{1}{2\pi}\int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}}{\omega (1-e\cos u)^2} du\\ &=& \frac{1}{2\pi\omega} \int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du \end{eqnarray*}
-\form#209:$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k$
-\form#210:\[ p_{0,s}= \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega} \int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du \]
-\form#211:$s=0$
-\form#212:$\int_0^{2\pi} \cos^{2k} u du = \frac{2\pi (2k)!}{2^{2k}(k!)^2}$
-\form#213:\[ p_{0,0}=\frac{1}{\omega} \sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k}(k!)^2}e^k \]
-\form#214:$s \neq 0$
-\form#215:\begin{eqnarray*} p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega} \int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega} \int_{0}^{2\pi} e^{i s (u-e\sin u)} \left(e^{iu}+e^{-iu}\right)^k du\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k {k \choose c} \int_{0}^{2\pi} e^{i s (u-e\sin u)} e^{icu}e^{-i(k-c)u} du\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k {k \choose c} \int_{0}^{2\pi} e^{i (s+2c-k) u} e^{-ies\sin u} du \end{eqnarray*}
-\form#216:$u=u'-\pi/2\Rightarrow \sin u = -\cos u'$
-\form#217:\begin{eqnarray*} 2\pi p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} e^{-i (s+2c-k)\pi/2} \int_{\pi/2}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{ \int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du' + \int_{2\pi}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' \right\}\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{ \int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du' + \int_{0}^{\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' \right\}\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \int_{0}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} i^{s+2c-k} J_{s+2c-k}(es)\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} J_{s+2c-k}(es)\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k} \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty} \frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}} {2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k} \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty} \frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}} {2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\ &=&\frac{2\pi}{\omega} \left(\frac{es}{2}\right)^s \sum_{k=0}^\infty \frac{(k+1)}{s^k} \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty} \frac{(-1)^\lambda (s^2e^2/4)^{\lambda+c}} {\lambda!(\lambda+s+2c-k)!}\\ \end{eqnarray*}
-\form#218:$n=\lambda+c\Rightarrow \lambda=n-c,\quad\lambda+s+2c-k=n+s+c-k$
-\form#219:$k-s-2c\leq n-c\Rightarrow c\geq k-n-s$
-\form#220:$c$
-\form#221:$k-n-s\leq n\Rightarrow k\leq 2n+s$
-\form#222:\[ p_{0,s}=\sum_{n=0}^\infty \alpha_{s,n}\left\{ \begin{array}{l@{,\quad}l} e^{2n} & s=0\\ (se/2)^{s+2n} & s \neq 0 \end{array}\right. \]
-\form#223:\[ \alpha_{s,n}\equiv\frac{1}{\omega}\left\{\begin{array}{l@{,\quad}l} \frac{(2n+1)!}{2^{2n}(n!)^2} & s=0\\ (-1)^n \sum_{k=0}^{2n+s} \frac{k+1}{s^k} \sum_{c=max(0,k-n-s)}^{min(n,k)} {k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!} & s \neq 0 \end{array} \right. \]
-\form#224:\begin{eqnarray*} \cos2\phi &=& 1-2\sin^2\phi = 1-2\frac{(1-e^2)\sin^2u}{(1-e\cos u)^2} = 1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2}\\ \sin2\phi &=& 2\sin\phi\cos\phi = 2\sqrt{1-e^2} \frac{\sin u(\cos u - e)}{(1-e\cos u)^2} = 2\sqrt{1-e^2}\frac{\sin 2u - e\sin u}{(1-e\cos u)^2} \end{eqnarray*}
-\form#225:$p_{\pm2,s}$
-\form#226:\begin{eqnarray*} p_{\pm2,s}&=& \frac{1}{2\pi}\int_0^{2\pi/\omega} a^3\exp(\mp 2i\phi_0)\frac{\cos(2\phi(t))\mp i\sin(2\phi(t))}{r^3(t)} \exp[i s (u-e\sin u)]dt\\ &=& \frac{e^{\mp 2i\phi_0}}{2\pi\omega}\int_0^{2\pi} \left[1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2} \mp i\sqrt{1-e^2}\frac{\sin 2u - 2e\sin u}{(1-e\cos u)^2}\right] \frac{\exp[i s (u-e\sin u)]}{(1-e\cos u)^2} du \end{eqnarray*}
-\form#227:$p_{0,s}$
-\form#228:\begin{eqnarray*} p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\ &&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\ &&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4} du\mp\\ &&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4} du\pm\\ &&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4} du\\ \end{eqnarray*}
-\form#229:$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k$
-\form#230:\begin{eqnarray*} 2\pi\omega I_{\lambda,s}&\equiv& \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\exp(i\lambda u)} {(1-e\cos u)^4} du\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} e^k \int_{0}^{2\pi} \exp[i (s+\lambda) u]\exp[-ise\sin u)]\cos^k u du\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} \int_{0}^{2\pi} \exp[i (s+\lambda+2c-k) u]\exp(-ise\sin u) du\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} J_{s+\lambda+2c-k}(es)\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} \sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty} \frac{(-1)^\nu (se)^{2\nu+s+\lambda+2c-k}} {2^{2\nu+s+\lambda+2c-k}\nu!(\nu+s+\lambda+2c-k)!}\\ &=&2\pi\left(\frac{se}{2}\right)^{s+\lambda}\sum_{k=0}^\infty {{k+3} \choose 3} s^{-k}\sum_{c=0}^k {k \choose c} \sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty} \frac{(-1)^\nu (s^2e^2/4)^{\nu+c}}{\nu!(\nu+s+\lambda+2c-k)!} \end{eqnarray*}
-\form#231:$n=\nu+c$
-\form#232:\begin{eqnarray*} \nu>=0 & \Rightarrow & c \le n\\ \nu>=k-s-\lambda-2c & \Rightarrow & c \ge k-s-\lambda-n\\ k-s-\lambda-n \le n & \Rightarrow & k \le 2n+\lambda+s\\ k-s-\lambda-n \le k & \Rightarrow & n \ge -s - \lambda \end{eqnarray*}
-\form#233:\[ I_{\lambda,s} = \sum_{n=\max(0,-s-\lambda)}^\infty \beta_{\lambda,s,n} (se/2)^{s+\lambda+2n} \]
-\form#234:\[ \beta_{\lambda,s,n}\equiv \frac{(-1)^n}{\omega} \sum_{k=0}^{2n+\lambda+s} {{k+3} \choose 3} s^{-k}\sum_{c=\max(0,k-\lambda-s-n)}^{\min(n,k)} {k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+s+c-k)!} \]
-\form#235:$I_{\lambda,s}$
-\form#236:\[ p_{\pm2,s}=\exp(\mp 2i\phi_0)\left\{p_{0,s} +(1-e^2)\left[(I_{2,s}+I_{-2,s})/2-I_{0,s}\right] \mp \sqrt{1-e^2}(I_{2,s}-I_{-2,s})/2 \pm e\sqrt{1-e^2}(I_{1,s}-I_{-1,s}) \right\} \]
-\form#237:$s\neq0$
-\form#238:\[ \sqrt{1-e^2}=\sum_{n=0}^\infty \frac{(2n)!}{4^n (n!)^2(1-2n)} e^{2n} \]
-\form#239:\[ p_{\pm2,s}=\exp(\mp 2i\phi_0)\sum_{n=-1}^\infty \gamma^\pm_{s,n}\left(\frac{se}{2}\right)^{2n+s} \]
-\form#240:\begin{eqnarray*} \gamma^\pm_{s,n} &\equiv &\alpha_{s,n} + \frac{\beta_{2,s,n-1}+\beta_{-2,s,n+1}}{2} - \beta_{0,s,n}+\frac{4}{s^2}\beta_{0,s,n-1} - \frac{2}{s^2}\left(\beta_{2,s,n-2}+\beta_{-2,s,n}\right)\\ &&{}\pm \sum_{k=0}^{n+1} \frac{(2k)!}{s^{2k}(k!)^2(2k-1)} \left[\frac{1}{2}\left(\beta_{2,s,n-k-1}-\beta_{-2,s,n-k+1}\right)+ \frac{2}{s}\left(\beta_{-1,s,n-k}-\beta_{1,s,n-k-1}\right)\right] \end{eqnarray*}
-\form#241:\begin{eqnarray*} p_{\pm2,s}&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} \Bigg\{ (k+1)J_{s+2c-k}(es) + \\ &&{}+{{k+3} \choose 3} \Bigg[ -(1-e^2)J_{s+2c-k}(es) +\frac{1-e^2}{2}\big[J_{s+2+2c-k}(es)+J_{s-2+2c-k}(es)\big] \mp\\ &&\quad\quad\quad\quad\quad{} \mp\frac{\sqrt{1-e^2}}{2}\big[J_{s+2+2c-k}(es)- J_{s-2+2c-k}(es)\big] \pm e\sqrt{1-e^2}\big[J_{s+1+2c-k}(es)-J_{s-1+2c-k}(es)\big] \Bigg] \Bigg\} \end{eqnarray*}
-\form#242:\begin{eqnarray*} 2\pi p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} + \frac{1}{\omega}\left[ (1-e^2)\int_{0}^{2\pi} \frac{\cos 2u -1} {(1-e\cos u)^4} du \mp i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\sin 2u} {(1-e\cos u)^4} du \pm i2e\sqrt{1-e^2} \int_{0}^{2\pi} \frac{\sin u} {(1-e\cos u)^4} du \right]\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} + \frac{2}{\omega}\left[ (1-e^2)\int_{0}^{2\pi} \frac{\cos^2 u -1} {(1-e\cos u)^4} du \pm i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u \mp ie\sqrt{1-e^2} \int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u \right]\right\} \end{eqnarray*}
-\form#243:\begin{eqnarray*} \int_{0}^{2\pi}\frac{\cos^{2n} u} {(1-e\cos u)^4} du &=&\sum_{k=0}^\infty {2k+3 \choose 3} e^{2k} \int_{0}^{2\pi}\frac{\cos^{2n+2k} u} du\\ &=&2\pi\sum_{k=0}^\infty {2k+3 \choose 3} \frac{(2k+2n)!}{2^{2k+2n}[(k+n)!]^2} e^{2k} \end{eqnarray*}
-\form#244:\begin{eqnarray*} \int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u &=&-\frac{1}{e}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d(1-e\cos u)\\ &=&\left.\frac{1}{3e(1-e\cos u)^3}\right|_{0}^{2\pi}\\ &=&0 \end{eqnarray*}
-\form#245:\begin{eqnarray*} \int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u &=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1-e\cos u-1}{(1-e\cos u)^4} d(1-e\cos u)\\ &=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^3} d(1-e\cos u)\\ &=&-\frac{1}{2e^2(1-e\cos u)^2}\\ &=&0 \end{eqnarray*}
-\form#246:\begin{eqnarray*} p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} + \frac{2(1-e^2)}{\omega}\left\{\sum_{k=0}^\infty {2k+3 \choose 3} \frac{(2k+2)!}{2^{2k+2}[(k+1)!]^2}- \frac{2k!}{2^{2k}(k!)^2}\right\}e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2(1-e^2)}{\omega}\sum_{k=0}^\infty {2k+3 \choose 3} \frac{2k!}{2^{2k}(k!)^2(2k+2)}e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \left[ {2k+3 \choose 3} \frac{2k!}{2^{2k}(k!)^2(2k+2)} - {2k+1 \choose 3} \frac{2(k-1)!}{2^{2k-2}[(k-1)!]^2 2k} \right]e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \left[ \frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2} - \frac{4k^2(2k+1)(2k-1)!}{6\,2^2k(k!)^2} \right]e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \left[ \frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2} - \frac{2k(2k+1)!}{6\,2^2k(k!)^2} \right]e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k+1}(k!)^2} e^{2k}\right\}\\ &=&0 \end{eqnarray*}
-\form#247:\begin{eqnarray*} p_{m,s}&=&\int_0^{2\pi/\omega} \frac{a^3\exp(-im\Delta \phi(t))}{r^3(t)}e^{i s \omega t}dt\\ &=& \int_0^{2\pi/\omega} a^3\exp(-im\phi_0)\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} e^{i s \omega t}dt \end{eqnarray*}
-\form#248:\begin{eqnarray*} p_{0,s}&=& \int_{0}^{2\pi} \frac{\exp(i s (u-e\sin u))}{\omega (1-e\cos u)^2} du\\ &=& \frac{1}{\omega} \int_{0}^{2\pi} \frac{\exp(i s (u-e\sin u))} {(1-e\cos u)^2} du \end{eqnarray*}
-\form#249:\begin{eqnarray*} p_{0,s}&=&\frac{1}{\omega}\int_0^{2\pi} \left[\cos u + i \sin u\right]^s \left[\sum_{l=0}^\infty \frac{(-ise)^l\sin^l u}{l!}\right] \left[\sum_{p=0}^\infty (p+1) e^p\cos^p u\right]\\ &=&\frac{1}{\omega}\int_0^{2\pi} \left[\sum_{k=0}^s {s \choose k} i^k\cos^{s-k} u \sin^k u\right] \left[\sum_{l=0}^\infty \frac{(-ise)^l\sin^l u}{l!}\right] \left[\sum_{p=0}^\infty (p+1) e^p\cos^p u\right]\\ &=&\frac{1}{\omega}\sum_{k=0}^s \sum_{l=0}^\infty \sum_{p=0}^\infty (-1)^l i^{k+l} (p+1) {s \choose k} \frac{s^l}{l!} e^{l+p} I_{k+l,s-k+p}\\ &=&\frac{1}{\omega}\sum_{n=0}^\infty \left[\sum_{k=0}^s {s \choose k} \sum_{l=0}^n (-1)^l i^{k+l} (n-l+1) \frac{s^l}{l!} I_{k+l,s-k+n-l}\right]e^n \end{eqnarray*}
-\form#250:\[ I_{m,n} \equiv \int_0^{2\pi} \sin^m u \cos^n u \]
-\form#251:\begin{eqnarray*} Q_{p,q}&\equiv& \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} \sin^p u \cos^q udu\\ &=& \sum_{\lambda=0}^\infty \frac{(-ise)^\lambda}{\lambda!} \int_{0}^{2\pi} \frac{\sin^{\lambda+p} u \cos^q u \left(\cos u + i\sin u\right)^s}{(1-e\cos u)^4} \end{eqnarray*}
-\form#252:\begin{eqnarray*} Q_{p,q}&=&\sum_{\lambda=0}^\infty \frac{(-ise)^\lambda}{\lambda!} \sum_{k=0}^\infty {k+3 \choose 3} e^k \sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma I_{\lambda+\sigma+p, s-\sigma+k+q}\\ Q_{p,q}&=&\sum_{n=0}^\infty \left[ \sum_{\lambda=0}^n \frac{(-is)^\lambda}{\lambda!} {n-\lambda+3 \choose 3} \sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma I_{\lambda+\sigma+p, s+n+q-\sigma-\lambda}\right] e^n \end{eqnarray*}
-\form#253:\begin{eqnarray*} p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\ &&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\ &&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4} du\mp\\ &&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4} du\pm\\ &&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4} du\\ &=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\ &&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}Q_{0,0}+\\ &&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}(Q_{0,0}-2Q_{2,0})\mp\\ &&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}2Q_{1,1}\pm\\ &&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}Q_{1,0}\\ &=&\exp\left(\mp 2i\phi_0\right) \left[p_{0,s} - 2\frac{(1-e^2)Q_{2,0} \pm i\sqrt{1-e^2}(Q_{1,1} - e Q_{1,0})}{\omega} \right] \end{eqnarray*}
-\form#254:\[ \sqrt{1-e^2}=1-\frac{e^2}{2}- \sum_{n=2}^\infty\frac{(2n-3)!}{2^{2n-2} n! (n-2)!} e^{2n} \]
-\form#255:\begin{eqnarray*} I_{m,n}&=&I_{m,n-2}-I_{m+2,n-2}=I_{m,n-2}-\frac{m+1}{n-1}I_{m,n}\\ \Rightarrow I_{m,n}&=&\frac{n-1}{n+m}I_{m,n-2} \end{eqnarray*}
-\form#256:\begin{eqnarray*} I_{m,n}&=&I_{m-2,n}-I_{m-2,n+2}=I_{m-2,n}-\frac{n+1}{m-1}I_{m,n}\\ \Rightarrow I_{m,n}&=&\frac{m-1}{n+m}I_{m-2,n} \end{eqnarray*}
-\form#257:$I_{m,1}=I_{1,n}=0$
-\form#258:$I_{m,n}$
-\form#259:$I_{m,n}=I_{n,m}$
-\form#260:$ \sum_{i=0}^3 c_i x^i=0 $
-\form#261:$i^{th}$
-\form#262:$x^i$
-\form#263:$M_\odot$
-\form#264:$R_\odot$
-\form#265:$\frac{M_\odot R_\odot^2 rad^2}{day^2}$
-\form#266:$\frac{M_\odot R_\odot^2 rad}{day}$
-\form#267:$[Fe/H]$
-\form#268:$M_\odot R_\odot^2$
-\form#269:$L_\odot$
-\form#270:$M_\odot \cdot R_\odot^2$
-\form#271:$\L_\odot$
-\form#272:$\mathrm{kg}\cdot\mathrm{m}^2\cdot\mathrm{rad}/\mathrm{s}$
-\form#273:$\frac{M_\odot R_\odot^2 rad^2}{day^2\,Gyr}$
-\form#274:$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}$
-\form#275:$M_\odot R_\odot^2 rad/day$
-\form#276:$\mathcal{U}_{m,m'}$
-\form#277:$\kappa_{m,m'}^+/\kappa_{m,m'}$
-\form#278:$m=-2 \ldots 2$
-\form#279:$\kappa_{m,m'}^-/\kappa_{m,m'}$
-\form#280:$p_{m,s}$
-\form#281:$\sum_s W_{2,s}D_{m,s}(\Theta)p_{s,m'}$
-\form#282:$\Theta$
-\form#283:$M_\odot R_\odot^2/Gyr$
-\form#284:$M_\odot R_\odot^2/Gyr^2$
-\form#285:$R_\odot/Gyr$
-\form#286:$R_\odot/Gyr^2$
-\form#287:$M_\odot/Gyr$
-\form#288:$M_\odot/Gyr^2$
-\form#289:$GM_\odot^2/R_\odot$
-\form#290:$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}$
-\form#291:$\theta^b_i$
-\form#292:$\omega^b_i$
-\form#293:$S^b_i$
-\form#294:$S^0_i$
-\form#295:$M_\odot R_\odot^2 \mathrm{day}^{-2}\mathrm{Gyr}^{-1}$
-\form#296:$S^0_i,\ i=1\ldots$
-\form#297:$theta^0_i,\ i=1\ldots$
-\form#298:$\theta^0_0\equiv0$
-\form#299:$\omega^0_i,\ i=1\ldots$
-\form#300:$\omega^0_0\equiv0$
-\form#301:$S^0_i,\ i=0,1,\ldots$
-\form#302:$\theta^0_i,\ i=0,\ldots$
-\form#303:$\theta^1_i,\ i=0,\ldots$
-\form#304:$\omega^0_i,\ i=1,\ldots$
-\form#305:$\omega^1_i,\ i=0,\ldots$
-\form#306:$S^0_i,\ i=0\ldots$
-\form#307:$S^1_i,\ i=0\ldots$
-\form#308:$M_\odot R_\odot^2 \mathrm{rad}\mathrm{day}^{-1}\mathrm{Gyr}^{-1}$
-\form#309:$M_\odot R_\odot^2 \mathrm{rad}^2\mathrm{day}^{-2}\mathrm{Gyr}^{-1}$
-\form#310:$M_\odot R_\odot^2\mathrm{rad}\mathrm{day}^{-1}mathrm{Gyr}^{-1}$
-\form#311:$\alpha$
-\form#312:$p_{2,s}$
-\form#313:$\gamma_{s,n}^+(s/2)^{s+2n}$
-\form#314:$p_{-2,s}$
-\form#315:$\gamma_{s,n}^-(s/2)^{s+2n}$
-\form#316:$p_{-2,s}(e)$
-\form#317:$p_{0,s}(e)$
-\form#318:$p_{2,s}(e)$
-\form#319:$10^{-6} M R^2$
-\form#320:$\propto\omega\min(\omega, \omega_{sat})^2$
-\form#321:$\dot{L}_1=\frac{I_1 L_2 - I_2 L_1}{\tau_c(I_1+I_2)}$
-\form#322:$Q'_\star = 10^6$
-\form#323:$T_{eff}$
-\form#324:$\log_{10}(g)$
-\form#325:$L_\star$
-\form#326:$\rho_\star$
+\form#0:$ \sum_{i=0}^3 c_i x^i=0 $
+\form#1:$i^{th}$
+\form#2:$x^i$
+\form#3:$M_\odot$
+\form#4:$R_\odot$
+\form#5:$\frac{M_\odot R_\odot^2 rad^2}{day^2}$
+\form#6:$\frac{M_\odot R_\odot^2 rad}{day}$
+\form#7:$M_\odot R_\odot^2$
+\form#8:$L_\odot$
+\form#9:$[Fe/H]$
+\form#10:$M_\odot \cdot R_\odot^2$
+\form#11:$\L_\odot$
+\form#12:$\mathrm{kg}\cdot\mathrm{m}^2\cdot\mathrm{rad}/\mathrm{s}$
+\form#13:$GM_\odot^2/R_\odot$
+\form#14:$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}$
+\form#15:$\theta^b_i$
+\form#16:$\omega^b_i$
+\form#17:$S^b_i$
+\form#18:$S^0_i$
+\form#19:$M_\odot R_\odot^2 \mathrm{day}^{-2}\mathrm{Gyr}^{-1}$
+\form#20:$a^{6.5}$
+\form#21:$S^0_i,\ i=1\ldots$
+\form#22:$theta^0_i,\ i=1\ldots$
+\form#23:$\theta^0_0\equiv0$
+\form#24:$\omega^0_i,\ i=1\ldots$
+\form#25:$\omega^0_0\equiv0$
+\form#26:$S^0_i,\ i=0,1,\ldots$
+\form#27:$\theta^0_i,\ i=0,\ldots$
+\form#28:$\theta^1_i,\ i=0,\ldots$
+\form#29:$\omega^0_i,\ i=1,\ldots$
+\form#30:$\omega^1_i,\ i=0,\ldots$
+\form#31:$S^0_i,\ i=0\ldots$
+\form#32:$S^1_i,\ i=0\ldots$
+\form#33:$p_{m,s}$
+\form#34:$\mathcal{U}_{m,m'}$
+\form#35:$\sum_s W_{2,s}D_{m,s}(\Theta)p_{s,m'}$
+\form#36:$\Theta$
+\form#37:$M_\odot R_\odot^2 \mathrm{rad}\mathrm{day}^{-1}\mathrm{Gyr}^{-1}$
+\form#38:$M_\odot R_\odot^2 \mathrm{rad}^2\mathrm{day}^{-2}\mathrm{Gyr}^{-1}$
+\form#39:$\hat{x}$
+\form#40:$\hat{z}$
+\form#41:$M_\odot R_\odot^2\mathrm{rad}\mathrm{day}^{-1}mathrm{Gyr}^{-1}$
+\form#42:$p_{0,s}$
+\form#43:$\alpha$
+\form#44:$p_{2,s}$
+\form#45:$\gamma_{s,n}^+(s/2)^{s+2n}$
+\form#46:$p_{-2,s}$
+\form#47:$\gamma_{s,n}^-(s/2)^{s+2n}$
+\form#48:$p_{-2,s}(e)$
+\form#49:$p_{0,s}(e)$
+\form#50:$p_{2,s}(e)$
+\form#51:$\kappa_{m,m'}^+/\kappa_{m,m'}$
+\form#52:$m=-2 \ldots 2$
+\form#53:$\kappa_{m,m'}^-/\kappa_{m,m'}$
+\form#54:$M_\odot R_\odot^2/Gyr$
+\form#55:$M_\odot R_\odot^2/Gyr^2$
+\form#56:$R_\odot/Gyr$
+\form#57:$R_\odot/Gyr^2$
+\form#58:$M_\odot/Gyr$
+\form#59:$M_\odot/Gyr^2$
+\form#60:$\frac{M_\odot R_\odot^2 rad^2}{day^2\,Gyr}$
+\form#61:$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}$
+\form#62:$M_\odot R_\odot^2 rad/day$
+\form#63:$10^{-6} M R^2$
+\form#64:$\dot{L}_1=\frac{I_1 L_2 - I_2 L_1}{\tau_c(I_1+I_2)}$
+\form#65:$\propto\omega\min(\omega, \omega_{sat})^2$
+\form#66:\begin{eqnarray} \frac{da}{dt}&=&\mathrm{sign}(\omega_\mathrm{conv}-\omega_\mathrm{orb}) \frac{9}{2}\sqrt{\frac{G}{aM_*}}\left( \frac{R_*}{a} \right)^5\frac{m_p}{Q_*} \\ \left(\frac{dL}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \left(\frac{dL}{dt}\right)_\mathrm{wind}&=& -K\omega_\mathrm{conv} \min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} \\ \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray}
+\form#67:$M_*$
+\form#68:$R_*$
+\form#69:$m_p$
+\form#70:$Q_*$
+\form#71:$\omega_\mathrm{conv}-\omega_\mathrm{orb}$
+\form#72:$\mathrm{sign}(\omega_\mathrm{conv}-\omega_\mathrm{orb})$
+\form#73:$K$
+\form#74:$\omega_\mathrm{sat}$
+\form#75:$I_\mathrm{conv}$
+\form#76:$L_\mathrm{conv}$
+\form#77:$I_\mathrm{rad}$
+\form#78:$L_\mathrm{rad}$
+\form#79:$\tau_c$
+\form#80:$M_\mathrm{rad}$
+\form#81:$R_\mathrm{rad}$
+\form#82:$\omega_\mathrm{conv}\equiv L_\mathrm{conv}/I_\mathrm{conv}$
+\form#83:$K=0.35\ \frac{M_{\odot}R_{\odot}^2 \mathrm{day}^2}{\mathrm{rad}^2\mathrm{Gyr}}$
+\form#84:$\omega_\mathrm{sat}=1.84\ \mathrm{rad}/\mathrm{day}$
+\form#85:$\tau_c=5\ \mathrm{Myr}$
+\form#86:$\omega_\mathrm{conv}=\omega_\mathrm{orb}$
+\form#87:$\omega_\mathrm{conv}=\omega_\mathrm{sat}$
+\form#88:\[ \left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{wind}=\left\{ \begin{array}{l@{\quad\mathrm{if}\quad}l} -K\omega_\mathrm{conv}^3 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} & \mathrm{NOT\_SATURATED}\\ -K\omega_\mathrm{conv} \min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} & \mathrm{UNKNOWN}\\ -K\omega_\mathrm{conv} \omega_\mathrm{sat}^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} & \mathrm{SATURATED} \end{array} \right. \]
+\form#89:$\omega_\mathrm{disk}$
+\form#90:\begin{eqnarray} \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \Delta \\ L&=&\frac{I_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \left(L_\mathrm{rad}-I_\mathrm{rad}\omega_\mathrm{disk}\right) \end{eqnarray}
+\form#91:\begin{eqnarray*} \frac{da^{6.5}}{dt}&=& -\frac{9}{13}\sqrt{\frac{G}{M_*}}R_*^5\frac{m_p}{Q_*} \\ \left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
+\form#92:$a$
+\form#93:\begin{eqnarray*} \frac{da}{dt}&=&2\frac{T - \dot{I}_\mathrm{conv}/a} {M_*m_p/(M_*+m_p) - 3I_\mathrm{conv}/a^2} \\ \left(\frac{dL}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \left(\frac{dL}{dt}\right)_\mathrm{wind}&=& -K\omega_\mathrm{conv} \min(\omega_\mathrm{conv}, \omega_\mathrm{sat})^2 \left( \frac{R_*}{R_\odot}\right)^{1/2} \left( \frac{M_*}{M_\odot} \right)^{-1/2} \\ \left(\frac{dL}{dt}\right)_\mathrm{coup}&=& \frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ T&=&\frac{a}{(M_*+m_p)G}\left[\left(\frac{dL}{dt}\right)_\mathrm{coup} + \left(\frac{dL}{dt}\right)_\mathrm{wind}\right] \\ \frac{dL_\mathrm{conv}}{dt}&=& \left(\frac{dL}{dt}\right)_\mathrm{coup} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
+\form#94:\begin{eqnarray*} \frac{da^{6.5}}{dt}&=& \frac{9}{13}\sqrt{\frac{G}{M_*}}R_*^5\frac{m_p}{Q_*} \\ \left(\frac{dL_\mathrm{conv}}{dt}\right)_\mathrm{tide}&=&-\frac{1}{2}m_p M_*\sqrt{\frac{G}{a(M_*+m_p)}}\frac{da}{dt} \\ \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} + \left(\frac{dL}{dt}\right)_\mathrm{tide} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
+\form#95:\begin{eqnarray*} \frac{dL_\mathrm{conv}}{dt}&=&\frac{\Delta L}{\tau_c} - \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} + \left(\frac{dL}{dt}\right)_\mathrm{wind} \\ \frac{dL_\mathrm{rad}}{dt}&=&-\frac{\Delta L}{\tau_c} + \frac{2}{3} R_\mathrm{rad}^2 \omega_\mathrm{conv} \frac{dM_\mathrm{rad}}{dt} \\ \Delta L&=&\frac{I_\mathrm{conv}L_\mathrm{rad}- I_\mathrm{rad}L_\mathrm{conv}}{I_\mathrm{conv}+I_\mathrm{rad}} \end{eqnarray*}
+\form#96:\begin{eqnarray*} \dot{E}&=&-\int d^3 x \rho(\mathbf{r}) \frac{\partial \mathbf{\xi}(\mathbf{r}, t)}{\partial t} \cdot\nabla U*(\mathbf{r}, t)\\ &=& \int d^3 x \nabla\cdot \left(\rho(\mathbf{r}) \frac{\partial \mathbf{\xi}(\mathbf{r}, t)}{\partial t} \right)U*(\mathbf{r},t) \end{eqnarray*}
+\form#97:\[ \dot{E}=-\left(\frac{GM'}{\omega_0 a^3}\right)^2\Omega \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'}\mathcal{U}_{\mu,\mu'}im' \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,\mu}^*(\theta, \phi) \]
+\form#98:$\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp{im\phi}$
+\form#99:$m=\mu$
+\form#100:$\Rightarrow \mu'=m'$
+\form#101:\begin{eqnarray*} \dot{E}&=&-\left(\frac{GM'}{\omega_0 a^3}\right)^2\Omega \sum_{m,m'} \mathcal{U}_{m,m'}^2 im' \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi)\\ &=&-T_0\Omega \sum_{m,m'} \mathcal{U}_{m,m'}^2im'\exp(i\Delta_{m,m'}) \kappa_{m,m'}\\ \end{eqnarray*}
+\form#102:\[ \dot{E}=T_0\Omega \sum_{m,m'} \mathcal{U}_{m,m'}^2m'\sin(\Delta_{m,m'}) \kappa_{m,m'}\\ \]
+\form#103:$m=0$
+\form#104:$m=\pm2$
+\form#105:\begin{eqnarray*} p_{m,s}&=&\int_0^{2\pi/\omega} \frac{a^3\exp(-im\Delta \phi(t))}{r^3(t)}e^{i s \omega t}dt\\ &=& \int_0^{2\pi/\omega} a^3\exp(-im\phi_0)\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} e^{i s \omega t}dt \end{eqnarray*}
+\form#106:\begin{eqnarray*} p_{0,s}&=& \int_{0}^{2\pi} \frac{\exp(i s (u-e\sin u))}{\omega (1-e\cos u)^2} du\\ &=& \frac{1}{\omega} \int_{0}^{2\pi} \frac{\exp(i s (u-e\sin u))} {(1-e\cos u)^2} du \end{eqnarray*}
+\form#107:$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k$
+\form#108:\begin{eqnarray*} p_{0,s}&=&\frac{1}{\omega}\int_0^{2\pi} \left[\cos u + i \sin u\right]^s \left[\sum_{l=0}^\infty \frac{(-ise)^l\sin^l u}{l!}\right] \left[\sum_{p=0}^\infty (p+1) e^p\cos^p u\right]\\ &=&\frac{1}{\omega}\int_0^{2\pi} \left[\sum_{k=0}^s {s \choose k} i^k\cos^{s-k} u \sin^k u\right] \left[\sum_{l=0}^\infty \frac{(-ise)^l\sin^l u}{l!}\right] \left[\sum_{p=0}^\infty (p+1) e^p\cos^p u\right]\\ &=&\frac{1}{\omega}\sum_{k=0}^s \sum_{l=0}^\infty \sum_{p=0}^\infty (-1)^l i^{k+l} (p+1) {s \choose k} \frac{s^l}{l!} e^{l+p} I_{k+l,s-k+p}\\ &=&\frac{1}{\omega}\sum_{n=0}^\infty \left[\sum_{k=0}^s {s \choose k} \sum_{l=0}^n (-1)^l i^{k+l} (n-l+1) \frac{s^l}{l!} I_{k+l,s-k+n-l}\right]e^n \end{eqnarray*}
+\form#109:\[ I_{m,n} \equiv \int_0^{2\pi} \sin^m u \cos^n u \]
+\form#110:\begin{eqnarray*} Q_{p,q}&\equiv& \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} \sin^p u \cos^q udu\\ &=& \sum_{\lambda=0}^\infty \frac{(-ise)^\lambda}{\lambda!} \int_{0}^{2\pi} \frac{\sin^{\lambda+p} u \cos^q u \left(\cos u + i\sin u\right)^s}{(1-e\cos u)^4} \end{eqnarray*}
+\form#111:$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k$
+\form#112:\begin{eqnarray*} Q_{p,q}&=&\sum_{\lambda=0}^\infty \frac{(-ise)^\lambda}{\lambda!} \sum_{k=0}^\infty {k+3 \choose 3} e^k \sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma I_{\lambda+\sigma+p, s-\sigma+k+q}\\ Q_{p,q}&=&\sum_{n=0}^\infty \left[ \sum_{\lambda=0}^n \frac{(-is)^\lambda}{\lambda!} {n-\lambda+3 \choose 3} \sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma I_{\lambda+\sigma+p, s+n+q-\sigma-\lambda}\right] e^n \end{eqnarray*}
+\form#113:\begin{eqnarray*} p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\ &&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\ &&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4} du\mp\\ &&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4} du\pm\\ &&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4} du\\ &=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\ &&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}Q_{0,0}+\\ &&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}(Q_{0,0}-2Q_{2,0})\mp\\ &&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}2Q_{1,1}\pm\\ &&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}Q_{1,0}\\ &=&\exp\left(\mp 2i\phi_0\right) \left[p_{0,s} - 2\frac{(1-e^2)Q_{2,0} \pm i\sqrt{1-e^2}(Q_{1,1} - e Q_{1,0})}{\omega} \right] \end{eqnarray*}
+\form#114:\[ \sqrt{1-e^2}=1-\frac{e^2}{2}- \sum_{n=2}^\infty\frac{(2n-3)!}{2^{2n-2} n! (n-2)!} e^{2n} \]
+\form#115:\begin{eqnarray*} I_{m,n}&=&I_{m,n-2}-I_{m+2,n-2}=I_{m,n-2}-\frac{m+1}{n-1}I_{m,n}\\ \Rightarrow I_{m,n}&=&\frac{n-1}{n+m}I_{m,n-2} \end{eqnarray*}
+\form#116:\begin{eqnarray*} I_{m,n}&=&I_{m-2,n}-I_{m-2,n+2}=I_{m-2,n}-\frac{n+1}{m-1}I_{m,n}\\ \Rightarrow I_{m,n}&=&\frac{m-1}{n+m}I_{m-2,n} \end{eqnarray*}
+\form#117:$I_{m,1}=I_{1,n}=0$
+\form#118:$I_{m,n}$
+\form#119:$I_{m,n}=I_{n,m}$
+\form#120:\begin{eqnarray*} \mathcal{U}_{-2,-2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1+cos\theta)^2\\ \mathcal{U}_{-1,-2}&=&-\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1+\cos\theta)\\ \mathcal{U}_{0,-2}&=&\sqrt{\frac{\pi}{5}}\frac{3}{4}\sin^2\theta\\ \mathcal{U}_{1,-2}&=&-\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1-\cos\theta)\\ \mathcal{U}_{2,-2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1-\cos\theta)^2\\ \end{eqnarray*}
+\form#121:\begin{eqnarray*} \mathcal{U}_{-2,0}&=&-\sqrt{\frac{6\pi}{5}}\frac{1}{4}\sin^2\theta\\ \mathcal{U}_{-1,0}&=&-\sqrt{\frac{6\pi}{5}}\frac{1}{2} \sin\theta\cos\theta\\ \mathcal{U}_{0,0}&=&-\sqrt{\frac{\pi}{5}}\frac{1}{2}(3\cos^2\theta-1)\\ \mathcal{U}_{1,0}&=&\sqrt{\frac{6\pi}{5}}\frac{1}{2} \sin\theta\cos\theta\\ \mathcal{U}_{2,0}&=&-\sqrt{\frac{6\pi}{5}}\frac{1}{4}\sin^2\theta \end{eqnarray*}
+\form#122:\begin{eqnarray*} \mathcal{U}_{-2,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1-\cos\theta)^2\\ \mathcal{U}_{-1,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1-\cos\theta)\\ \mathcal{U}_{0,2}&=&\sqrt{\frac{\pi}{5}}\frac{3}{4}\sin^2\theta\\ \mathcal{U}_{1,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{2} \sin\theta(1+\cos\theta)\\ \mathcal{U}_{2,2}&=&\sqrt{\frac{3\pi}{10}}\frac{1}{4}(1+\cos\theta)^2\\ \end{eqnarray*}
+\form#123:\[ U(\mathbf{r}, t) = \frac{GM'}{|\mathbf{r}_{M'}|}\left( \frac{\mathbf{r}\cdot\mathbf{r}_{M'}}{\left|\mathbf{r}_{M'}\right|^2} - \frac{\left|\mathbf{r_{M'}}\right|}{\left|\mathbf{r} - \mathbf{r}_{M'}\right|} \right) \]
+\form#124:$\mathbf{r}_{M'}(t)$
+\form#125:$M$
+\form#126:$M'$
+\form#127:$\mathbf{r}$
+\form#128:$\left|\mathbf{r}_{M'}(t)\right|$
+\form#129:$r(t) \equiv \left|\mathbf{r}_{M'}(t)\right| $
+\form#130:$\mathbf{\hat{z}}=\mathbf{\hat{L}}$
+\form#131:$\mathbf{\hat{y}}=\mathbf{\hat{S}}\times\mathbf{\hat{L}}$
+\form#132:\[ U(\mathbf{r}, t) = \frac{GM'}{r(t)}\sum_{l,m} c_{l,m}(\rho) Y_{l,m}(\theta, \phi) \]
+\form#133:$ \mathbf{r}=(\rho, \theta, \phi)$
+\form#134:\[ c_{l,m}(\rho, t) = \int_{0}^{2\pi} d\phi \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi) \]
+\form#135:$\tilde{U}(\mathbf{r}, t)\equiv U(\mathbf{r}, t)r(t)/(GM')$
+\form#136:$U(\mathbf{r}, t)$
+\form#137:$Y_{l,m}(\theta, \phi)$
+\form#138:$\hat{\tilde{z}}$
+\form#139:\[ \tilde{U}(\mathbf{r}, t) = \tilde{z} - \frac{1}{\sqrt{(1-\tilde{z})^2 + \tilde{x}^2 + \tilde{y}^2}} \]
+\form#140:$\tilde{x}$
+\form#141:$\tilde{y}$
+\form#142:$\tilde{z}$
+\form#143:$r(t)$
+\form#144:\begin{eqnarray*} \tilde{x}&=&\tilde{\rho}\sin\tilde{\theta}\cos\tilde{\phi}\\ \tilde{y}&=&\tilde{\rho}\sin\tilde{\theta}\sin\tilde{\phi}\\ \tilde{z}&=&\tilde{\rho}\cos\tilde{\theta} \end{eqnarray*}
+\form#145:$\tilde{\rho}$
+\form#146:\[ \tilde{U}(\tilde{\rho}, \tilde{\theta}, t) = \tilde{\rho}\cos\tilde{\theta} - \frac{1}{\sqrt{1-2\tilde{\rho}\cos\tilde{\theta} + \tilde{\rho}^2}} \]
+\form#147:$\tilde{\phi}$
+\form#148:$Y_{l,m}$
+\form#149:\begin{eqnarray*} x_{rot} &=& \tilde{z}\\ y_{rot} &=& \tilde{y}\\ z_{rot} &=& -\tilde{x}\\ \rho=\rho_{rot} &=& \tilde{\rho}\\ \theta = \theta_{rot} &\Rightarrow& \sin\theta = \sqrt{ \sin^2\tilde{\theta}\sin^2\tilde{\phi} + \cos^2\tilde{\theta}},\quad \cos\theta = -\sin\tilde{\theta}\cos\tilde{\phi}\\ \phi&=&\phi_{rot}-\Delta\phi(t)\\ \sin\phi_{rot}&=& \frac{\sin\tilde{\theta}\sin\tilde{\phi}} { \sqrt{\sin^2\tilde{\theta}\sin^2\tilde{\phi} + \cos^2\tilde{\theta}} }\\ \cos\phi_{rot}&=& \frac{\cos\tilde{\theta}} { \sqrt{\sin^2\tilde{\theta}\sin^2\tilde{\phi} + \cos^2\tilde{\theta}} } \end{eqnarray*}
+\form#150:$\mathbf{\hat{z}_{rot}}=\mathbf{\hat{L}}$
+\form#151:$\hat{x}_{rot}$
+\form#152:$\Delta\phi(t)$
+\form#153:$\Delta\phi(t)=\Omega t$
+\form#154:$\Omega$
+\form#155:\begin{eqnarray*} c_{l,m}(\rho, t) &=& \int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta,\phi_{rot}-\Delta\phi(t))\\ &=& exp(-im\Delta\phi(t))\int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot})\\ &=& \exp(-im\Delta\phi(t))\left\{ \int_{\Delta\phi(t)}^{2\pi} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}) + \int_{2\pi}^{2\pi+\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot})\right\}\\ &=& \exp(-im\Delta\phi(t))\left\{ \int_{\Delta\phi(t)}^{2\pi} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}) + \int_{0}^{\Delta\phi(t)} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}+2\pi)\right\}\\ &=& \exp(-im\Delta\phi(t)) \int_{0}^{2\pi} d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi_{rot}) \end{eqnarray*}
+\form#156:\[ c_{0,0}=c_{1,0}=c_{2,\pm1}=0\quad, \quad c_{1,\pm 1}=\pm\sqrt{\frac{2\pi}{3}}\tilde{\rho} \exp(-im\Delta\phi(t))\quad, \quad c_{2,0}=\sqrt{\frac{\pi}{5}}\rho^2\exp(-im\Delta\phi(t))\quad, \quad c_{2,\pm 2}=-\sqrt{\frac{3\pi}{10}}\rho^2\exp(-im\Delta\phi(t)) \]
+\form#157:$c_{1,\pm 1}$
+\form#158:$m$
+\form#159:$c_{2,*}$
+\form#160:$Y_{2,m}$
+\form#161:$z$
+\form#162:$\hat{S}$
+\form#163:$y$
+\form#164:$\hat{S}\times\hat{L}$
+\form#165:\begin{eqnarray*} y&=&y'=\rho'\sin\theta'\sin\phi'\\ z&=&x'\sin\Theta + z'\cos\Theta =\rho'\sin\theta'\cos\phi'\sin\Theta + \rho'\cos\theta'\cos\Theta\\ x&=&x'\cos\Theta - z'\sin\Theta =\rho'\sin\theta'\cos\phi'\cos\Theta - \rho'\cos\theta'\sin\Theta\\ \rho&=&\rho'\\ \cos\theta&=&z/\rho=\sin\theta'\cos\phi'\sin\Theta+\cos\theta'\cos\Theta\\ \exp(i\phi)&=&\frac{x+iy}{\rho\sin\theta} =\frac{\sin\theta'\sin\phi'+i\left(\sin\theta'\cos\phi'\cos\Theta - \cos\theta'\sin\Theta\right)} {\sqrt{1-\cos^2\theta}} \end{eqnarray*}
+\form#166:\[ U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi') \frac{\exp\left(-im'\Delta\phi(t)\right)a^3}{r^3(t)} \]
+\form#167:\[ U_{m,m'} \equiv \frac{GM'}{a^3}W_{2,m'}D_{m,m'}(\Theta) \]
+\form#168:$t=0$
+\form#169:$\Delta\phi(t)=\phi(t)+\phi_0$
+\form#170:$\phi(0)=0$
+\form#171:$\phi_0$
+\form#172:$90^\circ$
+\form#173:\begin{eqnarray*} r(t)&=&a(1-e\cos u)\\ \tan\left(\frac{\phi}{2}\right)&=&\sqrt{\frac{1+e}{1-e}} \tan\left(\frac{u}{2}\right)\\ \Rightarrow 1+\tan^2\left(\frac{\phi}{2}\right)&=&\frac{1-e\cos u} {(1-e)\cos^2\left(\frac{u}{2}\right)}\\ 1-\tan^2\left(\frac{\phi}{2}\right)&=&\frac{\cos u - e} {(1-e)\cos^2\left(\frac{u}{2}\right)}\\ \Rightarrow \cos\phi &=& \frac{\cos u - e}{1 - e\cos u}\\ \sin\phi &=& \frac{\sqrt{1-e^2}\sin u}{1 - e\cos u} \end{eqnarray*}
+\form#174:$u$
+\form#175:\[ u-e\sin u = \Omega t,\quad\Omega=\sqrt{\frac{G(M+M')}{a^3}} \]
+\form#176:\[ dt=\frac{1-e\cos u}{\Omega}du \]
+\form#177:$\Delta \phi(t)$
+\form#178:$2\pi/\Omega$
+\form#179:\[ \frac{a^3\exp(-im'\Delta \phi(t))}{r^3(t)}=\sum_s p_{m',s} \exp\left(-i s \Omega t\right) \]
+\form#180:$p_{m',s}(e)$
+\form#181:$m'$
+\form#182:\[ U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi') \exp\left(-im'\Omega t\right) \]
+\form#183:\[ U_{m,m'} \equiv \frac{GM'}{a^3} \mathcal{U}_{m,m'}\equiv \frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'} \]
+\form#184:$s$
+\form#185:$W_{2,m'}D_{m,m'}$
+\form#186:$p_{m',s}=\delta_{m',s}$
+\form#187:\begin{eqnarray*} \mathbf{\xi}_{m,s}(\mathbf{r},t)&=& \frac{U_{m,s}}{\omega_0^2}\mathbf{\bar{\xi}}_{m,s}(\mathbf{r}) \exp(-is\Omega t + i\Delta_{m,s})\\ \delta\rho(\mathbf{r},t)&=&\frac{U_{m,s}}{\omega_0^2} \delta\bar{\rho}_{m,s}(\mathbf{r}) \exp(-is\Omega t + i\Delta_{m,s})\\ \Delta_{m,s}&=&\tilde{\omega}_{m,s}t_{m,s} \end{eqnarray*}
+\form#188:$\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})$
+\form#189:$\tilde{\omega}_{m,s}=s\Omega-m\Omega_s$
+\form#190:$\Omega_s$
+\form#191:$\omega_0\equiv\sqrt{GM/R^3}$
+\form#192:$\Delta'_{m,m'}\equiv\kappa_{m,m'}\sin(\Delta_{m,m'})$
+\form#193:$\kappa'_{m,m'}\equiv\kappa_{m,m'}\cos(\Delta_{m,m'})$
+\form#194:$e$
+\form#195:$i$
+\form#196:$\Delta\omega$
+\form#197:\begin{eqnarray*} \dot{a}&=&a\frac{-\dot{E}}{E}\\ \dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\ \dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} - \frac{(T_x+\tilde{T}_x)\cos\theta}{L} - \frac{T_x+\mathscr{T}_x}{S}\\ \dot{\omega} &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{T_y+\mathscr{T}_y}{S\sin\theta}\\ \bhat{\tilde{x}}&=& \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{x} + \cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{z}\\ \bhat{\tilde{y}}&=& -\cos\theta\sin\Delta\omega\bhat{x} + \cos\Delta\omega\bhat{y} + \sin\theta\sin\Delta\omega\bhat{z}\\ \bhat{\tilde{z}}&=& \left(\sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{x} - \sin\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
+\form#198:$\tilde{\omega}\equiv m'\Omega-mS^{conv}/I_{conv}$
+\form#199:$\sin(\Delta_{m,m'}(\tilde{\omega})\kappa_{m,m'}$
+\form#200:$T_x^\pm$
+\form#201:$T_z^\pm$
+\form#202:$\dot{E}^\pm$
+\form#203:$T_x^0$
+\form#204:$T_z^0$
+\form#205:$\dot{E}^0$
+\form#206:$\lambda$
+\form#207:$1-\lambda$
+\form#208:\begin{eqnarray*} &&m'\frac{\partial}{\partial t}\sqrt{\frac{G(M+M')}{a^3}}= m\frac{\partial}{\partial t}\frac{S_i}{I_i}\\ \Rightarrow && -\frac{3m'}{2}\sqrt{\frac{G(M+M')}{a^5}}\dot{a}= m\frac{\dot{S}_i}{I_i} - m\frac{S_i\dot{I}_i}{I_i^2}\\ \Rightarrow && -\frac{3 m S_i}{2 I_i}\frac{\dot{a}}{a} = m\frac{\dot{S}_i}{I_i} - m\frac{S_i\dot{I}_i}{I_i^2}\\ \Rightarrow && -\frac{3}{2}\frac{\dot{a}}{a}= \frac{\dot{S}_i}{S_i} - \frac{\dot{I}_i}{I}\\ \Rightarrow && -\frac{3}{2}\frac{\dot{E}^0 + \sum_k\left[\lambda_k\dot{E}_k^+ + (1-\lambda_k)\dot{E}_k^-\right]}{E} = \frac{\dot{I_i}}{I_i} - \frac{\dot{S}_i^0 + \lambda_i\dot{S}_i^+ + (1-\lambda_i)\dot{S}_i^-}{S_i}\\ \Rightarrow && \lambda_i\left(\frac{\dot{S}_i^+ - \dot{S}_i^-}{S_i}\right) -\sum_k \lambda_k \left(1.5\frac{\dot{E}_k^+ - \dot{E}_k^-}{E} \right) =\frac{\dot{I_i}}{I_i} - \frac{\dot{S}_i^0 + \dot{S}_i^-}{S_i} +\frac{3}{2}\frac{\dot{E}^0+\sum_k\dot{E}_k^-}{E} \end{eqnarray*}
+\form#209:$0<\lambda<1$
+\form#210:\begin{eqnarray*} T_x&=&T_x^0 + \lambda T_x^+ + (1-\lambda)T_x^-\\ T_z&=&T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\ \dot{E}&=&\dot{E}^0 + \lambda\dot{E}^+ + (1-\lambda)\dot{E}^- \end{eqnarray*}
+\form#211:\begin{eqnarray*} E&=&-\frac{GMM'}{2a}\\ L&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2} =GMM'\sqrt{\frac{(1-e^2)MM'}{(-2E)(M+M')}} \end{eqnarray*}
+\form#212:\begin{eqnarray*} \dot{a}&=&a\frac{-\dot{E}}{E}\\ \dot{e}&=&\frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\ \end{eqnarray*}
+\form#213:$\mathbf{S}$
+\form#214:$S$
+\form#215:$\mathbf{L}$
+\form#216:$L$
+\form#217:$\theta$
+\form#218:$\omega$
+\form#219:$\mathbf{T}$
+\form#220:$\mathbf{\tilde{T}}$
+\form#221:$\mathbf{\mathscr{T}}$
+\form#222:$\bhat{p}$
+\form#223:$\bhat{z}$
+\form#224:$\bhat{y}$
+\form#225:$\bhat{x}$
+\form#226:$\bhat{y}\times\bhat{z}$
+\form#227:\begin{eqnarray*} \mathbf{S} &=& S\bhat{z}\\ \mathbf{L} &=& L\sin\theta\bhat{x}+L\cos\theta\bhat{z}\\ \bhat{y} &=& \frac{\mathbf{S}\times\mathbf{L}}{LS\sin\theta}\\ \bhat{p} &=& - \sin\omega\cos\theta\bhat{x} + \cos\omega\bhat{y} + \sin\omega\sin\theta\bhat{z}\\ \mathbf{S}' &=& (T_x+\mathscr{T}_x)dt\bhat{x} + (T_y+\mathscr{T}_y)dt\bhat{y} + (S+T_zdt+\mathscr{T}_zdt)\bhat{z}\\ \mathbf{L}' &=& (L\sin\theta-T_xdt-\tilde{T}_xdt)\bhat{x} - (T_y+\tilde{T}_y)dt\bhat{y} + (L\cos\theta-T_zdt-\tilde{T}_zdt)\bhat{z}\\ \frac{1}{S'} &=& \frac{1}{S} - \frac{T_z+\mathscr{T}_z}{S^2}dt\\ \frac{1}{L'} &=& \frac{1}{L} + \frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L^2}dt\\ \frac{1}{L'S'} &=& \frac{1}{LS}\left(1 - \frac{T_z+\mathscr{T}_z}{S}dt + \frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L}dt \right)\\ \Rightarrow \frac{d}{dt}\left(\frac{1}{LS}\right) &=& \frac{1}{LS}\left(\frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z+\mathscr{T}_z}{S} \right) \end{eqnarray*}
+\form#228:\begin{eqnarray*} \cos\theta &=& \frac{\mathbf{S}\cdot\mathbf{L}}{LS}\\ \cos\theta' &=& \frac{\mathbf{S}'\cdot\mathbf{L}'}{L'S'}\\ &=& \frac{L\sin\theta(T_x+\mathscr{T}_x)dt + LS\cos\theta + L\cos\theta(T_z+\mathscr{T}_z)dt - S(T_z+\tilde{T}_z)dt}{LS} \left(1 - \frac{T_z+\mathscr{T}_z}{S}dt + \frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L}dt \right)\\ &=& \cos\theta -\frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt + \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta + (T_z+\tilde{T}_z)\cos^2\theta}{L}dt +\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt + \frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt - \frac{T_z+\tilde{T}_z}{L}dt\\ &=& \cos\theta + \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta - (T_z+\tilde{T}_z)\sin^2\theta}{L}dt +\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt\\ \Rightarrow \dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} - \frac{(T_x+\tilde{T}_x)\cos\theta}{L} - \frac{T_x+\mathscr{T}_x}{S} \end{eqnarray*}
+\form#229:\[ \dot{\omega} = -\frac{1}{\sin\omega}\frac{d(\bhat{p}\cdot\bhat{y})}{dt} = -\frac{1}{\sin\omega}\left( \bhat{y}\cdot\frac{d\bhat{p}}{dt} + \bhat{p}\cdot\frac{d\bhat{y}}{dt} \right) \]
+\form#230:\begin{eqnarray*} \frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right) &=& - S(T_x+\tilde{T}_x)\bhat{y} + S(T_y+\tilde{T}_y)\bhat{x} - L\cos\theta(T_x+\mathscr{T}_x)\bhat{y} + L\cos\theta(T_y+\mathscr{T}_y)\bhat{x} - L\sin\theta(T_y+\mathscr{T}_y)\bhat{z} + L\sin\theta(T_z+\mathscr{T}_z)\bhat{y}\\ &=& \left[S(T_y+\tilde{T}_y) + L\cos\theta(T_y+\mathscr{T}_y)\right]\bhat{x} + \left[L\sin\theta(T_z+\mathscr{T}_z) - L\cos\theta(T_x+\mathscr{T}_x) - S(T_x+\tilde{T}_x) \right]\bhat{y} - L\sin\theta(T_y+\mathscr{T}_y)\bhat{z} \end{eqnarray*}
+\form#231:$\dot{\theta}$
+\form#232:\begin{eqnarray*} \frac{d}{dt}\left(\frac{1}{\sin\theta}\right) &=& \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin^2\theta} + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin^2\theta} - \frac{(T_z+\tilde{T}_z)\cos\theta}{L\sin\theta} \end{eqnarray*}
+\form#233:$\frac{d}{dt}\left(\frac{1}{LS}\right)$
+\form#234:$\frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)$
+\form#235:$\frac{d}{dt}\left(\frac{1}{\sin\theta}\right)$
+\form#236:\begin{eqnarray*} \frac{d}{dt}\bhat{y} &=& \left\{\frac{(T_x+\tilde{T}_x)\sin\theta + (T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z+\mathscr{T}_z}{S} \right\}\bhat{y}\\ && + \frac{1}{LS\sin\theta}\left\{ \left[S(T_y+\tilde{T}_y) + L\cos\theta(T_y+\mathscr{T}_y)\right]\bhat{x} + \left[L\sin\theta(T_z+\mathscr{T}_z) - L\cos\theta(T_x+\mathscr{T}_x) - S(T_x+\tilde{T}_x) \right]\bhat{y} - L\sin\theta(T_y+\mathscr{T}_y)\bhat{z} \right\}\\ && + \left\{\frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta} + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta} - \frac{(T_z+\tilde{T}_z)\cos\theta}{L} \right\}\bhat{y}\\ &=& \left[\frac{T_y+\tilde{T}_y}{L\sin\theta} + \frac{\cos\theta(T_y+\mathscr{T}_y)}{S\sin\theta} \right]\bhat{x}\\ && + \left[\frac{(T_x+\tilde{T}_x)\sin\theta}{L} + \frac{(T_z+\tilde{T}_z)\cos\theta}{L} - \frac{T_z+\mathscr{T}_z}{S} - \frac{\cos\theta(T_x+\mathscr{T}_x)}{S\sin\theta} + \frac{T_z+\mathscr{T}_z}{S} - \frac{T_x+\tilde{T}_x}{L\sin\theta} + \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta} + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta} - \frac{(T_z+\tilde{T}_z)\cos\theta}{L} \right]\bhat{y}\\ && - \frac{T_y+\mathscr{T}_y}{S}\bhat{z}\\ &=& \left[\frac{T_y+\tilde{T}_y}{L\sin\theta} + \frac{(T_y+\mathscr{T}_y)\cos\theta}{S\sin\theta} \right]\bhat{x} - \frac{T_y+\mathscr{T}_y}{S}\bhat{z}\\ \Rightarrow -\frac{\bhat{p}}{\sin\omega}\cdot\frac{d}{dt}\bhat{y} &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{(T_y+\mathscr{T}_y)\cos^2\theta}{S\sin\theta} + \frac{(T_y+\mathscr{T}_y)\sin\theta}{S}\\ &=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{T_y+\mathscr{T}_y}{S\sin\theta} \end{eqnarray*}
+\form#237:\begin{eqnarray*} \frac{d}{dt}\bhat{p} &=& -(\mathbf{T}+\mathbf{\tilde{T}}) \cdot\bhat{p}\frac{\mathbf{L}}{L^2}\\ &=& \left(\frac{(T_x+\tilde{T}_x)\sin\omega\cos\theta}{L} - \frac{(T_y+\tilde{T}_y)\cos\omega}{L} - \frac{(T_z+\tilde{T}_z)\sin\omega\sin\theta}{L} \right) \left(\sin\theta\bhat{x}+\cos\theta\bhat{z}\right)\\ \Rightarrow -\frac{\bhat{y}}{\sin\omega}\cdot\frac{d}{dt}\bhat{p} &=& 0 \end{eqnarray*}
+\form#238:\[ \dot{\omega} = \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta} + \frac{T_y+\mathscr{T}_y}{S\sin\theta} \]
+\form#239:\begin{eqnarray*} \dot{S} &=& T_z+\mathscr{T}_z\\ \dot{L} &=& -T_x\sin\theta - T_z\cos\theta \end{eqnarray*}
+\form#240:$\tilde{T}_x$
+\form#241:$\tilde{T}_y$
+\form#242:$\tilde{T}_z$
+\form#243:$\bhat{\tilde{x}}$
+\form#244:$\bhat{\tilde{y}}$
+\form#245:$\bhat{\tilde{z}}$
+\form#246:\[ \bhat{\tilde{y}}=-\cos\theta\sin\Delta\omega\bhat{x} + \cos\Delta\omega\bhat{y} + \sin\theta\sin\Delta\omega\bhat{z} \]
+\form#247:\begin{eqnarray*} \bhat{\tilde{z}}&=&\cos\tilde{\theta}\bhat{L}+ \sin\tilde{\theta}\bhat{L}\times\bhat{\tilde{y}}\\ &=&\sin\theta\cos\tilde{\theta}\bhat{x} + \cos\theta\cos\tilde{\theta}\bhat{z} + \sin\tilde{\theta}\left( \sin\theta\cos\Delta\omega\bhat{z} - \sin^2\theta\sin\Delta\omega\bhat{y} - \cos^2\theta\sin\Delta\omega\bhat{y} - \cos\theta\cos\Delta\omega\bhat{x} \right)\\ &=& \left(\sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{x} - \sin\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
+\form#248:\begin{eqnarray*} \bhat{\tilde{x}}&=& \sin\tilde{\theta}\bhat{L} - \cos\tilde{\theta}\bhat{L}\times\bhat{\tilde{y}}\\ &=& \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{x} + \cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
+\form#249:$\bhat{\tilde{x}}\times\bhat{\tilde{y}}=\bhat{\tilde{z}}$
+\form#250:\begin{eqnarray*} \bhat{\tilde{x}}\times\bhat{\tilde{y}} &=& \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\cos\Delta\omega\bhat{z} - \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\sin\theta\sin\Delta\omega\bhat{y}\\ && + \cos\tilde{\theta}\sin\Delta\omega \cos\theta\sin\Delta\omega \bhat{z} + \cos\tilde{\theta}\sin\Delta\omega \sin\theta\sin\Delta\omega \bhat{x}\\ && - \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\cos\theta\sin\Delta\omega\bhat{y} - \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\cos\Delta\omega\bhat{x}\\ &=& \left( \sin\theta\cos\tilde{\theta}\sin^2\Delta\omega - \cos\theta\sin\tilde{\theta}\cos\Delta\omega + \sin\theta\cos\tilde{\theta}\cos^2\Delta\omega\right)\bhat{x} -\left(\sin^2\theta\sin\tilde{\theta}\sin\Delta\omega + \sin\theta\cos\theta\cos\tilde{\theta} \sin\Delta\omega\cos\Delta\omega + \cos^2\theta\sin\tilde{\theta}\sin\Delta\omega - \sin\theta\cos\theta\cos\tilde{\theta} \sin\Delta\omega\cos\Delta\omega \right)\bhat{y} +\left(\sin\theta\sin\tilde{\theta}\cos\Delta\omega + \cos\theta\cos\tilde{\theta}\cos^2\Delta\omega + \cos\theta\cos\tilde{\theta}\sin^2\Delta\omega \right)\bhat{z}\\ &=& \left( \sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega\right)\bhat{x} -\sin\tilde{\theta}\sin\Delta\omega\bhat{y} +\left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\bhat{z} \end{eqnarray*}
+\form#251:$ \sin\tilde{\theta}\bhat{\tilde{x}}+\cos\tilde{\theta}\bhat{\tilde{z}}= \sin\theta\bhat{x}+\cos\theta\bhat{z} $
+\form#252:\begin{eqnarray*} \sin\tilde{\theta}\bhat{\tilde{x}}+\cos\tilde{\theta}\bhat{\tilde{z}} &=& \left(\sin\theta\sin^2\tilde{\theta} + \cos\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{x} + \sin\tilde{\theta}\cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\sin^2\tilde{\theta} - \sin\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{z}\\ && + \left(\sin\theta\cos^2\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{x} - \sin\tilde{\theta}\cos\tilde{\theta}\sin\Delta\omega\bhat{y} + \left(\cos\theta\cos^2\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\tilde{\theta} \cos\Delta\omega \right)\bhat{z}\\ &=& \sin\theta\bhat{x} + \cos\theta\bhat{z} \end{eqnarray*}
+\form#253:\[ - \sin(\omega-\Delta\omega)\cos\tilde{\theta}\bhat{\tilde{x}} + \cos(\omega-\Delta\omega)\bhat{\tilde{y}} + \sin(\omega-\Delta\omega)\sin\tilde{\theta}\bhat{\tilde{z}}= - \sin\omega\cos\theta\bhat{x} + \cos\omega\bhat{y} + \sin\omega\sin\theta\bhat{z} \]
+\form#254:\begin{eqnarray*} \bhat{\tilde{p}}\cdot\bhat{x} &=& -\sin(\omega-\Delta\omega)\cos\tilde{\theta} \left(\sin\theta\sin\tilde{\theta} + \cos\theta\cos\tilde{\theta}\cos\Delta\omega \right)\\ && - \cos(\omega-\Delta\omega)\cos\theta\sin\Delta\omega\\ && + \sin(\omega-\Delta\omega)\sin\tilde{\theta} \left(\sin\theta\cos\tilde{\theta} - \cos\theta\sin\tilde{\theta}\cos\Delta\omega \right)\\ &=& -\cos\theta\cos^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega - \cos\theta\cos(\omega-\Delta\omega)\sin\Delta\omega - \cos\theta\sin^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega\\ &=& - \cos\theta\sin(\omega-\Delta\omega)\cos\Delta\omega - \cos\theta\cos(\omega-\Delta\omega)\sin\Delta\omega\\ &=& - \sin\omega\cos\theta\\ &=& \bhat{p}\cdot\bhat{x} \end{eqnarray*}
+\form#255:\begin{eqnarray*} \bhat{\tilde{p}}\cdot\bhat{y} &=& - \sin(\omega-\Delta\omega)\cos\tilde{\theta} \cos\tilde{\theta}\sin\Delta\omega + \cos(\omega-\Delta\omega)\cos\Delta\omega - \sin(\omega-\Delta\omega)\sin\tilde{\theta} \sin\tilde{\theta}\sin\Delta\omega\\ &=& - \sin(\omega-\Delta\omega)\sin\Delta\omega + \cos(\omega-\Delta\omega)\cos\Delta\omega\\ &=& \cos\omega\\ &=& \bhat{p}\cdot\bhat{y} \end{eqnarray*}
+\form#256:\begin{eqnarray*} \bhat{\tilde{p}}\cdot\bhat{z} &=& - \sin(\omega-\Delta\omega)\cos\tilde{\theta} \left(\cos\theta\sin\tilde{\theta} - \sin\theta\cos\tilde{\theta}\cos\Delta\omega \right)\\ && + \cos(\omega-\Delta\omega)\sin\theta\sin\Delta\omega\\ && + \sin(\omega-\Delta\omega)\sin\tilde{\theta} \left(\cos\theta\cos\tilde{\theta} + \sin\theta\sin\tilde{\theta}\cos\Delta\omega \right)\\ &=& + \sin\theta\cos^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega + \cos(\omega-\Delta\omega)\sin\theta\sin\Delta\omega + \sin\theta\sin^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega\\ &=& \sin\theta\sin(\omega-\Delta\omega)\cos\Delta\omega + \sin\theta\cos(\omega-\Delta\omega)\sin\Delta\omega\\ &=& \sin\theta\sin\omega\\ &=& \bhat{p}\cdot\bhat{z} \end{eqnarray*}
+\form#257:\begin{eqnarray*} p_{m,s}&=&\frac{a^3}{2\pi}\int_0^{2\pi/\omega} \frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\ &=& a^3\int_0^{2\pi/\omega} e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} e^{i s \omega t}dt \end{eqnarray*}
+\form#258:\begin{eqnarray*} p_{0,s}&=& \frac{1}{2\pi}\int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}}{\omega (1-e\cos u)^2} du\\ &=& \frac{1}{2\pi\omega} \int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du \end{eqnarray*}
+\form#259:\[ p_{0,s}= \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega} \int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du \]
+\form#260:$s=0$
+\form#261:$\int_0^{2\pi} \cos^{2k} u du = \frac{2\pi (2k)!}{2^{2k}(k!)^2}$
+\form#262:\[ p_{0,0}=\frac{1}{\omega} \sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k}(k!)^2}e^k \]
+\form#263:$s \neq 0$
+\form#264:\begin{eqnarray*} p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega} \int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega} \int_{0}^{2\pi} e^{i s (u-e\sin u)} \left(e^{iu}+e^{-iu}\right)^k du\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k {k \choose c} \int_{0}^{2\pi} e^{i s (u-e\sin u)} e^{icu}e^{-i(k-c)u} du\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k {k \choose c} \int_{0}^{2\pi} e^{i (s+2c-k) u} e^{-ies\sin u} du \end{eqnarray*}
+\form#265:$u=u'-\pi/2\Rightarrow \sin u = -\cos u'$
+\form#266:\begin{eqnarray*} 2\pi p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} e^{-i (s+2c-k)\pi/2} \int_{\pi/2}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{ \int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du' + \int_{2\pi}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' \right\}\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{ \int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du' + \int_{0}^{\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' \right\}\\ &=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \int_{0}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} i^{s+2c-k} J_{s+2c-k}(es)\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega} \sum_{c=0}^k {k \choose c} J_{s+2c-k}(es)\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k} \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty} \frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}} {2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\ &=&\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k} \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty} \frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}} {2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\ &=&\frac{2\pi}{\omega} \left(\frac{es}{2}\right)^s \sum_{k=0}^\infty \frac{(k+1)}{s^k} \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty} \frac{(-1)^\lambda (s^2e^2/4)^{\lambda+c}} {\lambda!(\lambda+s+2c-k)!}\\ \end{eqnarray*}
+\form#267:$n=\lambda+c\Rightarrow \lambda=n-c,\quad\lambda+s+2c-k=n+s+c-k$
+\form#268:$k-s-2c\leq n-c\Rightarrow c\geq k-n-s$
+\form#269:$c$
+\form#270:$k-n-s\leq n\Rightarrow k\leq 2n+s$
+\form#271:\[ p_{0,s}=\sum_{n=0}^\infty \alpha_{s,n}\left\{ \begin{array}{l@{,\quad}l} e^{2n} & s=0\\ (se/2)^{s+2n} & s \neq 0 \end{array}\right. \]
+\form#272:\[ \alpha_{s,n}\equiv\frac{1}{\omega}\left\{\begin{array}{l@{,\quad}l} \frac{(2n+1)!}{2^{2n}(n!)^2} & s=0\\ (-1)^n \sum_{k=0}^{2n+s} \frac{k+1}{s^k} \sum_{c=max(0,k-n-s)}^{min(n,k)} {k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!} & s \neq 0 \end{array} \right. \]
+\form#273:\begin{eqnarray*} \cos2\phi &=& 1-2\sin^2\phi = 1-2\frac{(1-e^2)\sin^2u}{(1-e\cos u)^2} = 1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2}\\ \sin2\phi &=& 2\sin\phi\cos\phi = 2\sqrt{1-e^2} \frac{\sin u(\cos u - e)}{(1-e\cos u)^2} = 2\sqrt{1-e^2}\frac{\sin 2u - e\sin u}{(1-e\cos u)^2} \end{eqnarray*}
+\form#274:$p_{\pm2,s}$
+\form#275:\begin{eqnarray*} p_{\pm2,s}&=& \frac{1}{2\pi}\int_0^{2\pi/\omega} a^3\exp(\mp 2i\phi_0)\frac{\cos(2\phi(t))\mp i\sin(2\phi(t))}{r^3(t)} \exp[i s (u-e\sin u)]dt\\ &=& \frac{e^{\mp 2i\phi_0}}{2\pi\omega}\int_0^{2\pi} \left[1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2} \mp i\sqrt{1-e^2}\frac{\sin 2u - 2e\sin u}{(1-e\cos u)^2}\right] \frac{\exp[i s (u-e\sin u)]}{(1-e\cos u)^2} du \end{eqnarray*}
+\form#276:\begin{eqnarray*} p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\ &&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\ &&{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4} du\mp\\ &&{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4} du\pm\\ &&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega} \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4} du\\ \end{eqnarray*}
+\form#277:\begin{eqnarray*} 2\pi\omega I_{\lambda,s}&\equiv& \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\exp(i\lambda u)} {(1-e\cos u)^4} du\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} e^k \int_{0}^{2\pi} \exp[i (s+\lambda) u]\exp[-ise\sin u)]\cos^k u du\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} \int_{0}^{2\pi} \exp[i (s+\lambda+2c-k) u]\exp(-ise\sin u) du\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} J_{s+\lambda+2c-k}(es)\\ &=&\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} \sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty} \frac{(-1)^\nu (se)^{2\nu+s+\lambda+2c-k}} {2^{2\nu+s+\lambda+2c-k}\nu!(\nu+s+\lambda+2c-k)!}\\ &=&2\pi\left(\frac{se}{2}\right)^{s+\lambda}\sum_{k=0}^\infty {{k+3} \choose 3} s^{-k}\sum_{c=0}^k {k \choose c} \sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty} \frac{(-1)^\nu (s^2e^2/4)^{\nu+c}}{\nu!(\nu+s+\lambda+2c-k)!} \end{eqnarray*}
+\form#278:$n=\nu+c$
+\form#279:\begin{eqnarray*} \nu>=0 & \Rightarrow & c \le n\\ \nu>=k-s-\lambda-2c & \Rightarrow & c \ge k-s-\lambda-n\\ k-s-\lambda-n \le n & \Rightarrow & k \le 2n+\lambda+s\\ k-s-\lambda-n \le k & \Rightarrow & n \ge -s - \lambda \end{eqnarray*}
+\form#280:\[ I_{\lambda,s} = \sum_{n=\max(0,-s-\lambda)}^\infty \beta_{\lambda,s,n} (se/2)^{s+\lambda+2n} \]
+\form#281:\[ \beta_{\lambda,s,n}\equiv \frac{(-1)^n}{\omega} \sum_{k=0}^{2n+\lambda+s} {{k+3} \choose 3} s^{-k}\sum_{c=\max(0,k-\lambda-s-n)}^{\min(n,k)} {k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+s+c-k)!} \]
+\form#282:$I_{\lambda,s}$
+\form#283:\[ p_{\pm2,s}=\exp(\mp 2i\phi_0)\left\{p_{0,s} +(1-e^2)\left[(I_{2,s}+I_{-2,s})/2-I_{0,s}\right] \mp \sqrt{1-e^2}(I_{2,s}-I_{-2,s})/2 \pm e\sqrt{1-e^2}(I_{1,s}-I_{-1,s}) \right\} \]
+\form#284:$s\neq0$
+\form#285:\[ \sqrt{1-e^2}=\sum_{n=0}^\infty \frac{(2n)!}{4^n (n!)^2(1-2n)} e^{2n} \]
+\form#286:\[ p_{\pm2,s}=\exp(\mp 2i\phi_0)\sum_{n=-1}^\infty \gamma^\pm_{s,n}\left(\frac{se}{2}\right)^{2n+s} \]
+\form#287:\begin{eqnarray*} \gamma^\pm_{s,n} &\equiv &\alpha_{s,n} + \frac{\beta_{2,s,n-1}+\beta_{-2,s,n+1}}{2} - \beta_{0,s,n}+\frac{4}{s^2}\beta_{0,s,n-1} - \frac{2}{s^2}\left(\beta_{2,s,n-2}+\beta_{-2,s,n}\right)\\ &&{}\pm \sum_{k=0}^{n+1} \frac{(2k)!}{s^{2k}(k!)^2(2k-1)} \left[\frac{1}{2}\left(\beta_{2,s,n-k-1}-\beta_{-2,s,n-k+1}\right)+ \frac{2}{s}\left(\beta_{-1,s,n-k}-\beta_{1,s,n-k-1}\right)\right] \end{eqnarray*}
+\form#288:\begin{eqnarray*} p_{\pm2,s}&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c} \Bigg\{ (k+1)J_{s+2c-k}(es) + \\ &&{}+{{k+3} \choose 3} \Bigg[ -(1-e^2)J_{s+2c-k}(es) +\frac{1-e^2}{2}\big[J_{s+2+2c-k}(es)+J_{s-2+2c-k}(es)\big] \mp\\ &&\quad\quad\quad\quad\quad{} \mp\frac{\sqrt{1-e^2}}{2}\big[J_{s+2+2c-k}(es)- J_{s-2+2c-k}(es)\big] \pm e\sqrt{1-e^2}\big[J_{s+1+2c-k}(es)-J_{s-1+2c-k}(es)\big] \Bigg] \Bigg\} \end{eqnarray*}
+\form#289:\begin{eqnarray*} 2\pi p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} + \frac{1}{\omega}\left[ (1-e^2)\int_{0}^{2\pi} \frac{\cos 2u -1} {(1-e\cos u)^4} du \mp i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\sin 2u} {(1-e\cos u)^4} du \pm i2e\sqrt{1-e^2} \int_{0}^{2\pi} \frac{\sin u} {(1-e\cos u)^4} du \right]\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} + \frac{2}{\omega}\left[ (1-e^2)\int_{0}^{2\pi} \frac{\cos^2 u -1} {(1-e\cos u)^4} du \pm i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u \mp ie\sqrt{1-e^2} \int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u \right]\right\} \end{eqnarray*}
+\form#290:\begin{eqnarray*} \int_{0}^{2\pi}\frac{\cos^{2n} u} {(1-e\cos u)^4} du &=&\sum_{k=0}^\infty {2k+3 \choose 3} e^{2k} \int_{0}^{2\pi}\frac{\cos^{2n+2k} u} du\\ &=&2\pi\sum_{k=0}^\infty {2k+3 \choose 3} \frac{(2k+2n)!}{2^{2k+2n}[(k+n)!]^2} e^{2k} \end{eqnarray*}
+\form#291:\begin{eqnarray*} \int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u &=&-\frac{1}{e}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d(1-e\cos u)\\ &=&\left.\frac{1}{3e(1-e\cos u)^3}\right|_{0}^{2\pi}\\ &=&0 \end{eqnarray*}
+\form#292:\begin{eqnarray*} \int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u &=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1-e\cos u-1}{(1-e\cos u)^4} d(1-e\cos u)\\ &=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^3} d(1-e\cos u)\\ &=&-\frac{1}{2e^2(1-e\cos u)^2}\\ &=&0 \end{eqnarray*}
+\form#293:\begin{eqnarray*} p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} + \frac{2(1-e^2)}{\omega}\left\{\sum_{k=0}^\infty {2k+3 \choose 3} \frac{(2k+2)!}{2^{2k+2}[(k+1)!]^2}- \frac{2k!}{2^{2k}(k!)^2}\right\}e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2(1-e^2)}{\omega}\sum_{k=0}^\infty {2k+3 \choose 3} \frac{2k!}{2^{2k}(k!)^2(2k+2)}e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \left[ {2k+3 \choose 3} \frac{2k!}{2^{2k}(k!)^2(2k+2)} - {2k+1 \choose 3} \frac{2(k-1)!}{2^{2k-2}[(k-1)!]^2 2k} \right]e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \left[ \frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2} - \frac{4k^2(2k+1)(2k-1)!}{6\,2^2k(k!)^2} \right]e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \left[ \frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2} - \frac{2k(2k+1)!}{6\,2^2k(k!)^2} \right]e^{2k}\right\}\\ &=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} - \frac{2}{\omega}\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k+1}(k!)^2} e^{2k}\right\}\\ &=&0 \end{eqnarray*}
+\form#294:\begin{eqnarray*} \mathbf{T}&=&-\int d^3 x \delta\rho(\mathbf{r}, t) \mathbf{r}\times \nabla U*(\mathbf{r}, t)\\ &=&-\left(\frac{G M'}{a^3 \omega_0}\right)^2 \int d^3 x \left\{ \sum_{m,m'}\mathcal{U}_{m,m'} \delta\bar{\rho}_{m,m'}(\mathbf{r}) \exp(-im'\Omega t + i\Delta_{m,m'}) \right\} \mathbf{r}\times \left\{ \sum_{\mu,\mu'}\mathcal{U}_{\mu,\mu'} \exp(i \mu'\Omega t) \nabla \left[r^2 Y_{2,\mu}^*(\theta, \phi)\right] \right\} \end{eqnarray*}
+\form#295:$\mathbf{r}\times\nabla r^2=0$
+\form#296:\begin{eqnarray*} \mathbf{T}&=&-\left(\frac{G M'}{a^3 \omega_0}\right)^2 \int d^3 x \left\{ \sum_{m,m'}\mathcal{U}_{m,m'} \delta\bar{\rho}_{m,m'}(\mathbf{r}) \exp(-im'\Omega t + i\Delta_{m,m'}) \right\} \mathbf{r}\times \left\{ \sum_{\mu,\mu'}\mathcal{U}_{\mu,\mu'} \exp(i \mu'\Omega t) r^2 \nabla Y_{2,\mu}^*(\theta, \phi) \right\}\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
+\form#297:$\hat{z}=\cos\theta \hat{r} - \sin\theta \hat{\theta}$
+\form#298:$\hat{r}$
+\form#299:$\mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi)$
+\form#300:\begin{eqnarray*} T_z&=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \sin\theta \hat{\theta}\cdot \left[ \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \right]\\ &=& \left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \sin \theta (\mathbf{r}\times\hat{\theta})\cdot \nabla Y_{2,\mu}^*(\theta, \phi)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^3 \sin\theta \hat{\phi}\cdot\nabla Y_{2,\mu}^*(\theta, \phi)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \frac{\partial Y_{2,\mu}^*(\theta, \phi)}{\partial\phi}\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} i\mu\mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
+\form#301:$\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp(im\phi)$
+\form#302:$m'=\mu'$
+\form#303:\[ T_z= -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m'} i m \mathcal{U}_{m,m'}^2 \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi) \]
+\form#304:\begin{eqnarray*} T_z&=&\frac{G R^3}{M}\left(\frac{M'}{a^3}\right)^2 \sum_{m,m'} m \mathcal{U}_{m,m'}^2 \sin(\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi)\\ T_z&=&T_0 \sum_{m,m'} \mathcal{U}_{m,m'}^2 m \kappa_{m,m'} \sin(\Delta_{m,m'})\\ T_0&\equiv& G R^5\left(\frac{M'}{a^3}\right)^2\\ \kappa&\equiv&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*(\theta, \phi) \end{eqnarray*}
+\form#305:$\hat{x}=\sin\theta\cos\phi\hat{r} + \cos\theta\cos\phi\hat{\theta} - \sin\phi \hat{\phi}$
+\form#306:\begin{eqnarray*} T_x &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 (\cos\theta\cos\phi\hat{\theta} - \sin\phi\hat{\phi}) \left[ \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \right]\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^3 (\cos\theta\cos\phi\hat{\phi} + \sin\phi\hat{\theta})\cdot \nabla Y_{2,\mu}^*(\theta, \phi)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \cot\theta\cos\phi\frac{\partial}{\partial \phi} + \sin\phi\frac{\partial}{\partial \theta} \right) Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
+\form#307:\begin{eqnarray*} T_x &=& \left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( i\mu\cot\theta\cos\phi Y_{2,\mu}^*(\theta, \phi) - \sin\phi\frac{\partial Y_{2,\mu}^*(\theta, \phi)} {\partial \theta} \right)\\ \end{eqnarray*}
+\form#308:\[ \frac{\partial Y_{2,\mu}^*}{\partial \theta}=\mu\cot\theta Y_{2,\mu}^* + \sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \]
+\form#309:\begin{eqnarray*} T_x &=& \frac{T_0}{MR^2} \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} i\exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + i\sin\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \right)\\ &=& \frac{T_0}{MR^2} \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} i\exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \sqrt{(2-\mu)(3+\mu)}[\exp(2i\phi)-1] Y_{2,\mu+1}^* \right)\\ \end{eqnarray*}
+\form#310:\begin{eqnarray*} T_x &=& -\frac{T_0}{MR^2} \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \sin(\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \frac{\sqrt{(2-\mu)(3+\mu)}}{2}[\exp(2i\phi)-1] Y_{2,\mu+1}^* \right)\\ &=& T_0 \sum_{m,m'} \mathcal{U}_{m,m'} \sin(\Delta_{m,m'})( \kappa_{m,m'}^-\mathcal{U}_{m-1,m'}+ \kappa_{m,m'}^+\mathcal{U}_{m+1,m'})\\ \kappa_{m,m'}^-&\equiv& \frac{\sqrt{(3-m)(2+m)}}{2MR^2} \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 Y_{2,m}^*=\frac{\sqrt{(3-m)(2+m)}}{2}\kappa_{m,m'}\\ \kappa_{m,m'}^+&\equiv&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2\left[ (m+1)\cot\theta\exp(i\phi) Y_{2,m+1}^*(\theta,\phi)+ \frac{\sqrt{(1-m)(4+m)}}{2}\exp(2i\phi) Y_{2,m+2}^* \right] \end{eqnarray*}
+\form#311:$\kappa_{m,m'}^-$
+\form#312:$\kappa_{m,m'}$
+\form#313:$\kappa_{m,m'}^+$
+\form#314:$m=0, \pm 1, 2$
+\form#315:\begin{eqnarray*} \kappa_{0,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2\left[ \cot\theta\exp(i\phi) Y_{2,1}^*(\theta,\phi)+ \exp(2i\phi) Y_{2,2}^*(\theta,\phi) \right]\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2\left[ -\frac{1}{2}\sqrt{\frac{15}{2\pi}}\cos^2\theta+ \frac{1}{4}\sqrt{\frac{15}{2\pi}}\sin^2\theta \right]\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2 \frac{1}{4}\sqrt{\frac{15}{2\pi}}(3\cos^2\theta-1)\\ &=&\frac{\sqrt{3/2}}{MR^2}\int d^3 x \delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2 Y_{2,0}^*(\theta, \phi)\\ \Rightarrow \kappa_{0,m'}^+&=&\sqrt{3/2}\kappa_{0,m'}\\ \kappa_{-1,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-1,m'}(\mathbf{r}) r^2 \frac{\sqrt{6}}{2}\exp(2i\phi) Y_{2,1}^*\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-1,m'}(\mathbf{r}) r^2 \frac{\sqrt{6}}{2}\exp(2i\phi) Y_{2,-1}^*\\ \Rightarrow\kappa_{-1,m'}^+&=&\sqrt{3/2}\kappa_{-1,m'}\\ \kappa_{1,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{1,m'}(\mathbf{r}) r^2 2\cot\theta\exp(i\phi) Y_{2,2}^*(\theta,\phi)\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{1,m'}(\mathbf{r}) r^2 \frac{1}{2}\sqrt{\frac{15}{2\pi}}\sin\theta\cos\theta\exp(-i\phi)\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{1,m'}(\mathbf{r}) r^2 Y_{2,1}^*(\theta,\phi)\\ \Rightarrow\kappa_{1,m'}^+&=&\kappa_{1,m'}\\ \kappa_{-2,m'}^+&=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2\left[ -\cot\theta\exp(i\phi) Y_{2,-1}^*(\theta,\phi)+ \sqrt{\frac{3}{2}}\exp(2i\phi) Y_{2,0}^* \right]\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2\left[ -\frac{1}{2}\sqrt{\frac{15}{2\pi}}\cos^2\theta\exp(2i\phi)+ \frac{1}{4}\sqrt{\frac{15}{2\pi}}\exp(2i\phi)(3\cos^2\theta-1) \right]\\ &=&-\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2 \frac{1}{4}\sqrt{\frac{15}{2\pi}}\exp(2i\phi)\left[ -\cos^2\theta+3\cos^2\theta-1 \right]\\ &=&\frac{1}{MR^2} \int d^3 x \delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2 Y_{-2,m}^*(\theta, phi)\\ \Rightarrow \kappa_{-2,m'}^+&=&\kappa_{-2,m'}\\ \end{eqnarray*}
+\form#316:$\hat{y}=\sin\theta\sin\phi\hat{r} + \cos\theta\sin\phi\hat{\theta} - \cos\phi \hat{\phi}$
+\form#317:\begin{eqnarray*} T_y &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 (\cos\theta\sin\phi\hat{\theta} - \cos\phi\hat{\phi}) \left[ \mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi) \right]\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'} \exp(i(\mu'-m')\Omega t + i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( \cot\theta\sin\phi\frac{\partial}{\partial \phi} + \cos\phi\frac{\partial}{\partial \theta} \right) Y_{2,\mu}^*(\theta, \phi) \end{eqnarray*}
+\form#318:\begin{eqnarray*} T_y &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left( i\mu\cot\theta\sin\phi Y_{2,\mu}^*(\theta, \phi) + \cos\phi\frac{\partial Y_{2,\mu}^*(\theta, \phi)} {\partial \theta} \right)\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left\{ i\mu\cot\theta\sin\phi Y_{2,\mu}^*(\theta, \phi) + \cos\phi\left[\mu\cot\theta Y_{2,\mu}^* + \sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \right] \right\}\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left[ \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \cos\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^* \right]\\ &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2 \sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'} \exp(i\Delta_{m,m'}) \int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 \left[ \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) + \frac{\sqrt{(2-\mu)(3+\mu)}}{2}(\exp(2i\phi)+1) Y_{2,\mu+1}^* \right]\\ &=& -\frac{T_0}{MR^2} \sum_{m,m'} \mathcal{U}_{m,m'} \left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+ \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right) \exp(i\Delta_{m,m'}) \end{eqnarray*}
+\form#319:$\kappa^+_{m,m'}$
+\form#320:$\kappa^-_{m,m'}$
+\form#321:$T_x$
+\form#322:\[ T_y = -T_0 \sum_{m,m'} \mathcal{U}_{m,m'} \left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+ \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right) \cos(\Delta_{m,m'}) \]
+\form#323:$\cos\Delta_{m,m'}$
+\form#324:$T_{eff}$
+\form#325:$\log_{10}(g)$
+\form#326:$L_\star$
+\form#327:$\rho_\star$
+\form#328:$Q'_\star = 10^6$

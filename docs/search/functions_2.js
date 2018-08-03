@@ -2,9 +2,9 @@ var searchData=
 [
   ['badfunctionarguments',['BadFunctionArguments',['../classCore_1_1Error_1_1BadFunctionArguments.html#ac9e4433aec24d4435355a0a5f84d87b1',1,'Core::Error::BadFunctionArguments']]],
   ['badstellarzone',['BadStellarZone',['../classCore_1_1Error_1_1BadStellarZone.html#af16e72b633b9da792d0447c7da0fe91e',1,'Core::Error::BadStellarZone']]],
-  ['begin',['begin',['../classStellarEvolution_1_1MESA_1_1Interpolator.html#ae136813e97fd8dab7882af0892230057',1,'StellarEvolution::MESA::Interpolator::begin()'],['../classYRECEvolution.html#acbb68b520a3deddb536628f10573b68c',1,'YRECEvolution::begin()']]],
+  ['begin',['begin',['../classYRECEvolution.html#acbb68b520a3deddb536628f10573b68c',1,'YRECEvolution::begin()'],['../classStellarEvolution_1_1MESA_1_1Interpolator.html#ae136813e97fd8dab7882af0892230057',1,'StellarEvolution::MESA::Interpolator::begin()']]],
   ['binary_5fdifferential_5fequations',['binary_differential_equations',['../classEvolve_1_1BinarySystem.html#a9ad98f001f145c906ccb2820384e082d',1,'Evolve::BinarySystem']]],
-  ['binary_5fjacobian',['binary_jacobian',['../classEvolve_1_1BinarySystem.html#a5747633c7398f8b26649de457a04de70',1,'Evolve::BinarySystem']]],
+  ['binary_5fjacobian',['binary_jacobian',['../classEvolve_1_1BinarySystem.html#a5b489a84b03bb95d5e4ba00df77df67f',1,'Evolve::BinarySystem']]],
   ['binarysystem',['BinarySystem',['../classEvolve_1_1BinarySystem.html#a11ec497e4dbc7ca7ca88616c5f6c20ed',1,'Evolve::BinarySystem']]],
   ['block_5fheavier',['block_heavier',['../classStellarEvolution_1_1AllowedGridGrowth.html#aa87b028b88db2b5ce69e6bf6b7b272bf',1,'StellarEvolution::AllowedGridGrowth']]],
   ['block_5flighter',['block_lighter',['../classStellarEvolution_1_1AllowedGridGrowth.html#a0fe9b5f86dfac038db9dcc6a197ea3df',1,'StellarEvolution::AllowedGridGrowth']]],
