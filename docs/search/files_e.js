@@ -4,5 +4,7 @@ var searchData=
   ['test_5fsymmetries_2epy',['test_symmetries.py',['../test__symmetries_8py.html',1,'']]],
   ['threadedinterpolation_2ecpp',['ThreadedInterpolation.cpp',['../ThreadedInterpolation_8cpp.html',1,'']]],
   ['threadedinterpolation_2eh',['ThreadedInterpolation.h',['../ThreadedInterpolation_8h.html',1,'']]],
+  ['tidalpotentialterms_2ecpp',['TidalPotentialTerms.cpp',['../TidalPotentialTerms_8cpp.html',1,'']]],
+  ['tidalpotentialterms_2eh',['TidalPotentialTerms.h',['../TidalPotentialTerms_8h.html',1,'']]],
   ['transformations_2epy',['transformations.py',['../transformations_8py.html',1,'']]]
 ];

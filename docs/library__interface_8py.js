@@ -7,7 +7,7 @@ var library__interface_8py =
     [ "initialize_library", "library__interface_8py.html#a3a1328bf12d50ec0a0e0f52395bc9838", null ],
     [ "library_track_fname", "library__interface_8py.html#ab3df1619357e176d28a582e4f13f073c", null ],
     [ "ages", "library__interface_8py.html#ade745b42d1f877ba050af653b56ca64c", null ],
-    [ "library", "library__interface_8py.html#a47ec1ccce83fae60b275a6c45831a398", null ],
+    [ "library", "library__interface_8py.html#ab1f175f6509b8237f5bc3f7762744825", null ],
     [ "library_track_fname_rex", "library__interface_8py.html#a0625648331560926d943a24df0b0edcf", null ],
     [ "loaded_interpolator", "library__interface_8py.html#a98760bc208d6a01091f1f09f91334ac0", null ],
     [ "mesa_dir", "library__interface_8py.html#a68a131c026e19903964cd28672dcd3d7", null ],

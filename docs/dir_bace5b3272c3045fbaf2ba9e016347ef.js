@@ -50,6 +50,10 @@ var dir_bace5b3272c3045fbaf2ba9e016347ef =
     [ "SynchronizedCondition.h", "SynchronizedCondition_8h.html", [
       [ "SynchronizedCondition", "classEvolve_1_1SynchronizedCondition.html", "classEvolve_1_1SynchronizedCondition" ]
     ] ],
+    [ "TidalPotentialTerms.cpp", "TidalPotentialTerms_8cpp.html", null ],
+    [ "TidalPotentialTerms.h", "TidalPotentialTerms_8h.html", [
+      [ "TidalPotentialTerms", "classEvolve_1_1TidalPotentialTerms.html", "classEvolve_1_1TidalPotentialTerms" ]
+    ] ],
     [ "ZoneOrientation.cpp", "ZoneOrientation_8cpp.html", "ZoneOrientation_8cpp" ],
     [ "ZoneOrientation.h", "ZoneOrientation_8h.html", "ZoneOrientation_8h" ]
 ];
