@@ -23,7 +23,7 @@ double eccentric_anomaly_equation(double eccentric_anomaly,
             orbital_phase);
 }
 
-namespace testGravitationalPotential {
+namespace Evolve {
     double EccentricOrbit::reduced_mass() const
     {
         return (

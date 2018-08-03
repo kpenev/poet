@@ -16,13 +16,13 @@
 #include <boost/math/special_functions/spherical_harmonic.hpp>
 #include <cassert>
 
-namespace testGravitationalPotential {
+namespace Evolve {
     ///Evaluate the tidal potential using the expansion.
     class TidalPotentialExpansion {
     private:
         ///\brief The coefficients of the expansion of the tidal potential.
         ///(\f$ \mathcal{U}_{m,m'} \f$)
-        Evolve::TidalPotentialTerms __expansion_coef;
+        TidalPotentialTerms __expansion_coef;
 
         double
             ///The mass of the tidally perturbed object in solar masses.
@@ -158,5 +158,5 @@ namespace testGravitationalPotential {
                 time
             );
         }
-} //End testGravitationalPotential namespace.
+} //End Evolve namespace.
 #endif

@@ -7,7 +7,7 @@
 
 #include "TidalPotentialExpansion.h"
 
-namespace testGravitationalPotential {
+namespace Evolve {
 
     double TidalPotentialExpansion::tidal_term(int mprime,
                                                double radial_distance,
@@ -92,4 +92,4 @@ namespace testGravitationalPotential {
         return potential_norm * result;
     }
 
-}//End testGravitationalPotential namespace
+}//End Evolve namespace
