@@ -15,7 +15,7 @@ namespace Evolve {
                                                double polar_angle,
                                                double orbital_phase) const
     {
-        double result = 0.0;
+        std::complex<double> result = 0.0;
         for(int m=-2; m<=2; ++m) {
             double no_deriv, inclination_deriv, eccentricity_deriv;
             __expansion_coef(__eccentricity,
@@ -30,16 +30,20 @@ namespace Evolve {
                 *
                 std::pow(radial_distance, 2)
                 *
-                boost::math::spherical_harmonic_r(
+                boost::math::spherical_harmonic(
                     2,
                     m,
                     polar_angle,
-                    azimuthal_angle - mprime * orbital_phase / (m ? m : 1.0)
+                    azimuthal_angle
                 )
+                *
+                std::complex<double>(std::cos(mprime * orbital_phase),
+                                     -std::sin(mprime * orbital_phase))
             );
-            assert(std::isfinite(result));
+            assert(std::isfinite(result.real()));
+            assert(std::isfinite(result.imag()));
         }
-        return result;
+        return result.real();
     }
 
     double TidalPotentialExpansion::evaluate_spherical_coords(

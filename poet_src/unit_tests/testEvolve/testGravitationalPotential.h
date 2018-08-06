@@ -31,11 +31,23 @@ namespace Evolve {
         ///\brief Print to stdout the value of the tidal potential without an
         ///approximation and using the expansion as a function of time.
         void print_tidal_potential(
-            ///The tidal potential expansion.
-            TidalPotentialExpansion &approx_potential,
+            ///See same name argument to TidalPotential constructor.
+            double primary_mass,
 
-            ///The exact potential.
-            const TidalPotential &exact_potential,
+            ///See same name argument to TidalPotential constructor.
+            double secondary_mass,
+
+            ///See same name argument to TidalPotential constructor.
+            double semimajor,
+
+            ///See same name argument to TidalPotential constructor.
+            double eccentricity,
+
+            ///See same name argument to TidalPotential constructor.
+            double inclination,
+            
+            ///See same name argument to TidalPotential constructor.
+            double arg_of_periapsis,
 
             ///The position where to test for agreement between the two
             ///potentials, in the coordinate system expected by the potentials..

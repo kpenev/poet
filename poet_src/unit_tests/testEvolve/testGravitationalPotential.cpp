@@ -22,11 +22,29 @@ namespace Evolve {
     }
 
     void test_GravitationalPotential::print_tidal_potential(
-        TidalPotentialExpansion &approx_potential,
-        const TidalPotential &exact_potential,
+        double primary_mass,
+        double secondary_mass,
+        double semimajor,
+        double eccentricity,
+        double inclination,
+        double arg_of_periapsis,
         const Eigen::Vector3d &position
     ) const
     {
+        TidalPotential exact_potential(primary_mass,
+                                       secondary_mass,
+                                       semimajor,
+                                       eccentricity,
+                                       inclination,
+                                       arg_of_periapsis);
+        TidalPotentialExpansion approx_potential(primary_mass,
+                                                 secondary_mass,
+                                                 semimajor,
+                                                 eccentricity,
+                                                 inclination,
+                                                 arg_of_periapsis);
+
+
         double orbital_period = exact_potential.orbit().orbital_period();
         std::ostringstream Uexact_label, Uapprox_label;
         Uexact_label << "Uexact("
@@ -139,7 +157,6 @@ namespace Evolve {
         double arg_of_periapsis
     )
     {
-
         TidalPotential exact_potential(primary_mass,
                                        secondary_mass,
                                        semimajor,
@@ -168,7 +185,15 @@ namespace Evolve {
 
     void test_GravitationalPotential::test_expansion()
     {
-        test_system(1.0, 0.1, M_PI, 0.0, 0.0, 0.0);
+        double test_inclinations[] = {-M_PI/2, -1.0, -0.1, 0.0, 0.1, 1.0, M_PI/2};
+        unsigned num_inclinations = sizeof(test_inclinations) / sizeof(double);
+        for(
+            unsigned inclination_i = 0;
+            inclination_i < num_inclinations;
+            ++inclination_i 
+        ) {
+            test_system(1.0, 0.1, M_PI, 0.0, test_inclinations[inclination_i], 0.0);
+        }
     }
 
     test_GravitationalPotential::test_GravitationalPotential()
