@@ -62,7 +62,7 @@ namespace Evolve {
             double polar_angle,
 
             ///The orbital phase of the secondary body
-            ///(\f$ 2 \pi n \f$ is periapsis).
+            ///(\f$ 2 \pi n - argument_of_periapsis\f$ is periapsis).
             double orbital_phase
         ) const;
     public:

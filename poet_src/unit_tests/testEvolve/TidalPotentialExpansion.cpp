@@ -68,7 +68,7 @@ namespace Evolve {
                            __secondary_mass,
                            __semimajor,
                            __eccentricity).orbital_period()
-        );
+        ) + __arg_of_periapsis;
 
         double potential_norm = -(
             Core::AstroConst::G

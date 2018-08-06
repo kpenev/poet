@@ -185,14 +185,25 @@ namespace Evolve {
 
     void test_GravitationalPotential::test_expansion()
     {
-        double test_inclinations[] = {-M_PI/2, -1.0, -0.1, 0.0, 0.1, 1.0, M_PI/2};
-        unsigned num_inclinations = sizeof(test_inclinations) / sizeof(double);
+        double test_angles[] = {-M_PI/2, -1.0, -0.1, 0.0, 0.1, 1.0, M_PI/2};
+        unsigned num_angles = sizeof(test_angles) / sizeof(double);
         for(
             unsigned inclination_i = 0;
-            inclination_i < num_inclinations;
+            inclination_i < num_angles;
             ++inclination_i 
         ) {
-            test_system(1.0, 0.1, M_PI, 0.0, test_inclinations[inclination_i], 0.0);
+            for(
+                unsigned periapsis_i = 0;
+                periapsis_i < num_angles;
+                ++periapsis_i 
+            ) {
+                test_system(1.0,
+                            0.1,
+                            M_PI,
+                            0.0,
+                            test_angles[inclination_i],
+                            test_angles[periapsis_i]);
+            }
         }
     }
 
