@@ -99,7 +99,7 @@ int main()
     Evolve::test_GravitationalPotential tidal_potential_tests;
     Evolve::test_OrbitSolver orbit_solver_tests;
 	return (
-        tidal_potential_tests.run(output)
+        tidal_potential_tests.run(output, false)
 //        &&
 //        orbit_solver_tests.run(output)
         ? EXIT_SUCCESS

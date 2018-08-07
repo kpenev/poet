@@ -28,7 +28,8 @@ namespace Evolve {
         double eccentricity,
         double inclination,
         double arg_of_periapsis,
-        const Eigen::Vector3d &position
+        const Eigen::Vector3d &position,
+        unsigned e_order
     ) const
     {
         TidalPotential exact_potential(primary_mass,
@@ -43,6 +44,7 @@ namespace Evolve {
                                                  eccentricity,
                                                  inclination,
                                                  arg_of_periapsis);
+        approx_potential.set_eccentricity_order(e_order);
 
 
         double orbital_period = exact_potential.orbit().orbital_period();
@@ -86,7 +88,11 @@ namespace Evolve {
                 *
                 orbit.secondary_mass() * Core::AstroConst::solar_mass
                 /
-                (orbit.semimajor() * Core::AstroConst::solar_radius)
+                (
+                    orbit.semimajor() * Core::AstroConst::solar_radius
+                    *
+                    (1.0 - orbit.eccentricity())
+                )
             )
             *
             std::pow(
@@ -154,7 +160,8 @@ namespace Evolve {
         double semimajor,
         double eccentricity,
         double inclination,
-        double arg_of_periapsis
+        double arg_of_periapsis,
+        unsigned e_order
     )
     {
         TidalPotential exact_potential(primary_mass,
@@ -169,6 +176,7 @@ namespace Evolve {
                                                  eccentricity,
                                                  inclination,
                                                  arg_of_periapsis);
+        approx_potential.set_eccentricity_order(e_order);
 
         double test_offsets[]= {-0.01, -0.001, 0.0, 0.001, 0.01};
         unsigned num_offsets = sizeof(test_offsets) / sizeof(double);
@@ -187,6 +195,7 @@ namespace Evolve {
     {
         double test_angles[] = {-M_PI/2, -1.0, -0.1, 0.0, 0.1, 1.0, M_PI/2};
         unsigned num_angles = sizeof(test_angles) / sizeof(double);
+        num_angles=0;
         for(
             unsigned inclination_i = 0;
             inclination_i < num_angles;
@@ -204,6 +213,17 @@ namespace Evolve {
                             test_angles[inclination_i],
                             test_angles[periapsis_i]);
             }
+        }
+        for(
+            double e = 0.0;
+            e <= 0.5;
+            e += 0.1
+        ) {
+            unsigned e_order = 10;
+            if(e > 0.25) e_order = 20;
+            if(e > 0.45) e_order = 35;
+            std::cout << "Eccentricity : " << e << std::endl;
+            test_system(1.0, 0.1, M_PI, e, 0.0, 0.0, e_order);
         }
     }
 

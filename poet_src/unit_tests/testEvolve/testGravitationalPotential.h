@@ -51,7 +51,10 @@ namespace Evolve {
 
             ///The position where to test for agreement between the two
             ///potentials, in the coordinate system expected by the potentials..
-            const Eigen::Vector3d &position
+            const Eigen::Vector3d &position,
+
+            ///The eccentricity expansion order to use.
+            unsigned e_order
         ) const;
 
         ///The expected absolute precision in the potential expansion for the
@@ -96,7 +99,10 @@ namespace Evolve {
             double inclination,
             
             ///See same name argument to TidalPotential constructor.
-            double arg_of_periapsis
+            double arg_of_periapsis,
+
+            ///The eccentricity expansion order to use.
+            unsigned e_order=0
         );
 
     protected:
