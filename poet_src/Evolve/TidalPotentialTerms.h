@@ -33,6 +33,9 @@ namespace Evolve {
         ///The inclination with which __Ummp was last filled.
         double __Ummp_inclination;
 
+        ///The argument of periaspsis set by the last call to configure().
+        double __arg_of_periapsis;
+
         std::valarray< std::valarray<double> >
             ///The \f$\mathcal{U}_{m,m'}\f$ quantities defined in Lai (2012).
             __Ummp,
@@ -53,13 +56,40 @@ namespace Evolve {
         {return __e_order;}
 
         ///Set the inclination relative to the orbit.
-        void configure(double inclination);
+        void configure(double inclination, double arg_of_periapsis = 0);
 
         ///\brief Calculates \f$\sum_s W_{2,s}D_{m,s}(\Theta)p_{s,m'}\f$ (see
         ///documentation) and its derivatives w.r.t. e and \f$\Theta\f$.
         ///
         ///fill_Umm should already have been called with the appropriate
-        ///inclination.
+        ///inclination and argument of periapsis.
+        void operator()(
+            ///The eccentricity.
+            double e,
+
+            ///The m index.
+            int m,
+
+            ///The m' index.
+            int mp,
+
+            ///Set to the undifferentiated value.
+            std::complex<double> &no_deriv,
+
+            ///Set to the inclination derivative.
+            std::complex<double> &inclination_deriv,
+
+            ///Set to the eccentricity_derivative.
+            std::complex<double> &eccentricity_deriv
+        ) const;
+
+        ///\brief Calculates
+        /// \f$\left|\sum_s W_{2,s}D_{m,s}(\Theta)p_{s,m'}\right|\f$ (see
+        ///documentation) and its derivatives w.r.t. e and \f$\Theta\f$.
+        ///
+        ///fill_Umm should already have been called with the appropriate
+        ///inclination, and an argument of periapsis of zero. For non-zero
+        ///argument of periapsis use the complex version.
         void operator()(
             ///The eccentricity.
             double e,

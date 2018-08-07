@@ -39,8 +39,11 @@ namespace Evolve {
         }
     };
 
-    void TidalPotentialTerms::configure(double inclination)
+    void TidalPotentialTerms::configure(double inclination,
+                                        double arg_of_periapsis)
     {
+        __arg_of_periapsis = arg_of_periapsis;
+
         if(__Ummp_inclination==inclination) return;
         __Ummp_inclination=inclination;
         double c=std::cos(__Ummp_inclination), s=std::sin(__Ummp_inclination),
@@ -108,6 +111,35 @@ namespace Evolve {
         }
     }
 
+    void TidalPotentialTerms::operator()(
+        double e,
+        int m,
+        int mp, 
+        std::complex<double> &no_deriv,
+        std::complex<double> &inclination_deriv,
+        std::complex<double> &eccentricity_deriv
+    ) const
+    {
+        no_deriv=inclination_deriv=eccentricity_deriv=0;
+        for(int i=0; i<3; ++i) {
+            int s = 2 * (i - 1);
+            double pms=__pms(s, mp, e, __e_order, false);
+            std::complex<double> periapsis_factor(
+                std::cos(s * __arg_of_periapsis),
+                -std::sin(s * __arg_of_periapsis)
+            );
+            no_deriv += pms * __Ummp[m+2][i] * periapsis_factor;
+            inclination_deriv += pms * __Ummp_deriv[m+2][i] * periapsis_factor;
+            eccentricity_deriv += (
+                __pms(2*(i-1), mp, e, __e_order, true)
+                *
+                __Ummp[m+2][i]
+                *
+                periapsis_factor
+            );
+        }
+    }
+
     void TidalPotentialTerms::operator()(double e,
                                          int m,
                                          int mp, 
@@ -115,13 +147,21 @@ namespace Evolve {
                                          double &inclination_deriv,
                                          double &eccentricity_deriv) const
     {
-        no_deriv=inclination_deriv=eccentricity_deriv=0;
-        for(int i=0; i<3; ++i) {
-            double pms=__pms(2*(i-1), mp, e, __e_order, false);
-            no_deriv+=pms*__Ummp[m+2][i];
-            inclination_deriv+=pms*__Ummp_deriv[m+2][i];
-            eccentricity_deriv+=
-                __pms(2*(i-1), mp, e, __e_order, true)*__Ummp[m+2][i];
-        }
+        assert(__arg_of_periapsis == 0);
+        std::complex<double> complex_no_deriv,
+                             complex_inclination_deriv,
+                             complex_eccentricity_deriv;
+        operator()(e,
+                   m,
+                   mp,
+                   complex_no_deriv,
+                   complex_inclination_deriv,
+                   complex_eccentricity_deriv);
+        assert(complex_no_deriv.imag() == 0);
+        assert(complex_inclination_deriv.imag() == 0);
+        assert(complex_eccentricity_deriv.imag() == 0);
+        no_deriv = complex_no_deriv.real();
+        inclination_deriv = complex_inclination_deriv.real();
+        eccentricity_deriv = complex_eccentricity_deriv.real();
     }
 } //End Evolve namespace.

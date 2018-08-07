@@ -17,14 +17,17 @@ namespace Evolve {
     {
         std::complex<double> result = 0.0;
         for(int m=-2; m<=2; ++m) {
-            double no_deriv, inclination_deriv, eccentricity_deriv;
+            std::complex<double> no_deriv,
+                                 inclination_deriv,
+                                 eccentricity_deriv;
             __expansion_coef(__eccentricity,
                              m,
                              mprime,
                              no_deriv,
                              inclination_deriv,
                              eccentricity_deriv);
-            assert(std::isfinite(no_deriv));
+            assert(std::isfinite(no_deriv.real()));
+            assert(std::isfinite(no_deriv.imag()));
             result += (
                 no_deriv
                 *
@@ -59,7 +62,7 @@ namespace Evolve {
         assert(polar_angle >= 0);
         assert(polar_angle <= M_PI);
 
-        __expansion_coef.configure(__inclination);
+        __expansion_coef.configure(__inclination, __arg_of_periapsis);
 
         double orbital_phase = (
             2.0 * M_PI * time
@@ -68,7 +71,7 @@ namespace Evolve {
                            __secondary_mass,
                            __semimajor,
                            __eccentricity).orbital_period()
-        ) + __arg_of_periapsis;
+        );
 
         double potential_norm = -(
             Core::AstroConst::G
