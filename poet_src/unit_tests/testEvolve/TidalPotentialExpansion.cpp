@@ -15,7 +15,7 @@ namespace Evolve {
                                                double polar_angle,
                                                double orbital_phase) const
     {
-        std::complex<double> result = 0.0;
+        double result = 0.0;
         for(int m=-2; m<=2; ++m) {
             std::complex<double> no_deriv,
                                  inclination_deriv,
@@ -27,7 +27,7 @@ namespace Evolve {
                              inclination_deriv,
                              eccentricity_deriv);
             assert(std::isfinite(no_deriv.real()));
-            assert(std::isfinite(no_deriv.imag()));
+            assert(no_deriv.imag() == 0);
             result += (
                 no_deriv
                 *
@@ -42,11 +42,10 @@ namespace Evolve {
                 *
                 std::complex<double>(std::cos(mprime * orbital_phase),
                                      -std::sin(mprime * orbital_phase))
-            );
-            assert(std::isfinite(result.real()));
-            assert(std::isfinite(result.imag()));
+            ).real();
+            assert(std::isfinite(result));
         }
-        return result.real();
+        return result;
     }
 
     double TidalPotentialExpansion::evaluate_spherical_coords(

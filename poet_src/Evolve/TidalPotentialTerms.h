@@ -83,13 +83,8 @@ namespace Evolve {
             std::complex<double> &eccentricity_deriv
         ) const;
 
-        ///\brief Calculates
-        /// \f$\left|\sum_s W_{2,s}D_{m,s}(\Theta)p_{s,m'}\right|\f$ (see
-        ///documentation) and its derivatives w.r.t. e and \f$\Theta\f$.
-        ///
-        ///fill_Umm should already have been called with the appropriate
-        ///inclination, and argument of periapsis = 0 (use complex version for
-        ///non-zero argument of periapsis).
+        ///\brief Return only the real parts of the complex version of the
+        ///operator, since only the real part enters the tidal torque and power.
         void operator()(
             ///The eccentricity.
             double e,

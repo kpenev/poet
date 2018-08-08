@@ -100,9 +100,9 @@ int main()
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_OrbitSolver)
     );
-/*    all_tests.add(
+    all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_GravitationalPotential)
-    );*/
+    );
 	return (all_tests.run(output)
             ? EXIT_SUCCESS
             : EXIT_FAILURE);
