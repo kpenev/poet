@@ -88,7 +88,8 @@ namespace Evolve {
         ///documentation) and its derivatives w.r.t. e and \f$\Theta\f$.
         ///
         ///fill_Umm should already have been called with the appropriate
-        ///inclination, and argument of periapsis.
+        ///inclination, and argument of periapsis = 0 (use complex version for
+        ///non-zero argument of periapsis).
         void operator()(
             ///The eccentricity.
             double e,

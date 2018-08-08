@@ -147,6 +147,7 @@ namespace Evolve {
                                          double &inclination_deriv,
                                          double &eccentricity_deriv) const
     {
+        assert(__arg_of_periapsis == 0);
         std::complex<double> complex_no_deriv,
                              complex_inclination_deriv,
                              complex_eccentricity_deriv;
@@ -156,16 +157,12 @@ namespace Evolve {
                    complex_no_deriv,
                    complex_inclination_deriv,
                    complex_eccentricity_deriv);
-        no_deriv = std::abs(complex_no_deriv);
-        inclination_deriv = (
-            complex_no_deriv.real() * complex_inclination_deriv.real()
-            +
-            complex_no_deriv.imag() * complex_inclination_deriv.imag()
-        ) / no_deriv;
-        eccentricity_deriv = (
-            complex_no_deriv.real() * complex_eccentricity_deriv.real()
-            +
-            complex_no_deriv.imag() * complex_eccentricity_deriv.imag()
-        ) / no_deriv;
+        no_deriv = complex_no_deriv.real();
+        inclination_deriv = complex_inclination_deriv.real();
+        eccentricity_deriv = complex_eccentricity_deriv.real();
+
+        assert(complex_no_deriv.imag() == 0);
+        assert(complex_inclination_deriv.imag() == 0);
+        assert(complex_eccentricity_deriv.imag() == 0);
     }
 } //End Evolve namespace.
