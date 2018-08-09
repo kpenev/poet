@@ -19,7 +19,7 @@
 #include <iostream>
 #include <iomanip>
 
-namespace testGravitationalPotential {
+namespace Evolve {
     ///Basic description of two bodies in an eccentric orbit.
     class EccentricOrbit {
     private:
@@ -111,6 +111,6 @@ namespace testGravitationalPotential {
         ///\brief The orbital period of the system in days.
         double orbital_period() const;
     }; //End EccentricOrbit class
-}//End testGravitationalPotential namespace
+}//End Evolve namespace
 
 #endif

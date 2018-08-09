@@ -1,3 +1,4 @@
+#include "testGravitationalPotential.h"
 #include "testOrbitSolver.h"
 
 #ifdef STANDALONE
@@ -94,8 +95,16 @@ int main()
 	std::cerr.setf(std::ios_base::scientific);
 	std::cerr.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
-    Evolve::test_OrbitSolver tests;
-	return (tests.run(output) ? EXIT_SUCCESS : EXIT_FAILURE);
-    return 0;
+
+    Test::Suite all_tests;
+    all_tests.add(
+        std::auto_ptr<Test::Suite>(new Evolve::test_OrbitSolver)
+    );
+    all_tests.add(
+        std::auto_ptr<Test::Suite>(new Evolve::test_GravitationalPotential)
+    );
+	return (all_tests.run(output)
+            ? EXIT_SUCCESS
+            : EXIT_FAILURE);
 }
 #endif

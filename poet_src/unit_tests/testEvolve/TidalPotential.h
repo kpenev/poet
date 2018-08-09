@@ -12,7 +12,7 @@
 #include "EccentricOrbit.h"
 #include <cmath>
 
-namespace testGravitationalPotential {
+namespace Evolve {
     ///Calculate the tidal potential over one component of an eccentric binary.
     class TidalPotential {
     private:
@@ -101,25 +101,27 @@ namespace testGravitationalPotential {
             );
 
 
-            //Rotate along L_hat to a coordinate system with z along L and y
+            //Rotate around L_hat to a coordinate system with z along L and y
             //along SxL
             double z_rotated_secondary_x = (
                 secondary_position[0] * std::cos(__arg_of_periapsis)
                 -
                 secondary_position[1] * std::sin(__arg_of_periapsis)
             );
+            double z_rotated_secondary_y = (
+                secondary_position[0] * std::sin(__arg_of_periapsis)
+                +
+                secondary_position[1] * std::cos(__arg_of_periapsis)
+            );
 
+            //Rotated around SxL to the final coordinate system.
             Eigen::Vector3d transformed_secondary_position(
                 (
                     z_rotated_secondary_x * std::cos(__inclination)
                     +
                     secondary_position[2] * std::sin(__inclination)
                 ),
-                (
-                    secondary_position[0] * std::sin(__arg_of_periapsis)
-                    +
-                    secondary_position[1] * std::cos(__arg_of_periapsis)
-                ),
+                z_rotated_secondary_y,
                 (
                     -z_rotated_secondary_x * std::sin(__inclination)
                     +
@@ -127,7 +129,7 @@ namespace testGravitationalPotential {
                 )
             );
 
-            double center_to_secondary = secondary_position.norm();
+            double center_to_secondary = transformed_secondary_position.norm();
             double position_to_secondary = (
                 position
                 -
@@ -149,6 +151,6 @@ namespace testGravitationalPotential {
                 ) / Core::AstroConst::solar_radius
             );
         }
-} //End testGravitationalPotential namespace
+} //End Evolve namespace
 
 #endif

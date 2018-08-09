@@ -7,36 +7,42 @@
 
 #include "TidalPotentialExpansion.h"
 
-namespace testGravitationalPotential {
+namespace Evolve {
 
     double TidalPotentialExpansion::tidal_term(int mprime,
                                                double radial_distance,
                                                double azimuthal_angle,
                                                double polar_angle,
-                                               double orbital_phase)
+                                               double orbital_phase) const
     {
         double result = 0.0;
         for(int m=-2; m<=2; ++m) {
-            double no_deriv, inclination_deriv, eccentricity_deriv;
+            std::complex<double> no_deriv,
+                                 inclination_deriv,
+                                 eccentricity_deriv;
             __expansion_coef(__eccentricity,
                              m,
                              mprime,
                              no_deriv,
                              inclination_deriv,
                              eccentricity_deriv);
-            assert(std::isfinite(no_deriv));
+            assert(std::isfinite(no_deriv.real()));
+            assert(no_deriv.imag() == 0);
             result += (
                 no_deriv
                 *
                 std::pow(radial_distance, 2)
                 *
-                boost::math::spherical_harmonic_r(
+                boost::math::spherical_harmonic(
                     2,
                     m,
                     polar_angle,
-                    azimuthal_angle - mprime * orbital_phase / (m ? m : 1.0)
+                    azimuthal_angle
                 )
-            );
+                *
+                std::complex<double>(std::cos(mprime * orbital_phase),
+                                     -std::sin(mprime * orbital_phase))
+            ).real();
             assert(std::isfinite(result));
         }
         return result;
@@ -55,7 +61,7 @@ namespace testGravitationalPotential {
         assert(polar_angle >= 0);
         assert(polar_angle <= M_PI);
 
-        __expansion_coef.configure(__inclination);
+        __expansion_coef.configure(__inclination, __arg_of_periapsis);
 
         double orbital_phase = (
             2.0 * M_PI * time
@@ -92,4 +98,4 @@ namespace testGravitationalPotential {
         return potential_norm * result;
     }
 
-}//End testGravitationalPotential namespace
+}//End Evolve namespace
