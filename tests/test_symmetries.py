@@ -347,7 +347,7 @@ class TestSymmetries(unittest.TestCase):
                         mass=config['primary_mass'],
                         wind=wind
                     )
-                    planet = self._create_planet(config['econdary_mass'])
+                    planet = self._create_planet(config['secondary_mass'])
                     binary = self._create_binary_system(
                         star,
                         planet,
