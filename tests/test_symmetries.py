@@ -186,23 +186,98 @@ class TestSymmetries(unittest.TestCase):
             pyplot.loglog(evolution.age, wenv, secondary_envelope)
             pyplot.loglog(evolution.age, wcore, secondary_core)
 
-    def _compare_evolutions(self, evolution1, evolution2, flip=True):
-        """Require the two evolutions match for a, and primary Lconv & Lrad."""
+    #As simplified as I could make it.
+    #pylint: disable=too-many-locals
+    def _compare_evolutions(self,
+                            evolution1,
+                            evolution2,
+                            *,
+                            primary_to_secondary=False,
+                            flip=True,
+                            min_age=-scipy.inf,
+                            max_age=scipy.inf):
+        """
+        Require the two evolutions match for a, and primary Lconv & Lrad.
 
-        for quantity_name, quantity_name_backup in [
+        Args:
+            evolution1:    The first of the two evolutions to compare.
+
+            evolution2:    The second of the two evolutions to compare.
+
+            primary_to_secondary:    If False compares the evolution of the
+                primary object in both evolutions, otherwise compares the
+                evolution of the primary in evolution1 to the evolution of the
+                secondary in evolution2.
+
+            flip:    If true, also calls itself with the two evolutions swapped.
+
+            min_age:    Discrepancies at ages before this are ignored.
+
+            min_age:    Discrepancies at ages after this are ignored.
+        """
+
+        def output_failing(data):
+            """Output to stdout the discrepant evolutions."""
+
+            for i in range(max(d.shape[0] for d in data)):
+                print(
+                    '%25.16e %25.16e %25.16e %25.16e'
+                    %
+                    (
+                        (
+                            tuple(data[0][i]) if i < data[0].shape[0]
+                            else (scipy.nan, scipy.nan)
+                        )
+                        +
+                        (
+                            tuple(data[1][i]) if i < data[1].shape[0]
+                            else (scipy.nan, scipy.nan)
+                        )
+                    )
+                )
+
+
+        for quantity_name in [
                 ('semimajor', 'semimajor'),
                 ('envelope_angmom', 'primary_envelope_angmom'),
                 ('core_angmom', 'primary_core_angmom')
         ]:
-            with self.subTest(quantity=quantity_name, flipped=not flip):
-                quantity = [
-                    getattr(evol, quantity_name,
-                            getattr(evol, quantity_name_backup, None))
+            with self.subTest(quantity=quantity_name[0], flipped=not flip):
+                if primary_to_secondary:
+                    quantity = [
+                        getattr(
+                            evolution1, quantity_name[0],
+                            getattr(evolution1, quantity_name[1], None)
+                        ),
+                        getattr(
+                            evolution2,
+                            (
+                                (
+                                    '' if quantity_name[0] == 'semimajor'
+                                    else 'secondary_'
+                                )
+                                +
+                                quantity_name[0]
+                            )
+                        )
+                    ]
+                else:
+                    quantity = [
+                        getattr(evol, quantity_name[0],
+                                getattr(evol, quantity_name[1], None))
+                        for evol in [evolution1, evolution2]
+                    ]
+                age_within_range = [
+                    scipy.logical_and(evol.age[:-1] > min_age,
+                                      evol.age[:-1] < max_age)
                     for evol in [evolution1, evolution2]
                 ]
                 acceptable_ages = scipy.logical_and(
-                    (evolution1.age[:-1] - evolution1.age[1:]) < 0,
-                    scipy.isfinite(quantity[0][:-1])
+                    age_within_range[0],
+                    scipy.logical_and(
+                        (evolution1.age[:-1] - evolution1.age[1:]) < 0,
+                        scipy.isfinite(quantity[0][:-1])
+                    )
                 )
                 interp_quantity = InterpolatedUnivariateSpline(
                     evolution1.age[:-1][acceptable_ages],
@@ -211,25 +286,51 @@ class TestSymmetries(unittest.TestCase):
 
                 max_difference = scipy.nanmax(
                     scipy.fabs(
-                        quantity[1][:-1] - interp_quantity(evolution2.age[:-1])
+                        quantity[1][:-1][age_within_range[1]]
+                        -
+                        interp_quantity(evolution2.age[:-1][age_within_range[1]])
                     )
                 )
                 max_error = max(
                     (
-                        scipy.nanmax(quantity[1][:-1])
+                        scipy.nanmax(quantity[1][:-1][age_within_range[1]])
                         -
-                        scipy.nanmin(quantity[1][:-1])
+                        scipy.nanmin(quantity[1][:-1][age_within_range[1]])
                     ) * 5e-3,
-                    1e-10 * scipy.nanmean(quantity[1])
+                    1e-10 * scipy.nanmean(quantity[1][:-1][age_within_range[1]])
                 )
+                if max_difference > max_error:
+                    output_failing(
+                        [
+                            scipy.dstack(
+                                (
+                                    evolution1.age[:-1][age_within_range[0]],
+                                    quantity[0][:-1][age_within_range[0]]
+                                )
+                            )[0],
+                            scipy.dstack(
+                                (
+                                    evolution2.age[:-1][age_within_range[1]],
+                                    quantity[1][:-1][age_within_range[1]]
+                                )
+                            )[0]
+                        ]
+                    )
                 self.assertLessEqual(max_difference, max_error)
+
         if flip:
-            self._compare_evolutions(evolution2, evolution1, False)
+            self._compare_evolutions(evolution2,
+                                     evolution1,
+                                     primary_to_secondary=primary_to_secondary,
+                                     min_age=min_age,
+                                     max_age=max_age,
+                                     flip=False)
+    #pylint: enable=too-many-locals
 
     def test_star_planet_swap(self):
-        """Compare planet-non dissipative star to 2 non-dissipative stars."""
+        """Compare evolutions with secondary planet or non-dissipative star."""
 
-        tdisk = 5e-3
+        config = dict(primary_mass=1.0, secondary_mass=0.8, tdisk=5e-3)
 
         for star_phase_lag in [
                 0.0,
@@ -241,22 +342,20 @@ class TestSymmetries(unittest.TestCase):
             ]:
                 with self.subTest(wind=wind, phase_lag=star_phase_lag):
 
-                    max_age = 8.7 if (star_phase_lag and wind) else 10.0
-
                     star = self._create_star(
                         convective_phase_lag=star_phase_lag,
-                        mass=1.0,
+                        mass=config['primary_mass'],
                         wind=wind
                     )
-                    planet = self._create_planet(0.8)
+                    planet = self._create_planet(config['econdary_mass'])
                     binary = self._create_binary_system(
                         star,
                         planet,
                         disk_lock_frequency=2.0 * scipy.pi / 3.0,
                         initial_semimajor=10.0,
-                        disk_dissipation_age=tdisk
+                        disk_dissipation_age=config['tdisk']
                     )
-                    binary.evolve(max_age, 1e-3, 1e-6, None)
+                    binary.evolve(10.0, 1e-3, 1e-6, None)
                     star_planet_evolution = binary.get_evolution()
 
                     planet.delete()
@@ -265,23 +364,25 @@ class TestSymmetries(unittest.TestCase):
 
                     #pylint false positive, members added after construction.
                     #pylint: disable=no-member
-                    tdisk_index = star_planet_evolution.age.searchsorted(tdisk)
+                    tdisk_index = star_planet_evolution.age.searchsorted(
+                        config['tdisk']
+                    )
                     #pylint: enable=no-member
 
                     primary = self._create_star(
                         convective_phase_lag=star_phase_lag,
-                        mass=1.0,
+                        mass=config['primary_mass'],
                         wind=wind
                     )
                     secondary = self._create_star(convective_phase_lag=0.0,
-                                                  mass=0.8,
+                                                  mass=config['secondary_mass'],
                                                   wind=False)
                     binary = self._create_binary_system(
                         primary,
                         secondary,
                         disk_lock_frequency=2.0 * scipy.pi / 3.0,
                         initial_semimajor=10.0,
-                        disk_dissipation_age=tdisk,
+                        disk_dissipation_age=config['tdisk'],
                         secondary_angmom=scipy.array([
                             #pylint false positive
                             #pylint: disable=no-member
@@ -290,15 +391,115 @@ class TestSymmetries(unittest.TestCase):
                             #pylint: enable=no-member
                         ])
                     )
-                    binary.evolve(max_age, 1e-3, 1e-6, None)
+                    binary.evolve(10.0, 1e-3, 1e-6, None)
                     star_star_evolution = binary.get_evolution()
 
                     primary.delete()
                     secondary.delete()
                     binary.delete()
 
-                    self._compare_evolutions(star_planet_evolution,
-                                             star_star_evolution)
+                    self._compare_evolutions(
+                        star_planet_evolution,
+                        star_star_evolution,
+                        max_age=(8.7 if (star_phase_lag and wind)
+                                 else scipy.inf)
+                    )
+
+    def test_primary_secondary_swap(self):
+        """Compare evolutions of two stars, swapping wich one is primary."""
+
+        def get_disk_angmom(star_mass, star_phase_lag, wind):
+            """Return core & envelope angular momenta at disk dissipation."""
+
+            star = self._create_star(convective_phase_lag=star_phase_lag,
+                                     mass=star_mass,
+                                     wind=wind)
+            planet = self._create_planet(1.0)
+            binary = self._create_binary_system(
+                star,
+                planet,
+                disk_lock_frequency=2.0 * scipy.pi / 3.0,
+                initial_semimajor=10.0,
+                disk_dissipation_age=config['tdisk']
+            )
+            binary.evolve(config['tdisk'], 1e-3, 1e-6, None)
+            disk_dissipation_state = binary.final_state()
+
+            planet.delete()
+            star.delete()
+            binary.delete()
+
+            #Pylint false positive, members added after construction.
+            #pylint:disable=no-member
+            return scipy.array([disk_dissipation_state.envelope_angmom,
+                                disk_dissipation_state.core_angmom])
+            #pylint:enable=no-member
+
+        def get_evolution(primary_mass, secondary_mass, tdisk, star_phase_lag, wind):
+            """Return the evolution for the given parameters."""
+
+            primary = self._create_star(
+                convective_phase_lag=star_phase_lag,
+                mass=primary_mass,
+                wind=wind
+            )
+            secondary = self._create_star(
+                convective_phase_lag=star_phase_lag,
+                mass=secondary_mass,
+                wind=wind
+            )
+            binary = self._create_binary_system(
+                primary,
+                secondary,
+                disk_lock_frequency=2.0 * scipy.pi / 3.0,
+                initial_semimajor=10.0,
+                disk_dissipation_age=tdisk,
+                secondary_angmom=get_disk_angmom(secondary_mass,
+                                                 star_phase_lag,
+                                                 wind)
+            )
+            binary.evolve(10.0, 1e-3, 1e-6, None)
+            evolution = binary.get_evolution()
+
+            primary.delete()
+            secondary.delete()
+            binary.delete()
+
+            return evolution
+
+        config = dict(mass1=1.0, mass2=0.8, tdisk=5e-3)
+
+        for star_phase_lag in [
+                0.0,
+                phase_lag(6.0)
+        ]:
+            for wind in [
+                    False,
+                    True
+            ]:
+                with self.subTest(wind=wind, phase_lag=star_phase_lag):
+                    evolution1 = get_evolution(
+                        primary_mass=config['mass1'],
+                        secondary_mass=config['mass2'],
+                        tdisk=config['tdisk'],
+                        star_phase_lag=star_phase_lag,
+                        wind=wind
+                    )
+                    evolution2 = get_evolution(
+                        primary_mass=config['mass2'],
+                        secondary_mass=config['mass1'],
+                        tdisk=config['tdisk'],
+                        star_phase_lag=star_phase_lag,
+                        wind=wind
+                    )
+                    self._compare_evolutions(
+                        evolution1,
+                        evolution2,
+                        primary_to_secondary=True,
+                        min_age=config['tdisk'],
+                        max_age=(4.59 if (star_phase_lag and wind)
+                                 else scipy.inf)
+                    )
 
     @classmethod
     def setUpClass(cls):
