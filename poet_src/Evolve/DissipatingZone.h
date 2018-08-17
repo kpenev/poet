@@ -83,6 +83,39 @@ namespace Evolve {
     ///Needed to break circular dependency.
     class BinarySystem;
 
+    ///The collection of the (m-1, m'), (m, m') and (m+1, m') coefficients
+    ///needed for updating the tidal torque and power.
+    class TidalTermTriplet {
+    public:
+        double
+            ///The (m-1, m') coefficient.
+            m_minus_one,
+
+            ///The (m, m') coefficient.
+            m,
+
+            ///The (m+1, m') coefficient.
+            m_plus_one;
+
+        TidalTermTriplet(double m_minus_one_value=0.0,
+                         double m_value=0.0,
+                         double m_plus_one_value=0.0):
+            m_minus_one(m_minus_one_value),
+            m(m_value),
+            m_plus_one(m_plus_one_value)
+        {}
+
+        TidalTermTriplet &operator=(const TidalTermTriplet &rhs)
+        {
+            m_minus_one = rhs.m_minus_one;
+            m = rhs.m;
+            m_plus_one = rhs.m_plus_one;
+            return *this;
+        }
+    };
+
+
+
     ///\brief A layer of a system body for which the tidal bulge is not exactly
     ///in phase with the tidal potential.
     class LIB_PUBLIC DissipatingZone : public ZoneOrientation {
@@ -203,6 +236,33 @@ namespace Evolve {
         ///
         ///The spin frequency and orbital frequency must already be set.
         void initialize_locks();
+
+        ///Add a term to the tidal torque and power arrays.
+        void add_tidal_term(
+            ///The azimuthal number of the term to add.
+            int m,
+
+            ///The time frequnecy number of the term to add.
+            int mp,
+
+            ///The tidal frequency of the term to add.
+            double tidal_frequency,
+
+            ///The \f$\mathcal{U}_{m-1, m'}\f$,
+            /// \f$\mathcal{U}_{m, m'}\f$, and
+            /// \f$\mathcal{U}_{m+1, m'}\f$ terms
+            const TidalTermTriplet &U_value,
+
+            ///The derivative with respect to inclination of U_value.
+            const TidalTermTriplet &U_i_deriv,
+
+            ///The derivative with respect to eccentricity of U_value.
+            const TidalTermTriplet &U_e_deriv,
+
+            ///Estimate of the error in U_value due to truncating the
+            ///eccentricity expansion.
+            const TidalTermTriplet &U_error
+        );
 
 #ifndef NDEBUG
         ///\brief Runs a bunch of asserts to check the consistency of __lock and

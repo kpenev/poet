@@ -117,26 +117,32 @@ namespace Evolve {
         int mp, 
         std::complex<double> &no_deriv,
         std::complex<double> &inclination_deriv,
-        std::complex<double> &eccentricity_deriv
+        std::complex<double> &eccentricity_deriv,
+        std::complex<double> &highest_e_order_term
     ) const
     {
         no_deriv=inclination_deriv=eccentricity_deriv=0;
         for(int i=0; i<3; ++i) {
             int s = 2 * (i - 1);
-            double pms=__pms(s, mp, e, __e_order, false);
+            std::pair<double, double> pms=__pms(s, mp, e, __e_order, false);
             std::complex<double> periapsis_factor(
                 std::cos(s * __arg_of_periapsis),
                 -std::sin(s * __arg_of_periapsis)
             );
-            no_deriv += pms * __Ummp[m+2][i] * periapsis_factor;
-            inclination_deriv += pms * __Ummp_deriv[m+2][i] * periapsis_factor;
+            no_deriv += pms.first * __Ummp[m+2][i] * periapsis_factor;
+            inclination_deriv += (pms.first
+                                  *
+                                  __Ummp_deriv[m+2][i]
+                                  *
+                                  periapsis_factor);
             eccentricity_deriv += (
-                __pms(2*(i-1), mp, e, __e_order, true)
+                __pms(2*(i-1), mp, e, __e_order, true).first
                 *
                 __Ummp[m+2][i]
                 *
                 periapsis_factor
             );
+            highest_e_order_term += pms.second * __Ummp[m+2][i] * periapsis_factor;
         }
     }
 
@@ -145,19 +151,23 @@ namespace Evolve {
                                          int mp, 
                                          double &no_deriv,
                                          double &inclination_deriv,
-                                         double &eccentricity_deriv) const
+                                         double &eccentricity_deriv,
+                                         double &highest_e_order_term) const
     {
         std::complex<double> complex_no_deriv,
                              complex_inclination_deriv,
-                             complex_eccentricity_deriv;
+                             complex_eccentricity_deriv,
+                             complex_highest_e_order_term;
         operator()(e,
                    m,
                    mp,
                    complex_no_deriv,
                    complex_inclination_deriv,
-                   complex_eccentricity_deriv);
+                   complex_eccentricity_deriv,
+                   complex_highest_e_order_term);
         no_deriv = complex_no_deriv.real();
         inclination_deriv = complex_inclination_deriv.real();
         eccentricity_deriv = complex_eccentricity_deriv.real();
+        highest_e_order_term = complex_highest_e_order_term.real();
     }
 } //End Evolve namespace.
