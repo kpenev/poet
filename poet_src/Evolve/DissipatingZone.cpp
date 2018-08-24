@@ -54,11 +54,6 @@ namespace Evolve {
                ||
                limit.spin_frequency_multiplier()==2);
 
-        if(orbital_frequency_multiplier > 5)
-            std::cerr << "ofm" << std::endl;
-        if(spin_frequency_multiplier > 5)
-            std::cerr << "sfm" << std::endl;
-
         if(
             limit.term(orbital_frequency_multiplier,
                        spin_frequency_multiplier)
@@ -735,28 +730,28 @@ namespace Evolve {
     )
     {
         __potential_term.change_e_order(new_e_order);
-        if(__lock.spin_frequency_multiplier()==0) {
-            __e_order=new_e_order;
+        if(__lock.spin_frequency_multiplier() == 0) {
+            __e_order = new_e_order;
             return;
         }
         if(__lock) {
-           __e_order=new_e_order;
+           __e_order = new_e_order;
            if(__lock.orbital_frequency_multiplier()>
-                   static_cast<int>(__e_order)+2) release_lock();
+                   static_cast<int>(__e_order) + 2) release_lock();
            return;
         }
 #ifndef NDEBUG
         check_locks_consistency();
 #endif
-        if(new_e_order>__e_order) {
+        if(new_e_order > __e_order) {
             update_locks_to_higher_e_order(new_e_order);
-            __e_order=new_e_order;
+            __e_order = new_e_order;
         } else {
-            __e_order=new_e_order;
+            __e_order = new_e_order;
             update_lock_to_lower_e_order(__lock);
             update_lock_to_lower_e_order(__other_lock);
-            if(__lock.spin_frequency_multiplier()==0) {
-                __lock=__other_lock;
+            if(__lock.spin_frequency_multiplier() == 0) {
+                __lock = __other_lock;
                 __other_lock.set_lock(1, 0, 1);
             }
         }
