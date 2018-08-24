@@ -1,5 +1,6 @@
 var DissipatingZone_8h =
 [
+    [ "TidalTermTriplet", "classEvolve_1_1TidalTermTriplet.html", "classEvolve_1_1TidalTermTriplet" ],
     [ "DissipatingZone", "classEvolve_1_1DissipatingZone.html", "classEvolve_1_1DissipatingZone" ],
     [ "ZoneEvolutionQuantities", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20d", [
       [ "ANGULAR_MOMENTUM", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20da7c74c5f04b81fa0400175a1c91b26724", null ],

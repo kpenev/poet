@@ -13,7 +13,7 @@ var classStellarEvolution_1_1MESA_1_1Interpolator =
     [ "default_vs_log_age", "classStellarEvolution_1_1MESA_1_1Interpolator.html#ae45d1ea71d198de869bb437a68e041a4", null ],
     [ "end", "classStellarEvolution_1_1MESA_1_1Interpolator.html#a609f8c02cf1365c660ae8ae4b327c671", null ],
     [ "get_mass_feh_grid", "classStellarEvolution_1_1MESA_1_1Interpolator.html#a53cd9317bdb1338d6db487b22601e5c6", null ],
-    [ "log_current_age_ranges", "classStellarEvolution_1_1MESA_1_1Interpolator.html#abecfc181012602df35538bb054211ab8", null ],
+    [ "log_current_age_ranges", "classStellarEvolution_1_1MESA_1_1Interpolator.html#aaf68981cd7a435e727073cd02a9e48e4", null ],
     [ "move", "classStellarEvolution_1_1MESA_1_1Interpolator.html#a0a924ff28acad34b3e507f4731c3e481", null ],
     [ "parse_model_file_name", "classStellarEvolution_1_1MESA_1_1Interpolator.html#a83e1d7616b5575b2777807c18481ddcb", null ],
     [ "read_model_file", "classStellarEvolution_1_1MESA_1_1Interpolator.html#a8a3afcc5d3a9e31d6d517b63f8c1aa8f", null ],

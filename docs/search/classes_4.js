@@ -1,7 +1,8 @@
 var searchData=
 [
   ['eccentricityexpansioncoefficients',['EccentricityExpansionCoefficients',['../classEvolve_1_1EccentricityExpansionCoefficients.html',1,'Evolve']]],
-  ['evolutioniterator',['EvolutionIterator',['../classEvolutionIterator.html',1,'EvolutionIterator'],['../classStellarEvolution_1_1MESA_1_1EvolutionIterator.html',1,'StellarEvolution::MESA::EvolutionIterator']]],
+  ['evolutioniterator',['EvolutionIterator',['../classStellarEvolution_1_1MESA_1_1EvolutionIterator.html',1,'StellarEvolution::MESA']]],
+  ['evolutioniterator',['EvolutionIterator',['../classEvolutionIterator.html',1,'']]],
   ['evolvingstar',['EvolvingStar',['../classorbital__evolution_1_1star__interface_1_1EvolvingStar.html',1,'orbital_evolution::star_interface']]],
   ['evolvingstellarcore',['EvolvingStellarCore',['../classStar_1_1EvolvingStellarCore.html',1,'Star']]],
   ['evolvingstellarenvelope',['EvolvingStellarEnvelope',['../classStar_1_1EvolvingStellarEnvelope.html',1,'Star']]],

@@ -9,7 +9,8 @@ var searchData=
   ['stophistoryinterval',['StopHistoryInterval',['../classEvolve_1_1StopHistoryInterval.html',1,'Evolve']]],
   ['stopinformation',['StopInformation',['../classEvolve_1_1StopInformation.html',1,'Evolve']]],
   ['stoppingcondition',['StoppingCondition',['../classEvolve_1_1StoppingCondition.html',1,'Evolve']]],
-  ['structure',['Structure',['../classbasic__utils_1_1Structure.html',1,'basic_utils.Structure'],['../classpoet__interp_1_1Structure.html',1,'poet_interp.Structure']]],
+  ['structure',['Structure',['../classbasic__utils_1_1Structure.html',1,'basic_utils']]],
+  ['structure',['Structure',['../classpoet__interp_1_1Structure.html',1,'poet_interp']]],
   ['sumderivatives',['SumDerivatives',['../classStellarEvolution_1_1SumDerivatives.html',1,'StellarEvolution']]],
   ['sumquantity',['SumQuantity',['../classStellarEvolution_1_1SumQuantity.html',1,'StellarEvolution']]],
   ['synchronizedcondition',['SynchronizedCondition',['../classEvolve_1_1SynchronizedCondition.html',1,'Evolve']]]

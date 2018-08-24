@@ -4,7 +4,7 @@ var classEvolve_1_1DiskBinarySystem =
     [ "~DiskBinarySystem", "classEvolve_1_1DiskBinarySystem.html#adb2a1c86eae41628bd543abed8cc60f7", null ],
     [ "add_secondary", "classEvolve_1_1DiskBinarySystem.html#a5f4d160e9f944e35d3631e6719fdd0b2", null ],
     [ "disk_dissipation_age", "classEvolve_1_1DiskBinarySystem.html#a29351be7559bf9d8ad8b747fda0572e2", null ],
-    [ "next_stop_age", "classEvolve_1_1DiskBinarySystem.html#afdfaccaa6e4a21ee0ec8dcdb9c09c76d", null ],
+    [ "next_stop_age", "classEvolve_1_1DiskBinarySystem.html#a6045db3eea2f64a9211024456f57b98b", null ],
     [ "reached_critical_age", "classEvolve_1_1DiskBinarySystem.html#a39936671903a2752a7b45c48fb5ab5f1", null ],
     [ "release_surface_spin", "classEvolve_1_1DiskBinarySystem.html#af2878d4bf699469267ed6da06c388612", null ],
     [ "__disk_dissipation_age", "classEvolve_1_1DiskBinarySystem.html#a31b9f9125218e15584e36cb380ae3a1b", null ],

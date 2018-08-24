@@ -34,8 +34,8 @@ var hierarchy =
       [ "orbital_evolution.star_interface.EvolvingStar", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html", null ]
     ] ],
     [ "Evolve::EccentricityExpansionCoefficients", "classEvolve_1_1EccentricityExpansionCoefficients.html", null ],
-    [ "EvolutionIterator", "classEvolutionIterator.html", null ],
     [ "StellarEvolution::MESA::EvolutionIterator", "classStellarEvolution_1_1MESA_1_1EvolutionIterator.html", null ],
+    [ "EvolutionIterator", "classEvolutionIterator.html", null ],
     [ "exception", null, [
       [ "Core::Error::General", "classCore_1_1Error_1_1General.html", [
         [ "Core::Error::ALGLIB", "classCore_1_1Error_1_1ALGLIB.html", null ],
@@ -127,6 +127,7 @@ var hierarchy =
     [ "poet_interp.Structure", "classpoet__interp_1_1Structure.html", null ],
     [ "stellar_evolution.derived_stellar_quantities.TeffK", "classstellar__evolution_1_1derived__stellar__quantities_1_1TeffK.html", null ],
     [ "Evolve::TidalPotentialTerms", "classEvolve_1_1TidalPotentialTerms.html", null ],
+    [ "Evolve::TidalTermTriplet", "classEvolve_1_1TidalTermTriplet.html", null ],
     [ "YRECHeader", "classYRECHeader.html", null ],
     [ "Evolve::ZoneOrientation", "classEvolve_1_1ZoneOrientation.html", [
       [ "Evolve::DissipatingZone", "classEvolve_1_1DissipatingZone.html", [

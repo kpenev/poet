@@ -8,5 +8,5 @@ var searchData=
   ['poet_5fexecutable',['poet_executable',['../classpoet__interp_1_1PoetInterp.html#aed966761d3d6715e804bd38e874c7a6e',1,'poet_interp::PoetInterp']]],
   ['poet_5fprocess_5ffiles',['poet_process_files',['../classpoet__interp_1_1PoetInterp.html#a94b776859599664e1128db38895563aa',1,'poet_interp::PoetInterp']]],
   ['power',['POWER',['../DissipationQuantities_8h.html#aebd512bcc0c3dac1409c48436ebd4a41',1,'DissipationQuantities.h']]],
-  ['primary',['primary',['../classorbital__evolution_1_1binary_1_1Binary.html#aab3f33fcb9b6e9a794c1dce89e28f59d',1,'orbital_evolution.binary.Binary.primary()'],['../classorbital__evolution_1_1initial__condition__solver_1_1InitialConditionSolver.html#a5d2579c59622e4fd22960576b6fbf365',1,'orbital_evolution.initial_condition_solver.InitialConditionSolver.primary()']]]
+  ['primary',['primary',['../classorbital__evolution_1_1initial__condition__solver_1_1InitialConditionSolver.html#a5d2579c59622e4fd22960576b6fbf365',1,'orbital_evolution.initial_condition_solver.InitialConditionSolver.primary()'],['../classorbital__evolution_1_1binary_1_1Binary.html#aab3f33fcb9b6e9a794c1dce89e28f59d',1,'orbital_evolution.binary.Binary.primary()']]]
 ];

@@ -21,5 +21,6 @@ var namespaceEvolve =
     [ "StoppingCondition", "classEvolve_1_1StoppingCondition.html", "classEvolve_1_1StoppingCondition" ],
     [ "SynchronizedCondition", "classEvolve_1_1SynchronizedCondition.html", "classEvolve_1_1SynchronizedCondition" ],
     [ "TidalPotentialTerms", "classEvolve_1_1TidalPotentialTerms.html", "classEvolve_1_1TidalPotentialTerms" ],
+    [ "TidalTermTriplet", "classEvolve_1_1TidalTermTriplet.html", "classEvolve_1_1TidalTermTriplet" ],
     [ "ZoneOrientation", "classEvolve_1_1ZoneOrientation.html", "classEvolve_1_1ZoneOrientation" ]
 ];

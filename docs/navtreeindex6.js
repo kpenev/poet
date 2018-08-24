@@ -1,5 +1,14 @@
 var NAVTREEINDEX6 =
 {
+"classorbital__evolution_1_1binary_1_1Binary.html#a378e3362fbaaae346aef16b51cc61168":[17,0,3,0,0,0],
+"classorbital__evolution_1_1binary_1_1Binary.html#a4064b501fc9381eea6c4b4570de53f86":[17,0,3,0,0,18],
+"classorbital__evolution_1_1binary_1_1Binary.html#a6cc53bac09fd93145859545e21a2d2ef":[17,0,3,0,0,9],
+"classorbital__evolution_1_1binary_1_1Binary.html#a7b2659f0c45b56327c23fcbd9795db1c":[17,0,3,0,0,20],
+"classorbital__evolution_1_1binary_1_1Binary.html#a7ba36d7166ce9dda6c4ba7ec60f1bd0d":[17,0,3,0,0,16],
+"classorbital__evolution_1_1binary_1_1Binary.html#a81e6e90090b685df3c6f25b4d75a0050":[17,0,3,0,0,15],
+"classorbital__evolution_1_1binary_1_1Binary.html#a905b34c0e7a6896b50fc8449863640d1":[17,0,3,0,0,5],
+"classorbital__evolution_1_1binary_1_1Binary.html#a9ed19d3aab4a40a58e20f0c0ecc91ffe":[17,0,3,0,0,2],
+"classorbital__evolution_1_1binary_1_1Binary.html#aa4c67fd85f4073f845fefdb6d8e8e0fd":[17,0,3,0,0,7],
 "classorbital__evolution_1_1binary_1_1Binary.html#aab3f33fcb9b6e9a794c1dce89e28f59d":[17,0,3,0,0,19],
 "classorbital__evolution_1_1binary_1_1Binary.html#ac04f9ab53fe0098be3ebe2ea83f09ebb":[17,0,3,0,0,1],
 "classorbital__evolution_1_1binary_1_1Binary.html#ae081a56bcf445283ea92e82dc4940adb":[17,0,3,0,0,12],
@@ -240,14 +249,5 @@ var NAVTREEINDEX6 =
 "classstellar__evolution_1_1manager__data__model_1_1VarchangeDependentVariable.html#a9b5e931ca0aab7c986a620ef76c824bc":[17,0,7,4,7,2],
 "classstellar__evolution_1_1manager__data__model_1_1VarchangeDependentVariable.html#ac09a4af2af69f17b98c536f4ae6ac48a":[17,0,7,4,7,3],
 "classstellar__evolution_1_1manager__data__model_1_1VarchangeFeHNode.html":[17,0,7,4,8],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeFeHNode.html#a501f56eefdbfa6b8a6df3132ceea929f":[17,0,7,4,8,0],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html":[17,0,7,4,9],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#a5af8ed059b2dcd4a97b304f8d02447cd":[17,0,7,4,9,7],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#a7d9ab4b5ef6fd3c32b24aadae5f4a137":[17,0,7,4,9,2],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#a918bf4bf53c5c9547f5b07a02d83811e":[17,0,7,4,9,6],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#aa0b7084e4e093f97de685fb170e4741d":[17,0,7,4,9,0],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#aad483367ff4b4f20a4d78749ad79e44b":[17,0,7,4,9,3],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#ab7c0fff24b4f8f60ad82ceffcab8aa3e":[17,0,7,4,9,1],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#ac93d759cd9ba81ad67e9d3611e7ecfc0":[17,0,7,4,9,4],
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html#ace49d0a7dd2659ef93441e976f3ab61e":[17,0,7,4,9,5]
+"classstellar__evolution_1_1manager__data__model_1_1VarchangeFeHNode.html#a501f56eefdbfa6b8a6df3132ceea929f":[17,0,7,4,8,0]
 };
