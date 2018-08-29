@@ -35,6 +35,10 @@ namespace Evolve {
         ///equatorial orbit, as a function of eccentricity against Zahn77 (eq.
         ///3.6 and eq 3.8).
         void test_aligned_orbit();
+
+        ///\brief Output a table showing the convergence as e-order is
+        ///increased for aligned orbit and const phase lag.
+        void test_convergence();
     };//End testTidalTorquePower class.
 
 
