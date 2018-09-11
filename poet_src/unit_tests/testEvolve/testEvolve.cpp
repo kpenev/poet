@@ -1,5 +1,6 @@
 #include "testGravitationalPotential.h"
 #include "testOrbitSolver.h"
+#include "testTidalTorquePower.h"
 
 #ifdef STANDALONE
 
@@ -87,7 +88,7 @@ int main()
     */
 
     Evolve::TidalPotentialTerms::read_eccentricity_expansion(
-        "eccentricity_expansion_coef.txt"
+        "eccentricity_expansion_coef_O200.txt"
     );
 
 	std::cout.setf(std::ios_base::scientific);
@@ -96,16 +97,18 @@ int main()
 	std::cerr.precision(16);
 	Test::TextOutput output(Test::TextOutput::Verbose);
 
-    Evolve::test_GravitationalPotential tidal_potential_tests;
-    Evolve::test_OrbitSolver orbit_solver_tests;
-	return (
-        tidal_potential_tests.run(output, false)
-//        &&
-//        orbit_solver_tests.run(output)
-        ? EXIT_SUCCESS
-        : EXIT_FAILURE
+    Test::Suite all_tests;
+    all_tests.add(
+        std::auto_ptr<Test::Suite>(new Evolve::test_OrbitSolver)
     );
-
-    return 0;
+    all_tests.add(
+        std::auto_ptr<Test::Suite>(new Evolve::test_GravitationalPotential)
+    );
+    all_tests.add(
+        std::auto_ptr<Test::Suite>(new Evolve::test_TidalTorquePower)
+    );
+    return (all_tests.run(output)
+            ? EXIT_SUCCESS
+            : EXIT_FAILURE);
 }
 #endif

@@ -683,20 +683,21 @@ namespace Evolve {
     public:
         ///Construct a binary system.
         BinarySystem(
-                ///The first body in the system. Assumed to always be there, so
-                ///for a star-planet system this should be the star.
-                DissipatingBody &body1, 
+            ///The first body in the system. Assumed to always be there, so
+            ///for a star-planet system this should be the star.
+            DissipatingBody &body1, 
 
-                ///The second body in the system, initially may not be there and
-                ///later may be engulfed by the first body.
-                DissipatingBody &body2,
+            ///The second body in the system, initially may not be there and
+            ///later may be engulfed by the first body.
+            DissipatingBody &body2,
 
-                ///The name of the system.
-                const std::string &system_name="")
-            : __name(system_name),
-            __above_lock_fractions(Dissipation::NUM_DERIVATIVES), 
-            __body1(body1),
-            __body2(body2) {}
+            ///The name of the system.
+            const std::string &system_name=""
+        ) :
+        __name(system_name),
+        __above_lock_fractions(Dissipation::NUM_DERIVATIVES), 
+        __body1(body1),
+        __body2(body2) {}
 
         ///Returns the name of the system.
         const std::string get_name() const {return __name;}

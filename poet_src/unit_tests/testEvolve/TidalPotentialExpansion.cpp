@@ -15,16 +15,21 @@ namespace Evolve {
                                                double polar_angle,
                                                double orbital_phase) const
     {
-        std::complex<double> result = 0.0;
+        double result = 0.0;
         for(int m=-2; m<=2; ++m) {
-            double no_deriv, inclination_deriv, eccentricity_deriv;
+            std::complex<double> no_deriv,
+                                 inclination_deriv,
+                                 eccentricity_deriv,
+                                 error;
             __expansion_coef(__eccentricity,
                              m,
                              mprime,
                              no_deriv,
                              inclination_deriv,
-                             eccentricity_deriv);
-            assert(std::isfinite(no_deriv));
+                             eccentricity_deriv,
+                             error);
+            assert(std::isfinite(no_deriv.real()));
+            assert(no_deriv.imag() == 0);
             result += (
                 no_deriv
                 *
@@ -39,11 +44,10 @@ namespace Evolve {
                 *
                 std::complex<double>(std::cos(mprime * orbital_phase),
                                      -std::sin(mprime * orbital_phase))
-            );
-            assert(std::isfinite(result.real()));
-            assert(std::isfinite(result.imag()));
+            ).real();
+            assert(std::isfinite(result));
         }
-        return result.real();
+        return result;
     }
 
     double TidalPotentialExpansion::evaluate_spherical_coords(
@@ -59,7 +63,7 @@ namespace Evolve {
         assert(polar_angle >= 0);
         assert(polar_angle <= M_PI);
 
-        __expansion_coef.configure(__inclination);
+        __expansion_coef.configure(__inclination, __arg_of_periapsis);
 
         double orbital_phase = (
             2.0 * M_PI * time
@@ -68,7 +72,7 @@ namespace Evolve {
                            __secondary_mass,
                            __semimajor,
                            __eccentricity).orbital_period()
-        ) + __arg_of_periapsis;
+        );
 
         double potential_norm = -(
             Core::AstroConst::G

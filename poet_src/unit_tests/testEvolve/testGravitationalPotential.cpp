@@ -1,3 +1,10 @@
+/**\file
+ * 
+ * \brief Implement the non-inline methods of test_GravitationalPotential.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "testGravitationalPotential.h"
 
 namespace Evolve {
@@ -130,7 +137,7 @@ namespace Evolve {
         for(
             double time = 0;
             time < 5.0 * orbital_period;
-            time += 0.01 * M_PI * orbital_period
+            time += 0.03 * M_PI * orbital_period
         ) {
             double expected = exact_potential(position, time);
             double got = approx_potential(position, time);
@@ -195,35 +202,36 @@ namespace Evolve {
     {
         double test_angles[] = {-M_PI/2, -1.0, -0.1, 0.0, 0.1, 1.0, M_PI/2};
         unsigned num_angles = sizeof(test_angles) / sizeof(double);
-        num_angles=0;
-        for(
-            unsigned inclination_i = 0;
-            inclination_i < num_angles;
-            ++inclination_i 
-        ) {
-            for(
-                unsigned periapsis_i = 0;
-                periapsis_i < num_angles;
-                ++periapsis_i 
-            ) {
-                test_system(1.0,
-                            0.1,
-                            M_PI,
-                            0.0,
-                            test_angles[inclination_i],
-                            test_angles[periapsis_i]);
-            }
-        }
         for(
             double e = 0.0;
-            e <= 0.5;
+            e <= 0.55;
             e += 0.1
         ) {
-            unsigned e_order = 10;
+            unsigned e_order = 0;
+            if(e > 0.05) e_order = 10;
             if(e > 0.25) e_order = 20;
             if(e > 0.45) e_order = 35;
             std::cout << "Eccentricity : " << e << std::endl;
-            test_system(1.0, 0.1, M_PI, e, 0.0, 0.0, e_order);
+
+            for(
+                unsigned inclination_i = 0;
+                inclination_i < num_angles;
+                ++inclination_i 
+            ) {
+                for(
+                    unsigned periapsis_i = 0;
+                    periapsis_i < num_angles;
+                    ++periapsis_i 
+                ) {
+                    test_system(1.0,
+                                0.1,
+                                M_PI,
+                                e,
+                                test_angles[inclination_i],
+                                2.0 * test_angles[periapsis_i],
+                                e_order);
+                }
+            }
         }
     }
 

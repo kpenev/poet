@@ -6,6 +6,9 @@
  * \ingroup UnitTests_group
  */
 
+#ifndef __TEST_GRAVITATIONAL_POTENTIAL_H
+#define __TEST_GRAVITATIONAL_POTENTIAL_H
+
 #include "EccentricOrbit.h"
 #include "TidalPotential.h"
 #include "TidalPotentialExpansion.h"
@@ -121,3 +124,5 @@ namespace Evolve {
         void test_expansion();
     }; //End test_GravitationalPotential class.
 } //End Evolve namespace.
+
+#endif
