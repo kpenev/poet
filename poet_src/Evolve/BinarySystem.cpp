@@ -389,15 +389,12 @@ namespace Evolve {
     {
         if(__eccentricity == 0) return 0;
         double e2 = std::pow(__eccentricity, 2),
-               factor = (
-                   std::isnan(orbit_energy_gain_deriv) || semimajor_deriv
-                   ? (e2-1.0)/(2.0*__eccentricity)
-                   : (1.0+e2)/(2.0*e2)
-               );
+               factor = (1.0 - e2) / (__eccentricity);
+                   
         if(std::isnan(orbit_energy_gain_deriv))
             return factor * (orbit_energy_gain / __orbital_energy
                              +
-                             2.0*orbit_angmom_gain / __orbital_angmom);
+                             2.0 * orbit_angmom_gain / __orbital_angmom);
         else if(semimajor_deriv)
             return (
                 factor
@@ -413,7 +410,7 @@ namespace Evolve {
                     +
                     (
                         2.0 * orbit_angmom_gain_deriv
-                        +
+                        -
                         orbit_angmom_gain / __semimajor
                     )
                     /
@@ -426,11 +423,15 @@ namespace Evolve {
             (
                 orbit_energy_gain_deriv / __orbital_energy
                 +
-                2.0 / __orbital_angmom*(
-                    orbit_angmom_gain_deriv
-                    +
-                    orbit_angmom_gain * __eccentricity / (1.0 - e2)
-                )
+                2.0 * orbit_angmom_gain_deriv / __orbital_angmom
+            )
+            -
+            2.0 * orbit_angmom_gain / __orbital_angmom
+            -
+            (1.0 + e2) / e2 * (
+                orbit_energy_gain / __orbital_energy
+                +
+                2.0 * orbit_angmom_gain / __orbital_angmom
             )
         );
     }

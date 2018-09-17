@@ -54,11 +54,6 @@ namespace Evolve {
                ||
                limit.spin_frequency_multiplier()==2);
 
-        if(orbital_frequency_multiplier > 5)
-            std::cerr << "ofm" << std::endl;
-        if(spin_frequency_multiplier > 5)
-            std::cerr << "sfm" << std::endl;
-
         if(
             limit.term(orbital_frequency_multiplier,
                        spin_frequency_multiplier)
@@ -280,6 +275,115 @@ namespace Evolve {
 #endif
     }
 
+    void DissipatingZone::add_tidal_term(int m,
+                                         int mp,
+                                         double tidal_frequency,
+                                         const TidalTermTriplet &U_value,
+                                         const TidalTermTriplet &U_i_deriv,
+                                         const TidalTermTriplet &U_e_deriv,
+                                         const TidalTermTriplet &U_error)
+    {
+        int m_ind = m + 2;
+
+        bool locked_term = locked(mp, m);
+
+        for(
+            int deriv = Dissipation::NO_DERIV; 
+            (
+                (m != 0 || mp != 0)
+                && 
+                deriv < Dissipation::END_DIMENSIONLESS_DERIV
+            );
+            ++deriv
+        ) {
+            Dissipation::Derivative phase_lag_deriv =
+                (deriv < Dissipation::END_PHASE_LAG_DERIV
+                 ? static_cast<Dissipation::Derivative>(deriv)
+                 : Dissipation::NO_DERIV);
+            double mod_phase_lag_above,
+                   mod_phase_lag_below = modified_phase_lag(
+                       mp,
+                       m,
+                       tidal_frequency,
+                       phase_lag_deriv,
+                       mod_phase_lag_above
+                   ),
+                   love_coef = love_coefficient(
+                       mp,
+                       m,
+                       (
+                           phase_lag_deriv == Dissipation::AGE
+                           ? Dissipation::AGE
+                           : Dissipation::NO_DERIV
+                       )
+                   );
+
+            TidalTermTriplet U;
+            if(deriv < Dissipation::END_PHASE_LAG_DERIV)
+                U = U_value;
+            else if(deriv == Dissipation::INCLINATION)
+                U = U_i_deriv;
+            else
+                U = U_e_deriv;
+
+            double U_mmp_squared = std::pow(U.m, 2),
+                   term_power = U_mmp_squared*mp,
+                   term_torque_z = U_mmp_squared*m,
+                   term_torque_x = U.m * (
+                       __torque_x_minus_coef[m_ind] * U.m_minus_one
+                       +
+                       __torque_x_plus_coef[m_ind] * U.m_plus_one
+                   );
+            if(
+                !locked_term
+                &&
+                (tidal_frequency != 0 || __lock.lock_direction() < 0)
+            )
+                mod_phase_lag_above = mod_phase_lag_below;
+            else if(
+                !locked_term
+                &&
+                tidal_frequency == 0
+                &&
+                __lock.lock_direction() > 0
+            )
+                mod_phase_lag_below = mod_phase_lag_above;
+            int deriv_ind = 2 * deriv;
+            __power[deriv_ind] += term_power * mod_phase_lag_below;
+            __torque_z[deriv_ind] += (term_torque_z
+                                      *
+                                      mod_phase_lag_below);
+            __torque_x[deriv_ind] += (term_torque_x
+                                      *
+                                      mod_phase_lag_below);
+            __torque_y[deriv_ind + 1] = -(
+                __torque_y[deriv_ind] -= term_torque_x*love_coef
+            );
+            __power[deriv_ind + 1] += term_power * mod_phase_lag_above;
+            __torque_z[deriv_ind + 1] += (term_torque_z
+                                          *
+                                          mod_phase_lag_above);
+            __torque_x[deriv_ind + 1] += (term_torque_x
+                                          *
+                                          mod_phase_lag_above);
+#ifdef VERBOSE_DEBUG
+            if(deriv == Dissipation::NO_DERIV)
+                std::cerr << ", Wzone = "
+                    << spin_frequency()
+                    << ", U(" << m << ", " << mp << ") = "
+                    << U_mmp
+                    << ", term_power="
+                    << term_power 
+                    << ", mod_phase_lag(above="
+                    << mod_phase_lag_above
+                    << ", below="
+                    << mod_phase_lag_below
+                    << ")";
+#endif
+        }
+
+    }
+
     void DissipatingZone::configure_spin(double spin,
                                          bool spin_is_frequency)
     {
@@ -354,18 +458,18 @@ namespace Evolve {
             mp <= static_cast<int>(__e_order) + 2; 
             ++mp
         ) {
-            double U_mm1mp_value = 0,
-                   U_mm1mp_i_deriv = 0,
-                   U_mm1mp_e_deriv = 0,
-                   U_mp1mp_value,
-                   U_mp1mp_i_deriv,
-                   U_mp1mp_e_deriv;
+            TidalTermTriplet U_value,
+                             U_error,
+                             U_i_deriv,
+                             U_e_deriv;
             __potential_term(eccentricity,
                              -2,
                              mp,
-                             U_mp1mp_value,
-                             U_mp1mp_i_deriv,
-                             U_mp1mp_e_deriv);
+                             U_value.m_plus_one,
+                             U_i_deriv.m_plus_one,
+                             U_e_deriv.m_plus_one,
+                             U_error.m_plus_one);
+
             for(int m = -2; m <= 2; ++m) {
 #ifdef VERBOSE_DEBUG
                 std::cerr << "Term: m' = "
@@ -373,125 +477,39 @@ namespace Evolve {
                           << ", m = "
                           << m;
 #endif
-                int m_ind = m + 2;
-                bool locked_term = locked(mp, m);
-                double U_mmp_value = U_mp1mp_value, 
-                       U_mmp_i_deriv = U_mp1mp_i_deriv, 
-                       U_mmp_e_deriv = U_mp1mp_e_deriv;
+
+                U_value.m = U_value.m_plus_one;
+                U_error.m = U_error.m_plus_one;
+                U_i_deriv.m = U_i_deriv.m_plus_one;
+                U_e_deriv.m = U_e_deriv.m_plus_one;
                 if(m < 2)
                     __potential_term(eccentricity,
                                      m + 1,
                                      mp,
-                                     U_mp1mp_value,
-                                     U_mp1mp_i_deriv,
-                                     U_mp1mp_e_deriv);
-                else U_mp1mp_value = U_mp1mp_i_deriv = U_mp1mp_e_deriv = 0;
-                double tidal_frequency = forcing_frequency(mp,
-                                                           m,
-                                                           orbital_frequency);
-
-                for(
-                    int deriv = Dissipation::NO_DERIV; 
-                    (
-                        (m != 0 || mp != 0)
-                        && 
-                        deriv < Dissipation::END_DIMENSIONLESS_DERIV
-                    );
-                    ++deriv
-                ) {
-                    Dissipation::Derivative phase_lag_deriv =
-                        (deriv < Dissipation::END_PHASE_LAG_DERIV
-                         ? static_cast<Dissipation::Derivative>(deriv)
-                         : Dissipation::NO_DERIV);
-                    double mod_phase_lag_above,
-                           mod_phase_lag_below = modified_phase_lag(
-                               mp,
-                               m,
-                               tidal_frequency,
-                               phase_lag_deriv,
-                               mod_phase_lag_above
-                           ),
-                           love_coef = love_coefficient(
-                               mp,
-                               m,
-                               (
-                                   phase_lag_deriv == Dissipation::AGE
-                                   ? Dissipation::AGE
-                                   : Dissipation::NO_DERIV
-                               )
-                           ),
-                           U_mmp, U_mp1mp, U_mm1mp; 
-                    if(deriv < Dissipation::END_PHASE_LAG_DERIV) {
-                        U_mmp = U_mmp_value;
-                        U_mp1mp = U_mp1mp_value;
-                        U_mm1mp = U_mm1mp_value;
-                    } else if(deriv == Dissipation::INCLINATION) {
-                        U_mmp = U_mmp_i_deriv;
-                        U_mp1mp = U_mp1mp_i_deriv;
-                        U_mm1mp = U_mm1mp_i_deriv;
-                    } else {
-                        U_mmp = U_mmp_e_deriv;
-                        U_mp1mp = U_mp1mp_e_deriv;
-                        U_mm1mp = U_mm1mp_e_deriv;
-                    }
-                    double U_mmp_squared = std::pow(U_mmp, 2),
-                           term_power = U_mmp_squared*mp,
-                           term_torque_z = U_mmp_squared*m,
-                           term_torque_x = U_mmp*(
-                               __torque_x_minus_coef[m_ind] * U_mm1mp
-                               +
-                               __torque_x_plus_coef[m_ind] * U_mp1mp
-                           );
-                    if(
-                        !locked_term
-                        &&
-                        (tidal_frequency != 0 || __lock.lock_direction() < 0)
-                    )
-                        mod_phase_lag_above = mod_phase_lag_below;
-                    else if(
-                        !locked_term
-                        &&
-                        tidal_frequency == 0
-                        &&
-                        __lock.lock_direction() > 0
-                    )
-                        mod_phase_lag_below = mod_phase_lag_above;
-                    int deriv_ind = 2 * deriv;
-                    __power[deriv_ind] += term_power * mod_phase_lag_below;
-                    __torque_z[deriv_ind] += (term_torque_z
-                                              *
-                                              mod_phase_lag_below);
-                    __torque_x[deriv_ind] += (term_torque_x
-                                              *
-                                              mod_phase_lag_below);
-                    __torque_y[deriv_ind + 1] = -(
-                        __torque_y[deriv_ind] -= term_torque_x*love_coef
-                    );
-                    __power[deriv_ind + 1] += term_power * mod_phase_lag_above;
-                    __torque_z[deriv_ind + 1] += (term_torque_z
-                                                  *
-                                                  mod_phase_lag_above);
-                    __torque_x[deriv_ind + 1] += (term_torque_x
-                                                  *
-                                                  mod_phase_lag_above);
-#ifdef VERBOSE_DEBUG
-                    if(deriv == Dissipation::NO_DERIV)
-                        std::cerr << ", Wzone = "
-                                  << spin_frequency()
-                                  << ", U(" << m << ", " << mp << ") = "
-                                  << U_mmp
-                                  << ", term_power="
-                                  << term_power 
-                                  << ", mod_phase_lag(above="
-                                  << mod_phase_lag_above
-                                  << ", below="
-                                  << mod_phase_lag_below
-                                  << ")";
-#endif
+                                     U_value.m_plus_one,
+                                     U_i_deriv.m_plus_one,
+                                     U_e_deriv.m_plus_one,
+                                     U_error.m_plus_one);
+                else {
+                    U_value.m_plus_one = 0;
+                    U_error.m_plus_one = 0;
+                    U_i_deriv.m_plus_one = 0;
+                    U_e_deriv.m_plus_one = 0;
                 }
-                U_mm1mp_value = U_mmp_value;
-                U_mm1mp_i_deriv = U_mmp_i_deriv;
-                U_mm1mp_e_deriv = U_mmp_e_deriv;
+
+                add_tidal_term(m,
+                               mp, 
+                               forcing_frequency(mp,
+                                                 m,
+                                                 orbital_frequency),
+                               U_value,
+                               U_i_deriv,
+                               U_e_deriv,
+                               U_error);
+
+                U_value.m_minus_one = U_value.m;
+                U_i_deriv.m_minus_one = U_i_deriv.m;
+                U_e_deriv.m_minus_one = U_e_deriv.m;
 #ifdef VERBOSE_DEBUG
                 std::cerr << std::endl;
 #endif
@@ -712,28 +730,28 @@ namespace Evolve {
     )
     {
         __potential_term.change_e_order(new_e_order);
-        if(__lock.spin_frequency_multiplier()==0) {
-            __e_order=new_e_order;
+        if(__lock.spin_frequency_multiplier() == 0) {
+            __e_order = new_e_order;
             return;
         }
         if(__lock) {
-           __e_order=new_e_order;
+           __e_order = new_e_order;
            if(__lock.orbital_frequency_multiplier()>
-                   static_cast<int>(__e_order)+2) release_lock();
+                   static_cast<int>(__e_order) + 2) release_lock();
            return;
         }
 #ifndef NDEBUG
         check_locks_consistency();
 #endif
-        if(new_e_order>__e_order) {
+        if(new_e_order > __e_order) {
             update_locks_to_higher_e_order(new_e_order);
-            __e_order=new_e_order;
+            __e_order = new_e_order;
         } else {
-            __e_order=new_e_order;
+            __e_order = new_e_order;
             update_lock_to_lower_e_order(__lock);
             update_lock_to_lower_e_order(__other_lock);
-            if(__lock.spin_frequency_multiplier()==0) {
-                __lock=__other_lock;
+            if(__lock.spin_frequency_multiplier() == 0) {
+                __lock = __other_lock;
                 __other_lock.set_lock(1, 0, 1);
             }
         }

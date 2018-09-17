@@ -80,7 +80,12 @@ namespace Evolve {
             std::complex<double> &inclination_deriv,
 
             ///Set to the eccentricity_derivative.
-            std::complex<double> &eccentricity_deriv
+            std::complex<double> &eccentricity_deriv,
+
+            ///The contribution of only the term with the highest eccentricity
+            ///power. Useful for detemining when the expansion order should be
+            ///increased.
+            std::complex<double> &highest_e_order_term
         ) const;
 
         ///\brief Return only the real parts of the complex version of the
@@ -102,7 +107,12 @@ namespace Evolve {
             double &inclination_deriv,
 
             ///Set to the eccentricity_derivative.
-            double &eccentricity_deriv
+            double &eccentricity_deriv,
+
+            ///The contribution of only the term with the highest eccentricity
+            ///power. Useful for detemining when the expansion order should be
+            ///increased.
+            double &highest_e_order_term
         ) const;
 
         ///\brief Reads the eccentricity expansion coefficients of \f$p_{m,s}\f$.

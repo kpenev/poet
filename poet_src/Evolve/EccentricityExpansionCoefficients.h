@@ -70,8 +70,9 @@ namespace Evolve {
                 ///The power of the eccentricity in the desired term.
                 int epower) const;
 
-        ///Taylor series approximation of \f$p_{-2,s}(e)\f$.
-        double p_m2s(
+        ///Taylor series approximation of \f$p_{-2,s}(e)\f$, and the
+        ///contribution of the highest power eccentricity terms.
+        std::pair<double, double> p_m2s(
                 ///The eccentricity
                 double e, 
 
@@ -83,10 +84,12 @@ namespace Evolve {
                 
                 ///If true the result is differentiated w.r.t. to the
                 ///eccentricity.
-                bool deriv) const;
+                bool deriv
+        ) const;
         
-        ///Taylor series approximation of \f$p_{0,s}(e)\f$.
-        double p_0s(
+        ///Taylor series approximation of \f$p_{0,s}(e)\f$, and the
+        ///contribution of the highest power eccentricity terms.
+        std::pair<double, double> p_0s(
                 ///The eccentricity
                 double e, 
 
@@ -98,10 +101,12 @@ namespace Evolve {
                 
                 ///If true the result is differentiated w.r.t. to the
                 ///eccentricity.
-                bool deriv) const;
+                bool deriv
+        ) const;
 
-        ///Taylor series approximation of \f$p_{2,s}(e)\f$.
-        double p_p2s(
+        ///Taylor series approximation of \f$p_{2,s}(e)\f$, and the
+        ///contribution of the highest power eccentricity terms.
+        std::pair<double, double> p_p2s(
                 ///The eccentricity
                 double e, 
 
@@ -113,7 +118,8 @@ namespace Evolve {
                 
                 ///If true the result is differentiated w.r.t. to the
                 ///eccentricity.
-                bool deriv) const;
+                bool deriv
+        ) const;
 
     public:
         ///Create an uninitialized object.
@@ -133,8 +139,9 @@ namespace Evolve {
         ///Maximum eccentricity power with all necessary coefficients known.
         unsigned max_e_power() const {return __max_e_power;}
 
-        ///Taylor series approximation of \f$p_{m,s}\f$.
-        double operator()(
+        ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
+        ///contribution of the highest power eccentricity terms.
+        std::pair<double, double> operator()(
                 ///The first index (0 or +-2).
                 int m, 
 

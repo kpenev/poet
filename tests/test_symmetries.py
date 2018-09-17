@@ -221,18 +221,18 @@ class TestSymmetries(unittest.TestCase):
 
             for i in range(max(d.shape[0] for d in data)):
                 print(
-                    '%25.16e %25.16e %25.16e %25.16e'
-                    %
                     (
-                        (
-                            tuple(data[0][i]) if i < data[0].shape[0]
-                            else (scipy.nan, scipy.nan)
-                        )
-                        +
-                        (
-                            tuple(data[1][i]) if i < data[1].shape[0]
-                            else (scipy.nan, scipy.nan)
-                        )
+                        '%25.16e %25.16e' % tuple(data[0][i])
+                        if i < data[0].shape[0] else
+                        (51 * ' ')
+                    )
+                    +
+                    ' '
+                    +
+                    (
+                        '%25.16e %25.16e' % tuple(data[1][i])
+                        if i < data[1].shape[0] else
+                        (51 * ' ')
                     )
                 )
 
@@ -272,6 +272,7 @@ class TestSymmetries(unittest.TestCase):
                                       evol.age[:-1] < max_age)
                     for evol in [evolution1, evolution2]
                 ]
+
                 acceptable_ages = scipy.logical_and(
                     age_within_range[0],
                     scipy.logical_and(
@@ -330,80 +331,98 @@ class TestSymmetries(unittest.TestCase):
     def test_star_planet_swap(self):
         """Compare evolutions with secondary planet or non-dissipative star."""
 
-        config = dict(primary_mass=1.0, secondary_mass=0.8, tdisk=5e-3)
+        tdisk = 5e-3
 
-        for star_phase_lag in [
-                0.0,
-                phase_lag(6.0)
+        for primary_mass in [
+                1.0,
+                0.8
         ]:
-            for wind in [
-                    False,
-                    True
+            for secondary_mass in [
+                    1.0,
+                    0.8
             ]:
-                with self.subTest(wind=wind, phase_lag=star_phase_lag):
+                for star_phase_lag in [
+                        0.0,
+                        phase_lag(6.0)
+                ]:
+                    for wind in [
+                            False,
+                            True
+                    ]:
+                        with self.subTest(wind=wind,
+                                          phase_lag=star_phase_lag,
+                                          primary_mass=primary_mass,
+                                          secondary_mass=secondary_mass):
 
-                    star = self._create_star(
-                        convective_phase_lag=star_phase_lag,
-                        mass=config['primary_mass'],
-                        wind=wind
-                    )
-                    planet = self._create_planet(config['secondary_mass'])
-                    binary = self._create_binary_system(
-                        star,
-                        planet,
-                        disk_lock_frequency=2.0 * scipy.pi / 3.0,
-                        initial_semimajor=10.0,
-                        disk_dissipation_age=config['tdisk']
-                    )
-                    binary.evolve(10.0, 1e-3, 1e-6, None)
-                    star_planet_evolution = binary.get_evolution()
+                            star = self._create_star(
+                                convective_phase_lag=star_phase_lag,
+                                mass=primary_mass,
+                                wind=wind
+                            )
+                            planet = self._create_planet(secondary_mass)
+                            binary = self._create_binary_system(
+                                star,
+                                planet,
+                                disk_lock_frequency=2.0 * scipy.pi / 3.0,
+                                initial_semimajor=10.0,
+                                disk_dissipation_age=tdisk
+                            )
+                            binary.evolve(10.0, 1e-2, 1e-6, None)
+                            star_planet_evolution = binary.get_evolution()
 
-                    planet.delete()
-                    star.delete()
-                    binary.delete()
+                            planet.delete()
+                            star.delete()
+                            binary.delete()
 
-                    #pylint false positive, members added after construction.
-                    #pylint: disable=no-member
-                    tdisk_index = star_planet_evolution.age.searchsorted(
-                        config['tdisk']
-                    )
-                    #pylint: enable=no-member
-
-                    primary = self._create_star(
-                        convective_phase_lag=star_phase_lag,
-                        mass=config['primary_mass'],
-                        wind=wind
-                    )
-                    secondary = self._create_star(convective_phase_lag=0.0,
-                                                  mass=config['secondary_mass'],
-                                                  wind=False)
-                    binary = self._create_binary_system(
-                        primary,
-                        secondary,
-                        disk_lock_frequency=2.0 * scipy.pi / 3.0,
-                        initial_semimajor=10.0,
-                        disk_dissipation_age=config['tdisk'],
-                        secondary_angmom=scipy.array([
-                            #pylint false positive
+                            #pylint false positive, members added after
+                            #construction.
                             #pylint: disable=no-member
-                            star_planet_evolution.envelope_angmom[tdisk_index],
-                            star_planet_evolution.core_angmom[tdisk_index]
+                            tdisk_index = (
+                                star_planet_evolution.age.searchsorted(tdisk)
+                            )
                             #pylint: enable=no-member
-                        ])
-                    )
-                    binary.evolve(10.0, 1e-3, 1e-6, None)
-                    star_star_evolution = binary.get_evolution()
 
-                    primary.delete()
-                    secondary.delete()
-                    binary.delete()
+                            primary = self._create_star(
+                                convective_phase_lag=star_phase_lag,
+                                mass=primary_mass,
+                                wind=wind
+                            )
+                            secondary = self._create_star(
+                                convective_phase_lag=0.0,
+                                mass=secondary_mass,
+                                wind=False
+                            )
+                            binary = self._create_binary_system(
+                                primary,
+                                secondary,
+                                disk_lock_frequency=2.0 * scipy.pi / 3.0,
+                                initial_semimajor=10.0,
+                                disk_dissipation_age=tdisk,
+                                secondary_angmom=scipy.array([
+                                    #pylint false positive
+                                    #pylint: disable=no-member
+                                    star_planet_evolution.envelope_angmom[
+                                        tdisk_index
+                                    ] * 1e-3,
+                                    star_planet_evolution.core_angmom[
+                                        tdisk_index
+                                    ] * 1e-3
+                                    #pylint: enable=no-member
+                                ])
+                            )
+                            binary.evolve(10.0, 1e-2, 1e-6, None)
+                            star_star_evolution = binary.get_evolution()
 
-                    self._compare_evolutions(
-                        star_planet_evolution,
-                        star_star_evolution,
-                        max_age=(8.7 if (star_phase_lag and wind)
-                                 else scipy.inf)
-                    )
+                            primary.delete()
+                            secondary.delete()
+                            binary.delete()
+
+                            self._compare_evolutions(
+                                star_planet_evolution,
+                                star_star_evolution,
+                                max_age=(8.49 if (star_phase_lag and wind)
+                                         else scipy.inf)
+                            )
 
     def test_primary_secondary_swap(self):
         """Compare evolutions of two stars, swapping wich one is primary."""
@@ -422,7 +441,7 @@ class TestSymmetries(unittest.TestCase):
                 initial_semimajor=10.0,
                 disk_dissipation_age=config['tdisk']
             )
-            binary.evolve(config['tdisk'], 1e-3, 1e-6, None)
+            binary.evolve(config['tdisk'], 1e-2, 1e-6, None)
             disk_dissipation_state = binary.final_state()
 
             planet.delete()
@@ -458,7 +477,7 @@ class TestSymmetries(unittest.TestCase):
                                                  star_phase_lag,
                                                  wind)
             )
-            binary.evolve(10.0, 1e-3, 1e-6, None)
+            binary.evolve(10.0, 1e-2, 1e-6, None)
             evolution = binary.get_evolution()
 
             primary.delete()

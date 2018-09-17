@@ -1,3 +1,10 @@
+/**\file
+ * 
+ * \brief Implement the non-inline methods of test_GravitationalPotential.
+ *
+ * \ingroup UnitTests_group
+ */
+
 #include "testGravitationalPotential.h"
 
 namespace Evolve {

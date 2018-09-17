@@ -19,13 +19,15 @@ namespace Evolve {
         for(int m=-2; m<=2; ++m) {
             std::complex<double> no_deriv,
                                  inclination_deriv,
-                                 eccentricity_deriv;
+                                 eccentricity_deriv,
+                                 error;
             __expansion_coef(__eccentricity,
                              m,
                              mprime,
                              no_deriv,
                              inclination_deriv,
-                             eccentricity_deriv);
+                             eccentricity_deriv,
+                             error);
             assert(std::isfinite(no_deriv.real()));
             assert(no_deriv.imag() == 0);
             result += (
