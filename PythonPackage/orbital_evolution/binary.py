@@ -1,5 +1,8 @@
 """Define a class for binaries which can be evolved."""
 
+from ctypes import c_int, c_bool, c_double
+import numpy
+
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 from orbital_evolution.evolve_interface import library
@@ -8,10 +11,8 @@ from basic_utils import\
     semimajor,\
     orbital_frequency,\
     orbital_angular_momentum
-from ctypes import c_int, c_bool, c_double
-import numpy
 
-def get_evolution_quantities(secondary_is_star) :
+def get_evolution_quantities(secondary_is_star):
     """
     Return the list of quantities for a binary system.
 
@@ -33,28 +34,28 @@ def get_evolution_quantities(secondary_is_star) :
                              'envelope_angmom',
                              'core_angmom']
 
-    for q in star_float_quantities :
-        if secondary_is_star :
+    for q in star_float_quantities:
+        if secondary_is_star:
             evolution_quantities.append('primary_' + q)
-        else :
+        else:
             evolution_quantities.append(q)
 
 
-    if secondary_is_star :
-        for q in star_float_quantities :
+    if secondary_is_star:
+        for q in star_float_quantities:
             evolution_quantities.append('secondary_' + q)
 
     evolution_quantities.append('evolution_mode')
 
-    if secondary_is_star :
+    if secondary_is_star:
         evolution_quantities.extend(['primary_wind_saturation',
                                      'secondary_wind_saturation'])
-    else :
+    else:
         evolution_quantities.append('wind_saturation')
 
     return evolution_quantities
 
-class Binary :
+class Binary:
     """A class for binaries POET can evolve."""
 
     evolution_modes = ['LOCKED_SURFACE_SPIN',
@@ -67,12 +68,14 @@ class Binary :
     }
 
     @staticmethod
-    def evolution_quantity_c_type(quantity) :
+    def evolution_quantity_c_type(quantity):
         """Return the ctypes type of the given evolution quantity."""
 
-        if quantity == 'evolution_mode' : return c_int
-        elif quantity.endswith('wind_saturation') : return c_bool
-        else : return c_double
+        if quantity == 'evolution_mode':
+            return c_int
+        if quantity.endswith('wind_saturation'):
+            return c_bool
+        return c_double
 
     def __init__(self,
                  primary,
@@ -292,29 +295,36 @@ class Binary :
         self._c_get_evolution_func(*get_evol_args)
         return result
 
-    def final_state(self) :
+    def final_state(self):
         """Return the final evolution state of a system (all quantities)."""
 
         result = Structure()
         library_final_state = [self.evolution_quantity_c_type(q)()
                                for q in self.evolution_quantities]
-        self._c_get_final_state(self.c_solver,
-                                self.c_binary,
-                                self.primary.c_body,
-                                *library_final_state)
+        if isinstance(self.secondary, LockedPlanet):
+            self._c_get_final_state(self.c_solver,
+                                    self.c_binary,
+                                    self.primary.c_body,
+                                    *library_final_state)
+        else:
+            self._c_get_final_state(self.c_solver,
+                                    self.c_binary,
+                                    self.primary.c_body,
+                                    self.secondary.c_body,
+                                    *library_final_state)
         for quantity, library_value in zip(self.evolution_quantities,
-                                           library_final_state) :
+                                           library_final_state):
             setattr(result, quantity, library_value.value)
         return result
 
-    def orbital_frequency(self, semimajor) :
+    def orbital_frequency(self, semimajor):
         """
         The orbital frequency of the system for the given semimajor axis.
 
         Args:
             - semimajor:
                 The semimajor axis at which the system's orbital period is
-                required in solar radii. 
+                required in solar radii.
 
         Returns:
             The orbital period in days if the two bodies of this system are
@@ -325,7 +335,7 @@ class Binary :
                                  self.secondary.mass,
                                  semimajor)
 
-    def orbital_period(self, semimajor) :
+    def orbital_period(self, semimajor):
         """
         The orbital period of the system for the given semimajor axis.
 
@@ -341,7 +351,7 @@ class Binary :
 
         return 2.0 * numpy.pi / self.orbital_frequency(semimajor)
 
-    def semimajor(self, orbital_period) :
+    def semimajor(self, orbital_period):
         """
         The semimajor axis of the system for the given orbital period.
 
@@ -359,7 +369,7 @@ class Binary :
                          self.secondary.mass,
                          orbital_period)
 
-    def orbital_angular_momentum(self, semimajor, eccentricity) :
+    def orbital_angular_momentum(self, semimajor, eccentricity):
         """
         The orbital agular momentum for the given semimajor/eccentricity.
 
