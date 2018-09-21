@@ -13,6 +13,10 @@
 
 namespace Evolve {
 
+    /**\brief A zone dissipative to only a single tidal term.
+     * 
+     * \ingroup UnitTests_group
+     */
     class SingleTidalTermZone : public PolynomialEvolutionZone {
     private:
         int
@@ -64,11 +68,12 @@ namespace Evolve {
         {
             double result;
 
-            if(deriv != Dissipation::NO_DERIV)
+            if(deriv != Dissipation::NO_DERIV) {
+                return Core::NaN;
                 throw Core::Error::NotImplemented(
                     "single dissipative term phase lage derivatives"
                 );
-            if(
+            } if(
                 orbital_frequency_multiplier == __orbital_frequency_multiplier
                 &&
                 spin_frequency_multiplier == __spin_frequency_multiplier
@@ -93,7 +98,7 @@ namespace Evolve {
                     return -result;
                 }
             } else {
-                return (forcing_frequency > 0 ? result : -result);
+                return result;
             }
         }
 

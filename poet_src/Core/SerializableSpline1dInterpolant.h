@@ -4,10 +4,10 @@
 #include "../Core/SharedLibraryExportMacros.h"
 #include "../third_party_libs/alglib/alglib/src/interpolation.h"
 
-	#include <boost/serialization/base_object.hpp>
-	#include <boost/archive/text_oarchive.hpp>
-	#include <boost/archive/text_iarchive.hpp>
-	#include <boost/serialization/export.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/export.hpp>
 
 namespace Core {
 
