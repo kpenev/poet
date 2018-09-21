@@ -13,13 +13,17 @@
 
 namespace Evolve {
 
+    /**\brief A zone with constant phase lag for all tidal terms.
+     *
+     * \ingroup UnitTests_group
+     */
     class ConstPhaseLagZone : public PolynomialEvolutionZone {
     private:
         ///The constant value of the phase lag.
         double __phase_lag;
     public:
         ConstPhaseLagZone(
-            ///The phase lag of the only dissipative term.
+            ///The phase lag of all dissipative terms.
             double phase_lag,
 
             ///The coefficients of the polynomial for the mass evolution.

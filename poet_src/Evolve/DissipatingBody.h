@@ -305,7 +305,8 @@ namespace Evolve {
         ///Locks the given zone's spin to the orbit with the given frequency
         ///ratio.
         void lock_zone_spin(unsigned zone_index,
-                int orbital_frequency_multiplier, int spin_frequency_multiplier)
+                            int orbital_frequency_multiplier,
+                            int spin_frequency_multiplier)
         {
             zone(zone_index).set_lock(orbital_frequency_multiplier,
                                       spin_frequency_multiplier);
@@ -314,12 +315,13 @@ namespace Evolve {
 
         ///Releases the given zone from a spin-orbit lock.
         void unlock_zone_spin(
-                ///The zone whose spin orbit lock to release.
-                unsigned zone_index,
+            ///The zone whose spin orbit lock to release.
+            unsigned zone_index,
 
-                ///The direction in which the spin will evolve in the future
-                ///relative to the lock.
-                short direction)
+            ///The direction in which the spin will evolve in the future
+            ///relative to the lock.
+            short direction
+        )
         {
             if(direction == 0) zone(zone_index).release_lock();
             else zone(zone_index).release_lock(direction);
@@ -340,40 +342,42 @@ namespace Evolve {
         /// \f$\hat{x}\f$ along the ascending node of the orbit in the zone's
         ///equatorial plane, and \f$\hat{z}\f$ along the zone's angular momentum.
         Eigen::Vector3d nontidal_torque(
-                ///The index of the zone whose torque is needed.
-                unsigned zone_index,
+            ///The index of the zone whose torque is needed.
+            unsigned zone_index,
 
-                ///Whether to return the quantity or one of its derivatives.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-                
-                ///Since external torques depend on neighboring zones, this
-                ///parameter is used to distinguish those (it is ignored if :
-                ///deriv is Dissipation::NO_DERIV or a quantity which is not
-                ///zone specific):
-                /// - -1 Return the derivative with respect to the quantity for
-                ///   the zone above.
-                /// - 0 Return the derivative with respect to the quantity for
-                ///   this
-                ///   zone.
-                /// - 1 Return the derivative with respect to the quantity for
-                ///   the zone below.
-                int deriv_zone=0) const;
+            ///Whether to return the quantity or one of its derivatives.
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+
+            ///Since external torques depend on neighboring zones, this
+            ///parameter is used to distinguish those (it is ignored if :
+            ///deriv is Dissipation::NO_DERIV or a quantity which is not
+            ///zone specific):
+            /// - -1 Return the derivative with respect to the quantity for
+            ///   the zone above.
+            /// - 0 Return the derivative with respect to the quantity for
+            ///   this
+            ///   zone.
+            /// - 1 Return the derivative with respect to the quantity for
+            ///   the zone below.
+            int deriv_zone=0
+        ) const;
 
         ///\brief Tidal torque acting on the given zone (last 
         ///calculate_torques_power()).
         ///
         ///The coordinate system is the same as for nontidal_torque().
         const Eigen::Vector3d &tidal_torque(
-                ///The index of the zone whose tidal torque is required.
-                unsigned zone_index,
+            ///The index of the zone whose tidal torque is required.
+            unsigned zone_index,
 
-                ///If a zone is currently in a lock, this argument decides
-                ///whetherthe torque for spin frequency above (true) or below
-                ///(false) of the lock should be returned.
-                bool above,
+            ///If a zone is currently in a lock, this argument decides
+            ///whetherthe torque for spin frequency above (true) or below
+            ///(false) of the lock should be returned.
+            bool above,
 
-                ///Which derivative of the tidal torque is required.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+            ///Which derivative of the tidal torque is required.
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const
         {
             assert(zone_index<number_zones());
 
@@ -383,24 +387,26 @@ namespace Evolve {
 
         ///\brief Tidal power dissipated in the given zone.
         double tidal_power(
-                ///The index of the zone whose tidal torque is required.
-                unsigned zone_index,
+            ///The index of the zone whose tidal torque is required.
+            unsigned zone_index,
 
-                ///If a zone is currently in a lock, this argument decides
-                ///whetherthe torque for spin frequency above (true) or below
-                ///(false) of the lock should be returned.
-                bool above,
+            ///If a zone is currently in a lock, this argument decides
+            ///whetherthe torque for spin frequency above (true) or below
+            ///(false) of the lock should be returned.
+            bool above,
 
-                ///Which derivative of the tidal power is required.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const;
+            ///Which derivative of the tidal power is required.
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const;
 
         ///\brief Corrects the tidal orbit energy gain and angular momentum gain
         ///for locked zones.
         void set_above_lock_fractions(
-                ///The fractional contributions of the above the lock rates for
-                ///each zone (the vector) and their derivatives (the outer
-                ///index).
-                std::valarray<Eigen::VectorXd> &above_lock_fractions);
+            ///The fractional contributions of the above the lock rates for
+            ///each zone (the vector) and their derivatives (the outer
+            ///index).
+            std::valarray<Eigen::VectorXd> &above_lock_fractions
+        );
 
         ///\brief Rate of increase of the orbital energy due to tides in this
         ///body (last calculate_torques_power()).
@@ -409,17 +415,18 @@ namespace Evolve {
         ///returns the rate assuming all locked zones are fully below the lock.
         ///If it has, returns the actual rate.
         double tidal_orbit_energy_gain(
-                ///W.r.t. that quantity is the required derivative. 
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///W.r.t. that quantity is the required derivative. 
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 
-                ///If deriv is a zone-specific quantity, this argument
-                ///determines which zone to differentiate w.r.t.
-                unsigned deriv_zone_index=0,
+            ///If deriv is a zone-specific quantity, this argument
+            ///determines which zone to differentiate w.r.t.
+            unsigned deriv_zone_index=0,
 
-                ///The derivatives of all lock fractions w.r.t. to the quantity
-                ///identified by the above arguments.
-                const Eigen::VectorXd &above_lock_fraction_deriv=
-                Eigen::VectorXd()) const;
+            ///The derivatives of all lock fractions w.r.t. to the quantity
+            ///identified by the above arguments.
+            const Eigen::VectorXd &above_lock_fraction_deriv=
+            Eigen::VectorXd()
+        ) const;
 
         ///\brief The torque on the orbit due to tidal dissipation in the body.
         ///
@@ -427,53 +434,57 @@ namespace Evolve {
         ///returns the torue assuming all locked zones are fully below the lock.
         ///If it has, returns the actual rate.
         Eigen::Vector3d tidal_orbit_torque(
-                ///The derivative of the angular momentum rate required.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///The derivative of the angular momentum rate required.
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 
-                ///If deriv is a zone-specific quantity, this argument
-                ///determines which zone to differentiate w.r.t.
-                unsigned deriv_zone_index=0,
-                
-                ///The derivatives of all lock fractions w.r.t. to the quantity
-                ///identified by the above arguments.
-                const Eigen::VectorXd &above_lock_fraction_deriv=
-                Eigen::VectorXd()) const;
+            ///If deriv is a zone-specific quantity, this argument
+            ///determines which zone to differentiate w.r.t.
+            unsigned deriv_zone_index=0,
+
+            ///The derivatives of all lock fractions w.r.t. to the quantity
+            ///identified by the above arguments.
+            const Eigen::VectorXd &above_lock_fraction_deriv=
+            Eigen::VectorXd()
+        ) const;
 
         ///\brief Same as tidal_orbit_torque(Dissipation::Derivative, unsigned,
         ///const Eigen::VectorXd &) but allow specifying the zone whose
         ///coordinate system to use.
         Eigen::Vector3d tidal_orbit_torque(
-                ///The zone whose coordinate system to express the result.
-                const DissipatingZone &reference_zone,
+            ///The zone whose coordinate system to express the result.
+            const DissipatingZone &reference_zone,
 
-                ///The derivative of the angular momentum rate required.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///The derivative of the angular momentum rate required.
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
 
-                ///If deriv is a zone-specific quantity, this argument
-                ///determines which zone to differentiate w.r.t.
-                unsigned deriv_zone_index=0,
-                
-                ///The derivatives of all lock fractions w.r.t. to the quantity
-                ///identified by the above arguments.
-                const Eigen::VectorXd &above_lock_fraction_deriv=
-                Eigen::VectorXd()) const;
+            ///If deriv is a zone-specific quantity, this argument
+            ///determines which zone to differentiate w.r.t.
+            unsigned deriv_zone_index=0,
+
+            ///The derivatives of all lock fractions w.r.t. to the quantity
+            ///identified by the above arguments.
+            const Eigen::VectorXd &above_lock_fraction_deriv=
+            Eigen::VectorXd()
+        ) const;
 
         ///The number of zones the body consists of.
         virtual unsigned number_zones() const =0;
 
         ///A modifiable reference to one of the body's zones.
         virtual const DissipatingZone &zone(
-                ///The index of the zone within the body. Sequential zones are
-                ///ordered from outside to inside (0 is the surface zone,
-                ///number_zones()-1 is the core).
-                unsigned zone_index) const=0;
+            ///The index of the zone within the body. Sequential zones are
+            ///ordered from outside to inside (0 is the surface zone,
+            ///number_zones()-1 is the core).
+            unsigned zone_index
+        ) const=0;
 
         ///A modifiable reference to one of the body's zones.
         virtual DissipatingZone &zone(
-                ///The index of the zone within the body. Sequential zones are
-                ///ordered from outside to inside (0 is the surface zone,
-                ///number_zones()-1 is the core).
-                unsigned zone_index)=0;
+            ///The index of the zone within the body. Sequential zones are
+            ///ordered from outside to inside (0 is the surface zone,
+            ///number_zones()-1 is the core).
+            unsigned zone_index
+        )=0;
 
         ///\brief Coupling torque for two neighboring zones in the coordinate
         ///system of the top zone.
@@ -481,17 +492,18 @@ namespace Evolve {
         ///Units:
         /// \f$M_\odot R_\odot^2\mathrm{rad}\mathrm{day}^{-1}mathrm{Gyr}^{-1}\f$.
         virtual Eigen::Vector3d angular_momentum_coupling(
-                ///The index of the outer of the two zones whose coupling is
-                ///needed.
-                unsigned top_zone_index,
-                
-                ///The derivative of the coupling torque required.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-                
-                ///For derivatives with respect to zone specific quantities,
-                ///this determines which zone's quantity to differentiate
-                ///with respect to (top zone if true, bottom zone if false).
-                bool with_respect_to_top=false) const =0;
+            ///The index of the outer of the two zones whose coupling is
+            ///needed.
+            unsigned top_zone_index,
+
+            ///The derivative of the coupling torque required.
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+
+            ///For derivatives with respect to zone specific quantities,
+            ///this determines which zone's quantity to differentiate
+            ///with respect to (top zone if true, bottom zone if false).
+            bool with_respect_to_top=false
+        ) const =0;
 
         ///\brief Rate of angular momentum loss by the top zone of the body 
         ///and its derivatives.
@@ -505,8 +517,9 @@ namespace Evolve {
 
         ///\brief The current radius or its derivative with age of the body.
         double radius(
-                ///The order of the derivative to return.
-                int deriv_order=0) const
+            ///The order of the derivative to return.
+            int deriv_order=0
+        ) const
         {return zone(0).outer_radius(deriv_order);}
 
         ///The mass of the body (constant with age).

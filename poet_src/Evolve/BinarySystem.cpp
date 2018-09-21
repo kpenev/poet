@@ -389,7 +389,7 @@ namespace Evolve {
     {
         if(__eccentricity == 0) return 0;
         double e2 = std::pow(__eccentricity, 2),
-               factor = (1.0 - e2) / (__eccentricity);
+               factor = (1.0 - e2) / (2.0 * __eccentricity);
                    
         if(std::isnan(orbit_energy_gain_deriv))
             return factor * (orbit_energy_gain / __orbital_energy
