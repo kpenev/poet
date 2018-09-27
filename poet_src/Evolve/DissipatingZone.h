@@ -97,9 +97,9 @@ namespace Evolve {
             ///The (m+1, m') coefficient.
             m_plus_one;
 
-        TidalTermTriplet(double m_minus_one_value=0.0,
-                         double m_value=0.0,
-                         double m_plus_one_value=0.0):
+        TidalTermTriplet(double m_minus_one_value = 0.0,
+                         double m_value = 0.0,
+                         double m_plus_one_value = 0.0):
             m_minus_one(m_minus_one_value),
             m(m_value),
             m_plus_one(m_plus_one_value)
@@ -148,14 +148,15 @@ namespace Evolve {
             __orbital_angmom;
 
         
-        ///\brief The dimensionless tidal power and its derivatives.
+        ///\brief The dimensionless tidal power and its error and derivatives.
         ///
         ///Consists of pairs of numbers one for each derivative. The first number
         ///of each pair is always filled and if the zone is in a lock it is the
         ///tidal power calculated assuming the zone spin frequency approaches the
         ///lock from below. The second number is filled only if the zone is in a
         ///spin-orbit lock and is the tidal power assuming the zone spin
-        ///frequency approaches the lock from above.
+        ///frequency approaches the lock from above. After all derivatives the
+        ///final pair of numbers give the error in the undifferentiated value.
         std::valarray<double> __power,
 
             ///\brief The dimensionless tidal torque in the x direction and its
@@ -447,7 +448,7 @@ namespace Evolve {
         {
             assert(!__lock);
             __lock.set_lock(orbital_frequency_multiplier,
-                    spin_frequency_multiplier);
+                            spin_frequency_multiplier);
         }
 
         ///\brief Should return the tidal phase lag time the love number for the
@@ -525,51 +526,55 @@ namespace Evolve {
 
         ///\brief The dimensionless tidal power or one of its derivatives.
         double tidal_power(
-                ///If a spin-orbit lock is in effect and the time-lag is
-                ///discontinuous near zero forcing frequency, two possible values
-                ///can be calculated, assuming that the zone spin frequency
-                ///approaches the lock from below (false) or from above (true).
-                bool above,
+            ///If a spin-orbit lock is in effect and the time-lag is
+            ///discontinuous near zero forcing frequency, two possible values
+            ///can be calculated, assuming that the zone spin frequency
+            ///approaches the lock from below (false) or from above (true).
+            bool above,
 
-                ///What to return
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+            ///What to return
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const
         {
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__power.size()));
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1 < static_cast<int>(__power.size() - 2));
 
-            return __power[2*deriv+(above? 1 : 0)];
+            return __power[2 * deriv + (above? 1 : 0)];
         }
 
         ///\brief Same as tidal_power(bool, Dissipation::Derivative), but using
         ///the predefined mix of below/above contributions.
         double tidal_power(
-                ///The fraction of the timestep to assume to have spin above the
-                ///lock.
-                double above_fraction,
+            ///The fraction of the timestep to assume to have spin above the
+            ///lock.
+            double above_fraction,
 
-                ///The derivative required (ignores the derivative of
-                ///above_fraction).
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+            ///The derivative required (ignores the derivative of
+            ///above_fraction).
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const
         {
-            assert(!locked() || (above_fraction>=0 && above_fraction<=1));
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__power.size()));
+            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1 < static_cast<int>(__power.size() - 2));
 
-            return above_fraction*__power[2*deriv+1]
+            return above_fraction * __power[2 * deriv + 1]
                    +
-                   (1.0-above_fraction)*__power[2*deriv];
+                   (1.0 - above_fraction) * __power[2 * deriv];
         }
 
         ///\brief The dimensionless tidal torque along x.
         ///
         ///See tidal_power() for a description of the arguments.
-        double tidal_torque_x(bool above,
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+        double tidal_torque_x(
+            bool above,
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const
         {
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__torque_x.size()));
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1 < static_cast<int>(__torque_x.size()));
 
-            return __torque_x[2*deriv+(above? 1 : 0)];
+            return __torque_x[2 * deriv + (above? 1 : 0)];
         }
 
         ///\brief Same as tidal_torque_x(bool, Dissipation::Derivative) but
@@ -615,47 +620,51 @@ namespace Evolve {
 
                 ///The derivative required (ignores the derivative of
                 ///above_fraction).
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+                Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const
         {
-            assert(!locked() || (above_fraction>=0 && above_fraction<=1));
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__torque_y.size()));
+            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1 < static_cast<int>(__torque_y.size()));
 
-            return above_fraction*__torque_y[2*deriv+1]
+            return above_fraction * __torque_y[2 * deriv + 1]
                    +
-                   (1.0-above_fraction)*__torque_y[2*deriv];
+                   (1.0 - above_fraction) * __torque_y[2 * deriv];
         }
 
         ///\brief The dimensionless tidal torque along z.
         ///
         ///See tidal_power() for a description of the arguments.
-        double tidal_torque_z(bool above,
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+        double tidal_torque_z(
+            bool above,
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const
         {
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__torque_z.size()));
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1 < static_cast<int>(__torque_z.size()));
 
-            return __torque_z[2*deriv+(above? 1 : 0)];
+            return __torque_z[2 * deriv + (above? 1 : 0)];
         }
 
         ///\brief Same as tidal_torque_z(bool, Dissipation::Derivative) but
         //below and above contributions mixed.
         double tidal_torque_z(
-                ///The fraction of the timestep to assume to have spin above the
-                ///lock.
-                double above_fraction,
+            ///The fraction of the timestep to assume to have spin above the
+            ///lock.
+            double above_fraction,
 
-                ///The derivative required (ignores the derivative of
-                ///above_fraction).
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+            ///The derivative required (ignores the derivative of
+            ///above_fraction).
+            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+        ) const
         {
-            assert(!locked() || (above_fraction>=0 && above_fraction<=1));
-            assert(deriv<Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2*deriv+1<static_cast<int>(__torque_z.size()));
+            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
+            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * deriv + 1 < static_cast<int>(__torque_z.size()));
 
-            return above_fraction*__torque_z[2*deriv+1]
+            return above_fraction * __torque_z[2 * deriv + 1]
                    +
-                   (1.0-above_fraction)*__torque_z[2*deriv];
+                   (1.0 - above_fraction) * __torque_z[2 * deriv];
         }
 
         ///\brief Outer radius of the zone or its derivative (per last
@@ -664,11 +673,12 @@ namespace Evolve {
         ///The outermost zone's outer radius is considered to be the radius of
         ///the body.
         virtual double outer_radius(
-                ///What to return:
-                /// - 0 The boundary in \f$R_\odot\f$
-                /// - 1 The rate of change of the boundary in \f$R_\odot/Gyr\f$
-                /// - 2 The second derivative in \f$R_\odot/Gyr^2\f$
-                int deriv_order=0) const =0;
+            ///What to return:
+            /// - 0 The boundary in \f$R_\odot\f$
+            /// - 1 The rate of change of the boundary in \f$R_\odot/Gyr\f$
+            /// - 2 The second derivative in \f$R_\odot/Gyr^2\f$
+            int deriv_order = 0
+        ) const =0;
 
         ///\brief Same as outer_radius(int) but may be evaluated at a different
         ///age than for last confgure(). 
@@ -680,11 +690,12 @@ namespace Evolve {
         ///The outermost zone's boundary is considered to be the mass of the
         ///body and should be constant.
         virtual double outer_mass(
-                ///What to return:
-                /// - 0 The boundary in \f$M_\odot\f$
-                /// - 1 The rate of change of the boundary in \f$M_\odot/Gyr\f$
-                /// - 2 The second derivative in \f$M_\odot/Gyr^2\f$
-                int deriv_order=0) const =0;
+            ///What to return:
+            /// - 0 The boundary in \f$M_\odot\f$
+            /// - 1 The rate of change of the boundary in \f$M_\odot/Gyr\f$
+            /// - 2 The second derivative in \f$M_\odot/Gyr^2\f$
+            int deriv_order=0
+        ) const =0;
 
         ///\brief Same as outer_mass(int), but may be evaluated at a different
         ///age than last configure().
@@ -714,28 +725,31 @@ namespace Evolve {
 
         ///Discards the last steps from the evolution.
         virtual void rewind_evolution(
-                ///How many steps of evolution to discard.
-                unsigned nsteps);
+            ///How many steps of evolution to discard.
+            unsigned nsteps
+        );
 
         ///Discards all evolution.
         virtual void reset_evolution();
 
         ///The tabulated evolution of a real valued quantity so far.
         const std::list<double> &get_evolution_real(
-                ZoneEvolutionQuantities quantity) const
+            ZoneEvolutionQuantities quantity
+        ) const
         {
-            assert(quantity<NUM_REAL_EVOL_QUANTITIES);
+            assert(quantity < NUM_REAL_EVOL_QUANTITIES);
 
             return __evolution_real[quantity];
         }
 
         ///The tabulated evolution of an integer quantity so far.
         const std::list<int> &get_evolution_integer(
-                ZoneEvolutionQuantities quantity) const
+            ZoneEvolutionQuantities quantity
+        ) const
         {
-            assert(quantity>=NUM_REAL_EVOL_QUANTITIES);
+            assert(quantity >= NUM_REAL_EVOL_QUANTITIES);
 
-            return __evolution_integer[quantity-NUM_REAL_EVOL_QUANTITIES];
+            return __evolution_integer[quantity - NUM_REAL_EVOL_QUANTITIES];
         }
 
 
@@ -775,16 +789,19 @@ namespace Evolve {
         );
 
         ///Notifies the zone that its spin just jumped discontinously.
-        virtual void spin_jumped() {initialize_locks();}
+        virtual void spin_jumped()
+        {initialize_locks();}
 
         ///\brief Change the body as necessary at the given age.
         ///
         ///Handles things like interpolation discontinuities. 
-        virtual void reached_critical_age(double) {assert(false);}
+        virtual void reached_critical_age(double)
+        {assert(false);}
 
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.
-        virtual double next_stop_age() const {return Core::Inf;}
+        virtual double next_stop_age() const
+        {return Core::Inf;}
     }; //End DissipatingZone class.
 
 } //End Evolve namespace.
