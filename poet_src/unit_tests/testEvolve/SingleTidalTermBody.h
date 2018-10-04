@@ -82,7 +82,7 @@ namespace Evolve {
         ///See DissipatingBody::angular_momentum_coupling().
         Eigen::Vector3d angular_momentum_coupling(
             unsigned,
-            Dissipation::Derivative =Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry =Dissipation::NO_DERIV,
             bool =false
         ) const
         {assert(false);}

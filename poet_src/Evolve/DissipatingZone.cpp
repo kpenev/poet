@@ -354,9 +354,9 @@ namespace Evolve {
             );
             ++deriv
         ) {
-            Dissipation::Derivative phase_lag_deriv =(
+            Dissipation::QuantityEntry phase_lag_deriv = (
                 deriv < Dissipation::END_PHASE_LAG_DERIV
-                ? static_cast<Dissipation::Derivative>(deriv)
+                ? static_cast<Dissipation::QuantityEntry>(deriv)
                 : Dissipation::NO_DERIV
             );
             double mod_phase_lag_above,
@@ -446,25 +446,25 @@ namespace Evolve {
                                           *
                                           mod_phase_lag_above);
             if(has_error) {
-                const int ERROR_IND = 2 * Dissipation::END_DIMENSIONLESS_DERIV;
                 has_error = false;
-                __power[ERROR_IND] += term_power_error * mod_phase_lag_below;
-                __torque_z[ERROR_IND] += (term_torque_z_error
+                const int error_ind = 2 * Dissipation::END_DIMENSIONLESS_DERIV;
+                __power[error_ind] += term_power_error * mod_phase_lag_below;
+                __torque_z[error_ind] += (term_torque_z_error
                                           *
                                           mod_phase_lag_below);
-                __torque_x[ERROR_IND] += (term_torque_x_error
+                __torque_x[error_ind] += (term_torque_x_error
                                           *
                                           mod_phase_lag_below);
-                __torque_y[ERROR_IND + 1] = -(
-                    __torque_y[ERROR_IND] -= term_torque_x_error * love_coef
+                __torque_y[error_ind + 1] = -(
+                    __torque_y[error_ind] -= term_torque_x_error * love_coef
                 );
-                __power[ERROR_IND + 1] += (term_power_error
+                __power[error_ind + 1] += (term_power_error
                                            *
                                            mod_phase_lag_above);
-                __torque_z[ERROR_IND + 1] += (term_torque_z_error
+                __torque_z[error_ind + 1] += (term_torque_z_error
                                               *
                                               mod_phase_lag_above);
-                __torque_x[ERROR_IND + 1] += (term_torque_x_error
+                __torque_x[error_ind + 1] += (term_torque_x_error
                                               *
                                               mod_phase_lag_above);
             }
@@ -483,7 +483,6 @@ namespace Evolve {
                           << ")";
 #endif
         }
-
     }
 
     void DissipatingZone::configure_spin(double spin,
@@ -659,19 +658,34 @@ namespace Evolve {
 
 
     double DissipatingZone::periapsis_evolution(
-            const Eigen::Vector3d &orbit_torque,
-            const Eigen::Vector3d &zone_torque,
-            Dissipation::Derivative deriv,
-            const Eigen::Vector3d &orbit_torque_deriv,
-            const Eigen::Vector3d &zone_torque_deriv)
+        const Eigen::Vector3d &orbit_torque,
+        const Eigen::Vector3d &zone_torque,
+        Dissipation::QuantityEntry entry,
+        const Eigen::Vector3d &orbit_torque_deriv,
+        const Eigen::Vector3d &zone_torque_deriv
+    )
     {
         double sin_inc = std::sin(inclination()),
                cos_inc = std::cos(inclination()),
                zone_y_torque,
                orbit_y_torque;
-        if(deriv == Dissipation::NO_DERIV) {
+        if(entry == Dissipation::NO_DERIV) {
             orbit_y_torque = orbit_torque[1];
             zone_y_torque = zone_torque[1];
+        } else if(entry == Dissipation::EXPANSION_ERROR) {
+            return (
+                sin_inc == 0
+                ? 0
+                : (
+                    std::abs(orbit_torque_deriv[1] * cos_inc
+                             /
+                             (__orbital_angmom * sin_inc))
+                    +
+                    std::abs(zone_torque_deriv[1]
+                             /
+                             (angular_momentum() * sin_inc))
+                )
+            );
         } else {
             orbit_y_torque = orbit_torque_deriv[1];
             zone_y_torque = zone_torque_deriv[1];
@@ -697,18 +711,25 @@ namespace Evolve {
         assert(!std::isnan(result));
 
         if(
-            deriv == Dissipation::NO_DERIV 
-            || deriv == Dissipation::AGE 
-            || deriv == Dissipation::ECCENTRICITY
-            || deriv == Dissipation::PERIAPSIS
-            || deriv == Dissipation::RADIUS
-            || deriv == Dissipation::MOMENT_OF_INERTIA
-            || deriv == Dissipation::SEMIMAJOR
+            entry == Dissipation::NO_DERIV 
+            ||
+            entry == Dissipation::AGE 
+            ||
+            entry == Dissipation::ECCENTRICITY
+            ||
+            entry == Dissipation::PERIAPSIS
+            ||
+            entry == Dissipation::RADIUS
+            ||
+            entry == Dissipation::MOMENT_OF_INERTIA
+            ||
+            entry == Dissipation::SEMIMAJOR
         )
             return result;
         else if(
-            deriv == Dissipation::SPIN_FREQUENCY ||
-            deriv == Dissipation::SPIN_ANGMOM
+            entry == Dissipation::SPIN_FREQUENCY
+            ||
+            entry == Dissipation::SPIN_ANGMOM
         ) {
             if(sin_inc == 0) return 0.0;
             else return (
@@ -718,9 +739,9 @@ namespace Evolve {
                 /
                 (std::pow(angular_momentum(), 2) * sin_inc)
                 *
-                (deriv == Dissipation::SPIN_FREQUENCY ? moment_of_inertia() : 1)
+                (entry == Dissipation::SPIN_FREQUENCY ? moment_of_inertia() : 1)
             );
-        } else if(deriv == Dissipation::INCLINATION) {
+        } else if(entry == Dissipation::INCLINATION) {
             if(sin_inc == 0) return 0.0;
             else return (
                 result
@@ -743,7 +764,7 @@ namespace Evolve {
     double DissipatingZone::inclination_evolution(
             const Eigen::Vector3d &orbit_torque,
             const Eigen::Vector3d &zone_torque,
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
             const Eigen::Vector3d &orbit_torque_deriv,
             const Eigen::Vector3d &zone_torque_deriv)
     {
@@ -752,48 +773,66 @@ namespace Evolve {
                zone_x_torque,
                orbit_x_torque,
                orbit_z_torque;
-        if(deriv == Dissipation::NO_DERIV) {
+        if(entry == Dissipation::NO_DERIV) {
             orbit_x_torque = orbit_torque[0];
             orbit_z_torque = orbit_torque[2];
             zone_x_torque = zone_torque[0];
+        } else if(entry == Dissipation::EXPANSION_ERROR) {
+            return (
+                (
+                    std::abs(orbit_torque_deriv[0] * cos_inc)
+                    -
+                    std::abs(orbit_torque_deriv[2] * sin_inc)
+                )
+                /
+                __orbital_angmom
+            );
         } else {
             orbit_x_torque = orbit_torque_deriv[0];
             orbit_z_torque = orbit_torque_deriv[2];
             zone_x_torque = zone_torque_deriv[0];
         }
+
         double result;
         if(orbit_x_torque == 0 && orbit_z_torque == 0)
             result = 0.0;
         else 
-            result = ((orbit_x_torque * cos_inc - orbit_z_torque*sin_inc)
+            result = ((orbit_x_torque * cos_inc - orbit_z_torque * sin_inc)
                       /
                       __orbital_angmom);
 
         if(zone_x_torque != 0 && moment_of_inertia() != 0)
             result -= zone_x_torque / __angular_momentum;
+
         if(
-            deriv == Dissipation::NO_DERIV 
-            || deriv == Dissipation::AGE 
-            || deriv == Dissipation::ECCENTRICITY
-            || deriv == Dissipation::PERIAPSIS
-            || deriv == Dissipation::RADIUS
-            || deriv == Dissipation::MOMENT_OF_INERTIA
-            || deriv == Dissipation::SEMIMAJOR
+            entry == Dissipation::NO_DERIV 
+            ||
+            entry == Dissipation::AGE 
+            ||
+            entry == Dissipation::ECCENTRICITY
+            ||
+            entry == Dissipation::PERIAPSIS
+            ||
+            entry == Dissipation::RADIUS
+            ||
+            entry == Dissipation::MOMENT_OF_INERTIA
+            ||
+            entry == Dissipation::SEMIMAJOR
         )
             return result;
         else if(
-            deriv == Dissipation::SPIN_FREQUENCY
+            entry == Dissipation::SPIN_FREQUENCY
             ||
-            deriv == Dissipation::SPIN_ANGMOM
+            entry == Dissipation::SPIN_ANGMOM
         )
             return (
                 result
                 +
                 zone_torque[0] / std::pow(angular_momentum(), 2)
                 *
-                (deriv == Dissipation::SPIN_FREQUENCY ? moment_of_inertia() : 1)
+                (entry == Dissipation::SPIN_FREQUENCY ? moment_of_inertia() : 1)
             );
-        else if(deriv == Dissipation::INCLINATION)
+        else if(entry == Dissipation::INCLINATION)
             return (result
                     +
                     (orbit_torque[2] * cos_inc + orbit_torque[0] * sin_inc)

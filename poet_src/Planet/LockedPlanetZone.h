@@ -42,14 +42,14 @@ namespace Planet {
                 int ,
                 int ,
                 double ,
-                Evolve::Dissipation::Derivative ,
+                Evolve::Dissipation::QuantityEntry ,
                 double &) const
         {return 0;}
 
         ///See DissipatingZone::love_coefficient(), always zero.
         double love_coefficient(int,
                                 int,
-                                Evolve::Dissipation::Derivative) const
+                                Evolve::Dissipation::QuantityEntry) const
         {return 0;}
 
         ///Tiny value (\f$10^{-6} M R^2\f$).

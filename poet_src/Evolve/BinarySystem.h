@@ -58,14 +58,15 @@ namespace Evolve {
         ///The name of the binary system (e.g. "HAT-P-20")
         std::string __name;
 
-        ///\brief The evolution of the semimajor axis recorded by
-        ///add_to_evolution() so far.
-        std::list<double> __semimajor_evolution,
+        std::list<double>
+            ///\brief The evolution of the semimajor axis recorded by
+            ///add_to_evolution() so far.
+            __semimajor_evolution,
 
             ///\brief The evolution of the eccentricity recorded by
             ///add_to_evolution() so far
             __eccentricity_evolution;
-        
+
         ///The present age of the stellar system in Gyrs.
         double __age,
 
@@ -74,16 +75,16 @@ namespace Evolve {
 
                ///The current eccentricity.
                __eccentricity,
-               
+
                ///The current orbital energy.
                __orbital_energy,
-               
+
                ///The current orbital angular momentum.
                __orbital_angmom,
-               
+
                ///The rate at which the orbit gains energy due to tides.
                __orbit_energy_gain,
-               
+
                ///\brief The rate at which the orbit gains angular momentum due
                ///to tides.
                __orbit_angmom_gain;
@@ -138,7 +139,7 @@ namespace Evolve {
             ///the second body does. It is also the body that should support
             ///surface locks.
             &__body1, 
-            
+
             ///\brief The second body in the system.
             ///
             ///This body is never allowed to exist alone in the system or to have
@@ -284,7 +285,7 @@ namespace Evolve {
         ///derivative for the linear problem that defines the above fractions.
         void above_lock_problem_deriv_correction(
             ///The derivative being calculated
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///For zone-specific quantities, are we differentiating w.r.t. a
             ///zone part of body1?
@@ -311,7 +312,7 @@ namespace Evolve {
             ///The derivative of the above lock fractions to calculate. For
             ///zone-dependent quantities the derivatives are w.r.t. the
             ///surface zone quantity.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 
             ///Only used if deriv indicates a zone-dependent quantity. In
             ///that case, it specifies the body whose surface zone we are
@@ -324,7 +325,7 @@ namespace Evolve {
         Eigen::VectorXd above_lock_fractions_deriv(
             ///The derivative to calculate. Only INCLINATION, PERIAPSIS,
             ///MOMENT_OF_INERTIA and SPIN_ANGMOM derivatives are supported.
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's inclination we want the derivative 
             ///w.r.t.
@@ -383,7 +384,7 @@ namespace Evolve {
 
             ///The quantity we are collecting. Should be either
             ///body.tidal_orbit_energy_gain or body.tidal_orbit_torque.
-            VALUE_TYPE (DissipatingBody::*func)(Dissipation::Derivative,
+            VALUE_TYPE (DissipatingBody::*func)(Dissipation::QuantityEntry,
                                                 unsigned,
                                                 const Eigen::VectorXd &) const,
 
@@ -484,7 +485,7 @@ namespace Evolve {
         void angle_evolution_orbit_deriv(
             ///The derivative to compute, should be either
             ///Dissipation::SEMIMAJOR or Dissipation::ECCENTRICITY
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The derivative of the orbital angular momentum w.r.t. deriv.
             double angmom_deriv,
@@ -517,7 +518,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's coordinate system we are expressing the
             ///torque in.
@@ -540,7 +541,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's evolution we are differentiating.
             DissipatingBody &body,
@@ -564,7 +565,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's evolution we are differentiating.
             DissipatingBody &body,
@@ -611,7 +612,7 @@ namespace Evolve {
         ///zone specific quantity for all zones.
         void periapsis_evolution_zone_derivs(
             ///The derivative to compute.
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's periapsis evolution to differentiate.
             DissipatingBody &body,
@@ -655,7 +656,7 @@ namespace Evolve {
 
         void spin_angmom_evolution_zone_derivs(
             ///The derivative to compute.
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's periapsis evolution to differentiate.
             DissipatingBody &body,
@@ -816,7 +817,7 @@ namespace Evolve {
             ///and, Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::SPIN_ANGMOM and Dissipation::MOMENT_OF_INERTIA
             ///are allowed.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 
             ///The index of the zone whose quantity we want the derivative
             ///w.r.t. for zone specific quantities.

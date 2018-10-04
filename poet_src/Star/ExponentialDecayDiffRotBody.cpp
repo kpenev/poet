@@ -21,18 +21,19 @@ namespace Star {
     }
 
     Eigen::Vector3d &ExponentialDecayDiffRotBody::torque_entry(
-            unsigned top_zone_index,
-            Evolve::Dissipation::Derivative deriv,
-            bool with_respect_to_top
+        unsigned top_zone_index,
+        Evolve::Dissipation::QuantityEntry entry,
+        bool with_respect_to_top
     ) const
     {
-        assert(deriv != Evolve::Dissipation::ORBITAL_FREQUENCY);
-        assert(deriv != Evolve::Dissipation::ECCENTRICITY);
-        assert(deriv != Evolve::Dissipation::SEMIMAJOR);
+        assert(entry != Evolve::Dissipation::EXPANSION_ERROR);
+        assert(entry != Evolve::Dissipation::ORBITAL_FREQUENCY);
+        assert(entry != Evolve::Dissipation::ECCENTRICITY);
+        assert(entry != Evolve::Dissipation::SEMIMAJOR);
         assert(top_zone_index < number_zones()-1);
 
         std::valarray<Eigen::Vector3d> &zone_torque=__torque[top_zone_index];
-        switch(deriv) {
+        switch(entry) {
             case Evolve::Dissipation::NO_DERIV :
                 return zone_torque[0];
             case Evolve::Dissipation::SPIN_FREQUENCY : 
@@ -47,7 +48,7 @@ namespace Star {
                 return zone_torque[(with_respect_to_top ? 9 : 10)];
             default:
                 throw Core::Error::BadFunctionArguments(
-                    "Unsupported derivative in "
+                    "Unsupported entry in "
                     "ExponentialDecayDiffRotBody::torque_entry"
                 );
         }
@@ -84,22 +85,23 @@ namespace Star {
 
     Eigen::Vector3d ExponentialDecayDiffRotBody::angular_momentum_coupling(
         unsigned top_zone_index,
-        Evolve::Dissipation::Derivative deriv,
+        Evolve::Dissipation::QuantityEntry entry,
         bool with_respect_to_top
     ) const
     {
         assert(top_zone_index<number_zones()-1);
 
         if(
-            deriv == Evolve::Dissipation::ORBITAL_FREQUENCY
-            || deriv == Evolve::Dissipation::ECCENTRICITY
-            || deriv == Evolve::Dissipation::SEMIMAJOR
-            || deriv == Evolve::Dissipation::AGE
-            || deriv == Evolve::Dissipation::RADIUS
+            entry == Evolve::Dissipation::ORBITAL_FREQUENCY
+            || entry == Evolve::Dissipation::ECCENTRICITY
+            || entry == Evolve::Dissipation::SEMIMAJOR
+            || entry == Evolve::Dissipation::AGE
+            || entry == Evolve::Dissipation::RADIUS
+            || entry == Evolve::Dissipation::EXPANSION_ERROR
         )
             return Eigen::Vector3d(0, 0, 0);
         Eigen::Vector3d &result=torque_entry(top_zone_index,
-                                             deriv,
+                                             entry,
                                              with_respect_to_top);
         if(!std::isnan(result[0])) return result;
         const Evolve::DissipatingZone &zone1 = zone(top_zone_index),
@@ -111,22 +113,22 @@ namespace Star {
             return result;
         }
         if(
-            deriv == Evolve::Dissipation::INCLINATION
+            entry == Evolve::Dissipation::INCLINATION
             ||
-            deriv == Evolve::Dissipation::PERIAPSIS
+            entry == Evolve::Dissipation::PERIAPSIS
         )
             result = zone_to_zone_transform(
                     zone2,
                     zone1,
                     Eigen::Vector3d(0, 0, zone2.spin_frequency()),
-                    deriv,
+                    entry,
                     !with_respect_to_top
             );
         else if(
             (
-                deriv == Evolve::Dissipation::SPIN_FREQUENCY
+                entry == Evolve::Dissipation::SPIN_FREQUENCY
                 || 
-                deriv==Evolve::Dissipation::SPIN_ANGMOM
+                entry == Evolve::Dissipation::SPIN_ANGMOM
             )
             &&
             !with_respect_to_top
@@ -134,23 +136,23 @@ namespace Star {
             result = Eigen::Vector3d(
                 0,
                 0,
-                -(deriv == Evolve::Dissipation::SPIN_ANGMOM ? 1.0 / i1 : 1.0)
+                -(entry == Evolve::Dissipation::SPIN_ANGMOM ? 1.0 / i1 : 1.0)
             );
         else {
             result = zone_to_zone_transform(zone2,
                                             zone1,
                                             Eigen::Vector3d(0, 0, 1));
-            if(deriv == Evolve::Dissipation::SPIN_ANGMOM) result /= i2;
-            else if(deriv != Evolve::Dissipation::SPIN_FREQUENCY)
+            if(entry == Evolve::Dissipation::SPIN_ANGMOM) result /= i2;
+            else if(entry != Evolve::Dissipation::SPIN_FREQUENCY)
                 result *= zone2.spin_frequency();
             if(
-                deriv == Evolve::Dissipation::NO_DERIV
+                entry == Evolve::Dissipation::NO_DERIV
                 || 
-                deriv == Evolve::Dissipation::MOMENT_OF_INERTIA
+                entry == Evolve::Dissipation::MOMENT_OF_INERTIA
             )
                 result[2] -= zone1.spin_frequency();
         }
-        if(deriv != Evolve::Dissipation::MOMENT_OF_INERTIA) 
+        if(entry != Evolve::Dissipation::MOMENT_OF_INERTIA) 
             result *= i1 * i2;
         else if(with_respect_to_top)
             result *= i2 * (1 - i1 / (i1 + i2));

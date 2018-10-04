@@ -55,7 +55,7 @@ namespace Star {
 
         ///See DissipatingBody::angular_momentum_loss().
         double angular_momentum_loss(
-            Evolve::Dissipation::Derivative deriv = Evolve::Dissipation::NO_DERIV
+            Evolve::Dissipation::QuantityEntry entry = Evolve::Dissipation::NO_DERIV
         ) const;
 
         ///The frequency at which the wind loss saturates in rad/day.

@@ -55,8 +55,8 @@ namespace Evolve {
             NUM_QUANTITIES
         }; //End Quantity enumeration.
 
-        ///\brief All evolving quantities also have derivatives.
-        enum LIB_LOCAL Derivative {
+        ///All evolving quantities have a number of entries each (see below).
+        enum LIB_LOCAL QuantityEntry {
 
             ///The quantity itself, undifferentiated.
             NO_DERIV, 
@@ -116,27 +116,38 @@ namespace Evolve {
             SEMIMAJOR,
 
             ///The total number of derivatives supported
-            NUM_DERIVATIVES
-        }; //End Derivative enumeration.
+            NUM_DERIVATIVES,
+
+            ///The error due to truncating the eccentricity series to finite
+            ///order.
+            EXPANSION_ERROR = NUM_DERIVATIVES,
+
+            ///The total number of Entries 
+            NUM_ENTRIES
+        }; //End QuantityEntries enumeration.
 
     } //End Dissipation namespace.
 
-    LIB_LOCAL inline bool zone_specific(Dissipation::Derivative deriv)
+    LIB_LOCAL inline bool zone_specific(Dissipation::QuantityEntry entry)
     {
-        return (deriv==Dissipation::SPIN_FREQUENCY ||
-                deriv==Dissipation::INCLINATION ||
-                deriv==Dissipation::PERIAPSIS ||
-                deriv==Dissipation::MOMENT_OF_INERTIA ||
-                deriv==Dissipation::SPIN_ANGMOM);
+        return (entry == Dissipation::SPIN_FREQUENCY
+                ||
+                entry == Dissipation::INCLINATION
+                ||
+                entry == Dissipation::PERIAPSIS
+                ||
+                entry == Dissipation::MOMENT_OF_INERTIA
+                ||
+                entry == Dissipation::SPIN_ANGMOM);
     }
 
     ///More civilized output for Dissipation::Quantity variables.
     LIB_LOCAL std::ostream &operator<<(std::ostream &os,
             const Dissipation::Quantity &quantity);
 
-    ///More civilized output for Dissipation::Derivative variables.
+    ///More civilized output for Dissipation::QuantityError variables.
     LIB_LOCAL std::ostream &operator<<(std::ostream &os,
-            const Dissipation::Derivative &deriv);
+                                       Dissipation::QuantityEntry entry);
 
 } //End Evolve namespace.
 

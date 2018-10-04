@@ -338,11 +338,13 @@ namespace Evolve {
         int orbital_frequency_multiplier,
         int spin_frequency_multiplier,
         double forcing_frequency,
-        Dissipation::Derivative deriv,
+        Dissipation::QuantityEntry entry,
         double &above_lock_value
     ) const
     {
-        if(deriv == Dissipation::AGE) return 0;
+        if(entry == Dissipation::AGE || entry == Dissipation::EXPANSION_ERROR)
+            return 0;
+
         double abs_forcing_frequency = std::abs(forcing_frequency),
                abs_spin_frequency = std::abs(spin_frequency());
 
@@ -403,7 +405,7 @@ namespace Evolve {
                 )
             )
         );
-        switch(deriv) {
+        switch(entry) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (
                     (spin_power ? spin_power / spin_frequency() : 0.0)
@@ -427,7 +429,7 @@ namespace Evolve {
                 );
                 break;
             default :
-                assert(deriv == Dissipation::NO_DERIV);
+                assert(entry == Dissipation::NO_DERIV);
         }
         
         if(forcing_frequency == 0) {

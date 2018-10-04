@@ -32,7 +32,9 @@ namespace Evolve {
     public:
         ZoneOrientation(double inclination = Core::NaN,
                         double periapsis = Core::NaN) :
-            __inclination(inclination), __periapsis(periapsis) {}
+            __inclination(inclination),
+            __periapsis(periapsis)
+        {}
 
         ///Changes the zone orientation.
         void configure(double inclination, double periapsis)
@@ -61,7 +63,7 @@ namespace Evolve {
             ///computed (assuming vector does not depend on these), in addition
             ///to the regular transform. It is an error to request another
             ///derivative.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
             ///If deriv is not NO_DERIV, derivatives can be computed with respect
             ///to quantities of the from_zone (if this argument is true) or the

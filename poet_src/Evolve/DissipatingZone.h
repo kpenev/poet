@@ -350,36 +350,35 @@ namespace Evolve {
         ///Either configure() or set_reference_zone_angmom() must already have
         ///been called, and inclination() and spin_frequency() must be current.
         double periapsis_evolution(
-                ///The torque on the orbit due to all other zones in this zone's
-                ///coordinate system.
-                const Eigen::Vector3d &orbit_torque,
+            ///The torque on the orbit due to all other zones in this zone's
+            ///coordinate system.
+            const Eigen::Vector3d &orbit_torque,
 
-                ///All torques acting on this zone (i.e. tidale, angular
-                ///momentum loss due to wind for the surface zone and coupling to
-                ///neightboring zones due to differential rotation).
-                const Eigen::Vector3d &zone_torque,
+            ///All torques acting on this zone (i.e. tidale, angular
+            ///momentum loss due to wind for the surface zone and coupling to
+            ///neightboring zones due to differential rotation).
+            const Eigen::Vector3d &zone_torque,
 
-                ///If not Dissipation::NO_DERIV, the derivative of the rate with
-                ///respect to the given quantity is returned. For zone-specific
-                ///quantities, derivative with respect to this zone's quantity is
-                ///computed. If derivatives with respect to other zone's
-                ///quantities are required, those only come in through the orbit
-                ///torque and external torque, so pass the corresponding
-                ///derivative instead of the actual torques, and ignore this and
-                ///subsequent arguments.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
-                
-                ///This argument is required if dervi is neither NO_DERIV nor
-                ///PERIAPSIS, and should contain the derivative of the orbital
-                ///torque relative to the quantity identified by deriv.
-                const Eigen::Vector3d &orbit_torque_deriv=
-                    Eigen::Vector3d(),
+            ///If not Dissipation::NO_DERIV, the corresponding entry of the rate
+            ///is returned. For zone-specific quantities, derivative with
+            ///respect to this zone's quantity is computed. If derivatives with
+            ///respect to other zone's quantities are required, those only come
+            ///in through the orbit torque and external torque, so pass the
+            ///corresponding derivative instead of the actual torques, and
+            ///ignore this and subsequent arguments.
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 
-                ///This argument is required if deriv is neither NO_DERIV nor
-                ///PERIAPSIS, and shoul contain the derivative of the zone
-                ///torque relative to the quantity identified by deriv.
-                const Eigen::Vector3d &zone_torque_deriv=
-                    Eigen::Vector3d());
+            ///This argument is required if dervi is neither NO_DERIV nor
+            ///PERIAPSIS, and should contain the derivative of the orbital
+            ///torque relative to the quantity identified by deriv.
+            const Eigen::Vector3d &orbit_torque_deriv=
+            Eigen::Vector3d(),
+
+            ///This argument is required if deriv is neither NO_DERIV nor
+            ///PERIAPSIS, and shoul contain the derivative of the zone
+            ///torque relative to the quantity identified by deriv.
+            const Eigen::Vector3d &zone_torque_deriv=Eigen::Vector3d()
+        );
 
         ///\brief The rate at which the inclination between this zone and the 
         ///orbit is changing.
@@ -404,7 +403,7 @@ namespace Evolve {
                 ///torque and zone torque, so pass the corresponding derivative
                 ///instead of the actual torques, and ignore this and subsequent
                 ///arguments.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+                Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
                 
                 ///This argument is required if deriv is neither NO_DERIV nor
                 ///PERIAPSIS, and should contain the derivative of the orbital
@@ -421,7 +420,7 @@ namespace Evolve {
 
         ///\brief Should return true iff the given term is presently locked.
         virtual bool locked(int orbital_frequency_multiplier,
-                int spin_frequency_multiplier) const
+                            int spin_frequency_multiplier) const
         {return __lock(orbital_frequency_multiplier, 
                        spin_frequency_multiplier);}
 
@@ -473,7 +472,9 @@ namespace Evolve {
 
                 ///The return value should be either the phase lag itself
                 ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-                Dissipation::Derivative deriv,
+                ///Usually there will be no error due to truncating the
+                ///eccentricity expansion coefficient.
+                Dissipation::QuantityEntry entry,
 
                 ///If the lag of a locked term is calculated this should be set
                 ///to the lag assuming the spin frequency is just above the lock.
@@ -483,40 +484,45 @@ namespace Evolve {
         ///\brief Should return the corresponding component of the love
         ///coefficient (Lai 2012 Equation 24).
         virtual double love_coefficient(
-                ///The multiplier of the orbital frequency in the
-                ///expression for the forcing frequency.
-                int orbital_frequency_multiplier,
+            ///The multiplier of the orbital frequency in the
+            ///expression for the forcing frequency.
+            int orbital_frequency_multiplier,
 
-                ///The multiplier of the spin frequency in the
-                ///expression for the forcing frequency.
-                int spin_frequency_multiplier,
+            ///The multiplier of the spin frequency in the
+            ///expression for the forcing frequency.
+            int spin_frequency_multiplier,
 
-                ///The return value should be either the phase lag itself
-                ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-                Dissipation::Derivative deriv) const =0;
+            ///The return value should be either the phase lag itself
+            ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
+            ///Usually there will be no error due to truncating the
+            ///eccentricity expansion coefficient.
+            Dissipation::QuantityEntry entry
+        ) const =0;
 
         ///\brief Moment of inertia of the zone or its age derivative at the age
         ///of last configure() call.
         virtual double moment_of_inertia(
-                ///What to return:
-                /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
-                /// - 1 The rate of change of the moment of inertia in 
-                ///     \f$M_\odot R_\odot^2/Gyr\f$
-                /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
-                int deriv_order=0) const =0;
+            ///What to return:
+            /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
+            /// - 1 The rate of change of the moment of inertia in 
+            ///     \f$M_\odot R_\odot^2/Gyr\f$
+            /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
+            int deriv_order=0
+        ) const =0;
 
         ///\brief The moment of inertia of the zone or its age derivative at a
         ///specified age (no configure necessary).
         virtual double moment_of_inertia(
-                ///The age at which to evaluate the moment of inertia.
-                double age,
+            ///The age at which to evaluate the moment of inertia.
+            double age,
 
-                ///What to return:
-                /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
-                /// - 1 The rate of change of the moment of inertia in 
-                ///     \f$M_\odot R_\odot^2/Gyr\f$
-                /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
-                int deriv_order=0) const =0;
+            ///What to return:
+            /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
+            /// - 1 The rate of change of the moment of inertia in 
+            ///     \f$M_\odot R_\odot^2/Gyr\f$
+            /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
+            int deriv_order=0
+        ) const =0;
 
         ///\brief The spin frequency of the given zone.
         double spin_frequency() const {return __spin_frequency;}
@@ -533,34 +539,42 @@ namespace Evolve {
             bool above,
 
             ///What to return
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1 < static_cast<int>(__power.size() - 2));
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
 
-            return __power[2 * deriv + (above? 1 : 0)];
+            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * entry + 1 < static_cast<int>(__power.size() - 2));
+
+            return __power[2 * entry + (above? 1 : 0)];
         }
 
-        ///\brief Same as tidal_power(bool, Dissipation::Derivative), but using
-        ///the predefined mix of below/above contributions.
+        ///\brief Same as tidal_power(bool, Dissipation::QuantityEntry), but
+        ///using the predefined mix of below/above contributions.
         double tidal_power(
             ///The fraction of the timestep to assume to have spin above the
             ///lock.
             double above_fraction,
 
-            ///The derivative required (ignores the derivative of
-            ///above_fraction).
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            ///What to return
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1 < static_cast<int>(__power.size() - 2));
 
-            return above_fraction * __power[2 * deriv + 1]
-                   +
-                   (1.0 - above_fraction) * __power[2 * deriv];
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
+
+            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
+            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * entry + 1 < static_cast<int>(__power.size() - 2));
+
+            return (
+                above_fraction * __power[2 * entry + 1]
+                +
+                (1.0 - above_fraction) * __power[2 * entry]
+            );
         }
 
         ///\brief The dimensionless tidal torque along x.
@@ -568,68 +582,91 @@ namespace Evolve {
         ///See tidal_power() for a description of the arguments.
         double tidal_torque_x(
             bool above,
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1 < static_cast<int>(__torque_x.size()));
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
 
-            return __torque_x[2 * deriv + (above? 1 : 0)];
+            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * entry + 1 < static_cast<int>(__torque_x.size()));
+
+            return __torque_x[2 * entry + (above ? 1 : 0)];
         }
 
-        ///\brief Same as tidal_torque_x(bool, Dissipation::Derivative) but
-        //below and above contributions mixed.
+        ///\brief Same as tidal_torque_x(bool, Dissipation::QuantityEntry) but
+        ///below and above contributions mixed.
         double tidal_torque_x(
-                ///The fraction of the timestep to assume to have spin above the
-                ///lock.
-                double above_fraction,
+            ///The fraction of the timestep to assume to have spin above the
+            ///lock.
+            double above_fraction,
 
-                ///The derivative required (ignores the derivative of
-                ///above_fraction).
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
+            ///The entry required (ignores the derivative of
+            ///above_fraction if derivative is required).
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
+        ) const
         {
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
+
             assert(
                 !locked() || (above_fraction >= 0 && above_fraction <= 1)
             );
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1<static_cast<int>(__torque_x.size()));
+            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(
+                2 * entry + 1
+                <
+                static_cast<int>(__torque_x.size())
+            );
 
-            return above_fraction * __torque_x[2 * deriv + 1]
-                   +
-                   (1.0 - above_fraction) * __torque_x[2 * deriv];
+            return (above_fraction * __torque_x[2 * entry + 1]
+                    +
+                    (1.0 - above_fraction) * __torque_x[2 * entry]);
         }
 
         ///\brief The dimensionless torque along y.
         ///
         ///See tidal_power() for a description of the arguments.
-        double tidal_torque_y(bool above,
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV) const
-        {
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1<static_cast<int>(__torque_y.size()));
-
-            return __torque_y[2 * deriv + (above? 1 : 0)];
-        }
-
-        ///\brief Same as tidal_torque_y(bool, Dissipation::Derivative) but
-        //below and above contributions mixed.
         double tidal_torque_y(
-                ///The fraction of the timestep to assume to have spin above the
-                ///lock.
-                double above_fraction,
-
-                ///The derivative required (ignores the derivative of
-                ///above_fraction).
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            bool above,
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1 < static_cast<int>(__torque_y.size()));
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
 
-            return above_fraction * __torque_y[2 * deriv + 1]
-                   +
-                   (1.0 - above_fraction) * __torque_y[2 * deriv];
+            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(
+                2 * entry + 1
+                <
+                static_cast<int>(__torque_y.size())
+            );
+
+            return __torque_y[2 * entry + (above? 1 : 0)];
+        }
+
+        ///\brief Same as tidal_torque_y(bool, Dissipation::QuantityEntry) but
+        ///below and above contributions mixed.
+        double tidal_torque_y(
+            ///The fraction of the timestep to assume to have spin above the
+            ///lock.
+            double above_fraction,
+
+            ///The torque entry required (ignores the derivative of
+            ///above_fraction for derivatives).
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
+        ) const
+        {
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
+
+            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
+            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * entry + 1 < static_cast<int>(__torque_y.size()));
+
+            return (above_fraction * __torque_y[2 * entry + 1]
+                    +
+                    (1.0 - above_fraction) * __torque_y[2 * entry]);
         }
 
         ///\brief The dimensionless tidal torque along z.
@@ -637,34 +674,40 @@ namespace Evolve {
         ///See tidal_power() for a description of the arguments.
         double tidal_torque_z(
             bool above,
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1 < static_cast<int>(__torque_z.size()));
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
 
-            return __torque_z[2 * deriv + (above? 1 : 0)];
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * entry + 1 < static_cast<int>(__torque_z.size()));
+
+            return __torque_z[2 * entry + (above? 1 : 0)];
         }
 
-        ///\brief Same as tidal_torque_z(bool, Dissipation::Derivative) but
-        //below and above contributions mixed.
+        ///\brief Same as tidal_torque_z(bool, Dissipation::QuantityEntry) but
+        ///below and above contributions mixed.
         double tidal_torque_z(
             ///The fraction of the timestep to assume to have spin above the
             ///lock.
             double above_fraction,
 
-            ///The derivative required (ignores the derivative of
-            ///above_fraction).
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            ///The entry required (ignores the derivative of
+            ///above_fraction for derivatives).
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
-            assert(deriv < Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * deriv + 1 < static_cast<int>(__torque_z.size()));
+            if(entry == Dissipation::EXPANSION_ERROR)
+                entry = Dissipation::END_DIMENSIONLESS_DERIV;
 
-            return above_fraction * __torque_z[2 * deriv + 1]
-                   +
-                   (1.0 - above_fraction) * __torque_z[2 * deriv];
+            assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(2 * entry + 1 < static_cast<int>(__torque_z.size()));
+
+            return (above_fraction * __torque_z[2 * entry + 1]
+                    +
+                    (1.0 - above_fraction) * __torque_z[2 * entry]);
         }
 
         ///\brief Outer radius of the zone or its derivative (per last

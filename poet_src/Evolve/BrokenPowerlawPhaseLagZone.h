@@ -193,7 +193,7 @@ namespace Evolve {
 
             ///The return value should be either the phase lag itself
             ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///If the lag of a locked term is calculated this should be set
             ///to the lag assuming the spin frequency is just above the lock.
@@ -214,7 +214,7 @@ namespace Evolve {
 
             ///The return value should be either the phase lag itself
             ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-            Dissipation::Derivative
+            Dissipation::QuantityEntry
         ) const
         {return 0;}
 

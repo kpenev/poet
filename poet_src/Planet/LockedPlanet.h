@@ -37,7 +37,7 @@ namespace Planet {
         ///Should never be called.
         Eigen::Vector3d angular_momentum_coupling(
             unsigned,
-            Evolve::Dissipation::Derivative = Evolve::Dissipation::NO_DERIV,
+            Evolve::Dissipation::QuantityEntry=Evolve::Dissipation::NO_DERIV,
             bool = false
         ) const
         {
@@ -47,7 +47,7 @@ namespace Planet {
 
         ///Always zero.
         double angular_momentum_loss(
-            Evolve::Dissipation::Derivative =Evolve::Dissipation::NO_DERIV
+            Evolve::Dissipation::QuantityEntry=Evolve::Dissipation::NO_DERIV
         ) const
         {return 0;}
 

@@ -27,7 +27,7 @@ namespace Star {
                ///The timescale for the differential rotation torque
                __timescale;
 
-        ///\brief The coupling torque and its nonzero derivatives.
+        ///\brief The coupling torque and its nonzero entries.
         ///
         ///The outer index is the index of the outer zone being torqued.
         ///The meaning of the inner index is defined by torque_entry.
@@ -37,16 +37,16 @@ namespace Star {
         void reset_torque();
 
         ///\brief Returns the entry in __torque that corresponds to the given
-        ///derivative.
+        ///quantity entry.
         ///
         ///The quantity to differentiate against must have an entry in __torque
-        ///(i.e. the derivative must not be zero in general).
+        ///(i.e. the entry must not be zero in general).
         ///
         ///See DissipatingBody::angular_momentum_coupling() for a description of
         ///the arguments.
         Eigen::Vector3d &torque_entry(
             unsigned top_zone_index, 
-            Evolve::Dissipation::Derivative deriv,
+            Evolve::Dissipation::QuantityEntry entry,
             bool wih_respect_to_top
         ) const;
     public:
@@ -77,7 +77,8 @@ namespace Star {
         ///See DissipatingBody::angular_momentum_coupling().
         Eigen::Vector3d angular_momentum_coupling(
             unsigned top_zone_index,
-            Evolve::Dissipation::Derivative deriv =Evolve::Dissipation::NO_DERIV,
+            Evolve::Dissipation::QuantityEntry
+                entry=Evolve::Dissipation::NO_DERIV,
             bool with_respect_to_top=false
         ) const;
     };//End ExponentialDecayDiffRotBody class.

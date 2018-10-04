@@ -12,7 +12,7 @@
 namespace Star {
 
     double SaturatingSkumanichWindBody::angular_momentum_loss(
-            Evolve::Dissipation::Derivative deriv
+            Evolve::Dissipation::QuantityEntry entry
     ) const
     {
         double result = (__wind_strength*std::sqrt(radius() / mass())
@@ -21,7 +21,7 @@ namespace Star {
                           ? spin_frequency()*std::pow(__saturation_freq, 2)
                           : std::pow(spin_frequency(), 3)));
         double freq_power = (__saturated ? 1.0 : 3.0);
-        switch(deriv) {
+        switch(entry) {
             case Evolve::Dissipation::NO_DERIV :
                 return result;
             case Evolve::Dissipation::SPIN_FREQUENCY :

@@ -46,12 +46,12 @@ namespace Evolve {
         double modified_phase_lag(int,
                                   int spin_frequency_multiplier,
                                   double forcing_frequency,
-                                  Dissipation::Derivative deriv,
+                                  Dissipation::QuantityEntry entry,
                                   double &above_lock_value) const
         {
             double result;
 
-            if(deriv != Dissipation::NO_DERIV)
+            if(entry != Dissipation::NO_DERIV)
                 result = 0.0;
             else
                 result = __phase_lag;

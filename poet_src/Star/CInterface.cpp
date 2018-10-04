@@ -122,7 +122,7 @@ double modified_phase_lag(const EvolvingStar *star,
                           int orbital_frequency_multiplier,
                           int spin_frequency_multiplier,
                           double forcing_frequency,
-                          int deriv,
+                          int entry,
                           double *above_lock_value)
 {
     return reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
@@ -131,7 +131,7 @@ double modified_phase_lag(const EvolvingStar *star,
         orbital_frequency_multiplier,
         spin_frequency_multiplier,
         forcing_frequency,
-        static_cast<Evolve::Dissipation::Derivative>(deriv),
+        static_cast<Evolve::Dissipation::QuantityEntry>(entry),
         *above_lock_value
     );
 }

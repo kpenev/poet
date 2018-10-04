@@ -75,28 +75,29 @@ namespace Evolve {
             __tidal_torques_below;
 
         ///\brief The quantities w.r.t. which derivatives of the orbit energy
-        ///gain and torque are pre-calculated.
-        std::vector<Dissipation::Derivative> __orbit_deriv;
+        ///gain and torque are pre-calculated or error, if the value is
+        ///__expansion_error_id.
+        std::vector<Dissipation::QuantityEntry> __orbit_entries;
 
         std::valarray<double>
-            ///\brief Total tidal power (and derivatives) gained by the orbit
-            ///from this body.
+            ///\brief Total tidal power (and derivatives and error) gained by
+            ///the orbit from this body.
             ///
             ///The derivatives are only w.r.t. the non-zone specific
-            ///quantities listed in __orbit_deriv.
+            ///quantities listed in __orbit_entries.
             __orbit_energy_gain,
             
             ///\brief Corrections to __orbit_energy_gain_below
             ///(undifferentiated) if single zones switch to above.
             __orbit_energy_gain_correction;
 
-        ///\brief Torque on the orbit (and its derivatives) due to tides on this
-        ///body.
+        ///\brief Torque on the orbit (and its derivatives and error) due to
+        ///tides on this body.
         ///
         ///In the coordinate system of the topmost zone.
         ///
         ///The derivatives are only w.r.t. the non-zone specific quantities
-        ///listed in __orbit_deriv.
+        ///listed in __orbit_entries.
         std::vector<Eigen::Vector3d> __orbit_torque,
             
             ///\brief Corrections to __orbit_torque_below (undifferentiated)
@@ -147,29 +148,30 @@ namespace Evolve {
         ///The argument of periapsis and the inclination must be defined for both
         ///zones involved.
         void angular_momentum_transfer(
-                ///The outer zone.
-                const DissipatingZone &outer_zone,
+            ///The outer zone.
+            const DissipatingZone &outer_zone,
 
-                ///The inner zone.
-                const DissipatingZone &inner_zone,
+            ///The inner zone.
+            const DissipatingZone &inner_zone,
 
-                ///The angular momentum change for the outer zone in the outer
-                ///zone's coordinate system.
-                Eigen::Vector3d &outer_angmom_gain,
+            ///The angular momentum change for the outer zone in the outer
+            ///zone's coordinate system.
+            Eigen::Vector3d &outer_angmom_gain,
 
-                ///The angular momentum change for the inner zone in the inner
-                ///zone's coordinate system.
-                Eigen::Vector3d &inner_angmom_gain,
+            ///The angular momentum change for the inner zone in the inner
+            ///zone's coordinate system.
+            Eigen::Vector3d &inner_angmom_gain,
 
-                ///Derivatives with respect to inclination and periapsis can be
-                ///computed, in addition to the actual transfer. It is an error
-                ///to request another derivative.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///Derivatives with respect to inclination and periapsis can be
+            ///computed, in addition to the actual transfer. It is an error
+            ///to request another derivative.
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
-                ///If deriv is not NO_DERIV, derivatives can be computed with 
-                ///respect to quantities of the outer zone (if this argument is 
-                ///true) or the inner zone (if false).
-                bool with_respect_to_outer=false) const;
+            ///If deriv is not NO_DERIV, derivatives can be computed with 
+            ///respect to quantities of the outer zone (if this argument is 
+            ///true) or the inner zone (if false).
+            bool with_respect_to_outer=false
+        ) const;
 
         ///\brief Rate of angular momentum transfer (or its derivatives) to a
         ///zone due to its top boundary moving.
@@ -179,17 +181,18 @@ namespace Evolve {
         ///The set_orbit() method must already have been called and all zones
         ///must have their inclinations and arguments of periapsis set.
         Eigen::Vector3d angular_momentum_transfer_from_top(
-                ///The index of the zone to calculate angular momentum gain for.
-                ///Must not be zero.
-                unsigned zone_index,
+            ///The index of the zone to calculate angular momentum gain for.
+            ///Must not be zero.
+            unsigned zone_index,
 
-                ///Whether to return the quantity or one of its derivatives.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///Whether to return the quantity or one of its derivatives.
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
-                ///If deriv is a zone specific quantity this argument determines
-                ///if derivative with respect to the quantity of the zone above
-                ///(true) or this zone (false) should be calculated.
-                bool with_respect_to_outer=false) const;
+            ///If deriv is a zone specific quantity this argument determines
+            ///if derivative with respect to the quantity of the zone above
+            ///(true) or this zone (false) should be calculated.
+            bool with_respect_to_outer=false
+        ) const;
 
         ///\brief Rate of angular momentum transfer (or its derivatives) to a
         ///zone due to its bottom boundary moving.
@@ -198,17 +201,18 @@ namespace Evolve {
         ///
         ///The configure() method must already have been called.
         Eigen::Vector3d angular_momentum_transfer_from_bottom(
-                ///The index of the zone to calculate angular momentum gain for.
-                ///Must not be less than number_zones()-1.
-                unsigned zone_index,
+            ///The index of the zone to calculate angular momentum gain for.
+            ///Must not be less than number_zones()-1.
+            unsigned zone_index,
 
-                ///Whether to return the quantity or one of its derivatives.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///Whether to return the quantity or one of its derivatives.
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
-                ///If deriv is a zone specific quantity this argument determines
-                ///if derivative with respect to the quantity of the zone below
-                ///(true) or this zone (false) should be calculated.
-                bool with_respect_to_inner=false) const;
+            ///If deriv is a zone specific quantity this argument determines
+            ///if derivative with respect to the quantity of the zone below
+            ///(true) or this zone (false) should be calculated.
+            bool with_respect_to_inner=false
+        ) const;
 
         ///\brief Rate of angular momentum transfer (or its derivatives) to a
         ///zone due to moving zone boundaries.
@@ -217,39 +221,42 @@ namespace Evolve {
         ///
         ///The configure() method must already have been called.
         Eigen::Vector3d angular_momentum_transfer_to_zone(
-                ///The index of the zone to calculate angular momentum gain for.
-                unsigned zone_index,
+            ///The index of the zone to calculate angular momentum gain for.
+            unsigned zone_index,
 
-                ///Whether to return the quantity or one of its derivatives.
-                Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///Whether to return the quantity or one of its derivatives.
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
-                ///See matching argument of external_torque() for description.
-                int deriv_zone=0) const;
+            ///See matching argument of external_torque() for description.
+            int deriv_zone=0
+        ) const;
 
         ///\brief Calculates the non-tidal torques on all zones.
         void calculate_nontidal_torques();
 
         ///\brief Corrects __orbit_energy_gain for zone locks.
         void correct_orbit_energy_gain(
-                ///The derivative w.r.t. age of the above lock fractions.
-                Eigen::VectorXd &above_lock_fractions_age_deriv,
+            ///The derivative w.r.t. age of the above lock fractions.
+            Eigen::VectorXd &above_lock_fractions_age_deriv,
 
-                ///The derivative w.r.t. semimajor axis of the above lock 
-                ///fractions.
-                Eigen::VectorXd &above_lock_fractions_semimajor_deriv,
+            ///The derivative w.r.t. semimajor axis of the above lock 
+            ///fractions.
+            Eigen::VectorXd &above_lock_fractions_semimajor_deriv,
 
-                ///The derivative w.r.t. eccentricity of the above lock
-                ///fractions.
-                Eigen::VectorXd &above_lock_fractions_eccentricity_deriv,
+            ///The derivative w.r.t. eccentricity of the above lock
+            ///fractions.
+            Eigen::VectorXd &above_lock_fractions_eccentricity_deriv,
 
-                ///The derivative w.r.t. the body radius of the above lock
-                ///fractions.
-                Eigen::VectorXd &above_lock_fractions_radius_deriv);
+            ///The derivative w.r.t. the body radius of the above lock
+            ///fractions.
+            Eigen::VectorXd &above_lock_fractions_radius_deriv
+        );
 
         ///\brief Corrects __orbit_torque for zone locks.
         void correct_orbit_torque(
-                ///The same as the argument of set_above_lock_fractions.
-                std::valarray<Eigen::VectorXd> &above_lock_fractions);
+            ///The same as the argument of set_above_lock_fractions.
+            std::valarray<Eigen::VectorXd> &above_lock_fractions
+        );
     public:
         ///Some initializations for new objects.
         DissipatingBody();
@@ -345,8 +352,8 @@ namespace Evolve {
             ///The index of the zone whose torque is needed.
             unsigned zone_index,
 
-            ///Whether to return the quantity or one of its derivatives.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            ///Which entry to return for the torque.
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
             ///Since external torques depend on neighboring zones, this
             ///parameter is used to distinguish those (it is ignored if :
@@ -376,13 +383,14 @@ namespace Evolve {
             bool above,
 
             ///Which derivative of the tidal torque is required.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
             assert(zone_index<number_zones());
 
-            return (above ? __tidal_torques_above : __tidal_torques_below)
-                [zone_index][deriv];
+            return (above
+                    ? __tidal_torques_above
+                    : __tidal_torques_below)[zone_index][entry];
         }
 
         ///\brief Tidal power dissipated in the given zone.
@@ -396,7 +404,7 @@ namespace Evolve {
             bool above,
 
             ///Which derivative of the tidal power is required.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const;
 
         ///\brief Corrects the tidal orbit energy gain and angular momentum gain
@@ -416,7 +424,7 @@ namespace Evolve {
         ///If it has, returns the actual rate.
         double tidal_orbit_energy_gain(
             ///W.r.t. that quantity is the required derivative. 
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 
             ///If deriv is a zone-specific quantity, this argument
             ///determines which zone to differentiate w.r.t.
@@ -424,8 +432,8 @@ namespace Evolve {
 
             ///The derivatives of all lock fractions w.r.t. to the quantity
             ///identified by the above arguments.
-            const Eigen::VectorXd &above_lock_fraction_deriv=
-            Eigen::VectorXd()
+            const Eigen::VectorXd &
+            above_lock_fraction_deriv=Eigen::VectorXd()
         ) const;
 
         ///\brief The torque on the orbit due to tidal dissipation in the body.
@@ -435,7 +443,7 @@ namespace Evolve {
         ///If it has, returns the actual rate.
         Eigen::Vector3d tidal_orbit_torque(
             ///The derivative of the angular momentum rate required.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
             ///If deriv is a zone-specific quantity, this argument
             ///determines which zone to differentiate w.r.t.
@@ -443,19 +451,19 @@ namespace Evolve {
 
             ///The derivatives of all lock fractions w.r.t. to the quantity
             ///identified by the above arguments.
-            const Eigen::VectorXd &above_lock_fraction_deriv=
-            Eigen::VectorXd()
+            const Eigen::VectorXd &
+            above_lock_fraction_deriv=Eigen::VectorXd()
         ) const;
 
-        ///\brief Same as tidal_orbit_torque(Dissipation::Derivative, unsigned,
-        ///const Eigen::VectorXd &) but allow specifying the zone whose
-        ///coordinate system to use.
+        ///\brief Same as tidal_orbit_torque(Dissipation::QuantityEntry,
+        ///unsigned, const Eigen::VectorXd &) but allow specifying the zone
+        ///whose coordinate system to use.
         Eigen::Vector3d tidal_orbit_torque(
             ///The zone whose coordinate system to express the result.
             const DissipatingZone &reference_zone,
 
             ///The derivative of the angular momentum rate required.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
             ///If deriv is a zone-specific quantity, this argument
             ///determines which zone to differentiate w.r.t.
@@ -497,7 +505,7 @@ namespace Evolve {
             unsigned top_zone_index,
 
             ///The derivative of the coupling torque required.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
             ///For derivatives with respect to zone specific quantities,
             ///this determines which zone's quantity to differentiate
@@ -512,7 +520,7 @@ namespace Evolve {
         ///set.
         virtual double angular_momentum_loss(
             ///The derivative of the angular momentum loss required.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV
+            Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV
         ) const =0;
 
         ///\brief The current radius or its derivative with age of the body.
