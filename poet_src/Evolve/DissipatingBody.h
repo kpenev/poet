@@ -85,11 +85,11 @@ namespace Evolve {
             ///
             ///The derivatives are only w.r.t. the non-zone specific
             ///quantities listed in __orbit_entries.
-            __orbit_energy_gain,
+            __orbit_power,
             
-            ///\brief Corrections to __orbit_energy_gain_below
+            ///\brief Corrections to __orbit_power_below
             ///(undifferentiated) if single zones switch to above.
-            __orbit_energy_gain_correction;
+            __orbit_power_correction;
 
         ///\brief Torque on the orbit (and its derivatives and error) due to
         ///tides on this body.
@@ -234,8 +234,8 @@ namespace Evolve {
         ///\brief Calculates the non-tidal torques on all zones.
         void calculate_nontidal_torques();
 
-        ///\brief Corrects __orbit_energy_gain for zone locks.
-        void correct_orbit_energy_gain(
+        ///\brief Corrects __orbit_power for zone locks.
+        void correct_orbit_power(
             ///The derivative w.r.t. age of the above lock fractions.
             Eigen::VectorXd &above_lock_fractions_age_deriv,
 
@@ -422,7 +422,7 @@ namespace Evolve {
         ///If set_above_lock_fractions() has not been called since cofigure(),
         ///returns the rate assuming all locked zones are fully below the lock.
         ///If it has, returns the actual rate.
-        double tidal_orbit_energy_gain(
+        double tidal_orbit_power(
             ///W.r.t. that quantity is the required derivative. 
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 

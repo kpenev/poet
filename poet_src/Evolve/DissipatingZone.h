@@ -386,36 +386,41 @@ namespace Evolve {
         ///configure() must already have been called, and inclination() and
         ///spin_frequency() must be current.
         double inclination_evolution(
-                ///The torque on the orbit or reference zone due all
-                ///zones (including this one) in this zone's coordinate system.
-                const Eigen::Vector3d &orbit_torque,
+            ///The torque on the orbit or reference zone due all
+            ///zones (including this one) in this zone's coordinate system.
+            const Eigen::Vector3d &orbit_torque,
 
-                ///All torques acting on this zone (i.e. tidal, angular
-                ///momentum loss due to wind for the surface zone and coupling to
-                ///neightboring zones due to differential rotation).
-                const Eigen::Vector3d &zone_torque,
-                
-                ///If not Dissipation::NO_DERIV, the derivative of the rate with
-                ///respect to the given quantity is returned. For zone-specific
-                ///quantities, derivative with respect to this zone's quantity is
-                ///computed. If derivatives with respect to other zone's
-                ///quantities are required, those only come in through the orbit
-                ///torque and zone torque, so pass the corresponding derivative
-                ///instead of the actual torques, and ignore this and subsequent
-                ///arguments.
-                Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
-                
-                ///This argument is required if deriv is neither NO_DERIV nor
-                ///PERIAPSIS, and should contain the derivative of the orbital
-                ///torque relative to the quantity identified by deriv.
-                const Eigen::Vector3d &orbit_torque_deriv=
-                    Eigen::Vector3d(),
+            ///All torques acting on this zone (i.e. tidal, angular
+            ///momentum loss due to wind for the surface zone and coupling to
+            ///neightboring zones due to differential rotation).
+            const Eigen::Vector3d &zone_torque,
 
-                ///This argument is required if dervi is neither NO_DERIV nor
-                ///PERIAPSIS, and shoul contain the derivative of the zone
-                ///torque relative to the quantity identified by deriv.
-                const Eigen::Vector3d &zone_torque_deriv=
-                    Eigen::Vector3d());
+            ///If:
+            ///  * Dissipation::NO_DERIV - the value of the inclination evolution
+            ///    is returned,
+            ///  * Dissipation::EXPANSION_ERROR - the orbit_torque and
+            ///    zone_torque arguments must be error estemates and the error
+            ///    estimate of the inclination evolution rate is returned.
+            ///  * all other values - the derivative of the rate with
+            ///    respect to the given quantity is returned. For zone-specific
+            ///    quantities, derivative with respect to this zone's quantity
+            ///    is computed. If derivatives with respect to other zone's
+            ///    quantities are required, those only come in through the orbit
+            ///    torque and zone torque, so pass the corresponding derivative
+            ///    instead of the actual torques, and ignore this and subsequent
+            ///    arguments.
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
+
+            ///This argument is required if deriv is neither NO_DERIV nor
+            ///PERIAPSIS, and should contain the derivative of the orbital
+            ///torque relative to the quantity identified by deriv.
+            const Eigen::Vector3d &orbit_torque_deriv=Eigen::Vector3d(),
+
+            ///This argument is required if dervi is neither NO_DERIV nor
+            ///PERIAPSIS, and shoul contain the derivative of the zone
+            ///torque relative to the quantity identified by deriv.
+            const Eigen::Vector3d &zone_torque_deriv=Eigen::Vector3d()
+        );
 
 
         ///\brief Should return true iff the given term is presently locked.

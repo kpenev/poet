@@ -29,7 +29,8 @@ namespace Evolve {
     }
 
     int BinarySystem::locked_surface_differential_equations(
-        double *evolution_rates
+        double *evolution_rates,
+        bool expansion_error
     ) const
     {
         for(
@@ -37,8 +38,11 @@ namespace Evolve {
             zone_index < __body1.number_zones();
             ++zone_index
         ) {
-            evolution_rates[zone_index - 1] = 
-                __body1.nontidal_torque(zone_index)[2];
+            evolution_rates[zone_index - 1] = (
+                expansion_error
+                ? 0.0
+                : __body1.nontidal_torque(zone_index)[2]
+            );
 
             assert(__body1.nontidal_torque(zone_index)[0] == 0);
             assert(__body1.nontidal_torque(zone_index)[1] == 0);
@@ -51,7 +55,7 @@ namespace Evolve {
                                                double *age_derivs) const
     {
         unsigned num_param = __body1.number_zones() - 1;
-        double dR_dt = __body1.radius(1), 
+        double dR_dt = __body1.radius(1),
                dIabove_dt = __body1.zone(0).moment_of_inertia(1),
                dI_dt = __body1.zone(1).moment_of_inertia(1);
         for(unsigned row = 0; row < num_param; ++row) {
@@ -143,13 +147,30 @@ namespace Evolve {
     }
 
     int BinarySystem::single_body_differential_equations(
-            double *evolution_rates) const
+        double *evolution_rates,
+        bool expansion_error
+    ) const
     {
         unsigned nzones = __body1.number_zones();
         double ref_angmom = __body1.zone(0).angular_momentum(),
                *inclination_evol = evolution_rates,
                *periapsis_evol = evolution_rates + (nzones - 1),
                *angmom_evol = periapsis_evol+(nzones - 1);
+
+        if(expansion_error) {
+            angmom_evol[0] = 0.0;
+            for(
+                unsigned zone_index = 0;
+                zone_index < nzones - 1;
+                ++zone_index
+            )
+                inclination_evol[zone_index] = (
+                    periapsis_evol[zone_index] = (
+                        angmom_evol[zone_index + 1] = 0.0
+                    ) 
+                );
+        }
+
         Eigen::Vector3d reference_torque;
         for(unsigned zone_index = 0; zone_index < nzones; ++zone_index) {
             Eigen::Vector3d torque = __body1.nontidal_torque(zone_index);
@@ -361,30 +382,30 @@ namespace Evolve {
     }
 
     double BinarySystem::semimajor_evolution(
-        double orbit_energy_gain,
-        double orbit_energy_gain_deriv
+        double orbit_power,
+        double orbit_power_deriv
     ) const
     {
-        if(std::isnan(orbit_energy_gain_deriv))
-            return (orbit_energy_gain == 0
+        if(std::isnan(orbit_power_deriv))
+            return (orbit_power == 0
                     ? 0
-                    : -__semimajor * orbit_energy_gain / __orbital_energy);
+                    : -__semimajor * orbit_power / __orbital_energy);
         else
-            if(orbit_energy_gain == 0 && orbit_energy_gain_deriv == 0)
+            if(orbit_power == 0 && orbit_power_deriv == 0)
                 return 0;
             return (
-                -(2.0 * orbit_energy_gain
+                -(2.0 * orbit_power
                   +
-                  __semimajor * orbit_energy_gain_deriv
+                  __semimajor * orbit_power_deriv
                 )
                 /
                 __orbital_energy
             );
     }
 
-    double BinarySystem::eccentricity_evolution(double orbit_energy_gain,
+    double BinarySystem::eccentricity_evolution(double orbit_power,
                                                 double orbit_angmom_gain,
-                                                double orbit_energy_gain_deriv,
+                                                double orbit_power_deriv,
                                                 double orbit_angmom_gain_deriv,
                                                 bool semimajor_deriv) const
     {
@@ -392,8 +413,8 @@ namespace Evolve {
         double e2 = std::pow(__eccentricity, 2),
                factor = (1.0 - e2) / (2.0 * __eccentricity);
                    
-        if(std::isnan(orbit_energy_gain_deriv))
-            return factor * (orbit_energy_gain / __orbital_energy
+        if(std::isnan(orbit_power_deriv))
+            return factor * (orbit_power / __orbital_energy
                              +
                              2.0 * orbit_angmom_gain / __orbital_angmom);
         else if(semimajor_deriv)
@@ -402,9 +423,9 @@ namespace Evolve {
                 * 
                 (	
                     (
-                        orbit_energy_gain_deriv
+                        orbit_power_deriv
                         +
-                        orbit_energy_gain / __semimajor
+                        orbit_power / __semimajor
                     )
                     /
                     __orbital_energy
@@ -422,7 +443,7 @@ namespace Evolve {
             factor
             *
             (
-                orbit_energy_gain_deriv / __orbital_energy
+                orbit_power_deriv / __orbital_energy
                 +
                 2.0 * orbit_angmom_gain_deriv / __orbital_angmom
             )
@@ -430,10 +451,26 @@ namespace Evolve {
             2.0 * orbit_angmom_gain / __orbital_angmom
             -
             (1.0 + e2) / e2 * (
-                orbit_energy_gain / __orbital_energy
+                orbit_power / __orbital_energy
                 +
                 2.0 * orbit_angmom_gain / __orbital_angmom
             )
+        );
+    }
+
+    double BinarySystem::eccentricity_evolution_expansion_error() const
+    {
+        if(__eccentricity == 0) return 0;
+        double factor = ((1.0 - std::pow(__eccentricity, 2))
+                         /
+                         (2.0 * __eccentricity));
+
+        return factor * (
+            std::abs(__orbit_power_expansion_error / __orbital_energy)
+            +
+            std::abs(2.0 * __orbit_angmom_gain_expansion_error
+                     /
+                     __orbital_angmom)
         );
     }
 
@@ -472,9 +509,9 @@ namespace Evolve {
                     rhs.array() += (1.5
                                     *
                                     (
-                                        __body1.tidal_orbit_energy_gain()
+                                        __body1.tidal_orbit_power()
                                         +
-                                        __body2.tidal_orbit_energy_gain()
+                                        __body2.tidal_orbit_power()
                                     )
                                     /
                                     __orbital_energy
@@ -584,9 +621,9 @@ namespace Evolve {
         rhs.setConstant(1.5
                         *
                         (
-                            __body1.tidal_orbit_energy_gain(entry)
+                            __body1.tidal_orbit_power(entry)
                             +
-                            __body2.tidal_orbit_energy_gain(entry)
+                            __body2.tidal_orbit_power(entry)
                         )
                         /
                         __orbital_energy);
@@ -785,113 +822,160 @@ namespace Evolve {
         fill_above_lock_fractions_deriv();
     }
 
-    void BinarySystem::fill_binary_evolution_rates(
-            const Eigen::Vector3d &global_orbit_torque,
-            double *evolution_rates
+    void BinarySystem::fill_orbit_torque_and_power()
+    {
+        __orbit_torque = (
+            __body1.tidal_orbit_torque()
+            +
+            zone_to_zone_transform(__body2.zone(0),
+                                   __body1.zone(0),
+                                   __body2.tidal_orbit_torque())
+        );
+
+        __orbit_torque_expansion_error.setConstant(
+            __body1.tidal_orbit_torque(Dissipation::EXPANSION_ERROR).norm()
+            +
+            __body2.tidal_orbit_torque(Dissipation::EXPANSION_ERROR).norm()
+        );
+
+        __orbit_power = (__body1.tidal_orbit_power()
+                         +
+                         __body2.tidal_orbit_power());
+
+        __orbit_power_expansion_error = (
+            __body1.tidal_orbit_power(Dissipation::EXPANSION_ERROR)
+            +
+            __body2.tidal_orbit_power(Dissipation::EXPANSION_ERROR)
+        );
+
+        __orbit_angmom_gain = (__orbit_torque[0]
+                               *
+                               std::sin(__body1.zone(0).inclination())
+                               +
+                               __orbit_torque[2]
+                               *
+                               std::cos(__body1.zone(0).inclination()));
+
+
+        __orbit_angmom_gain_expansion_error = (
+            std::abs(__orbit_torque_expansion_error[0]
+                     *
+                     std::sin(__body1.zone(0).inclination()))
+            +
+            std::abs(__orbit_torque_expansion_error[2]
+                     *
+                     std::cos(__body1.zone(0).inclination()))
+        );
+    }
+
+    int BinarySystem::binary_differential_equations(
+        double *differential_equations,
+        bool expansion_error
     ) const
     {
         DissipatingZone &reference_zone = __body1.zone(0);
         unsigned num_body1_zones = __body1.number_zones(),
                  num_total_zones = num_body1_zones + __body2.number_zones();
-        double *inclination_rates = evolution_rates + 2,
+        double *inclination_rates = differential_equations + 2,
                *periapsis_rates = inclination_rates + num_total_zones,
-               *angmom_rates = periapsis_rates+num_total_zones - 1;
+               *angmom_rates = periapsis_rates + num_total_zones - 1;
         unsigned angmom_skipped = 0;
         double reference_periapsis_rate = Core::NaN;
-        for(
-            unsigned zone_index = 0;
-            zone_index < num_total_zones;
-            ++zone_index
-        ) {
-            DissipatingBody &body = (zone_index<num_body1_zones
+        for(unsigned zone_ind = 0; zone_ind < num_total_zones; ++zone_ind) {
+            DissipatingBody &body = (zone_ind < num_body1_zones
                                      ? __body1
                                      : __body2);
-            unsigned body_zone_index = zone_index;
-            if(zone_index>=num_body1_zones) body_zone_index -= num_body1_zones;
-            DissipatingZone &zone = body.zone(body_zone_index);
-            Eigen::Vector3d 
-                zone_orbit_torque = (
-                    zone_index
-                    ? zone_to_zone_transform(reference_zone,
-                                             zone,
-                                             global_orbit_torque)
-                    : global_orbit_torque
-                ),
-                total_zone_torque = body.nontidal_torque(body_zone_index);
-            if(zone.locked()) {
-                double above_frac = __above_lock_fractions[Dissipation::NO_DERIV]
-                    [angmom_skipped];
-                total_zone_torque += (above_frac
-                                      *
-                                      body.tidal_torque(body_zone_index, true)
-                                      +
-                                      (1.0 - above_frac)
-                                      *
-                                      body.tidal_torque(body_zone_index, false));
-                ++angmom_skipped;
-            } else total_zone_torque += body.tidal_torque(body_zone_index,
-                                                          false);
-            inclination_rates[zone_index] = zone.inclination_evolution(
-                zone_orbit_torque,
-                total_zone_torque
+            unsigned body_zone_ind = zone_ind;
+            if(zone_ind >= num_body1_zones)
+                body_zone_ind -= num_body1_zones;
+            DissipatingZone &zone = body.zone(body_zone_ind);
+            Eigen::Vector3d zone_orbit_torque,
+                            total_zone_torque;
+            if(expansion_error)
+                total_zone_torque.setZero();
+            else 
+                total_zone_torque = body.nontidal_torque(body_zone_ind);
+
+            if(expansion_error)
+                zone_orbit_torque = __orbit_torque_expansion_error;
+            else
+                zone_orbit_torque = (zone_ind
+                                     ? zone_to_zone_transform(reference_zone,
+                                                              zone,
+                                                              __orbit_torque)
+                                     : __orbit_torque);
+
+            Dissipation::QuantityEntry entry = (
+                expansion_error
+                ? Dissipation::EXPANSION_ERROR
+                : Dissipation::NO_DERIV
             );
-            assert(!std::isnan(inclination_rates[zone_index]));
-            if(zone_index) {
-                periapsis_rates[zone_index - 1] = zone.periapsis_evolution(
+            if(zone.locked()) {
+                double above_frac = (__above_lock_fractions
+                                     [Dissipation::NO_DERIV]
+                                     [angmom_skipped]);
+                total_zone_torque += (
+                    above_frac
+                    *
+                    body.tidal_torque(body_zone_ind, true, entry)
+                    +
+                    (1.0 - above_frac)
+                    *
+                    body.tidal_torque(body_zone_ind, false, entry)
+                );
+                ++angmom_skipped;
+            } else total_zone_torque += body.tidal_torque(body_zone_ind,
+                                                          false,
+                                                          entry);
+            inclination_rates[zone_ind] = zone.inclination_evolution(
+                zone_orbit_torque,
+                total_zone_torque,
+                entry
+            );
+            assert(!std::isnan(inclination_rates[zone_ind]));
+            if(zone_ind) {
+                periapsis_rates[zone_ind - 1] = zone.periapsis_evolution(
                     zone_orbit_torque,
-                    total_zone_torque
+                    total_zone_torque,
+                    entry
                 ) - reference_periapsis_rate;
-                assert(!std::isnan(periapsis_rates[zone_index - 1]));
+                assert(!std::isnan(periapsis_rates[zone_ind - 1]));
             } else {
                 reference_periapsis_rate = zone.periapsis_evolution(
                     zone_orbit_torque,
-                    total_zone_torque
+                    total_zone_torque,
+                    entry
                 );
+                if(expansion_error)
+                    reference_periapsis_rate = -std::abs(
+                        reference_periapsis_rate
+                    );
                 assert(!std::isnan(reference_periapsis_rate));
             }
             if(!zone.locked()) {
-                angmom_rates[zone_index - angmom_skipped] =
-                    total_zone_torque[2];
-                assert(!std::isnan(angmom_rates[zone_index - angmom_skipped]));
+                angmom_rates[zone_ind - angmom_skipped] = total_zone_torque[2];
+                assert(!std::isnan(angmom_rates[zone_ind - angmom_skipped]));
             }
 #ifdef VERBOSE_DEBUG
-            std::cerr << "Zone " << zone_index << " torque: "
-                      << total_zone_torque
-                      << std::endl;
+            std::cerr << "Zone " << zone_ind
+                      << " torque: " << total_zone_torque << std::endl;
 #endif
             assert(!std::isnan(total_zone_torque.sum()));
 
         }
-        evolution_rates[0] = semimajor_evolution(__orbit_energy_gain);
-        if(!angmom_skipped) evolution_rates[0] *= 6.5 * std::pow(__semimajor,
-                                                                 5.5);
-        evolution_rates[1]=eccentricity_evolution(__orbit_energy_gain,
-                                                  __orbit_angmom_gain);
-    }
-
-    int BinarySystem::binary_differential_equations(
-            double *differential_equations)
-    {
-        Eigen::Vector3d global_orbit_torque = (
-            __body1.tidal_orbit_torque()
-            + 
-            zone_to_zone_transform(__body2.zone(0),
-                                   __body1.zone(0),
-                                   __body2.tidal_orbit_torque())
+        differential_equations[0] = (
+            expansion_error
+            ? semimajor_evolution_expansion_error()
+            : semimajor_evolution(__orbit_power)
         );
-        __orbit_energy_gain=(__body1.tidal_orbit_energy_gain()
-                             +
-                             __body2.tidal_orbit_energy_gain());
-        __orbit_angmom_gain=(global_orbit_torque[0]
-                             *
-                             std::sin(__body1.zone(0).inclination())
-                             +
-                             global_orbit_torque[2]
-                             *
-                             std::cos(__body1.zone(0).inclination()));
+        if(!angmom_skipped)
+            differential_equations[0] *= 6.5 * std::pow(__semimajor, 5.5);
 
-        fill_binary_evolution_rates(global_orbit_torque, 
-                                    differential_equations);
+        differential_equations[1] = (
+            expansion_error
+            ? eccentricity_evolution_expansion_error()
+            : eccentricity_evolution(__orbit_power, __orbit_angmom_gain)
+        );
 #ifdef VERBOSE_DEBUG
         std::cerr << "rates: ";
         for(
@@ -969,18 +1053,18 @@ namespace Evolve {
         }
     }
 
-    void BinarySystem::fill_orbit_energy_gain_deriv(
-            std::valarray<double> &orbit_energy_gain_deriv) const
+    void BinarySystem::fill_orbit_power_deriv(
+            std::valarray<double> &orbit_power_deriv) const
     {
-        orbit_energy_gain_deriv[0] = 0;
-        orbit_energy_gain_deriv[1] = 0;
-        orbit_energy_gain_deriv[orbit_energy_gain_deriv.size() - 1] = 0;
-        add_body_rate_deriv(__body1, &DissipatingBody::tidal_orbit_energy_gain,
-                            orbit_energy_gain_deriv,
+        orbit_power_deriv[0] = 0;
+        orbit_power_deriv[1] = 0;
+        orbit_power_deriv[orbit_power_deriv.size() - 1] = 0;
+        add_body_rate_deriv(__body1, &DissipatingBody::tidal_orbit_power,
+                            orbit_power_deriv,
                             0);
         add_body_rate_deriv(__body2,
-                            &DissipatingBody::tidal_orbit_energy_gain,
-                            orbit_energy_gain_deriv,
+                            &DissipatingBody::tidal_orbit_power,
+                            orbit_power_deriv,
                             __body1.number_zones());
     }
 
@@ -1028,46 +1112,46 @@ namespace Evolve {
     }
 
     void BinarySystem::semimajor_jacobian(
-            const std::valarray<double> &orbit_energy_gain_deriv,
+            const std::valarray<double> &orbit_power_deriv,
             bool a6p5,
             double *param_derivs,
             double &age_deriv
     ) const
     {
-        param_derivs[0] = semimajor_evolution(__orbit_energy_gain,
-                                              orbit_energy_gain_deriv[0]);
+        param_derivs[0] = semimajor_evolution(__orbit_power,
+                                              orbit_power_deriv[0]);
         if(a6p5) param_derivs[0] +=
-            5.5 * semimajor_evolution(__orbit_energy_gain) / __semimajor;
+            5.5 * semimajor_evolution(__orbit_power) / __semimajor;
         unsigned i = 1;
-        for(; i < orbit_energy_gain_deriv.size() - 1; ++i)
-            param_derivs[i] = semimajor_evolution(orbit_energy_gain_deriv[i]);
-        age_deriv = semimajor_evolution(orbit_energy_gain_deriv[i]);
+        for(; i < orbit_power_deriv.size() - 1; ++i)
+            param_derivs[i] = semimajor_evolution(orbit_power_deriv[i]);
+        age_deriv = semimajor_evolution(orbit_power_deriv[i]);
     }
 
     void BinarySystem::eccentricity_jacobian(
-        const std::valarray<double> &orbit_energy_gain_deriv,
+        const std::valarray<double> &orbit_power_deriv,
         const std::valarray<double> &orbit_angmom_gain_deriv,
         bool a6p5,
         double *param_derivs,
         double &age_deriv
     ) const
     {
-        param_derivs[0] = eccentricity_evolution(__orbit_energy_gain,
+        param_derivs[0] = eccentricity_evolution(__orbit_power,
                                                  __orbit_angmom_gain,
-                                                 orbit_energy_gain_deriv[0],
+                                                 orbit_power_deriv[0],
                                                  orbit_angmom_gain_deriv[0],
                                                  true);
         if(a6p5) param_derivs[0] /= 6.5 * std::pow(__semimajor, 5.5);
-        param_derivs[1] = eccentricity_evolution(__orbit_energy_gain,
+        param_derivs[1] = eccentricity_evolution(__orbit_power,
                                                  __orbit_angmom_gain,
-                                                 orbit_energy_gain_deriv[1],
+                                                 orbit_power_deriv[1],
                                                  orbit_angmom_gain_deriv[1],
                                                  false);
         unsigned i = 2;
-        for(; i < orbit_energy_gain_deriv.size() - 1; ++i)
-            param_derivs[i] = eccentricity_evolution(orbit_energy_gain_deriv[i],
+        for(; i < orbit_power_deriv.size() - 1; ++i)
+            param_derivs[i] = eccentricity_evolution(orbit_power_deriv[i],
                                                      orbit_angmom_gain_deriv[i]);
-        age_deriv=eccentricity_evolution(orbit_energy_gain_deriv[i],
+        age_deriv=eccentricity_evolution(orbit_power_deriv[i],
                                          orbit_angmom_gain_deriv[i]);
     }
 
@@ -1556,15 +1640,15 @@ namespace Evolve {
                              (1.0 - std::pow(__eccentricity, 2))
                              *
                              __orbital_angmom);
-        std::valarray<double> orbit_energy_gain_deriv(num_param + 1),
+        std::valarray<double> orbit_power_deriv(num_param + 1),
                               orbit_angmom_gain_deriv(num_param + 1);
-        fill_orbit_energy_gain_deriv(orbit_energy_gain_deriv);
+        fill_orbit_power_deriv(orbit_power_deriv);
         fill_orbit_angmom_gain_deriv(orbit_angmom_gain_deriv);
-        semimajor_jacobian(orbit_energy_gain_deriv,
+        semimajor_jacobian(orbit_power_deriv,
                            num_locked_zones == 0,
                            param_derivs,
                            age_derivs[0]);
-        eccentricity_jacobian(orbit_energy_gain_deriv,
+        eccentricity_jacobian(orbit_power_deriv,
                               orbit_angmom_gain_deriv,
                               num_locked_zones == 0,
                               param_derivs + num_param,
@@ -1833,6 +1917,8 @@ namespace Evolve {
             update_above_lock_fractions();
         } else
             find_locked_zones();
+
+        fill_orbit_torque_and_power();
 #ifndef NDEBUG
     //	if(evolution_mode == BINARY)
     //		assert(__semimajor > minimum_semimajor());
@@ -1938,21 +2024,25 @@ namespace Evolve {
     int BinarySystem::differential_equations(double age,
                                              const double *parameters,
                                              Core::EvolModeType evolution_mode,
-                                             double *differential_equations)
+                                             double *differential_equations,
+                                             bool expansion_error)
     {
         int status = configure(false, age, parameters, evolution_mode);
         if(status != GSL_SUCCESS) return status;
         switch(evolution_mode) {
-            case Core::LOCKED_SURFACE_SPIN : 
+            case Core::LOCKED_SURFACE_SPIN :
                 return locked_surface_differential_equations(
-                        differential_equations
+                    differential_equations,
+                    expansion_error
                 );
             case Core::SINGLE :
                 return single_body_differential_equations(
-                        differential_equations
+                    differential_equations,
+                    expansion_error
                 );
             case Core::BINARY :
-                return binary_differential_equations(differential_equations);
+                return binary_differential_equations(differential_equations,
+                                                     expansion_error);
             default :
                 throw Core::Error::BadFunctionArguments(
                     "Evolution mode other than LOCKED_SURFACE_SPIN, SINGLE or "

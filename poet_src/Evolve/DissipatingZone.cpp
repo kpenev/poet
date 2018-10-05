@@ -677,11 +677,11 @@ namespace Evolve {
                 sin_inc == 0
                 ? 0
                 : (
-                    std::abs(orbit_torque_deriv[1] * cos_inc
+                    std::abs(orbit_torque[1] * cos_inc
                              /
                              (__orbital_angmom * sin_inc))
                     +
-                    std::abs(zone_torque_deriv[1]
+                    std::abs(zone_torque[1]
                              /
                              (angular_momentum() * sin_inc))
                 )
@@ -780,9 +780,9 @@ namespace Evolve {
         } else if(entry == Dissipation::EXPANSION_ERROR) {
             return (
                 (
-                    std::abs(orbit_torque_deriv[0] * cos_inc)
+                    std::abs(orbit_torque[0] * cos_inc)
                     -
-                    std::abs(orbit_torque_deriv[2] * sin_inc)
+                    std::abs(orbit_torque[2] * sin_inc)
                 )
                 /
                 __orbital_angmom

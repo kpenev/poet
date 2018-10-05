@@ -95,7 +95,7 @@ namespace Evolve {
                 case Dissipation::SEMIMAJOR : semimajor_deriv_ind=i; break;
                 default:;
             }
-        __orbit_energy_gain = 0;
+        __orbit_power = 0;
         for(
             unsigned zone_index = 0;
             zone_index < number_zones();
@@ -112,14 +112,14 @@ namespace Evolve {
             ) {
                 Dissipation::QuantityEntry entry = __orbit_entries[deriv_ind];
                 if(entry == Dissipation::EXPANSION_ERROR) {
-                    __orbit_energy_gain[deriv_ind] += std::abs(
+                    __orbit_power[deriv_ind] += std::abs(
                         current_zone.tidal_power(false,
                                                  Dissipation::EXPANSION_ERROR)
                     );
                     __orbit_torque[entry].setConstant(tidal_torque[entry].norm());
                 }
                 else if(entry < Dissipation::END_DIMENSIONLESS_DERIV)
-                    __orbit_energy_gain[deriv_ind] -= (
+                    __orbit_power[deriv_ind] -= (
                         current_zone.tidal_power(false, entry)
                     );
                 if(zone_index) {
@@ -147,29 +147,29 @@ namespace Evolve {
                 );
             }
         }
-        __orbit_energy_gain *= __power_norm;
-        __orbit_energy_gain[orbital_freq_deriv_ind] += (
-            5.0 / orbital_frequency * __orbit_energy_gain[no_deriv_ind]
+        __orbit_power *= __power_norm;
+        __orbit_power[orbital_freq_deriv_ind] += (
+            5.0 / orbital_frequency * __orbit_power[no_deriv_ind]
         );
-        __orbit_energy_gain[radius_deriv_ind] += (
-            5.0 / radius() * __orbit_energy_gain[no_deriv_ind]
+        __orbit_power[radius_deriv_ind] += (
+            5.0 / radius() * __orbit_power[no_deriv_ind]
         );
-        __orbit_energy_gain[semimajor_deriv_ind] = (
+        __orbit_power[semimajor_deriv_ind] = (
             __dorbital_frequency_da
             *
-            __orbit_energy_gain[orbital_freq_deriv_ind]
+            __orbit_power[orbital_freq_deriv_ind]
         );
     }
 
     void DissipatingBody::calculate_orbit_rate_corrections()
     {
-        __orbit_energy_gain_correction.resize(__num_locked_zones);
+        __orbit_power_correction.resize(__num_locked_zones);
         __orbit_torque_correction.resize(__num_locked_zones);
         unsigned correction_index = 0;
         for(unsigned zone_index=0; zone_index<number_zones(); ++zone_index)
             if(zone(zone_index).locked()) {
                 DissipatingZone &this_zone=zone(zone_index);
-                __orbit_energy_gain_correction[correction_index] = (
+                __orbit_power_correction[correction_index] = (
                     tidal_power(zone_index, false)
                     -
                     tidal_power(zone_index, true)
@@ -421,7 +421,7 @@ namespace Evolve {
 
     DissipatingBody::DissipatingBody() : 
         __orbit_entries(7),
-        __orbit_energy_gain(__orbit_entries.size()),
+        __orbit_power(__orbit_entries.size()),
         __orbit_torque(Dissipation::NUM_ENTRIES),
         __orbit_torque_correction(0),
         __num_locked_zones(0)
@@ -435,7 +435,7 @@ namespace Evolve {
         __orbit_entries[6] = Dissipation::EXPANSION_ERROR;
     }
 
-    void DissipatingBody::correct_orbit_energy_gain(
+    void DissipatingBody::correct_orbit_power(
         Eigen::VectorXd &above_lock_fractions_age_deriv,
         Eigen::VectorXd &above_lock_fractions_semimajor_deriv,
         Eigen::VectorXd &above_lock_fractions_eccentricity_deriv,
@@ -452,7 +452,7 @@ namespace Evolve {
                 unsigned locked_zone_index = (
                     zone(zone_index).locked_zone_index()
                 );
-                __orbit_energy_gain_correction[correction_index] = (
+                __orbit_power_correction[correction_index] = (
                     tidal_power(zone_index, false)
                     -
                     tidal_power(zone_index, true)
@@ -465,7 +465,7 @@ namespace Evolve {
                     Dissipation::QuantityEntry entry = (
                         __orbit_entries[entry_ind]
                     );
-                    __orbit_energy_gain[entry_ind] += (
+                    __orbit_power[entry_ind] += (
                         __above_lock_fractions
                         [Dissipation::NO_DERIV]
                         [locked_zone_index]
@@ -508,10 +508,10 @@ namespace Evolve {
                         else
                             assert(false);
 
-                        __orbit_energy_gain[entry_ind] += (
+                        __orbit_power[entry_ind] += (
                             frac_deriv
                             *
-                            __orbit_energy_gain_correction[correction_index]
+                            __orbit_power_correction[correction_index]
                         );
                     }
                 }
@@ -833,7 +833,7 @@ namespace Evolve {
             __above_lock_fractions[i].resize(above_lock_fractions[i].size());
         }
         __above_lock_fractions = above_lock_fractions;
-        correct_orbit_energy_gain(
+        correct_orbit_power(
             above_lock_fractions[Dissipation::AGE],
             above_lock_fractions[Dissipation::SEMIMAJOR],
             above_lock_fractions[Dissipation::ECCENTRICITY],
@@ -842,7 +842,7 @@ namespace Evolve {
         correct_orbit_torque(above_lock_fractions);
     }
 
-    double DissipatingBody::tidal_orbit_energy_gain(
+    double DissipatingBody::tidal_orbit_power(
         Dissipation::QuantityEntry entry,
         unsigned deriv_zone_index,
         const Eigen::VectorXd &above_lock_fraction_deriv
@@ -862,7 +862,7 @@ namespace Evolve {
             } else {
                 for(unsigned i = 0; i < __orbit_entries.size(); ++i)
                     if(entry == __orbit_entries[i])
-                        return __orbit_energy_gain[i];
+                        return __orbit_power[i];
 
                 assert(false);
             }
@@ -892,7 +892,7 @@ namespace Evolve {
                     above_lock_fraction_deriv
                     [zone(zone_index).locked_zone_index()]
                     *
-                    __orbit_energy_gain_correction[correction_index]
+                    __orbit_power_correction[correction_index]
                 );
                 ++correction_index;
             }
