@@ -22,6 +22,7 @@
 #include "../../Evolve/DiskBinarySystem.h"
 #include "../shared/PolynomialEvolution.h"
 #include "../shared/Common.h"
+#include "../shared/MakeStar.h"
 #include <iostream>
 #include <vector>
 
@@ -41,15 +42,6 @@ namespace Evolve {
 
         ///The star used in the current test.
         Star::InterpolatedEvolutionStar *__star;
-
-        ///Make __star a non-dissipative star with the given properties.
-        void make_const_lag_star(
-            const StellarEvolution::Interpolator &evolution,
-            double wind_strength,
-            double wind_sat_freq,
-            double coupling_timescale,
-            double phase_lag = 0
-        );
 
         ///\brief Create __star with constant dissipation in a range, quickly
         ///decaying outside of that.
@@ -80,12 +72,6 @@ namespace Evolve {
             ///The phase lag of the only dissipative tidal component.
             double phase_lag = 1.0e-5
         );
-
-        StellarEvolution::MockStellarEvolution *make_no_evolution(
-            double Rstar = 1.0,
-            double Iconv = 1.0
-        );
-        StellarEvolution::MockStellarEvolution *make_linear_I_evolution();
 
         ///Add a planet to the given star and evolve, returning the solver.
         void evolve(

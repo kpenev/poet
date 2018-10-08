@@ -107,7 +107,7 @@ namespace Evolve {
             );
             for(
                 unsigned deriv_ind = 0;
-                deriv_ind < __orbit_entries.size() - 1;
+                deriv_ind < __orbit_entries.size();
                 ++deriv_ind
             ) {
                 Dissipation::QuantityEntry entry = __orbit_entries[deriv_ind];
@@ -537,12 +537,12 @@ namespace Evolve {
                 );
                 DissipatingZone &this_zone = zone(zone_index);
                 for(
-                    unsigned entry_ind = 0;
-                    entry_ind < __orbit_torque.size();
-                    ++entry_ind
+                    int entry_int = Dissipation::NO_DERIV;
+                    entry_int < Dissipation::NUM_ENTRIES;
+                    ++entry_int
                 ) {
                     Dissipation::QuantityEntry entry = (
-                        __orbit_entries[entry_ind]
+                        static_cast<Dissipation::QuantityEntry>(entry_int)
                     );
                     Eigen::Vector3d correction = (
                         above_lock_fractions
@@ -700,7 +700,7 @@ namespace Evolve {
                 std::valarray<Eigen::Vector3d> &tidal_torque =
                     (above ? __tidal_torques_above : __tidal_torques_below)
                     [zone_index];
-                tidal_torque.resize(Dissipation::NUM_DERIVATIVES + 1);
+                tidal_torque.resize(Dissipation::NUM_ENTRIES);
                 for(
                     int torque_ind = Dissipation::NO_DERIV;
                     torque_ind <= Dissipation::END_DIMENSIONLESS_DERIV;
@@ -711,15 +711,15 @@ namespace Evolve {
                         ? static_cast<Dissipation::QuantityEntry>(torque_ind)
                         : Dissipation::EXPANSION_ERROR
                     );
-                    tidal_torque[torque_ind][0] = current_zone.tidal_torque_x(
+                    tidal_torque[entry][0] = current_zone.tidal_torque_x(
                         above,
                         entry
                     );
-                    tidal_torque[torque_ind][1] = current_zone.tidal_torque_y(
+                    tidal_torque[entry][1] = current_zone.tidal_torque_y(
                         above,
                         entry
                     );
-                    tidal_torque[torque_ind][2] = current_zone.tidal_torque_z(
+                    tidal_torque[entry][2] = current_zone.tidal_torque_z(
                         above,
                         entry
                     );

@@ -11,6 +11,8 @@
 
 #include "SingleTidalTermBody.h"
 #include "../shared/Common.h"
+#include "../shared/PolynomialEvolution.h"
+#include "../shared/MakeStar.h"
 #include "../../Planet/LockedPlanet.h"
 #include "../../third_party_libs/alglib/alglib/src/interpolation.h"
 
@@ -94,6 +96,9 @@ namespace Evolve {
 
         ///\brief Test the a & e differential equations for aligned orbit.
         void test_aligned_equations();
+
+        ///\brief Test the error estimate of the differential equations.
+        void test_error_estimate();
     };// End test_DifferentialEquations class.
 
 } //End Evolve namespace.

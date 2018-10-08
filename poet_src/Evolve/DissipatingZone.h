@@ -551,7 +551,7 @@ namespace Evolve {
                 entry = Dissipation::END_DIMENSIONLESS_DERIV;
 
             assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * entry + 1 < static_cast<int>(__power.size() - 2));
+            assert(2 * entry + 1 < static_cast<int>(__power.size()));
 
             return __power[2 * entry + (above? 1 : 0)];
         }
@@ -573,7 +573,7 @@ namespace Evolve {
 
             assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
             assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
-            assert(2 * entry + 1 < static_cast<int>(__power.size() - 2));
+            assert(2 * entry + 1 < static_cast<int>(__power.size()));
 
             return (
                 above_fraction * __power[2 * entry + 1]
@@ -685,7 +685,7 @@ namespace Evolve {
             if(entry == Dissipation::EXPANSION_ERROR)
                 entry = Dissipation::END_DIMENSIONLESS_DERIV;
 
-            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2 * entry + 1 < static_cast<int>(__torque_z.size()));
 
             return __torque_z[2 * entry + (above? 1 : 0)];

@@ -1,3 +1,6 @@
+#ifndef __POLYNOMIAL_EVOLUTION_H
+#define __POLYNOMIAL_EVOLUTION_H
+
 #include "../Core/Functions.h"
 #include "../StellarEvolution/EvolvingStellarQuantity.h"
 #include "../StellarEvolution/Interpolator.h"
@@ -13,7 +16,6 @@
 #include <fstream>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-
 
 namespace StellarEvolution {
 
@@ -206,6 +208,11 @@ namespace StellarEvolution {
         ///The age in Gyr at which the core forms.
         double core_formation_age() const {return __core_formation_age;}
     };
+
+    MockStellarEvolution *make_no_evolution(double Rstar = 1.0,
+                                            double Iconv = 1.0);
+
+    MockStellarEvolution *make_linear_I_evolution();
 
 }//End StellarEvolution namespace.
 
@@ -712,3 +719,5 @@ double solve(double guess_x,
              double (*df) (double x, void *params),
              void (*fdf) (double x, void *params, double *f, double *df),
              void *params);
+
+#endif

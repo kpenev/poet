@@ -89,6 +89,68 @@ namespace StellarEvolution {
                      );
         };
     }
+
+    MockStellarEvolution *make_no_evolution(double Rstar, double Iconv)
+    {
+        return new StellarEvolution::MockStellarEvolution(
+            0.0,
+            std::valarray< std::valarray<double> >(//R
+                std::valarray<double>(Rstar, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Iconv
+                std::valarray<double>(Iconv, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Irad
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Rcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Mcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Lum
+                std::valarray<double>(1.0, 1),
+                1
+            )
+        );
+    }
+
+    MockStellarEvolution *make_linear_I_evolution()
+    {
+        return new StellarEvolution::MockStellarEvolution(
+            0.0,
+            std::valarray< std::valarray<double> >(//R
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Iconv
+                std::valarray<double>(1.0, 1),
+                2
+            ),
+            std::valarray< std::valarray<double> >(//Irad
+                std::valarray<double>(1.0, 1),
+                2
+            ),
+            std::valarray< std::valarray<double> >(//Rcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Mcore
+                std::valarray<double>(1.0, 1),
+                1
+            ),
+            std::valarray< std::valarray<double> >(//Lum
+                std::valarray<double>(1.0, 1),
+                1
+            )
+        );
+    }
     
 }//End StellarEvolution namespace.
 

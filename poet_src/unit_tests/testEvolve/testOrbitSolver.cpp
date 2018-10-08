@@ -73,31 +73,6 @@ namespace Evolve {
         MAX_AGE
     );
 
-    void test_OrbitSolver::make_const_lag_star(
-        const StellarEvolution::Interpolator &evolution,
-        double wind_strength,
-        double wind_sat_freq,
-        double coupling_timescale,
-        double phase_lag
-    )
-    {
-        __star = new Star::InterpolatedEvolutionStar(1.0,//mass
-                                                     0.0,//feh
-                                                     wind_strength,
-                                                     wind_sat_freq,
-                                                     coupling_timescale,
-                                                     evolution);
-        Evolve::BrokenPowerlawPhaseLagZone *zone = &(__star->envelope());
-        for(int i = 0; i < 2; ++i) {
-            zone->setup(std::vector<double>(),//Wtide breaks
-                        std::vector<double>(),//W* breaks
-                        std::vector<double>(1, 0.0),//Wtide pow.
-                        std::vector<double>(1, 0.0),//W* pow.
-                        (i==0 ? phase_lag : 0.0));
-            zone = &(__star->core());
-        }
-    }
-
     void test_OrbitSolver::make_single_component_star(
         const StellarEvolution::Interpolator &evolution,
         double wind_strength,
@@ -150,70 +125,6 @@ namespace Evolve {
                                  powerlaw_indices,
                                  std::vector<double>(1, 0.0),
                                  phase_lag);
-    }
-
-    StellarEvolution::MockStellarEvolution *
-        test_OrbitSolver::make_no_evolution(double Rstar, double Iconv)
-    {
-        return new StellarEvolution::MockStellarEvolution(
-            0.0,
-            std::valarray< std::valarray<double> >(//R
-                std::valarray<double>(Rstar, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Iconv
-                std::valarray<double>(Iconv, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Irad
-                std::valarray<double>(1.0, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Rcore
-                std::valarray<double>(1.0, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Mcore
-                std::valarray<double>(1.0, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Lum
-                std::valarray<double>(1.0, 1),
-                1
-            )
-        );
-    }
-
-    StellarEvolution::MockStellarEvolution *
-        test_OrbitSolver::make_linear_I_evolution()
-    {
-        return new StellarEvolution::MockStellarEvolution(
-            0.0,
-            std::valarray< std::valarray<double> >(//R
-                std::valarray<double>(1.0, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Iconv
-                std::valarray<double>(1.0, 1),
-                2
-            ),
-            std::valarray< std::valarray<double> >(//Irad
-                std::valarray<double>(1.0, 1),
-                2
-            ),
-            std::valarray< std::valarray<double> >(//Rcore
-                std::valarray<double>(1.0, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Mcore
-                std::valarray<double>(1.0, 1),
-                1
-            ),
-            std::valarray< std::valarray<double> >(//Lum
-                std::valarray<double>(1.0, 1),
-                1
-            )
-        );
     }
 
     void test_OrbitSolver::evolve(double wdisk,
@@ -548,11 +459,11 @@ namespace Evolve {
             single_mode.add_break(TSTART, Core::SINGLE);
             binary_mode.add_break(TSTART, Core::BINARY);
 
-            make_const_lag_star(stellar_evol,
-                                windK,
-                                wind_sat_freq,
-                                core_env_coupling_time,
-                                1.0);//phase lag
+            __star = make_const_lag_star(stellar_evol,
+                                         windK,
+                                         wind_sat_freq,
+                                         core_env_coupling_time,
+                                         1.0);//phase lag
             evolve(0.0,//Wdisk
                    0.0,//tdisk
                    1.0,//initial semimajor
@@ -587,11 +498,11 @@ namespace Evolve {
                     mplanet < 1.5 - phase_lag;
                     mplanet += 1.0
                 ) {
-                    make_const_lag_star(stellar_evol,
-                                        windK,
-                                        wind_sat_freq,
-                                        core_env_coupling_time,
-                                        phase_lag);
+                    __star = make_const_lag_star(stellar_evol,
+                                                 windK,
+                                                 wind_sat_freq,
+                                                 core_env_coupling_time,
+                                                 phase_lag);
                     evolve(0.0,//Wdisk
                            0.0,//tdisk
                            1.0,//initial semimajor
@@ -641,11 +552,11 @@ namespace Evolve {
     {
         try {
             StellarEvolution::MockStellarEvolution *no_evol =
-                make_no_evolution();
-            make_const_lag_star(*no_evol,
-                                1.0,
-                                1.0,
-                                1.0);
+                StellarEvolution::make_no_evolution();
+            __star = make_const_lag_star(*no_evol,
+                                         1.0,
+                                         1.0,
+                                         1.0);
 
             ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
             expected_evol_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
@@ -706,9 +617,9 @@ namespace Evolve {
     {
         try {
             StellarEvolution::MockStellarEvolution *evol1 =
-                make_linear_I_evolution();
+                StellarEvolution::make_linear_I_evolution();
 
-            make_const_lag_star(*evol1, 1.0, 1.0, 1.0);
+            __star = make_const_lag_star(*evol1, 1.0, 1.0, 1.0);
 
             ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
             expected_evol_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
@@ -786,7 +697,7 @@ namespace Evolve {
                 )
             );
 
-            make_const_lag_star(evol2, 1.0, 1.0, 1.0);
+            __star = make_const_lag_star(evol2, 1.0, 1.0, 1.0);
 
             std::valarray<double> Lc_coef(1.0, 2);
             Lc_coef[1]=-1.0/6.0;
@@ -840,7 +751,7 @@ namespace Evolve {
             const double rt2 = std::sqrt(2.0);
 
             StellarEvolution::MockStellarEvolution 
-                *stellar_evol = make_no_evolution();
+                *stellar_evol = StellarEvolution::make_no_evolution();
             double initial_Lstar[] = {0.0, 0.0};
 
             std::vector<const Core::OneArgumentDiffFunction *>
@@ -860,7 +771,7 @@ namespace Evolve {
                                     unsat_wind_mode);
 
             delete stellar_evol;
-            stellar_evol = make_linear_I_evolution();
+            stellar_evol = StellarEvolution::make_linear_I_evolution();
             
             initial_Lstar[0] = 1.0;
             expected_real_quantities[CONV_ANGMOM] = &one_func;
@@ -958,7 +869,7 @@ namespace Evolve {
             expected_real_quantities[RAD_ANGMOM] = new FuncPlusFunc(&Lr1,
                                                                     &Lr2);
             delete stellar_evol;
-            stellar_evol = make_no_evolution();
+            stellar_evol = StellarEvolution::make_no_evolution();
             test_no_planet_scenario(*stellar_evol,
                                     initial_Lstar,
                                     100.0,//Wind K
@@ -990,7 +901,7 @@ namespace Evolve {
             sat_wind_mode.add_break(TSTART, true);
 
             StellarEvolution::MockStellarEvolution 
-                *no_evol = make_no_evolution(1.0);
+                *no_evol = StellarEvolution::make_no_evolution(1.0);
 
             std::vector<const Core::OneArgumentDiffFunction *>
                 expected_real_quantities(NUM_REAL_QUANTITIES - 1);
@@ -1071,11 +982,11 @@ namespace Evolve {
             initial_L[1] = 0.0;
             initial_L[2] = 0.0;
 
-            make_const_lag_star(*no_evol,
-                                0.0,//wind K
-                                100.0,//wsat
-                                Core::Inf,//tcoup
-                                lag);
+            __star = make_const_lag_star(*no_evol,
+                                         0.0,//wind K
+                                         100.0,//wsat
+                                         Core::Inf,//tcoup
+                                         lag);
 
             evolve(0.0,//wdisk
                    0.0,//tdisk
@@ -1286,7 +1197,7 @@ namespace Evolve {
             expected_wind_mode.add_break(TSTART, false);
             const double Ic = 0.001, Kwind = 1e-3, Kwind_s = 1;
             StellarEvolution::MockStellarEvolution *
-                no_evol = make_no_evolution(1.0, Ic);
+                no_evol = StellarEvolution::make_no_evolution(1.0, Ic);
 
             double a1 = 3,
                    Lscale = (Core::AstroConst::jupiter_mass
@@ -1517,7 +1428,7 @@ namespace Evolve {
                          tdisk = 1,
                          tfinal = 2;
             StellarEvolution::MockStellarEvolution *
-                no_evol = make_no_evolution(1.0, Ic);
+                no_evol = StellarEvolution::make_no_evolution(1.0, Ic);
 
             double afinal = 1.75,
                    Lscale = (Core::AstroConst::jupiter_mass
@@ -1600,13 +1511,15 @@ namespace Evolve {
                        Core::AstroConst::day
                    );
 
-            make_const_lag_star(*no_evol,
-                                Kwind,
-                                wsat,
-                                Core::Inf,//core-env coupling timescale
-                                lag_from_lgQ(1, (Core::AstroConst::jupiter_mass
-                                                 /
-                                                 Core::AstroConst::solar_mass)));
+            __star = make_const_lag_star(
+                *no_evol,
+                Kwind,
+                wsat,
+                Core::Inf,//core-env coupling timescale
+                lag_from_lgQ(1, (Core::AstroConst::jupiter_mass
+                                 /
+                                 Core::AstroConst::solar_mass))
+            );
             Planet::LockedPlanet planet(1.0, 1.0);
             planet.configure(true, //init
                              tdisk, //age
@@ -1832,7 +1745,7 @@ namespace Evolve {
                          );
 
             StellarEvolution::MockStellarEvolution *
-                no_evol = make_no_evolution(1.0, I_CONV);
+                no_evol = StellarEvolution::make_no_evolution(1.0, I_CONV);
 
             double lgQ = 8,
                    alpha = (
@@ -1853,7 +1766,7 @@ namespace Evolve {
                        Core::AstroConst::Gyr / Core::AstroConst::solar_radius
                    );
 
-            make_const_lag_star(
+            __star = make_const_lag_star(
                 *no_evol,
                 0.0,
                 1.0,
@@ -2060,9 +1973,9 @@ namespace Evolve {
                          wlocked = beta / std::pow(async, 1.5);
 
             StellarEvolution::MockStellarEvolution *
-                no_evol = make_no_evolution(1.0, Ic);
+                no_evol = StellarEvolution::make_no_evolution(1.0, Ic);
 
-            make_const_lag_star(
+            __star = make_const_lag_star(
                 *no_evol,//evolution
                 0.0,//Kwind
                 100.0,//wsat
@@ -2303,9 +2216,9 @@ namespace Evolve {
                                       kappa * tdisk);
 
             StellarEvolution::MockStellarEvolution *
-                no_evol = make_no_evolution(1.0, Ic);
+                no_evol = StellarEvolution::make_no_evolution(1.0, Ic);
 
-            make_const_lag_star(
+            __star = make_const_lag_star(
                 *no_evol,//evolution
                 Kwind,//Kwind
                 100.0,//wsat
@@ -2497,7 +2410,7 @@ namespace Evolve {
     void test_OrbitSolver::test_polar_1_0_evolution()
     {
         StellarEvolution::MockStellarEvolution *
-            no_evol = make_no_evolution();
+            no_evol = StellarEvolution::make_no_evolution();
 
         const double TDISK = 0.1,
                      WSTAR = 0.01,
@@ -2608,7 +2521,7 @@ namespace Evolve {
     void test_OrbitSolver::test_polar_2_0_evolution()
     {
         StellarEvolution::MockStellarEvolution *
-            no_evol = make_no_evolution();
+            no_evol = StellarEvolution::make_no_evolution();
 
         const double TDISK = 0.1,
                      WSTAR = 0.01,
@@ -2842,7 +2755,7 @@ namespace Evolve {
     void test_OrbitSolver::test_oblique_1_0_evolution()
     {
         StellarEvolution::MockStellarEvolution *
-            no_evol = make_no_evolution();
+            no_evol = StellarEvolution::make_no_evolution();
 
         const double PHASE_LAG = 0.1,
                      TDISK = 0.1,

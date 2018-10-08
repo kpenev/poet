@@ -349,4 +349,33 @@ namespace Evolve {
         }
     }
 
+    void test_DifferentialEquations::test_error_estimate()
+    {
+        const double MAX_ECCENTRICITY = 0.9;
+        const unsigned NUM_ECCENTRICITIES = 100;
+        const double ECCENTRICITY_STEP = (
+            MAX_ECCENTRICITY / (NUM_ECCENTRICITIES - 1)
+        );
+        const double a = 10.0;
+        const double age = 1.0;
+
+        StellarEvolution::MockStellarEvolution *no_evol =
+            StellarEvolution::make_no_evolution();
+
+        for(double e = 0.0; e <= MAX_ECCENTRICITY; ++e) {
+            Star::InterpolatedEvolutionStar *star = make_const_lag_star(
+                *no_evol,
+                1.0,
+                1.0,
+                1.0
+            );
+
+            Planet::LockedPlanet planet(1.0, 1.0);
+
+            BinarySystem binary(*star, planet);
+
+            delete star;
+        }
+    }
+
 } //End Envolve namespace.
