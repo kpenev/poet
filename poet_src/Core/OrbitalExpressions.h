@@ -16,18 +16,19 @@ namespace Core {
 
     ///Returns the orbital angular velocity of the given orbit in rad/day.
     LIB_PUBLIC double orbital_angular_velocity(
-            ///The mass of the first body in \f$M_\odot\f$.
-            double m1,
+        ///The mass of the first body in \f$M_\odot\f$.
+        double m1,
 
-            ///The mass of the second body in \f$M_\odot\f$.
-            double m2,
-            
-            ///The semimajor axis in \f$R_\odot\f$
-            double semimajor,
-            
-            ///Whether to return the derivative with respect to the semimajor
-            ///axis instead of the value.
-            bool deriv=false);
+        ///The mass of the second body in \f$M_\odot\f$.
+        double m2,
+
+        ///The semimajor axis in \f$R_\odot\f$
+        double semimajor,
+
+        ///Whether to return the derivative with respect to the semimajor
+        ///axis instead of the value.
+        bool deriv=false
+    );
 
     ///\brief The energy of the orbit (assuming 0 gravitational potential at
     ///infinity) in \f$\frac{M_\odot R_\odot^2 rad^2}{day^2}\f$.

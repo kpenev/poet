@@ -172,7 +172,8 @@ namespace Evolve {
 
     test_DifferentialEquations::test_DifferentialEquations()
     {
-        TEST_ADD(test_DifferentialEquations::test_aligned_equations);
+//        TEST_ADD(test_DifferentialEquations::test_aligned_equations);
+        TEST_ADD(test_DifferentialEquations::test_error_estimate);
     }
 
     void test_DifferentialEquations::test_aligned_equations()
@@ -362,20 +363,87 @@ namespace Evolve {
         StellarEvolution::MockStellarEvolution *no_evol =
             StellarEvolution::make_no_evolution();
 
-        for(double e = 0.0; e <= MAX_ECCENTRICITY; ++e) {
-            Star::InterpolatedEvolutionStar *star = make_const_lag_star(
-                *no_evol,
-                1.0,
-                1.0,
-                1.0
-            );
+        Star::InterpolatedEvolutionStar *star = make_const_lag_star(
+            *no_evol,
+            1.0,
+            1.0,
+            1.0
+        );
 
-            Planet::LockedPlanet planet(1.0, 1.0);
+        Planet::LockedPlanet planet(1.0, 1.0);
 
-            BinarySystem binary(*star, planet);
+        BinarySystem binary(*star, planet);
 
-            delete star;
+        std::valarray<double> parameters(0.0, 7),
+                              rough_rates(parameters.size()),
+                              fine_rates(parameters.size()),
+                              rate_errors(parameters.size());
+
+        parameters[0] = a;
+
+        binary.configure(true,
+                         (MIN_AGE + MAX_AGE) / 2.0,
+                         &(parameters[0]),
+                         Core::BINARY);
+
+        std::cout << std::setw(25) << "e_order"
+                  << std::setw(25) << "e"
+                  << std::setw(25) << "rough_a_rate"
+                  << std::setw(25) << "fine_a_rate"
+                  << std::setw(25) << "a_rate_error"
+                  << std::setw(25) << "rough_e_rate"
+                  << std::setw(25) << "fine_e_rate"
+                  << std::setw(25) << "e_rate_error"
+                  << std::setw(25) << "rough_inc_rate"
+                  << std::setw(25) << "fine_inc_rate"
+                  << std::setw(25) << "inc_rate_error"
+                  << std::setw(25) << "rough_spin_rate"
+                  << std::setw(25) << "fine_spin_rate"
+                  << std::setw(25) << "spin_rate_error"
+
+                  << std::endl;
+
+
+        for(unsigned e_order = 5; e_order <= 5; e_order+=5) {
+            for(double e = 0.0; e <= MAX_ECCENTRICITY; ++e) {
+                parameters[1] = e;
+
+                star->zone(0).change_e_order(e_order, binary, true, 0);
+                binary.differential_equations(age,
+                                              &(parameters[0]),
+                                              Core::BINARY,
+                                              &(rough_rates[0]));
+                binary.differential_equations(age,
+                                              &(parameters[0]),
+                                              Core::BINARY,
+                                              &(rate_errors[0]),
+                                              true);
+
+                star->zone(0).change_e_order(2 * e_order, binary, true, 0);
+                binary.differential_equations(age,
+                                              &(parameters[0]),
+                                              Core::BINARY,
+                                              &(fine_rates[0]));
+
+                std::cout << std::setw(25) << e_order
+                          << std::setw(25) << e
+                          << std::setw(25) << rough_rates[0]
+                          << std::setw(25) << fine_rates[0]
+                          << std::setw(25) << rate_errors[0]
+                          << std::setw(25) << rough_rates[1]
+                          << std::setw(25) << fine_rates[1]
+                          << std::setw(25) << rate_errors[1]
+                          << std::setw(25) << rough_rates[2]
+                          << std::setw(25) << fine_rates[2]
+                          << std::setw(25) << rate_errors[2]
+                          << std::setw(25) << rough_rates[7]
+                          << std::setw(25) << fine_rates[7]
+                          << std::setw(25) << rate_errors[7]
+                          << std::endl;
+            }
         }
+
+        delete star;
     }
 
 } //End Envolve namespace.

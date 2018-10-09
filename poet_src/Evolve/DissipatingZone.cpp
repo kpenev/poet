@@ -408,7 +408,11 @@ namespace Evolve {
                     __torque_x_plus_coef[m_ind] * U_error.m_plus_one 
                 );
                 term_torque_x_error = (
-                    U_error.m * (term_torque_x / U.m + common_error_term)
+                    (
+                        U_error.m
+                        ? U_error.m * (term_torque_x / U.m + common_error_term)
+                        : 0.0
+                    )
                     + 
                     U.m * common_error_term
                 );
@@ -445,6 +449,12 @@ namespace Evolve {
             __torque_x[deriv_ind + 1] += (term_torque_x
                                           *
                                           mod_phase_lag_above);
+            assert(!std::isnan(__torque_x[deriv_ind]));
+            assert(!std::isnan(__torque_x[deriv_ind + 1]));
+            assert(!std::isnan(__torque_y[deriv_ind]));
+            assert(!std::isnan(__torque_y[deriv_ind + 1]));
+            assert(!std::isnan(__torque_z[deriv_ind]));
+            assert(!std::isnan(__torque_z[deriv_ind + 1]));
             if(has_error) {
                 has_error = false;
                 const int error_ind = 2 * Dissipation::END_DIMENSIONLESS_DERIV;
@@ -467,6 +477,13 @@ namespace Evolve {
                 __torque_x[error_ind + 1] += (term_torque_x_error
                                               *
                                               mod_phase_lag_above);
+
+                assert(!std::isnan(__torque_x[error_ind]));
+                assert(!std::isnan(__torque_x[error_ind + 1]));
+                assert(!std::isnan(__torque_y[error_ind]));
+                assert(!std::isnan(__torque_y[error_ind + 1]));
+                assert(!std::isnan(__torque_z[error_ind]));
+                assert(!std::isnan(__torque_z[error_ind + 1]));
             }
 #ifdef VERBOSE_DEBUG
             if(deriv == Dissipation::NO_DERIV)

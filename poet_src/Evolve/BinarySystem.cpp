@@ -1931,6 +1931,7 @@ namespace Evolve {
                                 const double *parameters, 
                                 Core::EvolModeType evolution_mode)
     {
+        __evolution_mode = evolution_mode;
         double semimajor, eccentricity;
         const double *spin_angmom, *inclination, *periapsis;
         unsigned num_zones = number_zones();

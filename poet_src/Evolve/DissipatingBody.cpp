@@ -723,6 +723,7 @@ namespace Evolve {
                         above,
                         entry
                     );
+                    assert(!std::isnan(tidal_torque[entry].sum()));
                 }
                 above = !above;
             } while(above);

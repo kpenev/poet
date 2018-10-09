@@ -822,7 +822,7 @@ namespace Evolve {
 
         ///The total number of zones in both system bodies.
         unsigned number_zones() const
-        {return (__evolution_mode==Core::BINARY
+        {return (__evolution_mode == Core::BINARY
                  ? __body1.number_zones() + __body2.number_zones()
                  : __body1.number_zones());}
 

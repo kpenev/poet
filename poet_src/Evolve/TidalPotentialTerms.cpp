@@ -143,7 +143,7 @@ namespace Evolve {
                                   *
                                   periapsis_factor);
             eccentricity_deriv += (
-                __pms(2*(i-1), mp, e, __e_order, true).first
+                __pms(s, mp, e, __e_order, true).first
                 *
                 __Ummp[m+2][i]
                 *
@@ -154,6 +154,10 @@ namespace Evolve {
                                      __Ummp[m+2][i]
                                      *
                                      periapsis_factor);
+            assert(!std::isnan(no_deriv.real()));
+            assert(!std::isnan(inclination_deriv.real()));
+            assert(!std::isnan(eccentricity_deriv.real()));
+            assert(!std::isnan(highest_e_order_term.real()));
         }
     }
 
