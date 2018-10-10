@@ -367,6 +367,7 @@ namespace Evolve {
             *no_evol,
             1.0,
             1.0,
+            1.0,
             1.0
         );
 
@@ -405,7 +406,7 @@ namespace Evolve {
 
 
         for(unsigned e_order = 5; e_order <= 5; e_order+=5) {
-            for(double e = 0.0; e <= MAX_ECCENTRICITY; ++e) {
+            for(double e = 0.0; e <= MAX_ECCENTRICITY; e += ECCENTRICITY_STEP) {
                 parameters[1] = e;
 
                 star->zone(0).change_e_order(e_order, binary, true, 0);
