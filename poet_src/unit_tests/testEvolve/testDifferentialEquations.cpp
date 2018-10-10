@@ -375,7 +375,7 @@ namespace Evolve {
 
         BinarySystem binary(*star, planet);
 
-        std::valarray<double> parameters(0.0, 7),
+        std::valarray<double> parameters(0.0, 10),
                               rough_rates(parameters.size()),
                               fine_rates(parameters.size()),
                               rate_errors(parameters.size());
@@ -386,6 +386,7 @@ namespace Evolve {
                          (MIN_AGE + MAX_AGE) / 2.0,
                          &(parameters[0]),
                          Core::BINARY);
+        star->detect_saturation();
 
         std::cout << std::setw(25) << "e_order"
                   << std::setw(25) << "e"
@@ -445,6 +446,7 @@ namespace Evolve {
         }
 
         delete star;
+        delete no_evol;
     }
 
 } //End Envolve namespace.
