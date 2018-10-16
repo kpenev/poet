@@ -236,7 +236,7 @@ namespace Evolve {
                                  Core::BINARY);
 
                 double common_rate_factor = (
-                    2.4 * M_PI
+                    -2.4 * M_PI
                     *
                     (primary.mass() + secondary.mass()) / primary.mass()
                     *
@@ -406,7 +406,7 @@ namespace Evolve {
                   << std::endl;
 
 
-        for(unsigned e_order = 5; e_order <= 5; e_order+=5) {
+        for(unsigned e_order = 5; e_order <= 100; e_order+=5) {
             for(double e = 0.0; e <= MAX_ECCENTRICITY; e += ECCENTRICITY_STEP) {
                 parameters[1] = e;
 
