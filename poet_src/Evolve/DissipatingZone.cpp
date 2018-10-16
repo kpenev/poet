@@ -571,6 +571,8 @@ namespace Evolve {
 
         if(!dissipative()) return;
 
+        double esquared = std::pow(eccentricity, 2);
+
         for(
             int mp = -static_cast<int>(__e_order) - 2;
             mp <= static_cast<int>(__e_order) + 2; 
@@ -587,6 +589,7 @@ namespace Evolve {
                              U_i_deriv.m_plus_one,
                              U_e_deriv.m_plus_one,
                              U_error.m_plus_one);
+            U_error.m_plus_one *= esquared;
 
             for(int m = -2; m <= 2; ++m) {
 #ifdef VERBOSE_DEBUG
@@ -600,7 +603,7 @@ namespace Evolve {
                 U_error.m = U_error.m_plus_one;
                 U_i_deriv.m = U_i_deriv.m_plus_one;
                 U_e_deriv.m = U_e_deriv.m_plus_one;
-                if(m < 2)
+                if(m < 2) {
                     __potential_term(eccentricity,
                                      m + 1,
                                      mp,
@@ -608,7 +611,8 @@ namespace Evolve {
                                      U_i_deriv.m_plus_one,
                                      U_e_deriv.m_plus_one,
                                      U_error.m_plus_one);
-                else {
+                    U_error.m_plus_one *= esquared;
+                } else {
                     U_value.m_plus_one = 0;
                     U_error.m_plus_one = 0;
                     U_i_deriv.m_plus_one = 0;
