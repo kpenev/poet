@@ -1053,4 +1053,16 @@ namespace Evolve {
         return result;
     }
 
+    void DissipatingBody::change_e_order(unsigned new_e_order,
+                                         BinarySystem &system,
+                                         bool primary)
+    {
+        for(unsigned zone_ind = 0; zone_ind < number_zones(); ++zone_ind)
+            if(zone(zone_ind).dissipative())
+                zone(zone_ind).change_e_order(new_e_order,
+                                              system,
+                                              primary,
+                                              zone_ind);
+    }
+
 } //End Envolve namespace.

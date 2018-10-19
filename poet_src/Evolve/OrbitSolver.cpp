@@ -14,27 +14,40 @@
 
 namespace Evolve {
 
-    int stellar_system_diff_eq(double age, const double *parameters,
-            double *derivatives, void *system_mode)
+    const double MIN_RELATIVE_STEP = (
+        1.0
+        +
+        10.0 * std::numeric_limits<double>::epsilon()
+    );
+
+    int stellar_system_diff_eq(double age,
+                               const double *parameters,
+                               double *derivatives,
+                               void *system_mode)
     {
-        void **input_params=static_cast<void **>(system_mode);
-        BinarySystem &system=*static_cast< BinarySystem* >(input_params[0]);
-        Core::EvolModeType evol_mode=*static_cast< Core::EvolModeType* >(
+        void **input_params = static_cast<void **>(system_mode);
+        BinarySystem &system = *static_cast< BinarySystem* >(input_params[0]);
+        Core::EvolModeType evol_mode = *static_cast< Core::EvolModeType* >(
             input_params[1]
         );
-        return system.differential_equations(age, parameters, evol_mode,
+        return system.differential_equations(age,
+                                             parameters,
+                                             evol_mode,
                                              derivatives);
     }
 
     int stellar_system_jacobian(double age, const double *orbital_parameters,
             double *param_derivs, double *age_derivs,void *system_mode)
     {
-        void **input_params=static_cast<void **>(system_mode);
-        BinarySystem &system=*static_cast< BinarySystem* >(input_params[0]);
-        Core::EvolModeType evol_mode=*static_cast< Core::EvolModeType* >(
+        void **input_params = static_cast<void **>(system_mode);
+        BinarySystem &system = *static_cast< BinarySystem* >(input_params[0]);
+        Core::EvolModeType evol_mode = *static_cast< Core::EvolModeType* >(
             input_params[1]
         );
-        return system.jacobian(age, orbital_parameters, evol_mode, param_derivs,
+        return system.jacobian(age,
+                               orbital_parameters,
+                               evol_mode,
+                               param_derivs,
                                age_derivs);
     }
 
@@ -143,34 +156,37 @@ namespace Evolve {
         __tabulated_evolution_modes.push_back(evolution_mode);
     }
 
-    double OrbitSolver::go_back(double max_age, BinarySystem &system, 
-            std::valarray<double> &orbit, std::valarray<double> &derivatives)
+    double OrbitSolver::go_back(double max_age,
+                                BinarySystem &system, 
+                                std::valarray<double> &orbit)
     {
-        unsigned nsteps=0;
-        while(max_age<__tabulated_ages.back()) {
+        unsigned nsteps = 0;
+        while(max_age < __tabulated_ages.back()) {
             __tabulated_ages.pop_back();
             __tabulated_evolution_modes.pop_back();
             ++nsteps;
         }
         system.rewind_evolution(nsteps);
 
-        if(max_age<__stop_history_ages.back()) clear_discarded();
-        while(max_age<__stop_history_ages.back()) {
+        if(max_age < __stop_history_ages.back()) clear_discarded();
+        while(max_age < __stop_history_ages.back()) {
             __stop_history_ages.pop_back();
             __orbit_history.pop_back();
             __orbit_deriv_history.pop_back();
             __stop_cond_history.pop_back();
             __stop_deriv_history.pop_back();
         }
-        for(size_t i=0; i<__skip_history_zerocrossing.size(); i++) {
-            __skip_history_zerocrossing[i]=
-                std::min(__skip_history_zerocrossing[i],
-                         __stop_history_ages.size());
-            __skip_history_extremum[i]=
-                std::min(__stop_history_ages.back(), __skip_history_extremum[i]);
+        for(size_t i = 0; i < __skip_history_zerocrossing.size(); ++i) {
+            __skip_history_zerocrossing[i] = std::min(
+                __skip_history_zerocrossing[i],
+                __stop_history_ages.size()
+            );
+            __skip_history_extremum[i] = std::min(
+                __stop_history_ages.back(),
+                __skip_history_extremum[i]
+            );
         }
-        orbit=__orbit_history.back();
-        derivatives=__orbit_deriv_history.back();
+        orbit = __orbit_history.back();
         return __stop_history_ages.back();
     }
 
@@ -471,12 +487,38 @@ namespace Evolve {
         );
     }
 
+    int OrbitSolver::check_expansion_error(
+        const std::valarray<double> &derivatives,
+        const std::valarray<double> &expansion_errors
+    )
+    {
+        double max_error_ratio = 0.0;
+        for(unsigned i = 0; i < derivatives.size(); ++i) {
+            double error_ratio = (
+                std::abs(expansion_errors[i]) 
+                /
+                (__precision * derivatives[i] + __precision)
+            );
+            if(error_ratio > 1.0) 
+                return 1;
+            {
+            };
+            max_error_ratio = std::max(max_error_ratio, error_ratio);
+        }
+        if(max_error_ratio < 0.1)
+            return -1;
+        else
+            return 0;
+    }
+
     StopInformation OrbitSolver::update_stop_condition_history(
         double age,
         const std::valarray<double> &orbit,
         const std::valarray<double> &derivatives,
+        const std::valarray<double> &expansion_errors,
         Core::EvolModeType evolution_mode,
-        StoppingConditionType stop_reason
+        StoppingConditionType stop_reason,
+        bool ignore_e_order_decrease
     )
     {
         for(unsigned i = 0; i < orbit.size(); ++i)
@@ -493,6 +535,16 @@ namespace Evolve {
                     Core::Inf
                 );
             }
+
+        int adjust_e_order = check_expansion_error(derivatives,
+                                                   expansion_errors);
+        if(adjust_e_order > 0)
+            return StopInformation(
+                0.5 * (age + __stop_history_ages.back()),
+                Core::Inf,
+                LARGE_EXPANSION_ERROR
+            );
+
         std::valarray<double> current_stop_cond(
             __stopping_conditions->num_subconditions()
         );
@@ -569,6 +621,13 @@ namespace Evolve {
             __stop_deriv_history.push_back(current_stop_deriv);
             __orbit_history.push_back(orbit);
             __orbit_deriv_history.push_back(derivatives);
+
+            if(adjust_e_order < 0 && !ignore_e_order_decrease) {
+                return StopInformation(Core::Inf,
+                                       Core::Inf,
+                                       SMALL_EXPANSION_ERROR);
+            }
+
         } else {
 #ifndef NDEBUG
     		std::cerr << "Step to age = "
@@ -581,12 +640,66 @@ namespace Evolve {
         return result;
     }
 
-    StopInformation OrbitSolver::evolve_until(BinarySystem &system,
-            double &max_age,
-            std::valarray<double> &orbit,
-            StoppingConditionType &stop_reason,
-            double max_step,
-            Core::EvolModeType evolution_mode)
+    void OrbitSolver::reject_step(
+        double &t,
+        StopInformation &stop,
+        BinarySystem &system,
+        std::valarray<double> &orbit,
+        double &max_next_t,
+        double &step_size
+#ifndef NDEBUG
+        , std::string reason
+#endif
+    )
+    {
+        double last_good_t = go_back(stop.stop_age(),
+                                     system,
+                                     orbit);
+#ifndef NDEBUG
+        std::cerr
+            << "Reverting step from t = "
+            << t
+            << " to "
+            << last_good_t
+            << " due to "
+            << reason
+            << "Stop info: "
+            << stop
+            << std::endl;
+#endif
+
+        if(
+            t
+            <
+            last_good_t * MIN_RELATIVE_STEP
+        ) {
+#ifndef NDEBUG
+            std::cerr << "Stepped only "
+                << t - last_good_t
+                << "Gyr, aborting!"
+                << std::endl;
+#endif
+            throw Core::Error::NonGSLZeroStep();
+        }
+        t = last_good_t;
+        if(stop.is_crossing())
+            stop.stop_condition_precision() = (
+                __stop_cond_history.back()[
+                stop.stop_condition_index()
+                ]
+            );
+        max_next_t = stop.stop_age();
+        step_size = 0.1 * (max_next_t - t);
+    }
+
+    StopInformation OrbitSolver::evolve_until(
+        BinarySystem &system,
+        double &max_age,
+        std::valarray<double> &orbit,
+        StoppingConditionType &stop_reason,
+        double max_step,
+        Core::EvolModeType evolution_mode
+    )
     {
         size_t nargs=orbit.size();
 #ifndef NDEBUG
@@ -605,18 +718,25 @@ namespace Evolve {
         const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
 
         gsl_odeiv2_step *step=gsl_odeiv2_step_alloc(step_type, nargs);
-        gsl_odeiv2_control *step_control=gsl_odeiv2_control_standard_new(
-                __precision, __precision, 1, 0);
+        gsl_odeiv2_control *step_control = gsl_odeiv2_control_standard_new(
+            __precision,
+            __precision,
+            1,
+            0
+        );
         gsl_odeiv2_evolve *evolve=gsl_odeiv2_evolve_alloc(nargs);
 
         void *sys_mode[2]={&system, &evolution_mode};
         gsl_odeiv2_system ode_system={stellar_system_diff_eq,
-            stellar_system_jacobian, nargs, sys_mode};
+                                      stellar_system_jacobian,
+                                      nargs,
+                                      sys_mode};
         double t=system.age(); 
-        std::valarray<double> derivatives(nargs), param_derivatives(nargs),
-            age_derivatives(nargs);
-        stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
-                sys_mode);
+        std::valarray<double> derivatives(nargs),
+                              expansion_errors(nargs),
+                              param_derivatives(nargs),
+                              age_derivatives(nargs);
+
         add_to_evolution(t, evolution_mode, system);
 
     /*	std::cerr << "Initial state for t=" << t << ": " << std::endl
@@ -628,18 +748,13 @@ namespace Evolve {
             std::cerr << derivatives[i] << " ";
         std::cerr << std::endl;*/
 
-        update_stop_condition_history(t, orbit, derivatives, evolution_mode,
-                                      stop_reason);
         clear_discarded();
-        double step_size=0.01*(max_age-t);
-        const double MIN_RELATIVE_STEP = (
-            1.0
-            +
-            10.0 * std::numeric_limits<double>::epsilon()
-        );
+        double step_size = std::min(0.01 * (max_age - t),
+                                    max_step);
 
-        stop_reason=NO_STOP;
+        stop_reason = NO_STOP;
         StopInformation stop;
+        bool first_step = true;
         while(t<max_age) {
             double max_next_t = std::min(t + max_step, max_age);
             int status=GSL_SUCCESS;
@@ -651,9 +766,15 @@ namespace Evolve {
                           << std::endl;
 #endif
                 double from_t = t;
-                status=gsl_odeiv2_evolve_apply(
-                        evolve, step_control, step, &ode_system,
-                        &t, max_next_t, &step_size, &(orbit[0]));
+                if(!first_step)
+                    status = gsl_odeiv2_evolve_apply(evolve,
+                                                     step_control,
+                                                     step,
+                                                     &ode_system,
+                                                     &t,
+                                                     max_next_t,
+                                                     &step_size,
+                                                     &(orbit[0]));
                 if (status == GSL_FAILURE) {
 #ifndef NDEBUG
                     std::cerr << "Failed, (presume zero step size)!"
@@ -670,52 +791,46 @@ namespace Evolve {
 #ifndef NDEBUG
                     std::cerr << "Succeeded! Now t = " << t << std::endl;
 #endif
-                    stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
+                    stellar_system_diff_eq(t,
+                                           &(orbit[0]),
+                                           &(derivatives[0]),
                                            sys_mode);
 
-                    stop = update_stop_condition_history(t,
-                                                         orbit,
-                                                         derivatives,
-                                                         evolution_mode,
-                                                         stop_reason);
+                    system.differential_equations(t,
+                                                  &(orbit[0]),
+                                                  evolution_mode,
+                                                  &(expansion_errors[0]),
+                                                  true);
+
+                    stop = update_stop_condition_history(
+                        t,
+                        orbit,
+                        derivatives,
+                        expansion_errors,
+                        evolution_mode,
+                        stop_reason,
+                        system.eccentricity_order() == 0
+                    );
                 }
                 if(status == GSL_EDOM || !acceptable_step(t, stop)) {
-                    double last_good_t =
-                        go_back(stop.stop_age(), system, orbit, derivatives);
+                    reject_step(
+                        t,
+                        stop,
+                        system,
+                        orbit,
+                        max_next_t,
+                        step_size
 #ifndef NDEBUG
-                    std::cerr
-                        << "Reverting step from t = "
-                        << t
-                        << " to "
-                        << last_good_t
-                        << " due to "
-                        << (status == GSL_EDOM ? "EDOM error" : "bad step")
-                        << "Stop info: "
-                        << stop
-                        << std::endl;
+                        , (status == GSL_EDOM ? "EDOM error" : "bad step")
 #endif
-
-                    if(
-                        t
-                        <
-                        last_good_t * MIN_RELATIVE_STEP
-                    ) {
-                        throw Core::Error::NonGSLZeroStep();
-                    }
-                    t = last_good_t;
-                    if(stop.is_crossing())
-                        stop.stop_condition_precision()=
-                            __stop_cond_history.back()[
-                                stop.stop_condition_index()
-                            ];
-                    max_next_t=stop.stop_age();
-                    step_size=0.1*(max_next_t-t);
+                    );
                     gsl_odeiv2_evolve_reset(evolve);
-                    step_rejected=true;
+                    step_rejected = true;
                 } else {
-                    if(t < from_t * MIN_RELATIVE_STEP) {
+                    if(!first_step && t < from_t * MIN_RELATIVE_STEP) {
 #ifndef NDEBUG
-                        std::cerr << "Stepped only " << t - from_t
+                        std::cerr << "Stepped only "
+                                  << t - from_t
                                   << "Gyr, aborting!"
                                   << std::endl;
 #endif
@@ -723,6 +838,8 @@ namespace Evolve {
                     }
                     step_rejected=false;
                 }
+
+                first_step = false;
             } while(
                 step_rejected
                 &&
@@ -733,15 +850,28 @@ namespace Evolve {
                 std::cerr << "Stepped to t = " << t << std::endl;
 #endif
                 add_to_evolution(t, evolution_mode, system);
-            } if(stop.is_crossing() && stop.stop_reason()!=NO_STOP) {
-                stop_reason=stop.stop_reason();
+            }
+            if(
+                (stop.is_crossing() && stop.stop_reason() != NO_STOP)
+                ||
+                stop.stop_reason() == LARGE_EXPANSION_ERROR
+                ||
+                (
+                    stop.stop_reason() == SMALL_EXPANSION_ERROR
+                    &&
+                    system.eccentricity_order() > 0
+                )
+            ) {
+                stop_reason = stop.stop_reason();
                 break;
             }
         }
         max_age=t;
         clear_history();
-        stellar_system_diff_eq(t, &(orbit[0]), &(derivatives[0]),
-                sys_mode); 
+        stellar_system_diff_eq(t,
+                               &(orbit[0]),
+                               &(derivatives[0]),
+                               sys_mode); 
 
         gsl_odeiv2_evolve_free(evolve);
         gsl_odeiv2_control_free(step_control);
@@ -848,6 +978,63 @@ namespace Evolve {
         }
     }
 
+    void OrbitSolver::adjust_eccentricity_order(
+        BinarySystem &system,
+        const std::valarray<double> &orbit,
+        Core::EvolModeType evolution_mode
+    )
+    {
+        unsigned e_order = system.eccentricity_order();
+        std::valarray<double> expansion_errors(orbit.size()),
+                              derivatives(orbit.size());
+
+
+        int adjust_e_order;
+        do {
+            system.differential_equations(system.age(),
+                                          &(orbit[0]),
+                                          evolution_mode,
+                                          &(derivatives[0]));
+
+            system.differential_equations(system.age(),
+                                          &(orbit[0]),
+                                          evolution_mode,
+                                          &(expansion_errors[0]),
+                                          true);
+
+            adjust_e_order = check_expansion_error(derivatives,
+                                                   expansion_errors);
+            if(e_order == 0 && adjust_e_order < 0)
+                break;
+
+            if(
+                e_order == TidalPotentialTerms::max_e_order()
+                && 
+                adjust_e_order > 0
+            ) {
+                std::ostringstream msg;
+                msg << "Maximum available eccentricity expansion order of "
+                    << e_order
+                    << (" is insufficient to ensure evolution to the "
+                        "specified precisoin.");
+                throw Core::Error::Runtime(msg.str());
+            }
+
+            if(adjust_e_order) {
+                e_order += adjust_e_order;
+                system.change_e_order(e_order);
+                std::cerr << "Trying eccentricity expansion order of "
+                    << e_order
+                    << std::endl;
+            }
+        } while(adjust_e_order);
+#ifndef NDEBUG
+        std::cerr << "Adjusted eccentricity expansion order to "
+                  << e_order
+                  << std::endl;
+#endif
+    }
+
     void OrbitSolver::reset(BinarySystem &system)
     {
         __tabulated_ages.clear();
@@ -865,8 +1052,9 @@ namespace Evolve {
 #endif
     }
 
-    void OrbitSolver::operator()(BinarySystem &system, double max_step,
-            const std::list<double> &required_ages)
+    void OrbitSolver::operator()(BinarySystem &system,
+                                 double max_step,
+                                 const std::list<double> &required_ages)
     {
 #ifndef NDEBUG
         std::cerr << "Calculating evolution from t = " << system.age()
@@ -881,6 +1069,12 @@ namespace Evolve {
         std::valarray<double> orbit;
         
         Core::EvolModeType evolution_mode = system.fill_orbit(orbit);
+
+        adjust_eccentricity_order(system,
+                                  orbit,
+                                  evolution_mode);
+
+
         while(last_age < stop_evol_age) {
             double next_stop_age = std::min(stopping_age(last_age,
                                                          system,
@@ -908,7 +1102,15 @@ namespace Evolve {
             if(last_age < stop_evol_age) {
                 if(stop_reason == NO_STOP) 
                     system.reached_critical_age(last_age);
-                else 
+                else if(
+                    stop_reason == LARGE_EXPANSION_ERROR
+                    ||
+                    stop_reason == SMALL_EXPANSION_ERROR
+                ) {
+                    adjust_eccentricity_order(system,
+                                              orbit,
+                                              evolution_mode);
+                } else 
                     reached_stopping_condition(last_age, stop_reason);
             }
 #ifndef NDEBUG 

@@ -172,8 +172,8 @@ namespace Evolve {
 
     test_DifferentialEquations::test_DifferentialEquations()
     {
-//        TEST_ADD(test_DifferentialEquations::test_aligned_equations);
-        TEST_ADD(test_DifferentialEquations::test_error_estimate);
+        TEST_ADD(test_DifferentialEquations::test_aligned_equations);
+//        TEST_ADD(test_DifferentialEquations::test_error_estimate);
     }
 
     void test_DifferentialEquations::test_aligned_equations()
@@ -224,7 +224,7 @@ namespace Evolve {
 
                 BinarySystem binary(primary, secondary);
 
-                primary.zone(0).change_e_order(2, binary, true, 0);
+                binary.change_e_order(2);
 
                 std::valarray<double> parameters(0.0, 7);
                 std::valarray<double> evolution_rates(parameters.size());
@@ -284,7 +284,7 @@ namespace Evolve {
                                                           Core::BINARY,
                                                           &(evolution_rates[0]));
                             expected_semimajor_rate[e_index] = (
-                                -6.5 * std::pow(semimajor, 6.5)
+                                6.5 * std::pow(semimajor, 6.5)
                                 *
                                 rate_factor
                                 *

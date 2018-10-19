@@ -490,7 +490,7 @@ namespace Evolve {
                 std::cerr << ", Wzone = "
                           << spin_frequency()
                           << ", U(" << m << ", " << mp << ") = "
-                          << U_mmp
+                          << U.m
                           << ", term_power="
                           << term_power 
                           << ", mod_phase_lag(above="
@@ -656,6 +656,7 @@ namespace Evolve {
             -
             spin_frequency_multiplier * spin_frequency()
         );
+        assert(!std::isnan(forcing_freq));
 
 #ifdef VERBOSE_DEBUG
         std::cerr << ", Wtide = " << forcing_freq << " -> ";
@@ -704,7 +705,7 @@ namespace Evolve {
                     +
                     std::abs(zone_torque[1]
                              /
-                             (angular_momentum() * sin_inc))
+                             (__angular_momentum * sin_inc))
                 )
             );
         } else {
@@ -726,7 +727,7 @@ namespace Evolve {
             : (
                 -orbit_y_torque * cos_inc / (__orbital_angmom * sin_inc)
                 +
-                zone_y_torque / (angular_momentum() * sin_inc)
+                zone_y_torque / (__angular_momentum * sin_inc)
             )
         );
         assert(!std::isnan(result));
@@ -758,7 +759,7 @@ namespace Evolve {
                 -
                 zone_torque[1]
                 /
-                (std::pow(angular_momentum(), 2) * sin_inc)
+                (std::pow(__angular_momentum, 2) * sin_inc)
                 *
                 (entry == Dissipation::SPIN_FREQUENCY ? moment_of_inertia() : 1)
             );
@@ -770,7 +771,7 @@ namespace Evolve {
                 (
                     orbit_torque[1] / __orbital_angmom
                     +
-                    zone_torque[1] * cos_inc / angular_momentum()
+                    zone_torque[1] * cos_inc / __angular_momentum
                 )
                 /
                 std::pow(sin_inc, 2)
@@ -794,11 +795,18 @@ namespace Evolve {
                zone_x_torque,
                orbit_x_torque,
                orbit_z_torque;
+        assert(!std::isnan(orbit_torque[0]));
+        assert(!std::isnan(orbit_torque[2]));
+        assert(!std::isnan(zone_torque[0]));
         if(entry == Dissipation::NO_DERIV) {
             orbit_x_torque = orbit_torque[0];
             orbit_z_torque = orbit_torque[2];
             zone_x_torque = zone_torque[0];
         } else if(entry == Dissipation::EXPANSION_ERROR) {
+            if(orbit_torque[0] == 0 && orbit_torque[2] == 0)
+                return 0;
+
+            assert(__orbital_angmom > 0);
             return (
                 (
                     std::abs(orbit_torque[0] * cos_inc)
@@ -825,6 +833,8 @@ namespace Evolve {
         if(zone_x_torque != 0 && moment_of_inertia() != 0)
             result -= zone_x_torque / __angular_momentum;
 
+        assert(!std::isnan(result));
+
         if(
             entry == Dissipation::NO_DERIV 
             ||
@@ -839,27 +849,30 @@ namespace Evolve {
             entry == Dissipation::MOMENT_OF_INERTIA
             ||
             entry == Dissipation::SEMIMAJOR
-        )
+        ) {
             return result;
-        else if(
+        } else if(
             entry == Dissipation::SPIN_FREQUENCY
             ||
             entry == Dissipation::SPIN_ANGMOM
-        )
+        ) {
+            assert(std::abs(__angular_momentum) > 0);
             return (
                 result
                 +
-                zone_torque[0] / std::pow(angular_momentum(), 2)
+                zone_torque[0] / std::pow(__angular_momentum, 2)
                 *
                 (entry == Dissipation::SPIN_FREQUENCY ? moment_of_inertia() : 1)
             );
-        else if(entry == Dissipation::INCLINATION)
+        } else if(entry == Dissipation::INCLINATION) {
+            assert(std::abs(__angular_momentum) > 0);
             return (result
                     +
                     (orbit_torque[2] * cos_inc + orbit_torque[0] * sin_inc)
                     /
-                    angular_momentum());
-        else assert(false);
+                    __angular_momentum);
+        } else
+            assert(false);
         return Core::NaN;
     }
 

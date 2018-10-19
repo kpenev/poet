@@ -1024,6 +1024,20 @@ namespace Evolve {
         const std::list<double> &eccentricity_evolution() const
         {return __eccentricity_evolution;}
 
+        ///Change the eccentricity expansion order for all dissipative zones.
+        virtual void change_e_order(
+            ///The new eccentricity expansion order.
+            unsigned new_e_order
+        )
+        {
+            __body1.change_e_order(new_e_order, *this, true);
+            __body2.change_e_order(new_e_order, *this, false);
+        }
+
+        ///To what order should eccentricity expansion be performed for the given
+        ///value of the eccentricity.
+        virtual unsigned eccentricity_order() const;
+
         virtual ~BinarySystem() {}
 
     }; //End BinarySystem class.

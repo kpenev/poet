@@ -1516,9 +1516,9 @@ namespace Evolve {
                 Kwind,
                 wsat,
                 Core::Inf,//core-env coupling timescale
-                lag_from_lgQ(1, (Core::AstroConst::jupiter_mass
-                                 /
-                                 Core::AstroConst::solar_mass))
+                lag_from_lgQ(0.1, (Core::AstroConst::jupiter_mass
+                                   /
+                                   Core::AstroConst::solar_mass))
             );
             Planet::LockedPlanet planet(1.0, 1.0);
             planet.configure(true, //init
@@ -1638,7 +1638,7 @@ namespace Evolve {
             __star->detect_saturation();
             __solver = new Evolve::OrbitSolver(tfinal, 1e-8);
             (*__solver)(*__system,
-                        (tfinal - __system->age()) / 1000.0, //time step
+                        (tfinal - __system->age()) / 10000.0, //time step
                         std::list<double>()); //no required ages*/
 
             std::vector< const std::list<double> * > 

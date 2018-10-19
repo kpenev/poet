@@ -554,8 +554,9 @@ namespace Evolve {
 
         ///Discards the last steps from the evolution.
         virtual void rewind_evolution(
-                ///How many steps of evolution to discard.
-                unsigned nsteps);
+            ///How many steps of evolution to discard.
+            unsigned nsteps
+        );
 
         ///Discards all evolution.
         virtual void reset_evolution();
@@ -583,6 +584,18 @@ namespace Evolve {
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.
         virtual double next_stop_age() const {return Core::Inf;}
+
+        ///Change the eccentricity expansion order for all dissipative zones.
+        virtual void change_e_order(
+            ///The new eccentricity expansion order.
+            unsigned new_e_order,
+
+            ///The system being evolved.
+            BinarySystem &system, 
+
+            ///Is the body the primary in the system.
+            bool primary
+        );
 
         ///Virtual destructor.
         virtual ~DissipatingBody() {}

@@ -502,7 +502,7 @@ namespace Evolve {
         ) {
             for(int m = -2; m <= 2; ++m) {
                 *destination = get_tidal_index(
-                    forcing_frequency(mp, m, orbital_frequency)
+                    std::abs(forcing_frequency(mp, m, orbital_frequency))
                 );
                 ++destination;
             }

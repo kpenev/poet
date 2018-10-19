@@ -169,6 +169,7 @@ namespace Evolve {
                         angmom_evol[zone_index + 1] = 0.0
                     ) 
                 );
+            return 0;
         }
 
         Eigen::Vector3d reference_torque;
@@ -2299,6 +2300,41 @@ namespace Evolve {
     {
         return std::min(__body1.next_stop_age(),
                         __body2.next_stop_age());
+    }
+
+    unsigned BinarySystem::eccentricity_order() const
+    {
+#ifndef NDEBUG
+        int result = -1;
+#endif
+        DissipatingBody *body = &__body1;
+        while(true) {
+            for(
+                unsigned zone_ind = 0;
+                zone_ind < body->number_zones();
+                ++zone_ind
+            ) {
+                DissipatingZone &zone = body->zone(zone_ind);
+                if(zone.dissipative()) {
+#ifndef NDEBUG
+                    if(result < 1)
+                        result = zone.eccentricity_order();
+                    else
+                        assert(static_cast<unsigned>(result)
+                               ==
+                               zone.eccentricity_order());
+#else
+                    return zone.eccentricity_order();
+#endif
+                }
+            }
+            if(body == &__body2) break;
+            body = &__body2;
+        }
+#ifndef NDEBUG
+        return result;
+#endif
+        return 0;
     }
 
 } //End Evolve namespace.
