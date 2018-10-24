@@ -704,10 +704,10 @@ namespace Evolve {
         size_t nargs=orbit.size();
 #ifndef NDEBUG
         std::cerr << "Starting evolution leg in " << evolution_mode
-            << " from t=" << system.age() << " with initial orbit=";
+            << " from t=" << system.age() << " with initial orbit:\n";
         for(size_t i=0; i<nargs; ++i) {
             if(i) std::cerr << ", ";
-            std::cerr << orbit[i];
+            std::cerr << "\t" << orbit[i] << std::endl;
         }
         std::cerr << std::endl;
         std::cerr << "Stopping conditions:" << std::endl
@@ -749,7 +749,7 @@ namespace Evolve {
         std::cerr << std::endl;*/
 
         clear_discarded();
-        double step_size = std::min(0.01 * (max_age - t),
+        double step_size = std::min(0.1 * (max_age - t),
                                     max_step);
 
         stop_reason = NO_STOP;
@@ -763,7 +763,12 @@ namespace Evolve {
 #ifndef NDEBUG
                 std::cerr << "Attempting step from t = " << t
                           << " not to miss t = " << max_next_t
-                          << std::endl;
+                          << ", orbit:\n";
+                for(size_t i=0; i<nargs; ++i) {
+                    if(i) std::cerr << ", ";
+                    std::cerr << "\t" << orbit[i] << std::endl;
+                }
+                std::cerr << std::endl;
 #endif
                 double from_t = t;
                 if(!first_step)

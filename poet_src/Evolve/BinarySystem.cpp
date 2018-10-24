@@ -1879,7 +1879,26 @@ namespace Evolve {
             assert(inclination == NULL);
             assert(periapsis == NULL);
         }
+
+        std::cerr << "Configuring binary with a = " << semimajor
+                  << ", e = " << eccentricity
+                  << " in " << evolution_mode << " mode"
+                  << std::endl;
 #endif
+
+        if(
+            evolution_mode == Core::BINARY
+            &&
+            !(
+                semimajor > 0.0
+                &&
+                eccentricity >= 0.0
+                &&
+                eccentricity < 1.0
+            )
+        )
+            return GSL_EDOM;
+
         __evolution_mode = evolution_mode;
         double m1 = __body1.mass(),
                m2 = __body2.mass();
@@ -1891,6 +1910,9 @@ namespace Evolve {
                                                           m2,
                                                           semimajor,
                                                           eccentricity);
+#ifndef NDEBUG
+        std::cerr << "Configuring primary." << std::endl;
+#endif
         __body1.configure(initialize,
                           age,
                           m2,
@@ -1906,6 +1928,9 @@ namespace Evolve {
 
         if(evolution_mode == Core::BINARY) {
             unsigned offset = __body1.number_zones();
+#ifndef NDEBUG
+            std::cerr << "Configuring secondary." << std::endl;
+#endif
             __body2.configure(initialize,
                               age,
                               m1,
@@ -1937,12 +1962,14 @@ namespace Evolve {
         const double *spin_angmom, *inclination, *periapsis;
         unsigned num_zones = number_zones();
         if(evolution_mode == Core::BINARY) {
-            if(__body1.number_locked_zones() || __body2.number_locked_zones()) {
-                semimajor = parameters[0];
-            } else if(parameters[0] < 0) {
+            if(parameters[0] < 0) {
 #ifndef NDEBUG
                 std::cerr << "At t = " << age << " param: ";
-                for(unsigned i = 0; i < 3 * num_zones + 1; ++i) {
+                for(
+                    unsigned i = 0;
+                    i < 3 * num_zones + 1 - number_locked_zones();
+                    ++i
+                ) {
                     if(i) std::cerr << ", ";
                     std::cerr << parameters[i];
                 }
@@ -1950,7 +1977,10 @@ namespace Evolve {
 #endif
                 return GSL_EDOM;
             }
-            else semimajor = std::pow(parameters[0], 1.0 / 6.5);
+            if(__body1.number_locked_zones() || __body2.number_locked_zones()) {
+                semimajor = parameters[0];
+            } else 
+                semimajor = std::pow(parameters[0], 1.0 / 6.5);
             eccentricity = parameters[1];
             inclination = parameters+2;
         } else {
@@ -2029,6 +2059,13 @@ namespace Evolve {
                                              double *differential_equations,
                                              bool expansion_error)
     {
+#ifndef NDEBUG
+        if(!expansion_error)
+            std::cerr << "Finding differential equations at t = " << age
+                      << " in " << evolution_mode
+                      << " mode, with orbit[0] = " << parameters[0]
+                      << std::endl;
+#endif
         int status = configure(false, age, parameters, evolution_mode);
         if(status != GSL_SUCCESS) return status;
         switch(evolution_mode) {

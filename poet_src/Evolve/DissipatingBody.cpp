@@ -670,6 +670,9 @@ namespace Evolve {
                 ++angmom_offset;
             } else
                 zone_spin = spin_angmom[zone_index - angmom_offset];
+#ifndef NDEBUG
+            std::cerr << "Configuring zone " << zone_index << std::endl;
+#endif
             current_zone.configure(initialize,
                                    age,
                                    __orbital_frequency,

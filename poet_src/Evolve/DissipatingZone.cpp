@@ -548,6 +548,14 @@ namespace Evolve {
             std::cerr << "Initializing DissipatingZone" << std::endl;
 #endif
         }
+#ifndef NDEBUG
+        std::cerr << "At t = " << age << ", configuring zone with "
+                  << (spin_is_frequency ? "w" : "L") << " = " << spin
+                  << ", inclination = " << inclination
+                  << ", periapsis = " << periapsis
+                  << std::endl;
+
+#endif
         ZoneOrientation::configure(inclination, periapsis);
         __orbital_angmom = orbital_angmom;
         __orbital_frequency = orbital_frequency;
