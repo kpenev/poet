@@ -24,7 +24,7 @@
 #include "../Core/SharedLibraryExportMacros.h"
 #include "Error.h"
 #include "AstronomicalConstants.h"
-#include "Eigen/Dense"
+#include "IncludeEigen.h"
 
 
 namespace Core {

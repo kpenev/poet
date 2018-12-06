@@ -8,13 +8,13 @@
 #define BUILDING_LIBRARY
 #include "CInterface.h"
 
-LIB_PUBLIC const int RADIUS = StellarEvolution::RADIUS;
-LIB_PUBLIC const int ICONV = StellarEvolution::ICONV;
-LIB_PUBLIC const int LUM = StellarEvolution::LUM;
-LIB_PUBLIC const int IRAD = StellarEvolution::IRAD;
-LIB_PUBLIC const int MRAD = StellarEvolution::MRAD;
-LIB_PUBLIC const int RRAD = StellarEvolution::RRAD;
-LIB_PUBLIC const int NUM_QUANTITIES = StellarEvolution::NUM_QUANTITIES;
+const int RADIUS = StellarEvolution::RADIUS;
+const int ICONV = StellarEvolution::ICONV;
+const int LUM = StellarEvolution::LUM;
+const int IRAD = StellarEvolution::IRAD;
+const int MRAD = StellarEvolution::MRAD;
+const int RRAD = StellarEvolution::RRAD;
+const int NUM_QUANTITIES = StellarEvolution::NUM_QUANTITIES;
 
 MESAInterpolator* create_interpolator(const char *mesa_dir,
                                       double *smoothing,
@@ -62,7 +62,7 @@ const EvolvingStellarQuantity* create_quantity(
         reinterpret_cast<const StellarEvolution::MESA::Interpolator*>(
             interpolator
         );
-    return 
+    return
         reinterpret_cast<EvolvingStellarQuantity*> (
             (*actual_interpolator)(
                 static_cast<StellarEvolution::QuantityID>(quantityID),
@@ -148,7 +148,7 @@ void differentiate_quantity_array(const EvolvingStellarQuantity *quantity,
             actual_quantity->next_discontinuity() < age[i]
         )
             actual_quantity->select_interpolation_region(age[i]);
-        const Core::FunctionDerivatives 
+        const Core::FunctionDerivatives
             *deriv = actual_quantity->deriv(age[i]);
         for(unsigned order = 0; order < 3; ++order)
             result[order * nvalues + i] = deriv->order(order);
@@ -158,7 +158,7 @@ void differentiate_quantity_array(const EvolvingStellarQuantity *quantity,
 
 double quantity_min_age(const EvolvingStellarQuantity* quantity)
 {
-    return 
+    return
         reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
             quantity
         )->range_low();
@@ -166,7 +166,7 @@ double quantity_min_age(const EvolvingStellarQuantity* quantity)
 
 double quantity_max_age(const EvolvingStellarQuantity* quantity)
 {
-    return 
+    return
         reinterpret_cast<const StellarEvolution::EvolvingStellarQuantity*>(
             quantity
         )->range_high();
@@ -197,7 +197,7 @@ void quantity_continuous_range(const EvolvingStellarQuantity* quantity,
 
     MESAInterpolator *load_interpolator(const char *filename)
     {
-        StellarEvolution::MESA::Interpolator *interpolator = 
+        StellarEvolution::MESA::Interpolator *interpolator =
             new StellarEvolution::MESA::Interpolator();
         interpolator->load_state(filename);
         return reinterpret_cast<MESAInterpolator*>(interpolator);

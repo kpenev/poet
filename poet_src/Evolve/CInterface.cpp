@@ -8,11 +8,11 @@
 #define BUILDING_LIBRARY
 #include "CInterface.h"
 
-LIB_PUBLIC const int LOCKED_SURFACE_SPIN_EVOL_MODE = Core::LOCKED_SURFACE_SPIN;
-LIB_PUBLIC const int BINARY_EVOL_MODE = Core::BINARY;
-LIB_PUBLIC const int SINGLE_EVOL_MODE = Core::SINGLE;
-LIB_PUBLIC const int TABULATION_EVOL_MODE = Core::TABULATION;
-LIB_PUBLIC const double NaN = Core::NaN;
+const int LOCKED_SURFACE_SPIN_EVOL_MODE = Core::LOCKED_SURFACE_SPIN;
+const int BINARY_EVOL_MODE = Core::BINARY;
+const int SINGLE_EVOL_MODE = Core::SINGLE;
+const int TABULATION_EVOL_MODE = Core::TABULATION;
+const double NaN = Core::NaN;
 
 void read_eccentricity_expansion_coefficients(const char *filename)
 {
@@ -28,10 +28,10 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
                           double *spin_frequency_powers,
                           double reference_phase_lag)
 {
-    Evolve::BrokenPowerlawPhaseLagZone *zone =
+    Evolve::BrokenPowerlawPhaseLagZone *real_zone =
         reinterpret_cast<Evolve::BrokenPowerlawPhaseLagZone*>(zone);
 
-    zone->setup(
+    real_zone->setup(
         (
             num_tidal_frequency_breaks
             ? std::vector<double>(
@@ -62,7 +62,7 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
 }
 
 DiskBinarySystem *create_star_planet_system(EvolvingStar *star,
-                                            LockedPlanet *planet,
+                                            CPlanet *planet,
                                             double initial_semimajor,
                                             double initial_eccentricity,
                                             double initial_inclination,
@@ -73,7 +73,7 @@ DiskBinarySystem *create_star_planet_system(EvolvingStar *star,
     return reinterpret_cast<DiskBinarySystem*>(
         new Evolve::DiskBinarySystem(
             *reinterpret_cast<Star::InterpolatedEvolutionStar*>(star),
-            *reinterpret_cast<Planet::LockedPlanet*>(planet),
+            *reinterpret_cast<Planet::Planet*>(planet),
             initial_semimajor,
             initial_eccentricity,
             initial_inclination,
@@ -141,7 +141,7 @@ void configure_star(EvolvingStar *star,
     );
 }
 
-void configure_planet(LockedPlanet *planet,
+void configure_planet(CPlanet *planet,
                       double age,
                       double companion_mass,
                       double semimajor,
@@ -153,7 +153,7 @@ void configure_planet(LockedPlanet *planet,
                       bool zero_outer_inclination,
                       bool zero_outer_periapsis)
 {
-    reinterpret_cast<Planet::LockedPlanet*>(planet)->configure(
+    reinterpret_cast<Planet::Planet*>(planet)->configure(
         true,
         age,
         companion_mass,

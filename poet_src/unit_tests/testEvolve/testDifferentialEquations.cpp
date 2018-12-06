@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Implement the non-inline methods of test_DifferentialEquations
  *
  * \ingroup UnitTests_group
@@ -111,7 +111,7 @@ namespace Evolve {
 
         if(
             std::max(std::abs(max_difference), std::abs(min_difference))
-            < 
+            <
             1e-13 * y_scale
         )
             return;
@@ -120,7 +120,7 @@ namespace Evolve {
         alglib::polynomialfitreport fit_report;
         alglib::polynomialfit(x,
                               difference,
-                              max_order + 1, 
+                              max_order + 1,
                               fit_info,
                               interp,
                               fit_report);
@@ -220,7 +220,7 @@ namespace Evolve {
                                             one_poly,
                                             one_poly,
                                             one_poly);
-                Planet::LockedPlanet secondary(1.0, 1.0);
+                Planet::Planet secondary(1.0, 1.0);
 
                 BinarySystem binary(primary, secondary);
 
@@ -305,7 +305,7 @@ namespace Evolve {
                                 )
                             );
                             predicted_semimajor_rate[e_index] = evolution_rates[0];
-                            predicted_eccentricity_rate[e_index] = 
+                            predicted_eccentricity_rate[e_index] =
                                 evolution_rates[1];
                         }
 /*                        output_rates(eccentricities,
@@ -371,7 +371,7 @@ namespace Evolve {
             1.0
         );
 
-        Planet::LockedPlanet planet(1.0, 1.0);
+        Planet::Planet planet(1.0, 1.0);
 
         BinarySystem binary(*star, planet);
 

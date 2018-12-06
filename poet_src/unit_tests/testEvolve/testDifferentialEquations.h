@@ -13,7 +13,7 @@
 #include "../shared/Common.h"
 #include "../shared/PolynomialEvolution.h"
 #include "../shared/MakeStar.h"
-#include "../../Planet/LockedPlanet.h"
+#include "../../Planet/Planet.h"
 #include "../../third_party_libs/alglib/alglib/src/interpolation.h"
 
 namespace Evolve {

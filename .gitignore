@@ -4,4 +4,7 @@ stellar_evolution_interpolators
 MESA_tracks
 .gradle
 build
-a.out
+*.out
+*.txt
+*.eps
+alpha_beta_values

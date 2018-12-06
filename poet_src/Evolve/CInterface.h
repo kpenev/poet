@@ -38,14 +38,14 @@ extern "C" {
     struct LIB_PUBLIC OrbitSolver;
 
     ///Opaque struct to cant to/from Evolve::BrokenPowerlawPhasLagZone
-    struct LIB_LOCAL BrokenPowerlawPhaseLagZone;
+    struct LIB_PUBLIC BrokenPowerlawPhaseLagZone;
 
     ///Read eccentricity expansion coefficients from a file.
     LIB_PUBLIC void read_eccentricity_expansion_coefficients(
         const char *filename
     );
 
-    LIB_LOCAL void set_zone_dissipation(
+    LIB_PUBLIC void set_zone_dissipation(
         ///The zone to set the dissipation of.
         BrokenPowerlawPhaseLagZone *zone,
 
@@ -88,7 +88,7 @@ extern "C" {
 
         ///The second body in the system, initially may not be there and
         ///later may be engulfed by the first body.
-        LockedPlanet *planet,
+        CPlanet *planet,
 
         ///The semimajor axis of the orbit at which the secondary forms in
         /// \f$R_\odot\f$.
@@ -156,7 +156,7 @@ extern "C" {
     ///all zones.
     LIB_PUBLIC void configure_planet(
         ///The body to configure.
-        LockedPlanet *planet,
+        CPlanet *planet,
 
         ///The age to set the body to.
         double age,

@@ -24,7 +24,7 @@ int main(int, char **)
 
     const double DISK_PERIOD = 1.4311397660850234;
     const double PRIMARY_PHASE_LAG = 5.7726669277786535e-06;
-    const double SECONDARY_PHASE_LAG = 5.7726669277786535e-06; 
+    const double SECONDARY_PHASE_LAG = 5.7726669277786535e-06;
     const double DISK_DISSIPATION_AGE = 5e-3;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
@@ -53,24 +53,24 @@ int main(int, char **)
                                         DIFF_ROT_COUPLING_TIMESCALE,
                                         interpolator);
     select_interpolation_region(primary, core_formation_age(primary));
-    set_dissipation(primary,
-                    0,          //zone index
-                    0,          //# tidal frequency breaks
-                    0,          //# spin frequency breaks
-                    NULL,       //tidal frequency breaks
-                    NULL,       //spin frequency breaks
-                    &zero,      //tidal frequency powers
-                    &zero,      //spin frequency powers
-                    PRIMARY_PHASE_LAG);
-    set_dissipation(primary,
-                    1,          //zone index
-                    0,          //# tidal frequency breaks
-                    0,          //# spin frequency breaks
-                    NULL,       //tidal frequency breaks
-                    NULL,       //spin frequency breaks
-                    &zero,      //tidal frequency powers
-                    &zero,      //spin frequency powers
-                    0.0);       //phase lag
+    set_star_dissipation(primary,
+                         0,          //zone index
+                         0,          //# tidal frequency breaks
+                         0,          //# spin frequency breaks
+                         NULL,       //tidal frequency breaks
+                         NULL,       //spin frequency breaks
+                         &zero,      //tidal frequency powers
+                         &zero,      //spin frequency powers
+                         PRIMARY_PHASE_LAG);
+    set_star_dissipation(primary,
+                         1,          //zone index
+                         0,          //# tidal frequency breaks
+                         0,          //# spin frequency breaks
+                         NULL,       //tidal frequency breaks
+                         NULL,       //spin frequency breaks
+                         &zero,      //tidal frequency powers
+                         &zero,      //spin frequency powers
+                         0.0);       //phase lag
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
@@ -79,24 +79,24 @@ int main(int, char **)
                                           DIFF_ROT_COUPLING_TIMESCALE,
                                           interpolator);
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
-    set_dissipation(secondary,
-                    0,          //zone index
-                    0,          //# tidal frequency breaks
-                    0,          //# spin frequency breaks
-                    NULL,       //tidal frequency breaks
-                    NULL,       //spin frequency breaks
-                    &zero,      //tidal frequency powers
-                    &zero,      //spin frequency powers
-                    SECONDARY_PHASE_LAG);
-    set_dissipation(secondary,
-                    1,          //zone index
-                    0,          //# tidal frequency breaks
-                    0,          //# spin frequency breaks
-                    NULL,       //tidal frequency breaks
-                    NULL,       //spin frequency breaks
-                    &zero,      //tidal frequency powers
-                    &zero,      //spin frequency powers
-                    0.0);       //phase lag
+    set_star_dissipation(secondary,
+                         0,          //zone index
+                         0,          //# tidal frequency breaks
+                         0,          //# spin frequency breaks
+                         NULL,       //tidal frequency breaks
+                         NULL,       //spin frequency breaks
+                         &zero,      //tidal frequency powers
+                         &zero,      //spin frequency powers
+                         SECONDARY_PHASE_LAG);
+    set_star_dissipation(secondary,
+                         1,          //zone index
+                         0,          //# tidal frequency breaks
+                         0,          //# spin frequency breaks
+                         NULL,       //tidal frequency breaks
+                         NULL,       //spin frequency breaks
+                         &zero,      //tidal frequency powers
+                         &zero,      //spin frequency powers
+                         0.0);       //phase lag
 
     configure_star(secondary,
                    DISK_DISSIPATION_AGE,        //formation age

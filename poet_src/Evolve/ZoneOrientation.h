@@ -2,7 +2,7 @@
 #define __ZONE_ORIENTATION_H
 
 /**\file
- * 
+ *
  * \brief Declares a class for orientations of zones of DissipatingBody
  * objects.
  *
@@ -16,8 +16,8 @@
 
 #include "../Core/SharedLibraryExportMacros.h"
 #include "DissipationQuantities.h"
-#include "Eigen/Dense"
 #include "../Core/Common.h"
+#include "../Core/IncludeEigen.h"
 
 namespace Evolve {
 
@@ -54,8 +54,8 @@ namespace Evolve {
 
             ///The zone whose coordinate system we want to transform the vectors
             ///to.
-            const ZoneOrientation &to_zone, 
-            
+            const ZoneOrientation &to_zone,
+
             ///The vector to transform.
             const Eigen::Vector3d &vector,
 

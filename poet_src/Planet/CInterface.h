@@ -6,7 +6,6 @@
  */
 
 #include "../Core/SharedLibraryExportMacros.h"
-#include "../Evolve/CInterface.h"
 #include "Planet.h"
 
 extern "C" {

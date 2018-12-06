@@ -34,14 +34,24 @@ namespace Planet {
         unsigned number_zones() const {return 1;}
 
         ///Returns the only zone.
-        const Evolve::DissipatingZone &zone(unsigned zone_index) const
+        const Evolve::DissipatingZone &zone(
+            unsigned
+#ifndef NDEBUG
+            zone_index
+#endif
+        ) const
         {
             assert(zone_index == 0);
             return __zone;
         }
 
         ///Returns the only zone.
-        Evolve::DissipatingZone &zone(unsigned zone_index)
+        Evolve::DissipatingZone &zone(
+            unsigned
+#ifndef NDEBUG
+            zone_index
+#endif
+        )
         {
             assert(zone_index == 0);
             return __zone;

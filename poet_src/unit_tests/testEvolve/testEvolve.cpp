@@ -99,9 +99,9 @@ int main()
 	Test::TextOutput output(Test::TextOutput::Verbose);
 
     Test::Suite all_tests;
-    all_tests.add(
+/*    all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_GravitationalPotential)
-    );
+    );*/
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_TidalTorquePower)
     );

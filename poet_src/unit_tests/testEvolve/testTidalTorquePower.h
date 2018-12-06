@@ -10,7 +10,7 @@
 #define __TEST_TIDAL_TORQUE_POWER_H
 
 #include "ConstPhaseLagZone.h"
-#include "../../Planet/LockedPlanet.h"
+#include "../../Planet/Planet.h"
 #include "../../Evolve/BinarySystem.h"
 
 #include "../shared/Common.h"

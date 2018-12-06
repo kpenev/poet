@@ -85,7 +85,7 @@ namespace Evolve {
             assert(__body1.nontidal_torque(row + 1, Dissipation::AGE)[0] == 0);
             assert(__body1.nontidal_torque(row + 1, Dissipation::AGE)[1] == 0);
             assert(__body1.nontidal_torque(row + 1, Dissipation::RADIUS)[0]
-                   == 
+                   ==
                    0);
             assert(__body1.nontidal_torque(row + 1, Dissipation::RADIUS)[1]
                    ==
@@ -110,7 +110,7 @@ namespace Evolve {
                                            0)[1]
                    ==
                    0);
-            assert(__body1.nontidal_torque(row + 1, 
+            assert(__body1.nontidal_torque(row + 1,
                                            Dissipation::MOMENT_OF_INERTIA,
                                            1)[0]
                    ==
@@ -126,16 +126,16 @@ namespace Evolve {
                 if(std::abs(static_cast<int>(row) - static_cast<int>(col)) < 1)
                     dest = 0;
                 else {
-                    dest = __body1.nontidal_torque(row + 1, 
+                    dest = __body1.nontidal_torque(row + 1,
                                                    Dissipation::SPIN_ANGMOM,
                                                    col - row)[2];
 
-                    assert(__body1.nontidal_torque(row + 1, 
+                    assert(__body1.nontidal_torque(row + 1,
                                                    Dissipation::SPIN_ANGMOM,
                                                    col - row)[0]
                            ==
                            0);
-                    assert(__body1.nontidal_torque(row + 1, 
+                    assert(__body1.nontidal_torque(row + 1,
                                                    Dissipation::SPIN_ANGMOM,
                                                    col - row)[1]
                            ==
@@ -167,7 +167,7 @@ namespace Evolve {
                 inclination_evol[zone_index] = (
                     periapsis_evol[zone_index] = (
                         angmom_evol[zone_index + 1] = 0.0
-                    ) 
+                    )
                 );
             return 0;
         }
@@ -208,7 +208,7 @@ namespace Evolve {
         double *inclination_param_derivs,
         double *periapsis_param_derivs,
         double *angmom_param_derivs,
-        double *inclination_age_derivs, 
+        double *inclination_age_derivs,
         double *periapsis_age_derivs,
         double *angmom_age_derivs
     ) const
@@ -221,17 +221,17 @@ namespace Evolve {
                             1
                         ),
                         dref_torque_dperi=__body1.nontidal_torque(
-                            0, 
+                            0,
                             Dissipation::PERIAPSIS,
                             1
                         ),
                         dref_torque_dangmom0=__body1.nontidal_torque(
-                            0, 
+                            0,
                             Dissipation::SPIN_ANGMOM,
                             0
                         ),
                         dref_torque_dangmom1=__body1.nontidal_torque(
-                            0, 
+                            0,
                             Dissipation::SPIN_ANGMOM,
                             1
                         ),
@@ -252,7 +252,7 @@ namespace Evolve {
             double &angmom_angmom_deriv =
                 angmom_param_derivs[2 * nzones+deriv_zone_ind - 2];
             if(deriv_zone_ind==0) angmom_angmom_deriv = dref_torque_dangmom0[2];
-            else if(deriv_zone_ind == 1) 
+            else if(deriv_zone_ind == 1)
                 angmom_angmom_deriv = dref_torque_dangmom1[2];
             else angmom_angmom_deriv = 0;
         }
@@ -260,7 +260,7 @@ namespace Evolve {
         DissipatingZone &ref_zone = __body1.zone(0);
         for(unsigned zone_ind = 1; zone_ind < nzones; ++zone_ind) {
             DissipatingZone &zone = __body1.zone(zone_ind);
-            Eigen::Vector3d 
+            Eigen::Vector3d
                 zone_ref_torque = zone_to_zone_transform(ref_zone,
                                                          zone,
                                                          ref_torque),
@@ -273,13 +273,13 @@ namespace Evolve {
                                                               0);
             inclination_age_derivs[zone_ind - 1] =
                 zone.inclination_evolution(zone_ref_torque,
-                                           zone_torque, 
+                                           zone_torque,
                                            Dissipation::AGE,
                                            ref_torque_age_deriv,
                                            zone_torque_age_deriv);
             periapsis_age_derivs[zone_ind - 1] =
                 zone.periapsis_evolution(zone_ref_torque,
-                                         zone_torque, 
+                                         zone_torque,
                                          Dissipation::AGE,
                                          ref_torque_age_deriv,
                                          zone_torque_age_deriv);
@@ -299,14 +299,14 @@ namespace Evolve {
                 if(quantity_ind > 2 * nzones - 2) {
                     quantity_zone -= 2 * nzones - 2;
                     with_respect_to = Dissipation::SPIN_ANGMOM;
-                    if(quantity_zone == 0) 
+                    if(quantity_zone == 0)
                         ref_torque_deriv = dref_torque_dangmom0;
-                    else if(quantity_zone == 1) 
+                    else if(quantity_zone == 1)
                         ref_torque_deriv = dref_torque_dangmom1;
-                    if(quantity_zone <= 1) 
+                    if(quantity_zone <= 1)
                         ref_torque_deriv = zone_to_zone_transform(
                             ref_zone,
-                            zone, 
+                            zone,
                             ref_torque_deriv
                         );
                 } else {
@@ -324,7 +324,7 @@ namespace Evolve {
                     if(quantity_zone == 1)
                         ref_torque_deriv = zone_to_zone_transform(
                             ref_zone,
-                            zone, 
+                            zone,
                             ref_torque_deriv
                         );
                     ref_torque_deriv += zone_to_zone_transform(ref_zone,
@@ -344,7 +344,7 @@ namespace Evolve {
                         ref_torque_deriv,
                         zone_torque_deriv
                     );
-                    periapsis_dest=zone.periapsis_evolution(zone_ref_torque, 
+                    periapsis_dest=zone.periapsis_evolution(zone_ref_torque,
                                                             zone_torque,
                                                             with_respect_to,
                                                             ref_torque_deriv,
@@ -374,7 +374,7 @@ namespace Evolve {
     {
         unsigned nzones = __body1.number_zones(),
                  nparams=3*nzones-2;
-        fill_single_body_jacobian(param_derivs, 
+        fill_single_body_jacobian(param_derivs,
                                   param_derivs + (nzones - 1) * nparams,
                                   param_derivs + 2 * (nzones - 1) * nparams,
                                   age_derivs,
@@ -391,17 +391,18 @@ namespace Evolve {
             return (orbit_power == 0
                     ? 0
                     : -__semimajor * orbit_power / __orbital_energy);
-        else
-            if(orbit_power == 0 && orbit_power_deriv == 0)
-                return 0;
-            return (
-                -(2.0 * orbit_power
-                  +
-                  __semimajor * orbit_power_deriv
-                )
-                /
-                __orbital_energy
-            );
+
+        else if(orbit_power == 0 && orbit_power_deriv == 0)
+            return 0;
+
+        return (
+            -(2.0 * orbit_power
+              +
+              __semimajor * orbit_power_deriv
+            )
+            /
+            __orbital_energy
+        );
     }
 
     double BinarySystem::eccentricity_evolution(double orbit_power,
@@ -413,7 +414,7 @@ namespace Evolve {
         if(__eccentricity == 0) return 0;
         double e2 = std::pow(__eccentricity, 2),
                factor = -(1.0 - e2) / (2.0 * __eccentricity);
-                   
+
         if(std::isnan(orbit_power_deriv))
             return factor * (orbit_power / __orbital_energy
                              +
@@ -421,8 +422,8 @@ namespace Evolve {
         else if(semimajor_deriv)
             return (
                 factor
-                * 
-                (	
+                *
+                (
                     (
                         orbit_power_deriv
                         +
@@ -542,7 +543,7 @@ namespace Evolve {
             }
         } else if(deriv_zone.locked()) {
             if(
-                entry == Dissipation::SPIN_FREQUENCY 
+                entry == Dissipation::SPIN_FREQUENCY
                 ||
                 entry == Dissipation::SPIN_ANGMOM
             ) {
@@ -630,7 +631,7 @@ namespace Evolve {
                         __orbital_energy);
         unsigned i = 0;
         for(
-            std::list<unsigned>::const_iterator 
+            std::list<unsigned>::const_iterator
             zi=__locked_zones.begin();
             zi!=__locked_zones.end();
             ++zi
@@ -682,7 +683,7 @@ namespace Evolve {
         assert(entry == Dissipation::INCLINATION
                ||
                entry == Dissipation::PERIAPSIS
-               || 
+               ||
                entry == Dissipation::MOMENT_OF_INERTIA
                ||
                entry == Dissipation::SPIN_ANGMOM);
@@ -695,17 +696,17 @@ namespace Evolve {
         unsigned num_locked_zones = number_locked_zones();
         if(num_locked_zones == 0) return Eigen::VectorXd();
         DissipatingZone &deriv_zone = body.zone(zone_index);
-        unsigned locked_zone_index=(&body == &__body1 
+        unsigned locked_zone_index=(&body == &__body1
                                     ? 0
                                     : __body1.number_locked_zones());
         Eigen::VectorXd rhs;
-        for(unsigned i = 0; i < zone_index; ++i) 
+        for(unsigned i = 0; i < zone_index; ++i)
             if(body.zone(i).locked()) ++locked_zone_index;
         if(deriv_zone.locked()) {
             double above_frac =
                 __above_lock_fractions[Dissipation::NO_DERIV][locked_zone_index];
             rhs.setConstant(
-                num_locked_zones, 
+                num_locked_zones,
                 -1.5 * (above_frac*body.tidal_power(zone_index, true, entry)
                         +
                         (1.0 - above_frac) * body.tidal_power(zone_index,
@@ -737,10 +738,10 @@ namespace Evolve {
                     body.nontidal_torque(zone_index)[2]
                 ) / std::pow(deriv_zone.angular_momentum(), 2);
         } else {
-            rhs.setConstant(num_locked_zones, 
+            rhs.setConstant(num_locked_zones,
                             -1.5 * body.tidal_power(zone_index, false, entry));
         }
-        if(zone_index > 0 && body.zone(zone_index - 1).locked()) 
+        if(zone_index > 0 && body.zone(zone_index - 1).locked())
             rhs(body.zone(zone_index - 1).locked_zone_index()) -=
                 body.nontidal_torque(zone_index - 1, entry, 1)[2];
         if(
@@ -773,7 +774,7 @@ namespace Evolve {
         for(unsigned zone_ind = 1; zone_ind < num_zones; ++zone_ind) {
             ++body_zone_ind;
             if(body_zone_ind == body->number_zones()) {
-                body_zone_ind = 0; 
+                body_zone_ind = 0;
                 body = &__body2;
             }
             __above_lock_fractions_inclination_deriv[zone_ind] =
@@ -797,7 +798,7 @@ namespace Evolve {
 
     void BinarySystem::update_above_lock_fractions()
     {
-        std::valarray<Eigen::VectorXd> 
+        std::valarray<Eigen::VectorXd>
             body2_above_lock_fractions(Dissipation::NUM_DERIVATIVES);
         for(
             int deriv = Dissipation::NO_DERIV;
@@ -894,7 +895,7 @@ namespace Evolve {
                             total_zone_torque;
             if(expansion_error)
                 total_zone_torque.setZero();
-            else 
+            else
                 total_zone_torque = body.nontidal_torque(body_zone_ind);
 
             if(expansion_error)
@@ -1030,7 +1031,7 @@ namespace Evolve {
                 orbit_rate_deriv[zone_ind + 1 + num_zones + offset] =
                     (body.*func)(
                         Dissipation::PERIAPSIS,
-                        zone_ind, 
+                        zone_ind,
                         __above_lock_fractions_periapsis_deriv[zone_ind+offset]
                     );
             const DissipatingZone &zone = body.zone(zone_ind);
@@ -1039,7 +1040,7 @@ namespace Evolve {
                 zone_ind + 1 + 2 * num_zones - locked_zone_count
             ] = (body.*func)(
                 Dissipation::SPIN_ANGMOM,
-                zone_ind, 
+                zone_ind,
                 __above_lock_fractions_angmom_deriv[zone_ind + offset]
             );
             orbit_rate_deriv[num_param] += (
@@ -1073,7 +1074,7 @@ namespace Evolve {
             std::valarray<double> &orbit_angmom_gain_deriv
     ) const
     {
-        std::valarray<Eigen::Vector3d> 
+        std::valarray<Eigen::Vector3d>
             body1_orbit_torque_deriv(orbit_angmom_gain_deriv.size()),
             body2_orbit_torque_deriv(orbit_angmom_gain_deriv.size());
         body1_orbit_torque_deriv[0] =
@@ -1081,10 +1082,10 @@ namespace Evolve {
             body2_orbit_torque_deriv[0] =
             body2_orbit_torque_deriv[1] = Eigen::Vector3d(0, 0, 0);
         add_body_rate_deriv(__body1,
-                            &DissipatingBody::tidal_orbit_torque, 
+                            &DissipatingBody::tidal_orbit_torque,
                             body1_orbit_torque_deriv,
                             0);
-        add_body_rate_deriv(__body2, &DissipatingBody::tidal_orbit_torque, 
+        add_body_rate_deriv(__body2, &DissipatingBody::tidal_orbit_torque,
                             body2_orbit_torque_deriv,
                             __body1.number_zones());
         double body1_sin_inc = std::sin(__body1.zone(0).inclination()),
@@ -1260,7 +1261,7 @@ namespace Evolve {
         inclination = (orbit_torque_deriv[0] * cos_inc
                        -
                        orbit_torque_deriv[2] * sin_inc
-                       - 
+                       -
                        (orbit_torque[0] * cos_inc - orbit_torque[2] * sin_inc)
                        *
                        angmom_deriv
@@ -1279,7 +1280,7 @@ namespace Evolve {
         );
         Eigen::Vector3d to_add =- body.nontidal_torque(zone_ind, entry);
         if(zone.locked()) {
-            double 
+            double
                 above_frac =
                 __above_lock_fractions[Dissipation::NO_DERIV][locked_zone_ind],
                 above_frac_deriv = __above_lock_fractions[entry][locked_zone_ind];
@@ -1307,7 +1308,7 @@ namespace Evolve {
     void BinarySystem::fill_orbit_torque_deriv(
         Dissipation::QuantityEntry entry,
         DissipatingBody &body,
-        unsigned zone_ind, 
+        unsigned zone_ind,
         std::valarray<Eigen::Vector3d> &orbit_torque_deriv
     ) const
     {
@@ -1326,7 +1327,7 @@ namespace Evolve {
                  num_zones = orbit_torque_deriv.size();
         DissipatingBody *deriv_body = &__body1;
         const std::valarray<Eigen::VectorXd> *above_frac_deriv;
-        if(entry == Dissipation::INCLINATION) 
+        if(entry == Dissipation::INCLINATION)
             above_frac_deriv = &__above_lock_fractions_inclination_deriv;
         else if(entry == Dissipation::PERIAPSIS)
             above_frac_deriv = &__above_lock_fractions_periapsis_deriv;
@@ -1380,7 +1381,7 @@ namespace Evolve {
     void BinarySystem::fill_zone_torque_deriv(
         Dissipation::QuantityEntry entry,
         DissipatingBody &body,
-        unsigned zone_ind, 
+        unsigned zone_ind,
         std::valarray<Eigen::Vector3d> &zone_torque_deriv
     ) const
     {
@@ -1400,10 +1401,10 @@ namespace Evolve {
         zone_torque_deriv[1] = (nontidal_torque
                                 +
                                 body.tidal_torque(zone_ind, false, entry));
-        zone_torque_deriv[2] = (zone_ind < body.number_zones() - 1 
+        zone_torque_deriv[2] = (zone_ind < body.number_zones() - 1
                                 ? body.nontidal_torque(zone_ind, entry, 1)
                                 : Eigen::Vector3d::Zero());
-        if(body.zone(zone_ind).locked()) 
+        if(body.zone(zone_ind).locked())
             zone_torque_deriv[3] = (nontidal_torque
                                     +
                                     body.tidal_torque(zone_ind, true, entry));
@@ -1413,7 +1414,7 @@ namespace Evolve {
             Dissipation::QuantityEntry entry,
             DissipatingBody &body,
             unsigned zone_ind,
-            double zone_x_torque_above, 
+            double zone_x_torque_above,
             double zone_x_torque_below,
             const std::valarray<Eigen::Vector3d> &zone_torque_deriv,
             const Eigen::Vector3d &orbit_torque,
@@ -1493,7 +1494,7 @@ namespace Evolve {
             Dissipation::QuantityEntry entry,
             DissipatingBody &body,
             unsigned zone_ind,
-            double zone_y_torque_above, 
+            double zone_y_torque_above,
             double zone_y_torque_below,
             const std::valarray<Eigen::Vector3d> &zone_torque_deriv,
             double orbit_y_torque,
@@ -1530,7 +1531,7 @@ namespace Evolve {
             ++deriv_zone_ind
         ) {
             if(entry == Dissipation::PERIAPSIS && deriv_zone_ind == 0) continue;
-            double &dest = (entry == Dissipation::PERIAPSIS 
+            double &dest = (entry == Dissipation::PERIAPSIS
                             ? result[deriv_zone_ind - 1]
                             : result[deriv_zone_ind]);
             dest = (-orbit_torque_deriv[deriv_zone_ind][1]
@@ -1698,7 +1699,7 @@ namespace Evolve {
                                         body_zone_ind,
                                         sin_inc,
                                         cos_inc,
-                                        locked_zone_ind, 
+                                        locked_zone_ind,
                                         param_derivs[(2 + zone_ind) * num_param],
                                         periapsis_row[0]);
             angle_evolution_orbit_deriv(
@@ -1707,7 +1708,7 @@ namespace Evolve {
                 *body,
                 body_zone_ind,
                 sin_inc, cos_inc,
-                locked_zone_ind, 
+                locked_zone_ind,
                 param_derivs[(2 + zone_ind) * num_param + 1],
                 periapsis_row[1]
             );
@@ -1717,7 +1718,7 @@ namespace Evolve {
                             orbit_torque = body->tidal_orbit_torque(zone);
             zone_torque_above += body->tidal_torque(zone_ind, true);
             zone_torque_below += body->tidal_torque(zone_ind, false);
-            std::valarray<Eigen::Vector3d> 
+            std::valarray<Eigen::Vector3d>
                 zone_torque_deriv(zone.locked() ? 4 : 3),
                 orbit_torque_deriv(num_zones);
             unsigned param_offset = (2 + zone_ind) * num_param + 2;
@@ -1736,7 +1737,7 @@ namespace Evolve {
                                                   zone_torque_below[0],
                                                   zone_torque_deriv,
                                                   orbit_torque,
-                                                  orbit_torque_deriv, 
+                                                  orbit_torque_deriv,
                                                   *(above_frac_deriv[deriv_ind]),
                                                   sin_inc,
                                                   cos_inc,
@@ -1763,7 +1764,7 @@ namespace Evolve {
                     zone_torque_below[2],
                     zone_torque_deriv,
                     *(above_frac_deriv[deriv_ind]),
-                    locked_zone_ind, 
+                    locked_zone_ind,
                     param_derivs + param_offset + 2 * num_zones - 1
                 );
                 param_offset += (deriv == Dissipation::PERIAPSIS
@@ -1814,7 +1815,7 @@ namespace Evolve {
         else orbit[0] = __semimajor;
         orbit[1] = __eccentricity;
         unsigned inclination_ind = 2,
-                 periapsis_ind = 2 + number_zones(), 
+                 periapsis_ind = 2 + number_zones(),
                  angmom_ind = periapsis_ind + number_zones() - 1;
         for(short body_ind = 0; body_ind < 2; ++body_ind) {
             DissipatingBody &body = (body_ind == 0 ? __body1 : __body2);
@@ -1844,7 +1845,7 @@ namespace Evolve {
 
         orbit.resize(3 * __body1.number_zones() - 2);
         unsigned inclination_ind = 0,
-                 periapsis_ind = __body1.number_zones() - 1, 
+                 periapsis_ind = __body1.number_zones() - 1,
                  angmom_ind = periapsis_ind + __body1.number_zones() - 1;
         for(
             unsigned zone_ind = 0;
@@ -1954,7 +1955,7 @@ namespace Evolve {
 
     int BinarySystem::configure(bool initialize,
                                 double age,
-                                const double *parameters, 
+                                const double *parameters,
                                 Core::EvolModeType evolution_mode)
     {
         __evolution_mode = evolution_mode;
@@ -1979,7 +1980,7 @@ namespace Evolve {
             }
             if(__body1.number_locked_zones() || __body2.number_locked_zones()) {
                 semimajor = parameters[0];
-            } else 
+            } else
                 semimajor = std::pow(parameters[0], 1.0 / 6.5);
             eccentricity = parameters[1];
             inclination = parameters+2;
@@ -2026,7 +2027,7 @@ namespace Evolve {
                                              bool secondary_radius)
     {
         if(zone_specific(entry)) {
-            assert(entry == Dissipation::INCLINATION 
+            assert(entry == Dissipation::INCLINATION
                    ||
                    entry == Dissipation::PERIAPSIS
                    ||
@@ -2047,7 +2048,7 @@ namespace Evolve {
                     [locked_zone_index];
         } else {
             if(entry == Dissipation::RADIUS && secondary_radius)
-                return 
+                return
                     __above_lock_fractions_body2_radius_deriv[locked_zone_index];
             else return __above_lock_fractions[entry][locked_zone_index];
         }
@@ -2092,7 +2093,7 @@ namespace Evolve {
     }
 
     int BinarySystem::jacobian(double age,
-                               const double *parameters, 
+                               const double *parameters,
                                Core::EvolModeType evolution_mode,
                                double *param_derivs,
                                double *age_derivs)
@@ -2182,7 +2183,7 @@ namespace Evolve {
 #ifndef NDEBUG
     //		if(direction<0) assert(above_lock_fraction<0);
     //		else if(direction>0) assert(above_lock_fraction>0);
-    //		else 
+    //		else
 #endif
                 direction=(above_lock_fraction < 0 ? -1 : 1);
         }
@@ -2227,7 +2228,7 @@ namespace Evolve {
 #endif
         unsigned num_zones = __body1.number_zones();
         std::valarray<double> spin_angmom(num_zones),
-                              inclination(num_zones - 1), 
+                              inclination(num_zones - 1),
                               periapsis(num_zones - 1);
         DissipatingZone &old_surface_zone = __body1.zone(0);
         double old_surface_inclination = old_surface_zone.inclination(),

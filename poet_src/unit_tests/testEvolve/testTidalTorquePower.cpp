@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Define the non-inline methods of test_TidalTorquePower and actually
  * run the tests if compiled in stand-alone mode.
  *
@@ -26,7 +26,7 @@ namespace Evolve {
                        0.0,//periapsis
                        true);//spin_is_freq
 
-        Planet::LockedPlanet planet(1.0, 1.0);
+        Planet::Planet planet(1.0, 1.0);
         BinarySystem dummy_system(planet, planet, "");
 
         zone.change_e_order(20, dummy_system, true, 0);
@@ -122,7 +122,7 @@ namespace Evolve {
                        0.0,//periapsis
                        true);//spin_is_freq
 
-        Planet::LockedPlanet planet(1.0, 1.0);
+        Planet::Planet planet(1.0, 1.0);
         BinarySystem dummy_system(planet, planet, "");
 
         for(double e = 0.0; e <= 0.99; e += 0.01) {

@@ -15,7 +15,7 @@ namespace Evolve {
 
     /**\brief A skumanich wind body with a single zone dissipative to only a
      * single tidal term.
-     * 
+     *
      * \ingroup UnitTests_group
      */
     class SingleTidalTermBody : public Star::SaturatingSkumanichWindBody {
@@ -66,14 +66,24 @@ namespace Evolve {
         unsigned number_zones() const {return 1;}
 
         ///See DissipatingBody::zone(int) const.
-        const DissipatingZone &zone(unsigned zone_index) const
+        const DissipatingZone &zone(
+            unsigned
+#ifndef NDEBUG
+            zone_index
+#endif
+        ) const
         {
             assert(zone_index == 0);
             return __zone;
         }
 
         ///See DissipatingBody::zone(int).
-        DissipatingZone &zone(unsigned zone_index)
+        DissipatingZone &zone(
+            unsigned
+#ifndef NDEBUG
+            zone_index
+#endif
+        )
         {
             assert(zone_index == 0);
             return __zone;

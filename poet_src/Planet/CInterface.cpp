@@ -7,6 +7,7 @@
 
 #define BUILDING_LIBRARY
 #include "CInterface.h"
+#include "../Evolve/CInterface.h"
 
 CPlanet *create_planet(double mass, double radius)
 {
@@ -30,7 +31,7 @@ LIB_PUBLIC void set_planet_dissipation(CPlanet *planet,
                                        double reference_phase_lag)
 {
     Evolve::BrokenPowerlawPhaseLagZone *zone = &(
-        reinterpret_cast<Planet::Planet*>(planet).zone()
+        reinterpret_cast<Planet::Planet*>(planet)->zone()
     );
 
     set_zone_dissipation(

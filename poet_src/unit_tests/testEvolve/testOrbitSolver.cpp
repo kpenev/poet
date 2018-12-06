@@ -85,7 +85,7 @@ namespace Evolve {
     )
     {
         //phase lag(min_frequency - decay_scale)
-        //= 
+        //=
         //phase lag(max_frequency + decay_scale)
         //=
         //suppression_factor * phase_lag
@@ -140,11 +140,11 @@ namespace Evolve {
                                   double max_step_factor)
     {
         __star->select_interpolation_region(TSTART);
-        
+
 
         if(std::isnan(tplanet)) tplanet = tdisk;
 
-        Planet::LockedPlanet planet(planet_mass,
+        Planet::Planet planet(planet_mass,
                                     (planet_mass ? planet_radius : 0.0));
         planet.configure(true, //init
                          tplanet, //age
@@ -224,13 +224,13 @@ namespace Evolve {
                 __star->envelope().get_evolution_real(Evolve::INCLINATION)
             );
 
-            tabulated_real_quantities[RAD_INCLINATION] = 
+            tabulated_real_quantities[RAD_INCLINATION] =
                 &(__star->core().get_evolution_real(Evolve::INCLINATION));
 
-            tabulated_real_quantities[CONV_PERIAPSIS] = 
+            tabulated_real_quantities[CONV_PERIAPSIS] =
                 &(__star->envelope().get_evolution_real(Evolve::PERIAPSIS));
 
-            tabulated_real_quantities[RAD_PERIAPSIS] = 
+            tabulated_real_quantities[RAD_PERIAPSIS] =
                 &(__star->core().get_evolution_real(Evolve::PERIAPSIS));
 
             tabulated_real_quantities[CONV_ANGMOM] = &(
@@ -353,7 +353,7 @@ namespace Evolve {
                               << static_cast<RealEvolutionQuantity>(q)
                               << " = "
                               << *real_tabulated_iter[q];
-                              
+
             msg.str("");
             msg << age_msg_start.str() << " age is out of range.";
             TEST_ASSERT_MSG(*age_i >= min_age && *age_i <= max_age,
@@ -642,7 +642,7 @@ namespace Evolve {
             expected_real_quantities[RAD_INCLINATION] = &zero_func;
             expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
             expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
-            expected_real_quantities[CONV_ANGMOM] = 
+            expected_real_quantities[CONV_ANGMOM] =
                 new StellarEvolution::PolynomialEvolutionQuantity(
                     std::valarray<double>(1.0, 2),
                     TSTART,
@@ -720,7 +720,7 @@ namespace Evolve {
             initial_Lrad = (TSTART / 2.0 + 1.0) / 6.0;
             evolve(1.0,
                    MAX_AGE,
-                   1.0, 
+                   1.0,
                    &initial_Lrad);
             test_solution(get_evolution(),
                           expected_real_quantities,
@@ -750,7 +750,7 @@ namespace Evolve {
         try {
             const double rt2 = std::sqrt(2.0);
 
-            StellarEvolution::MockStellarEvolution 
+            StellarEvolution::MockStellarEvolution
                 *stellar_evol = StellarEvolution::make_no_evolution();
             double initial_Lstar[] = {0.0, 0.0};
 
@@ -772,7 +772,7 @@ namespace Evolve {
 
             delete stellar_evol;
             stellar_evol = StellarEvolution::make_linear_I_evolution();
-            
+
             initial_Lstar[0] = 1.0;
             expected_real_quantities[CONV_ANGMOM] = &one_func;
             test_no_planet_scenario(*stellar_evol,
@@ -858,7 +858,7 @@ namespace Evolve {
                 0.5 / rt2 * std::exp(-1.0 / (2.0 - rt2) * (TSTART))
             );
 
-            ExponentialPlusFunc 
+            ExponentialPlusFunc
                 Lc1(&zero_func, b1, -1.0 / (2.0 + rt2)),
                 Lc2(&zero_func, b2, -1.0 / (2.0 - rt2)),
                 Lr1(&zero_func, 0.5 / rt2, -1.0 / (2.0 + rt2)),
@@ -900,7 +900,7 @@ namespace Evolve {
             unsat_wind_mode.add_break(TSTART, false);
             sat_wind_mode.add_break(TSTART, true);
 
-            StellarEvolution::MockStellarEvolution 
+            StellarEvolution::MockStellarEvolution
                 *no_evol = StellarEvolution::make_no_evolution(1.0);
 
             std::vector<const Core::OneArgumentDiffFunction *>
@@ -990,7 +990,7 @@ namespace Evolve {
 
             evolve(0.0,//wdisk
                    0.0,//tdisk
-                   (*expected_real_quantities[SEMIMAJOR])(TSTART),
+                   initial_a,
                    &(initial_L[0]),
                    0.0,//initial inclination
                    mplanet,//planet mass
@@ -1034,7 +1034,7 @@ namespace Evolve {
 
             evolve(0.0,//wdisk
                    0.0,//tdisk
-                   (*expected_real_quantities[SEMIMAJOR])(TSTART),
+                   initial_a,
                    &(initial_L[0]),
                    0.0,//initial inclination
                    mplanet,//planet mass
@@ -1276,43 +1276,43 @@ namespace Evolve {
                                   3.0 * beta / 2.0 * std::log(a1)
                                   +
                                   kappa_s);
-            double solver_params[] = {Lscale, beta, kappa, int_const, 0.0};
-/*            double a0 = solve(a1,
+/*            double solver_params[] = {Lscale, beta, kappa, int_const, 0.0};
+            double a0 = solve(a1,
                               0.0,
                               1e-9,
                               &locked_unsat_eq,
                               &locked_unsat_deriv,
                               &locked_unsat_eq_deriv,
-                              static_cast<void*>(solver_params));*/
+                              static_cast<void*>(solver_params));
             solver_params[4] = TSTART;
-/*            double astart = solve(a0,
+            double astart = solve(a0,
                                   0.0,
                                   1e-9,
                                   &locked_unsat_eq,
                                   &locked_unsat_deriv,
                                   &locked_unsat_eq_deriv,
-                                  static_cast<void*>(solver_params));*/
+                                  static_cast<void*>(solver_params));
             solver_params[2] = kappa_s;
             solver_params[3] = int_const_s;
             solver_params[4] = 0;
-/*            double a0_s = solve(a1,
+            double a0_s = solve(a1,
                                 0.0,
                                 1e-9,
                                 &locked_sat_eq,
                                 &locked_sat_deriv,
                                 &locked_sat_eq_deriv,
-                                static_cast<void*>(solver_params));*/
+                                static_cast<void*>(solver_params));
             solver_params[4] = TSTART;
-/*            double astart_s = solve(a1,
+            double astart_s = solve(a1,
                                     0.0,
                                     1e-9,
                                     &locked_sat_eq,
                                     &locked_sat_deriv,
                                     &locked_sat_eq_deriv,
-                                    static_cast<void*>(solver_params));*/
+                                    static_cast<void*>(solver_params));
             solver_params[4] = 1.0;
 
-    /*		double w0=std::sqrt(
+    		double w0=std::sqrt(
                            AstroConst::G*
                            (AstroConst::solar_mass+AstroConst::jupiter_mass)/
                            std::pow(a0*AstroConst::solar_radius, 3))*
@@ -1476,13 +1476,13 @@ namespace Evolve {
                                Core::AstroConst::jupiter_mass
                            )
                            /
-                           std::pow(Core::AstroConst::solar_radius, 3), 
+                           std::pow(Core::AstroConst::solar_radius, 3),
                            1.5
                        )
                        *
                        std::pow(Core::AstroConst::day, 3)
                    ),
-                   int_const = (Lscale / 10.0 * std::pow(afinal, 5) 
+                   int_const = (Lscale / 10.0 * std::pow(afinal, 5)
                                 -
                                 beta / 2.0 * std::pow(afinal, 3)
                                 +
@@ -1520,7 +1520,7 @@ namespace Evolve {
                                    /
                                    Core::AstroConst::solar_mass))
             );
-            Planet::LockedPlanet planet(1.0, 1.0);
+            Planet::Planet planet(1.0, 1.0);
             planet.configure(true, //init
                              tdisk, //age
                              __star->mass(), //mass
@@ -1560,7 +1560,7 @@ namespace Evolve {
                               int_const
                               -
                               Lscale / 10.0 * std::pow(adestr, 5)) / kappa),
-                   Lc_at_destr = (beta / std::pow(adestr, 1.5) 
+                   Lc_at_destr = (beta / std::pow(adestr, 1.5)
                                   +
                                   Lscale * std::sqrt(adestr));
 
@@ -1641,7 +1641,7 @@ namespace Evolve {
                         (tfinal - __system->age()) / 10000.0, //time step
                         std::list<double>()); //no required ages*/
 
-            std::vector< const std::list<double> * > 
+            std::vector< const std::list<double> * >
                 tabulated_evolution = get_evolution();
             const std::vector< const std::list<double> * > &
                 transformed_evolution = to_check(tabulated_evolution);
@@ -1679,7 +1679,7 @@ namespace Evolve {
             StellarSystem system1(&star_not_saturated_wind_no_coupling, &planet1);
     /*		std::cout << std::endl << "alpha=" << Lscale
                 << std::endl << "beta=" << beta
-                << std::endl << "kappa=" << kappa 
+                << std::endl << "kappa=" << kappa
                 << std::endl << "wdisk=" << wdisk << std::endl;
             std::cout << std::endl << "ainitial=" << ainitial << std::endl;
             std::cout << std::endl << "Destruction a=" << adestr
@@ -2087,7 +2087,7 @@ namespace Evolve {
     void test_OrbitSolver::test_disklocked_to_locked_to_fast()
     {
         try {
-            const double 
+            const double
                 a0=3.2,
                 abreak=3.0,
                 adeath=2.0,
@@ -2364,7 +2364,7 @@ namespace Evolve {
             std::vector<const Core::OneArgumentDiffFunction *>
                 expected_real_quantities(NUM_REAL_QUANTITIES - 1);
 
-            std::vector< const std::list<double> * > 
+            std::vector< const std::list<double> * >
                 tabulated_evolution = get_evolution();
 
             const std::vector< const std::list<double> * > &
@@ -2627,7 +2627,7 @@ namespace Evolve {
                                     2.0 * WSTAR * LCONV_DECAY_RATE * TDISK
                                     -
                                     std::pow(LCONV_DECAY_RATE * TDISK, 2));
-        rad_cosinc_denom_coef[1] = 
+        rad_cosinc_denom_coef[1] =
             2.0 * LCONV_DECAY_RATE * (WORB + LCONV_DECAY_RATE * TDISK);
         rad_cosinc_denom_coef[2] = - std::pow(LCONV_DECAY_RATE, 2);
 
@@ -2714,7 +2714,7 @@ namespace Evolve {
                &ONE,//initial L*
                M_PI / 2.0);//initial inclination
 
-        std::vector< const std::list<double> * > 
+        std::vector< const std::list<double> * >
             tabulated_evolution = get_evolution();
         const std::vector< const std::list<double> * > &
             transformed_evolution = to_check(tabulated_evolution);

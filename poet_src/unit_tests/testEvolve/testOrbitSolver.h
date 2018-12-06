@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Declares the test suite that exercises the OrbitSolver class and
  * some other clasess necessary to accomplish this.
  *
@@ -18,7 +18,7 @@
 #include "ConservedLEObliquityEvolution.h"
 #include "../../Evolve/OrbitSolver.h"
 #include "../../Star/EvolvingStar.h"
-#include "../../Planet/LockedPlanet.h"
+#include "../../Planet/Planet.h"
 #include "../../Evolve/DiskBinarySystem.h"
 #include "../shared/PolynomialEvolution.h"
 #include "../shared/Common.h"

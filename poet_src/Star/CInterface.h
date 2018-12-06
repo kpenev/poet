@@ -7,7 +7,6 @@
  */
 
 
-#include "../Evolve/CInterface.h"
 #include "../StellarEvolution/CInterface.h"
 #include "../Core/SharedLibraryExportMacros.h"
 #include "EvolvingStar.h"
