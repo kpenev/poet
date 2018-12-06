@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Declares a class for the single zone of LockedPlanet objects.
  *
  * \ingroup Planet_group
@@ -11,40 +11,41 @@
 #include "../Core/SharedLibraryExportMacros.h"
 #include "../Evolve/DissipatingZone.h"
 #include "../Core/AstronomicalConstants.h"
+#include "../Evolve/BrokenPowerlawPhaseLagZone.h"
 
 namespace Planet {
 
     ///\brief The only zone of a LockedPlanet.
-    class LIB_LOCAL LockedPlanetZone : virtual public Evolve::DissipatingZone {
+    ///
+    ///\ingroup Planet_group
+    class LIB_LOCAL PlanetZone :
+        virtual public Evolve::BrokenPowerlawPhaseLagZone {
     private:
-        ///The mass of the planet.
-        double __mass,
+        double
+            ///See mass argument to constructor
+            __mass,
 
-               ///The radius of the planet.
-               __radius;
+            ///See radius argument to constructor
+            __radius,
+
+            ///See moment_of_inertia_factor to constructor.
+            __moment_of_inertia_factor;
+
     public:
-        LockedPlanetZone(double mass, double radius) :
-            __mass(mass
-                   *
-                   Core::AstroConst::jupiter_mass
-                   /
-                   Core::AstroConst::solar_mass),
-            __radius(radius
-                     *
-                     Core::AstroConst::jupiter_radius
-                     /
-                     Core::AstroConst::solar_radius)
-        {}
+        PlanetZone(
+            ///The mass of the planet in solar masses.
+            double mass,
 
-        ///See DissipatingZone::modified_phase_lag(), set to zero.
-        virtual double modified_phase_lag(
-                ///orbital_frequency_multiplier
-                int ,
-                int ,
-                double ,
-                Evolve::Dissipation::QuantityEntry ,
-                double &) const
-        {return 0;}
+            ///The radius of the planet is solar radii.
+            double radius,
+
+            ///The factor to multiply mass * radius^2 to get the moment of
+            ///inertia.
+            double moment_of_inertia_factor) :
+            __mass(mass),
+            __radius(radius),
+            __moment_of_inertia_factor(moment_of_inertia_factor)
+        {}
 
         ///See DissipatingZone::love_coefficient(), always zero.
         double love_coefficient(int,
@@ -54,13 +55,20 @@ namespace Planet {
 
         ///Tiny value (\f$10^{-6} M R^2\f$).
         double moment_of_inertia(
-                ///What to return:
-                /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
-                /// - 1 The rate of change of the moment of inertia in 
-                ///     \f$M_\odot R_\odot^2/Gyr\f$
-                /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
-                int deriv_order=0) const
-        {return (deriv_order==0 ? 1e-6*__mass*std::pow(__radius, 2) : 0);}
+            ///What to return:
+            /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
+            /// - 1 The rate of change of the moment of inertia in
+            ///     \f$M_\odot R_\odot^2/Gyr\f$
+            /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
+            int deriv_order=0
+        ) const
+        {
+            return (
+                deriv_order==0
+                ? __moment_of_inertia_factor * __mass * std::pow(__radius, 2)
+                : 0
+            );
+        }
 
         double moment_of_inertia(double, int deriv_order=0) const
         {return moment_of_inertia(deriv_order);}
@@ -81,50 +89,6 @@ namespace Planet {
         double outer_mass(double, int deriv_order=0) const
         {return (deriv_order==0 ? __mass : 0);}
 
-        ///No dissipation.
-        bool dissipative() const {return false;}
-
-        ///\brief Calls the usual DissipatingZone::configure but with zero
-        ///inclination and periapsis.
-        void configure(
-            ///Is this the first time configure() is invoked?
-            bool initialize,
-
-            ///The age to set the zone to.
-            double age,
-
-            ///The angular velocity of the orbit in rad/day.
-            double orbital_frequency,
-
-            ///The eccentricity of the orbit
-            double eccentricity,
-
-            ///The absolute value of the angular momentum of the orbit.
-            double orbital_angmom,
-
-            ///The angular momentum/frequency of the spin of the zone
-            ///(ignored).
-            double ,
-
-            ///The inclination of the zone relative to the orbit.
-            double ,
-
-            ///The argument of periapsis of the orbit in the equatorial
-            ///planet of the zone.
-            double ,
-
-            ///Is spin_angmom angular momentum of freuqency? (ignored)
-            bool
-        )
-        {DissipatingZone::configure(initialize,
-                                    age,
-                                    orbital_frequency,
-                                    eccentricity,
-                                    orbital_angmom,
-                                    orbital_frequency,
-                                    0,
-                                    0,
-                                    true);}
     }; //End LockedPlanetZone class.
 
 }//End Planet namespace.

@@ -1,4 +1,4 @@
-/**\file 
+/**\file
  *
  * \brief Declares the DissipatingBody class.
  *
@@ -26,7 +26,7 @@ namespace Evolve {
     ///
     ///All torques are in units of
     /// \f$M_\odot R_\odot^2 \mathrm{rad}\mathrm{day}^{-1}\mathrm{Gyr}^{-1}\f$
-    ///and tidal power is in units of 
+    ///and tidal power is in units of
     /// \f$M_\odot R_\odot^2 \mathrm{rad}^2\mathrm{day}^{-2}\mathrm{Gyr}^{-1}\f$
     ///
     ///Age derivatives are per Gyr
@@ -40,7 +40,7 @@ namespace Evolve {
     private:
         double
             ///The coefficient used to normalize tidal power.
-            __power_norm, 
+            __power_norm,
 
             ///The mean angular velocity with which the orbit is traversed.
             __orbital_frequency,
@@ -51,7 +51,7 @@ namespace Evolve {
             ///The frequency at which the surface is locked (if any).
             __surface_lock_frequency;
 
-        std::valarray< std::valarray<Eigen::Vector3d> > 
+        std::valarray< std::valarray<Eigen::Vector3d> >
             ///\brief The rate of angular momentum transfer between two
             ///neighboring zones due to zone boundaries moving.
             ///
@@ -86,7 +86,7 @@ namespace Evolve {
             ///The derivatives are only w.r.t. the non-zone specific
             ///quantities listed in __orbit_entries.
             __orbit_power,
-            
+
             ///\brief Corrections to __orbit_power_below
             ///(undifferentiated) if single zones switch to above.
             __orbit_power_correction;
@@ -99,7 +99,7 @@ namespace Evolve {
         ///The derivatives are only w.r.t. the non-zone specific quantities
         ///listed in __orbit_entries.
         std::vector<Eigen::Vector3d> __orbit_torque,
-            
+
             ///\brief Corrections to __orbit_torque_below (undifferentiated)
             ///if single zones switch to above.
             ///
@@ -167,8 +167,8 @@ namespace Evolve {
             ///to request another derivative.
             Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV,
 
-            ///If deriv is not NO_DERIV, derivatives can be computed with 
-            ///respect to quantities of the outer zone (if this argument is 
+            ///If deriv is not NO_DERIV, derivatives can be computed with
+            ///respect to quantities of the outer zone (if this argument is
             ///true) or the inner zone (if false).
             bool with_respect_to_outer=false
         ) const;
@@ -239,7 +239,7 @@ namespace Evolve {
             ///The derivative w.r.t. age of the above lock fractions.
             Eigen::VectorXd &above_lock_fractions_age_deriv,
 
-            ///The derivative w.r.t. semimajor axis of the above lock 
+            ///The derivative w.r.t. semimajor axis of the above lock
             ///fractions.
             Eigen::VectorXd &above_lock_fractions_semimajor_deriv,
 
@@ -285,7 +285,7 @@ namespace Evolve {
             ///(outermost zone to innermost).
             const double *spin_angmom,
 
-            ///The inclinations of the zones of the body (same order as 
+            ///The inclinations of the zones of the body (same order as
             ///spin_angmom). If NULL, all inclinations are assumed zero.
             const double *inclination = NULL,
 
@@ -294,7 +294,7 @@ namespace Evolve {
             ///zero.
             const double *periapsis = NULL,
 
-            ///If true, the outermost zone's spin is assumed locked to a 
+            ///If true, the outermost zone's spin is assumed locked to a
             ///disk and spin_angmom is assumed to start from the next zone.
             bool locked_surface = false,
 
@@ -338,7 +338,7 @@ namespace Evolve {
         ///The number of zones currently in a spin-orbit lock.
         unsigned number_locked_zones() const {return __num_locked_zones;}
 
-        ///\brief External torque acting on a single zone (last 
+        ///\brief External torque acting on a single zone (last
         ///calculate_torques_power()).
         ///
         ///This includes torques coupling it to other zones (due to differential
@@ -369,7 +369,7 @@ namespace Evolve {
             int deriv_zone=0
         ) const;
 
-        ///\brief Tidal torque acting on the given zone (last 
+        ///\brief Tidal torque acting on the given zone (last
         ///calculate_torques_power()).
         ///
         ///The coordinate system is the same as for nontidal_torque().
@@ -423,7 +423,7 @@ namespace Evolve {
         ///returns the rate assuming all locked zones are fully below the lock.
         ///If it has, returns the actual rate.
         double tidal_orbit_power(
-            ///W.r.t. that quantity is the required derivative. 
+            ///W.r.t. that quantity is the required derivative.
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 
             ///If deriv is a zone-specific quantity, this argument
@@ -513,7 +513,7 @@ namespace Evolve {
             bool with_respect_to_top=false
         ) const =0;
 
-        ///\brief Rate of angular momentum loss by the top zone of the body 
+        ///\brief Rate of angular momentum loss by the top zone of the body
         ///and its derivatives.
         ///
         ///The spin frequency of the topmost zone of the body must already be
@@ -540,7 +540,7 @@ namespace Evolve {
         ///\brief Angular velocity of the surface zone when locked (assumed
         ///constant).
         ///
-        ///For example this could be the frequency of the stellar convective 
+        ///For example this could be the frequency of the stellar convective
         ///zone when locked to the disk.
         double surface_lock_frequency() const
         {return __surface_lock_frequency;}
@@ -561,24 +561,24 @@ namespace Evolve {
         ///Discards all evolution.
         virtual void reset_evolution();
 
-        ///\brief Conditions detecting the next possible discontinuities in 
+        ///\brief Conditions detecting the next possible discontinuities in
         ///the evolution due to this body.
         ///
         ///Must be deleted when no longer necessary.
         virtual CombinedStoppingCondition *stopping_conditions(
             ///The system being evolved.
-            BinarySystem &system, 
+            BinarySystem &system,
 
             ///Is the body the primary in the system.
             bool primary
         );
-        
+
         ///Notifies the body that its spin just discontinously jumped.
         virtual void spin_jumped() {zone(0).spin_jumped();}
 
         ///\brief Change the body as necessary at the given age.
         ///
-        ///Handles things like interpolation discontinuities. 
+        ///Handles things like interpolation discontinuities.
         virtual void reached_critical_age(double) {assert(false);}
 
         ///\brief The next age when the evolution needs to be stopped for a
@@ -591,7 +591,7 @@ namespace Evolve {
             unsigned new_e_order,
 
             ///The system being evolved.
-            BinarySystem &system, 
+            BinarySystem &system,
 
             ///Is the body the primary in the system.
             bool primary

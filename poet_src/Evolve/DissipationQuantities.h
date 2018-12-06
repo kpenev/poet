@@ -19,19 +19,20 @@ namespace Evolve {
     ///
     ///\ingroup StellarSystem_group
     namespace Dissipation {
+
         ///The quantities which evolve due to tidal dissipation
         enum LIB_LOCAL Quantity {
             ///The rate at which energy is deposited into the body.
             ///Units: \f$\frac{M_\odot R_\odot^2 rad^2}{day^2\,Gyr}\f$
-            POWER, 
+            POWER,
 
             ///The torque exerted on the body in the x direction.
-            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$. 
-            TORQUEX, 
+            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
+            TORQUEX,
 
             ///The torque exerted on the body in the y direction.
-            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$. 
-            TORQUEY, 
+            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
+            TORQUEY,
 
             ///The torque exerted on the body in the z direction.
             ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
@@ -59,7 +60,7 @@ namespace Evolve {
         enum LIB_LOCAL QuantityEntry {
 
             ///The quantity itself, undifferentiated.
-            NO_DERIV, 
+            NO_DERIV,
 
             ///\brief The derivative w.r.t. age, excluding the dependence through
             ///the body's radius and the moments of inertia, but including all
@@ -105,13 +106,13 @@ namespace Evolve {
             ///
             ///Holding the angular momentum constant.
             MOMENT_OF_INERTIA,
-                    
+
             ///\brief The derivative w.r.t. the spin angular momentum in
             /// \f$M_\odot R_\odot^2 rad/day\f$.
             ///
             ///Holding the moment of inertia constant but not the spin frequency.
             SPIN_ANGMOM,
-            
+
             ///The derivative w.r.t. the semimajor axis in AU.
             SEMIMAJOR,
 
@@ -122,7 +123,7 @@ namespace Evolve {
             ///order.
             EXPANSION_ERROR = NUM_DERIVATIVES,
 
-            ///The total number of Entries 
+            ///The total number of Entries
             NUM_ENTRIES
         }; //End QuantityEntries enumeration.
 

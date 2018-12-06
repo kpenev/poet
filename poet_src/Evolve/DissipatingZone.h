@@ -9,9 +9,9 @@
 #ifndef __DISSIPATING_ZONE_H
 #define __DISSIPATING_ZONE_H
 
+#include "ZoneOrientation.h"
 #include "../Core/SharedLibraryExportMacros.h"
 #include "TidalPotentialTerms.h"
-#include "ZoneOrientation.h"
 #include "DissipationQuantities.h"
 #include "SpinOrbitLockInfo.h"
 #include "CombinedStoppingCondition.h"
@@ -147,7 +147,7 @@ namespace Evolve {
             ///The absolute value of the angular momentum of the orbit
             __orbital_angmom;
 
-        
+
         ///\brief The dimensionless tidal power and its error and derivatives.
         ///
         ///Consists of pairs of numbers one for each derivative. The first number
@@ -183,7 +183,7 @@ namespace Evolve {
         ///current spin-orbit ratio and its sign is correct.
         SpinOrbitLockInfo __lock,
 
-                          ///\brief The term closest matched by the current 
+                          ///\brief The term closest matched by the current
                           ///spin-orbit ratio in the other direction from __lock.
                           __other_lock;
 
@@ -208,7 +208,7 @@ namespace Evolve {
         ///value with the correct sign.
         void fix_forcing_frequency(
                 ///A tidal term for which the sign is known.
-                const SpinOrbitLockInfo &limit, 
+                const SpinOrbitLockInfo &limit,
 
                 ///The multiplier of the orbital frequency in the
                 ///expression for the forcing frequency.
@@ -223,7 +223,7 @@ namespace Evolve {
                 double &forcing_frequency
         ) const;
 
-        ///\brief Updates a SpinOrbitLockInfo variable as appropriate when 
+        ///\brief Updates a SpinOrbitLockInfo variable as appropriate when
         ///decreasing the eccentricity expansion order.
         ///
         ///__e_order must already be updated to the new value.
@@ -380,7 +380,7 @@ namespace Evolve {
             const Eigen::Vector3d &zone_torque_deriv=Eigen::Vector3d()
         );
 
-        ///\brief The rate at which the inclination between this zone and the 
+        ///\brief The rate at which the inclination between this zone and the
         ///orbit is changing.
         ///
         ///configure() must already have been called, and inclination() and
@@ -426,7 +426,7 @@ namespace Evolve {
         ///\brief Should return true iff the given term is presently locked.
         virtual bool locked(int orbital_frequency_multiplier,
                             int spin_frequency_multiplier) const
-        {return __lock(orbital_frequency_multiplier, 
+        {return __lock(orbital_frequency_multiplier,
                        spin_frequency_multiplier);}
 
         ///Should return true iff any tidal term is locked.
@@ -461,7 +461,7 @@ namespace Evolve {
         ///In case the forcing frequency is exactly zero, it should return the
         ///phase lag for the case of the spin frequency approaching the term from
         ///below. The lag for spin frequency approaching from above should be
-        ///written to above_lock_value. If the forcing frequency is non-zero, 
+        ///written to above_lock_value. If the forcing frequency is non-zero,
         ///leave above_lock_value untouched.
         virtual double modified_phase_lag(
                 ///The multiplier of the orbital frequency in the
@@ -471,7 +471,7 @@ namespace Evolve {
                 ///The multiplier of the spin frequency in the
                 ///expression for the forcing frequency.
                 int spin_frequency_multiplier,
-                
+
                 ///The current forcing frequency in rad/day.
                 double forcing_frequency,
 
@@ -509,7 +509,7 @@ namespace Evolve {
         virtual double moment_of_inertia(
             ///What to return:
             /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
-            /// - 1 The rate of change of the moment of inertia in 
+            /// - 1 The rate of change of the moment of inertia in
             ///     \f$M_\odot R_\odot^2/Gyr\f$
             /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
             int deriv_order=0
@@ -523,7 +523,7 @@ namespace Evolve {
 
             ///What to return:
             /// - 0 The moment of inertia in \f$M_\odot R_\odot^2\f$
-            /// - 1 The rate of change of the moment of inertia in 
+            /// - 1 The rate of change of the moment of inertia in
             ///     \f$M_\odot R_\odot^2/Gyr\f$
             /// - 2 The second derivative in \f$M_\odot R_\odot^2/Gyr^2\f$
             int deriv_order=0
@@ -729,7 +729,7 @@ namespace Evolve {
         ) const =0;
 
         ///\brief Same as outer_radius(int) but may be evaluated at a different
-        ///age than for last confgure(). 
+        ///age than for last confgure().
         virtual double outer_radius(double age, int deriv_order=0) const =0;
 
         ///\brief Mass coordinate of the zone's outer ouboundary or its
@@ -759,7 +759,7 @@ namespace Evolve {
             unsigned new_e_order,
 
             ///The system being evolved.
-            BinarySystem &system, 
+            BinarySystem &system,
 
             ///Is the body this zone is part of, the primary in the system.
             bool primary,
@@ -827,7 +827,7 @@ namespace Evolve {
         ///Must be deleted when no longer necessary.
         virtual CombinedStoppingCondition *stopping_conditions(
             ///The system being evolved.
-            BinarySystem &system, 
+            BinarySystem &system,
 
             ///Is the body this zone is part of, the primary in the system.
             bool primary,
@@ -842,7 +842,7 @@ namespace Evolve {
 
         ///\brief Change the body as necessary at the given age.
         ///
-        ///Handles things like interpolation discontinuities. 
+        ///Handles things like interpolation discontinuities.
         virtual void reached_critical_age(double)
         {assert(false);}
 

@@ -13,7 +13,7 @@
 
 namespace Star {
 
-    ///\brief Surface convective zone for low mass evolving stars or the entire 
+    ///\brief Surface convective zone for low mass evolving stars or the entire
     ///star for high mass stars.
     class EvolvingStellarEnvelope : public EvolvingStellarZone {
     private:
@@ -39,7 +39,7 @@ namespace Star {
                 *outer_radius=NULL,
 
                 ///The moment of inertia of the zone.
-                const StellarEvolution::EvolvingStellarQuantity 
+                const StellarEvolution::EvolvingStellarQuantity
                 *moment_of_inertia=NULL
         ) :
             EvolvingStellarZone({outer_radius, moment_of_inertia}),
@@ -69,9 +69,7 @@ namespace Star {
         ///See DissipatingZone::outer_mass.
         double outer_mass(int deriv_order=0) const
         {return (deriv_order ? 0 : __stellar_mass);}
-        
-        ///The envelope dissipates tides.
-        bool dissipative() const {return true;}
+
     };//End EvolvingStellarEnvelope class.
 
 }//End Star namespace.

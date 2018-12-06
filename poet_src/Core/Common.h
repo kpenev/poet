@@ -1,17 +1,13 @@
 /**\file
  *
  * \brief Declaration of some general purpose utilities.
- * 
+ *
  * \ingroup Utilities_group
  */
 
 #ifndef __COMMON_DEFINITIONS_H
 #define __COMMON_DEFINITIONS_H
 
-#include "../Core/SharedLibraryExportMacros.h"
-#include "Error.h"
-#include "AstronomicalConstants.h"
-#include "Eigen/Dense"
 #include <list>
 #include <valarray>
 #include <limits>
@@ -24,6 +20,12 @@
 #include <gsl/gsl_blas.h>
 #include "gsl/gsl_poly.h"
 #include <cassert>
+
+#include "../Core/SharedLibraryExportMacros.h"
+#include "Error.h"
+#include "AstronomicalConstants.h"
+#include "Eigen/Dense"
+
 
 namespace Core {
 
@@ -86,7 +88,7 @@ namespace Core {
     ///which the unique straight line passing through two points is zero.
     ///
     ///If derivative informaiton is provided, returns one of the zeroes in
-    ///the interval (x0, x1) of a cubic function passing through two points 
+    ///the interval (x0, x1) of a cubic function passing through two points
     ///and having specified values of its derivatives at those points.
     ///
     ///The two function values (y0 and y1) must have opposite sign.
@@ -118,7 +120,7 @@ namespace Core {
     ///\brief Finds the abscissa of a zero of a quadratic defined by three
     ///points.
     ///
-    ///The three points are (x0, y0), (x1, y1), (x2, y2). 
+    ///The three points are (x0, y0), (x1, y1), (x2, y2).
     ///Two of the function values must have opposite sign.
     LIB_LOCAL double quadratic_zerocrossing(double x0, double y0,
                                             double x1, double y1,
@@ -128,7 +130,7 @@ namespace Core {
 
     ///\brief Finds the abscissa of a zero of a cubic defined by four points.
     ///
-    ///The four points are (x0, y0), (x1, y1), (x2, y2), (x3, y3). 
+    ///The four points are (x0, y0), (x1, y1), (x2, y2), (x3, y3).
     ///Two of the function values must have opposite sign.
     LIB_LOCAL double cubic_zerocrossing(double x0, double y0,
                                         double x1, double y1,
@@ -148,7 +150,7 @@ namespace Core {
     ///The two derivatives must have an opposite sign.
     LIB_LOCAL double estimate_extremum(
         ///The abscissa of the first point though which the function
-        ///should pass.	
+        ///should pass.
         double x0,
 
         ///The oordinate of the first point though which the function
@@ -228,7 +230,7 @@ namespace Core {
     ///
     ///The vector must be freed when no longer needed.
     template<class ITERATOR>
-        gsl_vector *polynomial_coefficients(ITERATOR x_i, 
+        gsl_vector *polynomial_coefficients(ITERATOR x_i,
                                             ITERATOR y_i,
                                             size_t num_points)
         {

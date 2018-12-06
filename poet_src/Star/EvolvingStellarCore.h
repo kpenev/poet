@@ -36,7 +36,7 @@ namespace Star {
         ///Create a stellar core with the specified properties.
         EvolvingStellarCore(
             ///The age at which the core forms.
-            double formation_age=Core::Inf, 
+            double formation_age=Core::Inf,
 
             ///The mass of the core.
             const StellarEvolution::EvolvingStellarQuantity *mass = NULL,
@@ -45,7 +45,7 @@ namespace Star {
             const StellarEvolution::EvolvingStellarQuantity *radius = NULL,
 
             ///The moment of inertia of the zone.
-            const StellarEvolution::EvolvingStellarQuantity 
+            const StellarEvolution::EvolvingStellarQuantity
             *moment_of_inertia = NULL
         ) :
             EvolvingStellarZone({mass, radius, moment_of_inertia}),
@@ -75,9 +75,6 @@ namespace Star {
         ///See DissipatingZone::outer_mass(double, int).
         double outer_mass(double age, int deriv_order = 0) const
         {return any_age_quantity(MASS, age, deriv_order);}
-
-        ///No dissipation in the core.
-        bool dissipative() const {return false;} 
 
         ///The age at which the core forms in Gyr.
         double formation_age() const {return __formation_age;}

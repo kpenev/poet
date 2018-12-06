@@ -24,7 +24,7 @@ int main(int, char **)
 
     const double DISK_PERIOD = 1.4311397660850234;
     const double PRIMARY_PHASE_LAG = 5.7726669277786535e-06;
-    const double SECONDARY_PHASE_LAG = 0.0;
+    const double SECONDARY_PHASE_LAG = 5.7726669277786535e-06; 
     const double DISK_DISSIPATION_AGE = 5e-3;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
@@ -133,7 +133,7 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        10.0,   //final age
+        5.0,   //final age
         1e-2,   //max timestep
         1e-6,   //precision
         NULL,   //required ages

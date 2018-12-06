@@ -6,10 +6,13 @@
  * \ingroup Star_group
  */
 
+
+#include "../Evolve/CInterface.h"
+#include "../StellarEvolution/CInterface.h"
 #include "../Core/SharedLibraryExportMacros.h"
 #include "EvolvingStar.h"
-#include "../StellarEvolution/CInterface.h"
 #include "../Evolve/DissipationQuantities.h"
+
 
 extern "C" {
     ///Identifier for not differentiating the phase lag.
@@ -56,41 +59,32 @@ extern "C" {
     );
 
     ///Set the dissipative properties of one of the zones of a star.
-    LIB_PUBLIC void set_dissipation(
+    LIB_PUBLIC void set_star_dissipation(
         ///The star to set the dissipation for.
         EvolvingStar *star,
 
         ///Which zone to set the dissiaption for (0 - envelope, 1 - core).
         unsigned zone_index,
 
-        ///The number of breaks in the tidal frequency dependence.
+        ///See same name argument to set_zone_dissipation()
         unsigned num_tidal_frequency_breaks,
 
-        ///The number of breaks in the spin frequency dependence.
+        ///See same name argument to set_zone_dissipation()
         unsigned num_spin_frequency_breaks,
 
-        ///The locations of the breaks in tidal frequency in rad/day.
-        ///Entries should be sorted.
+        ///See same name argument to set_zone_dissipation()
         double *tidal_frequency_breaks,
 
-        ///The locations of the breaks in spin frequency in rad/day.
-        ///Entries should be sorted.
+        ///See same name argument to set_zone_dissipation()
         double *spin_frequency_breaks,
 
-        ///The powerlaw indices for the tidal frequency dependence.
-        ///Should be indexed in the same order as tidal_frequency_breaks,
-        ///but must contain an additional starting entry for the powerlaw
-        ///index before the first break.
+        ///See same name argument to set_zone_dissipation()
         double *tidal_frequency_powers,
 
-        ///The powerlaw indices for the spin frequency dependence.
-        ///Should be indexed in the same order as spin_frequency_breaks,
-        ///but must contain an additional starting entry for the powerlaw
-        ///index before the first break.
+        ///See same name argument to set_zone_dissipation()
         double *spin_frequency_powers,
 
-        ///The phase lag at the first tidal and first spin frequency break.
-        ///The rest are calculated by imposing continuity.
+        ///See same name argument to set_zone_dissipation()
         double reference_phase_lag
     );
 
