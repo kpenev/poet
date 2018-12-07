@@ -16,12 +16,13 @@ namespace Evolve {
             std::list< std::valarray<double> >::const_iterator &deriv_i)
     {
         ++age_i; ++cond_i; ++deriv_i;
-        if(age_i==__history_age_end) {
-            assert(cond_i==__stop_cond_history_end &&
-                    deriv_i==__stop_deriv_history_end);
-            age_i=__discarded_age_begin;
-            cond_i=__stop_cond_discarded_begin;
-            deriv_i=__stop_deriv_discarded_begin;
+        if(age_i == __history_age_end) {
+            assert(cond_i == __stop_cond_history_end
+                   &&
+                   deriv_i == __stop_deriv_history_end);
+            age_i = __discarded_age_begin;
+            cond_i = __stop_cond_discarded_begin;
+            deriv_i = __stop_deriv_discarded_begin;
         }
     }
 
@@ -30,58 +31,70 @@ namespace Evolve {
             std::list< std::valarray<double> >::const_iterator &cond_i,
             std::list< std::valarray<double> >::const_iterator &deriv_i)
     {
-        if(age_i==__discarded_age_begin) {
-            assert(cond_i==__stop_cond_discarded_begin &&
-                    deriv_i==__stop_deriv_discarded_begin);
-            age_i=__history_age_end;
-            cond_i=__stop_cond_history_end;
-            deriv_i=__stop_deriv_history_end;
+        if(age_i == __discarded_age_begin) {
+            assert(cond_i == __stop_cond_discarded_begin
+                   &&
+                   deriv_i == __stop_deriv_discarded_begin);
+            age_i = __history_age_end;
+            cond_i = __stop_cond_history_end;
+            deriv_i = __stop_deriv_history_end;
         }
         --age_i; --cond_i; --deriv_i;
     }
 
-    StopHistoryInterval::StopHistoryInterval(size_t num_points,
-            std::list<double>::const_iterator first_age,
-            std::list<double>::const_iterator history_age_end,
-            std::list<double>::const_iterator discarded_age_begin,		
-            std::list< std::valarray<double> >::const_iterator first_stop_cond,
-            std::list< std::valarray<double> >::const_iterator
-                stop_cond_history_end,
-            std::list< std::valarray<double> >::const_iterator
-                stop_cond_discarded_begin,
-            std::list< std::valarray<double> >::const_iterator first_stop_deriv,
-            std::list< std::valarray<double> >::const_iterator
-                stop_deriv_history_end,
-            std::list< std::valarray<double> >::const_iterator
-            stop_deriv_discarded_begin) :
-                __num_points(num_points), __point_i(0), __first_age(first_age),
-                __last_age(first_age), __history_age_end(history_age_end),
-                __discarded_age_begin(discarded_age_begin), __age_i(first_age),
-                __first_stop_cond(first_stop_cond),
-                __last_stop_cond(first_stop_cond),
-                __stop_cond_history_end(stop_cond_history_end),
-                __stop_cond_discarded_begin(stop_cond_discarded_begin),
-                __stop_cond_i(first_stop_cond),
-                __first_stop_deriv(first_stop_deriv),
-                __last_stop_deriv(first_stop_deriv),
-                __stop_deriv_history_end(stop_deriv_history_end),
-                __stop_deriv_discarded_begin(stop_deriv_discarded_begin),
-                __stop_deriv_i(first_stop_deriv)
+    StopHistoryInterval::StopHistoryInterval(
+        size_t num_points,
+        std::list<double>::const_iterator first_age,
+        std::list<double>::const_iterator history_age_end,
+        std::list<double>::const_iterator discarded_age_begin,
+        std::list< std::valarray<double> >::const_iterator first_stop_cond,
+        std::list< std::valarray<double> >::const_iterator
+        stop_cond_history_end,
+        std::list< std::valarray<double> >::const_iterator
+        stop_cond_discarded_begin,
+        std::list< std::valarray<double> >::const_iterator first_stop_deriv,
+        std::list< std::valarray<double> >::const_iterator
+        stop_deriv_history_end,
+        std::list< std::valarray<double> >::const_iterator
+        stop_deriv_discarded_begin
+    ) :
+        __num_points(num_points),
+        __point_i(0),
+        __first_age(first_age),
+        __last_age(first_age),
+        __history_age_end(history_age_end),
+        __discarded_age_begin(discarded_age_begin),
+        __age_i(first_age),
+        __first_stop_cond(first_stop_cond),
+        __last_stop_cond(first_stop_cond),
+        __stop_cond_history_end(stop_cond_history_end),
+        __stop_cond_discarded_begin(stop_cond_discarded_begin),
+        __stop_cond_i(first_stop_cond),
+        __first_stop_deriv(first_stop_deriv),
+        __last_stop_deriv(first_stop_deriv),
+        __stop_deriv_history_end(stop_deriv_history_end),
+        __stop_deriv_discarded_begin(stop_deriv_discarded_begin),
+        __stop_deriv_i(first_stop_deriv)
     {
-        if(num_points==0) throw Core::Error::BadFunctionArguments(
-                "Attempt to contsruct a StopHistoryInterval of size 0.");
+        if(num_points==0)
+            throw Core::Error::BadFunctionArguments(
+                "Attempt to contsruct a StopHistoryInterval of size 0."
+            );
         for(size_t i=0; i<num_points-1; i++)
-            advance_iterator_set(__last_age, __last_stop_cond,
-                    __last_stop_deriv);
+            advance_iterator_set(__last_age,
+                                 __last_stop_cond,
+                                 __last_stop_deriv);
         reset();
     }
 
     StopHistoryInterval::StopHistoryInterval(const StopHistoryInterval &orig) :
-        __num_points(orig.__num_points), __point_i(orig.__point_i),
+        __num_points(orig.__num_points),
+        __point_i(orig.__point_i),
         __first_age(orig.__first_age),
         __last_age(orig.__last_age),
         __history_age_end(orig.__history_age_end),
-        __discarded_age_begin(orig.__discarded_age_begin), __age_i(orig.__age_i),
+        __discarded_age_begin(orig.__discarded_age_begin),
+        __age_i(orig.__age_i),
         __first_stop_cond(orig.__first_stop_cond),
         __last_stop_cond(orig.__last_stop_cond),
         __stop_cond_history_end(orig.__stop_cond_history_end),
@@ -96,10 +109,10 @@ namespace Evolve {
 
     void StopHistoryInterval::reset()
     {
-        __point_i=0;
-        __age_i=__first_age;
-        __stop_cond_i=__first_stop_cond;
-        __stop_deriv_i=__first_stop_deriv;
+        __point_i = 0;
+        __age_i = __first_age;
+        __stop_cond_i = __first_stop_cond;
+        __stop_deriv_i = __first_stop_deriv;
     }
 
     StopHistoryInterval &StopHistoryInterval::operator++()

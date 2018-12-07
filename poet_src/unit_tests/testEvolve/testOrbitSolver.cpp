@@ -2978,9 +2978,9 @@ namespace Evolve {
 
     test_OrbitSolver::test_OrbitSolver()
     {
-        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
-        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
+        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);*/
         TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
         TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);

@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Implement the functions defined in MakeStar.h.
  *
  * \ingroup UnitTests_group
@@ -23,14 +23,10 @@ Star::InterpolatedEvolutionStar *make_const_lag_star(
                                             coupling_timescale,
                                             evolution)
     );
-    Evolve::BrokenPowerlawPhaseLagZone *zone = &(star->envelope());
-    for(int i = 0; i < 2; ++i) {
-        zone->setup(std::vector<double>(),//Wtide breaks
-                    std::vector<double>(),//W* breaks
-                    std::vector<double>(1, 0.0),//Wtide pow.
-                    std::vector<double>(1, 0.0),//W* pow.
-                    (i==0 ? phase_lag : 0.0));
-        zone = &(star->core());
-    }
+    star->envelope().setup(std::vector<double>(),//Wtide breaks
+                           std::vector<double>(),//W* breaks
+                           std::vector<double>(1, 0.0),//Wtide pow.
+                           std::vector<double>(1, 0.0),//W* pow.
+                           phase_lag);
     return star;
 }

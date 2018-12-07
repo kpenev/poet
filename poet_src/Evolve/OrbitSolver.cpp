@@ -3,7 +3,7 @@
  * \brief Implements some of the members of the OrbitSolver class, the
  * various stopping conditions and a number of other classes used while
  * calculating the orbital evolution.
- * 
+ *
  * \ingroup OrbitSolver_group
  */
 
@@ -134,11 +134,11 @@ namespace Evolve {
             const std::valarray<double> &current_stop_cond,
             const std::valarray<double> &current_stop_deriv)
     {
-        std::list<double>::iterator age_i=__discarded_stop_ages.begin();
+        std::list<double>::iterator age_i = __discarded_stop_ages.begin();
         std::list< std::valarray<double> >::iterator
-            cond_i=__stop_cond_discarded.begin(),
-            deriv_i=__stop_deriv_discarded.begin();
-        while(age_i!=__discarded_stop_ages.end() && age>(*age_i)) {
+            cond_i = __stop_cond_discarded.begin(),
+            deriv_i = __stop_deriv_discarded.begin();
+        while(age_i != __discarded_stop_ages.end() && age > (*age_i)) {
             age_i++; cond_i++; deriv_i++;
         }
         __discarded_stop_ages.insert(age_i, age);
@@ -157,7 +157,7 @@ namespace Evolve {
     }
 
     double OrbitSolver::go_back(double max_age,
-                                BinarySystem &system, 
+                                BinarySystem &system,
                                 std::valarray<double> &orbit)
     {
         unsigned nsteps = 0;
@@ -201,24 +201,47 @@ namespace Evolve {
     }
 
     StopHistoryInterval OrbitSolver::select_stop_condition_interval(
-            bool crossing, size_t cond_ind, size_t max_points) const
+        bool crossing,
+        size_t cond_ind,
+        size_t max_points
+    ) const
     {
-        if(crossing) assert(__stop_cond_history.size()-
-                __skip_history_zerocrossing[cond_ind]>=1);
-        else assert(__stop_cond_history.size()-
-                __skip_history_zerocrossing[cond_ind]>=2);
-        size_t num_points=std::min(max_points, __stop_history_ages.size()+
-                __discarded_stop_ages.size()-
-                (crossing ? __skip_history_zerocrossing[cond_ind] : 0));
-        std::list<double>::const_iterator first_age=__stop_history_ages.end();
+        if(crossing)
+            assert(
+                __stop_cond_history.size()
+                -
+                __skip_history_zerocrossing[cond_ind]
+                >=
+                1
+            );
+        else
+            assert(
+                __stop_cond_history.size()
+                -
+                __skip_history_zerocrossing[cond_ind]
+                >=
+                2
+            );
+        size_t num_points = std::min(
+            max_points,
+            (
+                __stop_history_ages.size()
+                +
+                __discarded_stop_ages.size()
+                -
+                (crossing ? __skip_history_zerocrossing[cond_ind] : 0)
+            )
+        );
+        std::list<double>::const_iterator first_age = __stop_history_ages.end();
         std::list< std::valarray<double> >::const_iterator
-            first_stop_cond=__stop_cond_history.end(),
-            first_stop_deriv=__stop_deriv_history.end();
-        int go_back=static_cast<int>(num_points)-
-                static_cast<int>(__discarded_stop_ages.size());
+            first_stop_cond = __stop_cond_history.end(),
+            first_stop_deriv = __stop_deriv_history.end();
+        int go_back = (static_cast<int>(num_points)
+                       -
+                       static_cast<int>(__discarded_stop_ages.size()));
         go_back=std::max(go_back, (crossing ? 1 : 2));
         size_t failed_back=0;
-        for(int i=0; i<go_back; i++) {
+        for(int i = 0; i < go_back; ++i) {
             --first_age;
             --first_stop_cond;
             --first_stop_deriv;
@@ -230,27 +253,46 @@ namespace Evolve {
                 --num_points;
             }
         }
-        if(go_back-failed_back<(crossing ? 1 : 2)) return StopHistoryInterval();
-        StopHistoryInterval interval(num_points, first_age,
-                __stop_history_ages.end(), __discarded_stop_ages.begin(),
-                first_stop_cond, __stop_cond_history.end(),
-                __stop_cond_discarded.begin(), first_stop_deriv,
-                __stop_deriv_history.end(), __stop_deriv_discarded.begin()),
+        if(go_back - failed_back < (crossing ? 1 : 2))
+            return StopHistoryInterval();
+        StopHistoryInterval interval(num_points,
+                                     first_age,
+                                     __stop_history_ages.end(),
+                                     __discarded_stop_ages.begin(),
+                                     first_stop_cond,
+                                     __stop_cond_history.end(),
+                                     __stop_cond_discarded.begin(),
+                                     first_stop_deriv,
+                                     __stop_deriv_history.end(),
+                                     __stop_deriv_discarded.begin()),
                             result=interval;
-        int max_left_shift=std::min(__discarded_stop_ages.size()-1,
-                num_points-(crossing ? 2 : 3));
+        int max_left_shift = std::min(__discarded_stop_ages.size() - 1,
+                                      num_points - (crossing ? 2 : 3));
         int history_limit=0;
         if(crossing)
-            history_limit=__stop_history_ages.size()-go_back+failed_back-
-                   __skip_history_zerocrossing[cond_ind];
-        else while(first_age!=__stop_history_ages.begin() &&
-                *(--first_age)>__skip_history_extremum[cond_ind])
-            ++history_limit;
+            history_limit = (__stop_history_ages.size()
+                             -
+                             go_back
+                             +
+                             failed_back
+                             -
+                             __skip_history_zerocrossing[cond_ind]);
+        else
+            while(
+                first_age != __stop_history_ages.begin()
+                &&
+                *(--first_age) > __skip_history_extremum[cond_ind]
+            )
+                ++history_limit;
         max_left_shift=std::min(history_limit, max_left_shift);
         for(int i=0; i<max_left_shift; i++) {
             interval << 1;
-            if((interval.last_age()-interval.first_age())<
-                    result.last_age()-result.first_age()) result=interval;
+            if(
+                (interval.last_age()-interval.first_age())
+                <
+                result.last_age()-result.first_age()
+            )
+                result=interval;
         }
         return result;
     }
@@ -377,7 +419,7 @@ namespace Evolve {
         double t3 = (++stop_interval).age(),
                c3 = stop_interval.stop_condition_value(condition_index);
         if(std::isnan(range_low)) {
-            range_low = t2; 
+            range_low = t2;
             range_high = t3;
             assert(c2 * c3 < 0);
             assert(c3 * crossing_sign > 0);
@@ -391,7 +433,7 @@ namespace Evolve {
     {
         if(
             __stop_history_ages.size() == 0
-            || 
+            ||
             (
                 __stop_history_ages.size()
                 ==
@@ -402,14 +444,28 @@ namespace Evolve {
         double prev_stop_cond = __stop_cond_history.back()[condition_index];
         double next_stop_cond = __stop_cond_discarded.front()[condition_index];
         if(
-            next_stop_cond * prev_stop_cond > 0 
-            || 
+            next_stop_cond * prev_stop_cond > 0
+            ||
             (
                 next_stop_cond
                 *
                 __stopping_conditions->expected_crossing_deriv_sign(
                     condition_index
-                ) < 0
+                )
+                <
+                0
+            )
+            ||
+            (
+                next_stop_cond == 0
+                &&
+                prev_stop_cond
+                *
+                __stopping_conditions->expected_crossing_deriv_sign(
+                    condition_index
+                )
+                >=
+                0
             )
         )
             return Core::Inf;
@@ -495,11 +551,11 @@ namespace Evolve {
         double max_error_ratio = 0.0;
         for(unsigned i = 0; i < derivatives.size(); ++i) {
             double error_ratio = (
-                std::abs(expansion_errors[i]) 
+                std::abs(expansion_errors[i])
                 /
                 (__precision * derivatives[i] + __precision)
             );
-            if(error_ratio > 1.0) 
+            if(error_ratio > 1.0)
                 return 1;
             {
             };
@@ -563,7 +619,7 @@ namespace Evolve {
     	output_history_and_discarded(std::cerr);
 #endif
         for(
-            size_t cond_ind = 0; 
+            size_t cond_ind = 0;
             (
                 __stop_cond_history.size() > 0
                 &&
@@ -573,7 +629,7 @@ namespace Evolve {
         ) {
             double stop_cond_value = current_stop_cond[cond_ind],
                    crossing_age = crossing_from_history(cond_ind),
-                   crossing_precision = 
+                   crossing_precision =
                        __stop_cond_history.back()[cond_ind];
             bool crossed_zero = false;
             if(std::abs(crossing_precision) >= std::abs(stop_cond_value)) {
@@ -583,7 +639,7 @@ namespace Evolve {
             ExtremumInformation extremum = extremum_from_history(cond_ind);
             double extremum_precision;
             if(std::isnan(extremum.y())) extremum_precision = Core::NaN;
-            else 
+            else
                 extremum_precision = (
                     std::min(
                         std::abs(extremum.y() - stop_cond_value),
@@ -594,7 +650,7 @@ namespace Evolve {
                     /
                     std::abs(extremum.y())
                 );
-            bool is_crossing = crossing_age<=extremum.x();
+            bool is_crossing = crossing_age <= extremum.x();
             short deriv_sign = 0;
             if(is_crossing) deriv_sign = (stop_cond_value > 0 ? 1 : -1);
             StopInformation &stop_info = __stop_info[cond_ind];
@@ -701,11 +757,11 @@ namespace Evolve {
         Core::EvolModeType evolution_mode
     )
     {
-        size_t nargs=orbit.size();
+        size_t nargs = orbit.size();
 #ifndef NDEBUG
         std::cerr << "Starting evolution leg in " << evolution_mode
             << " from t=" << system.age() << " with initial orbit:\n";
-        for(size_t i=0; i<nargs; ++i) {
+        for(size_t i = 0; i < nargs; ++i) {
             if(i) std::cerr << ", ";
             std::cerr << "\t" << orbit[i] << std::endl;
         }
@@ -717,21 +773,21 @@ namespace Evolve {
     //	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
         const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
 
-        gsl_odeiv2_step *step=gsl_odeiv2_step_alloc(step_type, nargs);
+        gsl_odeiv2_step *step = gsl_odeiv2_step_alloc(step_type, nargs);
         gsl_odeiv2_control *step_control = gsl_odeiv2_control_standard_new(
             __precision,
             __precision,
             1,
             0
         );
-        gsl_odeiv2_evolve *evolve=gsl_odeiv2_evolve_alloc(nargs);
+        gsl_odeiv2_evolve *evolve = gsl_odeiv2_evolve_alloc(nargs);
 
         void *sys_mode[2]={&system, &evolution_mode};
         gsl_odeiv2_system ode_system={stellar_system_diff_eq,
                                       stellar_system_jacobian,
                                       nargs,
                                       sys_mode};
-        double t=system.age(); 
+        double t=system.age();
         std::valarray<double> derivatives(nargs),
                               expansion_errors(nargs),
                               param_derivatives(nargs),
@@ -741,10 +797,10 @@ namespace Evolve {
 
     /*	std::cerr << "Initial state for t=" << t << ": " << std::endl
             << "\torbit:";
-        for(unsigned i=0; i<orbit.size(); ++i) 
+        for(unsigned i=0; i<orbit.size(); ++i)
             std::cerr << orbit[i] << " ";
         std::cerr << std::endl << "\tderiv  :";
-        for(unsigned i=0; i<derivatives.size(); ++i) 
+        for(unsigned i=0; i<derivatives.size(); ++i)
             std::cerr << derivatives[i] << " ";
         std::cerr << std::endl;*/
 
@@ -876,7 +932,7 @@ namespace Evolve {
         stellar_system_diff_eq(t,
                                &(orbit[0]),
                                &(derivatives[0]),
-                               sys_mode); 
+                               sys_mode);
 
         gsl_odeiv2_evolve_free(evolve);
         gsl_odeiv2_control_free(step_control);
@@ -903,7 +959,7 @@ namespace Evolve {
     }
 
     double OrbitSolver::stopping_age(double age,
-                                     const BinarySystem &system, 
+                                     const BinarySystem &system,
                                      const std::list<double> &required_ages)
     {
 #ifndef NDEBUG
@@ -927,9 +983,9 @@ namespace Evolve {
             ++next_required_age;
         if(
             next_required_age != required_ages.end()
-            && 
+            &&
             result > *next_required_age
-        ) 
+        )
             result = *next_required_age;
 #ifndef NDEBUG
         std::cerr << "Required ages change that to: " << result << std::endl;
@@ -943,19 +999,19 @@ namespace Evolve {
     )
     {
 #ifndef NDEBUG
-        std::cerr << "Stopped due to condition at t = " 
+        std::cerr << "Stopped due to condition at t = "
                   << stop_age
                   << std::endl;
 #endif
         for(
-            std::vector<StopInformation>::const_iterator stop_i = 
+            std::vector<StopInformation>::const_iterator stop_i =
                 __stop_info.begin();
             stop_i != __stop_info.end();
             ++stop_i
         ) {
             if(
                 stop_i->is_crossing()
-                && 
+                &&
                 (
                     stop_i->stop_age() < stop_age
                     ||
@@ -1014,7 +1070,7 @@ namespace Evolve {
 
             if(
                 e_order == TidalPotentialTerms::max_e_order()
-                && 
+                &&
                 adjust_e_order > 0
             ) {
                 std::ostringstream msg;
@@ -1072,7 +1128,7 @@ namespace Evolve {
         StoppingConditionType stop_reason = NO_STOP;
         double last_age = system.age();
         std::valarray<double> orbit;
-        
+
         Core::EvolModeType evolution_mode = system.fill_orbit(orbit);
 
         adjust_eccentricity_order(system,
@@ -1083,12 +1139,12 @@ namespace Evolve {
         while(last_age < stop_evol_age) {
             double next_stop_age = std::min(stopping_age(last_age,
                                                          system,
-                                                         required_ages), 
+                                                         required_ages),
                                             stop_evol_age);
             __stopping_conditions = get_stopping_condition(system);
 #ifndef NDEBUG
             std::cerr << "Next stop age: " << next_stop_age << std::endl;
-            StopInformation stop_information = 
+            StopInformation stop_information =
 #endif
                 evolve_until(system,
                              next_stop_age,
@@ -1105,7 +1161,7 @@ namespace Evolve {
 #endif
             last_age = next_stop_age;
             if(last_age < stop_evol_age) {
-                if(stop_reason == NO_STOP) 
+                if(stop_reason == NO_STOP)
                     system.reached_critical_age(last_age);
                 else if(
                     stop_reason == LARGE_EXPANSION_ERROR
@@ -1115,10 +1171,10 @@ namespace Evolve {
                     adjust_eccentricity_order(system,
                                               orbit,
                                               evolution_mode);
-                } else 
+                } else
                     reached_stopping_condition(last_age, stop_reason);
             }
-#ifndef NDEBUG 
+#ifndef NDEBUG
             std::cerr
                 << "At t=" << last_age
                 << ", changing evolution mode from " << old_evolution_mode
@@ -1127,10 +1183,10 @@ namespace Evolve {
 #endif
             evolution_mode = system.evolution_mode();
 #ifndef NDEBUG
-            std::cerr 
+            std::cerr
                 << "to " << evolution_mode
                 << " with " << system.number_locked_zones()
-                << " zones locked." 
+                << " zones locked."
                 << std::endl
                 << "Transforming orbit from: ";
             std::clog << orbit;
