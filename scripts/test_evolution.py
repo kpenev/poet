@@ -55,7 +55,10 @@ def create_star(interpolator, convective_phase_lag) :
                          reference_phase_lag = 0.0)
     return star
 
-def create_system(star, planet, disk_lock_frequency) :
+def create_system(star,
+                  planet,
+                  disk_lock_frequency,
+                  initial_eccentricity = 0.0) :
     """Create the system which to evolve from the given star and planet."""
 
     porb_initial = 3.5
@@ -78,7 +81,7 @@ def create_system(star, planet, disk_lock_frequency) :
     planet.configure(age = disk_dissipation_age,
                      companion_mass = star.mass,
                      semimajor = binary.semimajor(porb_initial),
-                     eccentricity = 0.0,
+                     eccentricity = initial_eccentricity,
                      spin_angmom = numpy.array([0.0]),
                      inclination = None,
                      periapsis = None,
@@ -106,6 +109,7 @@ def test_evolution(interpolator,
         print('=========================')
         evolution_quantities = ['age',
                                 'semimajor',
+                                'eccentricity',
                                 'envelope_angmom',
                                 'core_angmom',
                                 'wind_saturation']
@@ -149,9 +153,16 @@ def test_evolution(interpolator,
         pyplot.loglog(evolution.age,
                       wcore,
                       ':' + color)
-        wind_sat = numpy.zeros(evolution.age.shape)
-        wind_sat[evolution.wind_saturation] = wsat_enabled
+
+#        wind_sat = numpy.zeros(evolution.age.shape)
+#        wind_sat[evolution.wind_saturation] = wsat_enabled
 #        pyplot.loglog(evolution.age, wind_sat, '.')
+
+        pyplot.show()
+
+        pyplot.plot(evolution.age, evolution.eccentricity)
+        pyplot.show()
+
         star.delete()
         planet.delete()
         binary.delete()
@@ -159,7 +170,6 @@ def test_evolution(interpolator,
     pyplot.loglog([4.6], [1.0], 'x')
 #    pyplot.axhline(2.45 / wsun)
 #    pyplot.ylim((0.1, 100))
-    pyplot.show()
 
 def test_ic_solver(interpolator) :
     """Find initial condition to reproduce some current state and plot."""
