@@ -25,8 +25,8 @@ namespace Planet {
     public:
         ///Create a planet with a constant mass and radius.
         Planet(double mass,
-                     double radius,
-                     double inertia_factor=1e-6) :
+               double radius,
+               double inertia_factor=1e-6) :
             __zone(mass, radius, inertia_factor)
         {};
 

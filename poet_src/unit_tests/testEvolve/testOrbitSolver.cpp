@@ -14,6 +14,14 @@ namespace Evolve {
     const double zero = 0.0;
     const double one = 1.0;
 
+    const double Mjup_to_Msun = (Core::AstroConst::jupiter_mass
+                                 /
+                                 Core::AstroConst::solar_mass);
+
+    const double Rjup_to_Rsun = (Core::AstroConst::jupiter_radius
+                                 /
+                                 Core::AstroConst::solar_radius);
+
     std::ostream &operator<<(std::ostream &os,
                              RealEvolutionQuantity q)
     {
@@ -141,11 +149,13 @@ namespace Evolve {
     {
         __star->select_interpolation_region(TSTART);
 
+        planet_mass *= Mjup_to_Msun;
+        planet_radius *= Rjup_to_Rsun;
 
         if(std::isnan(tplanet)) tplanet = tdisk;
 
         Planet::Planet planet(planet_mass,
-                                    (planet_mass ? planet_radius : 0.0));
+                              (planet_mass ? planet_radius : 0.0));
         planet.configure(true, //init
                          tplanet, //age
                          __star->mass(), //mass
@@ -1520,7 +1530,7 @@ namespace Evolve {
                                    /
                                    Core::AstroConst::solar_mass))
             );
-            Planet::Planet planet(1.0, 1.0);
+            Planet::Planet planet(Mjup_to_Msun, Rjup_to_Rsun);
             planet.configure(true, //init
                              tdisk, //age
                              __star->mass(), //mass
@@ -2978,18 +2988,18 @@ namespace Evolve {
 
     test_OrbitSolver::test_OrbitSolver()
     {
-/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
-        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
         TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
-/*        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
         TEST_ADD(test_OrbitSolver::test_polar_1_0_evolution);
         TEST_ADD(test_OrbitSolver::test_polar_2_0_evolution);
-        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);
     }
 
 }//End Evolve namespace.

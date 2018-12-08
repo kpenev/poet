@@ -20,6 +20,7 @@
 #include "../../Star/EvolvingStar.h"
 #include "../../Planet/Planet.h"
 #include "../../Evolve/DiskBinarySystem.h"
+#include "../../Core/AstronomicalConstants.h"
 #include "../shared/PolynomialEvolution.h"
 #include "../shared/Common.h"
 #include "../shared/MakeStar.h"
