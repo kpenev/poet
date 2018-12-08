@@ -2983,13 +2983,13 @@ namespace Evolve {
         TEST_ADD(test_OrbitSolver::test_no_planet_evolution);*/
         TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
-        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+/*        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
         TEST_ADD(test_OrbitSolver::test_polar_1_0_evolution);
         TEST_ADD(test_OrbitSolver::test_polar_2_0_evolution);
-        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);
+        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);*/
     }
 
 }//End Evolve namespace.
