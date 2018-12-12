@@ -5,132 +5,140 @@
 from ctypes import\
     cdll,\
     c_int, c_double, c_void_p, c_char_p, c_uint, c_bool,\
-    byref, POINTER
+    byref
 from ctypes.util import find_library
-import numpy
 import re
-from astropy import constants, units
 
-class c_interpolator_p(c_void_p) : pass
+import numpy
 
-class c_quantity_p(c_void_p) : pass
+#class naming convention mimicks ctypes naming
+#This is just a placeholder, so no public methods.
+#pylint: disable=invalid-name
+#pylint: disable=too-few-public-methods
+class c_interpolator_p(c_void_p):
+    """Type corresponding to pointer to intepolator in the POET library."""
 
-def initialize_library() :
+class c_quantity_p(c_void_p):
+    """Type corresponding to pointer to evolution quantities in POET library."""
+#pylint: enable=invalid-name
+#pylint: enable=too-few-public-methods
+
+def initialize_library():
     """Prepare the stellarEvolution library for use."""
 
     library_fname = find_library('stellarEvolution')
-    if library_fname is None :
+    if library_fname is None:
         raise OSError('Unable to find POET\'s stellarEvolution library.')
-    library = cdll.LoadLibrary(library_fname)
+    result = cdll.LoadLibrary(library_fname)
 
-    num_quantities = c_int.in_dll(library, 'NUM_QUANTITIES').value
+    num_quantities = c_int.in_dll(result, 'NUM_QUANTITIES').value
 
-    library.create_interpolator.argtypes = [
+    result.create_interpolator.argtypes = [
         c_char_p,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  shape = (num_quantities,),
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_int,
-                                  ndim = 1,
-                                  shape = (num_quantities,),
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_bool,
-                                  ndim = 1,
-                                  shape = (num_quantities,),
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_bool,
-                                  ndim = 1,
-                                  shape = (num_quantities,),
-                                  flags = 'C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  shape=(num_quantities,),
+                                  flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_int,
+                                  ndim=1,
+                                  shape=(num_quantities,),
+                                  flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_bool,
+                                  ndim=1,
+                                  shape=(num_quantities,),
+                                  flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_bool,
+                                  ndim=1,
+                                  shape=(num_quantities,),
+                                  flags='C_CONTIGUOUS'),
         c_uint
     ]
-    library.create_interpolator.restype = c_interpolator_p
+    result.create_interpolator.restype = c_interpolator_p
 
-    library.destroy_interpolator.argtypes = [
-        library.create_interpolator.restype
+    result.destroy_interpolator.argtypes = [
+        result.create_interpolator.restype
     ]
-    library.destroy_interpolator.restype = None
+    result.destroy_interpolator.restype = None
 
-    library.create_quantity.argtypes = [library.create_interpolator.restype,
-                                        c_int,
-                                        c_double,
-                                        c_double]
-    library.create_quantity.restype = c_quantity_p
+    result.create_quantity.argtypes = [result.create_interpolator.restype,
+                                       c_int,
+                                       c_double,
+                                       c_double]
+    result.create_quantity.restype = c_quantity_p
 
-    library.destroy_quantity.argtypes = [c_quantity_p]
-    library.destroy_quantity.restype = None
+    result.destroy_quantity.argtypes = [c_quantity_p]
+    result.destroy_quantity.restype = None
 
-    library.evaluate_quantity.argtypes = [c_quantity_p, c_double]
-    library.evaluate_quantity.restype = c_double
+    result.evaluate_quantity.argtypes = [c_quantity_p, c_double]
+    result.evaluate_quantity.restype = c_double
 
-    library.evaluate_quantity_array.argtypes = [
+    result.evaluate_quantity_array.argtypes = [
         c_quantity_p,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_uint,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
     ]
 
-    library.quantity_min_age.restype = c_double
+    result.quantity_min_age.restype = c_double
 
-    library.quantity_max_age.restype = c_double
+    result.quantity_max_age.restype = c_double
 
-    library.quantity_continuous_range.restype = None
+    result.quantity_continuous_range.restype = None
 
-    library.save_interpolator.argtypes = [
-        library.create_interpolator.restype,
+    result.save_interpolator.argtypes = [
+        result.create_interpolator.restype,
         c_char_p
     ]
-    library.save_interpolator.restype = None
+    result.save_interpolator.restype = None
 
-    library.load_interpolator.argtypes = [c_char_p]
-    library.load_interpolator.restype = library.create_interpolator.restype
+    result.load_interpolator.argtypes = [c_char_p]
+    result.load_interpolator.restype = result.create_interpolator.restype
 
-    library.differentiate_quantity.argtypes = [
+    result.differentiate_quantity.argtypes = [
         c_quantity_p,
         c_double,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS')
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
     ]
 
-    library.differentiate_quantity_array.argtypes = [
+    result.differentiate_quantity_array.argtypes = [
         c_quantity_p,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_uint,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS')
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
     ]
 
-    library.default_smoothing.argtypes = [c_int]
-    library.default_smoothing.restype = c_double
+    result.default_smoothing.argtypes = [c_int]
+    result.default_smoothing.restype = c_double
 
-    library.default_vs_log_age.argtypes = [c_int]
-    library.default_vs_log_age.restype = c_bool
+    result.default_vs_log_age.argtypes = [c_int]
+    result.default_vs_log_age.restype = c_bool
 
-    library.default_nodes.argtypes = [c_int]
-    library.default_nodes.restype = c_int
+    result.default_nodes.argtypes = [c_int]
+    result.default_nodes.restype = c_int
 
-    library.metallicity_from_feh.argtypes = [c_double]
-    library.metallicity_from_feh.restype = c_double
+    result.metallicity_from_feh.argtypes = [c_double]
+    result.metallicity_from_feh.restype = c_double
 
-    library.feh_from_metallicity.argtypes = [c_double]
-    library.feh_from_metallicity.restype = c_double
+    result.feh_from_metallicity.argtypes = [c_double]
+    result.feh_from_metallicity.restype = c_double
 
-    library.feh_from_z.argtypes = [c_double]
-    library.feh_from_z.restype = c_double
+    result.feh_from_z.argtypes = [c_double]
+    result.feh_from_z.restype = c_double
 
-    library.z_from_feh.argtypes = [c_double]
-    library.z_from_feh.restype = c_double
+    result.z_from_feh.argtypes = [c_double]
+    result.z_from_feh.restype = c_double
 
-    return library
+    return result
 
 library = initialize_library()
 
@@ -138,34 +146,33 @@ library_track_fname_rex = re.compile(
     'M(?P<MASS>[0-9.E+-]+)_Z(?P<Z>[0-9.E+-]+).csv'
 )
 
-def library_track_fname(mass, feh) :
+def library_track_fname(mass, feh):
     """
     Returns the base name expected by library for a track.
 
     Args:
-        - mass:
-            The mass of the star whose evolution is stored in the track.
+        mass:    The mass of the star whose evolution is stored in the track.
 
-        - feh:
-            The [Fe/H] value of the star whose evolution is stored
-            in the track.
+        feh:    The [Fe/H] value of the star whose evolution is stored in the
+            track.
 
     Returns:
-        The base filename the stellar evolution library expects to be used
-        for the given track.
+        str:
+            The base filename the stellar evolution library expects to be used
+            for the given track.
     """
 
     return 'M%s_Z%s.csv' % (repr(float(mass)),
                             repr(library.z_from_feh(feh)))
 
-class MESAInterpolator :
+class MESAInterpolator:
     """A class for interpolating among a set of MESA tracks."""
 
     quantity_list = ['RADIUS', 'ICONV', 'LUM', 'IRAD', 'MRAD', 'RRAD']
 
     quantity_ids = {q: c_int.in_dll(library, q).value for q in quantity_list}
-    quantity_names = {c_int.in_dll(library, q).value: q 
-                      for q in quantity_list} 
+    quantity_names = {c_int.in_dll(library, q).value: q
+                      for q in quantity_list}
 
     default_smoothing = {q_name: library.default_smoothing(q_id)
                          for q_name, q_id in quantity_ids.items()}
@@ -179,41 +186,42 @@ class MESAInterpolator :
     default_log_quantity = {q_name: library.default_log_quantity(q_id)
                             for q_name, q_id in quantity_ids.items()}
 
-    def __init__(self, **kwargs) :
+    def __init__(self, **kwargs):
         """
         Prepare a MESA based interpolation.
-        
-        Keyword only arguments:
-            - mesa_dir:
-                A directory contaning a grid (mass and metallicity) of MESA
-                tracks to base the interpolation on. Must not be specified
+
+        Args:
+            mesa_dir:    A directory contaning a grid (mass and metallicity) of
+                MESA tracks to base the interpolation on. Must not be specified
                 if interpolator_fname is.
-            - smoothing:
-                A numpy float array of the smoothing arguments to use for
-                the interpolation of each quantity. Should be in the order
+
+            smoothing:    A numpy float array of the smoothing arguments to use
+                for the interpolation of each quantity. Should be in the order
                 defined by quantity_ids.
-            - nodes:
-                A numpy integer array of the nodes to use for the
+
+            nodes:    A numpy integer array of the nodes to use for the
                 interpolation of each quantity. Same order as smoothing.
-            - vs_log_age:
-                A numpy boolean array indicating whether the interpolation
-                for each quantity should be done vs log(age) instead of age.
-            - log_quantity:
-                A numpy boolean array indicating whether the interpolation
-                for each quantity should be of log(quantity) instead of
-                quantity.
-            - interpolator_fname: 
-                The filename of a previously saved interpolator state. Must
-                not be specified together with mesa_dir. If passed, the
-                smoothing and nodes arguments are ignored.
-            - num_threads:
-                The number of simultaneous threads to use when constructing
-                the interpolation.
+
+            vs_log_age:    A numpy boolean array indicating whether the
+                interpolation for each quantity should be done vs log(age)
+                instead of age.
+
+            log_quantity:    A numpy boolean array indicating whether the
+                interpolation for each quantity should be of log(quantity)
+                instead of quantity.
+
+            interpolator_fname:    The filename of a previously saved
+                interpolator state. Must not be specified together with
+                mesa_dir. If passed, the smoothing and nodes arguments are
+                ignored.
+
+            num_threads:    The number of simultaneous threads to use when
+                constructing the interpolation.
 
         Returns: None.
         """
 
-        if 'mesa_dir' in kwargs :
+        if 'mesa_dir' in kwargs:
             self.interpolator = library.create_interpolator(
                 kwargs['mesa_dir'].encode('ascii'),
                 kwargs['smoothing'],
@@ -222,48 +230,51 @@ class MESAInterpolator :
                 kwargs['log_quantity'],
                 kwargs['num_threads']
             )
-        else :
-            assert('interpolator_fname' in kwargs)
+        else:
+            assert 'interpolator_fname' in kwargs
             self.interpolator = library.load_interpolator(
                 kwargs['interpolator_fname'].encode('ascii')
             )
 
-    def delete(self) :
+    def delete(self):
         """Free the resources allocated at construction."""
 
         library.destroy_interpolator(self.interpolator)
 
-    def save(self, filename) :
+    def save(self, filename):
         """
         Save the interpolator created to the given file for faster creation.
 
         Args:
-            - filename: The name of the file to use for saving the state.
-                        Overwritten if exists.
+            filename:    The name of the file to use for saving the state.
+                Overwritten if exists.
 
-        Returns: None
+        Returns:
+            None
         """
 
         library.save_interpolator(self.interpolator,
                                   filename.encode('ascii'))
 
-    def __call__(self, quantity, mass, feh) :
+    def __call__(self, quantity, mass, feh):
         """
         Return a stellar quantity interpolated to the given mass and [Fe/H].
 
         Args:
-            - quantity:
-                A string identifying the quantity to interpolate. The
+            quantity:    A string identifying the quantity to interpolate. The
                 following values are allowed: 'radius', 'iconv', 'lum',
                 'irad', 'mrad', 'rrad'. This is a case insensitive argument.
-            - mass:
-                The mass of the star for which this quantity should be
+
+            mass:    The mass of the star for which this quantity should be
                 defined in solar masses.
-            - feh:
-                The [Fe/H] of the star for which this  quantity  should
+
+            feh:    The [Fe/H] of the star for which this  quantity  should
                 be defined.
 
-        Returns: A Quantity instance, callable with an age parameter.
+        Returns:
+            Quantity:
+                callable with an age parameter evaluating to the quantity at the
+                given age.
         """
 
         return Quantity(
@@ -273,77 +284,82 @@ class MESAInterpolator :
                                     c_double(feh))
         )
 
-class Quantity :
+class Quantity:
+    """Callable that evaluates to the value of the quantity at a given age."""
 
-    def __init__(self, underlying_quantity) :
+    def __init__(self, underlying_quantity):
         """Wrap the underlying EvolvingStellarQuantity into a callable."""
 
         self.underlying_quantity = underlying_quantity
         self.min_age = library.quantity_min_age(underlying_quantity)
         self.max_age = library.quantity_max_age(underlying_quantity)
 
-    def delete(self) :
+    def delete(self):
         """Destroy the underlying quantity."""
 
         library.destroy_quantity(self.underlying_quantity)
 
-    def __call__(self, age) :
+    def __call__(self, age):
         """
         Evaluate the underlying quantity at the given age(s) (in Gyr).
-        
+
         Args:
-            - age: Either a single float or a numpy array of floats giving
-                   the ages at which to evaluate the quantity.
-        
-        Returns: The value(s) of the quantity in the same format as age.
+            age:    Either a single float or a numpy array of floats giving
+               the ages at which to evaluate the quantity.
+
+        Returns:
+            type(age):
+                The value(s) of the quantity in the same format as age.
         """
 
-        if type(age) is numpy.ndarray :
-            result = numpy.empty(dtype = c_double,
-                                 shape = (age.size,),
-                                 order = 'C')
+        if isinstance(age, numpy.ndarray):
+            result = numpy.empty(dtype=c_double,
+                                 shape=(age.size,),
+                                 order='C')
             library.evaluate_quantity_array(self.underlying_quantity,
                                             age,
                                             age.size,
                                             result)
             return result
-        else :
-            return library.evaluate_quantity(self.underlying_quantity,
-                                             c_double(age))
 
-    def deriv(self, age) :
+        return library.evaluate_quantity(self.underlying_quantity,
+                                         c_double(age))
+
+    def deriv(self, age):
         """
         Return the 0-th, 1-st and 2-nd order derivatives of the quantity.
 
         Args:
-            - age: Either a single float or a numpy array of floats giving
-                   the ages at which to evaluate the quantity.
+            age(float or numpy array):    Either a single float or a numpy array
+                of floats giving the ages at which to evaluate the quantity.
 
-        Returns: A numpy array either 1-D (if age is a single float) or 2-D
-                 if age is a numpy array where the outside (or only) index is
-                 the derivative order.
+        Returns:
+            numpy array:
+                Either 1-D (if age is a single float) or 2-D array if age is a
+                numpy array where the outside (or only) index is the derivative
+                order.
         """
 
-        if type(age) is numpy.ndarray :
-            result = numpy.empty(dtype = c_double,
-                                 shape = (3, age.size),
-                                 order = 'C')
+        if isinstance(age, numpy.ndarray):
+            result = numpy.empty(dtype=c_double,
+                                 shape=(3, age.size),
+                                 order='C')
             library.differentiate_quantity_array(
                 self.underlying_quantity,
                 age,
                 age.size,
                 result.reshape(3 * age.size)
             )
-        else :
-            result = numpy.empty(dtype = c_double,
-                                 shape = (3,),
-                                 order = 'C')
+        else:
+            result = numpy.empty(dtype=c_double,
+                                 shape=(3,),
+                                 order='C')
             library.differentiate_quantity(self.underlying_quantity,
                                            c_double(age),
                                            result)
         return result
 
-    def continuous_range(self, age) :
+    def continuous_range(self, age):
         """
         Return the range around age over which the quantity is continuous.
 
@@ -361,8 +377,10 @@ class Quantity :
                                           byref(max_age))
         return min_age.value, max_age.value
 
-if __name__ == '__main__' :
-    mesa_dir = '../poet_src/StellarEvolution/MESA'
+def example():
+    """Example of the usage of the interface."""
+
+#    mesa_dir = '../poet_src/StellarEvolution/MESA'
 #    interpolator = MESAInterpolator(mesa_dir = mesa_dir)
 #    interpolator.save(mesa_dir + '/saved_interpolator')
 #    for quantity_name in MESAInterpolator.quantity_list :
@@ -370,9 +388,9 @@ if __name__ == '__main__' :
 #        print(quantity_name + '(1.0) = ' + repr(quantity(1.0)))
 #        print(quantity_name + '(4.6) = ' + repr(quantity(4.6)))
     loaded_interpolator = MESAInterpolator(
-        interpolator_fname = ('saved_interpolator')
+        interpolator_fname=('saved_interpolator')
     )
-    for quantity_name in MESAInterpolator.quantity_list :
+    for quantity_name in MESAInterpolator.quantity_list:
         quantity = loaded_interpolator(quantity_name, 1.0, 0.25)
         ages = numpy.exp(
             numpy.linspace(numpy.log(max(quantity.min_age, 1e-5)),
@@ -389,3 +407,6 @@ if __name__ == '__main__' :
               ') = '
               +
               repr(quantity(ages)))
+
+if __name__ == '__main__':
+    example()

@@ -8,9 +8,9 @@ from orbital_evolution.planet_interface import LockedPlanet
 from orbital_evolution.evolve_interface import library
 from basic_utils import\
     Structure,\
-    semimajor,\
-    orbital_frequency,\
-    orbital_angular_momentum
+    calc_semimajor,\
+    calc_orbital_frequency,\
+    calc_orbital_angular_momentum
 
 def get_evolution_quantities(secondary_is_star):
     """
@@ -34,16 +34,16 @@ def get_evolution_quantities(secondary_is_star):
                              'envelope_angmom',
                              'core_angmom']
 
-    for q in star_float_quantities:
+    for quantity in star_float_quantities:
         if secondary_is_star:
-            evolution_quantities.append('primary_' + q)
+            evolution_quantities.append('primary_' + quantity)
         else:
-            evolution_quantities.append(q)
+            evolution_quantities.append(quantity)
 
 
     if secondary_is_star:
-        for q in star_float_quantities:
-            evolution_quantities.append('secondary_' + q)
+        for quantity in star_float_quantities:
+            evolution_quantities.append('secondary_' + quantity)
 
     evolution_quantities.append('evolution_mode')
 
@@ -55,6 +55,8 @@ def get_evolution_quantities(secondary_is_star):
 
     return evolution_quantities
 
+#Two of the "attributes are actually methods
+#pylint: disable=too-many-instance-attributes
 class Binary:
     """A class for binaries POET can evolve."""
 
@@ -62,7 +64,7 @@ class Binary:
                        'BINARY',
                        'SINGLE',
                        'TABULATION']
-    evolution_mode_ids = {
+    _evolution_mode_ids = {
         mode: c_int.in_dll(library, mode + '_EVOL_MODE').value
         for mode in evolution_modes
     }
@@ -80,13 +82,14 @@ class Binary:
     def __init__(self,
                  primary,
                  secondary,
+                 *,
                  disk_lock_frequency,
                  disk_dissipation_age,
-                 initial_semimajor = None,
-                 initial_orbital_period = None,
-                 initial_eccentricity = 0.0,
-                 initial_inclination = 0.0,
-                 secondary_formation_age = None) :
+                 initial_semimajor=None,
+                 initial_orbital_period=None,
+                 initial_eccentricity=0.0,
+                 initial_inclination=0.0,
+                 secondary_formation_age=None):
         """
         Create a binary system out of two bodies.
 
@@ -127,27 +130,27 @@ class Binary:
         Returns: None
         """
 
-        assert(isinstance(primary, EvolvingStar))
+        assert isinstance(primary, EvolvingStar)
         self.primary = primary
         self.secondary = secondary
-        if initial_semimajor is None :
+        if initial_semimajor is None:
             initial_semimajor = self.semimajor(initial_orbital_period)
-        if secondary_formation_age is None :
+        if secondary_formation_age is None:
             secondary_formation_age = disk_dissipation_age
 
         self.evolution_quantities = get_evolution_quantities(
             isinstance(secondary, EvolvingStar)
         )
-        if isinstance(secondary, LockedPlanet) :
+        if isinstance(secondary, LockedPlanet):
             c_create_func = library.create_star_planet_system
             self._c_get_evolution_func = library.get_star_planet_evolution
             self._c_get_final_state = library.get_star_planet_final_state
-        else :
-            assert(isinstance(secondary, EvolvingStar))
+        else:
+            assert isinstance(secondary, EvolvingStar)
             c_create_func = library.create_star_star_system
             self._c_get_evolution_func = library.get_star_star_evolution
             self._c_get_final_state = library.get_star_star_final_state
-           
+
         self.c_binary = c_create_func(
             primary.c_body,
             secondary.c_body,
@@ -159,21 +162,25 @@ class Binary:
             secondary_formation_age
         )
 
-    def delete(self) :
+        self.num_evolution_steps = 0
+        self.c_solver = None
+
+    def delete(self):
         """Destroy the binary created at construction."""
 
         library.destroy_binary(self.c_binary)
-        if hasattr(self, 'c_solver') :
+        if hasattr(self, 'c_solver'):
             library.destroy_solver(self.c_solver)
 
     def configure(self,
+                  *,
                   age,
                   semimajor,
                   eccentricity,
                   spin_angmom,
                   inclination,
                   periapsis,
-                  evolution_mode) :
+                  evolution_mode):
         """
         Set the current state (orbit) of a system.
 
@@ -215,13 +222,13 @@ class Binary:
                                  spin_angmom,
                                  inclination,
                                  periapsis,
-                                 self.evolution_mode_ids[evolution_mode])
+                                 self._evolution_mode_ids[evolution_mode])
 
     def evolve(self,
                final_age,
                max_time_step,
                precision,
-               required_ages) :
+               required_ages):
         """
         Evolve the system forward from its current state.
 
@@ -242,8 +249,11 @@ class Binary:
         Returnns: None
         """
 
-        if hasattr(self, 'c_solver') :
+        #The point is to check if previous call defined the member
+        #pylint: disable=access-member-before-definition
+        if hasattr(self, 'c_solver'):
             library.destroy_solver(self.c_solver)
+        #pylint: enable=access-member-before-definition
         self.c_solver = library.evolve_system(
             self.c_binary,
             final_age,
@@ -254,41 +264,45 @@ class Binary:
         )
         self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
 
-    def get_evolution(self, quantities = None) :
+    def get_evolution(self, quantities=None):
         """
         Return the last calculated evolution.
-        
+
         Args:
-            - quantities:
-                An iterable of quantities to read the evolution of. The
-                evolution of omitted quantities can still be obtained later
-                by subsequent calls to this method. The allowed entries are
-                in the star_star_evolution_quantities for binary star systems
-                or in star_planet_evolution_quantities for a star-planet
-                system. If None, it defaults to the full list of quantities
-                for the given system.
-        
-        Returns: 
-            A structure with mebers named the same way as the input list of
-            quantities containing the values of the corresponding quantity at
-            each evolution step. The order is always in increasing age.
+            - quantities:    An iterable of quantities to read the evolution of.
+                The evolution of omitted quantities can still be obtained later
+                by subsequent calls to this method. The allowed entries are in
+                the star_star_evolution_quantities for binary star systems or in
+                star_planet_evolution_quantities for a star-planet system. If
+                None, it defaults to the full list of quantities for the given
+                system.
+
+        Returns:
+            Sturture:
+                A structure with mebers named the same way as the input list of
+                quantities containing the values of the corresponding quantity
+                at each evolution step. The order is always in increasing age.
         """
 
         result = Structure()
 
-        if quantities is None :
+        if quantities is None:
             quantities = self.evolution_quantities
 
-        for q in quantities :
-            setattr(result,
-                    q, 
-                    numpy.empty(self.num_evolution_steps,
-                                dtype = self.evolution_quantity_c_type(q)))
+        for quantity_name in quantities:
+            setattr(
+                result,
+                quantity_name,
+                numpy.empty(
+                    self.num_evolution_steps,
+                    dtype=self.evolution_quantity_c_type(quantity_name)
+                )
+            )
 
         get_evol_args = [self.c_solver,
                          self.c_binary,
                          self.primary.c_body]
-        if isinstance(self.secondary, EvolvingStar) :
+        if isinstance(self.secondary, EvolvingStar):
             get_evol_args.append(self.secondary.c_body)
         get_evol_args.extend([getattr(result, quantity, None)
                               for quantity in self.evolution_quantities])
@@ -331,9 +345,9 @@ class Binary:
             in an orbit with the given semimajor axis.
         """
 
-        return orbital_frequency(self.primary.mass,
-                                 self.secondary.mass,
-                                 semimajor)
+        return calc_orbital_frequency(self.primary.mass,
+                                      self.secondary.mass,
+                                      semimajor)
 
     def orbital_period(self, semimajor):
         """
@@ -365,9 +379,9 @@ class Binary:
             system are in an orbit with the given period.
         """
 
-        return semimajor(self.primary.mass,
-                         self.secondary.mass,
-                         orbital_period)
+        return calc_semimajor(self.primary.mass,
+                              self.secondary.mass,
+                              orbital_period)
 
     def orbital_angular_momentum(self, semimajor, eccentricity):
         """
@@ -385,7 +399,8 @@ class Binary:
             with the given semimajor axis and eccentricity in solar units.
         """
 
-        return orbital_angular_momentum(self.primary.mass,
-                                        self.secondary.mass,
-                                        semimajor,
-                                        eccentricity)
+        return calc_orbital_angular_momentum(self.primary.mass,
+                                             self.secondary.mass,
+                                             semimajor,
+                                             eccentricity)
+#pylint: enable=too-many-instance-attributes

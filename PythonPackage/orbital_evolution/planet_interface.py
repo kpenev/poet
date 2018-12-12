@@ -2,11 +2,13 @@
 
 """An interface to the POET planet library."""
 
-from ctypes import cdll, c_double
+from ctypes import cdll, c_double, c_uint
 from ctypes.util import find_library
 
+import numpy
 from astropy import constants
 
+from orbital_evolution.c_interface_util import ndpointer_or_null
 from orbital_evolution.dissipating_body import\
     c_dissipating_body_p,\
     DissipatingBody
@@ -27,7 +29,26 @@ def initialize_library():
     result.destroy_planet.argtypes = [result.create_planet.restype]
     result.destroy_planet.restype = None
 
-    return library
+    result.set_planet_dissipation.argtypes = [
+        result.create_planet.restype,
+        c_uint,
+        c_uint,
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        c_double
+    ]
+
+    return result
 
 library = initialize_library()
 
@@ -61,6 +82,30 @@ class LockedPlanet(DissipatingBody):
 
         library.destroy_planet(self.c_body)
 
+    def set_dissipation(self,
+                        *,
+                        tidal_frequency_breaks,
+                        spin_frequency_breaks,
+                        tidal_frequency_powers,
+                        spin_frequency_powers,
+                        reference_phase_lag):
+        """
+        Set the dissipaation of the only zone of the planet.
+
+        See EvolvingStar.set_dissipation() for description of the arguments.
+
+        Returns:
+            None
+        """
+
+        library.set_planet_dissipation(self.c_body,
+                                       tidal_frequency_powers.size - 1,
+                                       spin_frequency_powers - 1,
+                                       tidal_frequency_breaks,
+                                       spin_frequency_breaks,
+                                       tidal_frequency_powers,
+                                       spin_frequency_powers,
+                                       reference_phase_lag)
 if __name__ == '__main__':
     #False positive.
     #pylint: disable=no-member

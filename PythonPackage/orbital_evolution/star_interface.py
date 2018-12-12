@@ -3,8 +3,15 @@
 """An interface to the POET star library."""
 
 import sys
+from ctypes import cdll, c_int, c_double, c_uint, byref
+from ctypes.util import find_library
+
+import numpy
+
 sys.path.append('..')
 
+#Need to add POEP packageto module search path before importing.
+#pylint: disable=wrong-import-position
 from stellar_evolution.library_interface import\
     library as stellar_evolution_library
 from orbital_evolution.dissipating_body import\
@@ -12,21 +19,18 @@ from orbital_evolution.dissipating_body import\
     c_dissipating_body_p
 from orbital_evolution.evolve_interface import\
     library as orbital_evolution_library
-from orbital_evolution.evolve_interface import library as evolve_library
 from orbital_evolution.c_interface_util import ndpointer_or_null
-from ctypes import cdll, c_int, c_double, c_void_p, c_uint, c_bool, byref
-from ctypes.util import find_library
-import numpy
+#pylint: enable=wrong-import-position
 
-def initialize_library() :
+def initialize_library():
     """Prepare the planet library for use."""
 
     library_fname = find_library('star')
-    if(library_fname is None) :
-        raise OSError('Unable to find POET\'s star library.') 
-    library = cdll.LoadLibrary(library_fname)
+    if library_fname is None:
+        raise OSError('Unable to find POET\'s star library.')
+    result = cdll.LoadLibrary(library_fname)
 
-    library.create_star.argtypes = [
+    result.create_star.argtypes = [
         c_double,
         c_double,
         c_double,
@@ -34,117 +38,117 @@ def initialize_library() :
         c_double,
         stellar_evolution_library.create_interpolator.restype
     ]
-    library.create_star.restype = c_dissipating_body_p
+    result.create_star.restype = c_dissipating_body_p
 
-    library.destroy_star.argtypes = [library.create_star.restype]
-    library.destroy_star.restype = None
+    result.destroy_star.argtypes = [result.create_star.restype]
+    result.destroy_star.restype = None
 
-    library.set_dissipation.argtypes = [
-        library.create_star.restype,
+    result.set_star_dissipation.argtypes = [
+        result.create_star.restype,
         c_uint,
         c_uint,
         c_uint,
-        ndpointer_or_null(dtype = c_double,
-                          ndim = 1,
-                          flags = 'C_CONTIGUOUS'),
-        ndpointer_or_null(dtype = c_double,
-                          ndim = 1,
-                          flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_double
     ]
-    library.set_dissipation.restype = None
+    result.set_star_dissipation.restype = None
 
-    library.detect_stellar_wind_saturation.argtypes = [
-        library.create_star.restype
+    result.detect_stellar_wind_saturation.argtypes = [
+        result.create_star.restype
     ]
-    library.detect_stellar_wind_saturation.restype = None
+    result.detect_stellar_wind_saturation.restype = None
 
-    library.select_interpolation_region.argtypes = [
-        library.create_star.restype,
+    result.select_interpolation_region.argtypes = [
+        result.create_star.restype,
         c_double
     ]
-    library.select_interpolation_region.restype = None
+    result.select_interpolation_region.restype = None
 
-    library.modified_phase_lag.restype = c_double
+    result.modified_phase_lag.restype = c_double
 
-    library.core_formation_age.argtypes = [library.create_star.restype]
-    library.core_formation_age.restype = c_double
+    result.core_formation_age.argtypes = [result.create_star.restype]
+    result.core_formation_age.restype = c_double
 
-    library.lifetime.argtypes = [library.create_star.restype]
-    library.lifetime.restype = c_double
+    result.lifetime.argtypes = [result.create_star.restype]
+    result.lifetime.restype = c_double
 
-    library.luminosity.argtypes = [library.create_star.restype, c_double]
-    library.luminosity.restype = c_double
+    result.luminosity.argtypes = [result.create_star.restype, c_double]
+    result.luminosity.restype = c_double
 
-    library.luminosity_array.argtypes = [
-        library.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+    result.luminosity_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_uint,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS')
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
     ]
-    library.luminosity_array.restype = None
+    result.luminosity_array.restype = None
 
-    library.core_inertia.argtypes = [library.create_star.restype, c_double]
-    library.core_inertia.restype = c_double
+    result.core_inertia.argtypes = [result.create_star.restype, c_double]
+    result.core_inertia.restype = c_double
 
-    library.core_inertia_array.argtypes = [
-        library.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+    result.core_inertia_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_uint,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS')
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
     ]
-    library.core_inertia_array.restype = None
+    result.core_inertia_array.restype = None
 
-    library.envelope_inertia.argtypes = [library.create_star.restype,
-                                         c_double]
-    library.envelope_inertia.restype = c_double
+    result.envelope_inertia.argtypes = [result.create_star.restype,
+                                        c_double]
+    result.envelope_inertia.restype = c_double
 
-    library.envelope_inertia_array.argtypes = [
-        library.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+    result.envelope_inertia_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_uint,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS')
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
     ]
-    library.envelope_inertia_array.restype = None
+    result.envelope_inertia_array.restype = None
 
-    library.star_radius.argtypes = [library.create_star.restype, c_double]
-    library.star_radius.restype = c_double
+    result.star_radius.argtypes = [result.create_star.restype, c_double]
+    result.star_radius.restype = c_double
 
-    library.star_radius_array.argtypes = [
-        library.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS'),
+    result.star_radius_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_uint,
-        numpy.ctypeslib.ndpointer(dtype = c_double,
-                                  ndim = 1,
-                                  flags = 'C_CONTIGUOUS')
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
     ]
-    library.star_radius_array.restype = None
+    result.star_radius_array.restype = None
 
-    return library
+    return result
 
 library = initialize_library()
 
-class EvolvingStar(DissipatingBody) :
+class EvolvingStar(DissipatingBody):
     """A class for stars following interpolated stellar evolution tracks."""
 
     deriv_list = ['NO', 'AGE', 'SPIN_FREQUENCY', 'ORBITAL_FREQUENCY']
@@ -153,28 +157,29 @@ class EvolvingStar(DissipatingBody) :
 
     lib_configure_body = orbital_evolution_library.configure_star
 
-    def _evaluate_stellar_property(self, property_name, age) :
+    def _evaluate_stellar_property(self, property_name, age):
         """Evaluate a library function at a single age or array of ages."""
 
-        if type(age) is numpy.ndarray :
-            result = numpy.empty(dtype = c_double,
-                                 shape = (age.size,),
-                                 order = 'C')
+        if isinstance(age, numpy.ndarray):
+            result = numpy.empty(dtype=c_double,
+                                 shape=(age.size,),
+                                 order='C')
             getattr(library, property_name + '_array')(self.c_body,
                                                        age,
                                                        age.size,
                                                        result)
             return result
-        else :
-            return getattr(library, property_name)(self.c_body, age)
+
+        return getattr(library, property_name)(self.c_body, age)
 
     def __init__(self,
+                 *,
                  mass,
                  metallicity,
                  wind_strength,
                  wind_saturation_frequency,
                  diff_rot_coupling_timescale,
-                 interpolator) :
+                 interpolator):
         """
         Create a star with the given properties and evolution.
 
@@ -213,18 +218,19 @@ class EvolvingStar(DissipatingBody) :
                                           diff_rot_coupling_timescale,
                                           interpolator.interpolator)
 
-    def delete(self) :
+    def delete(self):
         """Destroy the library star object created at construction."""
 
         library.destroy_star(self.c_body)
 
     def set_dissipation(self,
-                        zone_index, 
+                        *,
+                        zone_index,
                         tidal_frequency_breaks,
                         spin_frequency_breaks,
                         tidal_frequency_powers,
                         spin_frequency_powers,
-                        reference_phase_lag) :
+                        reference_phase_lag):
         """
         Set the dissipative properties of one of the zones of a star.
 
@@ -255,22 +261,22 @@ class EvolvingStar(DissipatingBody) :
         Returns: None
         """
 
-        library.set_dissipation(self.c_body,
-                                zone_index,
-                                tidal_frequency_powers.size - 1,
-                                spin_frequency_powers.size - 1,
-                                tidal_frequency_breaks,
-                                spin_frequency_breaks,
-                                tidal_frequency_powers,
-                                spin_frequency_powers,
-                                reference_phase_lag)
+        library.set_star_dissipation(self.c_body,
+                                     zone_index,
+                                     tidal_frequency_powers.size - 1,
+                                     spin_frequency_powers.size - 1,
+                                     tidal_frequency_breaks,
+                                     spin_frequency_breaks,
+                                     tidal_frequency_powers,
+                                     spin_frequency_powers,
+                                     reference_phase_lag)
 
-    def detect_stellar_wind_saturation(self) :
+    def detect_stellar_wind_saturation(self):
         """Tell a fully configured star to set its wind saturation state."""
 
         library.detect_stellar_wind_saturation(self.c_body)
 
-    def select_interpolation_region(self, age) :
+    def select_interpolation_region(self, age):
         """
         Prepare for interpolating stellar quantities around the given age.
 
@@ -284,11 +290,12 @@ class EvolvingStar(DissipatingBody) :
         library.select_interpolation_region(self.c_body, age)
 
     def modified_phase_lag(self,
+                           *,
                            zone_index,
                            orbital_frequency_multiplier,
                            spin_frequency_multiplier,
                            forcing_frequency,
-                           deriv) :
+                           deriv):
         """
         Return the phase lag times the love number.
 
@@ -325,99 +332,138 @@ class EvolvingStar(DissipatingBody) :
             c_int(deriv),
             byref(above_lock_value)
         )
-        if(forcing_frequency == 0) :
+        if forcing_frequency == 0:
             return below_lock_value, above_lock_value.value
-        else :
-            return below_lock_value
+        return below_lock_value
 
-    def core_formation_age(self) :
+    def core_formation_age(self):
         """Return the age at which the core of the star forms in Gyrs."""
 
         return library.core_formation_age(self.c_body)
 
-    def lifetime(self) :
+    def lifetime(self):
         """Return the maximum age at which the star can be queried."""
 
         return library.lifetime(self.c_body)
 
-    def luminosity(self, age) :
+    def luminosity(self, age):
         """Return the luminosity of the star at the given age."""
 
         return self._evaluate_stellar_property('luminosity', age)
 
-    def core_inertia(self, age) :
+    def core_inertia(self, age):
         """
         Return the moment of inertia of the stellar core at the given age.
         """
 
         return self._evaluate_stellar_property('core_inertia', age)
 
-    def envelope_inertia(self, age) :
+    def envelope_inertia(self, age):
         """
         Return the moment of inertia of the stellar env. at the given age.
         """
 
         return self._evaluate_stellar_property('envelope_inertia', age)
 
-    def radius(self, age) :
+    def radius(self, age):
         """Return the luminosity of the star at the given age."""
 
         return self._evaluate_stellar_property('star_radius', age)
 
-if __name__ == '__main__' :
+if __name__ == '__main__':
+    #Only needed for example under __main__
+    #pylint: disable=ungrouped-imports
     from stellar_evolution.manager import StellarEvolutionManager
+    #pylint: enable=ungrouped-imports
 
-    serialized_dir = '../../stellar_evolution_interpolators'
-    manager = StellarEvolutionManager(serialized_dir)
-    interpolator = manager.get_interpolator_by_name('default')
-    star1 = EvolvingStar(1.0, 0.0, 0.15, 2.5, 5.0, interpolator)
-    star2 = EvolvingStar(1.0, 0.0, 0.15, 2.5, 5.0, interpolator)
-    star1.set_dissipation(0,
-                         numpy.array([]),
-                         numpy.array([]),
-                         numpy.array([0.0]),
-                         numpy.array([0.0]),
-                         0.1)
-    star1.set_dissipation(1,
-                         numpy.array([1.0]),
-                         numpy.array([]),
-                         numpy.array([0.0, 1.0]),
-                         numpy.array([0.0]),
-                         0.1)
-    star2.set_dissipation(0,
-                         numpy.array([0.6, 1.2]),
-                         numpy.array([]),
-                         numpy.array([0.0, 1.0, 0.0]),
-                         numpy.array([0.0]),
-                         0.1)
-    star2.set_dissipation(1,
-                         numpy.array([0.5, 1.0, 1.5]),
-                         numpy.array([]),
-                         numpy.array([1.0, 2.0, 3.0, 4.0]),
-                         numpy.array([0.0]),
-                         0.1)
-    print('%25s %25s %25s %25s %25s'
-          %
-          ('w', 'Env1(kDt)', 'Core1(kDt)', 'Env2(kDt)', 'Core2(kDt)'))
-    for w in numpy.linspace(0.1, 2.0, 20) :
-        print(
-            '%25s %25s %25s %25s %25s'
-            %
-            (
-                w, 
-                repr(star1.modified_phase_lag(
-                    0, 1, 1, w, star1.deriv_ids['NO']
-                )),
-                repr(star1.modified_phase_lag(
-                    1, 1, 1, w, star1.deriv_ids['NO']
-                )), 
-                repr(star2.modified_phase_lag(
-                    0, 1, 1, w, star2.deriv_ids['NO']
-                )),
-                repr(star2.modified_phase_lag(
-                    1, 1, 1, w, star2.deriv_ids['NO']
-                ))
-            )
+    def example():
+        """An example of how to use this module."""
+
+        serialized_dir = '../../stellar_evolution_interpolators'
+        manager = StellarEvolutionManager(serialized_dir)
+        interpolator = manager.get_interpolator_by_name('default')
+        star1 = EvolvingStar(mass=1.0,
+                             metallicity=0.0,
+                             wind_strength=0.15,
+                             wind_saturation_frequency=2.5,
+                             diff_rot_coupling_timescale=5.0,
+                             interpolator=interpolator)
+        star2 = EvolvingStar(mass=1.0,
+                             metallicity=0.0,
+                             wind_strength=0.15,
+                             wind_saturation_frequency=2.5,
+                             diff_rot_coupling_timescale=5.0,
+                             interpolator=interpolator)
+        star1.set_dissipation(
+            zone_index=0,
+            tidal_frequency_breaks=numpy.array([]),
+            spin_frequency_breaks=numpy.array([]),
+            tidal_frequency_powers=numpy.array([0.0]),
+            spin_frequency_powers=numpy.array([0.0]),
+            reference_phase_lag=0.1
         )
+        star1.set_dissipation(
+            zone_index=1,
+            tidal_frequency_breaks=numpy.array([1.0]),
+            spin_frequency_breaks=numpy.array([]),
+            tidal_frequency_powers=numpy.array([0.0, 1.0]),
+            spin_frequency_powers=numpy.array([0.0]),
+            reference_phase_lag=0.1
+        )
+        star2.set_dissipation(
+            zone_index=0,
+            tidal_frequency_breaks=numpy.array([0.6, 1.2]),
+            spin_frequency_breaks=numpy.array([]),
+            tidal_frequency_powers=numpy.array([0.0, 1.0, 0.0]),
+            spin_frequency_powers=numpy.array([0.0]),
+            reference_phase_lag=0.1
+        )
+        star2.set_dissipation(
+            zone_index=1,
+            tidal_frequency_breaks=numpy.array([0.5, 1.0, 1.5]),
+            spin_frequency_breaks=numpy.array([]),
+            tidal_frequency_powers=numpy.array([1.0, 2.0, 3.0, 4.0]),
+            spin_frequency_powers=numpy.array([0.0]),
+            reference_phase_lag=0.1
+        )
+        print('%25s %25s %25s %25s %25s'
+              %
+              ('w', 'Env1(kDt)', 'Core1(kDt)', 'Env2(kDt)', 'Core2(kDt)'))
+        for wtide in numpy.linspace(0.1, 2.0, 20):
+            print(
+                '%25s %25s %25s %25s %25s'
+                %
+                (
+                    wtide,
+                    repr(star1.modified_phase_lag(
+                        zone_index=0,
+                        orbital_frequency_multiplier=1,
+                        spin_frequency_multiplier=1,
+                        forcing_frequency=wtide,
+                        deriv=star1.deriv_ids['NO']
+                    )),
+                    repr(star1.modified_phase_lag(
+                        zone_index=1,
+                        orbital_frequency_multiplier=1,
+                        spin_frequency_multiplier=1,
+                        forcing_frequency=wtide,
+                        deriv=star1.deriv_ids['NO']
+                    )),
+                    repr(star2.modified_phase_lag(
+                        zone_index=0,
+                        orbital_frequency_multiplier=1,
+                        spin_frequency_multiplier=1,
+                        forcing_frequency=wtide,
+                        deriv=star2.deriv_ids['NO']
+                    )),
+                    repr(star2.modified_phase_lag(
+                        zone_index=1,
+                        orbital_frequency_multiplier=1,
+                        spin_frequency_multiplier=1,
+                        forcing_frequency=wtide,
+                        deriv=star2.deriv_ids['NO']
+                    ))
+                )
+            )
 
-
+    example()

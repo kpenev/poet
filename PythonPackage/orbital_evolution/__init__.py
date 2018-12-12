@@ -1,3 +1,5 @@
+"""The module for calculating tidal orbital evolution."""
+
 from glob import glob
 import os.path
 
