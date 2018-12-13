@@ -1,14 +1,17 @@
 """Configuration so that YCM can function properly."""
 
+import os
 import os.path
 from glob import glob
-from subprocess import Popen, PIPE, DEVNULL
+from subprocess import Popen, PIPE
 import platform
 
 def get_system_paths():
     """Return a list of the directories to search for <...> includes."""
 
     cpp_compiler = ('g++' if platform.system() == 'Linux' else 'clang')
+
+    DEVNULL = open(os.devnull, 'w')
 
     compiler_report = Popen(
         [cpp_compiler, '-E', '-v', '-x', 'c++', '-'],
@@ -23,6 +26,8 @@ def get_system_paths():
     num_sys_paths = compiler_report[sys_paths_start - 1:].index(
         'End of search list.'
     ) - 1
+
+    DEVNULL.close()
 
     return [
         path.strip()
