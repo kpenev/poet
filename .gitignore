@@ -8,3 +8,4 @@ build
 *.txt
 *.eps
 alpha_beta_values
+.DS_Store
