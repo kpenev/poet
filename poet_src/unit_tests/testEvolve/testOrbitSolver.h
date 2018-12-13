@@ -47,6 +47,9 @@ namespace Evolve {
         ///The primary planet in the current test (NULL if primary is star).
         Planet::Planet *__primary_planet;
 
+        ///A list of functions allocated during a test to delete at the end.
+        std::vector< const Core::OneArgumentDiffFunction* > __temp_functions;
+
         ///\brief Create __star with constant dissipation in a range, quickly
         ///decaying outside of that.
         void make_single_component_star(
@@ -125,12 +128,27 @@ namespace Evolve {
             double max_age = MAX_AGE,
             bool debug_mode = false
         );
+
+        ///\brief Calculate the predicted evolution for the
+        ///test_unlocked_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_unlocked_evolution(
+                ///The constant phase lag of the primary's surface zone.
+                double phase_lag,
+
+                ///The mass of the secondary in the system in Jupiter masses.
+                double secondary_mass,
+
+                ///If true, the decaying evolution is returned (see
+                ///test_unlocked_evolution()), otherwise, the expanding one.
+                bool decaying=true
+            );
     protected:
         ///No fixtures at this time
-        void setup() {};
+        void setup();
 
         ///No fixtures at this time
-        void tear_down() {};
+        void tear_down();
     public:
         ///Create the test suite.
         test_OrbitSolver();
@@ -151,8 +169,15 @@ namespace Evolve {
         void test_no_planet_evolution();
 
         ///\brief Tests the evolution of the orbit plus stellar rotation,
-        ///starting with the planet already present and ensuring it does not
-        ///die or lock to the star.
+        ///starting with the planet already present and it does not die or lock
+        ///to the star.
+        ///
+        ///Two evolutions are tested:
+        ///  - fast: with a small initial semimajor axis and with the stellar
+        ///    spin-down not saturated
+        //
+        ///  - slow: with a larger initial semimajor axis and with the stellar
+        ///    spin-down saturated.
         void test_unlocked_evolution();
 
         ///\brief Tests the evolution of the orbit plus stellar rotation for
