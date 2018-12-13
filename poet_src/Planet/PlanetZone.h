@@ -123,7 +123,6 @@ namespace Planet {
             bool spin_is_frequency
         )
         {
-            assert(!dissipative());
             BrokenPowerlawPhaseLagZone::configure(
                 initialize,
                 age,

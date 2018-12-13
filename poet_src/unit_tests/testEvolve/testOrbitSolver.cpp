@@ -140,47 +140,52 @@ namespace Evolve {
                                   double initial_a,
                                   const double *initial_Lstar,
                                   double initial_incl,
-                                  double planet_mass,
-                                  double tplanet,
+                                  double secondary_mass,
+                                  double tsecondary,
                                   double max_age,
-                                  double planet_radius,
+                                  double secondary_radius,
                                   double precision,
                                   double max_step_factor)
     {
-        __star->select_interpolation_region(TSTART);
+        Evolve::DissipatingBody *primary;
+        if(__star) {
+            __star->select_interpolation_region(TSTART);
+            primary = __star;
+        } else
+            primary = __primary_planet;
 
-        planet_mass *= Mjup_to_Msun;
-        planet_radius *= Rjup_to_Rsun;
+        secondary_mass *= Mjup_to_Msun;
+        secondary_radius *= Rjup_to_Rsun;
 
-        if(std::isnan(tplanet)) tplanet = tdisk;
+        if(std::isnan(tsecondary)) tsecondary = tdisk;
 
-        Planet::Planet planet(planet_mass,
-                              (planet_mass ? planet_radius : 0.0));
-        planet.configure(true, //init
-                         tplanet, //age
-                         __star->mass(), //mass
-                         initial_a, //semimajor
-                         0.0, //eccentricity
-                         &zero, //spin angmom
-                         NULL, //inclination
-                         NULL, //periapsis
-                         false, //locked surface
-                         true, //zero outer inclination
-                         true);//zero outer periapsis
+        Planet::Planet secondary(secondary_mass,
+                                 (secondary_mass ? secondary_radius : 0.0));
+        secondary.configure(true, //init
+                            tsecondary, //age
+                            primary->mass(), //mass
+                            initial_a, //semimajor
+                            0.0, //eccentricity
+                            &zero, //spin angmom
+                            NULL, //inclination
+                            NULL, //periapsis
+                            false, //locked surface
+                            true, //zero outer inclination
+                            true);//zero outer periapsis
 
         __system = new Evolve::DiskBinarySystem(
-            *__star,
-            planet,
+            *primary,
+            secondary,
             initial_a, //semimajor
             0.0, //eccentricity
             initial_incl, //inclination
             wdisk, //Wdisk
             tdisk, //disk dissipation age
-            tplanet //planet formation age
+            tsecondary //secondary formation age
         );
         if(tdisk <= TSTART) {
             double zeros[] = {0.0, 0.0};
-            if(tplanet <= TSTART) {
+            if(tsecondary <= TSTART) {
                 __system->configure(true, //init
                                     TSTART,
                                     initial_a, //semimajor
@@ -209,7 +214,7 @@ namespace Evolve {
                                 NULL, //periapsis
                                 Core::LOCKED_SURFACE_SPIN);
         }
-        __star->detect_saturation();
+        if(__star) __star->detect_saturation();
         __solver = new Evolve::OrbitSolver(max_age, precision);
         (*__solver)(*__system,
                     (max_age - __system->age()) * max_step_factor,//time step
@@ -230,27 +235,38 @@ namespace Evolve {
             tabulated_real_quantities[ECCENTRICITY] =
                 &(__system->eccentricity_evolution());
 
+            Evolve::DissipatingZone *primary_envelope;
+
+            if(__star) {
+                tabulated_real_quantities[RAD_INCLINATION] =
+                    &(__star->core().get_evolution_real(Evolve::INCLINATION));
+
+                tabulated_real_quantities[RAD_PERIAPSIS] =
+                    &(__star->core().get_evolution_real(Evolve::PERIAPSIS));
+
+                tabulated_real_quantities[RAD_ANGMOM] = &(
+                    __star->core().get_evolution_real(Evolve::ANGULAR_MOMENTUM)
+                );
+                primary_envelope = &(__star->envelope());
+            } else {
+                tabulated_real_quantities[RAD_INCLINATION] = NULL;
+                tabulated_real_quantities[RAD_PERIAPSIS] = NULL;
+                tabulated_real_quantities[RAD_ANGMOM] = NULL;
+                primary_envelope = &(__primary_planet->zone());
+            }
+
             tabulated_real_quantities[CONV_INCLINATION] = &(
-                __star->envelope().get_evolution_real(Evolve::INCLINATION)
+                primary_envelope->get_evolution_real(Evolve::INCLINATION)
             );
 
-            tabulated_real_quantities[RAD_INCLINATION] =
-                &(__star->core().get_evolution_real(Evolve::INCLINATION));
-
-            tabulated_real_quantities[CONV_PERIAPSIS] =
-                &(__star->envelope().get_evolution_real(Evolve::PERIAPSIS));
-
-            tabulated_real_quantities[RAD_PERIAPSIS] =
-                &(__star->core().get_evolution_real(Evolve::PERIAPSIS));
+            tabulated_real_quantities[CONV_PERIAPSIS] = &(
+                primary_envelope->get_evolution_real(Evolve::PERIAPSIS)
+            );
 
             tabulated_real_quantities[CONV_ANGMOM] = &(
-                __star->envelope().get_evolution_real(
+                primary_envelope->get_evolution_real(
                     Evolve::ANGULAR_MOMENTUM
                 )
-            );
-
-            tabulated_real_quantities[RAD_ANGMOM] = &(
-                __star->core().get_evolution_real(Evolve::ANGULAR_MOMENTUM)
             );
         return tabulated_real_quantities;
     }
@@ -270,8 +286,8 @@ namespace Evolve {
         const std::list<Core::EvolModeType> &tabulated_modes =
             __solver->mode_evolution();
 
-        const std::list<bool> &tabulated_wind_sat =
-            __star->wind_saturation_evolution();
+        const std::list<bool> *tabulated_wind_sat =
+            (__star ? &(__star->wind_saturation_evolution()) : NULL);
 
         unsigned num_ages = tabulated_real_quantities[AGE]->size();
 
@@ -287,25 +303,32 @@ namespace Evolve {
         bool all_same_size = true;
 
         for(unsigned q = 0; q < AGE; ++q) {
-            msg << tabulated_real_quantities[q]->size()
-                << " tabulated "
-                << static_cast<RealEvolutionQuantity>(q)
-                << ", ";
-            all_same_size = (
-                all_same_size
-                &&
-                tabulated_real_quantities[q]->size() == num_ages
-            );
+            if(tabulated_real_quantities[q]) {
+                msg << tabulated_real_quantities[q]->size()
+                    << " tabulated "
+                    << static_cast<RealEvolutionQuantity>(q)
+                    << ", ";
+                all_same_size = (
+                    all_same_size
+                    &&
+                    tabulated_real_quantities[q]->size() == num_ages
+                );
+            }
         }
 
-        msg << tabulated_modes.size() << " tabulated modes, "
-            << tabulated_wind_sat.size() << " tabulated wind saturations";
+        msg << tabulated_modes.size() << " tabulated modes";
 
         all_same_size = (all_same_size
                          &&
-                         tabulated_modes.size() == num_ages
-                         &&
-                         tabulated_wind_sat.size() == num_ages);
+                         tabulated_modes.size() == num_ages);
+        if(__star) {
+            msg << ", "
+                << tabulated_wind_sat->size()
+                << " tabulated wind saturations";
+            all_same_size = (all_same_size
+                             &&
+                             tabulated_wind_sat->size() == num_ages);
+        }
 
 
         if(debug_mode) std::cout << msg.str() << std::endl;
@@ -328,11 +351,13 @@ namespace Evolve {
         std::vector< std::list<double>::const_iterator >
             real_tabulated_iter(AGE);
         for(unsigned q = 0; q < AGE; ++q)
-            real_tabulated_iter[q] = tabulated_real_quantities[q]->begin();
+            if(tabulated_real_quantities[q])
+                real_tabulated_iter[q] = tabulated_real_quantities[q]->begin();
         std::list<Core::EvolModeType>::const_iterator
             tabulated_mode_iter = tabulated_modes.begin();
-        std::list<bool>::const_iterator
-            tabulated_wind_sat_iter = tabulated_wind_sat.begin();
+        std::list<bool>::const_iterator tabulated_wind_sat_iter;
+        if(__star)
+            tabulated_wind_sat_iter = tabulated_wind_sat->begin();
         double last_checked_age = Core::NaN;
 
         for(
@@ -354,15 +379,18 @@ namespace Evolve {
             age_msg_start.setf(std::ios_base::scientific);
             age_msg_start << msg_start.str()
                           << "age = " << *age_i
-                          << ", mode = " << *tabulated_mode_iter
-                          << ", wind is ";
-            if(!(*tabulated_wind_sat_iter)) age_msg_start << " not ";
-            age_msg_start << "saturated";
+                          << ", mode = " << *tabulated_mode_iter;
+            if(__star) {
+                age_msg_start << ", wind is ";
+                if(!(*tabulated_wind_sat_iter)) age_msg_start << " not ";
+                age_msg_start << "saturated";
+            }
             for(unsigned q = 0; q < AGE; ++q)
-                age_msg_start << ", "
-                              << static_cast<RealEvolutionQuantity>(q)
-                              << " = "
-                              << *real_tabulated_iter[q];
+                if(tabulated_real_quantities[q])
+                    age_msg_start << ", "
+                                  << static_cast<RealEvolutionQuantity>(q)
+                                  << " = "
+                                  << *real_tabulated_iter[q];
 
             msg.str("");
             msg << age_msg_start.str() << " age is out of range.";
@@ -393,16 +421,18 @@ namespace Evolve {
                 else TEST_ASSERT_MSG(false, msg.str().c_str());
             }
 
-            msg.str("");
-            msg << age_msg_start.str() << ": wind is ";
-            if(!(*tabulated_wind_sat_iter)) msg << " not ";
-            msg << "saturated, but should";
-            if(!expected_wind_sat) msg << " not ";
-            msg << "be.";
-            if(debug_mode) std::cout << msg.str() << std::endl;
-            if(!skipped && expected_wind_sat != *tabulated_wind_sat_iter) {
-                if(can_skip) skipped = true;
-                else TEST_ASSERT_MSG(false, msg.str().c_str());
+            if(__star) {
+                msg.str("");
+                msg << age_msg_start.str() << ": wind is ";
+                if(!(*tabulated_wind_sat_iter)) msg << " not ";
+                msg << "saturated, but should";
+                if(!expected_wind_sat) msg << " not ";
+                msg << "be.";
+                if(debug_mode) std::cout << msg.str() << std::endl;
+                if(!skipped && expected_wind_sat != *tabulated_wind_sat_iter) {
+                    if(can_skip) skipped = true;
+                    else TEST_ASSERT_MSG(false, msg.str().c_str());
+                }
             }
 /*            TEST_ASSERT_MSG(
                 (
@@ -416,6 +446,7 @@ namespace Evolve {
             );*/
 
             for(unsigned q = 0; q < AGE; ++q) {
+                if(!tabulated_real_quantities[q]) continue;
                 msg.str("");
                 msg << age_msg_start.str() << ": "
                     << static_cast<RealEvolutionQuantity>(q)
@@ -446,8 +477,10 @@ namespace Evolve {
             else if(debug_mode)
                 std::cerr << "Skipped checks for t = " << *age_i
                           << std::endl;
-            for(unsigned q = 0; q < AGE; ++q) ++(real_tabulated_iter[q]);
-            ++tabulated_wind_sat_iter;
+            for(unsigned q = 0; q < AGE; ++q)
+                if(tabulated_real_quantities[q])
+                    ++(real_tabulated_iter[q]);
+            if(__star)  ++tabulated_wind_sat_iter;
             ++tabulated_mode_iter;
         }
     }
@@ -992,11 +1025,18 @@ namespace Evolve {
             initial_L[1] = 0.0;
             initial_L[2] = 0.0;
 
-            __star = make_const_lag_star(*no_evol,
+            __star = NULL;
+            __primary_planet = new Planet::Planet(1.0, 1.0, 1.0);
+            __primary_planet->zone().setup(std::vector<double>(),//Wtide breaks
+                                           std::vector<double>(),//W* breaks
+                                           std::vector<double>(1, 0.0),//Wtide pow.
+                                           std::vector<double>(1, 0.0),//W* pow.
+                                           lag);
+/*            __star = make_const_lag_star(*no_evol,
                                          0.0,//wind K
                                          100.0,//wsat
                                          Core::Inf,//tcoup
-                                         lag);
+                                         lag);*/
 
             evolve(0.0,//wdisk
                    0.0,//tdisk
@@ -1058,7 +1098,8 @@ namespace Evolve {
                           TSTART,
                           1.0);
 
-            delete __star;
+            if(__star) delete __star;
+            else delete __primary_planet;
             delete __system;
             delete __solver;
             delete expected_real_quantities[CONV_ANGMOM];
@@ -2988,9 +3029,9 @@ namespace Evolve {
 
     test_OrbitSolver::test_OrbitSolver()
     {
-        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
-        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
+        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);*/
         TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
         TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);

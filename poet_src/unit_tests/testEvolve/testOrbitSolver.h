@@ -41,8 +41,11 @@ namespace Evolve {
         ///The system being evolved by the current test.
         Evolve::DiskBinarySystem *__system;
 
-        ///The star used in the current test.
+        ///The star used in the current test (NULL if primary is planet).
         Star::InterpolatedEvolutionStar *__star;
+
+        ///The primary planet in the current test (NULL if primary is star).
+        Planet::Planet *__primary_planet;
 
         ///\brief Create __star with constant dissipation in a range, quickly
         ///decaying outside of that.
@@ -81,11 +84,11 @@ namespace Evolve {
             double initial_a,
             const double *initial_Lstar,
             double initial_incl = 0.0,
-            double planet_mass = 1.0,
+            double secondary_mass = 1.0,
             ///If NaN defaults to tdisk.
-            double tplanet = Core::NaN,
+            double tsecondary = Core::NaN,
             double max_age = MAX_AGE,
-            double planet_radius = 1.0,
+            double secondary_radius = 1.0,
             double precision = 1e-6,
             double max_step_factor = 1e-3
         );
