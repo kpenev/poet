@@ -148,6 +148,10 @@ namespace Evolve {
                                   double max_step_factor)
     {
         Evolve::DissipatingBody *primary;
+       if(__star)
+           primary = __star;
+       else
+           primary = __primary_planet;
 
         secondary_mass *= Mjup_to_Msun;
         secondary_radius *= Rjup_to_Rsun;
@@ -658,6 +662,7 @@ namespace Evolve {
                 (decaying ? 0.0 : -1e5) - std::sqrt(a0),
                 0
             );
+            __temp_functions.push_back(Lconv_unscaled);
 
             expected_real_quantities[SEMIMAJOR] = new FunctionToPower(
                 a6p5_evol,
@@ -1045,7 +1050,7 @@ namespace Evolve {
                                          Core::Inf,//tcoup
                                          lag);
 
-            for(unsigned loop = 0; loop < 2; ++loop) {
+            while(true) {
                 double initial_a = (
                     *expected_real_quantities[SEMIMAJOR]
                 )(TSTART);
@@ -1102,18 +1107,20 @@ namespace Evolve {
                               TSTART,
                               1.0);
 
-                delete __star;
-                __star = NULL;
+                if(__star) {
+                    delete __star;
+                    __star = NULL;
 
-                __primary_planet = new Planet::Planet(1.0, 1.0, 1.0);
-                __primary_planet->zone().setup(
-                    std::vector<double>(),//Wtide breaks
-                    std::vector<double>(),//W* breaks
-                    std::vector<double>(1, 0.0),//Wtide pow.
-                    std::vector<double>(1, 0.0),//W* pow.
-                    lag
-                );
-
+                    __primary_planet = new Planet::Planet(1.0, 1.0, 1.0);
+                    __primary_planet->zone().setup(
+                        std::vector<double>(),//Wtide breaks
+                        std::vector<double>(),//W* breaks
+                        std::vector<double>(1, 0.0),//Wtide pow.
+                        std::vector<double>(1, 0.0),//W* pow.
+                        lag
+                    );
+                } else
+                    break;
             }
 
             delete no_evol;
@@ -3037,18 +3044,22 @@ namespace Evolve {
     void test_OrbitSolver::tear_down()
     {
         if(__star) {
+            std::cout << "Deleting star" << std::endl;
             delete __star;
             __star = NULL;
         }
         if(__primary_planet) {
+            std::cout << "Deleting primary planet" << std::endl;
             delete __primary_planet;
             __primary_planet = NULL;
         }
         if(__system) {
+            std::cout << "Deleting system" << std::endl;
             delete __system;
             __system = NULL;
         }
         if(__solver) {
+            std::cout << "Deleting solver" << std::endl;
             delete __solver;
             __solver = NULL;
         }
@@ -3058,6 +3069,7 @@ namespace Evolve {
             temp_func_i != __temp_functions.end();
             ++temp_func_i
         ) {
+            std::cout << "Deleting function" << std::endl;
             delete *temp_func_i;
         }
         __temp_functions.clear();
