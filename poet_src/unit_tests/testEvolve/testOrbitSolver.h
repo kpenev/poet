@@ -143,6 +143,31 @@ namespace Evolve {
                 ///test_unlocked_evolution()), otherwise, the expanding one.
                 bool decaying=true
             );
+
+        ///\brief Calculate the predicted evolution for the
+        ///test_disklocked_to_fast_to_locked() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_disklocked_to_fast_to_locked(
+                /// \f$Log_10(Q)\$ for the primary.
+                double lgQ,
+
+                ///The age at which the disk dissipates
+                double tdisk,
+
+                ///The semimajor axis at which the spin-orbit lock occurs.
+                double async,
+
+                ///The age at which the spin-orbit lock occurs.
+                double tsync,
+
+                ///The age up to which to calculate the evolution.
+                double tend,
+
+                ///Should the disk locked portion of the evolution be included?
+                bool include_disk_lock=true
+            );
+
+
     protected:
         ///No fixtures at this time
         void setup();

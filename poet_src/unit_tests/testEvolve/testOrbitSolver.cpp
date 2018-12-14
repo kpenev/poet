@@ -182,38 +182,49 @@ namespace Evolve {
             tdisk, //disk dissipation age
             tsecondary //secondary formation age
         );
-        if(tdisk <= TSTART) {
-            double zeros[] = {0.0, 0.0};
-            if(tsecondary <= TSTART) {
-                __system->configure(true, //init
-                                    TSTART,
-                                    initial_a, //semimajor
-                                    0.0, //eccentricity
-                                    initial_Lstar, //spin angmom
-                                    zeros, //inclination
-                                    zeros, //periapsis
-                                    Core::BINARY);
+        double zeros[] = {0.0, 0.0};
+        if(__star) {
+            if(tdisk <= TSTART) {
+                if(tsecondary <= TSTART) {
+                    __system->configure(true, //init
+                                        TSTART,
+                                        initial_a, //semimajor
+                                        0.0, //eccentricity
+                                        initial_Lstar, //spin angmom
+                                        zeros, //inclination
+                                        zeros, //periapsis
+                                        Core::BINARY);
+                } else {
+                    __system->configure(true, //init
+                                        TSTART,
+                                        Core::NaN, //semimajor
+                                        Core::NaN, //eccentricity
+                                        initial_Lstar, //spin angmom
+                                        zeros, //inclination
+                                        zeros, //periapsis
+                                        Core::SINGLE);
+                }
             } else {
                 __system->configure(true, //init
                                     TSTART,
                                     Core::NaN, //semimajor
                                     Core::NaN, //eccentricity
                                     initial_Lstar, //spin angmom
-                                    zeros, //inclination
-                                    zeros, //periapsis
-                                    Core::SINGLE);
+                                    NULL, //inclination
+                                    NULL, //periapsis
+                                    Core::LOCKED_SURFACE_SPIN);
             }
+            __star->detect_saturation();
         } else {
             __system->configure(true, //init
-                                TSTART,
-                                Core::NaN, //semimajor
-                                Core::NaN, //eccentricity
+                                tsecondary,
+                                initial_a, //semimajor
+                                0.0, //eccentricity
                                 initial_Lstar, //spin angmom
-                                NULL, //inclination
-                                NULL, //periapsis
-                                Core::LOCKED_SURFACE_SPIN);
+                                zeros, //inclination
+                                zeros, //periapsis
+                                Core::BINARY);
         }
-        if(__star) __star->detect_saturation();
         __solver = new Evolve::OrbitSolver(max_age, precision);
         (*__solver)(*__system,
                     (max_age - __system->age()) * max_step_factor,//time step
@@ -686,6 +697,191 @@ namespace Evolve {
 
         }
 
+    std::vector<const Core::OneArgumentDiffFunction *>
+        test_OrbitSolver::calculate_expected_disklocked_to_fast_to_locked(
+            double lgQ,
+            double tdisk,
+            double async,
+            double tsync,
+            double tend,
+            bool include_disk_lock
+        )
+        {
+            const double Q = std::pow(10.0, lgQ),
+                         alpha = (
+                             -4.5
+                             *
+                             std::sqrt(
+                                 Core::AstroConst::G
+                                 /
+                                 (
+                                     Core::AstroConst::solar_radius
+                                     *
+                                     Core::AstroConst::solar_mass
+                                 )
+                             )
+                             *
+                             Core::AstroConst::jupiter_mass / Q
+                             *
+                             Core::AstroConst::Gyr
+                             /
+                             Core::AstroConst::solar_radius
+                         ),
+                         Lscale = (
+                             Core::AstroConst::jupiter_mass
+                             /
+                             std::pow(Core::AstroConst::solar_radius, 1.5)
+                             *
+                             std::sqrt(Core::AstroConst::G
+                                       /
+                                       (
+                                           Core::AstroConst::jupiter_mass
+                                           +
+                                           Core::AstroConst::solar_mass
+                                       )
+                             )
+                             *
+                             Core::AstroConst::day
+                         ),
+                         beta = (
+                             std::sqrt(
+                                 Core::AstroConst::G
+                                 *
+                                 (
+                                     Core::AstroConst::solar_mass
+                                     +
+                                     Core::AstroConst::jupiter_mass
+                                 )
+                             )
+                             *
+                             Core::AstroConst::day
+                             /
+                             std::pow(Core::AstroConst::solar_radius, 1.5)
+                         ),
+                         a6p5_offset = (std::pow(async, 6.5)
+                                        -
+                                        6.5 * alpha * tsync),
+                         a_formation=std::pow(
+                             a6p5_offset + 6.5 * alpha * tdisk,
+                             1.0 / 6.5
+                         ),
+                         Ic = (
+                             Lscale
+                             *
+                             (std::sqrt(a_formation) - std::sqrt(async))
+                             /
+                             (beta * (std::pow(async, -1.5)
+                                      -
+                                      0.5 * std::pow(a_formation, -1.5)))
+                         ),
+                         wdisk = 0.5 * beta / std::pow(a_formation, 1.5),
+                         wlocked = beta / std::pow(async, 1.5);
+
+            std::valarray<double> a6p5_poly_coef(2);
+            a6p5_poly_coef[0] = a6p5_offset;
+            a6p5_poly_coef[1] = 6.5 * alpha;
+            StellarEvolution::PolynomialEvolutionQuantity
+                *a6p5_evol = new StellarEvolution::PolynomialEvolutionQuantity(
+                    a6p5_poly_coef,
+                    tdisk,
+                    tsync
+                ),
+                *Lconv_disk = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(Ic * wdisk, 1),
+                    TSTART,
+                    tdisk
+                ),
+                *Lconv_locked = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(Ic * wlocked, 1),
+                    tsync,
+                    tend
+                ),
+                *nan_disk = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(Core::NaN, 2),
+                    TSTART,
+                    tdisk
+                ),
+                *a_locked = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(async, 1),
+                    tsync,
+                    tend
+                ),
+                *Lrad_evol = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(),
+                    TSTART,
+                    tend
+                ),
+                *zero_e = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(),
+                    tdisk,
+                    tend
+                );
+            __temp_functions.push_back(a6p5_evol);
+            __temp_functions.push_back(Lconv_disk);
+            __temp_functions.push_back(Lconv_locked);
+            __temp_functions.push_back(nan_disk);
+            __temp_functions.push_back(a_locked);
+            __temp_functions.push_back(Lrad_evol);
+            __temp_functions.push_back(zero_e);
+
+            FunctionToPower *a_fast = new FunctionToPower(a6p5_evol,
+                                                          1.0 / 6.5),
+                            *sqrta_evol = new FunctionToPower(a6p5_evol,
+                                                              1.0 / 13.0);
+            __temp_functions.push_back(a_fast);
+            __temp_functions.push_back(sqrta_evol);
+
+            ExponentialPlusFunc *Lconv_unscaled = new ExponentialPlusFunc(
+                sqrta_evol,
+                -Ic * wdisk / Lscale - std::sqrt(a_formation), 0
+            );
+            __temp_functions.push_back(Lconv_unscaled);
+
+            ScaledFunction *Lconv_fast = new ScaledFunction(Lconv_unscaled,
+                                                            -Lscale);
+            __temp_functions.push_back(Lconv_fast);
+
+            PiecewiseFunction *a_evol = new PiecewiseFunction,
+                              *e_evol = new PiecewiseFunction,
+                              *Lconv_evol = new PiecewiseFunction;
+            __temp_functions.push_back(a_evol);
+            __temp_functions.push_back(e_evol);
+            __temp_functions.push_back(Lconv_evol);
+
+            StellarEvolution::PolynomialEvolutionQuantity *zero_quantity;
+
+            if(include_disk_lock) {
+                a_evol->add_piece(nan_disk);
+                e_evol->add_piece(nan_disk);
+                Lconv_evol->add_piece(Lconv_disk);
+                zero_quantity = &zero_func;
+            } else {
+                zero_quantity = zero_e;
+            }
+
+            a_evol->add_piece(a_fast);
+            a_evol->add_piece(a_locked);
+
+            e_evol->add_piece(zero_e);
+
+            Lconv_evol->add_piece(Lconv_fast);
+            Lconv_evol->add_piece(Lconv_locked);
+
+            std::vector<const Core::OneArgumentDiffFunction *>
+                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
+
+            expected_real_quantities[SEMIMAJOR] = a_evol;
+            expected_real_quantities[ECCENTRICITY] = e_evol;
+            expected_real_quantities[CONV_INCLINATION] = zero_quantity;
+            expected_real_quantities[RAD_INCLINATION] = zero_quantity;
+            expected_real_quantities[CONV_PERIAPSIS] = zero_quantity;
+            expected_real_quantities[RAD_PERIAPSIS] = zero_quantity;
+            expected_real_quantities[CONV_ANGMOM] = Lconv_evol;
+            expected_real_quantities[RAD_ANGMOM] = zero_quantity;
+
+            return expected_real_quantities;
+        }
+
     void test_OrbitSolver::test_disk_locked_no_stellar_evolution()
     {
         try {
@@ -1063,7 +1259,7 @@ namespace Evolve {
                 initial_L[2] = 0.0;
 
                 evolve(0.0,//wdisk
-                       0.0,//tdisk
+                       TSTART,//tdisk
                        initial_a,
                        &(initial_L[0]),
                        0.0,//initial inclination
@@ -1092,7 +1288,7 @@ namespace Evolve {
                 initial_L[0] = (*expected_real_quantities[CONV_ANGMOM])(TSTART);
 
                 evolve(0.0,//wdisk
-                       0.0,//tdisk
+                       TSTART,//tdisk
                        initial_a,
                        &(initial_L[0]),
                        0.0,//initial inclination
@@ -1963,171 +2159,100 @@ namespace Evolve {
     {
         try {
             const double lgQ = 8,
-                         Q = std::pow(10.0, lgQ),
-                         alpha = (
-                             -4.5
-                             *
-                             std::sqrt(
-                                 Core::AstroConst::G
-                                 /
-                                 (
-                                     Core::AstroConst::solar_radius
-                                     *
-                                     Core::AstroConst::solar_mass
-                                 )
-                             )
-                             *
-                             Core::AstroConst::jupiter_mass / Q
-                             *
-                             Core::AstroConst::Gyr
-                             /
-                             Core::AstroConst::solar_radius
-                         ),
-                         Lscale = (
-                             Core::AstroConst::jupiter_mass
-                             /
-                             std::pow(Core::AstroConst::solar_radius, 1.5)
-                             *
-                             std::sqrt(Core::AstroConst::G
-                                       /
-                                       (
-                                           Core::AstroConst::jupiter_mass
-                                           +
-                                           Core::AstroConst::solar_mass
-                                       )
-                             )
-                             *
-                             Core::AstroConst::day
-                         ),
-                         beta = (
-                             std::sqrt(
-                                 Core::AstroConst::G
-                                 *
-                                 (
-                                     Core::AstroConst::solar_mass
-                                     +
-                                     Core::AstroConst::jupiter_mass
-                                 )
-                             )
-                             *
-                             Core::AstroConst::day
-                             /
-                             std::pow(Core::AstroConst::solar_radius, 1.5)
-                         ),
                          tdisk = 1,
                          async = 2.5,
                          tsync = 2.0,
-                         tend = 3,
-                         a6p5_offset = (std::pow(async, 6.5)
-                                        -
-                                        6.5 * alpha * tsync),
-                         a_formation=std::pow(
-                             a6p5_offset + 6.5 * alpha * tdisk,
-                             1.0 / 6.5
-                         ),
-                         Ic = (
-                             Lscale
-                             *
-                             (std::sqrt(a_formation) - std::sqrt(async))
-                             /
-                             (beta * (std::pow(async, -1.5)
-                                      -
-                                      0.5 * std::pow(a_formation, -1.5)))
-                         ),
-                         wdisk = 0.5 * beta / std::pow(a_formation, 1.5),
-                         wlocked = beta / std::pow(async, 1.5);
+                         tend = 3;
+
+            std::vector<const Core::OneArgumentDiffFunction *>
+                expected_real_quantities
+                =
+                calculate_expected_disklocked_to_fast_to_locked(
+                    lgQ,
+                    tdisk,
+                    async,
+                    tsync,
+                    tend
+                );
+
+            double wsync = Core::orbital_angular_velocity(1.0,
+                                                          Mjup_to_Msun,
+                                                          async),
+                   Lconv_sync = (*expected_real_quantities[CONV_ANGMOM])(
+                       (tsync + tend) / 2.0
+                   ),
+                   Iconv = Lconv_sync / wsync,
+                   Ldisk = (*expected_real_quantities[CONV_ANGMOM])(
+                       (TSTART + tdisk) / 2.0
+                   ),
+                   wdisk = Ldisk / Iconv,
+                   a_formation = (*expected_real_quantities[SEMIMAJOR])(tdisk),
+                   phase_lag = lag_from_lgQ(lgQ,
+                                            (Core::AstroConst::jupiter_mass
+                                             /
+                                             Core::AstroConst::solar_mass));
 
             StellarEvolution::MockStellarEvolution *
-                no_evol = StellarEvolution::make_no_evolution(1.0, Ic);
+                no_evol = StellarEvolution::make_no_evolution(1.0, Iconv);
 
             __star = make_const_lag_star(
                 *no_evol,//evolution
                 0.0,//Kwind
                 100.0,//wsat
                 Core::Inf,//tcoup
-                lag_from_lgQ(lgQ,
-                             (Core::AstroConst::jupiter_mass
-                              /
-                              Core::AstroConst::solar_mass))
+                phase_lag
             );
-            evolve(wdisk,//wdisk,
-                   tdisk,//tdisk
-                   a_formation,//initial semimajor
-                   &zero,//initial L*
-                   0.0,//initial inclination
-                   1.0,//planet_mass
-                   Core::NaN,//form the planet when disk dissipates
-                   tend,//max evolution age
-                   0.01);//planet radius
 
             ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
             expected_evol_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
             expected_evol_mode.add_break(tdisk, Core::BINARY);
 
-            std::valarray<double> a6p5_poly_coef(2);
-            a6p5_poly_coef[0] = a6p5_offset;
-            a6p5_poly_coef[1] = 6.5 * alpha;
-            StellarEvolution::PolynomialEvolutionQuantity
-                a6p5_evol(a6p5_poly_coef, tdisk, tsync),
-                Lconv_disk(std::valarray<double>(Ic * wdisk, 1),
-                           TSTART,
-                           tdisk),
-                Lconv_locked(std::valarray<double>(Ic * wlocked, 1),
-                             tsync,
-                             tend),
-                nan_disk(std::valarray<double>(Core::NaN, 2),
-                       TSTART,
-                       tdisk),
-                a_locked(std::valarray<double>(async, 1),
-                         tsync,
-                         tend),
-                Lrad_evol(std::valarray<double>(),
-                          TSTART,
-                          tend),
-                zero_e(std::valarray<double>(), tdisk, tend);
-            FunctionToPower a_fast(&a6p5_evol, 1.0 / 6.5),
-                            sqrta_evol(&a6p5_evol, 1.0 / 13.0);
-            ExponentialPlusFunc Lconv_unscaled(
-                &sqrta_evol,
-                -Ic * wdisk / Lscale - std::sqrt(a_formation), 0
-            );
-            ScaledFunction Lconv_fast(&Lconv_unscaled, -Lscale);
-
-            PiecewiseFunction a_evol, e_evol, Lconv_evol;
-
-            a_evol.add_piece(&nan_disk);
-            a_evol.add_piece(&a_fast);
-            a_evol.add_piece(&a_locked);
-
-            e_evol.add_piece(&nan_disk);
-            e_evol.add_piece(&zero_e);
-
-            Lconv_evol.add_piece(&Lconv_disk);
-            Lconv_evol.add_piece(&Lconv_fast);
-            Lconv_evol.add_piece(&Lconv_locked);
-
-            std::vector<const Core::OneArgumentDiffFunction *>
-                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
-
-            expected_real_quantities[SEMIMAJOR] = &a_evol;
-            expected_real_quantities[ECCENTRICITY] = &e_evol;
-            expected_real_quantities[CONV_INCLINATION] = &zero_func;
-            expected_real_quantities[RAD_INCLINATION] = &zero_func;
-            expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
-            expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
-            expected_real_quantities[CONV_ANGMOM] = &Lconv_evol;
-            expected_real_quantities[RAD_ANGMOM] = &zero_func;
-
-
             ExpectedEvolutionMode<bool> expected_wind_mode;
             expected_wind_mode.add_break(TSTART, false);
 
-            test_solution(get_evolution(),
-                          expected_real_quantities,
-                          expected_evol_mode,
-                          expected_wind_mode,
-                          TSTART,
-                          tend);
+            while(true) {
+                evolve(wdisk,//wdisk,
+                       tdisk,//tdisk
+                       a_formation,//initial semimajor
+                       (__star ? &zero : &Ldisk),//initial L*
+                       0.0,//initial inclination
+                       1.0,//planet_mass
+                       Core::NaN,//time of secondary formation
+                       tend,//max evolution age
+                       0.01,//planet radius
+                       1e-7);//precision
+
+                test_solution(get_evolution(),
+                              expected_real_quantities,
+                              expected_evol_mode,
+                              expected_wind_mode,
+                              (__star ? TSTART : tdisk),
+                              tend);
+                if(__star) {
+                    delete __star;
+                    __star = NULL;
+
+                    __primary_planet = new Planet::Planet(1.0, 1.0, Iconv);
+                    __primary_planet->zone().setup(
+                        std::vector<double>(),//Wtide breaks
+                        std::vector<double>(),//W* breaks
+                        std::vector<double>(1, 0.0),//Wtide pow.
+                        std::vector<double>(1, 0.0),//W* pow.
+                        phase_lag
+                    );
+
+                    expected_real_quantities =
+                        calculate_expected_disklocked_to_fast_to_locked(
+                            lgQ,
+                            tdisk,
+                            async,
+                            tsync,
+                            tend
+                        );
+
+                } else
+                    break;
+            }
 
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(
@@ -3081,18 +3206,18 @@ namespace Evolve {
         __star(NULL),
         __primary_planet(NULL)
     {
-/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
-        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
         TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
-/*        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
         TEST_ADD(test_OrbitSolver::test_polar_1_0_evolution);
         TEST_ADD(test_OrbitSolver::test_polar_2_0_evolution);
-        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);*/
+        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);
     }
 
 }//End Evolve namespace.
