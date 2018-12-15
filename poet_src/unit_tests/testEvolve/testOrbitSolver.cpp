@@ -597,6 +597,10 @@ namespace Evolve {
                                   debug_mode);
 
                 }
+            delete __star;
+            delete __system;
+            delete __solver;
+
     }
 
     std::vector<const Core::OneArgumentDiffFunction *>
@@ -1930,6 +1934,7 @@ namespace Evolve {
                           expected_wind_mode,
                           TSTART,
                           tfinal);
+            delete no_evol;
 
 #if 0
             Star star_not_saturated_wind_no_coupling(
@@ -2253,6 +2258,7 @@ namespace Evolve {
                 } else
                     break;
             }
+            delete no_evol;
 
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(
@@ -2575,6 +2581,7 @@ namespace Evolve {
                           expected_wind_mode,
                           TSTART,
                           tend);
+            delete no_evol;
         } catch (Core::Error::General &ex) {
             TEST_ASSERT_MSG(
                 false,
