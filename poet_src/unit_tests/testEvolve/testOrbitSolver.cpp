@@ -81,11 +81,7 @@ namespace Evolve {
         MAX_AGE
     );
 
-    void test_OrbitSolver::make_single_component_star(
-        const StellarEvolution::Interpolator &evolution,
-        double wind_strength,
-        double wind_sat_freq,
-        double coupling_timescale,
+    void test_OrbitSolver::set_single_component_dissipation(
         double min_frequency,
         double max_frequency,
         double decay_scale,
@@ -98,18 +94,6 @@ namespace Evolve {
         //=
         //suppression_factor * phase_lag
         const double suppression_factor = 0.01;
-
-        __star = new Star::InterpolatedEvolutionStar(1.0,//mass
-                                                     0.0,//feh
-                                                     wind_strength,
-                                                     wind_sat_freq,
-                                                     coupling_timescale,
-                                                     evolution);
-        __star->core().setup(std::vector<double>(),//Wtide breaks
-                             std::vector<double>(),//W* breaks
-                             std::vector<double>(1, 0.0),//Wtide pow.
-                             std::vector<double>(1, 0.0),//W* pow.
-                             0.0);//Phase lag (no dissipation in the core).
 
         std::vector<double> breaks(2);
         breaks[0] = min_frequency;
@@ -128,11 +112,45 @@ namespace Evolve {
             std::log(1.0 + decay_scale / max_frequency)
         );
 
-        __star->envelope().setup(breaks,
-                                 std::vector<double>(),
-                                 powerlaw_indices,
-                                 std::vector<double>(1, 0.0),
-                                 phase_lag);
+        BrokenPowerlawPhaseLagZone *zone;
+
+        if(__star) {
+            assert(__primary_planet == NULL);
+            zone = &(__star->envelope());
+        } else {
+            assert(__primary_planet);
+            zone = &(__primary_planet->zone());
+        }
+
+        zone->setup(breaks,
+                   std::vector<double>(),
+                   powerlaw_indices,
+                   std::vector<double>(1, 0.0),
+                   phase_lag);
+    }
+
+    void test_OrbitSolver::make_single_component_star(
+        const StellarEvolution::Interpolator &evolution,
+        double wind_strength,
+        double wind_sat_freq,
+        double coupling_timescale,
+        double min_frequency,
+        double max_frequency,
+        double decay_scale,
+        double phase_lag
+    )
+    {
+        __star = new Star::InterpolatedEvolutionStar(1.0,//mass
+                                                     0.0,//feh
+                                                     wind_strength,
+                                                     wind_sat_freq,
+                                                     coupling_timescale,
+                                                     evolution);
+        set_single_component_dissipation(min_frequency,
+                                         max_frequency,
+                                         decay_scale,
+                                         phase_lag);
+
     }
 
     void test_OrbitSolver::evolve(double wdisk,
@@ -216,12 +234,13 @@ namespace Evolve {
             }
             __star->detect_saturation();
         } else {
+            double initial_inclinations[] = {initial_incl, 0.0, 0.0};
             __system->configure(true, //init
                                 tsecondary,
                                 initial_a, //semimajor
                                 0.0, //eccentricity
                                 initial_Lstar, //spin angmom
-                                zeros, //inclination
+                                initial_inclinations, //inclination
                                 zeros, //periapsis
                                 Core::BINARY);
         }
@@ -882,6 +901,106 @@ namespace Evolve {
             expected_real_quantities[RAD_PERIAPSIS] = zero_quantity;
             expected_real_quantities[CONV_ANGMOM] = Lconv_evol;
             expected_real_quantities[RAD_ANGMOM] = zero_quantity;
+
+            return expected_real_quantities;
+        }
+
+    std::vector<const Core::OneArgumentDiffFunction *>
+        test_OrbitSolver::calculate_expected_polar_1_0(double tdisk,
+                                                       double wstar,
+                                                       double worb)
+
+        {
+            double aorb = std::pow(
+                         (
+                             Core::AstroConst::G
+                             *
+                             (
+                                 Core::AstroConst::solar_mass
+                                 +
+                                 Core::AstroConst::jupiter_mass
+                             )
+                         )
+                         /
+                         std::pow(
+                             worb / Core::AstroConst::day,
+                             2
+                         ),
+                         1.0 / 3.0
+                     ) / Core::AstroConst::solar_radius;
+
+            StellarEvolution::PolynomialEvolutionQuantity
+                *disk_nan_evol = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(Core::NaN, 1),
+                    TSTART,
+                    tdisk
+                ),
+                *fixed_a_evol = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(aorb, 1),
+                    tdisk,
+                    MAX_AGE
+                ),
+                *fixed_e_evol = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(),
+                    tdisk,
+                    MAX_AGE
+                ),
+                *disk_zero_evol = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(),
+                    TSTART,
+                    tdisk
+                ),
+                *halfpi_evol = new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(M_PI / 2.0, 1),
+                    tdisk,
+                    MAX_AGE
+                );
+            __temp_functions.push_back(disk_nan_evol);
+            __temp_functions.push_back(fixed_a_evol);
+            __temp_functions.push_back(fixed_e_evol);
+            __temp_functions.push_back(disk_zero_evol);
+            __temp_functions.push_back(halfpi_evol);
+
+            PiecewiseFunction *a_evol = new PiecewiseFunction,
+                              *e_evol = new PiecewiseFunction,
+                              *conv_incl_evol = new PiecewiseFunction,
+                              *rad_incl_evol = new PiecewiseFunction;
+            __temp_functions.push_back(a_evol);
+            __temp_functions.push_back(e_evol);
+            __temp_functions.push_back(conv_incl_evol);
+            __temp_functions.push_back(rad_incl_evol);
+
+            a_evol->add_piece(disk_nan_evol);
+            a_evol->add_piece(fixed_a_evol);
+
+            e_evol->add_piece(disk_nan_evol);
+            e_evol->add_piece(fixed_e_evol);
+
+            conv_incl_evol->add_piece(disk_zero_evol);
+            conv_incl_evol->add_piece(halfpi_evol);
+
+            rad_incl_evol->add_piece(disk_zero_evol);
+            rad_incl_evol->add_piece(halfpi_evol);
+
+            std::vector<const Core::OneArgumentDiffFunction *>
+                expected_real_quantities(NUM_REAL_QUANTITIES - 1);
+
+            expected_real_quantities[SEMIMAJOR] = a_evol;
+            expected_real_quantities[ECCENTRICITY] = e_evol;
+            expected_real_quantities[CONV_INCLINATION] = conv_incl_evol;
+            expected_real_quantities[RAD_INCLINATION] = rad_incl_evol;
+            expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
+            expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
+            expected_real_quantities[CONV_ANGMOM] =
+                new StellarEvolution::PolynomialEvolutionQuantity(
+                    std::valarray<double>(wstar, 1),
+                    TSTART,
+                    MAX_AGE
+                );
+            __temp_functions.push_back(
+                expected_real_quantities[CONV_ANGMOM]
+            );
+            expected_real_quantities[RAD_ANGMOM] = &one_func;
 
             return expected_real_quantities;
         }
@@ -2245,16 +2364,6 @@ namespace Evolve {
                         std::vector<double>(1, 0.0),//W* pow.
                         phase_lag
                     );
-
-                    expected_real_quantities =
-                        calculate_expected_disklocked_to_fast_to_locked(
-                            lgQ,
-                            tdisk,
-                            async,
-                            tsync,
-                            tend
-                        );
-
                 } else
                     break;
             }
@@ -2611,80 +2720,24 @@ namespace Evolve {
 
         const double TDISK = 0.1,
                      WSTAR = 0.01,
-                     WORB = 0.1,
-                     AORB = std::pow(
-                         (
-                             Core::AstroConst::G
-                             *
-                             (
-                                 Core::AstroConst::solar_mass
-                                 +
-                                 Core::AstroConst::jupiter_mass
-                             )
-                         )
-                         /
-                         std::pow(
-                             WORB / Core::AstroConst::day,
-                             2
-                         ),
-                         1.0 / 3.0
-                     ) / Core::AstroConst::solar_radius,
-                     ONE = 1.0;
-
-        StellarEvolution::PolynomialEvolutionQuantity
-            disk_nan_evol(std::valarray<double>(Core::NaN, 1),
-                          TSTART,
-                          TDISK),
-            fixed_a_evol(std::valarray<double>(AORB, 1),
-                         TDISK,
-                         MAX_AGE),
-            fixed_e_evol(std::valarray<double>(),
-                         TDISK,
-                         MAX_AGE),
-            disk_zero_evol(std::valarray<double>(),
-                           TSTART,
-                           TDISK),
-            halfpi_evol(std::valarray<double>(M_PI / 2.0, 1),
-                        TDISK,
-                        MAX_AGE);
-
-        PiecewiseFunction a_evol, e_evol, conv_incl_evol, rad_incl_evol;
-
-        a_evol.add_piece(&disk_nan_evol);
-        a_evol.add_piece(&fixed_a_evol);
-
-        e_evol.add_piece(&disk_nan_evol);
-        e_evol.add_piece(&fixed_e_evol);
-
-        conv_incl_evol.add_piece(&disk_zero_evol);
-        conv_incl_evol.add_piece(&halfpi_evol);
-
-        rad_incl_evol.add_piece(&disk_zero_evol);
-        rad_incl_evol.add_piece(&halfpi_evol);
-
+                     WORB = 0.1;
+        double initial_L = 1.0;
         std::vector<const Core::OneArgumentDiffFunction *>
-            expected_real_quantities(NUM_REAL_QUANTITIES - 1);
-
-        expected_real_quantities[SEMIMAJOR] = &a_evol;
-        expected_real_quantities[ECCENTRICITY] = &e_evol;
-        expected_real_quantities[CONV_INCLINATION] = &conv_incl_evol;
-        expected_real_quantities[RAD_INCLINATION] = &rad_incl_evol;
-        expected_real_quantities[CONV_PERIAPSIS] = &zero_func;
-        expected_real_quantities[RAD_PERIAPSIS] = &zero_func;
-        expected_real_quantities[CONV_ANGMOM] =
-            new StellarEvolution::PolynomialEvolutionQuantity(
-                std::valarray<double>(WSTAR, 1),
-                TSTART,
-                MAX_AGE
+            expected_real_quantities = calculate_expected_polar_1_0(
+                TDISK,
+                WSTAR,
+                WORB
             );
-        expected_real_quantities[RAD_ANGMOM] = &one_func;
-
         ExpectedEvolutionMode<Core::EvolModeType> expected_evol_mode;
         expected_evol_mode.add_break(TSTART, Core::LOCKED_SURFACE_SPIN);
         expected_evol_mode.add_break(TDISK, Core::BINARY);
 
         ExpectedEvolutionMode<bool> expected_wind_mode;
         expected_wind_mode.add_break(TSTART, false);
+
+        double semimajor = (*expected_real_quantities[SEMIMAJOR])(
+            (TDISK + MAX_AGE) / 2.0
+        );
 
         make_single_component_star(*no_evol,
                                    0.0,//Kw
@@ -2695,20 +2748,40 @@ namespace Evolve {
                                    0.1 * WSTAR,
                                    1.0);//tcoup
 
-        evolve(WSTAR,//wdisk
-               TDISK,//tdisk
-               AORB,//initial semimajor
-               &ONE,//initial L*
-               M_PI / 2.0);//initial inclination
+        while(true) {
+            evolve(WSTAR,//wdisk
+                   TDISK,//tdisk
+                   semimajor,//initial semimajor
+                   &initial_L,//initial L*
+                   M_PI / 2.0);//initial inclination
 
-        test_solution(get_evolution(),
-                      expected_real_quantities,
-                      expected_evol_mode,
-                      expected_wind_mode,
-                      TSTART,
-                      MAX_AGE);
+            test_solution(get_evolution(),
+                          expected_real_quantities,
+                          expected_evol_mode,
+                          expected_wind_mode,
+                          (__star ? TSTART : TDISK),
+                          MAX_AGE);
 
-        delete expected_real_quantities[CONV_ANGMOM];
+            if(__star) {
+                delete __star;
+                delete __system;
+                delete __solver;
+                __star = NULL;
+                __system = NULL;
+                __solver = NULL;
+
+                __primary_planet = new Planet::Planet(1.0, 1.0, 1.0);
+                set_single_component_dissipation(
+                    0.9 * WSTAR,
+                    1.1 * WSTAR,
+                    0.1 * WSTAR,
+                    1.0
+                );
+                initial_L = WSTAR;
+            } else
+                break;
+        }
+
         delete no_evol;
     }
 
@@ -3213,18 +3286,18 @@ namespace Evolve {
         __star(NULL),
         __primary_planet(NULL)
     {
-        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
+/*        TEST_ADD(test_OrbitSolver::test_disk_locked_no_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_disk_locked_with_stellar_evolution);
         TEST_ADD(test_OrbitSolver::test_no_planet_evolution);
-        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);
+        TEST_ADD(test_OrbitSolver::test_unlocked_evolution);*/
 //        TEST_ADD(test_OrbitSolver::test_locked_evolution);//NOT REVIVED!!!
-        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
+/*        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_noplanet);
         TEST_ADD(test_OrbitSolver::test_disklocked_to_fast_to_locked);
-        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);
+        TEST_ADD(test_OrbitSolver::test_disklocked_to_locked_to_fast);*/
         TEST_ADD(test_OrbitSolver::test_polar_1_0_evolution);
-        TEST_ADD(test_OrbitSolver::test_polar_2_0_evolution);
-        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);
+/*        TEST_ADD(test_OrbitSolver::test_polar_2_0_evolution);
+        TEST_ADD(test_OrbitSolver::test_oblique_1_0_evolution);*/
     }
 
 }//End Evolve namespace.

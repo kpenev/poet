@@ -50,6 +50,24 @@ namespace Evolve {
         ///A list of functions allocated during a test to delete at the end.
         std::vector< const Core::OneArgumentDiffFunction* > __temp_functions;
 
+        ///\brief Set the dissipation of the primary to only a single tidal
+        //component.
+        void set_single_component_dissipation(
+            ///The minimum frequency at which the dissipation should be at its
+            ///maximum value.
+            double min_frequency,
+
+            ///The maximum frequency at which the dissipation should be at its
+            ///maximum value.
+            double max_frequency,
+
+            ///The scale on which frequnecy should decay.
+            double decay_scale,
+
+            ///The phase lag of the only dissipative tidal component.
+            double phase_lag = 1.0e-5
+        );
+
         ///\brief Create __star with constant dissipation in a range, quickly
         ///decaying outside of that.
         void make_single_component_star(
@@ -67,11 +85,11 @@ namespace Evolve {
 
             ///The minimum frequency at which the dissipation should be at its
             ///maximum value.
-            double min_frequnecy,
+            double min_frequency,
 
             ///The maximum frequency at which the dissipation should be at its
             ///maximum value.
-            double max_frequnecy,
+            double max_frequency,
 
             ///The scale on which frequnecy should decay.
             double decay_scale,
@@ -167,6 +185,19 @@ namespace Evolve {
                 bool include_disk_lock=true
             );
 
+        ///\brief Calculate the predicted evolution for the
+        ///test_polar_1_0_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_polar_1_0(
+                ///The disk lifetime.
+                double tdisk,
+
+                ///The spin of the star (does not evolve).
+                double wstar,
+
+                ///The orbital angular velocity (does not evolve).
+                double worb
+            );
 
     protected:
         ///No fixtures at this time
