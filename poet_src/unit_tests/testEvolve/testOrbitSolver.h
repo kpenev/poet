@@ -224,6 +224,33 @@ namespace Evolve {
                 double &semimajor
             );
 
+        ///\brief Calculate the predicted evolution for the
+        ///test_oblique_m_0_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_oblique_m_0(
+                ///The value of m to return the evolution for
+                unsigned m,
+
+                ///The disk lifetime.
+                double tdisk,
+
+                ///The orbital angular velocity (does not evolve).
+                double worb,
+
+                ///The initial inclination.
+                double initial_inc,
+
+                ///The initial stellar spin angular frequency.
+                double initial_wstar,
+
+                ///The phase lag of the primary.
+                double phase_lag,
+
+                ///Overwritten by the smallest stellar spin frequency that can
+                ///possibly occur during the evolution.
+                double &min_wstar
+            );
+
     protected:
         ///No fixtures at this time
         void setup();
@@ -300,8 +327,8 @@ namespace Evolve {
         ///momentum conservation with the orbit approximately not changing.
         void test_polar_2_0_evolution();
 
-        ///\brief Test an evolution with only the 1-0 component but in an
-        ///arbitrarily inclined orbit.
+        ///\brief Test an evolution with only the m-0 component (m=1 and then 2)
+        ///but in an arbitrarily inclined orbit.
         ///
         ///From angular momentum conservation, the obliquity should satisfy:
         /// \f$ \cos\theta  = \frac{T^2 - S^2 - L^2}{2 S L} \f$
@@ -314,9 +341,13 @@ namespace Evolve {
         ///  - \f$ \dot{S} = -\sigma c^2 (1 - c^2) \f$
         ///  - \f$ \dot{c} = \frac{\sigma}{S} c^2 (1 - c^2)\left[c + \frac{S}{L} \right] \f$
         ///
-        ///Per mathematica, the evolution of S is given by:
+        ///Per mathematica, the evolution of S for m=1 is given by:
         /// \f$ \frac{1}{2} L^3 \left(-\frac{4}{L^2+S^2-T^2}-\frac{2 \log \left(L^2+S^2-T^2\right)}{L^2-T^2}-\frac{-\frac{2 L^3 \log \left(-L^2+S^2+T^2\right)}{L^2-T^2}+(L+T) \log (-L+S-T)+(L-T) (\log (L+S-T)+\log (-L+S+T))+(L+T) \log (L+S+T)}{L T^2}\right) \f$
         void test_oblique_1_0_evolution();
+
+        ///Same as test_oblique_1_0_evolution(), but only the m=2, m'=0 term is
+        ///dissipative.
+        void test_oblique_2_0_evolution();
     };//End test_OrbitSolver class.
 
 }//End Evolve namespace.
