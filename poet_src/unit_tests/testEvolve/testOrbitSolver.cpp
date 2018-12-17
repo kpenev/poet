@@ -1199,6 +1199,11 @@ namespace Evolve {
                               *conv_cosinc_evol = new PiecewiseFunction,
                               *rad_cosinc_evol = new PiecewiseFunction,
                               *lconv_evol = new PiecewiseFunction;
+            __temp_functions.push_back(a_evol);
+            __temp_functions.push_back(e_evol);
+            __temp_functions.push_back(conv_cosinc_evol);
+            __temp_functions.push_back(rad_cosinc_evol);
+            __temp_functions.push_back(lconv_evol);
 
             a_evol->add_piece(disk_nan_evol);
             a_evol->add_piece(fixed_a_evol);
