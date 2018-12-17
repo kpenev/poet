@@ -199,6 +199,31 @@ namespace Evolve {
                 double worb
             );
 
+        ///\brief Calculate the predicted evolution for the
+        ///test_polar_2_0_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_polar_2_0(
+                ///The disk lifetime.
+                double tdisk,
+
+                ///The spin of the star (does not evolve).
+                double wstar,
+
+                ///The orbital angular velocity (does not evolve).
+                double worb,
+
+                ///The phase lag of the primary.
+                double phase_lag,
+
+                ///On return overwritten by the convective angular momentum
+                ///decay rate.
+                double &lconv_decay_rate,
+
+                ///On return overwritten by the semimajor axis (does not
+                //envolve).
+                double &semimajor
+            );
+
     protected:
         ///No fixtures at this time
         void setup();
