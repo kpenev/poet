@@ -39,7 +39,7 @@ class DissipatingBody(ABC):
         Args:
             age:    The age to set the body to.
 
-            companion_mass:    The mass of the second body in the system.
+            companion_mass:    The mass of the other body in the system.
 
             semimajor:    The semimajor axis of the orbit in solar radii.
 
