@@ -173,7 +173,7 @@ namespace Evolve {
     test_DifferentialEquations::test_DifferentialEquations()
     {
         TEST_ADD(test_DifferentialEquations::test_aligned_equations);
-//        TEST_ADD(test_DifferentialEquations::test_error_estimate);
+        TEST_ADD(test_DifferentialEquations::test_error_estimate);
     }
 
     void test_DifferentialEquations::test_aligned_equations()
