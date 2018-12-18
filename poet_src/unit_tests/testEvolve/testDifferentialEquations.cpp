@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Implement the non-inline methods of test_DifferentialEquations
  *
  * \ingroup UnitTests_group
@@ -111,7 +111,7 @@ namespace Evolve {
 
         if(
             std::max(std::abs(max_difference), std::abs(min_difference))
-            < 
+            <
             1e-13 * y_scale
         )
             return;
@@ -120,7 +120,7 @@ namespace Evolve {
         alglib::polynomialfitreport fit_report;
         alglib::polynomialfit(x,
                               difference,
-                              max_order + 1, 
+                              max_order + 1,
                               fit_info,
                               interp,
                               fit_report);
@@ -173,6 +173,7 @@ namespace Evolve {
     test_DifferentialEquations::test_DifferentialEquations()
     {
         TEST_ADD(test_DifferentialEquations::test_aligned_equations);
+        TEST_ADD(test_DifferentialEquations::test_error_estimate);
     }
 
     void test_DifferentialEquations::test_aligned_equations()
@@ -219,11 +220,11 @@ namespace Evolve {
                                             one_poly,
                                             one_poly,
                                             one_poly);
-                Planet::LockedPlanet secondary(1.0, 1.0);
+                Planet::Planet secondary(1.0, 1.0);
 
                 BinarySystem binary(primary, secondary);
 
-                primary.zone(0).change_e_order(2, binary, true, 0);
+                binary.change_e_order(2);
 
                 std::valarray<double> parameters(0.0, 7);
                 std::valarray<double> evolution_rates(parameters.size());
@@ -235,7 +236,7 @@ namespace Evolve {
                                  Core::BINARY);
 
                 double common_rate_factor = (
-                    2.4 * M_PI
+                    -2.4 * M_PI
                     *
                     (primary.mass() + secondary.mass()) / primary.mass()
                     *
@@ -283,7 +284,7 @@ namespace Evolve {
                                                           Core::BINARY,
                                                           &(evolution_rates[0]));
                             expected_semimajor_rate[e_index] = (
-                                -6.5 * std::pow(semimajor, 6.5)
+                                6.5 * std::pow(semimajor, 6.5)
                                 *
                                 rate_factor
                                 *
@@ -304,7 +305,7 @@ namespace Evolve {
                                 )
                             );
                             predicted_semimajor_rate[e_index] = evolution_rates[0];
-                            predicted_eccentricity_rate[e_index] = 
+                            predicted_eccentricity_rate[e_index] =
                                 evolution_rates[1];
                         }
 /*                        output_rates(eccentricities,
@@ -347,6 +348,105 @@ namespace Evolve {
                 }
             }
         }
+    }
+
+    void test_DifferentialEquations::test_error_estimate()
+    {
+        const double MAX_ECCENTRICITY = 0.9;
+        const unsigned NUM_ECCENTRICITIES = 100;
+        const double ECCENTRICITY_STEP = (
+            MAX_ECCENTRICITY / (NUM_ECCENTRICITIES - 1)
+        );
+        const double a = 10.0;
+        const double age = 1.0;
+
+        StellarEvolution::MockStellarEvolution *no_evol =
+            StellarEvolution::make_no_evolution();
+
+        Star::InterpolatedEvolutionStar *star = make_const_lag_star(
+            *no_evol,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        );
+
+        Planet::Planet planet(1.0, 1.0);
+
+        BinarySystem binary(*star, planet);
+
+        std::valarray<double> parameters(0.0, 10),
+                              rough_rates(parameters.size()),
+                              fine_rates(parameters.size()),
+                              rate_errors(parameters.size());
+
+        parameters[0] = a;
+
+        binary.configure(true,
+                         (MIN_AGE + MAX_AGE) / 2.0,
+                         &(parameters[0]),
+                         Core::BINARY);
+        star->detect_saturation();
+
+        std::cout << std::setw(25) << "e_order"
+                  << std::setw(25) << "e"
+                  << std::setw(25) << "rough_a_rate"
+                  << std::setw(25) << "fine_a_rate"
+                  << std::setw(25) << "a_rate_error"
+                  << std::setw(25) << "rough_e_rate"
+                  << std::setw(25) << "fine_e_rate"
+                  << std::setw(25) << "e_rate_error"
+                  << std::setw(25) << "rough_inc_rate"
+                  << std::setw(25) << "fine_inc_rate"
+                  << std::setw(25) << "inc_rate_error"
+                  << std::setw(25) << "rough_spin_rate"
+                  << std::setw(25) << "fine_spin_rate"
+                  << std::setw(25) << "spin_rate_error"
+
+                  << std::endl;
+
+
+        for(unsigned e_order = 5; e_order <= 100; e_order+=5) {
+            for(double e = 0.0; e <= MAX_ECCENTRICITY; e += ECCENTRICITY_STEP) {
+                parameters[1] = e;
+
+                star->zone(0).change_e_order(e_order, binary, true, 0);
+                binary.differential_equations(age,
+                                              &(parameters[0]),
+                                              Core::BINARY,
+                                              &(rough_rates[0]));
+                binary.differential_equations(age,
+                                              &(parameters[0]),
+                                              Core::BINARY,
+                                              &(rate_errors[0]),
+                                              true);
+
+                star->zone(0).change_e_order(2 * e_order, binary, true, 0);
+                binary.differential_equations(age,
+                                              &(parameters[0]),
+                                              Core::BINARY,
+                                              &(fine_rates[0]));
+
+                std::cout << std::setw(25) << e_order
+                          << std::setw(25) << e
+                          << std::setw(25) << rough_rates[0]
+                          << std::setw(25) << fine_rates[0]
+                          << std::setw(25) << rate_errors[0]
+                          << std::setw(25) << rough_rates[1]
+                          << std::setw(25) << fine_rates[1]
+                          << std::setw(25) << rate_errors[1]
+                          << std::setw(25) << rough_rates[2]
+                          << std::setw(25) << fine_rates[2]
+                          << std::setw(25) << rate_errors[2]
+                          << std::setw(25) << rough_rates[7]
+                          << std::setw(25) << fine_rates[7]
+                          << std::setw(25) << rate_errors[7]
+                          << std::endl;
+            }
+        }
+
+        delete star;
+        delete no_evol;
     }
 
 } //End Envolve namespace.

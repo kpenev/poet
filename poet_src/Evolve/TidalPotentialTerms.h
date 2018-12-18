@@ -121,6 +121,11 @@ namespace Evolve {
         ///tabulate_eccentricity_expansion_coefficients.py.
         static void read_eccentricity_expansion(const std::string &fname)
         {__pms.read(fname);}
+
+        ///\brief The maximum eccentricity expansion order for which the
+        ///expansion is known.
+        static unsigned max_e_order()
+        {return __pms.max_e_power();}
     }; //End TidalPotentialTerms class.
 } //End Evolve namespace
 

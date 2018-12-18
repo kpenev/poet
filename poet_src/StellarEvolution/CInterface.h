@@ -53,7 +53,7 @@ extern "C" {
         ///The directory containing all and only the MESA tracks to include
         ///in the interpolation.
         const char *mesa_dir,
-        
+
         ///The set of smoothing arguments to use. One for each quantity, in
         ///the order defined by the RADIUS, ICONV, ..., constants.
         double *smoothing,
@@ -122,7 +122,7 @@ extern "C" {
         ///The quantity to evaluate. Must be previously created using
         ///interpolate()
         const EvolvingStellarQuantity *quantity,
-        
+
         ///The array of ages to evaluate the quantity at.
         double *age,
 
@@ -152,7 +152,7 @@ extern "C" {
     ///zeroth, first and second order derivatives. That is the first
     ///consecutive nvalues entries are the function values at echo of the
     ///nvalues ages, the next nvalues entries are the first derivatives at
-    ///each age etc. 
+    ///each age etc.
     LIB_PUBLIC void differentiate_quantity_array(
         ///The quantity to differentiate. Must be previously created using
         ///interpolate()
@@ -164,7 +164,7 @@ extern "C" {
         ///The number of ages at which evaluation is required.
         unsigned nvalues,
 
-        ///A pre-allocated memory (size: 3 * nvalues) where to place the 
+        ///A pre-allocated memory (size: 3 * nvalues) where to place the
         ///result.
         double *result
     );
@@ -230,7 +230,7 @@ extern "C" {
         int quantityID
     );
 
-    ///\brief Return whether by default the log(given quantity) is 
+    ///\brief Return whether by default the log(given quantity) is
     ///interpolated vs. the quantity itself.
     LIB_PUBLIC bool default_log_quantity(
         ///The quantity to return the default nodes for.

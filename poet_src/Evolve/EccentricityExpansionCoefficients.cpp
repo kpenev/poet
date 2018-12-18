@@ -23,8 +23,10 @@ namespace Evolve {
 
         double e2 = std::pow(e, 2);
         int min_n = std::max(1, -s - 1),
-            gamma_ind1 = s + __max_e_power + 2;
-        double e_pow = std::pow(e, s + 2 * min_n - (deriv ? 1 : 0)),
+            gamma_ind1 = s + __max_e_power + 2,
+            e_pow_ind = s + 2 * min_n - (deriv ? 1 : 0);
+        assert(e_pow_ind + (deriv ? 1 : 0) >= 0);
+        double e_pow = (e_pow_ind < 0 ? 0.0 : std::pow(e, e_pow_ind)),
                coef = (deriv ? s + 2 * min_n : 1);
         for(
             int gamma_ind2 = 0;
@@ -54,8 +56,10 @@ namespace Evolve {
 
         double e2 = std::pow(e, 2);
         int min_n = std::max(0, -s),
-            alpha_ind1 = s + __max_e_power;
-        double e_pow = std::pow(e, s + 2 * min_n - (deriv ? 1 : 0)),
+            alpha_ind1 = s + __max_e_power,
+            e_pow_ind = s + 2 * min_n - (deriv ? 1 : 0);
+        assert(e_pow_ind + (deriv ? 1 : 0) >= 0);
+        double e_pow = (e_pow_ind < 0 ? 0.0 : std::pow(e, e_pow_ind)),
                coef = (deriv ? s + 2 * min_n : 1);
         for(
             int alpha_ind2 = 0;
@@ -80,8 +84,11 @@ namespace Evolve {
         std::pair<double, double> result(0.0, 0.0);
 
         double e2 = std::pow(e, 2);
-        int min_n = std::max(-1, -s + 1), gamma_ind1 = s + __max_e_power - 2;
-        double e_pow = std::pow(e, s + 2 * min_n - (deriv ? 1 : 0)),
+        int min_n = std::max(-1, -s + 1),
+            gamma_ind1 = s + __max_e_power - 2,
+            e_pow_ind = s + 2 * min_n - (deriv ? 1 : 0);
+        assert(e_pow_ind + (deriv ? 1 : 0) >= 0);
+        double e_pow = (e_pow_ind < 0 ? 0.0 : std::pow(e, e_pow_ind)),
                coef = (deriv ? s + 2 * min_n : 1);
         for(
             int gamma_ind2 = 0;

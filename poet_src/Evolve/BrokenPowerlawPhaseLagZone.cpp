@@ -52,7 +52,7 @@ namespace Evolve {
 
     }
 
-    std::vector<double>::size_type 
+    std::vector<double>::size_type
         BrokenPowerlawPhaseLagZone::get_tidal_index(
             double abs_forcing_frequency
         ) const
@@ -73,18 +73,18 @@ namespace Evolve {
         }
 
     void BrokenPowerlawPhaseLagZone::add_tidal_frequency_conditions(
-        BinarySystem &system, 
+        BinarySystem &system,
         bool primary,
         unsigned,
         CombinedStoppingCondition &result
     )
     {
-        const DissipatingBody 
+        const DissipatingBody
             &this_body = (primary ? system.primary() : system.secondary()),
             &other_body = (primary ? system.secondary() : system.primary());
 
         for(
-            int e_order = 0; 
+            int e_order = 0;
             e_order <= static_cast<int>(eccentricity_order());
             ++e_order
         )
@@ -167,6 +167,7 @@ namespace Evolve {
         double reference_phase_lag
     )
     {
+        __dissipative = true;
         reset();
         assert(__spin_frequency_breaks.size() == 0);
         assert(__tidal_frequency_breaks.size() == 0);
@@ -174,7 +175,7 @@ namespace Evolve {
         assert(__spin_frequency_powers.size() == 0);
         assert(__break_phase_lags.size() == 0);
         assert(tidal_frequency_powers.size()
-               == 
+               ==
                tidal_frequency_breaks.size() + 1);
         assert(spin_frequency_powers.size()
                ==
@@ -204,7 +205,7 @@ namespace Evolve {
         ) {
             if(break_lag_i == 0)
                 __break_phase_lags[break_lag_i] = reference_phase_lag;
-            else 
+            else
                 __break_phase_lags[break_lag_i] = (
                     __break_phase_lags[
                         break_lag_i - tidal_frequency_breaks.size()
@@ -338,11 +339,19 @@ namespace Evolve {
         int orbital_frequency_multiplier,
         int spin_frequency_multiplier,
         double forcing_frequency,
-        Dissipation::Derivative deriv,
+        Dissipation::QuantityEntry entry,
         double &above_lock_value
     ) const
     {
-        if(deriv == Dissipation::AGE) return 0;
+        if(
+            !__dissipative
+            ||
+            entry == Dissipation::AGE
+            ||
+            entry == Dissipation::EXPANSION_ERROR
+        )
+            return 0;
+
         double abs_forcing_frequency = std::abs(forcing_frequency),
                abs_spin_frequency = std::abs(spin_frequency());
 
@@ -373,7 +382,7 @@ namespace Evolve {
         )
             --tidal_break_index;
 
-        std::vector<double>::size_type 
+        std::vector<double>::size_type
             lag_index = (spin_break_index * __tidal_frequency_breaks.size()
                          +
                          tidal_break_index);
@@ -403,7 +412,7 @@ namespace Evolve {
                 )
             )
         );
-        switch(deriv) {
+        switch(entry) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (
                     (spin_power ? spin_power / spin_frequency() : 0.0)
@@ -419,7 +428,7 @@ namespace Evolve {
                 break;
             case Dissipation::ORBITAL_FREQUENCY :
                 result *= (
-                    tidal_power 
+                    tidal_power
                     ? (orbital_frequency_multiplier * tidal_power
                        /
                        forcing_frequency)
@@ -427,9 +436,9 @@ namespace Evolve {
                 );
                 break;
             default :
-                assert(deriv == Dissipation::NO_DERIV);
+                assert(entry == Dissipation::NO_DERIV);
         }
-        
+
         if(forcing_frequency == 0) {
             if(spin_frequency_multiplier >= 0) {
                 above_lock_value = -result;
@@ -446,12 +455,12 @@ namespace Evolve {
 
     CombinedStoppingCondition *
         BrokenPowerlawPhaseLagZone::stopping_conditions(
-            BinarySystem &system, 
+            BinarySystem &system,
             bool primary,
             unsigned zone_index
         )
     {
-        CombinedStoppingCondition *result = 
+        CombinedStoppingCondition *result =
             DissipatingZone::stopping_conditions(system,
                                                  primary,
                                                  zone_index);
@@ -472,7 +481,7 @@ namespace Evolve {
         if(__tidal_frequency_breaks.size() != 0)
             add_tidal_frequency_conditions(system,
                                            primary,
-                                           zone_index, 
+                                           zone_index,
                                            *result);
 
         return result;
@@ -480,7 +489,7 @@ namespace Evolve {
 
     void BrokenPowerlawPhaseLagZone::change_e_order(
         unsigned new_e_order,
-        BinarySystem &system, 
+        BinarySystem &system,
         bool primary,
         unsigned zone_index
     )
@@ -500,7 +509,7 @@ namespace Evolve {
         ) {
             for(int m = -2; m <= 2; ++m) {
                 *destination = get_tidal_index(
-                    forcing_frequency(mp, m, orbital_frequency)
+                    std::abs(forcing_frequency(mp, m, orbital_frequency))
                 );
                 ++destination;
             }

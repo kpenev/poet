@@ -19,19 +19,20 @@ namespace Evolve {
     ///
     ///\ingroup StellarSystem_group
     namespace Dissipation {
+
         ///The quantities which evolve due to tidal dissipation
         enum LIB_LOCAL Quantity {
             ///The rate at which energy is deposited into the body.
             ///Units: \f$\frac{M_\odot R_\odot^2 rad^2}{day^2\,Gyr}\f$
-            POWER, 
+            POWER,
 
             ///The torque exerted on the body in the x direction.
-            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$. 
-            TORQUEX, 
+            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
+            TORQUEX,
 
             ///The torque exerted on the body in the y direction.
-            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$. 
-            TORQUEY, 
+            ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
+            TORQUEY,
 
             ///The torque exerted on the body in the z direction.
             ///Units: \f$\frac{M_\odot R_\odot^2 rad}{day\,Gyr}\f$.
@@ -55,11 +56,11 @@ namespace Evolve {
             NUM_QUANTITIES
         }; //End Quantity enumeration.
 
-        ///\brief All evolving quantities also have derivatives.
-        enum LIB_LOCAL Derivative {
+        ///All evolving quantities have a number of entries each (see below).
+        enum LIB_LOCAL QuantityEntry {
 
             ///The quantity itself, undifferentiated.
-            NO_DERIV, 
+            NO_DERIV,
 
             ///\brief The derivative w.r.t. age, excluding the dependence through
             ///the body's radius and the moments of inertia, but including all
@@ -105,38 +106,49 @@ namespace Evolve {
             ///
             ///Holding the angular momentum constant.
             MOMENT_OF_INERTIA,
-                    
+
             ///\brief The derivative w.r.t. the spin angular momentum in
             /// \f$M_\odot R_\odot^2 rad/day\f$.
             ///
             ///Holding the moment of inertia constant but not the spin frequency.
             SPIN_ANGMOM,
-            
+
             ///The derivative w.r.t. the semimajor axis in AU.
             SEMIMAJOR,
 
             ///The total number of derivatives supported
-            NUM_DERIVATIVES
-        }; //End Derivative enumeration.
+            NUM_DERIVATIVES,
+
+            ///The error due to truncating the eccentricity series to finite
+            ///order.
+            EXPANSION_ERROR = NUM_DERIVATIVES,
+
+            ///The total number of Entries
+            NUM_ENTRIES
+        }; //End QuantityEntries enumeration.
 
     } //End Dissipation namespace.
 
-    LIB_LOCAL inline bool zone_specific(Dissipation::Derivative deriv)
+    LIB_LOCAL inline bool zone_specific(Dissipation::QuantityEntry entry)
     {
-        return (deriv==Dissipation::SPIN_FREQUENCY ||
-                deriv==Dissipation::INCLINATION ||
-                deriv==Dissipation::PERIAPSIS ||
-                deriv==Dissipation::MOMENT_OF_INERTIA ||
-                deriv==Dissipation::SPIN_ANGMOM);
+        return (entry == Dissipation::SPIN_FREQUENCY
+                ||
+                entry == Dissipation::INCLINATION
+                ||
+                entry == Dissipation::PERIAPSIS
+                ||
+                entry == Dissipation::MOMENT_OF_INERTIA
+                ||
+                entry == Dissipation::SPIN_ANGMOM);
     }
 
     ///More civilized output for Dissipation::Quantity variables.
     LIB_LOCAL std::ostream &operator<<(std::ostream &os,
             const Dissipation::Quantity &quantity);
 
-    ///More civilized output for Dissipation::Derivative variables.
+    ///More civilized output for Dissipation::QuantityError variables.
     LIB_LOCAL std::ostream &operator<<(std::ostream &os,
-            const Dissipation::Derivative &deriv);
+                                       Dissipation::QuantityEntry entry);
 
 } //End Evolve namespace.
 

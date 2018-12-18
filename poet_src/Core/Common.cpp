@@ -1,7 +1,7 @@
 /**\file
  *
  * \brief The implementation of some of the utility functions.
- * 
+ *
  * \ingroup Utilities_group
  */
 
@@ -78,7 +78,7 @@ namespace Core {
             /*		std::cerr << "Linear zerocrossing between ("
              		<< x0 << ", " << y0
                     << ") and (" << x1 << ", " << y1 << ")="
-                    << linear_solution 
+                    << linear_solution
                     << std::endl;*/
 #endif
             return linear_solution;
@@ -97,7 +97,7 @@ namespace Core {
                     << "), coef=(" << a << ", " << b << ", " << c << ", "
                     << d << "), solutions=(" << solutions << ")";*/
 #endif
-            for(size_t i=0; i<solutions.size(); i++) 
+            for(size_t i=0; i<solutions.size(); i++)
                 if(solutions[i]>=x0 && solutions[i]<=x1) {
 #ifndef NDEBUG
                     /*				std::cerr << ", selected: "
@@ -107,7 +107,7 @@ namespace Core {
                 }
             if(y0*y1<=0) {
 #ifndef NDEBUG
-                /*			std::cerr << ", fallback to linear: " 
+                /*			std::cerr << ", fallback to linear: "
                   			<< linear_solution
                             << std::endl;*/
 #endif
@@ -119,7 +119,7 @@ namespace Core {
                 << a << "*x**3 + "
                 << b << "*x**2 + "
                 << c << "*x + "
-                << d 
+                << d
                 << " (x0=" << x0
                 << ", y0=" << y0
                 << ", x1=" << x1
@@ -129,7 +129,7 @@ namespace Core {
                 << " found in the given range in estimate zerocrossing. "
                 "Solutions(" << solutions.size() << "): ";
             if(solutions.size()>0) msg << solutions[0];
-            for(size_t i=1; i<solutions.size(); i++) 
+            for(size_t i=1; i<solutions.size(); i++)
                 msg << ", " << solutions[i];
             throw Error::BadFunctionArguments(msg.str());
         }
@@ -151,8 +151,8 @@ namespace Core {
         else {
             std::ostringstream msg;
             msg.precision(16);
-            msg << "No sign change found in quadratic_zerocrossing(x0=" 
-                << x0 << ", y0=" << y0 << ", x1=" << x1 << ", y1=" << y1 
+            msg << "No sign change found in quadratic_zerocrossing(x0="
+                << x0 << ", y0=" << y0 << ", x1=" << x1 << ", y1=" << y1
                 << ", x2=" << x2 << ", y2=" << y2 << ")";
             throw Error::BadFunctionArguments(msg.str());
         }
@@ -164,14 +164,14 @@ namespace Core {
         }
 #ifndef NDEBUG
         /*	std::cerr << "Quadratic zerocrossing between (" << x0 << ", "
-          	<< y0 
+          	<< y0
             << "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
             << ") in range (" << require_range_low << ", "
             << require_range_high
             << "), coef=(" << a << ", " << b << ", " << c << "), solutions=("
             << solutions << ")";*/
 #endif
-        for(size_t i=0; i<solutions.size(); i++) 
+        for(size_t i=0; i<solutions.size(); i++)
             if(solutions[i]>=require_range_low &&
                solutions[i]<=require_range_high) {
 #ifndef NDEBUG
@@ -200,9 +200,9 @@ namespace Core {
         else {
             std::ostringstream msg;
             msg.precision(16);
-            msg << "No sign change found in cubic_zerocrossing(x0=" 
-                << x0 << ", y0=" << y0 << ", x1=" << x1 << ", y1=" << y1 
-                << ", x2=" << x2 << ", y2=" << y2 
+            msg << "No sign change found in cubic_zerocrossing(x0="
+                << x0 << ", y0=" << y0 << ", x1=" << x1 << ", y1=" << y1
+                << ", x2=" << x2 << ", y2=" << y2
                 << ", x3=" << x3 << ", y3=" << y3 << ")";
             throw Error::BadFunctionArguments(msg.str());
         }
@@ -221,7 +221,7 @@ namespace Core {
             require_range_high=x3;
         }
 #ifndef NDEBUG
-        /*	std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0 
+        /*	std::cerr << "Cubic zerocrossing between (" << x0 << ", " << y0
             << "), (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2
             << "), (" << x3 << ", " << y3 << ") in range ("
             << require_range_low << ", " << require_range_high
@@ -233,7 +233,7 @@ namespace Core {
             std::cerr << "), solutions=(" << solutions << ")";*/
 #endif
         gsl_vector_free(cubic_coef);
-        for(size_t i=0; i<solutions.size(); i++) 
+        for(size_t i=0; i<solutions.size(); i++)
             if(solutions[i]>=require_range_low &&
                solutions[i]<=require_range_high) {
 #ifndef NDEBUG
@@ -309,7 +309,7 @@ namespace Core {
     }
 
     ///Are the two points indistinguishable (up to NUMERIC_SAFETY).
-    bool indistinguishable(double x0, double y0, double x1, double y1) 
+    bool indistinguishable(double x0, double y0, double x1, double y1)
     {
         return (std::abs(x1-x0)/std::max(std::abs(x1), std::abs(x0))
                 <NUMERIC_SAFETY
@@ -332,11 +332,11 @@ namespace Core {
 #endif
             if(extremum_y) *extremum_y=y1;
             return x1;
-        } 
+        }
         double s02=(y0-y2)/(x0-x2), s12=(y1-y2)/(x1-x2), a=(s02 - s12)/(x0-x1),
                extremum_x=0.5*(x0 + x2 - s02/a);
         if(extremum_y)
-            *extremum_y=y0 - s02*s02/(2.0*a) + s02*x2 
+            *extremum_y=y0 - s02*s02/(2.0*a) + s02*x2
                 - a*(x0*x0 + x2*x2)/2.0;
 #ifndef NDEBUG
         /*	double b=-2.0*a*extremum_x;
@@ -416,7 +416,7 @@ namespace Core {
             /*		std::cerr << "Cubic extrema between (" << x0 << ", "
               		<< y0 << "), ("
                     << x1 << ", " << y1 << "), (" << x2 << ", " << y2
-                    << "), (" 
+                    << "), ("
                     << x3 << ", " << y3 << ") in range ("
                     << require_range_low
                     << ", " << require_range_high << "), coef=("
@@ -427,8 +427,8 @@ namespace Core {
                         b*std::pow(extremum_x1,2)/2.0
                         +
                         c*extremum_x1 + d)
-                    << ") and (" << extremum_x2 << ", " 
-                    << a*std::pow(extremum_x2,3)/3.0 + 
+                    << ") and (" << extremum_x2 << ", "
+                    << a*std::pow(extremum_x2,3)/3.0 +
                     b*std::pow(extremum_x2,2)/2.0 + c*extremum_x2 + d
                     << ")";*/
 #endif

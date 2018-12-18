@@ -110,7 +110,7 @@ namespace Evolve {
         {return evaluate_polynomial(__inertia_coefficients, age, deriv_order);}
 
         ///See DissipatingZone::love_coefficient()
-        double love_coefficient(int, int, Dissipation::Derivative) const
+        double love_coefficient(int, int, Dissipation::QuantityEntry) const
         {return 0.0;}
     };//End PolynomialEvolutionZone class.
 

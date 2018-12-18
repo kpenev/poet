@@ -16,7 +16,7 @@ int main(int, char **)
 
     double mstar = 1.0, mplanet = 1.0, a0 = 10.0, zero = 0.0;
 
-    LockedPlanet *planet = create_planet(1.0, 1.0);
+    CPlanet *planet = create_planet(1.0, 1.0);
     configure_planet(planet,
                      5e-3,
                      mstar,
@@ -30,9 +30,8 @@ int main(int, char **)
                      true);
 
     MESAInterpolator *interpolator = load_interpolator(
-        "../../stellar_evolution_interpolators/"
-        "93878c27-baa3-4cbe-8f78-0ad2a21e121f"
-//        "30b6d5cc-4ae8-43da-899d-740eefd18638"
+        "stellar_evolution_interpolators/"
+        "90af7144-f918-4a1c-95a2-0b086a80d0a2"
     );
     EvolvingStar *star = create_star(mstar,
                                      0.0,
@@ -44,8 +43,8 @@ int main(int, char **)
 
     double break_frequency = 2.0 * M_PI / 4.33;
     double powerlaws[] = {0.0, -3.1};
-    set_dissipation(star, 0, 1, 0, &break_frequency, NULL, powerlaws, &zero, 3e-7);
-    set_dissipation(star, 1, 0, 0, NULL, NULL, &zero, &zero, 0.0);
+    set_star_dissipation(star, 0, 1, 0, &break_frequency, NULL, powerlaws, &zero, 3e-7);
+    set_star_dissipation(star, 1, 0, 0, NULL, NULL, &zero, &zero, 0.0);
 
     DiskBinarySystem *system = create_star_planet_system(
         star,

@@ -7,12 +7,12 @@
 
 #define BUILDING_LIBRARY
 #include "CInterface.h"
+#include "../Evolve/CInterface.h"
 
-LIB_PUBLIC const int NO_DERIV = Evolve::Dissipation::NO_DERIV;
-LIB_PUBLIC const int AGE_DERIV = Evolve::Dissipation::AGE;
-LIB_PUBLIC const int SPIN_FREQUENCY_DERIV = Evolve::Dissipation::SPIN_FREQUENCY;
-LIB_PUBLIC const int 
-    ORBITAL_FREQUENCY_DERIV = Evolve::Dissipation::ORBITAL_FREQUENCY;
+const int NO_DERIV = Evolve::Dissipation::NO_DERIV;
+const int AGE_DERIV = Evolve::Dissipation::AGE;
+const int SPIN_FREQUENCY_DERIV = Evolve::Dissipation::SPIN_FREQUENCY;
+const int ORBITAL_FREQUENCY_DERIV = Evolve::Dissipation::ORBITAL_FREQUENCY;
 
 double lag_from_lgQ(double lgQ)
 {
@@ -46,7 +46,7 @@ void destroy_star(EvolvingStar *star)
     delete reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
 }
 
-void set_dissipation(EvolvingStar *star,
+void set_star_dissipation(EvolvingStar *star,
                      unsigned zone_index,
                      unsigned num_tidal_frequency_breaks,
                      unsigned num_spin_frequency_breaks,
@@ -56,7 +56,7 @@ void set_dissipation(EvolvingStar *star,
                      double *spin_frequency_powers,
                      double reference_phase_lag)
 {
-    Star::InterpolatedEvolutionStar* real_star = 
+    Star::InterpolatedEvolutionStar* real_star =
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
     Evolve::BrokenPowerlawPhaseLagZone *zone;
     if(zone_index == 0) zone = &(real_star->envelope());
@@ -72,32 +72,15 @@ void set_dissipation(EvolvingStar *star,
               << " spin frequency breaks."
               << std::endl;
 #endif
-    
-    zone->setup(
-        (
-            num_tidal_frequency_breaks
-            ? std::vector<double>(
-                tidal_frequency_breaks, 
-                tidal_frequency_breaks + num_tidal_frequency_breaks
-            )
-            : std::vector<double>()
-        ),
-        (
-            num_spin_frequency_breaks
-            ? std::vector<double>(
-                spin_frequency_breaks,
-                spin_frequency_breaks + num_spin_frequency_breaks
-            )
-            : std::vector<double>()
-        ),
-        std::vector<double>(
-            tidal_frequency_powers,
-            tidal_frequency_powers + num_tidal_frequency_breaks + 1
-        ),
-        std::vector<double>(
-            spin_frequency_powers,
-            spin_frequency_powers + num_spin_frequency_breaks + 1
-        ),
+
+    set_zone_dissipation(
+        reinterpret_cast<BrokenPowerlawPhaseLagZone*>(zone),
+        num_tidal_frequency_breaks,
+        num_spin_frequency_breaks,
+        tidal_frequency_breaks,
+        spin_frequency_breaks,
+        tidal_frequency_powers,
+        spin_frequency_powers,
         reference_phase_lag
     );
 }
@@ -122,7 +105,7 @@ double modified_phase_lag(const EvolvingStar *star,
                           int orbital_frequency_multiplier,
                           int spin_frequency_multiplier,
                           double forcing_frequency,
-                          int deriv,
+                          int entry,
                           double *above_lock_value)
 {
     return reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
@@ -131,7 +114,7 @@ double modified_phase_lag(const EvolvingStar *star,
         orbital_frequency_multiplier,
         spin_frequency_multiplier,
         forcing_frequency,
-        static_cast<Evolve::Dissipation::Derivative>(deriv),
+        static_cast<Evolve::Dissipation::QuantityEntry>(entry),
         *above_lock_value
     );
 }
@@ -152,7 +135,7 @@ double lifetime(const EvolvingStar *star)
 
 double luminosity(EvolvingStar *star, double age)
 {
-    const Star::InterpolatedEvolutionStar *actual_star = 
+    const Star::InterpolatedEvolutionStar *actual_star =
         reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
             star
         );
@@ -165,7 +148,7 @@ void luminosity_array(EvolvingStar *star,
                       unsigned nvalues,
                       double *result)
 {
-    Star::InterpolatedEvolutionStar *actual_star = 
+    Star::InterpolatedEvolutionStar *actual_star =
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(
             star
         );
@@ -176,7 +159,7 @@ void luminosity_array(EvolvingStar *star,
             age[i] < age[i - 1]
         )
             actual_star->select_interpolation_region(age[i]);
-        else 
+        else
             actual_star->reached_critical_age(age[i]);
         result[i] = actual_star->luminosity(age[i]);
     }
@@ -266,7 +249,7 @@ void star_radius_array(EvolvingStar *star,
                        unsigned nvalues,
                        double *result)
 {
-    Star::EvolvingStellarZone &zone = 
+    Star::EvolvingStellarZone &zone =
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(
             star
         )->envelope();

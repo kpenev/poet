@@ -1,54 +1,54 @@
-## \file
-#  \ingroup PythonPackage_group
+"""A collection of orbital functions and a class for storing data."""
 
-##
-# \addtogroup PythonPackage_group PythonPackage
-#
-#  @{
-
-from astropy import units, constants
 from math import pi
+from astropy import units, constants
 
-class Structure :
+#Class intended as data representation.
+#pylint: disable=too-few-public-methods
+class Structure:
     """An empty class used only to hold user defined attributes."""
 
-    def __init__(self, **initial_attributes) :
+    def __init__(self, **initial_attributes):
         """Create a class with (optionally) initial attributes."""
 
-        for attribute_name, attribute_value in initial_attributes.items() :
+        for attribute_name, attribute_value in initial_attributes.items():
             setattr(self, attribute_name, attribute_value)
 
-    def format(self, prefix='') :
+    def format(self, prefix=''):
         """Generate a tree-like representation of self."""
 
         result = ''
-        for attr_name in dir(self) :
-            if attr_name[0] != '_' and attr_name != 'format' :
+        for attr_name in dir(self):
+            if attr_name[0] != '_' and attr_name != 'format':
                 attribute = getattr(self, attr_name)
-                if isinstance(attribute, Structure) :
-                    result+=(prefix
-                             +
-                             '|-'
-                             +
-                             attr_name
-                             +
-                             '\n'
-                             +
-                             attribute.format(prefix + '| '))
-                else : result += (prefix
-                                  +
-                                  '|-'
-                                  +
-                                  attr_name
-                                  +
-                                  ': '
-                                  +
-                                  str(attribute)
-                                  +
-                                  '\n')
+                if isinstance(attribute, Structure):
+                    result += (prefix
+                               +
+                               '|-'
+                               +
+                               attr_name
+                               +
+                               '\n'
+                               +
+                               attribute.format(prefix + '| '))
+                else:
+                    result += (prefix
+                               +
+                               '|-'
+                               +
+                               attr_name
+                               +
+                               ': '
+                               +
+                               str(attribute)
+                               +
+                               '\n')
         return result
+#pylint: enable=too-few-public-methods
 
-def semimajor(m1, m2, orbital_period) :
+#In this case m1 and m2 make perfect sense as argument names.
+#pylint: disable=invalid-name
+def calc_semimajor(m1, m2, orbital_period):
     """
     Return the semimajor axis for a binary with the given orbit.
 
@@ -66,6 +66,8 @@ def semimajor(m1, m2, orbital_period) :
         The semimajor axis in solar radii.
     """
 
+    #Pylint false positive, does not detect units and constants members.
+    #pylint: disable=no-member
     return (
         (
             constants.G * (m1 + m2) * units.M_sun
@@ -75,8 +77,12 @@ def semimajor(m1, m2, orbital_period) :
             (4.0 * pi**2)
         )**(1.0 / 3.0)
     ).to(units.R_sun).value
+    #pylint: enable=no-member
+#pylint: enable=invalid-name
 
-def orbital_frequency(m1, m2, semimajor) :
+#In this case m1 and m2 make perfect sense as argument names.
+#pylint: disable=invalid-name
+def calc_orbital_frequency(m1, m2, semimajor):
     """
     Return the orbital for a binary with the given orbit.
 
@@ -94,6 +100,8 @@ def orbital_frequency(m1, m2, semimajor) :
         The orbital angular velocity in rad / day.
     """
 
+    #Pylint false positive, does not detect units and constants members.
+    #pylint: disable=no-member
     return (
         (
             constants.G * (m1 + m2) * units.M_sun
@@ -101,8 +109,12 @@ def orbital_frequency(m1, m2, semimajor) :
             (semimajor * units.R_sun)**3
         )**0.5
     ).to(1 / units.day).value
+    #pylint: enable=no-member
+#pylint: enable=invalid-name
 
-def orbital_angular_momentum(m1, m2, semimajor, eccentricity) :
+#In this case m1 and m2 make perfect sense as argument names.
+#pylint: disable=invalid-name
+def calc_orbital_angular_momentum(m1, m2, semimajor, eccentricity):
     """
     Return the angular momentum of the given orbit.
 
@@ -124,12 +136,14 @@ def orbital_angular_momentum(m1, m2, semimajor, eccentricity) :
         given bodies in the given orbit.
     """
 
+    #Pylint false positive, does not detect units and constants members.
+    #pylint: disable=no-member
     return (
         m1 * m2 / (m1 + m2) * semimajor**2
         *
-        orbital_frequency(m1, m2, semimajor)
+        calc_orbital_frequency(m1, m2, semimajor)
         *
         (1.0 - eccentricity**2)**0.5
     )
-
-## @}
+    #pylint: enable=no-member
+#pylint: enable=invalid-name

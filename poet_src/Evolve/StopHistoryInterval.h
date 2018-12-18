@@ -39,7 +39,7 @@ namespace Evolve {
 
             ///The first age in the discarded stopping conditions.
             __discarded_age_begin,
-            
+
             ///The age of the current point.
             __age_i;
 
@@ -54,7 +54,7 @@ namespace Evolve {
 
             ///The first of the discarded stopping condition values.
             __stop_cond_discarded_begin,
-            
+
             ///The current stopping condition value.
             __stop_cond_i,
 
@@ -63,13 +63,13 @@ namespace Evolve {
 
             ///The last stopping condition derivative in the interval
             __last_stop_deriv,
-            
+
             ///The one past last element of the history of stoppnig conditions
             __stop_deriv_history_end,
 
             ///The first of the discarded stopping condition values.
             __stop_deriv_discarded_begin,
-                
+
             ///The current stop condition derivative
             __stop_deriv_i;
 
@@ -103,41 +103,48 @@ namespace Evolve {
 
                 ///An iterator pointing to the first age in the discarded list.
                 std::list<double>::const_iterator
-                discarded_age_begin=std::list<double>::const_iterator(),	
+                discarded_age_begin=std::list<double>::const_iterator(),
 
                 ///An iterator pointing to the first stopping condition in the
                 ///interval.
                 std::list< std::valarray<double> >::const_iterator
-                first_stop_cond=std::list< std::valarray<double> >::const_iterator(),
+                first_stop_cond
+                =
+                std::list< std::valarray<double> >::const_iterator(),
 
                 ///An iterator pointing to one past the last stopping condition
                 ///in the history.
                 std::list< std::valarray<double> >::const_iterator
-                stop_cond_history_end=
+                stop_cond_history_end
+                =
                 std::list< std::valarray<double> >::const_iterator(),
 
                 ///An iterator pointing to the first stopping condition in the
                 ///discarded list.
                 std::list< std::valarray<double> >::const_iterator
-                stop_cond_discarded_begin=
+                stop_cond_discarded_begin
+                =
                 std::list< std::valarray<double> >::const_iterator(),
 
                 ///An iterator pointing to the first stopping derivative in the
                 ///interval.
                 std::list< std::valarray<double> >::const_iterator
-                first_stop_deriv=
+                first_stop_deriv
+                =
                 std::list< std::valarray<double> >::const_iterator(),
 
                 ///An iterator pointing to one past the last stopping derivative
                 ///in the history.
                 std::list< std::valarray<double> >::const_iterator
-                stop_deriv_history_end=
+                stop_deriv_history_end
+                =
                 std::list< std::valarray<double> >::const_iterator(),
 
                 ///An iterator pointing to the first stopping derivative in the
                 ///discarded list.
                 std::list< std::valarray<double> >::const_iterator
-                stop_deriv_discarded_begin=
+                stop_deriv_discarded_begin
+                =
                 std::list< std::valarray<double> >::const_iterator());
 
         ///Copy orig to *this.

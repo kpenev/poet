@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Declare C-style functions for accessing the functionality of the
  * Evolve library.
  *
@@ -37,20 +37,58 @@ extern "C" {
     ///Opaque struct to cast to/from Evolve::OrbitSolver.
     struct LIB_PUBLIC OrbitSolver;
 
+    ///Opaque struct to cant to/from Evolve::BrokenPowerlawPhasLagZone
+    struct LIB_PUBLIC BrokenPowerlawPhaseLagZone;
+
     ///Read eccentricity expansion coefficients from a file.
     LIB_PUBLIC void read_eccentricity_expansion_coefficients(
         const char *filename
+    );
+
+    LIB_PUBLIC void set_zone_dissipation(
+        ///The zone to set the dissipation of.
+        BrokenPowerlawPhaseLagZone *zone,
+
+        ///The number of breaks in the tidal frequency dependence.
+        unsigned num_tidal_frequency_breaks,
+
+        ///The number of breaks in the spin frequency dependence.
+        unsigned num_spin_frequency_breaks,
+
+        ///The locations of the breaks in tidal frequency in rad/day.
+        ///Entries should be sorted.
+        double *tidal_frequency_breaks,
+
+        ///The locations of the breaks in spin frequency in rad/day.
+        ///Entries should be sorted.
+        double *spin_frequency_breaks,
+
+        ///The powerlaw indices for the tidal frequency dependence.
+        ///Should be indexed in the same order as tidal_frequency_breaks,
+        ///but must contain an additional starting entry for the powerlaw
+        ///index before the first break.
+        double *tidal_frequency_powers,
+
+        ///The powerlaw indices for the spin frequency dependence.
+        ///Should be indexed in the same order as spin_frequency_breaks,
+        ///but must contain an additional starting entry for the powerlaw
+        ///index before the first break.
+        double *spin_frequency_powers,
+
+        ///The phase lag at the first tidal and first spin frequency break.
+        ///The rest are calculated by imposing continuity.
+        double reference_phase_lag
     );
 
     ///Create a binary system out of a star and a planet.
     LIB_PUBLIC DiskBinarySystem *create_star_planet_system(
         ///The first body in the system. Assumed to always be there, so
         ///for a star-planet system this should be the star.
-        EvolvingStar *star, 
+        EvolvingStar *star,
 
         ///The second body in the system, initially may not be there and
         ///later may be engulfed by the first body.
-        LockedPlanet *planet,
+        CPlanet *planet,
 
         ///The semimajor axis of the orbit at which the secondary forms in
         /// \f$R_\odot\f$.
@@ -78,7 +116,7 @@ extern "C" {
     LIB_PUBLIC DiskBinarySystem *create_star_star_system(
         ///The first body in the system. Assumed to always be there, so
         ///for a star-planet system this should be the star.
-        EvolvingStar *primary, 
+        EvolvingStar *primary,
 
         ///The second body in the system, initially may not be there and
         ///later may be engulfed by the first body.
@@ -118,7 +156,7 @@ extern "C" {
     ///all zones.
     LIB_PUBLIC void configure_planet(
         ///The body to configure.
-        LockedPlanet *planet,
+        CPlanet *planet,
 
         ///The age to set the body to.
         double age,
@@ -136,7 +174,7 @@ extern "C" {
         ///(outermost zone to innermost).
         const double *spin_angmom,
 
-        ///The inclinations of the zones of the body (same order as 
+        ///The inclinations of the zones of the body (same order as
         ///spin_angmom). If NULL, all inclinations are assumed zero.
         const double *inclination,
 
@@ -145,7 +183,7 @@ extern "C" {
         ///zero.
         const double *periapsis,
 
-        ///If true, the outermost zone's spin is assumed locked to a 
+        ///If true, the outermost zone's spin is assumed locked to a
         ///disk and spin_angmom is assumed to start from the next zone.
         bool locked_surface,
 
@@ -184,7 +222,7 @@ extern "C" {
         ///(outermost zone to innermost).
         const double *spin_angmom,
 
-        ///The inclinations of the zones of the body (same order as 
+        ///The inclinations of the zones of the body (same order as
         ///spin_angmom). If NULL, all inclinations are assumed zero.
         const double *inclination,
 
@@ -193,7 +231,7 @@ extern "C" {
         ///zero.
         const double *periapsis,
 
-        ///If true, the outermost zone's spin is assumed locked to a 
+        ///If true, the outermost zone's spin is assumed locked to a
         ///disk and spin_angmom is assumed to start from the next zone.
         bool locked_surface,
 
@@ -222,7 +260,7 @@ extern "C" {
         ///The eccentricity of the orbit.
         double eccentricity,
 
-        ///The spin angular momenta of the zones of the bodies (body 1 
+        ///The spin angular momenta of the zones of the bodies (body 1
         ///first, outermost zone to innermost, followed by body 2).
         const double *spin_angmom,
 
@@ -298,7 +336,7 @@ extern "C" {
         ///steps.
         double *semimajor,
 
-        ///An array to fill with the orbital eccentricity at the saved 
+        ///An array to fill with the orbital eccentricity at the saved
         ///evolution steps.
         double *eccentricity,
 
@@ -361,7 +399,7 @@ extern "C" {
         ///steps.
         double *semimajor,
 
-        ///An array to fill with the orbital eccentricity at the saved 
+        ///An array to fill with the orbital eccentricity at the saved
         ///evolution steps.
         double *eccentricity,
 
@@ -450,7 +488,7 @@ extern "C" {
         ///steps.
         double *semimajor,
 
-        ///An array to fill with the orbital eccentricity at the saved 
+        ///An array to fill with the orbital eccentricity at the saved
         ///evolution steps.
         double *eccentricity,
 
@@ -513,7 +551,7 @@ extern "C" {
         ///steps.
         double *semimajor,
 
-        ///An array to fill with the orbital eccentricity at the saved 
+        ///An array to fill with the orbital eccentricity at the saved
         ///evolution steps.
         double *eccentricity,
 

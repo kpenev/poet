@@ -1,7 +1,7 @@
 /**\file
  *
  * \brief Definition of the Dissipation::Quantity and
- * Dissipation::Derivative output.
+ * Dissipation::QuantityEntry output.
  *
  * \ingroup Evolve
  */
@@ -27,11 +27,11 @@ namespace Evolve {
         return os;
     }
 
-    ///More civilized output for Dissipation::Derivative variables.
+    ///More civilized output for Dissipation::QuantityEntry variables.
     std::ostream &operator<<(std::ostream &os,
-            const Dissipation::Derivative &deriv)
+                             Dissipation::QuantityEntry entry)
     {
-        switch(deriv) {
+        switch(entry) {
             case Dissipation::NO_DERIV : os << "NO_DERIV";
                                          break;
             case Dissipation::AGE : os << "AGE";
@@ -54,6 +54,8 @@ namespace Evolve {
                                             break;
             case Dissipation::SEMIMAJOR : os << "SEMIMAJOR";
                                           break;
+            case Dissipation::EXPANSION_ERROR : os << "EXPANSION_ERROR";
+                                                break;
             default : assert(false);
         };
         return os;

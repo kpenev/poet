@@ -16,25 +16,33 @@
 #include "LagForcingFrequencyBreakCondition.h"
 #include "LagSpinBreakCondition.h"
 
+
 namespace Evolve {
 
+    ///\brief A DissipatingZone where the phase lag is described by a broken
+    ///powerlaw.
+    ///
+    ///By default the zone is non-dissipative.
     class LIB_PUBLIC BrokenPowerlawPhaseLagZone : virtual public DissipatingZone {
         friend class LagForcingFrequencyBreakCondition;
         friend class LagSpinBreakCondition;
     private:
+        ///Is the zone dissipative.
+        bool __dissipative;
+
         std::vector<double>
             ///\brief The locations of the breaks in tidal frequency in rad/day.
             __tidal_frequency_breaks,
 
             ///The locations of the breaks in spin frequency in rad/day.
             __spin_frequency_breaks,
-            
+
             ///\brief The powerlaw indices for the tidal frequency dependence.
             __tidal_frequency_powers,
 
             ///\brief The powerlaw indices for the spin frequency dependence.
             __spin_frequency_powers,
-            
+
             ///\brief The phase lags at the tidal/spin frequency breaks.
             ///
             ///The tidal frequency break index changes faster and the spin
@@ -69,7 +77,7 @@ namespace Evolve {
             {
                 return (
                     2
-                    + 
+                    +
                     (orbital_frequency_multiplier > 0 ? 1 : -1)
                     *
                     (
@@ -110,7 +118,7 @@ namespace Evolve {
         ///are appropriate for the current eccentricity expansion order.
         void add_tidal_frequency_conditions(
             ///The system being evolved.
-            BinarySystem &system, 
+            BinarySystem &system,
 
             ///Is the body this zone is part of, the primary in the system.
             bool primary,
@@ -127,8 +135,9 @@ namespace Evolve {
         void print_configuration(std::ostream &out_stream = std::clog);
 
     public:
-        ///\brief Create an unuseable zone. Must call setup() before use.
-        BrokenPowerlawPhaseLagZone() {}
+        ///\brief Create a non-dissipative zone. Must call setup() if
+        ///the zone is dissipative.
+        BrokenPowerlawPhaseLagZone() : __dissipative(false) {}
 
         ///\brief Seup the zone with the given breaks/powers imposing
         ///continuity accress all breaks. Must only be called before use.
@@ -140,7 +149,7 @@ namespace Evolve {
             ///The locations of the breaks in spin frequency in rad/day.
             ///Entries should be sorted.
             const std::vector<double> &spin_frequency_breaks,
-            
+
             ///The powerlaw indices for the tidal frequency dependence.
             ///Should be indexed in the same order as tidal_frequency_breaks,
             ///but must contain an additional starting entry for the powerlaw
@@ -153,7 +162,7 @@ namespace Evolve {
             ///index before the first break.
             const std::vector<double> &spin_frequency_powers,
 
-            ///The phase lag at the first tidal and first spin frequency 
+            ///The phase lag at the first tidal and first spin frequency
             ///break. The rest are calculated by imposing continuity.
             double reference_phase_lag
         );
@@ -170,7 +179,7 @@ namespace Evolve {
             double periapsis,
             bool spin_is_frequency
         );
-        
+
         ///\brief Should return the tidal phase lag times the love number for
         ///the given tidal term (or one of its derivatives).
         ///
@@ -193,7 +202,7 @@ namespace Evolve {
 
             ///The return value should be either the phase lag itself
             ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///If the lag of a locked term is calculated this should be set
             ///to the lag assuming the spin frequency is just above the lock.
@@ -214,7 +223,7 @@ namespace Evolve {
 
             ///The return value should be either the phase lag itself
             ///(NO_DERIV) or its derivative w.r.t. the specified quantity.
-            Dissipation::Derivative
+            Dissipation::QuantityEntry
         ) const
         {return 0;}
 
@@ -224,7 +233,7 @@ namespace Evolve {
         ///Must be deleted when no longer necessary.
         virtual CombinedStoppingCondition *stopping_conditions(
             ///The system being evolved.
-            BinarySystem &system, 
+            BinarySystem &system,
 
             ///Is the body this zone is part of, the primary in the system.
             bool primary,
@@ -239,7 +248,7 @@ namespace Evolve {
             unsigned new_e_order,
 
             ///The system being evolved.
-            BinarySystem &system, 
+            BinarySystem &system,
 
             ///Is the body this zone is part of, the primary in the system.
             bool primary,
@@ -248,7 +257,11 @@ namespace Evolve {
             unsigned zone_index
         );
 
-        ///Cleanup. 
+        ///\brief Return true iff disspation has been defined for the zone.
+        virtual bool dissipative() const
+        {return __dissipative;}
+
+        ///Cleanup.
         ~BrokenPowerlawPhaseLagZone() {
 #ifndef NDEBUG
             std::cerr << "Destroying powerlaw lag zone:"

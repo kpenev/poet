@@ -36,7 +36,7 @@ namespace Evolve {
     }
 
     void LagSpinBreakCondition::fill_locked_derivs(
-        Core::EvolModeType 
+        Core::EvolModeType
 #ifndef NDEBUG
         evol_mode
 #endif
@@ -73,11 +73,11 @@ namespace Evolve {
     ) const
     {
         unsigned angmom_index = 1 + __zone_index + 2 * __body.number_zones();
-        if(evol_mode == Core::BINARY) 
+        if(evol_mode == Core::BINARY)
             angmom_index += (
                 2 * __other_body.number_zones()
-                + 
-                (__primary 
+                +
+                (__primary
                  ? 0
                  : (__other_body.number_zones()
                     -
@@ -106,7 +106,7 @@ namespace Evolve {
         const DissipatingBody &other_body,
         bool primary,
         unsigned zone_index
-    ) : 
+    ) :
         __zone(zone),
         __body(body),
         __other_body(other_body),
@@ -127,7 +127,7 @@ namespace Evolve {
         assert(evol_mode != Core::LOCKED_SURFACE_SPIN);
         assert(__primary || evol_mode == Core::BINARY);
 
-        stop_deriv.resize(Core::NaN, __num_subconditions);
+        stop_deriv.resize(__num_subconditions, Core::NaN);
 
 
         if(__zone.locked())

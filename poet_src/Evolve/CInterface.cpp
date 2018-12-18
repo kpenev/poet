@@ -8,19 +8,61 @@
 #define BUILDING_LIBRARY
 #include "CInterface.h"
 
-LIB_PUBLIC const int LOCKED_SURFACE_SPIN_EVOL_MODE = Core::LOCKED_SURFACE_SPIN;
-LIB_PUBLIC const int BINARY_EVOL_MODE = Core::BINARY;
-LIB_PUBLIC const int SINGLE_EVOL_MODE = Core::SINGLE;
-LIB_PUBLIC const int TABULATION_EVOL_MODE = Core::TABULATION;
-LIB_PUBLIC const double NaN = Core::NaN;
+const int LOCKED_SURFACE_SPIN_EVOL_MODE = Core::LOCKED_SURFACE_SPIN;
+const int BINARY_EVOL_MODE = Core::BINARY;
+const int SINGLE_EVOL_MODE = Core::SINGLE;
+const int TABULATION_EVOL_MODE = Core::TABULATION;
+const double NaN = Core::NaN;
 
 void read_eccentricity_expansion_coefficients(const char *filename)
 {
     Evolve::TidalPotentialTerms::read_eccentricity_expansion(filename);
 }
 
-DiskBinarySystem *create_star_planet_system(EvolvingStar *star, 
-                                            LockedPlanet *planet,
+void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
+                          unsigned num_tidal_frequency_breaks,
+                          unsigned num_spin_frequency_breaks,
+                          double *tidal_frequency_breaks,
+                          double *spin_frequency_breaks,
+                          double *tidal_frequency_powers,
+                          double *spin_frequency_powers,
+                          double reference_phase_lag)
+{
+    Evolve::BrokenPowerlawPhaseLagZone *real_zone =
+        reinterpret_cast<Evolve::BrokenPowerlawPhaseLagZone*>(zone);
+
+    real_zone->setup(
+        (
+            num_tidal_frequency_breaks
+            ? std::vector<double>(
+                tidal_frequency_breaks,
+                tidal_frequency_breaks + num_tidal_frequency_breaks
+            )
+            : std::vector<double>()
+        ),
+        (
+            num_spin_frequency_breaks
+            ? std::vector<double>(
+                spin_frequency_breaks,
+                spin_frequency_breaks + num_spin_frequency_breaks
+            )
+            : std::vector<double>()
+        ),
+        std::vector<double>(
+            tidal_frequency_powers,
+            tidal_frequency_powers + num_tidal_frequency_breaks + 1
+        ),
+        std::vector<double>(
+            spin_frequency_powers,
+            spin_frequency_powers + num_spin_frequency_breaks + 1
+        ),
+        reference_phase_lag
+    );
+
+}
+
+DiskBinarySystem *create_star_planet_system(EvolvingStar *star,
+                                            CPlanet *planet,
                                             double initial_semimajor,
                                             double initial_eccentricity,
                                             double initial_inclination,
@@ -31,7 +73,7 @@ DiskBinarySystem *create_star_planet_system(EvolvingStar *star,
     return reinterpret_cast<DiskBinarySystem*>(
         new Evolve::DiskBinarySystem(
             *reinterpret_cast<Star::InterpolatedEvolutionStar*>(star),
-            *reinterpret_cast<Planet::LockedPlanet*>(planet),
+            *reinterpret_cast<Planet::Planet*>(planet),
             initial_semimajor,
             initial_eccentricity,
             initial_inclination,
@@ -43,7 +85,7 @@ DiskBinarySystem *create_star_planet_system(EvolvingStar *star,
     );
 }
 
-DiskBinarySystem *create_star_star_system(EvolvingStar *primary, 
+DiskBinarySystem *create_star_star_system(EvolvingStar *primary,
                                           EvolvingStar *secondary,
                                           double initial_semimajor,
                                           double initial_eccentricity,
@@ -99,7 +141,7 @@ void configure_star(EvolvingStar *star,
     );
 }
 
-void configure_planet(LockedPlanet *planet,
+void configure_planet(CPlanet *planet,
                       double age,
                       double companion_mass,
                       double semimajor,
@@ -111,7 +153,7 @@ void configure_planet(LockedPlanet *planet,
                       bool zero_outer_inclination,
                       bool zero_outer_periapsis)
 {
-    reinterpret_cast<Planet::LockedPlanet*>(planet)->configure(
+    reinterpret_cast<Planet::Planet*>(planet)->configure(
         true,
         age,
         companion_mass,
@@ -205,7 +247,7 @@ void get_star_evolution(const EvolvingStar *star_arg,
                         double *core_angmom,
                         bool *wind_saturation)
 {
-    const Star::InterpolatedEvolutionStar *star = 
+    const Star::InterpolatedEvolutionStar *star =
         reinterpret_cast<const Star::InterpolatedEvolutionStar*>(star_arg);
     list_to_array(star->envelope().get_evolution_real(Evolve::INCLINATION),
                   envelope_inclination);
@@ -349,7 +391,7 @@ void get_star_final_state(const EvolvingStar *star_arg,
                           double *core_angmom,
                           bool *wind_saturation)
 {
-    const Star::InterpolatedEvolutionStar *star = 
+    const Star::InterpolatedEvolutionStar *star =
         reinterpret_cast<const Star::InterpolatedEvolutionStar*>(star_arg);
 
     if(envelope_inclination)
@@ -437,7 +479,7 @@ void get_star_planet_final_state(const OrbitSolver *solver,
 
     get_binary_final_state(system, semimajor, eccentricity);
 
-    get_star_final_state(star, 
+    get_star_final_state(star,
                          envelope_inclination,
                          core_inclination,
                          envelope_periapsis,
@@ -476,7 +518,7 @@ void get_star_star_final_state(const OrbitSolver *solver,
 
     get_binary_final_state(system, semimajor, eccentricity);
 
-    get_star_final_state(primary, 
+    get_star_final_state(primary,
                          primary_envelope_inclination,
                          primary_core_inclination,
                          primary_envelope_periapsis,
@@ -485,7 +527,7 @@ void get_star_star_final_state(const OrbitSolver *solver,
                          primary_core_angmom,
                          primary_wind_saturation);
 
-    get_star_final_state(secondary, 
+    get_star_final_state(secondary,
                          secondary_envelope_inclination,
                          secondary_core_inclination,
                          secondary_envelope_periapsis,

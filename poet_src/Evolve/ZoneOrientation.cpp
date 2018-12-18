@@ -4,8 +4,10 @@
 namespace Evolve {
 
     Eigen::Vector3d zone_to_zone_transform(const ZoneOrientation &from_zone,
-            const ZoneOrientation &to_zone, const Eigen::Vector3d &vector,
-            Dissipation::Derivative deriv, bool with_respect_to_from)
+                                           const ZoneOrientation &to_zone,
+                                           const Eigen::Vector3d &vector,
+                                           Dissipation::QuantityEntry deriv,
+                                           bool with_respect_to_from)
     {
         assert(deriv == Dissipation::NO_DERIV
                ||

@@ -33,6 +33,12 @@ namespace Evolve {
         ///The stellar spin frequency reached the wind saturation frequency
         ///(from either direction).
         WIND_SATURATION,
+
+        ///The error due to truncating the eccentricity expansion is too large.
+        LARGE_EXPANSION_ERROR,
+
+        ///The error due to truncating the eccentricity expansion is too small.
+        SMALL_EXPANSION_ERROR,
         
         ///The stellar rotation reached some critical value (from either
         ///direction).

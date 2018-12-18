@@ -63,31 +63,30 @@ namespace Evolve {
         double modified_phase_lag(int orbital_frequency_multiplier,
                                   int spin_frequency_multiplier,
                                   double forcing_frequency,
-                                  Dissipation::Derivative deriv,
+                                  Dissipation::QuantityEntry entry,
                                   double &above_lock_value) const
         {
             double result;
 
-            if(deriv != Dissipation::NO_DERIV) {
-                return Core::NaN;
-                throw Core::Error::NotImplemented(
-                    "single dissipative term phase lage derivatives"
-                );
-            } if(
-                orbital_frequency_multiplier == __orbital_frequency_multiplier
-                &&
-                spin_frequency_multiplier == __spin_frequency_multiplier
-            )
-                result = __phase_lag;
-            else if(
-                orbital_frequency_multiplier == -__orbital_frequency_multiplier
-                &&
-                spin_frequency_multiplier == -__spin_frequency_multiplier
-
-            )
-                result = -__phase_lag;
-            else
+            if(entry != Dissipation::NO_DERIV)
                 result = 0.0;
+            else {
+                if(
+                    orbital_frequency_multiplier == __orbital_frequency_multiplier
+                    &&
+                    spin_frequency_multiplier == __spin_frequency_multiplier
+                )
+                    result = __phase_lag;
+                else if(
+                    orbital_frequency_multiplier == -__orbital_frequency_multiplier
+                    &&
+                    spin_frequency_multiplier == -__spin_frequency_multiplier
+
+                )
+                    result = -__phase_lag;
+                else
+                    result = 0.0;
+            }
 
             if(forcing_frequency == 0) {
                 if(spin_frequency_multiplier >= 0) {

@@ -194,12 +194,11 @@ namespace Evolve {
         ///\brief Rewinds the evlution to the last step before the given age and
         ///returns the age of that step.
         ///
-        ///Sets the orbit and derivatives to what they were at that step and
-        ///removes any items from the histories and tabulations that are later
-        ///than max_age.
-        double go_back(double max_age, BinarySystem &system, 
-                std::valarray<double> &orbit,
-                std::valarray<double> &derivatives);
+        ///Sets the orbit to what it was at that step and removes any items from
+        ///the histories and tabulations that are later than max_age.
+        double go_back(double max_age, 
+                       BinarySystem &system, 
+                       std::valarray<double> &orbit);
 
 
         ///Clears the current stopping condition history.
@@ -265,6 +264,18 @@ namespace Evolve {
         ///acceptable.
         bool acceptable_step(double age, const StopInformation &stop_info);
 
+        ///\brief Return -1 if the expansion error is too small (e-order can
+        ///safely be decreased, 0 if it is within range, 1 if it is too big
+        //(e-order should be increased).
+        int check_expansion_error(
+            ///The rates of change of the evolution variables per Gyr.
+            const std::valarray<double> &derivatives,
+
+            ///The errors in derivatives, due to the truncated eccentricity
+            ///series.
+            const std::valarray<double> &expansion_errors
+        );
+
         ///\brief Updates stop_cond_history and stop_deriv_history after a
         ///GSL step, returning if/where the evolution needs to stop.
         ///
@@ -281,6 +292,10 @@ namespace Evolve {
             ///The rates of change of the evolution variables per Gyr.
             const std::valarray<double> &derivatives,
 
+            ///The errors in derivatives, due to the truncated eccentricity
+            ///series.
+            const std::valarray<double> &expansion_errors,
+
             ///The current evolution mode.
             Core::EvolModeType evolution_mode,
 
@@ -288,7 +303,40 @@ namespace Evolve {
             ///stretch, this should indicate the reason why the previous 
             ///stretch was stopped. For subsequent calls during the same 
             ///evolution stretch it should be NO_STOP.
-            StoppingConditionType stop_reason=NO_STOP
+            StoppingConditionType stop_reason=NO_STOP,
+
+            ///If true, ignore indication that eccentricity order should be
+            ///decreased.
+            bool ignore_e_order_decrease=false
+        );
+
+        ///Handle the situation when the last step has to be rejected.
+        void reject_step(
+            ///The age up to which the rejected step reached, on exit gets
+            ///updated with the last acceptable age found.
+            double &age,
+
+            ///The reason we stopped. If a zero-crossing, the precision is
+            ///updated.
+            StopInformation &stop,
+
+            ///The binary system being evolved.
+            BinarySystem &system,
+
+            ///The current orbit of the system, gets updated with the last
+            ///acceptable orbit found.
+            std::valarray<double> &orbit,
+
+            ///Gets updated with the maximum age up to which evolution is
+            ///allowed to proceed.
+            double &max_next_t,
+
+            ///Gets updated with the step size to use for the next step.
+            double &step_size
+#ifndef NDEBUG
+            ///The reason for rejecting the step.
+            , std::string reason
+#endif
         );
 
         ///\brief Evolves a system until either some age cut-off is reached or
@@ -301,33 +349,34 @@ namespace Evolve {
         ///The return value is true if the last step finished after the 
         ///stopping condition crossed zero and false if it ended before that.
         StopInformation evolve_until(
-                ///The planet-star system to evolve.
-                BinarySystem &system,
-                
-                ///The age at which to stop this part of the evolution. On
-                ///exit, it is overwritten with the age of the last accepted
-                ///step.
-                double &max_age,
-                
-                ///The initial conditions. The contents depends on the value 
-                ///of evolution_mode. See #BinarySystem.differential 
-                ///equations for details.			
-                ///
-                ///On exit, it is overwritten with the orbit of the last
-                ///accepted step.
-                std::valarray<double> &orbit,
-            
-                ///On input should be the reason why the last evolution 
-                ///stopped. It should be NO_STOP if this is the first piece 
-                ///of evolution being calculated. On exit it is overwritten 
-                ///with the value appropriate for the next run.
-                StoppingConditionType &stop_reason,
+            ///The planet-star system to evolve.
+            BinarySystem &system,
 
-                ///The maximum step that GSL is allowed to take.
-                double max_step,
+            ///The age at which to stop this part of the evolution. On
+            ///exit, it is overwritten with the age of the last accepted
+            ///step.
+            double &max_age,
 
-                ///The evolution mode for this part of the evolution.
-                Core::EvolModeType evolution_mode);
+            ///The initial conditions. The contents depends on the value 
+            ///of evolution_mode. See #BinarySystem.differential 
+            ///equations for details.			
+            ///
+            ///On exit, it is overwritten with the orbit of the last
+            ///accepted step.
+            std::valarray<double> &orbit,
+
+            ///On input should be the reason why the last evolution 
+            ///stopped. It should be NO_STOP if this is the first piece 
+            ///of evolution being calculated. On exit it is overwritten 
+            ///with the value appropriate for the next run.
+            StoppingConditionType &stop_reason,
+
+            ///The maximum step that GSL is allowed to take.
+            double max_step,
+
+            ///The evolution mode for this part of the evolution.
+            Core::EvolModeType evolution_mode
+        );
 
         ///\brief Returns the stopping conditions which end the given 
         ///evolution mode and update __stop_info.
@@ -359,6 +408,20 @@ namespace Evolve {
             ///The type of condition which caused the stoppage.
             StoppingConditionType stop_reason
         );
+
+        ///\brief Increase/decrease the eccentricity expansion order until error
+        ///is acceptable and return the new order.
+        void adjust_eccentricity_order(
+            ///The system being evolved.
+            BinarySystem &system,
+
+            ///The current orbital elements.
+            const std::valarray<double> &orbit,
+
+            ///The evolution mode for this part of the evolution.
+            Core::EvolModeType evolution_mode
+        );
+
 
         ///Clears any previously calculated evolution.
         void reset(BinarySystem &system);

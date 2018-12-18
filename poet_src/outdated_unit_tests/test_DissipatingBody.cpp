@@ -113,7 +113,7 @@ void test_DissipatingBody::test_orbit_rates_same_periapsis()
         double power_norm=power_norm_Lai(body->mass(), other_mass,
                 body->radius(), a),
                torque_norm=torque_norm_Lai(other_mass, body->radius(), a);
-        double energy_gain=0;
+        double power=0;
         Eigen::Vector3d orbit_torque_env(0, 0, 0),
                         orbit_torque_core(0, 0, 0);
         for(unsigned zone_ind=0; zone_ind<2; ++zone_ind) {
@@ -128,7 +128,7 @@ void test_DissipatingBody::test_orbit_rates_same_periapsis()
                             &other_orbit_torque(zone_ind==0
                                                 ? orbit_torque_core
                                                 : orbit_torque_env);
-            energy_gain-=power_norm*dimensionless_power_Lai(this_inclination,
+            power-=power_norm*dimensionless_power_Lai(this_inclination,
                                                             lags);
             Eigen::Vector3d 
                 zone_torque(dimensionless_torque_x_Lai(this_inclination,
@@ -145,12 +145,12 @@ void test_DissipatingBody::test_orbit_rates_same_periapsis()
                                    +
                                    zone_torque[2]*cos_inc_diff;
         }
-        double value=body->tidal_orbit_energy_gain();
+        double value=body->tidal_orbit_power();
         std::ostringstream msg;
-        msg << "Expected orbit energy gain: " 
-            << energy_gain << " got: " << value << ", difference: " 
-            << energy_gain-value;
-        TEST_ASSERT_MSG(check_diff(value, energy_gain, 1e-10, 1e-15),
+        msg << "Expected orbit power: " 
+            << power << " got: " << value << ", difference: " 
+            << power-value;
+        TEST_ASSERT_MSG(check_diff(value, power, 1e-10, 1e-15),
                         msg.str().c_str());
         for(unsigned zone_ind=0; zone_ind<2; ++zone_ind) {
             const Eigen::Vector3d &expected_torque=(zone_ind==0

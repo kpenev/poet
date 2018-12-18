@@ -217,7 +217,7 @@ model {
             }
         }
 
-        debug_stellar_evolution(NativeExecutableSpec) {
+        debugStellarEvolution(NativeExecutableSpec) {
             sources.cpp {
                 lib library: "eigen"
                 lib library: "stellarEvolution"
@@ -228,11 +228,12 @@ model {
                 }
             }
         }
-        debug_planet_star_evolution(NativeExecutableSpec) {
+
+        debugPlanetStarEvolution(NativeExecutableSpec) {
             sources.cpp {
                 source {
                     srcDir "poet_src/debug"
-                    include "**/planet_star_evolution.c"
+                    include "**/planet_star_evolution.cpp"
                 }
             }
             binaries.all {
@@ -244,11 +245,12 @@ model {
                 lib library: "dirent"
             }
         }
-        debug_star_star_evolution(NativeExecutableSpec) {
+
+        debugStarStarEvolution(NativeExecutableSpec) {
             sources.cpp {
                 source {
                     srcDir "poet_src/debug"
-                    include "**/star_star_evolution.c"
+                    include "**/star_star_evolution.cpp"
                 }
             }
             binaries.all {

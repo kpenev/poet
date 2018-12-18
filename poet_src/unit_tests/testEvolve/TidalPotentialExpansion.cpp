@@ -29,7 +29,6 @@ namespace Evolve {
                              eccentricity_deriv,
                              error);
             assert(std::isfinite(no_deriv.real()));
-            assert(no_deriv.imag() == 0);
             result += (
                 no_deriv
                 *

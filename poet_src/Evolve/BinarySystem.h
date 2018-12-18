@@ -58,35 +58,54 @@ namespace Evolve {
         ///The name of the binary system (e.g. "HAT-P-20")
         std::string __name;
 
-        ///\brief The evolution of the semimajor axis recorded by
-        ///add_to_evolution() so far.
-        std::list<double> __semimajor_evolution,
+        std::list<double>
+            ///\brief The evolution of the semimajor axis recorded by
+            ///add_to_evolution() so far.
+            __semimajor_evolution,
 
             ///\brief The evolution of the eccentricity recorded by
             ///add_to_evolution() so far
             __eccentricity_evolution;
-        
-        ///The present age of the stellar system in Gyrs.
-        double __age,
 
-               ///The current semimajor axis.
-               __semimajor,
+        double 
+            ///The present age of the stellar system in Gyrs.
+            __age,
 
-               ///The current eccentricity.
-               __eccentricity,
-               
-               ///The current orbital energy.
-               __orbital_energy,
-               
-               ///The current orbital angular momentum.
-               __orbital_angmom,
-               
-               ///The rate at which the orbit gains energy due to tides.
-               __orbit_energy_gain,
-               
-               ///\brief The rate at which the orbit gains angular momentum due
-               ///to tides.
-               __orbit_angmom_gain;
+            ///The current semimajor axis.
+            __semimajor,
+
+            ///The current eccentricity.
+            __eccentricity,
+
+            ///The current orbital energy.
+            __orbital_energy,
+
+            ///The current orbital angular momentum.
+            __orbital_angmom,
+
+            ///The rate at which the orbit gains energy due to tides.
+            __orbit_power,
+           
+            ///\brief Estimate of the error in __orbit_power due to
+            ///truncating the tidal potential eccentricity expansion
+            __orbit_power_expansion_error,
+
+            ///\brief The rate at which the orbit gains angular momentum due
+            ///to tides.
+            __orbit_angmom_gain,
+
+            ///\brief Estimate of the error in __orbit_angmom_gain due to
+            ///truncating the tidal potential eccentricity expansion
+            __orbit_angmom_gain_expansion_error;
+
+        Eigen::Vector3d 
+            ///\brief The torque on the orbit in the coordinate system of the 
+            ///outermost zone of the first body.
+            __orbit_torque,
+            
+            ///\brief An estiamte of the error in ::__orbit_torque due to
+            ///truncating the eccentricity series of the tidal potential.
+            __orbit_torque_expansion_error;
 
         ///The evolution mode from the last call to configure();
         Core::EvolModeType __evolution_mode;
@@ -138,7 +157,7 @@ namespace Evolve {
             ///the second body does. It is also the body that should support
             ///surface locks.
             &__body1, 
-            
+
             ///\brief The second body in the system.
             ///
             ///This body is never allowed to exist alone in the system or to have
@@ -155,7 +174,12 @@ namespace Evolve {
         ///configure().
         int locked_surface_differential_equations(
             ///On output is set to the rates of change of \f$S^0_i\f$.
-            double *evolution_rates
+            double *evolution_rates,
+
+            ///If true, instead of returning the evolution rates, returns
+            ///an estimete of the error in those due to truncating the
+            ///eccentricity expansion series of the tidal potential.
+            bool expansion_error
         ) const;
 
         ///\brief Jacobian for the evolution of the rotation of the zones of 
@@ -179,7 +203,12 @@ namespace Evolve {
         int single_body_differential_equations(			
             ///On outputs is set to the rate of change of the orbital
             ///parameters.
-            double *evolution_rates
+            double *evolution_rates,
+
+            ///If true, instead of returning the evolution rates, returns
+            ///an estimete of the error in those due to truncating the
+            ///eccentricity expansion series of the tidal potential.
+            bool expansion_error
         ) const;
 
         ///Fills the jacobian for a system consisting of one isolated body.
@@ -236,13 +265,19 @@ namespace Evolve {
             ///The rate at which the orbit gains energy (total for all zones 
             ///of all bodies) in
             /// \f$M_\odot R_\odot^2 \mathrm{day}^{-2}\mathrm{Gyr}^{-1}\f$
-            double orbit_energy_gain,
+            double orbit_power,
 
             ///If not NaN, the derivative with respect to the semimajoir axis
             ///is returned, assuming that this is the derivative of
-            ///orbit_energy_gain with respect to the semimajor axis.
-            double orbit_energy_gain_deriv=Core::NaN
+            ///orbit_power with respect to the semimajor axis.
+            double orbit_power_deriv=Core::NaN
         ) const;
+
+        ///\brief Estimate of the  error in the value returned by 
+        ///semimajor_evolution() due to truncating the tidal potential
+        ///eccentricity expansion
+        double semimajor_evolution_expansion_error() const
+        {return semimajor_evolution(__orbit_power_expansion_error);}
 
         ///\brief Returns the rate of evolution of the eccentricity or one of its
         ///derivatives.
@@ -256,7 +291,7 @@ namespace Evolve {
         ///with respect to the quantity as the first and second arguments.
         double eccentricity_evolution(
             ///See semimajor_evolution()
-            double orbit_energy_gain,
+            double orbit_power,
 
             ///The rate at which the orbit gains angular momentum (total for
             ///all zones of all bodies) in
@@ -268,11 +303,11 @@ namespace Evolve {
             //eccentricity is returned instead of the rate itself. In this
             ///case, this value must be the derivative of orbit_power w.r.t.
             ///the same this as the desired derivative.
-            double orbit_energy_gain_deriv=Core::NaN,
+            double orbit_power_deriv=Core::NaN,
 
-            ///If orbit_energy_gain_deriv is not NaN, this must be set to the
+            ///If orbit_power_deriv is not NaN, this must be set to the
             ///derivative of orbit_torque with respect to the same variable
-            ///as orbit_energy_gain_deriv.
+            ///as orbit_power_deriv.
             double orbit_angmom_gain_deriv=Core::NaN,
 
             ///If true the derivative calculated is assumed to be w.r.t. the
@@ -280,11 +315,16 @@ namespace Evolve {
             bool semimajor_deriv=true
         ) const;
 
+        ///\brief Estimate of the  error in the value returned by 
+        ///eccentricity_evolution() due to truncating the tidal potential
+        ///eccentricity expansion
+        double eccentricity_evolution_expansion_error() const;
+
         ///\brief Makes corrections to the matrix and RHS to accomodate the given
         ///derivative for the linear problem that defines the above fractions.
         void above_lock_problem_deriv_correction(
             ///The derivative being calculated
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///For zone-specific quantities, are we differentiating w.r.t. a
             ///zone part of body1?
@@ -311,7 +351,7 @@ namespace Evolve {
             ///The derivative of the above lock fractions to calculate. For
             ///zone-dependent quantities the derivatives are w.r.t. the
             ///surface zone quantity.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 
             ///Only used if deriv indicates a zone-dependent quantity. In
             ///that case, it specifies the body whose surface zone we are
@@ -324,7 +364,7 @@ namespace Evolve {
         Eigen::VectorXd above_lock_fractions_deriv(
             ///The derivative to calculate. Only INCLINATION, PERIAPSIS,
             ///MOMENT_OF_INERTIA and SPIN_ANGMOM derivatives are supported.
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's inclination we want the derivative 
             ///w.r.t.
@@ -346,28 +386,24 @@ namespace Evolve {
         ///mode.
         void update_above_lock_fractions();
 
-        ///\brief Fills an array with the evolution rates for the quantities
-        ///describing a binary.
+        ///\brief Update the values of ::__orbit_power, ::__orbit_torque,
+        ///::__orbit_angmom_gain and their associated expansion errors.
         ///
-        ///The configure() method must already have been called.
-        void fill_binary_evolution_rates(
-            ///The torque on the orbit in the reference frame of the
-            ///outermost zone of body 1.
-            const Eigen::Vector3d &global_orbit_torque,
+        ///Called as part of ::configure().
+        void fill_orbit_torque_and_power();
 
-            ///The rate of change of the orbital parameters (see paramateres
-            ///argument of binary_differential_equations().
-            ///
-            ///The size must be sufficient to hold all rates.
-            double *evolution_rates
-        ) const;
-                
+               
         ///The differential equations for a system with both bodies present.
         int binary_differential_equations(
             ///On output is set to the rates of change of the evolution
             ///variables. See differintal_equations() for details.
-            double *differential_equations
-        );
+            double *differential_equations,
+
+            ///If true, instead of returning the evolution rates, returns
+            ///an estimete of the error in those due to truncating the
+            ///eccentricity expansion series of the tidal potential.
+            bool expansion_error
+        ) const;
 
 
         ///\brief Adds the derivatives of a rate by which the orbit is changing
@@ -382,8 +418,8 @@ namespace Evolve {
             const DissipatingBody &body,
 
             ///The quantity we are collecting. Should be either
-            ///body.tidal_orbit_energy_gain or body.tidal_orbit_torque.
-            VALUE_TYPE (DissipatingBody::*func)(Dissipation::Derivative,
+            ///body.tidal_orbit_power or body.tidal_orbit_torque.
+            VALUE_TYPE (DissipatingBody::*func)(Dissipation::QuantityEntry,
                                                 unsigned,
                                                 const Eigen::VectorXd &) const,
 
@@ -398,9 +434,9 @@ namespace Evolve {
 
         ///\brief Computes the derivatives w.r.t. the evolution quantities of the
         ///orbit energy gain.
-        void fill_orbit_energy_gain_deriv(
+        void fill_orbit_power_deriv(
             ///Location to fill.
-            std::valarray<double> &orbit_energy_gain_deriv
+            std::valarray<double> &orbit_power_deriv
         ) const;
 
         ///\brief Computes the derivatives w.r.t. the evolution quantities of the
@@ -414,7 +450,7 @@ namespace Evolve {
         void semimajor_jacobian(
             ///The derivatives of the orbit energy gain w.r.t. the evolution
             ///variables and age (last entry).
-            const std::valarray<double> &orbit_energy_gain_deriv,
+            const std::valarray<double> &orbit_power_deriv,
 
             ///Is the first variable \f$a^{6.5}\f$ instead of a?
             bool a6p5,
@@ -432,7 +468,7 @@ namespace Evolve {
         void eccentricity_jacobian(
             ///The derivatives of the orbit energy gain w.r.t. the evolution
             ///variables and age (last entry).
-            const std::valarray<double> &orbit_energy_gain_deriv,
+            const std::valarray<double> &orbit_power_deriv,
 
             ///The derivatives of the orbit angular momentum gain w.r.t. the
             ///evolution variables and age (last entry).
@@ -484,7 +520,7 @@ namespace Evolve {
         void angle_evolution_orbit_deriv(
             ///The derivative to compute, should be either
             ///Dissipation::SEMIMAJOR or Dissipation::ECCENTRICITY
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The derivative of the orbital angular momentum w.r.t. deriv.
             double angmom_deriv,
@@ -517,7 +553,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's coordinate system we are expressing the
             ///torque in.
@@ -540,7 +576,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's evolution we are differentiating.
             DissipatingBody &body,
@@ -564,7 +600,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's evolution we are differentiating.
             DissipatingBody &body,
@@ -611,7 +647,7 @@ namespace Evolve {
         ///zone specific quantity for all zones.
         void periapsis_evolution_zone_derivs(
             ///The derivative to compute.
-            Dissipation::Derivative deriv, 
+            Dissipation::QuantityEntry entry, 
 
             ///The body whose zone's periapsis evolution to differentiate.
             DissipatingBody &body,
@@ -655,7 +691,7 @@ namespace Evolve {
 
         void spin_angmom_evolution_zone_derivs(
             ///The derivative to compute.
-            Dissipation::Derivative deriv,
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's periapsis evolution to differentiate.
             DissipatingBody &body,
@@ -721,7 +757,8 @@ namespace Evolve {
         __name(system_name),
         __above_lock_fractions(Dissipation::NUM_DERIVATIVES), 
         __body1(body1),
-        __body2(body2) {}
+        __body2(body2)
+        {}
 
         ///Returns the name of the system.
         const std::string get_name() const {return __name;}
@@ -785,7 +822,7 @@ namespace Evolve {
 
         ///The total number of zones in both system bodies.
         unsigned number_zones() const
-        {return (__evolution_mode==Core::BINARY
+        {return (__evolution_mode == Core::BINARY
                  ? __body1.number_zones() + __body2.number_zones()
                  : __body1.number_zones());}
 
@@ -816,7 +853,7 @@ namespace Evolve {
             ///and, Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::SPIN_ANGMOM and Dissipation::MOMENT_OF_INERTIA
             ///are allowed.
-            Dissipation::Derivative deriv=Dissipation::NO_DERIV,
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV,
 
             ///The index of the zone whose quantity we want the derivative
             ///w.r.t. for zone specific quantities.
@@ -869,7 +906,12 @@ namespace Evolve {
             ///On outputs gets filled  with the rates at which the entries in
             ///parameters evolve. It is assumed that sufficient space has
             ///been allocated to hold the results.
-            double *differential_equations
+            double *differential_equations,
+
+            ///If true, instead of returning the evolution rates, returns
+            ///an estimete of the error in those due to truncating the
+            ///eccentricity expansion series of the tidal potential.
+            bool expansion_error=false
         );
 
         ///The jacobian of the evolution equations.
@@ -981,6 +1023,20 @@ namespace Evolve {
         ///The tabulated evolution of the eccentricity so far.
         const std::list<double> &eccentricity_evolution() const
         {return __eccentricity_evolution;}
+
+        ///Change the eccentricity expansion order for all dissipative zones.
+        virtual void change_e_order(
+            ///The new eccentricity expansion order.
+            unsigned new_e_order
+        )
+        {
+            __body1.change_e_order(new_e_order, *this, true);
+            __body2.change_e_order(new_e_order, *this, false);
+        }
+
+        ///To what order should eccentricity expansion be performed for the given
+        ///value of the eccentricity.
+        virtual unsigned eccentricity_order() const;
 
         virtual ~BinarySystem() {}
 

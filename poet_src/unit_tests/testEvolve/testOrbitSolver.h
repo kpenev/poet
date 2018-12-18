@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Declares the test suite that exercises the OrbitSolver class and
  * some other clasess necessary to accomplish this.
  *
@@ -18,10 +18,12 @@
 #include "ConservedLEObliquityEvolution.h"
 #include "../../Evolve/OrbitSolver.h"
 #include "../../Star/EvolvingStar.h"
-#include "../../Planet/LockedPlanet.h"
+#include "../../Planet/Planet.h"
 #include "../../Evolve/DiskBinarySystem.h"
+#include "../../Core/AstronomicalConstants.h"
 #include "../shared/PolynomialEvolution.h"
 #include "../shared/Common.h"
+#include "../shared/MakeStar.h"
 #include <iostream>
 #include <vector>
 
@@ -39,16 +41,31 @@ namespace Evolve {
         ///The system being evolved by the current test.
         Evolve::DiskBinarySystem *__system;
 
-        ///The star used in the current test.
+        ///The star used in the current test (NULL if primary is planet).
         Star::InterpolatedEvolutionStar *__star;
 
-        ///Make __star a non-dissipative star with the given properties.
-        void make_const_lag_star(
-            const StellarEvolution::Interpolator &evolution,
-            double wind_strength,
-            double wind_sat_freq,
-            double coupling_timescale,
-            double phase_lag = 0
+        ///The primary planet in the current test (NULL if primary is star).
+        Planet::Planet *__primary_planet;
+
+        ///A list of functions allocated during a test to delete at the end.
+        std::vector< const Core::OneArgumentDiffFunction* > __temp_functions;
+
+        ///\brief Set the dissipation of the primary to only a single tidal
+        //component.
+        void set_single_component_dissipation(
+            ///The minimum frequency at which the dissipation should be at its
+            ///maximum value.
+            double min_frequency,
+
+            ///The maximum frequency at which the dissipation should be at its
+            ///maximum value.
+            double max_frequency,
+
+            ///The scale on which frequnecy should decay.
+            double decay_scale,
+
+            ///The phase lag of the only dissipative tidal component.
+            double phase_lag = 1.0e-5
         );
 
         ///\brief Create __star with constant dissipation in a range, quickly
@@ -68,11 +85,11 @@ namespace Evolve {
 
             ///The minimum frequency at which the dissipation should be at its
             ///maximum value.
-            double min_frequnecy,
+            double min_frequency,
 
             ///The maximum frequency at which the dissipation should be at its
             ///maximum value.
-            double max_frequnecy,
+            double max_frequency,
 
             ///The scale on which frequnecy should decay.
             double decay_scale,
@@ -81,12 +98,6 @@ namespace Evolve {
             double phase_lag = 1.0e-5
         );
 
-        StellarEvolution::MockStellarEvolution *make_no_evolution(
-            double Rstar = 1.0,
-            double Iconv = 1.0
-        );
-        StellarEvolution::MockStellarEvolution *make_linear_I_evolution();
-
         ///Add a planet to the given star and evolve, returning the solver.
         void evolve(
             double wdisk,
@@ -94,11 +105,11 @@ namespace Evolve {
             double initial_a,
             const double *initial_Lstar,
             double initial_incl = 0.0,
-            double planet_mass = 1.0,
+            double secondary_mass = 1.0,
             ///If NaN defaults to tdisk.
-            double tplanet = Core::NaN,
+            double tsecondary = Core::NaN,
             double max_age = MAX_AGE,
-            double planet_radius = 1.0,
+            double secondary_radius = 1.0,
             double precision = 1e-6,
             double max_step_factor = 1e-3
         );
@@ -135,12 +146,117 @@ namespace Evolve {
             double max_age = MAX_AGE,
             bool debug_mode = false
         );
+
+        ///\brief Calculate the predicted evolution for the
+        ///test_unlocked_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_unlocked_evolution(
+                ///The constant phase lag of the primary's surface zone.
+                double phase_lag,
+
+                ///The mass of the secondary in the system in Jupiter masses.
+                double secondary_mass,
+
+                ///If true, the decaying evolution is returned (see
+                ///test_unlocked_evolution()), otherwise, the expanding one.
+                bool decaying=true
+            );
+
+        ///\brief Calculate the predicted evolution for the
+        ///test_disklocked_to_fast_to_locked() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_disklocked_to_fast_to_locked(
+                /// \f$Log_10(Q)\$ for the primary.
+                double lgQ,
+
+                ///The age at which the disk dissipates
+                double tdisk,
+
+                ///The semimajor axis at which the spin-orbit lock occurs.
+                double async,
+
+                ///The age at which the spin-orbit lock occurs.
+                double tsync,
+
+                ///The age up to which to calculate the evolution.
+                double tend,
+
+                ///Should the disk locked portion of the evolution be included?
+                bool include_disk_lock=true
+            );
+
+        ///\brief Calculate the predicted evolution for the
+        ///test_polar_1_0_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_polar_1_0(
+                ///The disk lifetime.
+                double tdisk,
+
+                ///The spin of the star (does not evolve).
+                double wstar,
+
+                ///The orbital angular velocity (does not evolve).
+                double worb
+            );
+
+        ///\brief Calculate the predicted evolution for the
+        ///test_polar_2_0_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_polar_2_0(
+                ///The disk lifetime.
+                double tdisk,
+
+                ///The spin of the star (does not evolve).
+                double wstar,
+
+                ///The orbital angular velocity (does not evolve).
+                double worb,
+
+                ///The phase lag of the primary.
+                double phase_lag,
+
+                ///On return overwritten by the convective angular momentum
+                ///decay rate.
+                double &lconv_decay_rate,
+
+                ///On return overwritten by the semimajor axis (does not
+                //envolve).
+                double &semimajor
+            );
+
+        ///\brief Calculate the predicted evolution for the
+        ///test_oblique_m_0_evolution() case.
+        std::vector<const Core::OneArgumentDiffFunction *>
+            calculate_expected_oblique_m_0(
+                ///The value of m to return the evolution for
+                unsigned m,
+
+                ///The disk lifetime.
+                double tdisk,
+
+                ///The orbital angular velocity (does not evolve).
+                double worb,
+
+                ///The initial inclination.
+                double initial_inc,
+
+                ///The initial stellar spin angular frequency.
+                double initial_wstar,
+
+                ///The phase lag of the primary.
+                double phase_lag,
+
+                ///Overwritten by the smallest stellar spin frequency that can
+                ///possibly occur during the evolution.
+                double &min_wstar
+            );
+
     protected:
         ///No fixtures at this time
-        void setup() {};
+        void setup();
 
         ///No fixtures at this time
-        void tear_down() {};
+        void tear_down();
     public:
         ///Create the test suite.
         test_OrbitSolver();
@@ -161,8 +277,15 @@ namespace Evolve {
         void test_no_planet_evolution();
 
         ///\brief Tests the evolution of the orbit plus stellar rotation,
-        ///starting with the planet already present and ensuring it does not
-        ///die or lock to the star.
+        ///starting with the planet already present and it does not die or lock
+        ///to the star.
+        ///
+        ///Two evolutions are tested:
+        ///  - fast: with a small initial semimajor axis and with the stellar
+        ///    spin-down not saturated
+        //
+        ///  - slow: with a larger initial semimajor axis and with the stellar
+        ///    spin-down saturated.
         void test_unlocked_evolution();
 
         ///\brief Tests the evolution of the orbit plus stellar rotation for
@@ -204,8 +327,8 @@ namespace Evolve {
         ///momentum conservation with the orbit approximately not changing.
         void test_polar_2_0_evolution();
 
-        ///\brief Test an evolution with only the 1-0 component but in an
-        ///arbitrarily inclined orbit.
+        ///\brief Test an evolution with only the m-0 component (m=1 and then 2)
+        ///but in an arbitrarily inclined orbit.
         ///
         ///From angular momentum conservation, the obliquity should satisfy:
         /// \f$ \cos\theta  = \frac{T^2 - S^2 - L^2}{2 S L} \f$
@@ -218,9 +341,13 @@ namespace Evolve {
         ///  - \f$ \dot{S} = -\sigma c^2 (1 - c^2) \f$
         ///  - \f$ \dot{c} = \frac{\sigma}{S} c^2 (1 - c^2)\left[c + \frac{S}{L} \right] \f$
         ///
-        ///Per mathematica, the evolution of S is given by:
+        ///Per mathematica, the evolution of S for m=1 is given by:
         /// \f$ \frac{1}{2} L^3 \left(-\frac{4}{L^2+S^2-T^2}-\frac{2 \log \left(L^2+S^2-T^2\right)}{L^2-T^2}-\frac{-\frac{2 L^3 \log \left(-L^2+S^2+T^2\right)}{L^2-T^2}+(L+T) \log (-L+S-T)+(L-T) (\log (L+S-T)+\log (-L+S+T))+(L+T) \log (L+S+T)}{L T^2}\right) \f$
         void test_oblique_1_0_evolution();
+
+        ///Same as test_oblique_1_0_evolution(), but only the m=2, m'=0 term is
+        ///dissipative.
+        void test_oblique_2_0_evolution();
     };//End test_OrbitSolver class.
 
 }//End Evolve namespace.

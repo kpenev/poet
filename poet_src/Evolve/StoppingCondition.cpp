@@ -19,6 +19,8 @@ namespace Evolve {
             case BREAK_LOCK: os << "BREAK_LOCK"; break;
             case PLANET_DEATH: os << "PLANET_DEATH"; break;
             case WIND_SATURATION: os << "WIND_SATURATION"; break;
+            case LARGE_EXPANSION_ERROR: os << "LARGE_EXPANSION_ERROR"; break;
+            case SMALL_EXPANSION_ERROR: os << "SMALL_EXPANSION_ERROR"; break;
             case EXTERNAL: os << "EXTERNAL";
         }
         return os;

@@ -20,16 +20,19 @@ namespace Core {
                                     bool deriv)
     {
         return (
-            deriv ? -1.5 : 1.0) * std::sqrt(
+            (deriv ? -1.5 : 1.0)
+            *
+            std::sqrt(
                 Core::AstroConst::G * (m1 + m2) * Core::AstroConst::solar_mass
                 /
                 std::pow(
                     semimajor * Core::AstroConst::solar_radius,
-                    (deriv ? 5 :3)
+                    (deriv ? 5 : 3)
                 )
             )
             * 
-            Core::AstroConst::day;
+            Core::AstroConst::day
+        );
     }
 
     double orbital_energy(double m1,
@@ -65,5 +68,22 @@ namespace Core {
                *
                Core::AstroConst::day;
     }
+
+    LIB_PUBLIC double semimajor_from_period(double m1,
+                                            double m2,
+                                            double period)
+    {
+        return std::pow(
+            Core::AstroConst::G * (m1 + m2) * Core::AstroConst::solar_mass
+            *
+            std::pow(Core::AstroConst::day * period, 2)
+            /
+            (4.0 * M_PI * M_PI)
+            ,
+            1.0 / 3.0
+        ) / Core::AstroConst::solar_radius;
+    }
+
+
 
 }//End Core namespace.
