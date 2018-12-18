@@ -40,7 +40,7 @@ class InitialConditionSolver:
             primary=self.primary,
             secondary=self.secondary,
             initial_orbital_period=initial_orbital_period,
-            initial_eccentricity=0.0,
+            initial_eccentricity=self.initial_eccentricity,
             initial_inclination=0.0,
             disk_lock_frequency=2.0 * scipy.pi / disk_period,
             disk_dissipation_age=self.target.disk_dissipation_age,
@@ -60,16 +60,16 @@ class InitialConditionSolver:
                               evolution_mode='LOCKED_SURFACE_SPIN')
         self.binary.primary.detect_stellar_wind_saturation()
         self.binary.secondary.configure(
-            self.target.planet_formation_age,
-            self.binary.primary.mass,
-            self.binary.semimajor(initial_orbital_period),
-            0.0,
-            scipy.array([0.0]),
-            None,
-            None,
-            False,
-            True,
-            True
+            age=self.target.planet_formation_age,
+            companion_mass=self.binary.primary.mass,
+            semimajor=self.binary.semimajor(initial_orbital_period),
+            eccentricity=self.initial_eccentricity,
+            spin_angmom=scipy.array([0.0]),
+            inclination=None,
+            periapsis=None,
+            locked_surface=False,
+            zero_outer_inclination=True,
+            zero_outer_periapsis=True
         )
         self.binary.evolve(
             self.target.age,
@@ -153,7 +153,8 @@ class InitialConditionSolver:
                  evolution_max_time_step=1.0,
                  evolution_precision=1e-6,
                  orbital_period_tolerance=1e-6,
-                 spin_tolerance=1e-6):
+                 spin_tolerance=1e-6,
+                 initial_eccentricity=0.0):
         """
         Initialize the object.
 
@@ -170,6 +171,15 @@ class InitialConditionSolver:
 
             evolution_precision:    The precision to require of the evolution.
 
+            orbital_period_tolerance:    The required precision with which the
+                orbital period at the present age must be reproduced.
+
+            spin_tolerance:    The required precision with which the
+                primary spin period at the present age must be reproduced.
+
+            initial_eccentricity:    The initial eccentricity with which to
+                start the evolution.
+
         Returns:
             None
         """
@@ -185,6 +195,7 @@ class InitialConditionSolver:
         self.evolution_precision = evolution_precision
         self.orbital_period_tolerance = orbital_period_tolerance
         self.spin_tolerance = spin_tolerance
+        self.initial_eccentricity = initial_eccentricity
 
         self.target = None
         self.primary = None

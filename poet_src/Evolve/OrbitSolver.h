@@ -2,7 +2,7 @@
  *
  * \brief Defines the OrbitSolver class, the various stopping conditions and
  * a number of other classes used while calculating the orbital evolution.
- * 
+ *
  * \ingroup OrbitSolver_group
  */
 
@@ -43,14 +43,14 @@ namespace Evolve {
     LIB_LOCAL int stellar_system_diff_eq(
             ///System age in Gyr.
             double age,
-            
+
             ///A C-style array of the variables evolved under the current set of
             ///equations.
             const double *parameters,
 
             ///A C-style array of the rates of change of the orbital_parameters.
             double *derivatives,
-            
+
             ///A C-style array of pointers giving the stellar system, the
             ///current evolution mode, the wind saturation state to assume,
             ///the spin-orbit lock of the star and the dissipation rates.
@@ -61,18 +61,18 @@ namespace Evolve {
     LIB_LOCAL int stellar_system_jacobian(
             ///System age in Gyr.
             double age,
-            
+
             ///A C-style array of the variables evolved under the current set of
             ///equations.
             const double *parameters,
 
             ///A C-style array of the Jacobian matrix entries.
             double *param_derivs,
-            
+
             ///A C-style array of the partial age derivatives of the differential
             ///equations. Age is in Gyr.
             double *age_derivs,
-            
+
             ///A C-style array of pointers giving the stellar system and the
             ///current evolution mode.
             void *system_mode);
@@ -84,7 +84,7 @@ namespace Evolve {
     private:
         ///The value of the argument where the extremum occurs.
         double __x,
-               
+
                ///The value of the function at the extremum.
                __y;
     public:
@@ -107,14 +107,23 @@ namespace Evolve {
         double &y() {return __y;}
     };//End ExtremumInformation class.
 
-    ///\brief Solves the system of ODEs describing the evolution of a 
+    ///\brief Solves the system of ODEs describing the evolution of a
     ///single planet around a single star.
     ///
     ///\ingroup OrbitSolver_group
     class LIB_PUBLIC OrbitSolver {
     private:
-        double __end_age, ///< The last  age for which evolution is required.
-               __precision;///< The precision required of the solution
+        double
+            ///The last  age for which evolution is required.
+            __end_age,
+
+            ///The precision required of the solution
+            __precision,
+
+            ///\brief If the fractional error due to truncating the eccentricity
+            ///series falls below this value times the maximum acceptable error,
+            ///the eccentricity order is downgraded.
+            __e_order_downgrade_threshold;
 
         ///The ages at which solution is tabulated
         std::list<double> __tabulated_ages;
@@ -144,7 +153,7 @@ namespace Evolve {
             ///Past values of the stop condition derivatives
             __stop_deriv_history,
 
-            ///\brief Discarded values of the stop conditions. 
+            ///\brief Discarded values of the stop conditions.
             ///
             ///Useful for interpolating to zeroes and extrema.
             __stop_cond_discarded,
@@ -157,7 +166,7 @@ namespace Evolve {
         ///The current set of stopping conditions.
         StoppingCondition *__stopping_conditions;
 
-        ///The full information about the next age where each stopping 
+        ///The full information about the next age where each stopping
         ///condition indicates evolution should be stopped and why.
         std::vector<StopInformation> __stop_info;
 
@@ -187,7 +196,7 @@ namespace Evolve {
 
                 ///The evolution mode represented in orbit.
                 Core::EvolModeType evolution_mode,
-            
+
                 ///The binary system being evolved.
                 BinarySystem &system);
 
@@ -196,8 +205,8 @@ namespace Evolve {
         ///
         ///Sets the orbit to what it was at that step and removes any items from
         ///the histories and tabulations that are later than max_age.
-        double go_back(double max_age, 
-                       BinarySystem &system, 
+        double go_back(double max_age,
+                       BinarySystem &system,
                        std::valarray<double> &orbit);
 
 
@@ -208,12 +217,12 @@ namespace Evolve {
         ///stop the evolution.
         ///
         ///Finds the smallest possible interval that contains a zero crossing/or
-        ///an extremum straddling the history and discarded stop conditions, 
-        ///containing at most the specified number of points (could be less if 
+        ///an extremum straddling the history and discarded stop conditions,
+        ///containing at most the specified number of points (could be less if
         ///there are not enough points). The interval is also guaranteed to
         ///contain at least one point in the history and one point in the
         ///discarded list.
-        StopHistoryInterval select_stop_condition_interval(bool crossing, 
+        StopHistoryInterval select_stop_condition_interval(bool crossing,
                 size_t cond_ind, size_t max_points) const;
 
         ///\brief Estimates the value and age of an extremum of a stopping
@@ -279,8 +288,8 @@ namespace Evolve {
         ///\brief Updates stop_cond_history and stop_deriv_history after a
         ///GSL step, returning if/where the evolution needs to stop.
         ///
-        ///Returns the index of the condition with the closest estimated age 
-        ///for zero crossing or an extremum exists which might have 
+        ///Returns the index of the condition with the closest estimated age
+        ///for zero crossing or an extremum exists which might have
         ///crossed zero.
         StopInformation update_stop_condition_history(
             ///System age in Gyr.
@@ -299,9 +308,9 @@ namespace Evolve {
             ///The current evolution mode.
             Core::EvolModeType evolution_mode,
 
-            ///For the first call of this function for an evolution 
-            ///stretch, this should indicate the reason why the previous 
-            ///stretch was stopped. For subsequent calls during the same 
+            ///For the first call of this function for an evolution
+            ///stretch, this should indicate the reason why the previous
+            ///stretch was stopped. For subsequent calls during the same
             ///evolution stretch it should be NO_STOP.
             StoppingConditionType stop_reason=NO_STOP,
 
@@ -346,7 +355,7 @@ namespace Evolve {
         ///Appends each accepted step to tabulated_ages,
         ///tabulated_evolution_mode, tabulated_orbit and tabulated_deriv.
         ///
-        ///The return value is true if the last step finished after the 
+        ///The return value is true if the last step finished after the
         ///stopping condition crossed zero and false if it ended before that.
         StopInformation evolve_until(
             ///The planet-star system to evolve.
@@ -357,17 +366,17 @@ namespace Evolve {
             ///step.
             double &max_age,
 
-            ///The initial conditions. The contents depends on the value 
-            ///of evolution_mode. See #BinarySystem.differential 
-            ///equations for details.			
+            ///The initial conditions. The contents depends on the value
+            ///of evolution_mode. See #BinarySystem.differential
+            ///equations for details.
             ///
             ///On exit, it is overwritten with the orbit of the last
             ///accepted step.
             std::valarray<double> &orbit,
 
-            ///On input should be the reason why the last evolution 
-            ///stopped. It should be NO_STOP if this is the first piece 
-            ///of evolution being calculated. On exit it is overwritten 
+            ///On input should be the reason why the last evolution
+            ///stopped. It should be NO_STOP if this is the first piece
+            ///of evolution being calculated. On exit it is overwritten
             ///with the value appropriate for the next run.
             StoppingConditionType &stop_reason,
 
@@ -378,7 +387,7 @@ namespace Evolve {
             Core::EvolModeType evolution_mode
         );
 
-        ///\brief Returns the stopping conditions which end the given 
+        ///\brief Returns the stopping conditions which end the given
         ///evolution mode and update __stop_info.
         CombinedStoppingCondition *get_stopping_condition(
             ///The system being evolved.
@@ -389,7 +398,7 @@ namespace Evolve {
         ///stopping condition occurs.
         double stopping_age(
                 ///The age from which the next part of the evolution starts.
-                double age, 
+                double age,
 
                 ///The stellar system being evolved.
                 const BinarySystem &system,

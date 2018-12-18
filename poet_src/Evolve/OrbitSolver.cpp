@@ -561,7 +561,7 @@ namespace Evolve {
             };
             max_error_ratio = std::max(max_error_ratio, error_ratio);
         }
-        if(max_error_ratio < 0.1)
+        if(max_error_ratio < __e_order_downgrade_threshold)
             return -1;
         else
             return 0;
@@ -1045,12 +1045,13 @@ namespace Evolve {
         Core::EvolModeType evolution_mode
     )
     {
-        unsigned e_order = system.eccentricity_order();
+        unsigned e_order = system.eccentricity_order(),
+                 starting_e_order = e_order;
         std::valarray<double> expansion_errors(orbit.size()),
                               derivatives(orbit.size());
 
 
-        int adjust_e_order;
+        int adjust_e_order, last_adjustment = 0;
         do {
             system.differential_equations(system.age(),
                                           &(orbit[0]),
@@ -1065,6 +1066,9 @@ namespace Evolve {
 
             adjust_e_order = check_expansion_error(derivatives,
                                                    expansion_errors);
+            std::cerr << "Suggested adjustment: " << adjust_e_order << std::endl;
+            std::cerr << "Last adjustment: " << last_adjustment << std::endl;
+
             if(e_order == 0 && adjust_e_order < 0)
                 break;
 
@@ -1083,17 +1087,30 @@ namespace Evolve {
 
             if(adjust_e_order) {
                 e_order += adjust_e_order;
+                last_adjustment = adjust_e_order;
                 system.change_e_order(e_order);
-                std::cerr << "Trying eccentricity expansion order of "
-                    << e_order
-                    << std::endl;
-            }
-        } while(adjust_e_order);
+                if(e_order == starting_e_order) {
+                    __e_order_downgrade_threshold *= 0.1;
 #ifndef NDEBUG
-        std::cerr << "Adjusted eccentricity expansion order to "
-                  << e_order
-                  << std::endl;
+                    std::cerr << "Reverted to eccentricity expansion order of ";
+                } else {
+                    std::cerr << "Trying eccentricity expansion order of ";
 #endif
+                }
+#ifndef NDEBUG
+                std::cerr << e_order << std::endl;
+#endif
+            }
+        } while(adjust_e_order && e_order != starting_e_order);
+
+        if(e_order != starting_e_order) {
+            __e_order_downgrade_threshold = 0.1;
+#ifndef NDEBUG
+            std::cerr << "Adjusted eccentricity expansion order to "
+                      << e_order
+                      << std::endl;
+#endif
+        }
     }
 
     void OrbitSolver::reset(BinarySystem &system)
@@ -1106,6 +1123,7 @@ namespace Evolve {
     OrbitSolver::OrbitSolver(double max_age, double required_precision) :
         __end_age(max_age),
         __precision(required_precision),
+        __e_order_downgrade_threshold(0.1),
         __stopping_conditions(NULL)
     {
 #ifndef NDEBUG
@@ -1152,18 +1170,19 @@ namespace Evolve {
                              stop_reason,
                              max_step,
                              evolution_mode);
+
+            Core::EvolModeType old_evolution_mode = evolution_mode;
 #ifndef NDEBUG
             std::cerr << "Stop information: "
                       << stop_information
                       << std::endl;
-            Core::EvolModeType old_evolution_mode = evolution_mode;
             unsigned old_locked_zones = system.number_locked_zones();
 #endif
             last_age = next_stop_age;
             if(last_age < stop_evol_age) {
-                if(stop_reason == NO_STOP)
+                if(stop_reason == NO_STOP) {
                     system.reached_critical_age(last_age);
-                else if(
+                } else if(
                     stop_reason == LARGE_EXPANSION_ERROR
                     ||
                     stop_reason == SMALL_EXPANSION_ERROR
@@ -1195,6 +1214,16 @@ namespace Evolve {
 #ifndef NDEBUG
             std::cerr << " to " << orbit << std::endl;
 #endif
+
+            if(
+                evolution_mode == Core::BINARY
+                &&
+                old_evolution_mode != Core::BINARY
+            )
+                adjust_eccentricity_order(system,
+                                          orbit,
+                                          evolution_mode);
+
             delete __stopping_conditions;
             __stopping_conditions = NULL;
         }
