@@ -412,7 +412,7 @@ class VarChangingInterpolator(MESAInterpolator):
             possible_solutions = scipy.logical_and(possible_solutions,
                                                    sign_change)
 
-            return possible_solutions, var_diff
+        return possible_solutions, var_diff
 
     @staticmethod
     def _bilinear_coef_equations(m_low, m_high, age_low, age_high):
