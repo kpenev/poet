@@ -100,7 +100,7 @@ class LockedPlanet(DissipatingBody):
 
         library.set_planet_dissipation(self.c_body,
                                        tidal_frequency_powers.size - 1,
-                                       spin_frequency_powers - 1,
+                                       spin_frequency_powers.size - 1,
                                        tidal_frequency_breaks,
                                        spin_frequency_breaks,
                                        tidal_frequency_powers,
