@@ -161,7 +161,7 @@ namespace Evolve {
                                 std::valarray<double> &orbit)
     {
         unsigned nsteps = 0;
-        while(max_age < __tabulated_ages.back()) {
+        while(!__tabulated_ages.empty() && max_age < __tabulated_ages.back()) {
             __tabulated_ages.pop_back();
             __tabulated_evolution_modes.pop_back();
             ++nsteps;
@@ -169,7 +169,11 @@ namespace Evolve {
         system.rewind_evolution(nsteps);
 
         if(max_age < __stop_history_ages.back()) clear_discarded();
-        while(max_age < __stop_history_ages.back()) {
+        while(
+            !__stop_history_ages.empty()
+            &&
+            max_age < __stop_history_ages.back()
+        ) {
             __stop_history_ages.pop_back();
             __orbit_history.pop_back();
             __orbit_deriv_history.pop_back();
@@ -592,14 +596,17 @@ namespace Evolve {
                 );
             }
 
-        int adjust_e_order = check_expansion_error(derivatives,
+        int adjust_e_order = 0;
+        if(evolution_mode == Core::BINARY) {
+            adjust_e_order = check_expansion_error(derivatives,
                                                    expansion_errors);
-        if(adjust_e_order > 0)
-            return StopInformation(
-                0.5 * (age + __stop_history_ages.back()),
-                Core::Inf,
-                LARGE_EXPANSION_ERROR
-            );
+            if(adjust_e_order > 0)
+                return StopInformation(
+                    0.5 * (age + __stop_history_ages.back()),
+                    Core::Inf,
+                    LARGE_EXPANSION_ERROR
+                );
+        }
 
         std::valarray<double> current_stop_cond(
             __stopping_conditions->num_subconditions()
@@ -819,6 +826,7 @@ namespace Evolve {
 #ifndef NDEBUG
                 std::cerr << "Attempting step from t = " << t
                           << " not to miss t = " << max_next_t
+                          << ", suggested step = " << step_size
                           << ", orbit:\n";
                 for(size_t i=0; i<nargs; ++i) {
                     if(i) std::cerr << ", ";
@@ -874,17 +882,18 @@ namespace Evolve {
                     );
                 }
                 if(status == GSL_EDOM || !acceptable_step(t, stop)) {
-                    reject_step(
-                        t,
-                        stop,
-                        system,
-                        orbit,
-                        max_next_t,
-                        step_size
+                    if(!first_step)
+                        reject_step(
+                            t,
+                            stop,
+                            system,
+                            orbit,
+                            max_next_t,
+                            step_size
 #ifndef NDEBUG
-                        , (status == GSL_EDOM ? "EDOM error" : "bad step")
+                            , (status == GSL_EDOM ? "EDOM error" : "bad step")
 #endif
-                    );
+                        );
                     gsl_odeiv2_evolve_reset(evolve);
                     step_rejected = true;
                 } else {
@@ -904,10 +913,14 @@ namespace Evolve {
             } while(
                 step_rejected
                 &&
+                !first_step
+                &&
                 std::abs(stop.stop_condition_precision()) > __precision
+                &&
+                stop.stop_reason() != LARGE_EXPANSION_ERROR
             );
             if(!step_rejected) {
-#ifdef VERBOSE_DEBUG
+#ifndef NDEBUG
                 std::cerr << "Stepped to t = " << t << std::endl;
 #endif
                 add_to_evolution(t, evolution_mode, system);
@@ -921,6 +934,10 @@ namespace Evolve {
                     stop.stop_reason() == SMALL_EXPANSION_ERROR
                     &&
                     system.eccentricity_order() > 0
+                    &&
+                    t > (0.99 * __last_e_order_upgrade_age
+                         +
+                         0.01 * max_age)
                 )
             ) {
                 stop_reason = stop.stop_reason();
@@ -1042,9 +1059,17 @@ namespace Evolve {
     void OrbitSolver::adjust_eccentricity_order(
         BinarySystem &system,
         const std::valarray<double> &orbit,
-        Core::EvolModeType evolution_mode
+        Core::EvolModeType evolution_mode,
+        bool must_increase
     )
     {
+#ifndef NDEBUG
+        std::cerr << "Adjusting eccentricity order at t ="
+                  << system.age()
+                  << std::endl;
+#endif
+        assert(evolution_mode == Core::BINARY);
+
         unsigned e_order = system.eccentricity_order(),
                  starting_e_order = e_order;
         std::valarray<double> expansion_errors(orbit.size()),
@@ -1066,8 +1091,9 @@ namespace Evolve {
 
             adjust_e_order = check_expansion_error(derivatives,
                                                    expansion_errors);
-            std::cerr << "Suggested adjustment: " << adjust_e_order << std::endl;
-            std::cerr << "Last adjustment: " << last_adjustment << std::endl;
+#ifndef NDEBUG
+        std::cerr << "Suggested adjustment" << adjust_e_order << std::endl;
+#endif
 
             if(e_order == 0 && adjust_e_order < 0)
                 break;
@@ -1085,8 +1111,15 @@ namespace Evolve {
                 throw Core::Error::Runtime(msg.str());
             }
 
-            if(adjust_e_order) {
-                e_order += adjust_e_order;
+            if(adjust_e_order || must_increase) {
+                if(must_increase) {
+                    e_order += 1;
+                    __last_e_order_upgrade_age = system.age();
+                } else {
+                    e_order += adjust_e_order;
+                    if(adjust_e_order > 0)
+                        __last_e_order_upgrade_age = system.age();
+                }
                 last_adjustment = adjust_e_order;
                 system.change_e_order(e_order);
                 if(e_order == starting_e_order) {
@@ -1100,6 +1133,7 @@ namespace Evolve {
 #ifndef NDEBUG
                 std::cerr << e_order << std::endl;
 #endif
+                if(must_increase && adjust_e_order <= 0) break;
             }
         } while(adjust_e_order && e_order != starting_e_order);
 
@@ -1149,9 +1183,10 @@ namespace Evolve {
 
         Core::EvolModeType evolution_mode = system.fill_orbit(orbit);
 
-        adjust_eccentricity_order(system,
-                                  orbit,
-                                  evolution_mode);
+        if(evolution_mode == Core::BINARY)
+            adjust_eccentricity_order(system,
+                                      orbit,
+                                      evolution_mode);
 
 
         while(last_age < stop_evol_age) {
@@ -1187,9 +1222,12 @@ namespace Evolve {
                     ||
                     stop_reason == SMALL_EXPANSION_ERROR
                 ) {
-                    adjust_eccentricity_order(system,
-                                              orbit,
-                                              evolution_mode);
+                    adjust_eccentricity_order(
+                        system,
+                        orbit,
+                        evolution_mode,
+                        stop_reason == LARGE_EXPANSION_ERROR
+                    );
                 } else
                     reached_stopping_condition(last_age, stop_reason);
             }

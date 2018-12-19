@@ -123,7 +123,10 @@ namespace Evolve {
             ///\brief If the fractional error due to truncating the eccentricity
             ///series falls below this value times the maximum acceptable error,
             ///the eccentricity order is downgraded.
-            __e_order_downgrade_threshold;
+            __e_order_downgrade_threshold,
+
+            ///The last age at which the eccentricity order was increased
+            __last_e_order_upgrade_age;
 
         ///The ages at which solution is tabulated
         std::list<double> __tabulated_ages;
@@ -428,7 +431,10 @@ namespace Evolve {
             const std::valarray<double> &orbit,
 
             ///The evolution mode for this part of the evolution.
-            Core::EvolModeType evolution_mode
+            Core::EvolModeType evolution_mode,
+
+            ///If true the eccentircity order is increased by at least 1.
+            bool must_increase = false
         );
 
 
