@@ -10,6 +10,11 @@
 
 int main(int, char **)
 {
+
+    char interp_fname[] = "/home/kpenev/projects/git/poet/stellar_evolution_interpolators/f18f8304-fa82-4fe1-b082-43bbf8131cae";
+
+    MESAInterpolator *interpolator = load_interpolator(interp_fname);
+
     const double PRIMARY_MASS = 1.0208328796081652;
     const double SECONDARY_MASS = 0.7022364956055686;
     const double FEH = 0.0;
@@ -34,13 +39,6 @@ int main(int, char **)
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
     );
-
-    MESAInterpolator *interpolator = load_interpolator(
-        "stellar_evolution_interpolators/"
-//        "93878c27-baa3-4cbe-8f78-0ad2a21e121f"
-        "90af7144-f918-4a1c-95a2-0b086a80d0a2"
-    );
-
 
     double zero = 0.0;
     double initial_secondary_angmom[] = {0.79097531984229608,
@@ -133,11 +131,12 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        5.0,   //final age
+        5.0,    //final age
         1e-2,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
-        0       //num required ages
+        0,      //num required ages
+        true    //Print stepping progress?
     );
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],

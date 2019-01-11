@@ -173,6 +173,9 @@ namespace Evolve {
         ///condition indicates evolution should be stopped and why.
         std::vector<StopInformation> __stop_info;
 
+        ///See print_progress argument of constructor.
+        bool __print_progress;
+
 #ifndef NDEBUG
         ///\brief Generates a nicely formatted table of the contents of the
         ///discarded and history stopping condition information.
@@ -447,7 +450,11 @@ namespace Evolve {
             double max_age,
 
             ///The precision which to require of the solution.
-            double required_precision
+            double required_precision,
+
+            ///Should output be created to track the progress in calculating the
+            ///evolution?
+            bool print_progress=false
         );
 
         ///\brief Actually solves the given differential equation with the given

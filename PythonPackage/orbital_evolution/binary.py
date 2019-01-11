@@ -228,7 +228,8 @@ class Binary:
                final_age,
                max_time_step,
                precision,
-               required_ages):
+               required_ages,
+               print_progress=False):
         """
         Evolve the system forward from its current state.
 
@@ -246,6 +247,9 @@ class Binary:
             - required_ages:
                 Ages at which the evolution must stop precisely.
 
+            - print_progress:
+                Should output be created to show the progress in time steps.
+
         Returnns: None
         """
 
@@ -260,7 +264,8 @@ class Binary:
             max_time_step,
             precision,
             required_ages,
-            (0 if required_ages is None else required_ages.size)
+            (0 if required_ages is None else required_ages.size),
+            print_progress
         )
         self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
 

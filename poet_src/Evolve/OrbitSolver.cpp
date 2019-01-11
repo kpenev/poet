@@ -858,8 +858,10 @@ namespace Evolve {
                 }
                 if(status == GSL_SUCCESS) {
 #ifndef NDEBUG
-                    std::cerr << "Succeeded! Now t = " << t << std::endl;
+                    if(__print_progress)
 #endif
+                        std::cerr << "Succeeded! Now t = " << t << std::endl;
+
                     stellar_system_diff_eq(t,
                                            &(orbit[0]),
                                            &(derivatives[0]),
@@ -1154,11 +1156,14 @@ namespace Evolve {
         system.reset_evolution();
     }
 
-    OrbitSolver::OrbitSolver(double max_age, double required_precision) :
+    OrbitSolver::OrbitSolver(double max_age,
+                             double required_precision,
+                             bool print_progress) :
         __end_age(max_age),
         __precision(required_precision),
         __e_order_downgrade_threshold(0.1),
-        __stopping_conditions(NULL)
+        __stopping_conditions(NULL),
+        __print_progress(print_progress)
     {
 #ifndef NDEBUG
         assert(max_age>0);

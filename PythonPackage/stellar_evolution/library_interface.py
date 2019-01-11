@@ -313,6 +313,8 @@ class Quantity:
         """
 
         if isinstance(age, numpy.ndarray):
+            assert (age >= self.min_age).all()
+            assert (age <= self.max_age).all()
             result = numpy.empty(dtype=c_double,
                                  shape=(age.size,),
                                  order='C')
@@ -322,6 +324,8 @@ class Quantity:
                                             result)
             return result
 
+        assert age > self.min_age
+        assert age < self.max_age
         return library.evaluate_quantity(self.underlying_quantity,
                                          c_double(age))
 

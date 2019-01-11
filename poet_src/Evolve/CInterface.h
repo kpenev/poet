@@ -298,7 +298,10 @@ extern "C" {
         double *required_ages,
 
         ///The number of required ages.
-        unsigned num_required_ages
+        unsigned num_required_ages,
+
+        ///See print_progress argument to Evolve::OrbitSolver::OrbitSolver()
+        bool print_progress
     );
 
     ///Destroy a solver created by evolve_system.
