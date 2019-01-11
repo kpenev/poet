@@ -11,10 +11,6 @@
 int main(int, char **)
 {
 
-    char interp_fname[] = "/home/kpenev/projects/git/poet/stellar_evolution_interpolators/f18f8304-fa82-4fe1-b082-43bbf8131cae";
-
-    MESAInterpolator *interpolator = load_interpolator(interp_fname);
-
     const double PRIMARY_MASS = 1.0208328796081652;
     const double SECONDARY_MASS = 0.7022364956055686;
     const double FEH = 0.0;
@@ -40,6 +36,12 @@ int main(int, char **)
         "eccentricity_expansion_coef_O200.txt"
     );
 
+    MESAInterpolator *interpolator = load_interpolator(
+        "stellar_evolution_interpolators/"
+//        "90af7144-f918-4a1c-95a2-0b086a80d0a2"
+        "4584388e-6d19-4864-a68c-8077cd12ef3b"
+    );
+
     double zero = 0.0;
     double initial_secondary_angmom[] = {0.79097531984229608,
                                          7.6031508107941889e-02};
@@ -60,15 +62,6 @@ int main(int, char **)
                          &zero,      //tidal frequency powers
                          &zero,      //spin frequency powers
                          PRIMARY_PHASE_LAG);
-    set_star_dissipation(primary,
-                         1,          //zone index
-                         0,          //# tidal frequency breaks
-                         0,          //# spin frequency breaks
-                         NULL,       //tidal frequency breaks
-                         NULL,       //spin frequency breaks
-                         &zero,      //tidal frequency powers
-                         &zero,      //spin frequency powers
-                         0.0);       //phase lag
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
@@ -86,15 +79,6 @@ int main(int, char **)
                          &zero,      //tidal frequency powers
                          &zero,      //spin frequency powers
                          SECONDARY_PHASE_LAG);
-    set_star_dissipation(secondary,
-                         1,          //zone index
-                         0,          //# tidal frequency breaks
-                         0,          //# spin frequency breaks
-                         NULL,       //tidal frequency breaks
-                         NULL,       //spin frequency breaks
-                         &zero,      //tidal frequency powers
-                         &zero,      //spin frequency powers
-                         0.0);       //phase lag
 
     configure_star(secondary,
                    DISK_DISSIPATION_AGE,        //formation age
