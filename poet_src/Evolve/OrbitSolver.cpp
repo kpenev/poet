@@ -857,7 +857,7 @@ namespace Evolve {
                     throw Core::Error::Runtime(msg.str());
                 }
                 if(status == GSL_SUCCESS) {
-#ifndef NDEBUG
+#ifdef NDEBUG
                     if(__print_progress)
 #endif
                         std::cerr << "Succeeded! Now t = " << t << std::endl;
