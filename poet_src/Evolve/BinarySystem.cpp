@@ -526,14 +526,14 @@ namespace Evolve {
                             1.5
                             *
                             (
-                                body->tidal_power(locked_ind, true)
+                                body->tidal_power(zone_ind, true)
                                 -
-                                body->tidal_power(locked_ind, false)
+                                body->tidal_power(zone_ind, false)
                             )
                             /
                             __orbital_energy
                             /
-                            __semimajor*coef
+                            __semimajor * coef
                         );
 
                         ++locked_ind;
