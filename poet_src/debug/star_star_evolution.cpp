@@ -4,9 +4,38 @@
 #include "../Evolve/CInterface.h"
 #include "../Core/OrbitalExpressions.h"
 #include "../Core/AstronomicalConstants.h"
+#include "dirent_hacked.h"
 #include <iomanip>
 #include <iostream>
 #include <valarray>
+
+MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
+{
+    MESAInterpolator *interpolator;
+    DIR *dirstream = opendir(interpolator_dir.c_str());
+    bool found = false;
+    for(struct dirent *entry; (entry = readdir(dirstream));) {
+        std::string fname(entry->d_name);
+        std::cout << "Fname: " << fname << std::endl;
+        if(
+            fname[0] != '.'
+            &&
+            fname.substr(fname.size() - 7) != ".sqlite"
+        ) {
+            std::cout << "Fname tail: "
+                      << std::string(fname.substr(fname.size() - 7))
+                      << std::endl;
+
+            assert(!found);
+            found=true;
+            interpolator = load_interpolator(
+                (interpolator_dir + fname).c_str()
+            );
+
+        }
+    }
+    return interpolator;
+}
 
 int main(int, char **)
 {
@@ -35,11 +64,8 @@ int main(int, char **)
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
     );
-
-    MESAInterpolator *interpolator = load_interpolator(
+    MESAInterpolator *interpolator = get_interpolator(
         "stellar_evolution_interpolators/"
-//        "90af7144-f918-4a1c-95a2-0b086a80d0a2"
-        "4584388e-6d19-4864-a68c-8077cd12ef3b"
     );
 
     double zero = 0.0;
@@ -166,30 +192,46 @@ int main(int, char **)
               << std::setw(25) << "sec_Lconv"
               << std::setw(25) << "sec_Lrad"
               << std::endl;
-    for(int i = 0; i < num_steps; ++i)
+    double primary_Iconv, primary_Irad, secondary_Iconv, secondary_Irad;
+    for(int i = 0; i < num_steps; ++i) {
+        if(
+            age[i] < core_formation_age(primary)
+            ||
+            age[i] > lifetime(primary)
+        )
+            primary_Iconv = primary_Irad = Core::NaN;
+        else {
+            primary_Iconv = envelope_inertia(primary, age[i]);
+            primary_Irad = core_inertia(primary, age[i]);
+        }
+
+        if(
+            age[i] < core_formation_age(secondary)
+            ||
+            age[i] > lifetime(secondary)
+        )
+            secondary_Iconv = secondary_Irad = Core::NaN;
+        else {
+            secondary_Iconv = envelope_inertia(secondary, age[i]);
+            secondary_Irad = core_inertia(secondary, age[i]);
+        }
+
         std::cout << std::setw(25) << age[i]
                   << std::setw(25) << Core::orbital_angular_velocity(
                       PRIMARY_MASS,
                       SECONDARY_MASS,
                       semimajor[i]
                   )
-                  << std::setw(25) << (primary_lconv[i]
-                                       /
-                                       envelope_inertia(primary, age[i]))
-                  << std::setw(25) << (primary_lrad[i]
-                                       /
-                                       core_inertia(primary, age[i]))
-                  << std::setw(25) << (secondary_lconv[i]
-                                       /
-                                       envelope_inertia(secondary, age[i]))
-                  << std::setw(25) << (secondary_lrad[i]
-                                       /
-                                       core_inertia(secondary, age[i]))
+                  << std::setw(25) << primary_lconv[i] / primary_Iconv
+                  << std::setw(25) << primary_lrad[i] / primary_Irad
+                  << std::setw(25) << secondary_lconv[i] / secondary_Iconv
+                  << std::setw(25) << secondary_lrad[i] / secondary_Irad
                   << std::setw(25) << primary_lconv[i]
                   << std::setw(25) << primary_lrad[i]
                   << std::setw(25) << secondary_lconv[i]
                   << std::setw(25) << secondary_lrad[i]
                   << std::endl;
+    }
 
     destroy_binary(system);
     destroy_star(primary);

@@ -154,7 +154,7 @@ namespace StellarEvolution {
                     (
                         colname_index < NUM_COLUMNS
                         &&
-                        column_name != __column_names[colname_index] 
+                        column_name != __column_names[colname_index]
                     );
                     ++colname_index
                 ) {}
@@ -181,7 +181,7 @@ namespace StellarEvolution {
                             i == MESA::LOG_RSTAR
                             &&
                             __column_numbers[MESA::RSTAR] != -1
-                        ) 
+                        )
                         ||
                         (
                             i == MESA::RSTAR
@@ -233,7 +233,7 @@ namespace StellarEvolution {
         void Interpolator::log_current_age_ranges() const
         {
             assert(__mass_list.size() == __feh_list.size());
-            std::list<double>::const_iterator 
+            std::list<double>::const_iterator
                 mass_iter = __mass_list.begin(),
                 feh_iter = __feh_list.begin();
 
@@ -296,7 +296,7 @@ namespace StellarEvolution {
         void Interpolator::sort_last_track_by_age()
         {
             if(
-                std::is_sorted(std::begin(__track_ages.back()), 
+                std::is_sorted(std::begin(__track_ages.back()),
                                std::end(__track_ages.back()))
             )
                 return;
@@ -321,7 +321,7 @@ namespace StellarEvolution {
                 int quantity = 0;
                 quantity < StellarEvolution::NUM_QUANTITIES;
                 ++quantity
-            ) 
+            )
                 __track_quantities[quantity].back() = std::valarray<double>(
                     __track_quantities[quantity].back()[age_sorting_indices]
                 );
@@ -367,7 +367,7 @@ namespace StellarEvolution {
                             Core::list_to_valarray(track_columns[column])
                         )
                     );
-                else 
+                else
                     __track_quantities[quantity].push_back(
                         Core::list_to_valarray(track_columns[column])
                     );
@@ -381,7 +381,7 @@ namespace StellarEvolution {
         )
         {
             assert(__mass_list.size() == __feh_list.size());
-            std::list<double>::const_iterator 
+            std::list<double>::const_iterator
                 mass_iter = __mass_list.begin(),
                 feh_iter = __feh_list.begin();
 
@@ -416,7 +416,7 @@ namespace StellarEvolution {
                         << ", age range = " << (*age_iter)[0]
                         << " - " << (*age_iter)[age_iter->size() -1]
                         << std::endl;
-                    if(feh_index == 0) 
+                    if(feh_index == 0)
                         masses[mass_index] = *mass_iter;
                     else if(masses[mass_index] != *mass_iter)
                         throw Core::Error::IO(
@@ -424,7 +424,7 @@ namespace StellarEvolution {
                             "masses and [Fe/H]."
                         );
 
-                    if(mass_index == 0) 
+                    if(mass_index == 0)
                         feh[feh_index] = *feh_iter;
                     else if(feh[feh_index] != *feh_iter)
                         throw Core::Error::IO(
@@ -558,7 +558,7 @@ namespace StellarEvolution {
                 if(
                     fname[0] != '.'
                     &&
-                    fname.substr(fname.size()-4) == ".csv"
+                    fname.substr(fname.size() - 4) == ".csv"
                     &&
                     parse_model_file_name(fname)
                 ) {
