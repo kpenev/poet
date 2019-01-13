@@ -11,10 +11,10 @@
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 1.0208328796081652;
-    const double SECONDARY_MASS = 0.7022364956055686;
-    const double FEH = 0.0;
-    const double INITIAL_PERIOD = 4.881682292837919;
+    const double PRIMARY_MASS = 0.9735205066895405;
+    const double SECONDARY_MASS = 0.7522396868226867;
+    const double FEH = -0.317892129759198;
+    const double INITIAL_PERIOD = 5.2663825;
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -23,14 +23,14 @@ int main(int, char **)
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
-    const double DISK_PERIOD = 1.4311397660850234;
-    const double PRIMARY_PHASE_LAG = 5.7726669277786535e-06;
-    const double SECONDARY_PHASE_LAG = 5.7726669277786535e-06;
+    const double DISK_PERIOD = 1.4064967495370835;
+    const double PRIMARY_PHASE_LAG =  1.6799410609204806e-05;
+    const double SECONDARY_PHASE_LAG = 1.6799410609204806e-05;
     const double DISK_DISSIPATION_AGE = 5e-3;
-    const double WIND_SATURATION_FREQUENCY = 2.54;
+    const double WIND_SATURATION_FREQUENCY = 2.78;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
     const double WIND_STRENGTH = 0.17;
-    const double INCLINATION = M_PI / 2;
+    const double INCLINATION = 0.0;
 
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
@@ -43,8 +43,8 @@ int main(int, char **)
     );
 
     double zero = 0.0;
-    double initial_secondary_angmom[] = {0.79097531984229608,
-                                         7.6031508107941889e-02};
+    double initial_secondary_angmom[] = {0.98159209,
+                                         0.0370639};
 
     EvolvingStar *primary = create_star(PRIMARY_MASS,
                                         FEH,
@@ -116,7 +116,7 @@ int main(int, char **)
     OrbitSolver *solver = evolve_system(
         system,
         5.0,    //final age
-        1e-2,   //max timestep
+        1e-3,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
         0,      //num required ages
