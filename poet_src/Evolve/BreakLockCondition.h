@@ -27,15 +27,18 @@ namespace Evolve {
 
         ///The index within the list of locked zones of the checked zone.
         unsigned __locked_zone_index;
-    public: 
+    public:
         ///Create a condition monitoring for a lock breaking.
         BreakLockCondition(
-                ///The binary system this locking condition is attached to
-                BinarySystem &system,
+            ///The binary system this locking condition is attached to
+            BinarySystem &system,
 
-                ///Index within the list of locked zones of the checked zone.
-                unsigned locked_zone_index) :
-            __system(system), __locked_zone_index(locked_zone_index) {}
+            ///Index within the list of locked zones of the checked zone.
+            unsigned locked_zone_index
+        ) :
+            __system(system),
+            __locked_zone_index(locked_zone_index)
+        {}
 
         ///\brief How far away from breaking the lock the system is.
         ///

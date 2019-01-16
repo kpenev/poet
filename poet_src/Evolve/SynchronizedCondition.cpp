@@ -111,6 +111,7 @@ namespace Evolve {
                   << std::endl;
         StoppingCondition::reached(deriv_sign, index);
         std::cerr << "Now expected sign: " << expected_crossing_deriv_sign()
+                  << std::endl;
         __system.check_for_lock(__orbital_freq_mult,
                                 __spin_freq_mult,
                                 (__primary ? 0 : 1),

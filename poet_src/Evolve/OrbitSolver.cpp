@@ -78,8 +78,17 @@ namespace Evolve {
         os << std::endl << hline << std::endl;
 
         for(size_t i=0; i<__stop_cond_discarded.front().size(); i++) {
-            os << std::setw(13) << "Condition[" << std::setw(5) << i
-                << "]:";
+            assert(
+                __stopping_conditions->expected_crossing_deriv_sign(i) > 0
+                ||
+                __stopping_conditions->expected_crossing_deriv_sign(i) < 0
+            );
+            os << std::setw(13) << "Condition["
+                << std::setw(5) << i
+                << "]:"
+                << (__stopping_conditions->expected_crossing_deriv_sign(i) > 0
+                    ? " / "
+                    : " \\ ");
             size_t point_num=0;
             std::list<double>::const_iterator age_i=__stop_history_ages.begin();
             bool marked_skip_extremum=false;
