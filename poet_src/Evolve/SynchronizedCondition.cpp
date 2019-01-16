@@ -15,8 +15,8 @@ namespace Evolve {
         __orbital_freq_mult(orbital_freq_mult),
         __spin_freq_mult(spin_freq_mult),
         __primary(primary),
-        __zone_index(zone_index), 
-        __zone((primary 
+        __zone_index(zone_index),
+        __zone((primary
                 ? system.primary()
                 : system.secondary()).zone(zone_index)),
         __system(system)
@@ -46,7 +46,7 @@ namespace Evolve {
                                 __system.number_locked_zones()));
         assert(orbit.size() == derivatives.size());
 #endif
-        double m1 = __system.primary().mass(), 
+        double m1 = __system.primary().mass(),
                m2 = __system.secondary().mass(),
                semimajor = __system.semimajor(),
                worb = Core::orbital_angular_velocity(m1, m2, semimajor),
@@ -70,9 +70,9 @@ namespace Evolve {
             /
             __zone.moment_of_inertia()
         );
-        if(__system.number_locked_zones()) 
+        if(__system.number_locked_zones())
             dworb_dt /= 6.5 * orbit[0] / semimajor;
-        stop_deriv.resize(1, 
+        stop_deriv.resize(1,
                           (
                               (wspin * dworb_dt - dwspin_dt * worb)
                               /
@@ -105,11 +105,16 @@ namespace Evolve {
 
     void SynchronizedCondition::reached(short deriv_sign, unsigned index)
     {
+        std::cerr << "Synchronization reached: "
+                  << "Expected sign: " << expected_crossing_deriv_sign()
+                  << "sign: " << deriv_sign
+                  << std::endl;
         StoppingCondition::reached(deriv_sign, index);
+        std::cerr << "Now expected sign: " << expected_crossing_deriv_sign()
         __system.check_for_lock(__orbital_freq_mult,
                                 __spin_freq_mult,
                                 (__primary ? 0 : 1),
-                                __zone_index, 
+                                __zone_index,
                                 (__spin_freq_mult>0 ? -deriv_sign : deriv_sign));
     }
 

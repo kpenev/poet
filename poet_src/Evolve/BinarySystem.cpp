@@ -2185,7 +2185,7 @@ namespace Evolve {
     //		else if(direction>0) assert(above_lock_fraction>0);
     //		else
 #endif
-                direction=(above_lock_fraction < 0 ? -1 : 1);
+                direction=(above_lock_fraction <= 0 ? -1 : 1);
         }
         body.unlock_zone_spin(zone_index, direction);
         configure(false,
