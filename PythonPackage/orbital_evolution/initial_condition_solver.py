@@ -4,6 +4,7 @@ from scipy.optimize import brentq
 import scipy
 
 from orbital_evolution.binary import Binary
+from orbital_evolution.star_interface import EvolvingStar
 from basic_utils import Structure
 
 #TODO: organize attributes into dictionaries or structures.
@@ -59,17 +60,26 @@ class InitialConditionSolver:
                               periapsis=None,
                               evolution_mode='LOCKED_SURFACE_SPIN')
         self.binary.primary.detect_stellar_wind_saturation()
-        self.binary.secondary.configure(
+        if isinstance(self.secondary, EvolvingStar):
+            secondary_inclination_periapsis = dict(
+                inclination=scipy.array([0.0]),
+                periapsis=scipy.array([0.0])
+            )
+        else:
+            secondary_inclination_periapsis = dict(
+                inclination=None,
+                periapsis=None
+            )
+        self.secondary.configure(
             age=self.target.planet_formation_age,
             companion_mass=self.binary.primary.mass,
             semimajor=self.binary.semimajor(initial_orbital_period),
             eccentricity=self.initial_eccentricity,
             spin_angmom=scipy.array([0.0]),
-            inclination=None,
-            periapsis=None,
             locked_surface=False,
             zero_outer_inclination=True,
-            zero_outer_periapsis=True
+            zero_outer_periapsis=True,
+            **secondary_inclination_periapsis
         )
         self.binary.evolve(
             self.target.age,
@@ -87,7 +97,7 @@ class InitialConditionSolver:
             *
             self.binary.primary.envelope_inertia(final_state.age)
             /
-            final_state.envelope_angmom
+            final_state.primary_envelope_angmom
         )
         #pylint: enable=no-member
         print('Got Porb = %s, P* = %s'
