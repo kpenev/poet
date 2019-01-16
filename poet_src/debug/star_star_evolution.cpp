@@ -40,9 +40,9 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.9735205066895405;
-    const double SECONDARY_MASS = 0.7522396868226867;
-    const double FEH = -0.317892129759198;
+    const double PRIMARY_MASS = 1.0232841210154926;
+    const double SECONDARY_MASS = 0.7932453911599053;
+    const double FEH = -0.06;
     const double INITIAL_PERIOD = 5.2663825;
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
@@ -53,8 +53,8 @@ int main(int, char **)
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
     const double DISK_PERIOD = 1.4064967495370835;
-    const double PRIMARY_PHASE_LAG =  1.6799410609204806e-05;
-    const double SECONDARY_PHASE_LAG = 1.6799410609204806e-05;
+    const double PRIMARY_PHASE_LAG = 1.6781137801667067e-08;
+    const double SECONDARY_PHASE_LAG = 1.6781137801667067e-08;
     const double DISK_DISSIPATION_AGE = 5e-3;
     const double WIND_SATURATION_FREQUENCY = 2.78;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
