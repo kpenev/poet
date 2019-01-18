@@ -105,13 +105,17 @@ namespace Evolve {
 
     void SynchronizedCondition::reached(short deriv_sign, unsigned index)
     {
+#ifndef NDEBUG
         std::cerr << "Synchronization reached: "
                   << "Expected sign: " << expected_crossing_deriv_sign()
                   << "sign: " << deriv_sign
                   << std::endl;
+#endif
         StoppingCondition::reached(deriv_sign, index);
+#ifndef NDEBUG
         std::cerr << "Now expected sign: " << expected_crossing_deriv_sign()
                   << std::endl;
+#endif
         __system.check_for_lock(__orbital_freq_mult,
                                 __spin_freq_mult,
                                 (__primary ? 0 : 1),

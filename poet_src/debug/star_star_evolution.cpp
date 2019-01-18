@@ -40,10 +40,10 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 1.0232841210154926;
-    const double SECONDARY_MASS = 0.7932453911599053;
-    const double FEH = -0.06;
-    const double INITIAL_PERIOD = 5.2663825;
+    const double PRIMARY_MASS = 0.7;
+    const double SECONDARY_MASS = 0.0586475388040175;
+    const double FEH = 0.07;
+    const double INITIAL_PERIOD = 4.738942071469313;
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -52,32 +52,34 @@ int main(int, char **)
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
-    const double DISK_PERIOD = 1.4064967495370835;
-    const double PRIMARY_PHASE_LAG = 1.6781137801667067e-08;
-    const double SECONDARY_PHASE_LAG = 1.6781137801667067e-08;
-    const double DISK_DISSIPATION_AGE = 5e-3;
+    const double DISK_PERIOD = 8.03;
+    const double PRIMARY_PHASE_LAG = 2.984155182973038e-07;
+    const double SECONDARY_PHASE_LAG = 2.984155182973038e-07;
+    const double DISK_DISSIPATION_AGE = 1e-2;
     const double WIND_SATURATION_FREQUENCY = 2.78;
-    const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
-    const double WIND_STRENGTH = 0.17;
+    const double DIFF_ROT_COUPLING_TIMESCALE = 1e-2;
+    const double WIND_STRENGTH = 0.13;
     const double INCLINATION = 0.0;
 
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
     );
-    MESAInterpolator *interpolator = get_interpolator(
+    MESAInterpolator *primary_interpolator = get_interpolator(
         "stellar_evolution_interpolators/"
+    );
+    MESAInterpolator *secondary_interpolator = get_interpolator(
+        "MMS06_6211_B_interpolator/"
     );
 
     double zero = 0.0;
-    double initial_secondary_angmom[] = {0.98159209,
-                                         0.0370639};
+    double initial_secondary_angmom[] = {0.0, 0.0};
 
     EvolvingStar *primary = create_star(PRIMARY_MASS,
                                         FEH,
                                         WIND_STRENGTH,
                                         WIND_SATURATION_FREQUENCY,
                                         DIFF_ROT_COUPLING_TIMESCALE,
-                                        interpolator);
+                                        primary_interpolator);
     select_interpolation_region(primary, core_formation_age(primary));
     set_star_dissipation(primary,
                          0,          //zone index
@@ -91,10 +93,10 @@ int main(int, char **)
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
-                                          WIND_STRENGTH,
-                                          WIND_SATURATION_FREQUENCY,
+                                          0.0,
+                                          1e10,
                                           DIFF_ROT_COUPLING_TIMESCALE,
-                                          interpolator);
+                                          secondary_interpolator);
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index
@@ -110,7 +112,7 @@ int main(int, char **)
                    DISK_DISSIPATION_AGE,        //formation age
                    PRIMARY_MASS,                //companion mass
                    INITIAL_SEMIMAJOR,           //formation semimajor
-                   0.0,                         //formation eccentricity
+                   0.3,                         //formation eccentricity
                    initial_secondary_angmom,    //spin angular momentum
                    &zero,                       //inclination
                    &zero,                       //periapsis
@@ -123,7 +125,7 @@ int main(int, char **)
         primary,                    //primary
         secondary,                  //secondary
         INITIAL_SEMIMAJOR,          //initial semimajor
-        0.0,                        //initial eccentricity
+        0.3,                        //initial eccentricity
         INCLINATION,                //initial inclination
         2.0 * M_PI / DISK_PERIOD,   //disk lock frequency
         DISK_DISSIPATION_AGE,       //disk dissipation age
@@ -141,7 +143,7 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        5.0,    //final age
+        0.22,    //final age
         1e-3,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
@@ -151,6 +153,7 @@ int main(int, char **)
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],
            *semimajor = new double[num_steps],
+           *eccentricity = new double[num_steps],
            *primary_lconv = new double[num_steps],
            *primary_lrad = new double[num_steps],
            *secondary_lconv = new double[num_steps],
@@ -162,7 +165,7 @@ int main(int, char **)
         secondary,
         age,
         semimajor,
-        NULL,           //eeccentricity
+        eccentricity,   //eeccentricity
         NULL,           //primary envelope inclination
         NULL,           //primary core inclination
         NULL,           //primary envelope periapsis
@@ -183,6 +186,7 @@ int main(int, char **)
     std::cout.setf(std::ios::scientific, std::ios::floatfield);
     std::cout << std::setw(25) << "Age[Gyr]"
               << std::setw(25) << "worb[rad/day]"
+              << std::setw(25) << "eccentricity"
               << std::setw(25) << "prim_wconv[rad/day]"
               << std::setw(25) << "prim_wrad[rad/day]"
               << std::setw(25) << "sec_wconv[rad/day]"
@@ -205,14 +209,17 @@ int main(int, char **)
             primary_Irad = core_inertia(primary, age[i]);
         }
 
+
+        secondary_Iconv = (age[i] <= 1e-2
+                           ? Core::NaN
+                           : envelope_inertia(secondary, age[i]));
         if(
             age[i] < core_formation_age(secondary)
             ||
             age[i] > lifetime(secondary)
         )
-            secondary_Iconv = secondary_Irad = Core::NaN;
+            secondary_Irad = Core::NaN;
         else {
-            secondary_Iconv = envelope_inertia(secondary, age[i]);
             secondary_Irad = core_inertia(secondary, age[i]);
         }
 
@@ -222,6 +229,7 @@ int main(int, char **)
                       SECONDARY_MASS,
                       semimajor[i]
                   )
+                  << std::setw(25) << eccentricity[i]
                   << std::setw(25) << primary_lconv[i] / primary_Iconv
                   << std::setw(25) << primary_lrad[i] / primary_Irad
                   << std::setw(25) << secondary_lconv[i] / secondary_Iconv
@@ -236,7 +244,8 @@ int main(int, char **)
     destroy_binary(system);
     destroy_star(primary);
     destroy_star(secondary);
-    destroy_interpolator(interpolator);
+    destroy_interpolator(primary_interpolator);
+    destroy_interpolator(secondary_interpolator);
     destroy_solver(solver);
     delete[] age;
     delete[] semimajor;

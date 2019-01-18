@@ -85,7 +85,8 @@ class InitialConditionSolver:
             self.target.age,
             self.evolution_max_time_step,
             self.evolution_precision,
-            None
+            None,
+            True
         )
         final_state = self.binary.final_state()
         #False positives
