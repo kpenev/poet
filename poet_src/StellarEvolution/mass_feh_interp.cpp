@@ -16,8 +16,6 @@ namespace StellarEvolution {
                interp_values.length());
 
         if(interp_values.length() == 1) {
-            assert(stellar_mass == interp_masses[0]);
-            assert(stellar_feh == interp_feh[0]);
             return interp_values[0];
         } else if(interp_masses.length() == 1) {
             alglib::spline1dinterpolant spline;
@@ -33,8 +31,8 @@ namespace StellarEvolution {
             return alglib::spline1dcalc(spline, stellar_mass);
         } else {
             alglib::spline2dinterpolant spline;
-            alglib::spline2dbuildbicubicv(interp_masses, 
-                                          interp_masses.length(), 
+            alglib::spline2dbuildbicubicv(interp_masses,
+                                          interp_masses.length(),
                                           interp_feh,
                                           interp_feh.length(),
                                           interp_values,

@@ -2,7 +2,7 @@
  *
  * \brief Defines some of the methods of the EvolvingStellarQuantity class
  * used for interpolating among stellar evolution tracks.
- * 
+ *
  * \ingroup StellarSystem_group
  */
 
@@ -16,7 +16,7 @@ namespace StellarEvolution {
     {
         if(
             __track_masses.size() != 1
-            && 
+            &&
             __track_feh.size() != 1
             &&
             (
@@ -35,7 +35,7 @@ namespace StellarEvolution {
                 << " and [Fe/H]: "
                 << __feh
                 << " are outside the range of masses: "
-                << __track_masses[0] 
+                << __track_masses[0]
                 << " - "
                 << __track_masses[__track_masses.size() - 1]
                 << " and [Fe/H]: "
@@ -60,6 +60,10 @@ namespace StellarEvolution {
                                                    last_ptr,
                                                    value),
                      *below_ptr = above_ptr;
+        if(boundaries.size() == 1) {
+            below_index = above_index = 0;
+            return;
+        }
 #ifndef NDEBUG
         if(above_ptr >= last_ptr )
             std::cerr << "Value: "
@@ -97,14 +101,14 @@ namespace StellarEvolution {
         ) {
             double track_feh = __track_feh[feh_i];
             for(
-                size_t mass_i = 0; 
+                size_t mass_i = 0;
                 mass_i < __track_masses.size();
                 ++mass_i
             ) {
                 double track_mass = __track_masses[mass_i];
-                double min_track_age = 
+                double min_track_age =
                            __evolution_tracks[track_i]->range_low(),
-                       max_track_age = 
+                       max_track_age =
                            __evolution_tracks[track_i]->range_high();
                 if(__log_age) {
                     min_track_age = std::exp(min_track_age);
@@ -143,9 +147,9 @@ namespace StellarEvolution {
     {
         double track_argument = (__log_age ? std::log(age) : age);
         if(track_argument < track.range_low()) {
-            assert(std::abs(track_argument - track.range_low()) 
+            assert(std::abs(track_argument - track.range_low())
                    <
-                   1e-8 * std::abs(track_argument)); 
+                   1e-8 * std::abs(track_argument));
             track_argument = track.range_low();
         }
 
@@ -355,7 +359,7 @@ namespace StellarEvolution {
 
             AllowedGridGrowth grow;
 
-            if(__mass_index_above == __mass_index_below) 
+            if(__mass_index_above == __mass_index_below)
                 grow.block_lighter().block_heavier();
             if(__feh_index_above == __feh_index_below)
                 grow.block_poorer().block_richer();
@@ -412,9 +416,9 @@ namespace StellarEvolution {
         );
         alglib::real_1d_array track_values;
         track_values.setlength(num_interp_tracks);
-        std::vector<const FunctionDerivatives *> 
-            *track_derivatives 
-            = 
+        std::vector<const FunctionDerivatives *>
+            *track_derivatives
+            =
             new std::vector<const FunctionDerivatives *>(num_interp_tracks);
         size_t value_index = 0;
         for(
@@ -476,7 +480,7 @@ namespace StellarEvolution {
         //t * (1.0 + (t / 5.0) * m**5 * 10.0**(-0.2*feh))* m**2.3 * 10.0**(-0.4*feh)
         double feh_factor = std::pow(10.0, -feh / 5.0);
         return std::log(
-            age 
+            age
             *
             (1.0 + age / 5.0 * std::pow(mass, 5) * feh_factor)
             *
@@ -513,7 +517,7 @@ namespace StellarEvolution {
         bool log_quantity,
         bool starts_zero
     ) :
-        __mass(mass), 
+        __mass(mass),
         __feh(feh),
         __log_age(log_age),
         __log_quantity(log_quantity),
@@ -648,7 +652,7 @@ namespace StellarEvolution {
         }
     }
 
-    const FunctionDerivatives *EvolvingStellarQuantity::deriv(double age) 
+    const FunctionDerivatives *EvolvingStellarQuantity::deriv(double age)
         const
     {
         const FunctionDerivatives *deriv;
