@@ -2162,7 +2162,7 @@ namespace Evolve {
                                      [Dissipation::NO_DERIV]
                                      [locked_zone.locked_zone_index()];
 #ifndef NDEBUG
-        std::cerr << "Holding lock requireds above lock fraction of: "
+        std::cerr << "Holding lock requires above lock fraction of: "
                   << above_lock_fraction
                   << std::endl;
 #endif
@@ -2179,14 +2179,10 @@ namespace Evolve {
             )
         );
         spin_angmom.insert(check_zone_dest, original_angmom);
-        if(std::isfinite(above_lock_fraction) || direction == 0) {
-#ifndef NDEBUG
-    //		if(direction<0) assert(above_lock_fraction<0);
-    //		else if(direction>0) assert(above_lock_fraction>0);
-    //		else
-#endif
-                direction=(above_lock_fraction <= 0 ? -1 : 1);
-        }
+        if(direction == 0)
+            throw Core::Error::Runtime(
+                "Crossing spin-orbit synchronization with unspecified direction!"
+            );
         body.unlock_zone_spin(zone_index, direction);
         configure(false,
                   __age,
