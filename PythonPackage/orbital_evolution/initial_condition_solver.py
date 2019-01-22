@@ -47,8 +47,9 @@ class InitialConditionSolver:
             disk_dissipation_age=self.target.disk_dissipation_age,
             secondary_formation_age=self.target.planet_formation_age
         )
+        print('Constructed binary')
 
-        self.binary.primary.select_interpolation_region(
+        self.primary.select_interpolation_region(
             self.primary.core_formation_age()
         )
 
@@ -59,7 +60,9 @@ class InitialConditionSolver:
                               inclination=None,
                               periapsis=None,
                               evolution_mode='LOCKED_SURFACE_SPIN')
-        self.binary.primary.detect_stellar_wind_saturation()
+        print('Configured binary')
+
+        self.primary.detect_stellar_wind_saturation()
         if isinstance(self.secondary, EvolvingStar):
             secondary_inclination_periapsis = dict(
                 inclination=scipy.array([0.0]),
@@ -75,12 +78,15 @@ class InitialConditionSolver:
             companion_mass=self.binary.primary.mass,
             semimajor=self.binary.semimajor(initial_orbital_period),
             eccentricity=self.initial_eccentricity,
-            spin_angmom=scipy.array([0.0]),
+            spin_angmom=scipy.array([0.0, 0.0]),
             locked_surface=False,
             zero_outer_inclination=True,
             zero_outer_periapsis=True,
             **secondary_inclination_periapsis
         )
+        print('Configured secondary')
+        if isinstance(self.secondary, EvolvingStar):
+            self.secondary.detect_stellar_wind_saturation()
         self.binary.evolve(
             self.target.age,
             self.evolution_max_time_step,

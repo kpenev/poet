@@ -667,7 +667,9 @@ namespace Evolve {
         assert(!std::isnan(forcing_freq));
 
 #ifdef VERBOSE_DEBUG
-        std::cerr << ", Wtide = " << forcing_freq << " -> ";
+        std::cerr << "Worb = " << orbital_frequency << ", "
+                  << "Wspin = " << spin_frequency() << " -> "
+                  << "Wtide = " << forcing_freq << " -> ";
 #endif
 
         fix_forcing_frequency(__lock,
@@ -680,7 +682,7 @@ namespace Evolve {
                                   spin_frequency_multiplier,
                                   forcing_freq);
 #ifdef VERBOSE_DEBUG
-        std::cerr << forcing_freq;
+        std::cerr << forcing_freq << std::endl;
 #endif
         return forcing_freq;
     }
