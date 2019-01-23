@@ -43,7 +43,7 @@ int main(int, char **)
     const double PRIMARY_MASS = 0.7;
     const double SECONDARY_MASS = 0.0586475388040175;
     const double FEH = 0.07;
-    const double INITIAL_PERIOD = 4.738942071469313;
+    const double INITIAL_PERIOD = 4.39;
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -54,12 +54,13 @@ int main(int, char **)
 
     const double DISK_PERIOD = 8.03;
     const double PRIMARY_PHASE_LAG = 2.984155182973038e-07;
-    const double SECONDARY_PHASE_LAG = 2.984155182973038e-07;
+    const double SECONDARY_PHASE_LAG = 2.984155182973038e-06;
     const double DISK_DISSIPATION_AGE = 1e-2;
     const double WIND_SATURATION_FREQUENCY = 2.78;
     const double DIFF_ROT_COUPLING_TIMESCALE = 1e-2;
     const double WIND_STRENGTH = 0.13;
     const double INCLINATION = 0.0;
+    const double INITIAL_ECCENTRICITY = 0.3;
 
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
@@ -81,7 +82,7 @@ int main(int, char **)
                                         DIFF_ROT_COUPLING_TIMESCALE,
                                         primary_interpolator);
     select_interpolation_region(primary, core_formation_age(primary));
-    set_star_dissipation(primary,
+/*    set_star_dissipation(primary,
                          0,          //zone index
                          0,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
@@ -89,7 +90,7 @@ int main(int, char **)
                          NULL,       //spin frequency breaks
                          &zero,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         PRIMARY_PHASE_LAG);
+                         PRIMARY_PHASE_LAG);*/
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
@@ -112,7 +113,7 @@ int main(int, char **)
                    DISK_DISSIPATION_AGE,        //formation age
                    PRIMARY_MASS,                //companion mass
                    INITIAL_SEMIMAJOR,           //formation semimajor
-                   0.3,                         //formation eccentricity
+                   INITIAL_ECCENTRICITY,        //formation eccentricity
                    initial_secondary_angmom,    //spin angular momentum
                    &zero,                       //inclination
                    &zero,                       //periapsis
@@ -125,7 +126,7 @@ int main(int, char **)
         primary,                    //primary
         secondary,                  //secondary
         INITIAL_SEMIMAJOR,          //initial semimajor
-        0.3,                        //initial eccentricity
+        INITIAL_ECCENTRICITY,       //initial eccentricity
         INCLINATION,                //initial inclination
         2.0 * M_PI / DISK_PERIOD,   //disk lock frequency
         DISK_DISSIPATION_AGE,       //disk dissipation age
@@ -210,7 +211,7 @@ int main(int, char **)
         }
 
 
-        secondary_Iconv = (age[i] <= 1e-2
+        secondary_Iconv = (age[i] <= 2e-3
                            ? Core::NaN
                            : envelope_inertia(secondary, age[i]));
         if(
