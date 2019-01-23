@@ -574,6 +574,11 @@ namespace Evolve {
             };
             max_error_ratio = std::max(max_error_ratio, error_ratio);
         }
+#ifndef NDEBUG
+        std::cerr << "O(e) downgrade threshold = "
+                  << __e_order_downgrade_threshold
+                  << std::endl;
+#endif NDEBUG
         if(max_error_ratio < __e_order_downgrade_threshold)
             return -1;
         else
@@ -1103,7 +1108,7 @@ namespace Evolve {
             adjust_e_order = check_expansion_error(derivatives,
                                                    expansion_errors);
 #ifndef NDEBUG
-        std::cerr << "Suggested adjustment" << adjust_e_order << std::endl;
+        std::cerr << "Suggested adjustment: " << adjust_e_order << std::endl;
 #endif
 
             if(e_order == 0 && adjust_e_order < 0)
@@ -1131,9 +1136,16 @@ namespace Evolve {
                     if(adjust_e_order > 0)
                         __last_e_order_upgrade_age = system.age();
                 }
-                last_adjustment = adjust_e_order;
                 system.change_e_order(e_order);
-                if(e_order == starting_e_order) {
+                if(
+                    e_order == starting_e_order
+                    ||
+                    (
+                        last_adjustment < 0
+                        &&
+                        adjust_e_order > 0
+                    )
+                ) {
                     __e_order_downgrade_threshold *= 0.1;
 #ifndef NDEBUG
                     std::cerr << "Reverted to eccentricity expansion order of ";
@@ -1144,6 +1156,7 @@ namespace Evolve {
 #ifndef NDEBUG
                 std::cerr << e_order << std::endl;
 #endif
+                last_adjustment = adjust_e_order;
                 if(must_increase && adjust_e_order <= 0) break;
             }
         } while(adjust_e_order && e_order != starting_e_order);
