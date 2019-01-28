@@ -7,8 +7,6 @@ from orbital_evolution.binary import Binary
 from orbital_evolution.star_interface import EvolvingStar
 from basic_utils import Structure
 
-#TODO: organize attributes into dictionaries or structures.
-#pylint: disable=too-many-instance-attributes
 class InitialConditionSolver:
     """Find initial conditions which reproduce a given system now."""
 
@@ -41,8 +39,8 @@ class InitialConditionSolver:
             primary=self.primary,
             secondary=self.secondary,
             initial_orbital_period=initial_orbital_period,
-            initial_eccentricity=self.initial_eccentricity,
-            initial_inclination=0.0,
+            initial_eccentricity=self.parameters['initial eccentricity'],
+            initial_inclination=self.parameters['initial inclination'],
             disk_lock_frequency=2.0 * scipy.pi / disk_period,
             disk_dissipation_age=self.target.disk_dissipation_age,
             secondary_formation_age=self.target.planet_formation_age
@@ -77,7 +75,7 @@ class InitialConditionSolver:
             age=self.target.planet_formation_age,
             companion_mass=self.binary.primary.mass,
             semimajor=self.binary.semimajor(initial_orbital_period),
-            eccentricity=self.initial_eccentricity,
+            eccentricity=self.parameters['initial eccentricity'],
             spin_angmom=scipy.array([0.0, 0.0]),
             locked_surface=False,
             zero_outer_inclination=True,
@@ -89,8 +87,8 @@ class InitialConditionSolver:
             self.secondary.detect_stellar_wind_saturation()
         self.binary.evolve(
             self.target.age,
-            self.evolution_max_time_step,
-            self.evolution_precision,
+            self.configuration['max time step'],
+            self.configuration['precision'],
             None,
             True
         )
@@ -171,7 +169,8 @@ class InitialConditionSolver:
                  evolution_precision=1e-6,
                  orbital_period_tolerance=1e-6,
                  spin_tolerance=1e-6,
-                 initial_eccentricity=0.0):
+                 initial_eccentricity=0.0,
+                 initial_inclination=0.0):
         """
         Initialize the object.
 
@@ -204,15 +203,21 @@ class InitialConditionSolver:
         self.binary = None
         self._best_initial_conditions = None
 
+        self.parameters = {
+            'initial eccentricity': initial_eccentricity,
+            'initial inclination': initial_inclination
+        }
         if planet_formation_age:
-            self.planet_formation_age = planet_formation_age
+            self.parameters['planet formation age'] = planet_formation_age
         if disk_dissipation_age is not None:
-            self.disk_dissipation_age = disk_dissipation_age
-        self.evolution_max_time_step = evolution_max_time_step
-        self.evolution_precision = evolution_precision
-        self.orbital_period_tolerance = orbital_period_tolerance
-        self.spin_tolerance = spin_tolerance
-        self.initial_eccentricity = initial_eccentricity
+            self.parameters['disk dissipation age'] = disk_dissipation_age
+
+        self.configuration = {
+            'max time step': evolution_max_time_step,
+            'precision': evolution_precision,
+            'orbital period tolerance': orbital_period_tolerance,
+            'spin tolerance': spin_tolerance
+        }
 
         self.target = None
         self.primary = None
@@ -269,8 +274,8 @@ class InitialConditionSolver:
             )[0] - self.target.Porb,
             porb_min,
             porb_max,
-            xtol=self.orbital_period_tolerance,
-            rtol=self.orbital_period_tolerance
+            xtol=self.configuration['orbital period tolerance'],
+            rtol=self.configuration['orbital period tolerance']
         )
 
         porb_final, spin_period = self._try_initial_conditions(
@@ -411,14 +416,18 @@ class InitialConditionSolver:
         self.secondary = planet
 
         if not hasattr(self.target, 'disk_dissipation_age'):
-            self.target.disk_dissipation_age = self.disk_dissipation_age
+            self.target.disk_dissipation_age = (
+                self.parameters['disk dissipation age']
+            )
         if not hasattr(self.target, 'planet_formation_age'):
             if hasattr(self.target, 'past_lifetime'):
                 self.target.planet_formation_age = (self.target.age
                                                     -
                                                     self.target.past_lifetime)
             else:
-                self.target.planet_formation_age = self.planet_formation_age
+                self.target.planet_formation_age = (
+                    self.parameters['planet formation age']
+                )
 
         if not hasattr(target, 'Psurf'):
             wdisk = (target.Wdisk if hasattr(target, 'Wdisk')
@@ -442,8 +451,8 @@ class InitialConditionSolver:
                     a=wdisk_grid[i],
                     b=wdisk_grid[i+1],
                     args=(target.Porb, True),
-                    xtol=self.spin_tolerance,
-                    rtol=self.spin_tolerance
+                    xtol=self.configuration['spin tolerance'],
+                    rtol=self.configuration['spin tolerance']
                 )
 
                 nsolutions += 1
@@ -453,4 +462,3 @@ class InitialConditionSolver:
             return (self._best_initial_conditions.initial_orbital_period,
                     self._best_initial_conditions.disk_period)
             #pylint: enable=no-member
-#pylint: enable=too-many-instance-attributes
