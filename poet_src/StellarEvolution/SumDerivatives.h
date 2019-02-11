@@ -10,7 +10,7 @@
 #define __SUM_DERIVATIVES_H
 
 #include "../Core/SharedLibraryExportMacros.h"
-#include "../../Core/Functions.h"
+#include "../Core/Functions.h"
 
 namespace StellarEvolution {
 
@@ -23,10 +23,10 @@ namespace StellarEvolution {
         ///The derivatives of the first quantity in the sum.
         const FunctionDerivatives *q1_deriv,
 
-              ///The derivatives of the second quantity in the sum.  
+              ///The derivatives of the second quantity in the sum.
               *q2_deriv;
 
-        ///\brief Whether to delete the input derivative when the object is 
+        ///\brief Whether to delete the input derivative when the object is
         ///destroyed.
         bool destroy_derivs;
     public:

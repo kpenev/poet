@@ -232,6 +232,7 @@ class MESAInterpolator:
             )
         else:
             assert 'interpolator_fname' in kwargs
+            self.filename = kwargs['interpolator_fname']
             self.interpolator = library.load_interpolator(
                 kwargs['interpolator_fname'].encode('ascii')
             )
@@ -253,6 +254,7 @@ class MESAInterpolator:
             None
         """
 
+        self.filename = filename
         library.save_interpolator(self.interpolator,
                                   filename.encode('ascii'))
 

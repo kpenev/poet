@@ -71,6 +71,7 @@ class LockedPlanet(DissipatingBody):
         Returns: None
         """
 
+        super().__init__()
         self.mass = mass
         self.radius = radius
         self.c_body = library.create_planet(mass, radius)
@@ -82,6 +83,8 @@ class LockedPlanet(DissipatingBody):
 
         library.destroy_planet(self.c_body)
 
+    #The parent method simply saves the parameters, so it need not name them.
+    #pylint: disable=arguments-differ
     def set_dissipation(self,
                         *,
                         tidal_frequency_breaks,
@@ -106,6 +109,16 @@ class LockedPlanet(DissipatingBody):
                                        tidal_frequency_powers,
                                        spin_frequency_powers,
                                        reference_phase_lag)
+        super().set_dissipation(
+            zone_index=0,
+            tidal_frequency_breaks=tidal_frequency_breaks,
+            spin_frequency_breaks=spin_frequency_breaks,
+            tidal_frequency_powers=tidal_frequency_powers,
+            spin_frequency_powers=spin_frequency_powers,
+            reference_phase_lag=reference_phase_lag
+        )
+    #pylint: enable=arguments-differ
+
 if __name__ == '__main__':
     #False positive.
     #pylint: disable=no-member

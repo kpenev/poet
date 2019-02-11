@@ -12,14 +12,18 @@ class c_dissipating_body_p(c_void_p):
 #pylint: enable=invalid-name
 #pylint: enable=too-few-public-methods
 
-#Class intended to be inherited from
-#pylint: disable=too-few-public-methods
 class DissipatingBody(ABC):
     """A base class for any body in a POET system."""
 
     @abstractmethod
     def lib_configure_body(self, *args, **kwargs):
         """Ensure a function for configuring the body is defined."""
+
+    def __init__(self):
+        """Initialize some attributes."""
+
+        self.dissipation = dict()
+        self.spin_angmom = None
 
     def configure(self,
                   *,
@@ -70,6 +74,9 @@ class DissipatingBody(ABC):
             None
         """
 
+        self.spin_angmom = spin_angmom
+        #Objects inheriting from this class are expected to define self.c_body
+        #before invoking this method
         #pylint: disable=no-member
         self.lib_configure_body(self.c_body,
                                 age,
@@ -83,4 +90,8 @@ class DissipatingBody(ABC):
                                 zero_outer_inclination,
                                 zero_outer_periapsis)
         #pylint: enable=no-member
-#pylint: enable=too-few-public-methods
+
+    def set_dissipation(self, *, zone_index, **dissipation_params):
+        """Record the dissipation that was defined for a zone of the body."""
+
+        self.dissipation[zone_index] = dict(dissipation_params)

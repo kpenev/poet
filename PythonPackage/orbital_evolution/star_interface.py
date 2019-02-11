@@ -206,11 +206,13 @@ class EvolvingStar(DissipatingBody):
         Returns: None
         """
 
+        super().__init__()
         self.mass = mass
         self.metallicity = metallicity
         self.wind_strength = wind_strength
         self.wind_saturation_frequency = wind_saturation_frequency
         self.diff_rot_coupling_timescale = diff_rot_coupling_timescale
+        self.interpolator = interpolator
         self.c_body = library.create_star(mass,
                                           metallicity,
                                           wind_strength,
@@ -223,6 +225,8 @@ class EvolvingStar(DissipatingBody):
 
         library.destroy_star(self.c_body)
 
+    #The parent method simply saves the parameters, so it need not name them.
+    #pylint: disable=arguments-differ
     def set_dissipation(self,
                         *,
                         zone_index,
@@ -270,6 +274,15 @@ class EvolvingStar(DissipatingBody):
                                      tidal_frequency_powers,
                                      spin_frequency_powers,
                                      reference_phase_lag)
+        super().set_dissipation(
+            zone_index=zone_index,
+            tidal_frequency_breaks=tidal_frequency_breaks,
+            tidal_frequency_powers=tidal_frequency_powers,
+            spin_frequency_breaks=spin_frequency_breaks,
+            spin_frequency_powers=spin_frequency_powers,
+            reference_phase_lag=reference_phase_lag
+        )
+    #pylint: enable=arguments-differ
 
     def detect_stellar_wind_saturation(self):
         """Tell a fully configured star to set its wind saturation state."""

@@ -1,6 +1,8 @@
 """Define a class for binaries which can be evolved."""
 
+import os.path
 from ctypes import c_int, c_bool, c_double
+
 import numpy
 
 from orbital_evolution.star_interface import EvolvingStar
@@ -79,6 +81,111 @@ class Binary:
             return c_bool
         return c_double
 
+    def _create_c_code(self,
+                       c_code_fname,
+                       *,
+                       final_age,
+                       max_time_step,
+                       precision,
+                       eccentricity_expansion_fname):
+        """Create a c++ file calculating the currently set-up evolution."""
+
+        assert eccentricity_expansion_fname
+        c_code_substitutions = dict(
+            poet_include_path=os.path.join(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.dirname(__file__)
+                    )
+                ),
+                'poet_src'
+            ),
+            feh=self.primary.metallicity,
+            secondary_radius=(numpy.nan
+                              if isinstance(self.secondary, EvolvingStar) else
+                              self.secondary.radius),
+            secondary_is_star=isinstance(self.secondary, EvolvingStar),
+            final_age=final_age,
+            max_time_step=max_time_step,
+            precision=precision,
+            eccentricity_expansion_fname=eccentricity_expansion_fname,
+            **self.initial_conditions
+        )
+        (
+            c_code_substitutions['initial_secondary_envelope_angmom'],
+            c_code_substitutions['initial_secondary_core_angmom']
+        ) = (self.secondary.spin_angmom
+             if isinstance(self.secondary, EvolvingStar) else
+             (numpy.nan, numpy.nan))
+
+        for component_name in ['primary', 'secondary']:
+            component = getattr(self, component_name)
+            c_code_substitutions[component_name + '_mass'] = component.mass
+            if component.dissipation:
+                assert set(component.dissipation.keys()) == set([0])
+                for param, value in component.dissipation[0].items():
+                    print('param: ' + param)
+                    if param != 'reference_phase_lag':
+                        value = (
+                            '{}' if value is None
+                            else (
+                                '{'
+                                +
+                                ', '.join('%.16e' % v for v in value)
+                                +
+                                '}'
+                            )
+                        )
+                    c_code_substitutions[
+                        component_name
+                        +
+                        '_'
+                        +
+                        param
+                    ] = value
+                for dependence in ['spin', 'tidal']:
+                    breaks = component.dissipation[0][dependence
+                                                      +
+                                                      '_frequency_breaks']
+                    c_code_substitutions[
+                        component_name
+                        +
+                        '_num_'
+                        +
+                        dependence
+                        +
+                        '_frequency_breaks'
+                    ] = (0 if breaks is None else breaks.size)
+            for param in ['wind_strength',
+                          'wind_saturation_frequency',
+                          'diff_rot_coupling_timescale']:
+                c_code_substitutions[component_name + '_' + param] = (
+                    getattr(component, param)
+                    if isinstance(component, EvolvingStar) else
+                    numpy.nan
+                )
+
+            c_code_substitutions[component_name + '_interpolator_fname'] = (
+                component.interpolator.filename
+                if isinstance(component, EvolvingStar) else
+                ''
+            )
+
+        print('Substitution keys:\n\t'
+              +
+              '\n\t'.join(c_code_substitutions.keys()))
+
+        with open(c_code_fname, 'w') as c_code:
+            c_code.write(
+                open(
+                    os.path.join(
+                        os.path.dirname(__file__),
+                        'calculate_evolution_template.cpp'
+                    )
+                ).read()
+                % c_code_substitutions
+            )
+
     def __init__(self,
                  primary,
                  secondary,
@@ -135,8 +242,20 @@ class Binary:
         self.secondary = secondary
         if initial_semimajor is None:
             initial_semimajor = self.semimajor(initial_orbital_period)
+
+
         if secondary_formation_age is None:
             secondary_formation_age = disk_dissipation_age
+
+        self.initial_conditions = dict(
+            initial_eccentricity=initial_eccentricity,
+            initial_inclination=initial_inclination,
+            disk_dissipation_age=disk_dissipation_age,
+            disk_lock_frequency=disk_lock_frequency,
+            initial_semimajor=initial_semimajor,
+            secondary_formation_age=secondary_formation_age
+        )
+
 
         self.evolution_quantities = get_evolution_quantities(
             isinstance(secondary, EvolvingStar)
@@ -229,7 +348,10 @@ class Binary:
                max_time_step,
                precision,
                required_ages,
-               print_progress=False):
+               *,
+               print_progress=False,
+               create_c_code='',
+               eccentricity_expansion_fname=None):
         """
         Evolve the system forward from its current state.
 
@@ -250,8 +372,25 @@ class Binary:
             - print_progress:
                 Should output be created to show the progress in time steps.
 
+            - create_c_code:    The name of a file to create which when compiled
+                will calculate the exact evolution currently set-up for this
+                binary. If empty, no such file is created.
+
+            - eccentricity_expansion_fname:    The filename from which
+                eccentricity expansion coefficients were read. Only used if
+                create_c_code is not empty.
+
         Returnns: None
         """
+
+        if create_c_code:
+            self._create_c_code(
+                create_c_code,
+                final_age=final_age,
+                max_time_step=max_time_step,
+                precision=precision,
+                eccentricity_expansion_fname=eccentricity_expansion_fname
+            )
 
         #The point is to check if previous call defined the member
         #pylint: disable=access-member-before-definition
