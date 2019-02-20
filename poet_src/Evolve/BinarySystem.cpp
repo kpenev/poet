@@ -960,7 +960,13 @@ namespace Evolve {
             }
 #ifdef VERBOSE_DEBUG
             std::cerr << "Zone " << zone_ind
-                      << " torque: " << total_zone_torque << std::endl;
+                      << " torque: " << total_zone_torque
+                      << " inclination rate: " << inclination_rates[zone_ind];
+            if(zone_ind)
+                std::cerr << " periapsis rate: "
+                          << periapsis_rates[zone_ind - 1];
+
+            std::cerr << std::endl;
 #endif
             assert(!std::isnan(total_zone_torque.sum()));
 
@@ -979,7 +985,10 @@ namespace Evolve {
             : eccentricity_evolution(__orbit_power, __orbit_angmom_gain)
         );
 #ifdef VERBOSE_DEBUG
-        std::cerr << "rates: ";
+        if(expansion_error)
+            std::cerr << "rate errors: ";
+        else
+            std::cerr << "rates: ";
         for(
             unsigned i = 0;
             i < 3 * (__body1.number_zones() + __body2.number_zones()) + 1;
