@@ -578,7 +578,7 @@ namespace Evolve {
         std::cerr << "O(e) downgrade threshold = "
                   << __e_order_downgrade_threshold
                   << std::endl;
-#endif NDEBUG
+#endif
         if(max_error_ratio < __e_order_downgrade_threshold)
             return -1;
         else
@@ -684,12 +684,23 @@ namespace Evolve {
             stop_info.deriv_sign_at_crossing() = (is_crossing
                                                   ? deriv_sign
                                                   : 0.0);
+#ifdef VERBOSE_DEBUG
+            std::cerr << "Condition " << cond_ind
+                      << ": " << stop_info
+                      << std::endl;
+#endif
             if(
                 (!acceptable_step(age, stop_info) || is_crossing)
                 &&
                 stop_info.stop_age() < result.stop_age()
-            )
+            ) {
                 result = stop_info;
+#ifdef VERBOSE_DEBUG
+                std::cerr << "SELECTED" << std::endl;
+            } else {
+                std::cerr << "NOT SELECTED!" << std::endl;
+#endif
+            }
         }
         if(acceptable_step(age, result)) {
     //		update_skip_history(current_stop_cond, result);
@@ -699,7 +710,13 @@ namespace Evolve {
             __orbit_history.push_back(orbit);
             __orbit_deriv_history.push_back(derivatives);
 
-            if(adjust_e_order < 0 && !ignore_e_order_decrease) {
+            if(
+                result.stop_reason() == NO_STOP
+                &&
+                adjust_e_order < 0
+                &&
+                !ignore_e_order_decrease
+            ) {
                 return StopInformation(Core::Inf,
                                        Core::Inf,
                                        SMALL_EXPANSION_ERROR);
