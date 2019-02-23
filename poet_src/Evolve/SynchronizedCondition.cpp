@@ -56,32 +56,50 @@ namespace Evolve {
                                                           semimajor,
                                                           true)
                            *
-                           derivatives[0]);
+                           derivatives[0]
+                           *
+                           Core::AstroConst::solar_radius);
+
 
         unsigned angmom_ind = 1 + 2 * __system.number_zones();
         if(!__primary) angmom_ind += (__system.primary().number_zones()
                                       -
                                       __system.primary().number_locked_zones());
+
+        const DissipatingBody &body = (__primary
+                                       ? __system.primary()
+                                       : __system.secondary());
         for(unsigned i = 0; i < __zone_index; ++i)
-            if(!__system.secondary().zone(i).locked()) ++angmom_ind;
+            if(!body.zone(i).locked()) ++angmom_ind;
 
         double dwspin_dt = (
             (derivatives[angmom_ind] - __zone.moment_of_inertia(1) * wspin)
             /
             __zone.moment_of_inertia()
         );
-        if(__system.number_locked_zones())
+        if(__system.number_locked_zones() == 0)
             dworb_dt /= 6.5 * orbit[0] / semimajor;
-        stop_deriv.resize(1,
-                          (
-                              (wspin * dworb_dt - dwspin_dt * worb)
-                              /
-                              std::pow(worb, 2)
-                              *
-                              __spin_freq_mult
-                          )
-                          /
-                          __orbital_freq_mult);
+
+#ifdef VERBOSE_DEBUG
+        std::cerr << describe() << " angmom index: " << angmom_ind
+            << " worb = " << worb
+            << " dworb_dt = " << dworb_dt
+            << " wspin = " << wspin
+            << " dwspin_dt = " << dwspin_dt
+            << " adot = " << derivatives[0] / (6.5 * orbit[0] / semimajor)
+            << std::endl;
+#endif
+
+        stop_deriv.resize(
+            1,
+            (
+                (wspin * dworb_dt - dwspin_dt * worb)
+                /
+                std::pow(worb, 2)
+                *
+                __spin_freq_mult
+            )
+        );
 #ifndef NDEBUG
         if(
             std::isnan((__orbital_freq_mult * worb - wspin * __spin_freq_mult)

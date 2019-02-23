@@ -363,11 +363,15 @@ namespace Evolve {
             size_t condition_index) const
     {
         ExtremumInformation result;
-        if(__stop_history_ages.size() == 0
-                ||
+        if(
+            __stop_history_ages.size() == 0
+            ||
+            (
                 __stop_history_ages.back()
                 <
-                __skip_history_extremum[condition_index])
+                __skip_history_extremum[condition_index]
+            )
+        )
             return result;
         double prev_stop_cond = __stop_cond_history.back()[condition_index],
                next_stop_cond = __stop_cond_discarded.front()[condition_index];
