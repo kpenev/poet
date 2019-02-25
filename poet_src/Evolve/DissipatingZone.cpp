@@ -913,6 +913,11 @@ namespace Evolve {
     {
         assert(__lock);
         assert(direction == 1 || direction == -1);
+        assert(
+            __lock.spin_frequency_multiplier() == 1
+            ||
+            __lock.spin_frequency_multiplier() == 2
+        );
         __lock.lock_direction(direction);
         int orbit_mult = (
             (__lock.spin_frequency_multiplier() == 2 ? 1 : 2)

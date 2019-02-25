@@ -690,6 +690,7 @@ namespace Evolve {
                                                   : 0.0);
 #ifdef VERBOSE_DEBUG
             std::cerr << "Condition " << cond_ind
+                      << __stopping_conditions->describe(cond_ind)
                       << ": " << stop_info
                       << std::endl;
 #endif
@@ -952,7 +953,11 @@ namespace Evolve {
                 &&
                 !first_step
                 &&
-                std::abs(stop.stop_condition_precision()) > __precision
+                (
+                    std::abs(stop.stop_condition_precision()) > __precision
+                    ||
+                    __stop_history_ages.size() == 1
+                )
                 &&
                 stop.stop_reason() != LARGE_EXPANSION_ERROR
             );
