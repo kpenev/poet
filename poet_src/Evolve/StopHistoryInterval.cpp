@@ -76,11 +76,11 @@ namespace Evolve {
         __stop_deriv_discarded_begin(stop_deriv_discarded_begin),
         __stop_deriv_i(first_stop_deriv)
     {
-        if(num_points==0)
+        if(num_points == 0)
             throw Core::Error::BadFunctionArguments(
                 "Attempt to contsruct a StopHistoryInterval of size 0."
             );
-        for(size_t i=0; i<num_points-1; i++)
+        for(size_t i = 0; i < num_points - 1; i++)
             advance_iterator_set(__last_age,
                                  __last_stop_cond,
                                  __last_stop_deriv);

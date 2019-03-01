@@ -21,6 +21,16 @@ namespace Evolve {
     ///\brief A collection of accepted and discarded evolution steps which
     ///contain some reason to stop.
     ///
+    ///Generally tracks iterators over the stored evolution history and
+    ///discarded values during the evolution calculations. One particular
+    ///wrinkle is that this class deals with the possibility that step sizes can
+    ///be driven to very small values by some other precision requirements
+    ///leading to stopping condition values that differ only by numerical errors
+    ///in their calculations causing real extrema to be missed or creating fake
+    ///ones. To handle this, values that differ by less than some precsibed
+    ///amount (see numerical_roundoff_factor argument to the constructor) are
+    ///treated as a single value equal to their average.
+    ///
     ///\ingroup OrbitSolver_group
     class LIB_LOCAL StopHistoryInterval {
     private:
@@ -90,62 +100,63 @@ namespace Evolve {
     public:
         ///Construct an interval of steps with some reason to stop the evolution.
         StopHistoryInterval(
-                ///The number of points in the interval.
-                size_t num_points=0,
+            ///The number of points in the interval.
+            size_t num_points=0,
 
-                ///An iterator pointing to the first age in the interval.
-                std::list<double>::const_iterator
-                first_age=std::list<double>::const_iterator(),
+            ///An iterator pointing to the first age in the interval.
+            std::list<double>::const_iterator
+            first_age=std::list<double>::const_iterator(),
 
-                ///An iterator pointing to one past the last age in the history.
-                std::list<double>::const_iterator
-                history_age_end=std::list<double>::const_iterator(),
+            ///An iterator pointing to one past the last age in the history.
+            std::list<double>::const_iterator
+            history_age_end=std::list<double>::const_iterator(),
 
-                ///An iterator pointing to the first age in the discarded list.
-                std::list<double>::const_iterator
-                discarded_age_begin=std::list<double>::const_iterator(),
+            ///An iterator pointing to the first age in the discarded list.
+            std::list<double>::const_iterator
+            discarded_age_begin=std::list<double>::const_iterator(),
 
-                ///An iterator pointing to the first stopping condition in the
-                ///interval.
-                std::list< std::valarray<double> >::const_iterator
-                first_stop_cond
-                =
-                std::list< std::valarray<double> >::const_iterator(),
+            ///An iterator pointing to the first stopping condition in the
+            ///interval.
+            std::list< std::valarray<double> >::const_iterator
+            first_stop_cond
+            =
+            std::list< std::valarray<double> >::const_iterator(),
 
-                ///An iterator pointing to one past the last stopping condition
-                ///in the history.
-                std::list< std::valarray<double> >::const_iterator
-                stop_cond_history_end
-                =
-                std::list< std::valarray<double> >::const_iterator(),
+            ///An iterator pointing to one past the last stopping condition
+            ///in the history.
+            std::list< std::valarray<double> >::const_iterator
+            stop_cond_history_end
+            =
+            std::list< std::valarray<double> >::const_iterator(),
 
-                ///An iterator pointing to the first stopping condition in the
-                ///discarded list.
-                std::list< std::valarray<double> >::const_iterator
-                stop_cond_discarded_begin
-                =
-                std::list< std::valarray<double> >::const_iterator(),
+            ///An iterator pointing to the first stopping condition in the
+            ///discarded list.
+            std::list< std::valarray<double> >::const_iterator
+            stop_cond_discarded_begin
+            =
+            std::list< std::valarray<double> >::const_iterator(),
 
-                ///An iterator pointing to the first stopping derivative in the
-                ///interval.
-                std::list< std::valarray<double> >::const_iterator
-                first_stop_deriv
-                =
-                std::list< std::valarray<double> >::const_iterator(),
+            ///An iterator pointing to the first stopping derivative in the
+            ///interval.
+            std::list< std::valarray<double> >::const_iterator
+            first_stop_deriv
+            =
+            std::list< std::valarray<double> >::const_iterator(),
 
-                ///An iterator pointing to one past the last stopping derivative
-                ///in the history.
-                std::list< std::valarray<double> >::const_iterator
-                stop_deriv_history_end
-                =
-                std::list< std::valarray<double> >::const_iterator(),
+            ///An iterator pointing to one past the last stopping derivative
+            ///in the history.
+            std::list< std::valarray<double> >::const_iterator
+            stop_deriv_history_end
+            =
+            std::list< std::valarray<double> >::const_iterator(),
 
-                ///An iterator pointing to the first stopping derivative in the
-                ///discarded list.
-                std::list< std::valarray<double> >::const_iterator
-                stop_deriv_discarded_begin
-                =
-                std::list< std::valarray<double> >::const_iterator());
+            ///An iterator pointing to the first stopping derivative in the
+            ///discarded list.
+            std::list< std::valarray<double> >::const_iterator
+            stop_deriv_discarded_begin
+            =
+            std::list< std::valarray<double> >::const_iterator()
+        );
 
         ///Copy orig to *this.
         StopHistoryInterval(const StopHistoryInterval &orig);

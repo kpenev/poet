@@ -252,8 +252,8 @@ namespace Evolve {
         int go_back = (static_cast<int>(num_points)
                        -
                        static_cast<int>(__discarded_stop_ages.size()));
-        go_back=std::max(go_back, (crossing ? 1 : 2));
-        size_t failed_back=0;
+        go_back = std::max(go_back, (crossing ? 1 : 2));
+        size_t failed_back = 0;
         for(int i = 0; i < go_back; ++i) {
             --first_age;
             --first_stop_cond;
@@ -278,10 +278,10 @@ namespace Evolve {
                                      first_stop_deriv,
                                      __stop_deriv_history.end(),
                                      __stop_deriv_discarded.begin()),
-                            result=interval;
+                            result = interval;
         int max_left_shift = std::min(__discarded_stop_ages.size() - 1,
                                       num_points - (crossing ? 2 : 3));
-        int history_limit=0;
+        int history_limit = 0;
         if(crossing)
             history_limit = (__stop_history_ages.size()
                              -
@@ -297,64 +297,139 @@ namespace Evolve {
                 *(--first_age) > __skip_history_extremum[cond_ind]
             )
                 ++history_limit;
-        max_left_shift=std::min(history_limit, max_left_shift);
-        for(int i=0; i<max_left_shift; i++) {
+        max_left_shift = std::min(history_limit, max_left_shift);
+        for(int i = 0; i < max_left_shift; i++) {
             interval << 1;
             if(
-                (interval.last_age()-interval.first_age())
+                (interval.last_age() - interval.first_age())
                 <
-                result.last_age()-result.first_age()
+                result.last_age() - result.first_age()
             )
-                result=interval;
+                result = interval;
         }
         return result;
     }
 
     ExtremumInformation OrbitSolver::extremum_from_history_no_deriv(
-            size_t condition_index) const
+        size_t condition_index
+    ) const
     {
         ExtremumInformation result;
-        if(__stop_history_ages.size()-
-                __skip_history_zerocrossing[condition_index]<2) return result;
-        std::list< std::valarray<double> >::const_iterator
-            stop_cond_i=__stop_cond_history.end();
-        double pre1_cond=(*(--stop_cond_i))[condition_index],
-               pre2_cond=(*(--stop_cond_i))[condition_index],
-               post_cond=__stop_cond_discarded.front()[condition_index];
-        if(std::abs(pre1_cond)>std::abs(pre2_cond) ||
-                std::abs(pre1_cond)>std::abs(post_cond) ||
-                (!std::isfinite(pre1_cond) && !std::isfinite(pre2_cond) &&
-                 !std::isfinite(post_cond)))
+        if(
+            __stop_history_ages.size()
+            -
+            __skip_history_zerocrossing[condition_index] < 2
+        )
+            return result;
+        std::list< std::valarray<double> >::const_iterator stop_cond_i =
+            __stop_cond_history.end();
+        double pre1_cond = (*(--stop_cond_i))[condition_index],
+               pre2_cond = (*(--stop_cond_i))[condition_index],
+               post_cond = __stop_cond_discarded.front()[condition_index];
+        if(
+            std::abs(pre1_cond) > std::abs(pre2_cond)
+            ||
+            std::abs(pre1_cond) > std::abs(post_cond)
+            ||
+            (
+                !std::isfinite(pre1_cond)
+                &&
+                !std::isfinite(pre2_cond)
+                &&
+                !std::isfinite(post_cond)
+            )
+        )
             return result;
 
-        StopHistoryInterval stop_interval=select_stop_condition_interval(
-                false, condition_index, 4);
-        if(stop_interval.num_points()<3) return result;
-        double t0=stop_interval.age(),
-               c0=stop_interval.stop_condition_value(condition_index),
-               t1=(++stop_interval).age(),
-               c1=stop_interval.stop_condition_value(condition_index),
-               t2=(++stop_interval).age(),
-               c2=stop_interval.stop_condition_value(condition_index);
-        if(stop_interval.num_points()==3) {
-            if((c1-c0)*(c2-c1)>0) return result;
-            result.x()=Core::quadratic_extremum(t0, c0, t1, c1, t2, c2,
-                    &(result.y()));
+        StopHistoryInterval stop_interval = select_stop_condition_interval(
+            false,
+            condition_index,
+            4
+        );
+        if(stop_interval.num_points() < 3)
+            return result;
+        double t0 = stop_interval.age(),
+               c0 = stop_interval.stop_condition_value(condition_index),
+               t1 = (++stop_interval).age(),
+               c1 = stop_interval.stop_condition_value(condition_index),
+               t2 = (++stop_interval).age(),
+               c2 = stop_interval.stop_condition_value(condition_index),
+               abs_c0 = std::abs(c0),
+               abs_c1 = std::abs(c1),
+               abs_c2 = std::abs(c2);
+
+        const double min_fractional_diff = (
+            100.0
+            *
+            std::numeric_limits<double>::epsilon()
+        );
+
+        bool ignore_10_diff = (std::abs(c1 - c0) / std::max(abs_c0, abs_c1)
+                               <
+                               min_fractional_diff),
+             ignore_21_diff = (std::abs(c2 - c1) / std::max(abs_c1, abs_c2)
+                               <
+                               min_fractional_diff);
+
+        if(stop_interval.num_points() == 3) {
+            if((c1 - c0) * (c2 - c1) > 0 || ignore_10_diff || ignore_21_diff)
+                return result;
+            result.x() = Core::quadratic_extremum(t0, c0, t1, c1, t2, c2,
+                                                  &(result.y()));
         } else {
-            double t3=(++stop_interval).age(),
-                   c3=stop_interval.stop_condition_value(condition_index);
-            if((c1-c0)*(c2-c1)>0 && (c2-c1)*(c3-c2)>0) return result;
-            double range_low, range_high;
-            if(std::abs(c1)<=std::abs(c0) && std::abs(c1)<=std::abs(c2)) {
-                range_low=t0; range_high=t2;
-            } else if(std::abs(c2)<=std::abs(c1) && std::abs(c2)<=std::abs(c3)) {
-                range_low=t1; range_high=t3;
+            double t3 = (++stop_interval).age(),
+                   c3 = stop_interval.stop_condition_value(condition_index),
+                   abs_c3 = std::abs(c3);
+            bool ignore_32_diff = (
+                std::abs(c3 - c2) / std::max(abs_c3, abs_c2)
+                <
+                min_fractional_diff
+            );
+            if(
+                (
+                    (c1 - c0) * (c2 - c1) > 0
+                    ||
+                    ignore_10_diff
+                    ||
+                    ignore_21_diff
+                )
+                &&
+                (
+                    (c2 - c1) * (c3 - c2) > 0
+                    ||
+                    ignore_21_diff
+                    ||
+                    ignore_32_diff
+                )
+            )
+                return result;
+            double range_low,
+                   range_high;
+            if(
+                !ignore_10_diff
+                &&
+                std::abs(c1) <= std::abs(c0)
+                &&
+                std::abs(c1) <= std::abs(c2)
+            ) {
+                range_low = t0;
+                range_high = t2;
+            } else if(
+                !ignore_32_diff
+                &&
+                abs_c2 <= abs_c1
+                &&
+                abs_c2 <= abs_c3
+            ) {
+                range_low = t1;
+                range_high = t3;
             } else throw Core::Error::BadFunctionArguments(
                 "Searching for extremum among monotonic stopping condition "
                 "values in OrbitSolver::extremum_from_history_no_deriv."
             );
-            result.x()=Core::cubic_extremum(t0, c0, t1, c1, t2, c2, t3, c3,
-                    &(result.y()), range_low, range_high);
+            result.x() = Core::cubic_extremum(t0, c0, t1, c1, t2, c2, t3, c3,
+                                              &(result.y()),
+                                              range_low, range_high);
         }
         return result;
     }
@@ -897,6 +972,11 @@ namespace Evolve {
                     if(__print_progress)
 #endif
                         std::cerr << "Succeeded! Now t = " << t << std::endl;
+#ifdef VERBOSE_DEBUG
+                    std::cerr << "GSL suggested new step size:"
+                              << step_size
+                              << std::endl;
+#endif
 
                     stellar_system_diff_eq(t,
                                            &(orbit[0]),
@@ -1137,9 +1217,6 @@ namespace Evolve {
         std::cerr << "Suggested adjustment: " << adjust_e_order << std::endl;
 #endif
 
-            if(e_order == 0 && adjust_e_order < 0)
-                break;
-
             if(
                 e_order == TidalPotentialTerms::max_e_order()
                 &&
@@ -1157,7 +1234,9 @@ namespace Evolve {
                 if(must_increase) {
                     e_order += 1;
                     __last_e_order_upgrade_age = system.age();
-                } else {
+                } else if(e_order == 0 && adjust_e_order < 0)
+                    break;
+                else {
                     e_order += adjust_e_order;
                     if(adjust_e_order > 0)
                         __last_e_order_upgrade_age = system.age();
