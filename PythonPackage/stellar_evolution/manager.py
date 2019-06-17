@@ -460,7 +460,7 @@ class StellarEvolutionManager:
             'sqlite:///'
             +
             os.path.join(serialization_path, 'serialized.sqlite'),
-            echo=True
+            echo=False
         )
         Session.configure(bind=db_engine)
         self._serialization_path = serialization_path
