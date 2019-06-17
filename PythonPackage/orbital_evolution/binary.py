@@ -14,49 +14,6 @@ from basic_utils import\
     calc_orbital_frequency,\
     calc_orbital_angular_momentum
 
-def get_evolution_quantities(secondary_is_star):
-    """
-    Return the list of quantities for a binary system.
-
-    Args:
-        secondary_is_star: True iff the evolution was for a binary star (vs a
-        planet-star) system.
-
-    Returns:
-        A list of the evolution quantities tracked for an evolution of the
-        given system type.
-    """
-
-    evolution_quantities = ['age', 'semimajor', 'eccentricity']
-
-    star_float_quantities = ['envelope_inclination',
-                             'core_inclination',
-                             'envelope_periapsis',
-                             'core_periapsis',
-                             'envelope_angmom',
-                             'core_angmom']
-
-    for quantity in star_float_quantities:
-        if secondary_is_star:
-            evolution_quantities.append('primary_' + quantity)
-        else:
-            evolution_quantities.append(quantity)
-
-
-    if secondary_is_star:
-        for quantity in star_float_quantities:
-            evolution_quantities.append('secondary_' + quantity)
-
-    evolution_quantities.append('evolution_mode')
-
-    if secondary_is_star:
-        evolution_quantities.extend(['primary_wind_saturation',
-                                     'secondary_wind_saturation'])
-    else:
-        evolution_quantities.append('wind_saturation')
-
-    return evolution_quantities
-
 #Two of the "attributes are actually methods
 #pylint: disable=too-many-instance-attributes
 class Binary:
@@ -71,6 +28,53 @@ class Binary:
         for mode in evolution_modes
     }
 
+    def _get_evolution_quantities(self):
+        """
+        Return the list of quantities in the evolution of the binary.
+
+        Args:
+            None
+
+        Returns:
+            [str]:
+                A list of the evolution quantities tracked for an evolution of
+                the current system.
+        """
+
+        evolution_quantities = ['age', 'semimajor', 'eccentricity']
+
+        star_float_quantities = ['envelope_inclination',
+                                 'core_inclination',
+                                 'envelope_periapsis',
+                                 'core_periapsis',
+                                 'envelope_angmom',
+                                 'core_angmom']
+
+        secondary_is_star = isinstance(self.secondary, EvolvingStar)
+
+        if secondary_is_star:
+            for quantity in star_float_quantities:
+                evolution_quantities.append('primary_' + quantity)
+
+        else:
+            evolution_quantities.extend(star_float_quantities
+                                        +
+                                        [
+                                            'planet_inclination',
+                                            'planet_periapsis',
+                                            'planet_angmom'
+                                        ])
+
+        evolution_quantities.append('evolution_mode')
+
+        if secondary_is_star:
+            evolution_quantities.extend(['primary_wind_saturation',
+                                         'secondary_wind_saturation'])
+        else:
+            evolution_quantities.append('wind_saturation')
+
+        return evolution_quantities
+
     @staticmethod
     def evolution_quantity_c_type(quantity):
         """Return the ctypes type of the given evolution quantity."""
@@ -81,6 +85,7 @@ class Binary:
             return c_bool
         return c_double
 
+    #TODO: revive c-code creation
     def _create_c_code(self,
                        c_code_fname,
                        *,
@@ -257,9 +262,7 @@ class Binary:
         )
 
 
-        self.evolution_quantities = get_evolution_quantities(
-            isinstance(secondary, EvolvingStar)
-        )
+        self.evolution_quantities = self._get_evolution_quantities()
         if isinstance(secondary, LockedPlanet):
             c_create_func = library.create_star_planet_system
             self._c_get_evolution_func = library.get_star_planet_evolution
@@ -445,11 +448,12 @@ class Binary:
 
         get_evol_args = [self.c_solver,
                          self.c_binary,
-                         self.primary.c_body]
-        if self.secondary.is_dissipative:
-            get_evol_args.append(self.secondary.c_body)
+                         self.primary.c_body,
+                         self.secondary.c_body]
+
         get_evol_args.extend([getattr(result, quantity, None)
                               for quantity in self.evolution_quantities])
+
         self._c_get_evolution_func(*get_evol_args)
         return result
 
@@ -459,17 +463,13 @@ class Binary:
         result = Structure()
         library_final_state = [self.evolution_quantity_c_type(q)()
                                for q in self.evolution_quantities]
-        if isinstance(self.secondary, LockedPlanet):
-            self._c_get_final_state(self.c_solver,
-                                    self.c_binary,
-                                    self.primary.c_body,
-                                    *library_final_state)
-        else:
-            self._c_get_final_state(self.c_solver,
-                                    self.c_binary,
-                                    self.primary.c_body,
-                                    self.secondary.c_body,
-                                    *library_final_state)
+
+        self._c_get_final_state(self.c_solver,
+                                self.c_binary,
+                                self.primary.c_body,
+                                self.secondary.c_body,
+                                *library_final_state)
+
         for quantity, library_value in zip(self.evolution_quantities,
                                            library_final_state):
             setattr(result, quantity, library_value.value)

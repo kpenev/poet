@@ -127,40 +127,50 @@ def initialize_library():
     result.num_evolution_steps.restype = c_uint
 
     result.get_star_planet_evolution.argtypes = [
-        result.evolve_system.restype,
-        result.create_star_planet_system.restype,
-        c_dissipating_body_p,
-        ndpointer_or_null(dtype=c_double,
+        result.evolve_system.restype, # solver
+        result.create_star_planet_system.restype, #system
+        c_dissipating_body_p, #star
+        c_dissipating_body_p, #planet
+        ndpointer_or_null(dtype=c_double, #age
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #semimajor
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #eccentricity
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #envelope inclination
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #core_inclination
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #envelope_periapsis
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #core_periapsis
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #envelope_angmom
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double, #core_angmom
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_int,
+        ndpointer_or_null(dtype=c_double, #planet_inclination
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_bool,
+        ndpointer_or_null(dtype=c_double, #planet_periapsis
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #planet_angmom
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_int, #evolution_mode
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_bool, #wind_saturation
                           ndim=1,
                           flags='C_CONTIGUOUS')
     ]
@@ -229,20 +239,24 @@ def initialize_library():
     result.get_star_star_evolution.restype = None
 
     result.get_star_planet_final_state.argtypes = [
-        result.evolve_system.restype,
-        result.create_star_planet_system.restype,
-        c_dissipating_body_p,
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_double),
-        POINTER(c_int),
-        POINTER(c_bool)
+        result.evolve_system.restype, #solver
+        result.create_star_planet_system.restype, #system
+        c_dissipating_body_p, #star
+        c_dissipating_body_p, #planet
+        POINTER(c_double), #age
+        POINTER(c_double), #semimajor
+        POINTER(c_double), #eccentricity
+        POINTER(c_double), #envelope_inclination
+        POINTER(c_double), #core_inclination
+        POINTER(c_double), #envelovpe_peripasis
+        POINTER(c_double), #core_periapsis
+        POINTER(c_double), #envolepo_angmom
+        POINTER(c_double), #core_angmom
+        POINTER(c_double), #planet_inclination
+        POINTER(c_double), #planet_periapsis
+        POINTER(c_double), #planet_angmom
+        POINTER(c_int), #evolution_mode
+        POINTER(c_bool) #wind_saturation
     ]
     result.get_star_planet_final_state.restype = None
 
