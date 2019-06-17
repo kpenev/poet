@@ -446,7 +446,7 @@ class Binary:
         get_evol_args = [self.c_solver,
                          self.c_binary,
                          self.primary.c_body]
-        if isinstance(self.secondary, EvolvingStar):
+        if self.secondary.is_dissipative:
             get_evol_args.append(self.secondary.c_body)
         get_evol_args.extend([getattr(result, quantity, None)
                               for quantity in self.evolution_quantities])
