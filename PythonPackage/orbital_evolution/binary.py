@@ -56,6 +56,9 @@ class Binary:
             for quantity in star_float_quantities:
                 evolution_quantities.append('primary_' + quantity)
 
+            for quantity in star_float_quantities:
+                evolution_quantities.append('secondary_' + quantity)
+
         else:
             evolution_quantities.extend(star_float_quantities
                                         +
