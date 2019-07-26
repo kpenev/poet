@@ -641,6 +641,9 @@ namespace Evolve {
     )
     {
         double max_error_ratio = 0.0;
+#ifndef NDEBUG
+        unsigned max_ratio_index = 0;
+#endif
         for(unsigned i = 0; i < derivatives.size(); ++i) {
             double error_ratio = (
                 std::abs(expansion_errors[i])
@@ -648,21 +651,42 @@ namespace Evolve {
                 (__precision * std::abs(derivatives[i]) + __precision)
             );
             assert(error_ratio >= 0);
-            if(error_ratio > 1.0)
+            if(error_ratio > 1.0) {
+#ifndef NDEBUG
+                std::cerr << "Expansion ratio for parameter " << i
+                          << " = " << error_ratio
+                          << " suggest increasing e order!"
+                          << std::endl;
+#endif
                 return 1;
-            {
-            };
-            max_error_ratio = std::max(max_error_ratio, error_ratio);
+            }
+            if(error_ratio > max_error_ratio) {
+                max_error_ratio = error_ratio;
+#ifndef NDEBUG
+                max_ratio_index = i;
+#endif
+            }
         }
 #ifndef NDEBUG
         std::cerr << "O(e) downgrade threshold = "
                   << __e_order_downgrade_threshold
+                  << ", max error ratio = "
+                  << max_error_ratio
+                  << " for parameter "
+                  << max_ratio_index
                   << std::endl;
 #endif
-        if(max_error_ratio < __e_order_downgrade_threshold)
+        if(max_error_ratio < __e_order_downgrade_threshold) {
+#ifndef NDEBUG
+            std::cerr << "Suggest decreasing e order." << std::endl;
+#endif
             return -1;
-        else
+        } else {
+#ifndef NDEBUG
+            std::cerr << "Suggest e order is fine." << std::endl;
+#endif
             return 0;
+        }
     }
 
     StopInformation OrbitSolver::update_stop_condition_history(
