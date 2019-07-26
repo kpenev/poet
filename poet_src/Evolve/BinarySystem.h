@@ -1,7 +1,7 @@
 /**\file
  *
  * \brief Defines the BinarySystem class.
- * 
+ *
  * \ingroup Evolve_group
  */
 
@@ -31,7 +31,7 @@ namespace Evolve {
     /// - age: Gyr
     /// - a: semimajor axis in \f$R_\odot\f$ (average distance between the
     ///      bodies)
-    /// - e: the eccentricity of the orbit 
+    /// - e: the eccentricity of the orbit
     /// - Eorb: the energy of the orbit (potential + kinetic) treating the two
     ///         bodies as point masses in \f$GM_\odot^2/R_\odot\f$.
     /// - L: angular momentum of the orbit treating the two bodies as point
@@ -42,7 +42,7 @@ namespace Evolve {
     /// - \f$\omega^b_i\f$: argument of periapsis of the orbit for the i-th zone
     ///                     of the b-th body with a plane of reference
     ///                     perpendicular to that zone's spin.
-    /// - \f$S^b_i\f$: spin angular momentum of the i-th zone of the b-th body in 
+    /// - \f$S^b_i\f$: spin angular momentum of the i-th zone of the b-th body in
     ///             \f$M_\odot\cdot R_\odot^2 \cdot \mathrm{rad}/\mathrm{day}\f$.
     ///
     ///The index of the outermost zone of a body is zero and increases inward.
@@ -67,7 +67,7 @@ namespace Evolve {
             ///add_to_evolution() so far
             __eccentricity_evolution;
 
-        double 
+        double
             ///The present age of the stellar system in Gyrs.
             __age,
 
@@ -85,7 +85,7 @@ namespace Evolve {
 
             ///The rate at which the orbit gains energy due to tides.
             __orbit_power,
-           
+
             ///\brief Estimate of the error in __orbit_power due to
             ///truncating the tidal potential eccentricity expansion
             __orbit_power_expansion_error,
@@ -98,11 +98,11 @@ namespace Evolve {
             ///truncating the tidal potential eccentricity expansion
             __orbit_angmom_gain_expansion_error;
 
-        Eigen::Vector3d 
-            ///\brief The torque on the orbit in the coordinate system of the 
+        Eigen::Vector3d
+            ///\brief The torque on the orbit in the coordinate system of the
             ///outermost zone of the first body.
             __orbit_torque,
-            
+
             ///\brief An estiamte of the error in ::__orbit_torque due to
             ///truncating the eccentricity series of the tidal potential.
             __orbit_torque_expansion_error;
@@ -150,13 +150,13 @@ namespace Evolve {
         Eigen::ColPivHouseholderQR<Eigen::MatrixXd>
             __above_lock_fractions_decomp;
 
-        DissipatingBody 
+        DissipatingBody
             ///\brief The first body in the system.
             ///
             ///This is the body that is allowed to exist both before and after
             ///the second body does. It is also the body that should support
             ///surface locks.
-            &__body1, 
+            &__body1,
 
             ///\brief The second body in the system.
             ///
@@ -182,12 +182,12 @@ namespace Evolve {
             bool expansion_error
         ) const;
 
-        ///\brief Jacobian for the evolution of the rotation of the zones of 
+        ///\brief Jacobian for the evolution of the rotation of the zones of
         ///body 0 with the topmost zone rotating with a fixed frequency.
         ///
         ///The age of the system must already be set appropriately by
         ///configure().
-        void locked_surface_jacobian(			
+        void locked_surface_jacobian(
             ///On output is set to the Jacobian.
             double *param_derivs,
 
@@ -200,7 +200,7 @@ namespace Evolve {
         ///if no other body is present.
         ///
         ///configure() must already have been called.
-        int single_body_differential_equations(			
+        int single_body_differential_equations(
             ///On outputs is set to the rate of change of the orbital
             ///parameters.
             double *evolution_rates,
@@ -213,31 +213,31 @@ namespace Evolve {
 
         ///Fills the jacobian for a system consisting of one isolated body.
         void fill_single_body_jacobian(
-            ///The rows of the jacobian corresponding to the zone 
+            ///The rows of the jacobian corresponding to the zone
             ///inclinations.
-            double *inclination_param_derivs,  
+            double *inclination_param_derivs,
 
             ///The rows of the jacobian corresponding to the zone periapses.
             double *periapsis_param_derivs,
 
             ///The rows of the jacobian corresponding to the zone angular
             ///momenta.
-            double *angmom_param_derivs, 
+            double *angmom_param_derivs,
 
             ///The part of the age derivatives array corresponding to the
             ///zone inclinations.
-            double *inclination_age_derivs, 
+            double *inclination_age_derivs,
 
             ///The part of the age derivatives array corresponding to the
             ///zone periapses.
-            double *periapsis_age_derivs, 
+            double *periapsis_age_derivs,
 
             ///The part of the age derivatives array corresponding to the
             ///zone angular momenta.
             double *angmom_age_derivs
         ) const;
 
-        ///\brief Jacobian for the evolution of the rotation of the zones of 
+        ///\brief Jacobian for the evolution of the rotation of the zones of
         ///body 0 if no other body is present.
         ///
         ///The age of the system must already be set appropriately by
@@ -262,7 +262,7 @@ namespace Evolve {
         ///provide the derivative of the tidal power with respect to the quantity
         ///as the first argument.
         double semimajor_evolution(
-            ///The rate at which the orbit gains energy (total for all zones 
+            ///The rate at which the orbit gains energy (total for all zones
             ///of all bodies) in
             /// \f$M_\odot R_\odot^2 \mathrm{day}^{-2}\mathrm{Gyr}^{-1}\f$
             double orbit_power,
@@ -273,7 +273,7 @@ namespace Evolve {
             double orbit_power_deriv=Core::NaN
         ) const;
 
-        ///\brief Estimate of the  error in the value returned by 
+        ///\brief Estimate of the  error in the value returned by
         ///semimajor_evolution() due to truncating the tidal potential
         ///eccentricity expansion
         double semimajor_evolution_expansion_error() const
@@ -286,7 +286,7 @@ namespace Evolve {
         ///configure().
         ///
         ///Supports differentiation with repesct to the semimajor axis and
-        ///eccentricity. If derivatives with respect to other quantities are 
+        ///eccentricity. If derivatives with respect to other quantities are
         ///required, simply provide the derivative of the tidal power and torque
         ///with respect to the quantity as the first and second arguments.
         double eccentricity_evolution(
@@ -315,7 +315,7 @@ namespace Evolve {
             bool semimajor_deriv=true
         ) const;
 
-        ///\brief Estimate of the  error in the value returned by 
+        ///\brief Estimate of the  error in the value returned by
         ///eccentricity_evolution() due to truncating the tidal potential
         ///eccentricity expansion
         double eccentricity_evolution_expansion_error() const;
@@ -331,7 +331,7 @@ namespace Evolve {
             bool body1_deriv,
 
             ///The matrix to update.
-            Eigen::MatrixXd &matrix, 
+            Eigen::MatrixXd &matrix,
 
             ///The RHS vector to update.
             Eigen::VectorXd &rhs
@@ -366,7 +366,7 @@ namespace Evolve {
             ///MOMENT_OF_INERTIA and SPIN_ANGMOM derivatives are supported.
             Dissipation::QuantityEntry entry,
 
-            ///The body whose zone's inclination we want the derivative 
+            ///The body whose zone's inclination we want the derivative
             ///w.r.t.
             DissipatingBody &body,
 
@@ -392,7 +392,7 @@ namespace Evolve {
         ///Called as part of ::configure().
         void fill_orbit_torque_and_power();
 
-               
+
         ///The differential equations for a system with both bodies present.
         int binary_differential_equations(
             ///On output is set to the rates of change of the evolution
@@ -457,7 +457,7 @@ namespace Evolve {
 
             ///The location to fill with the deriavtives of the semimajor
             ///evolution equation w.r.t. the evolution variables.
-            double *param_derivs, 
+            double *param_derivs,
 
             ///The location to set to the age derivative of the semimajor
             ///evolution equation.
@@ -479,7 +479,7 @@ namespace Evolve {
 
             ///The location to fill with the deriavtives of the eccentricity
             ///evolution equation w.r.t. the evolution variables.
-            double *param_derivs, 
+            double *param_derivs,
 
             ///The location to set to the age derivative of the eccentricity
             ///evolution equation.
@@ -497,10 +497,10 @@ namespace Evolve {
             unsigned zone_ind,
 
             ///The sin of the inclination between the zone and the orbit.
-            double sin_inc, 
+            double sin_inc,
 
             ///The cos of the inclination between the zone and the orbit.
-            double cos_inc, 
+            double cos_inc,
 
             ///The index of the current zone in the list of locked zones
             ///(used only if zone is locked, ignored otherwise)
@@ -520,7 +520,7 @@ namespace Evolve {
         void angle_evolution_orbit_deriv(
             ///The derivative to compute, should be either
             ///Dissipation::SEMIMAJOR or Dissipation::ECCENTRICITY
-            Dissipation::QuantityEntry entry, 
+            Dissipation::QuantityEntry entry,
 
             ///The derivative of the orbital angular momentum w.r.t. deriv.
             double angmom_deriv,
@@ -553,7 +553,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::QuantityEntry entry, 
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's coordinate system we are expressing the
             ///torque in.
@@ -576,7 +576,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::QuantityEntry entry, 
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's evolution we are differentiating.
             DissipatingBody &body,
@@ -600,7 +600,7 @@ namespace Evolve {
             ///The derivatives to compute. Sholud be one of:
             ///Dissipation::INCLINATION, Dissipation::PERIAPSIS,
             ///Dissipation::MOMENT_OF_INERTIA, Dissipation::SPIN_ANGMOM
-            Dissipation::QuantityEntry entry, 
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's evolution we are differentiating.
             DissipatingBody &body,
@@ -610,7 +610,7 @@ namespace Evolve {
 
             ///The x component of the torque on the zone (above a potential
             ///spin orbit lock). Ignored if the zone is not locked.
-            double zone_x_torque_above, 
+            double zone_x_torque_above,
 
             ///The x component of the torque on the zone (below a potential
             ///spin orbit lock).
@@ -630,10 +630,10 @@ namespace Evolve {
             const std::valarray<Eigen::VectorXd> &above_frac_deriv,
 
             ///The sin of the inclination between the zone and the orbit.
-            double sin_inc, 
+            double sin_inc,
 
             ///The cos of the inclination between the zone and the orbit.
-            double cos_inc, 
+            double cos_inc,
 
             ///The index of the current zone in the list of locked zones
             ///(used only if zone is locked, ignored otherwise)
@@ -647,17 +647,17 @@ namespace Evolve {
         ///zone specific quantity for all zones.
         void periapsis_evolution_zone_derivs(
             ///The derivative to compute.
-            Dissipation::QuantityEntry entry, 
+            Dissipation::QuantityEntry entry,
 
             ///The body whose zone's periapsis evolution to differentiate.
             DissipatingBody &body,
 
             ///The zone whose periapsis evolution to differentiate.
-            unsigned zone_ind, 
+            unsigned zone_ind,
 
             ///The y component of the torque on the zone above a lock if
             ///locked.
-            double zone_y_torque_above, 
+            double zone_y_torque_above,
 
             ///The y component of the torque on the zone (assuming below a
             ///lock if locked).
@@ -676,14 +676,14 @@ namespace Evolve {
             const std::valarray<Eigen::VectorXd> &above_frac_deriv,
 
             ///The sin of the inclination between the zone and the orbit.
-            double sin_inc, 
+            double sin_inc,
 
             ///The cos of the inclination between the zone and the orbit.
             double cos_inc,
 
             ///The index in the list of locked zones of this zone if it is
             ///locked.
-            unsigned locked_zone_ind, 
+            unsigned locked_zone_ind,
 
             ///Overwritten by the result. Should have the correct size.
             double *result
@@ -720,7 +720,7 @@ namespace Evolve {
             ///Overwritten by the result. Should have the correct size.
             double *result
         ) const;
-                
+
         ///Calculates the jacobian for the evolution of a system of two bodies.
         void binary_jacobian(
             ///On output is set to the Jacobian.
@@ -745,7 +745,7 @@ namespace Evolve {
         BinarySystem(
             ///The first body in the system. Assumed to always be there, so
             ///for a star-planet system this should be the star.
-            DissipatingBody &body1, 
+            DissipatingBody &body1,
 
             ///The second body in the system, initially may not be there and
             ///later may be engulfed by the first body.
@@ -755,7 +755,7 @@ namespace Evolve {
             const std::string &system_name=""
         ) :
         __name(system_name),
-        __above_lock_fractions(Dissipation::NUM_DERIVATIVES), 
+        __above_lock_fractions(Dissipation::NUM_DERIVATIVES),
         __body1(body1),
         __body2(body2)
         {}
@@ -777,7 +777,7 @@ namespace Evolve {
             ///The eccentricity of the orbit.
             double eccentricity,
 
-            ///The spin angular momenta of the zones of the bodies (body 1 
+            ///The spin angular momenta of the zones of the bodies (body 1
             ///first, outermost zone to innermost, followed by body 2).
             const double *spin_angmom,
 
@@ -805,7 +805,7 @@ namespace Evolve {
             double age,
 
             ///The parameters being evolved. See differential_equations().
-            const double *parameters, 
+            const double *parameters,
 
             ///The evolution mode to assume for the system.
             Core::EvolModeType evolution_mode
@@ -833,7 +833,10 @@ namespace Evolve {
         ///The current semimajor axis of the system.
         double semimajor() const {return __semimajor;}
 
-        ///\brief Fills an array with the parameters expected by 
+        ///The current eccentricity of the system.
+        double eccentricity() const {return __eccentricity;}
+
+        ///\brief Fills an array with the parameters expected by
         ///differential_equations() and jacobian(), returning the evolution mode.
         ///
         ///The system must be appropriately configure() -ed already.
@@ -919,10 +922,10 @@ namespace Evolve {
         ///Calls configure()!
         int jacobian(
             ///The age of the system.
-            double age, 
+            double age,
 
             ///See differential_equations()
-            const double *parameters, 
+            const double *parameters,
 
             ///The evolution mode to assume for the system.
             Core::EvolModeType evolution_mode,
@@ -935,12 +938,12 @@ namespace Evolve {
             ///parameters w.r.t. age.
             double *age_derivs
         );
-        
+
         ///\brief Check if a spin-orbit lock can be held and updates the system
         ///as necessary to calculate subsequent evolution.
         void check_for_lock(
             ///The multiplier of the orbital frequency at the lock
-            int orbital_freq_mult, 
+            int orbital_freq_mult,
 
             ///The multiplier of the spin frequency of the potentially locked
             ///zone at the lock.
@@ -957,13 +960,13 @@ namespace Evolve {
             short direction
         );
 
-        ///\brief Smallest semimajor axis at which the secondary can survive for 
+        ///\brief Smallest semimajor axis at which the secondary can survive for
         ///the latest system configuration.
         ///
         ///By default returns the larger of:
         /// - primary radius.
         /// - 2.44*(secondary radius)*((primary mass)/(secondary mass))^(1/3)
-        virtual double minimum_semimajor(
+        virtual double minimum_separation(
             ///If true the rate of change (per Gyr) is returned.
             bool deriv=false
         ) const;
@@ -1009,7 +1012,7 @@ namespace Evolve {
         ///\brief Change the system as necessary at the given age.
         ///
         ///Handles things like the disk dissipating, the planet forming and
-        ///interpolation discontinuities. 
+        ///interpolation discontinuities.
         virtual void reached_critical_age(double age);
 
         ///\brief The next age when the evolution needs to be stopped for a

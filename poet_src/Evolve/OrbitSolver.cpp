@@ -645,8 +645,9 @@ namespace Evolve {
             double error_ratio = (
                 std::abs(expansion_errors[i])
                 /
-                (__precision * derivatives[i] + __precision)
+                (__precision * std::abs(derivatives[i]) + __precision)
             );
+            assert(error_ratio > 0);
             if(error_ratio > 1.0)
                 return 1;
             {

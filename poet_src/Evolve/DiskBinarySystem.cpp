@@ -27,7 +27,7 @@ namespace Evolve {
 #endif
         unsigned nzones = primary().number_zones() + secondary().number_zones();
         std::valarray<double> angmom(nzones),
-                              inclination(nzones), 
+                              inclination(nzones),
                               periapsis(nzones - 1);
         unsigned zone_ind = 0;
         for(short body_ind = 0; body_ind < 2; ++body_ind) {
@@ -56,7 +56,12 @@ namespace Evolve {
                   &(inclination[0]),
                   &(periapsis[0]),
                   Core::BINARY);
-        if(semimajor() < minimum_semimajor()) secondary_died();
+        if(
+            semimajor() * (1.0 - eccentricity())
+            <
+            minimum_separation()
+        )
+            secondary_died();
     }
 
     DiskBinarySystem::DiskBinarySystem(DissipatingBody &body1,

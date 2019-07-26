@@ -2348,7 +2348,7 @@ namespace Evolve {
                                 Core::LOCKED_SURFACE_SPIN);
 
 
-            double adestr = __system->minimum_semimajor(),
+            double adestr = __system->minimum_separation(),
                    tdestr = ((beta / 2.0 * std::pow(adestr, 3)
                               +
                               int_const
