@@ -38,7 +38,7 @@ model {
                 getGSLLinkerArgs().each{linker.args it}
                 linker.args "-l" + ensureLibraryVersion(
                     "boost_serialization",
-                    [min: "1.54", max: "2.0"]
+                    [min: "1.53", max: "2.0"]
                 )
                 linker.args "-l" + ensureLibraryVersion("pthread")
 
@@ -185,37 +185,37 @@ model {
 
         }
 
-        testEvolve(NativeExecutableSpec) {
-            sources.cpp {
-                source {
-                    srcDir "poet_src/unit_tests/testEvolve"
-                    source {
-                        srcDir "poet_src/unit_tests/shared"
-                        include "**/*.cpp"
-                    }
-                    include "**/*.cpp"
-                }
-                source {
-                    srcDir "poet_src/Core"
-                    include "**/*.cpp"
-                }
-                source {
-                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
-                    include "**/*.cpp"
-                }
-            }
-            binaries.all {
-                cppCompiler.define "STANDALONE"
-                linker.args "-l" + ensureLibraryVersion("cpptest")
-
-                lib library: "eigen"
-                lib library: "stellarEvolution"
-                lib library: "star"
-                lib library: "planet"
-                lib library: "evolve"
-                lib library: "dirent"
-            }
-        }
+//        testEvolve(NativeExecutableSpec) {
+//            sources.cpp {
+//                source {
+//                    srcDir "poet_src/unit_tests/testEvolve"
+//                    source {
+//                        srcDir "poet_src/unit_tests/shared"
+//                        include "**/*.cpp"
+//                    }
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/Core"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+//                    include "**/*.cpp"
+//                }
+//            }
+//            binaries.all {
+//                cppCompiler.define "STANDALONE"
+//                linker.args "-l" + ensureLibraryVersion("cpptest")
+//
+//                lib library: "eigen"
+//                lib library: "stellarEvolution"
+//                lib library: "star"
+//                lib library: "planet"
+//                lib library: "evolve"
+//                lib library: "dirent"
+//            }
+//        }
 
         debugStellarEvolution(NativeExecutableSpec) {
             sources.cpp {
