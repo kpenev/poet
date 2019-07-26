@@ -647,7 +647,7 @@ namespace Evolve {
                 /
                 (__precision * std::abs(derivatives[i]) + __precision)
             );
-            assert(error_ratio > 0);
+            assert(error_ratio >= 0);
             if(error_ratio > 1.0)
                 return 1;
             {
