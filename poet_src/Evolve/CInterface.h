@@ -331,6 +331,9 @@ extern "C" {
         ///The star which was evolved.
         const EvolvingStar *star,
 
+        ///The planet which was evolved,
+        const CPlanet *planet,
+
         ///An array to fill with the ages at which the evolution was
         ///calculated.
         double *age,
@@ -366,6 +369,19 @@ extern "C" {
         ///An array to fill with the angular momentum of the stellar
         ///radiative core.
         double *core_angmom,
+
+        ///An array to fill wit the angle between the planet's and the
+        ///orbital angular momentum (pass NULL if the planet is not
+        ///dissipative).
+        double *planet_inclination,
+
+        ///An array to fill wit the  periapsis of the orbit in the equatorial
+        ///plane of the planet (pass NULL if the planet is not dissipative).
+        double *planet_periapsis,
+
+        ///An array to fill wit the angular momentum of the planet (pass NULL if
+        ///the planet is not dissipative).
+        double *planet_angmom,
 
         ///An array to fill with the evolution mode of the system.
         int *evolution_mode,
@@ -483,6 +499,9 @@ extern "C" {
         ///The star which was evolved.
         const EvolvingStar *star,
 
+        ///The planet which was evolved.
+        const CPlanet *planet,
+
         ///An array to fill with the ages at which the evolution was
         ///calculated.
         double *age,
@@ -495,29 +514,42 @@ extern "C" {
         ///evolution steps.
         double *eccentricity,
 
-        ///An array to fill with the angle between the stellar convective
+        ///To overwrite with the angle between the stellar convective
         ///envelope and the orbital angular momenta.
         double *envelope_inclination,
 
-        ///An array to fill with the angle between the stellar radiative core
+        ///To overwrite with the angle between the stellar radiative core
         ///and the orbital angular momenta.
         double *core_inclination,
 
-        ///An array to fill with the periapsis of the orbit in the equatorial
+        ///To overwrite with the periapsis of the orbit in the equatorial
         ///plane of the stellar convective envelope.
         double *envelope_periapsis,
 
-        ///An array to fill with the periapsis of the orbit in the equatorial
+        ///To overwrite with the periapsis of the orbit in the equatorial
         ///plane of the stellar radiative core.
         double *core_periapsis,
 
-        ///An array to fill with the angular momentum of the stellar
+        ///To overwrite with the angular momentum of the stellar
         ///convective envelope.
         double *envelope_angmom,
 
-        ///An array to fill with the angular momentum of the stellar
+        ///To overwrite with the angular momentum of the stellar
         ///radiative core.
         double *core_angmom,
+
+        ///To overwrite with the angle between the planet's and the
+        ///orbital angular momentum (pass NULL if the planet is not
+        ///dissipative).
+        double *planet_inclination,
+
+        ///To overwrite with the  periapsis of the orbit in the equatorial
+        ///plane of the planet (pass NULL if the planet is not dissipative).
+        double *planet_periapsis,
+
+        ///To overwrite with the angular momentum of the planet (pass NULL if
+        ///the planet is not dissipative).
+        double *planet_angmom,
 
         ///An array to fill with the evolution mode of the system.
         int *evolution_mode,

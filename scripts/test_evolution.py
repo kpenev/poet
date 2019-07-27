@@ -22,13 +22,21 @@ from astropy import units, constants
 
 wsun = 2.0 * numpy.pi / 25.34
 
-def create_planet(mass = (constants.M_jup / constants.M_sun).to('')) :
+def create_planet(mass = (constants.M_jup / constants.M_sun).to(''),
+                  phase_lag=0.0) :
     """Return a configured planet to use in the evolution."""
 
     planet = LockedPlanet(
         mass = mass,
         radius = (constants.R_jup / constants.R_sun).to('')
     )
+    if phase_lag:
+        print('Setting planet dissipation')
+        planet.set_dissipation(tidal_frequency_breaks = None,
+                               spin_frequency_breaks = None,
+                               tidal_frequency_powers = numpy.array([0.0]),
+                               spin_frequency_powers = numpy.array([0.0]),
+                               reference_phase_lag = phase_lag)
     return planet
 
 def create_star(interpolator, convective_phase_lag) :
@@ -40,19 +48,15 @@ def create_star(interpolator, convective_phase_lag) :
                         wind_saturation_frequency = 2.45,
                         diff_rot_coupling_timescale = 5.0e-3,
                         interpolator = interpolator)
+    if convective_phase_lag:
+        print('Setting star dissipation')
+        star.set_dissipation(zone_index = 0,
+                             tidal_frequency_breaks = None,
+                             spin_frequency_breaks = None,
+                             tidal_frequency_powers = numpy.array([0.0]),
+                             spin_frequency_powers = numpy.array([0.0]),
+                             reference_phase_lag = convective_phase_lag)
     star.select_interpolation_region(star.core_formation_age())
-    star.set_dissipation(zone_index = 0,
-                         tidal_frequency_breaks = None,
-                         spin_frequency_breaks = None,
-                         tidal_frequency_powers = numpy.array([0.0]),
-                         spin_frequency_powers = numpy.array([0.0]),
-                         reference_phase_lag = convective_phase_lag)
-    star.set_dissipation(zone_index = 1,
-                         tidal_frequency_breaks = None,
-                         spin_frequency_breaks = None,
-                         tidal_frequency_powers = numpy.array([0.0]),
-                         spin_frequency_powers = numpy.array([0.0]),
-                         reference_phase_lag = 0.0)
     return star
 
 def create_system(star,
@@ -92,15 +96,16 @@ def create_system(star,
     return binary
 
 def test_evolution(interpolator,
-                   convective_phase_lag = phase_lag(5.5)) :
+                   convective_phase_lag = phase_lag(5.5),
+                   planet_phase_lag = 0.0) :
     """Run a single orbital evolution calculation and plot the results."""
 
-    for pdisk, color, wsat_enabled in [(1.4, 'r', '1')] :#, 
-#                                       (3.0, 'g', '2'), 
+    for pdisk, color, wsat_enabled in [(1.4, 'r', '1')] :#,
+#                                       (3.0, 'g', '2'),
 #                                       (7.0, 'b', '3')] :
         star = create_star(interpolator = interpolator,
-                           convective_phase_lag = convective_phase_lag)
-        planet = create_planet()
+                           convective_phase_lag=convective_phase_lag)
+        planet = create_planet(phase_lag=planet_phase_lag)
         binary = create_system(star, planet, 2.0 * numpy.pi / pdisk)
 
         binary.evolve(10.0, 0.001, 1e-6, None)
@@ -112,9 +117,10 @@ def test_evolution(interpolator,
                                 'eccentricity',
                                 'envelope_angmom',
                                 'core_angmom',
-                                'wind_saturation']
+                                'wind_saturation',
+                                'planet_angmom']
         evolution = binary.get_evolution(evolution_quantities)
-        worb = (2.0 * numpy.pi / binary.orbital_period(evolution.semimajor) 
+        worb = (2.0 * numpy.pi / binary.orbital_period(evolution.semimajor)
                 /
                 wsun)
         wenv = (evolution.envelope_angmom
@@ -123,36 +129,55 @@ def test_evolution(interpolator,
         wcore = (evolution.core_angmom
                  /
                  binary.primary.core_inertia(evolution.age)) / wsun
+
+        planet_inertia = 0.3 * planet.mass * planet.radius**2
+
+        print('Lplanet = ' + repr(evolution.planet_angmom))
+
+        wplanet = (evolution.planet_angmom / planet_inertia) / wsun
+
+        print('Wplanet = ' + repr(wplanet))
+
         numpy.savetxt(
             'Pdisk=%f.evol' % pdisk,
-            numpy.dstack(
-                [evolution.age, worb, wenv, wcore, evolution.wind_saturation]
-            )[0],
+            numpy.dstack([evolution.age,
+                          worb,
+                          wenv,
+                          wcore,
+                          wplanet,
+                          evolution.wind_saturation])[0],
             fmt = '%25s',
-            header = ' '.join(['%25s' % q for q in 
-                               ['t', 'worb', 'wenv', 'wcore', 'wind_sat']])
+            header = ' '.join(
+                ['%25s' % q
+                 for q in ['t', 'worb', 'wenv', 'wcore', 'wplanet', 'wind_sat']]
+            )
         )
 #        pyplot.loglog(
 #            evolution.age,
 #            (
-#                2.0 * numpy.pi / binary.orbital_period(evolution.semimajor) 
+#                2.0 * numpy.pi / binary.orbital_period(evolution.semimajor)
 #                /
 #                wsun
 #            ),
 #            '-r'
 #        )
         pyplot.loglog(evolution.age,  worb, '-' + color)
-        pyplot.loglog(evolution.age[evolution.wind_saturation], 
+        pyplot.loglog(evolution.age[evolution.wind_saturation],
                       wenv[evolution.wind_saturation],
-                      '.' + color)
+                      'o' + color,
+                      markerfacecolor=color)
         pyplot.loglog(
-            evolution.age[numpy.logical_not(evolution.wind_saturation)], 
+            evolution.age[numpy.logical_not(evolution.wind_saturation)],
             wenv[numpy.logical_not(evolution.wind_saturation)],
-            'x' + color
+            'o' + color,
+            markerfacecolor='none'
         )
         pyplot.loglog(evolution.age,
                       wcore,
-                      ':' + color)
+                      'x' + color)
+        pyplot.loglog(evolution.age,
+                      wplanet,
+                      '.' + color)
 
 #        wind_sat = numpy.zeros(evolution.age.shape)
 #        wind_sat[evolution.wind_saturation] = wsat_enabled
@@ -196,5 +221,7 @@ if __name__ == '__main__' :
     manager = StellarEvolutionManager(serialized_dir)
     interpolator = manager.get_interpolator_by_name('default')
 
-    test_evolution(interpolator, phase_lag(6.0))
+    test_evolution(interpolator,
+                   planet_phase_lag=phase_lag(7.0),
+                   convective_phase_lag=0.0*phase_lag(6.0))
 #    test_ic_solver()

@@ -84,6 +84,7 @@ int main(int, char **)
         solver,
         system,
         star,
+        planet,
         age,
         semimajor,
         NULL, //eeccentricity
@@ -93,6 +94,9 @@ int main(int, char **)
         NULL, //core periapsis
         lconv,//envelope angmom
         lrad, //core angmom
+        NULL, //planet inclination
+        NULL, //planet periapsis
+        NULL, //planet angular momentum
         NULL, //evolution mode
         NULL  //wind saturation
     );

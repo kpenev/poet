@@ -2203,7 +2203,7 @@ namespace Evolve {
                   Core::BINARY);
     }
 
-    double BinarySystem::minimum_semimajor(bool deriv) const
+    double BinarySystem::minimum_separation(bool deriv) const
     {
         double rroche = (
             __body2.radius()

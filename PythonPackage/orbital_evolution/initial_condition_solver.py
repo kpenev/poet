@@ -86,11 +86,11 @@ class InitialConditionSolver:
         if isinstance(self.secondary, EvolvingStar):
             self.secondary.detect_stellar_wind_saturation()
         self.binary.evolve(
-            self.target.age,
-            self.configuration['max time step'],
-            self.configuration['precision'],
-            None,
-            True
+            final_age=self.target.age,
+            max_time_step=self.configuration['max time step'],
+            precision=self.configuration['precision'],
+            required_ages=None,
+            print_progress=False
         )
         final_state = self.binary.final_state()
         #False positives
@@ -102,7 +102,9 @@ class InitialConditionSolver:
             *
             self.binary.primary.envelope_inertia(final_state.age)
             /
-            final_state.primary_envelope_angmom
+            getattr(final_state,
+                    'primary_envelope_angmom',
+                    final_state.envelope_angmom)
         )
         #pylint: enable=no-member
         print('Got Porb = %s, P* = %s'
@@ -142,7 +144,21 @@ class InitialConditionSolver:
             else:
                 porb_max = porb_initial
             porb_initial *= step
+            print('Before evolution:'
+                  +
+                  '\n\tporb_error = %s' % repr(porb_error)
+                  +
+                  '\n\tguess_porb_error = %s' % repr(guess_porb_error)
+                  +
+                  '\n\tporb_initial = %s' % repr(porb_initial)
+                  +
+                  '\n\tporb_min = %s' % porb_min
+                  +
+                  '\n\tporb_max = %s' % porb_max
+                  +
+                  '\n\tstep = %s' % step)
             porb = self._try_initial_conditions(porb_initial, disk_period)[0]
+            print('After evolution: porb = %s' % repr(porb))
             if not scipy.isnan(porb):
                 porb_error = porb - self.target.Porb
 

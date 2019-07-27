@@ -24,6 +24,7 @@ class DissipatingBody(ABC):
 
         self.dissipation = dict()
         self.spin_angmom = None
+        self.is_dissipative = False
 
     def configure(self,
                   *,
@@ -95,3 +96,4 @@ class DissipatingBody(ABC):
         """Record the dissipation that was defined for a zone of the body."""
 
         self.dissipation[zone_index] = dict(dissipation_params)
+        self.is_dissipative = True
