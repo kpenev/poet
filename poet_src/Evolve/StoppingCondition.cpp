@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief The implementations of the various stopping condition methods.
  *
  * \ingroup OrbitSolver_group
