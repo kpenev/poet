@@ -12,6 +12,9 @@ var dir_995cd6c2711b02ce08a6c1561179f65c =
       [ "RhoCGS", "classstellar__evolution_1_1derived__stellar__quantities_1_1RhoCGS.html", "classstellar__evolution_1_1derived__stellar__quantities_1_1RhoCGS" ]
     ] ],
     [ "library_interface.py", "library__interface_8py.html", "library__interface_8py" ],
-    [ "manager.py", "manager_8py.html", "manager_8py" ],
+    [ "managed_interpolator.py", "managed__interpolator_8py.html", "managed__interpolator_8py" ],
+    [ "manager.py", "manager_8py.html", [
+      [ "StellarEvolutionManager", "classstellar__evolution_1_1manager_1_1StellarEvolutionManager.html", "classstellar__evolution_1_1manager_1_1StellarEvolutionManager" ]
+    ] ],
     [ "manager_data_model.py", "manager__data__model_8py.html", "manager__data__model_8py" ]
 ];

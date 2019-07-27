@@ -1,7 +1,7 @@
 var classstellar__evolution_1_1change__variables_1_1QuantityEvaluator =
 [
     [ "__init__", "classstellar__evolution_1_1change__variables_1_1QuantityEvaluator.html#a3d3302f03b471c45e693e2d78006b1f1", null ],
-    [ "_evaluate", "classstellar__evolution_1_1change__variables_1_1QuantityEvaluator.html#af29e53368d1d50c1083c618797ade72a", null ],
+    [ "_evaluate", "classstellar__evolution_1_1change__variables_1_1QuantityEvaluator.html#a9d0801d18dd7a75e8bd74035c3629eee", null ],
     [ "logg", "classstellar__evolution_1_1change__variables_1_1QuantityEvaluator.html#a087f84b30a3bd366e65b8e5da845161a", null ],
     [ "lum", "classstellar__evolution_1_1change__variables_1_1QuantityEvaluator.html#a60c046b974f329de3cdf0ca6095e0344", null ],
     [ "rho", "classstellar__evolution_1_1change__variables_1_1QuantityEvaluator.html#a09a341db7be69d1c392091d5c3bfc4dc", null ],

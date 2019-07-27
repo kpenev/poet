@@ -24,6 +24,7 @@ var dir_08389f9c72fab3fa939892ce5a81a233 =
       [ "OneArgumentDiffFunction", "classCore_1_1OneArgumentDiffFunction.html", "classCore_1_1OneArgumentDiffFunction" ],
       [ "ZeroFunction", "classCore_1_1ZeroFunction.html", "classCore_1_1ZeroFunction" ]
     ] ],
+    [ "IncludeEigen.h", "IncludeEigen_8h.html", null ],
     [ "InterpolatingFunctionALGLIB.cpp", "InterpolatingFunctionALGLIB_8cpp.html", null ],
     [ "InterpolatingFunctionALGLIB.h", "InterpolatingFunctionALGLIB_8h.html", [
       [ "InterpolatingFunctionALGLIB", "classCore_1_1InterpolatingFunctionALGLIB.html", "classCore_1_1InterpolatingFunctionALGLIB" ]

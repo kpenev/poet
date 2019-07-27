@@ -4,9 +4,5 @@ var dir_d4e9d01515196ff932a069d16cb1a06e =
     [ "stellar_evolution", "dir_995cd6c2711b02ce08a6c1561179f65c.html", "dir_995cd6c2711b02ce08a6c1561179f65c" ],
     [ "tests", "dir_c9539567694d78c4b0f819a921a65b4f.html", "dir_c9539567694d78c4b0f819a921a65b4f" ],
     [ "basic_utils.py", "basic__utils_8py.html", "basic__utils_8py" ],
-    [ "evolution_cmdline_args.py", "evolution__cmdline__args_8py.html", "evolution__cmdline__args_8py" ],
-    [ "poet_interp.py", "poet__interp_8py.html", [
-      [ "Structure", "classpoet__interp_1_1Structure.html", "classpoet__interp_1_1Structure" ],
-      [ "PoetInterp", "classpoet__interp_1_1PoetInterp.html", "classpoet__interp_1_1PoetInterp" ]
-    ] ]
+    [ "evolution_cmdline_args.py", "evolution__cmdline__args_8py.html", "evolution__cmdline__args_8py" ]
 ];

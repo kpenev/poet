@@ -14,7 +14,7 @@ var Star_2CInterface_8h =
     [ "luminosity_array", "Star_2CInterface_8h.html#ad87fe098a108d5b9f1ad55f7fc97db87", null ],
     [ "modified_phase_lag", "Star_2CInterface_8h.html#a81c1e9a69798bdc67ca146a50770e34c", null ],
     [ "select_interpolation_region", "Star_2CInterface_8h.html#ac4a2340985e2148305ad54eb1cf71972", null ],
-    [ "set_dissipation", "Star_2CInterface_8h.html#add771a5564a43bd6ce563a3e6fe1013b", null ],
+    [ "set_star_dissipation", "Star_2CInterface_8h.html#a173549731ce40529fd3eb2c8fe4205be", null ],
     [ "star_radius", "Star_2CInterface_8h.html#adb2b3ffe0a6892fddc5fd8f3e1494552", null ],
     [ "star_radius_array", "Star_2CInterface_8h.html#a6ff348a923a3014b6b6593a81a4548a0", null ],
     [ "AGE_DERIV", "Star_2CInterface_8h.html#a392ec0a73b4c258ddae5cb915557b2ad", null ],

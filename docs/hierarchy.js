@@ -19,9 +19,8 @@ var hierarchy =
       [ "stellar_evolution.manager_data_model.VarchangeGrid", "classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html", null ],
       [ "stellar_evolution.manager_data_model.VarchangeMassNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeMassNode.html", null ]
     ] ],
-    [ "orbital_evolution.dissipating_body.DissipatingBody", "classorbital__evolution_1_1dissipating__body_1_1DissipatingBody.html", null ],
     [ "Evolve::DissipatingBody", "classEvolve_1_1DissipatingBody.html", [
-      [ "Planet::LockedPlanet", "classPlanet_1_1LockedPlanet.html", null ],
+      [ "Planet::Planet", "classPlanet_1_1Planet.html", null ],
       [ "Star::ExponentialDecayDiffRotBody", "classStar_1_1ExponentialDecayDiffRotBody.html", [
         [ "Star::InterpolatedEvolutionStar", "classStar_1_1InterpolatedEvolutionStar.html", null ]
       ] ],
@@ -34,8 +33,8 @@ var hierarchy =
       [ "orbital_evolution.star_interface.EvolvingStar", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html", null ]
     ] ],
     [ "Evolve::EccentricityExpansionCoefficients", "classEvolve_1_1EccentricityExpansionCoefficients.html", null ],
-    [ "StellarEvolution::MESA::EvolutionIterator", "classStellarEvolution_1_1MESA_1_1EvolutionIterator.html", null ],
     [ "EvolutionIterator", "classEvolutionIterator.html", null ],
+    [ "StellarEvolution::MESA::EvolutionIterator", "classStellarEvolution_1_1MESA_1_1EvolutionIterator.html", null ],
     [ "exception", null, [
       [ "Core::Error::General", "classCore_1_1Error_1_1General.html", [
         [ "Core::Error::ALGLIB", "classCore_1_1Error_1_1ALGLIB.html", null ],
@@ -75,14 +74,7 @@ var hierarchy =
     [ "stellar_evolution.derived_stellar_quantities.LogGCGS", "classstellar__evolution_1_1derived__stellar__quantities_1_1LogGCGS.html", null ],
     [ "stellar_evolution.library_interface.MESAInterpolator", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html", [
       [ "stellar_evolution.change_variables.VarChangingInterpolator", "classstellar__evolution_1_1change__variables_1_1VarChangingInterpolator.html", [
-        [ "stellar_evolution.manager.ManagedInterpolator", "classstellar__evolution_1_1manager_1_1ManagedInterpolator.html", null ]
-      ] ]
-    ] ],
-    [ "object", null, [
-      [ "stellar_evolution.manager_data_model.VarchangeGridNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeGridNode.html", [
-        [ "stellar_evolution.manager_data_model.VarchangeAgeNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeAgeNode.html", null ],
-        [ "stellar_evolution.manager_data_model.VarchangeFeHNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeFeHNode.html", null ],
-        [ "stellar_evolution.manager_data_model.VarchangeMassNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeMassNode.html", null ]
+        [ "stellar_evolution.managed_interpolator.ManagedInterpolator", "classstellar__evolution_1_1managed__interpolator_1_1ManagedInterpolator.html", null ]
       ] ]
     ] ],
     [ "Core::OneArgumentFunction< InputDataType, OutputDataType >", "classCore_1_1OneArgumentFunction.html", null ],
@@ -97,7 +89,6 @@ var hierarchy =
       ] ]
     ] ],
     [ "Evolve::OrbitSolver", "classEvolve_1_1OrbitSolver.html", null ],
-    [ "poet_interp.PoetInterp", "classpoet__interp_1_1PoetInterp.html", null ],
     [ "stellar_evolution.library_interface.Quantity", "classstellar__evolution_1_1library__interface_1_1Quantity.html", null ],
     [ "stellar_evolution.change_variables.QuantityEvaluator", "classstellar__evolution_1_1change__variables_1_1QuantityEvaluator.html", null ],
     [ "stellar_evolution.derived_stellar_quantities.RhoCGS", "classstellar__evolution_1_1derived__stellar__quantities_1_1RhoCGS.html", null ],
@@ -124,21 +115,28 @@ var hierarchy =
       [ "Star::WindSaturationCondition", "classStar_1_1WindSaturationCondition.html", null ]
     ] ],
     [ "basic_utils.Structure", "classbasic__utils_1_1Structure.html", null ],
-    [ "poet_interp.Structure", "classpoet__interp_1_1Structure.html", null ],
     [ "stellar_evolution.derived_stellar_quantities.TeffK", "classstellar__evolution_1_1derived__stellar__quantities_1_1TeffK.html", null ],
     [ "Evolve::TidalPotentialTerms", "classEvolve_1_1TidalPotentialTerms.html", null ],
     [ "Evolve::TidalTermTriplet", "classEvolve_1_1TidalTermTriplet.html", null ],
+    [ "stellar_evolution.manager_data_model.VarchangeGridNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeGridNode.html", [
+      [ "stellar_evolution.manager_data_model.VarchangeAgeNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeAgeNode.html", null ],
+      [ "stellar_evolution.manager_data_model.VarchangeFeHNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeFeHNode.html", null ],
+      [ "stellar_evolution.manager_data_model.VarchangeMassNode", "classstellar__evolution_1_1manager__data__model_1_1VarchangeMassNode.html", null ]
+    ] ],
     [ "YRECHeader", "classYRECHeader.html", null ],
     [ "Evolve::ZoneOrientation", "classEvolve_1_1ZoneOrientation.html", [
       [ "Evolve::DissipatingZone", "classEvolve_1_1DissipatingZone.html", [
         [ "Evolve::BrokenPowerlawPhaseLagZone", "classEvolve_1_1BrokenPowerlawPhaseLagZone.html", [
+          [ "Planet::PlanetZone", "classPlanet_1_1PlanetZone.html", null ],
           [ "Star::EvolvingStellarZone", "classStar_1_1EvolvingStellarZone.html", [
             [ "Star::EvolvingStellarCore", "classStar_1_1EvolvingStellarCore.html", null ],
             [ "Star::EvolvingStellarEnvelope", "classStar_1_1EvolvingStellarEnvelope.html", null ]
           ] ]
-        ] ],
-        [ "Planet::LockedPlanetZone", "classPlanet_1_1LockedPlanetZone.html", null ]
+        ] ]
       ] ]
+    ] ],
+    [ "ABC", null, [
+      [ "orbital_evolution.dissipating_body.DissipatingBody", "classorbital__evolution_1_1dissipating__body_1_1DissipatingBody.html", null ]
     ] ],
     [ "c_void_p", null, [
       [ "orbital_evolution.dissipating_body.c_dissipating_body_p", "classorbital__evolution_1_1dissipating__body_1_1c__dissipating__body__p.html", null ],

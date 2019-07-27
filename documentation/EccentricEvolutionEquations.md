@@ -10,7 +10,7 @@ The orbital energy and angular momentum are:
 Hence:
 \f{eqnarray*}{
 	\dot{a}&=&a\frac{-\dot{E}}{E}\\
-	\dot{e}&=&\frac{(M+M')}{G(MM')^3}\frac{(\dot{E}L+2E\dot{L})L}{e}\\
+	\dot{e}&=&\frac{(M+M')}{G^2(MM')^3}\frac{(\dot{E}L+2E\dot{L})L}{e}\\
 \f}
 
 Now consider a single zone subject to tidal torques. We will use the

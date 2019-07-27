@@ -2,18 +2,18 @@ var NAVTREE =
 [
   [ "poet", "index.html", [
     [ "Description", "index.html", null ],
-    [ "Evolution Equations From Tidal Torque+Power", "EccentricEvolutionEquations.html", null ],
-    [ "A table of curly U values as originally defined in Lai (2012)", "InclinationEccentricity_Ummtable.html", null ],
-    [ "About", "md_documentation_About.html", null ],
-    [ "Tidal Torque for Inclined and Eccentric Orbits", "InclinationEccentricity_torque.html", null ],
     [ "Implementation", "md_documentation_Implementation.html", null ],
     [ "Tidal Power for Inclined and Eccentric Orbits", "InclinationEccentricity_power.html", null ],
+    [ "Calculation of the Pm,s Coefficients", "InclinationEccentricity_pms2.html", null ],
+    [ "A table of curly U values as originally defined in Lai (2012)", "InclinationEccentricity_Ummtable.html", null ],
     [ "Inclined and Eccentric Orbital Evolution (NOT IMPLEMENTED YET!!!)", "InclinationEccentricity.html", null ],
+    [ "Evolution Equations From Tidal Torque+Power", "EccentricEvolutionEquations.html", null ],
     [ "Acknowledgements", "md_documentation_Acknowledgements.html", null ],
     [ "Calculation of the Pm,s Coefficients", "InclinationEccentricity_pms1.html", null ],
-    [ "Calculation of the Pm,s Coefficients", "InclinationEccentricity_pms2.html", null ],
-    [ "The Python Orbital Evolution Module", "OrbitalEvolutionReadMe.html", null ],
+    [ "Tidal Torque for Inclined and Eccentric Orbits", "InclinationEccentricity_torque.html", null ],
+    [ "About", "md_documentation_About.html", null ],
     [ "The Python Stellar Evolution Module", "StellarEvolutionReadMe.html", null ],
+    [ "The Python Orbital Evolution Module", "OrbitalEvolutionReadMe.html", null ],
     [ "POET Python Interface", "PythonPackageReadMe.html", null ],
     [ "Todo List", "todo.html", null ],
     [ "Modules", "modules.html", "modules" ],
@@ -56,14 +56,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AllowedGridGrowth_8h.html",
-"LagSpinBreakCondition_8cpp.html",
-"classCore_1_1Error_1_1IO.html",
-"classEvolve_1_1DissipatingBody.html#a0490a32914bda4938feb2d1c89ba31c0",
-"classEvolve_1_1StopHistoryInterval.html#a31b9638761266457f255b7898446c04b",
-"classStellarEvolution_1_1AllowedGridGrowth.html#afdba08b152e18dc518579cc344373d37",
-"classorbital__evolution_1_1binary_1_1Binary.html#a378e3362fbaaae346aef16b51cc61168",
-"classstellar__evolution_1_1manager__data__model_1_1VarchangeGrid.html",
-"group__UnitTests__group.html"
+"Interpolator_8cpp.html#a9984662919fb47d29bf2c64585f39447",
+"calculate__evolution__template_8cpp.html#a97a7a16aac03c803f20a298c7b4a3e8a",
+"classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ac53745a06b73e66c7620c61fa8f1de4a",
+"classEvolve_1_1OrbitSolver.html#adb3081f8d3158cffab8127a85b653b6d",
+"classStar_1_1InterpolatedEvolutionStar.html#ab304a55a503f5899d896fc6f29d38b9f",
+"classStellarEvolution_1_1ZeroQuantity.html#a337cfcf33414b6eb8b4d857193fa01da",
+"classstellar__evolution_1_1manager__data__model_1_1ModelSuite.html",
+"group__StellarEvolution__group.html#gabba5d3523382717495a76e6ae5fa7f19"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

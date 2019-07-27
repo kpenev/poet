@@ -17,6 +17,7 @@ var classorbital__evolution_1_1star__interface_1_1EvolvingStar =
     [ "deriv_ids", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a349592d67399ffed746c0e3e3d859185", null ],
     [ "deriv_list", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#ae93ec45245a21099652f6ecd8f49c8db", null ],
     [ "diff_rot_coupling_timescale", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a7b7e8239d517280c3835f3d7e8213891", null ],
+    [ "interpolator", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a1119ecfea7279b389616145ca5684994", null ],
     [ "lib_configure_body", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a5f5df79ea76934c7d3eafca58c3e441a", null ],
     [ "mass", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a316eb6db584e801b34d028f70bc9a2c5", null ],
     [ "metallicity", "classorbital__evolution_1_1star__interface_1_1EvolvingStar.html#a050dba0ed06d3697d507210e5923492b", null ],

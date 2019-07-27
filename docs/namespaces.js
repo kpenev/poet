@@ -7,7 +7,6 @@ var namespaces =
     [ "Evolve", "namespaceEvolve.html", "namespaceEvolve" ],
     [ "orbital_evolution", "namespaceorbital__evolution.html", "namespaceorbital__evolution" ],
     [ "Planet", "namespacePlanet.html", null ],
-    [ "poet_interp", "namespacepoet__interp.html", null ],
     [ "Star", "namespaceStar.html", null ],
     [ "std", "namespacestd.html", null ],
     [ "stellar_evolution", "namespacestellar__evolution.html", "namespacestellar__evolution" ],

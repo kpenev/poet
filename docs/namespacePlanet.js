@@ -1,5 +1,5 @@
 var namespacePlanet =
 [
-    [ "LockedPlanet", "classPlanet_1_1LockedPlanet.html", "classPlanet_1_1LockedPlanet" ],
-    [ "LockedPlanetZone", "classPlanet_1_1LockedPlanetZone.html", "classPlanet_1_1LockedPlanetZone" ]
+    [ "Planet", "classPlanet_1_1Planet.html", "classPlanet_1_1Planet" ],
+    [ "PlanetZone", "classPlanet_1_1PlanetZone.html", "classPlanet_1_1PlanetZone" ]
 ];

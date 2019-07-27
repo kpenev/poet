@@ -5,6 +5,7 @@ var searchData=
   ['customstellarevolution',['CustomStellarEvolution',['../namespaceStellarEvolution_1_1CustomStellarEvolution.html',1,'StellarEvolution']]],
   ['derived_5fstellar_5fquantities',['derived_stellar_quantities',['../namespacestellar__evolution_1_1derived__stellar__quantities.html',1,'stellar_evolution']]],
   ['library_5finterface',['library_interface',['../namespacestellar__evolution_1_1library__interface.html',1,'stellar_evolution']]],
+  ['managed_5finterpolator',['managed_interpolator',['../namespacestellar__evolution_1_1managed__interpolator.html',1,'stellar_evolution']]],
   ['manager',['manager',['../namespacestellar__evolution_1_1manager.html',1,'stellar_evolution']]],
   ['manager_5fdata_5fmodel',['manager_data_model',['../namespacestellar__evolution_1_1manager__data__model.html',1,'stellar_evolution']]],
   ['mesa',['MESA',['../namespaceStellarEvolution_1_1MESA.html',1,'StellarEvolution']]],

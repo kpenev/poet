@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['stellar_20evolution',['Stellar Evolution',['../group__StellarEvolution__group.html',1,'']]],
-  ['stellar_20system',['Stellar System',['../group__StellarSystem__group.html',1,'']]]
+  ['unit_20tests',['Unit Tests',['../group__UnitTests__group.html',1,'']]],
+  ['utilities',['Utilities',['../group__Utilities__group.html',1,'']]]
 ];

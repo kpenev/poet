@@ -13,14 +13,14 @@ var Star_2CInterface_8cpp =
     [ "lifetime", "Star_2CInterface_8cpp.html#ab3a1f0d12975209262dc7224a73db4b7", null ],
     [ "luminosity", "Star_2CInterface_8cpp.html#ac7cc0f78dbc91dfc6b6e762401464052", null ],
     [ "luminosity_array", "Star_2CInterface_8cpp.html#a37df8c2465db3e911d8f2ad61a7c861d", null ],
-    [ "modified_phase_lag", "Star_2CInterface_8cpp.html#a923dbfdcf732ca20ffbc53f6f7ef30ca", null ],
+    [ "modified_phase_lag", "Star_2CInterface_8cpp.html#a33142f1b7f0334669bc8d1f04bff2895", null ],
     [ "select_interpolation_region", "Star_2CInterface_8cpp.html#a590adf083a98e106e9abf1c792388494", null ],
-    [ "set_dissipation", "Star_2CInterface_8cpp.html#adbb9cd9319abb03874ee6b947263e988", null ],
+    [ "set_star_dissipation", "Star_2CInterface_8cpp.html#aedd067d18902972511cc2085dbc01623", null ],
     [ "star_radius", "Star_2CInterface_8cpp.html#ad5639d4505c475845d483c6568749c31", null ],
     [ "star_radius_array", "Star_2CInterface_8cpp.html#ad1d9972b4deba60177553d6a70157acb", null ],
     [ "zone_inertia_array", "Star_2CInterface_8cpp.html#a1b8bafafb6c8a983f342ad5a3cbbacb3", null ],
-    [ "AGE_DERIV", "Star_2CInterface_8cpp.html#a392ec0a73b4c258ddae5cb915557b2ad", null ],
-    [ "NO_DERIV", "Star_2CInterface_8cpp.html#a990ea4db1a54550cac7936e4ada27187", null ],
-    [ "ORBITAL_FREQUENCY_DERIV", "Star_2CInterface_8cpp.html#a1d6d2922ac88979eb54376ecbee1c5c1", null ],
-    [ "SPIN_FREQUENCY_DERIV", "Star_2CInterface_8cpp.html#afcb49a3f2cafa68bb76875c06240f315", null ]
+    [ "AGE_DERIV", "Star_2CInterface_8cpp.html#a7b5141b194955f7a7ff7d9e9b4978049", null ],
+    [ "NO_DERIV", "Star_2CInterface_8cpp.html#a6f9dd4e1fa98faf0b979a9d24b6fe643", null ],
+    [ "ORBITAL_FREQUENCY_DERIV", "Star_2CInterface_8cpp.html#a2cfb30f088c8502e30223991b725f7ff", null ],
+    [ "SPIN_FREQUENCY_DERIV", "Star_2CInterface_8cpp.html#a98c1291bedae59e103961c3f46f6ca5f", null ]
 ];

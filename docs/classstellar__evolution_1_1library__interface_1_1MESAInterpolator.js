@@ -8,6 +8,7 @@ var classstellar__evolution_1_1library__interface_1_1MESAInterpolator =
     [ "default_nodes", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html#a3102cee8126f8e377e6455181073f8be", null ],
     [ "default_smoothing", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html#a041bb4c91212f465532d6429e7c7f7f5", null ],
     [ "default_vs_log_age", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html#a4e58e26687660a26b6b0209b9e5e9fba", null ],
+    [ "filename", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html#a36cab14d75cc5e2600046047549ae28c", null ],
     [ "interpolator", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html#ae7d3b19cb156a5d59c1a80313da26d71", null ],
     [ "quantity_ids", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html#a55b3eb46e4df6ef2b80de2a91b9c27a4", null ],
     [ "quantity_list", "classstellar__evolution_1_1library__interface_1_1MESAInterpolator.html#a5f84ecb0f30e4831c9f1292954aae123", null ],

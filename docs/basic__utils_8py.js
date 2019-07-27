@@ -1,6 +1,7 @@
 var basic__utils_8py =
 [
-    [ "orbital_angular_momentum", "basic__utils_8py.html#ga8e777e4ea8153672d788ff2d532b7e01", null ],
-    [ "orbital_frequency", "basic__utils_8py.html#ga1539b2bc4b756eba1e097782d516882f", null ],
-    [ "semimajor", "basic__utils_8py.html#ga1d39c8e96a846ed509a9cf68c1b1cbe4", null ]
+    [ "Structure", "classbasic__utils_1_1Structure.html", "classbasic__utils_1_1Structure" ],
+    [ "calc_orbital_angular_momentum", "basic__utils_8py.html#a913434fab8aaa1f1a66e47625838c761", null ],
+    [ "calc_orbital_frequency", "basic__utils_8py.html#a0f7005a586f5710869ab09c551147bd0", null ],
+    [ "calc_semimajor", "basic__utils_8py.html#a8e0690d8f3b1a4f7cbe9b535ac2cb9ad", null ]
 ];

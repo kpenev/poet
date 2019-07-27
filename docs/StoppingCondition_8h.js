@@ -6,6 +6,8 @@ var StoppingCondition_8h =
       [ "BREAK_LOCK", "StoppingCondition_8h.html#a85153f462ec2e3c59f6425b9830e4296af09745d682dd73f9c09a1cbb3375f614", null ],
       [ "PLANET_DEATH", "StoppingCondition_8h.html#a85153f462ec2e3c59f6425b9830e4296a3d910e41fd0408e400e222e4e3e72896", null ],
       [ "WIND_SATURATION", "StoppingCondition_8h.html#a85153f462ec2e3c59f6425b9830e4296afadecbd5ade6e677f2e6104815063602", null ],
+      [ "LARGE_EXPANSION_ERROR", "StoppingCondition_8h.html#a85153f462ec2e3c59f6425b9830e4296a96152d49e50bcdd162cb6c7dcd5a8679", null ],
+      [ "SMALL_EXPANSION_ERROR", "StoppingCondition_8h.html#a85153f462ec2e3c59f6425b9830e4296a220881ceba77656927940e376a85b702", null ],
       [ "EXTERNAL", "StoppingCondition_8h.html#a85153f462ec2e3c59f6425b9830e4296a679f643c2a007165e78a413dffa67ede", null ]
     ] ],
     [ "operator<<", "StoppingCondition_8h.html#a61119fe5581ffb2edb8cfa64e81255ed", null ]
