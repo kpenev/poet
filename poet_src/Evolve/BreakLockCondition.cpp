@@ -76,7 +76,7 @@ namespace Evolve {
                             deriv_zone_ind)
                     *derivatives[inclination_offset+deriv_zone_ind]
                     *dangmom_dt;
-                if(deriv_zone_ind) 
+                if(deriv_zone_ind)
                     dfrac_dt+=__system.above_lock_fraction(
                             __locked_zone_index, Dissipation::PERIAPSIS,
                             deriv_zone_ind)
@@ -95,7 +95,7 @@ namespace Evolve {
 
     void BreakLockCondition::reached(
         short deriv_sign,
-        unsigned 
+        unsigned
 #ifndef NDEBUG
         index
 #endif
