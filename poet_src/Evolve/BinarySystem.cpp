@@ -961,7 +961,10 @@ namespace Evolve {
 #ifdef VERBOSE_DEBUG
             std::cerr << "Zone " << zone_ind
                       << " torque: " << total_zone_torque
-                      << " inclination rate: " << inclination_rates[zone_ind];
+                      << " inclination rate";
+            if(expansion_error)
+                std::cerr << " error";
+            std::cerr << ": " << inclination_rates[zone_ind];
             if(zone_ind)
                 std::cerr << " periapsis rate: "
                           << periapsis_rates[zone_ind - 1];
