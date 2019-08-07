@@ -15,7 +15,7 @@ namespace Evolve {
     }
 
     void CombinedStoppingCondition::add_subcondition_values(
-            const StoppingCondition *cond, 
+            const StoppingCondition *cond,
             Core::EvolModeType evol_mode,
             const std::valarray<double> &orbit,
             const std::valarray<double> &derivatives,
@@ -33,7 +33,7 @@ namespace Evolve {
         }
     }
 
-    std::vector<StoppingCondition *>::const_iterator 
+    std::vector<StoppingCondition *>::const_iterator
         CombinedStoppingCondition::find_condition(unsigned &index) const
         {
             std::vector<StoppingCondition *>::const_iterator sc_iter=
@@ -46,11 +46,11 @@ namespace Evolve {
             return sc_iter;
         }
 
-    std::vector<StoppingCondition *>::iterator 
+    std::vector<StoppingCondition *>::iterator
         CombinedStoppingCondition::find_condition(unsigned &index)
         {
             std::vector<StoppingCondition *>::const_iterator
-                const_result = 
+                const_result =
                 static_cast<const CombinedStoppingCondition *>(
                     this
                 )->find_condition(index);

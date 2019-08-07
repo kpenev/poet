@@ -411,7 +411,7 @@ namespace Evolve {
                                                 double orbit_angmom_gain_deriv,
                                                 bool semimajor_deriv) const
     {
-        if(__eccentricity == 0) return 0;
+        if(__eccentricity <= 1e-8) return 0;
         double e2 = std::pow(__eccentricity, 2),
                factor = -(1.0 - e2) / (2.0 * __eccentricity);
 
