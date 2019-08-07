@@ -40,10 +40,10 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.7;
-    const double SECONDARY_MASS = 0.0586475388040175;
-    const double FEH = 0.07;
-    const double INITIAL_PERIOD = 4.39;
+    const double PRIMARY_MASS = 1.02505108176533;
+    const double SECONDARY_MASS = 0.9994248047211968;
+    const double FEH = -0.06;
+    const double INITIAL_PERIOD = 14.2;
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -52,15 +52,15 @@ int main(int, char **)
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
-    const double DISK_PERIOD = 8.03;
-    const double PRIMARY_PHASE_LAG = 2.984155182973038e-07;
-    const double SECONDARY_PHASE_LAG = 2.984155182973038e-06;
-    const double DISK_DISSIPATION_AGE = 1e-2;
-    const double WIND_SATURATION_FREQUENCY = 2.78;
-    const double DIFF_ROT_COUPLING_TIMESCALE = 1e-2;
-    const double WIND_STRENGTH = 0.13;
+    const double DISK_PERIOD = 4.687960373696023;
+    const double PRIMARY_PHASE_LAG =2.984155182973038e-09;
+    const double SECONDARY_PHASE_LAG =2.984155182973038e-09;
+    const double DISK_DISSIPATION_AGE = 5e-3;
+    const double WIND_SATURATION_FREQUENCY = 2.54;
+    const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
+    const double WIND_STRENGTH = 0.17;
     const double INCLINATION = 0.0;
-    const double INITIAL_ECCENTRICITY = 0.3;
+    const double INITIAL_ECCENTRICITY = 0.0241;
 
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
@@ -68,9 +68,7 @@ int main(int, char **)
     MESAInterpolator *primary_interpolator = get_interpolator(
         "stellar_evolution_interpolators/"
     );
-    MESAInterpolator *secondary_interpolator = get_interpolator(
-        "MMS06_6211_B_interpolator/"
-    );
+
 
     double zero = 0.0;
     double initial_secondary_angmom[] = {0.0, 0.0};
@@ -82,7 +80,7 @@ int main(int, char **)
                                         DIFF_ROT_COUPLING_TIMESCALE,
                                         primary_interpolator);
     select_interpolation_region(primary, core_formation_age(primary));
-/*    set_star_dissipation(primary,
+    set_star_dissipation(primary,
                          0,          //zone index
                          0,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
@@ -90,14 +88,14 @@ int main(int, char **)
                          NULL,       //spin frequency breaks
                          &zero,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         PRIMARY_PHASE_LAG);*/
+                         PRIMARY_PHASE_LAG);
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
                                           0.0,
                                           1e10,
                                           DIFF_ROT_COUPLING_TIMESCALE,
-                                          secondary_interpolator);
+                                          primary_interpolator);
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index
@@ -144,7 +142,7 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        0.22,    //final age
+        8.705870938160976,    //final age
         1e-3,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
@@ -246,7 +244,6 @@ int main(int, char **)
     destroy_star(primary);
     destroy_star(secondary);
     destroy_interpolator(primary_interpolator);
-    destroy_interpolator(secondary_interpolator);
     destroy_solver(solver);
     delete[] age;
     delete[] semimajor;
