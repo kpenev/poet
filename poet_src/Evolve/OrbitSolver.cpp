@@ -371,12 +371,10 @@ namespace Evolve {
                                <
                                min_fractional_diff);
 
-         std::cerr<<"c0 = "<< c0 << " c1 = " << c1 << " c2 = " << c2 << std::endl;
-         std::cerr << "ignore_10_diff = " << ignore_10_diff << " ignore_21_diff = " << ignore_21_diff << std::endl;
 
         if(stop_interval.num_points() == 3) {
             if((c1 - c0) * (c2 - c1) > 0 || ignore_10_diff || ignore_21_diff)
-            {std::cerr << "Stop interval point = 3, condition satisfied" << std::endl;
+            {
                 return result;}
             result.x() = Core::quadratic_extremum(t0, c0, t1, c1, t2, c2,
                                                   &(result.y()));
@@ -389,7 +387,6 @@ namespace Evolve {
                 <
                 min_fractional_diff
             );
-            std::cerr << "c3 = " << c3 << std::endl;
             if(
                 (
                     (c1 - c0) * (c2 - c1) > 0
@@ -407,7 +404,6 @@ namespace Evolve {
                     ignore_32_diff
                 )
             ){
-                std::cerr << "Stop interval points = 4, conditions satisfied" << std::endl;
                 return result;
             }
              double range_low,
