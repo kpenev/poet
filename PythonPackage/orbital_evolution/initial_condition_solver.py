@@ -93,6 +93,7 @@ class InitialConditionSolver:
             print_progress=False
         )
         final_state = self.binary.final_state()
+        print('Final state:\n' + final_state.format('\t'))
         #False positives
         #pylint: disable=no-member
         assert final_state.age == self.target.age
@@ -102,9 +103,11 @@ class InitialConditionSolver:
             *
             self.binary.primary.envelope_inertia(final_state.age)
             /
-            getattr(final_state,
-                    'primary_envelope_angmom',
-                    final_state.envelope_angmom)
+            (
+                getattr(final_state, 'primary_envelope_angmom', None)
+                or
+                getattr(final_state, 'envelope_angmom')
+            )
         )
         #pylint: enable=no-member
         print('Got Porb = %s, P* = %s'
