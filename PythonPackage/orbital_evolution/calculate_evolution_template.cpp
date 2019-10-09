@@ -9,58 +9,120 @@
 #include <iostream>
 #include <valarray>
 
+/******************************************************************************
+ * PRIMARY PARAMETERS                                                         *
+ ******************************************************************************/
+/* Physical properties */
 const double PRIMARY_MASS = %(primary_mass).16e;
-const double SECONDARY_MASS = %(secondary_mass).16e;
-#if %(secondary_is_star)d
-#else
-const double SECONDARY_RADIUS = %(secondary_radius).16e;
-#endif
 const double FEH = %(feh).16e;
-const double INITIAL_SEMIMAJOR = %(initial_semimajor).16e;
 
-const double DISK_FREQUENCY = %(disk_lock_frequency).16e;
-const double DISK_DISSIPATION_AGE = %(disk_dissipation_age).16e;
-
-const double PRIMARY_PHASE_LAG = %(primary_reference_phase_lag).16e;
-double PRIMARY_TIDAL_FREQUENCY_BREAKS[] =
-    %(primary_tidal_frequency_breaks)s;
-double PRIMARY_SPIN_FREQUENCY_BREAKS[] =
-    %(primary_spin_frequency_breaks)s;
-double PRIMARY_TIDAL_FREQUENCY_POWERS[] =
-    %(primary_tidal_frequency_powers)s;
-double PRIMARY_SPIN_FREQUENCY_POWERS[] =
-    %(primary_spin_frequency_powers)s;
-
+/* Wind */
+const double PRIMARY_WIND_STRENGTH = %(primary_wind_strength).16e;
 const double PRIMARY_WIND_SATURATION_FREQUENCY =
     %(primary_wind_saturation_frequency).16e;
 const double PRIMARY_DIFF_ROT_COUPLING_TIMESCALE =
     %(primary_diff_rot_coupling_timescale).16e;
-const double PRIMARY_WIND_STRENGTH = %(primary_wind_strength).16e;
 
-const double INITIAL_INCLINATION = %(initial_inclination).16e;
-const double INITIAL_ECCENTRICITY = %(initial_eccentricity).16e;
+/* Dissipation */
+#if %(dissipative_primary)d
+    const double PRIMARY_PHASE_LAG = %(primary_reference_phase_lag).16e;
+    double PRIMARY_TIDAL_FREQUENCY_BREAKS[] =
+        %(primary_tidal_frequency_breaks)s;
+    double PRIMARY_SPIN_FREQUENCY_BREAKS[] =
+        %(primary_spin_frequency_breaks)s;
+    double PRIMARY_TIDAL_FREQUENCY_POWERS[] =
+        %(primary_tidal_frequency_powers)s;
+    double PRIMARY_SPIN_FREQUENCY_POWERS[] =
+        %(primary_spin_frequency_powers)s;
+#endif
+/******************************************************************************/
 
-const double ZERO=0.0;
+/******************************************************************************
+ * SECONDARY PARAMETERS                                                       *
+ ******************************************************************************/
+const double SECONDARY_MASS = %(secondary_mass).16e;
 
-DiskBinarySystem *create_system(EvolvingStar *primary)
-{
+#if %(secondary_is_star)d
+    /* Wind */
+    const double SECONDARY_WIND_STRENGTH = %(secondary_wind_strength).16e;
+    const double SECONDARY_WIND_SATURATION_FREQUENCY =
+        %(secondary_wind_saturation_frequency).16e;
+    const double SECONDARY_DIFF_ROT_COUPLING_TIMESCALE =
+        %(secondary_diff_rot_coupling_timescale).16e;
+#else
+    const double SECONDARY_RADIUS = %(secondary_radius).16e;
+#endif
+
+/* Dissipation */
+#if %(dissipative_secondary)d
     const double SECONDARY_PHASE_LAG = %(secondary_reference_phase_lag).16e;
     double SECONDARY_TIDAL_FREQUENCY_BREAKS[] =
         %(secondary_tidal_frequency_breaks)s;
     double SECONDARY_SPIN_FREQUENCY_BREAKS[] =
         %(secondary_spin_frequency_breaks)s;
     double SECONDARY_TIDAL_FREQUENCY_POWERS[] =
-        %(primary_tidal_frequency_powers)s;
+        %(secondary_tidal_frequency_powers)s;
     double SECONDARY_SPIN_FREQUENCY_POWERS[] =
-        %(primary_spin_frequency_powers)s;
+        %(secondary_spin_frequency_powers)s;
+#endif
+/******************************************************************************/
+
+
+/******************************************************************************
+ * INITIAL ORBIT                                                              *
+ ******************************************************************************/
+const double INITIAL_SEMIMAJOR = %(initial_semimajor).16e;
+const double DISK_FREQUENCY = %(disk_lock_frequency).16e;
+const double DISK_DISSIPATION_AGE = %(disk_dissipation_age).16e;
+const double INITIAL_INCLINATION = %(initial_inclination).16e;
+const double INITIAL_ECCENTRICITY = %(initial_eccentricity).16e;
+/******************************************************************************/
+
+const double ZERO=0.0;
+
+EvolvingStar *create_primary()
+{
+    MESAInterpolator *primary_interpolator = load_interpolator(
+        "%(primary_interpolator_fname)s"
+    );
+
+    EvolvingStar *primary = create_star(PRIMARY_MASS,
+                                        FEH,
+                                        PRIMARY_WIND_STRENGTH,
+                                        PRIMARY_WIND_SATURATION_FREQUENCY,
+                                        PRIMARY_DIFF_ROT_COUPLING_TIMESCALE,
+                                        primary_interpolator);
+
+    select_interpolation_region(primary, core_formation_age(primary));
+
+#if %(dissipative_primary)d
+    set_star_dissipation(
+        primary,
+        0,          //zone index
+        sizeof(PRIMARY_TIDAL_FREQUENCY_BREAKS) / sizeof(double),
+        sizeof(PRIMARY_SPIN_FREQUENCY_BREAKS) / sizeof(double),
+        (
+            sizeof(PRIMARY_TIDAL_FREQUENCY_BREAKS)
+            ? PRIMARY_TIDAL_FREQUENCY_BREAKS
+            : NULL
+        ),
+        (
+            sizeof(PRIMARY_SPIN_FREQUENCY_BREAKS)
+            ? PRIMARY_SPIN_FREQUENCY_BREAKS
+            : NULL
+        ),
+        PRIMARY_TIDAL_FREQUENCY_POWERS,
+        PRIMARY_SPIN_FREQUENCY_POWERS,
+        PRIMARY_PHASE_LAG
+    );
+#endif
+
+    return primary;
+}
 
 #if %(secondary_is_star)d
-    const double SECONDARY_WIND_SATURATION_FREQUENCY =
-        %(secondary_wind_saturation_frequency).16e;
-    const double SECONDARY_DIFF_ROT_COUPLING_TIMESCALE =
-        %(secondary_diff_rot_coupling_timescale).16e;
-    const double SECONDARY_WIND_STRENGTH = %(secondary_wind_strength).16e;
-
+EvolvingStar *create_secondary()
+{
     MESAInterpolator *secondary_interpolator = load_interpolator(
         "%(secondary_interpolator_fname)s"
     );
@@ -78,11 +140,12 @@ DiskBinarySystem *create_system(EvolvingStar *primary)
                                           secondary_interpolator);
 
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
+#if %(dissipative_secondary)d
     set_star_dissipation(
         secondary,
         0,          //zone index
-        %(secondary_num_tidal_frequency_breaks)d,
-        %(secondary_num_spin_frequency_breaks)d,
+        sizeof(SECONDARY_TIDAL_FREQUENCY_BREAKS) / sizeof(double),
+        sizeof(SECONDARY_SPIN_FREQUENCY_BREAKS) / sizeof(double),
         (
             sizeof(SECONDARY_TIDAL_FREQUENCY_BREAKS)
             ? SECONDARY_TIDAL_FREQUENCY_BREAKS
@@ -97,6 +160,7 @@ DiskBinarySystem *create_system(EvolvingStar *primary)
         SECONDARY_SPIN_FREQUENCY_POWERS,
         SECONDARY_PHASE_LAG
     );
+#endif
 
     configure_star(secondary,
                    DISK_DISSIPATION_AGE,        //formation age
@@ -110,13 +174,18 @@ DiskBinarySystem *create_system(EvolvingStar *primary)
                    true,                        //zero outer inclination?
                    true);                       //zero outer periapsis?
     detect_stellar_wind_saturation(secondary);
+    return secondary;
+}
 #else
+CPlanet *create_secondary()
+{
     CPlanet *secondary = create_planet(SECONDARY_MASS, SECONDARY_RADIUS);
 
+#if %(dissipative_secondary)d
     set_planet_dissipation(
         secondary,
-        %(secondary_num_tidal_frequency_breaks)d,
-        %(secondary_num_spin_frequency_breaks)d,
+        sizeof(SECONDARY_TIDAL_FREQUENCY_BREAKS) / sizeof(double),
+        sizeof(SECONDARY_SPIN_FREQUENCY_BREAKS) / sizeof(double),
         (
             sizeof(SECONDARY_TIDAL_FREQUENCY_BREAKS)
             ? SECONDARY_TIDAL_FREQUENCY_BREAKS
@@ -131,6 +200,7 @@ DiskBinarySystem *create_system(EvolvingStar *primary)
         SECONDARY_SPIN_FREQUENCY_POWERS,
         SECONDARY_PHASE_LAG
     );
+#endif
 
     configure_planet(secondary,
                      DISK_DISSIPATION_AGE,
@@ -143,8 +213,20 @@ DiskBinarySystem *create_system(EvolvingStar *primary)
                      false, //Locked to disk?
                      true,  //Outer inclination == 0?
                      true); //Outer periapsis == 0?
-
+    return secondary;
+}
 #endif
+
+DiskBinarySystem *create_system(
+    EvolvingStar *primary,
+#if %(secondary_is_star)d
+    EvolvingStar *
+#else
+    CPlanet *
+#endif
+    secondary
+)
+{
 
     return
 #if %(secondary_is_star)d
@@ -168,40 +250,16 @@ int main(int, char **)
     read_eccentricity_expansion_coefficients(
         "%(eccentricity_expansion_fname)s"
     );
-    MESAInterpolator *primary_interpolator = load_interpolator(
-        "%(primary_interpolator_fname)s"
-    );
+    EvolvingStar *primary=create_primary();
 
-    EvolvingStar *primary = create_star(PRIMARY_MASS,
-                                        FEH,
-                                        PRIMARY_WIND_STRENGTH,
-                                        PRIMARY_WIND_SATURATION_FREQUENCY,
-                                        PRIMARY_DIFF_ROT_COUPLING_TIMESCALE,
-                                        primary_interpolator);
+#if %(secondary_is_star)d
+    EvolvingStar *
+#else
+    CPlanet *
+#endif
+    secondary = create_secondary();
 
-    select_interpolation_region(primary, core_formation_age(primary));
-
-    set_star_dissipation(
-        primary,
-        0,          //zone index
-        %(primary_num_tidal_frequency_breaks)d,
-        %(primary_num_spin_frequency_breaks)d,
-        (
-            sizeof(PRIMARY_TIDAL_FREQUENCY_BREAKS)
-            ? PRIMARY_TIDAL_FREQUENCY_BREAKS
-            : NULL
-        ),
-        (
-            sizeof(PRIMARY_SPIN_FREQUENCY_BREAKS)
-            ? PRIMARY_SPIN_FREQUENCY_BREAKS
-            : NULL
-        ),
-        PRIMARY_TIDAL_FREQUENCY_POWERS,
-        PRIMARY_SPIN_FREQUENCY_POWERS,
-        PRIMARY_PHASE_LAG
-    );
-
-    DiskBinarySystem *system=create_system(primary);
+    DiskBinarySystem *system=create_system(primary, secondary);
 
     configure_system(system,
                      core_formation_age(primary),
@@ -238,9 +296,7 @@ int main(int, char **)
         solver,
         system,
         primary,
-#if %(secondary_is_star)d
         secondary,
-#endif
         age,
         semimajor,
         eccentricity,   //eeccentricity
@@ -258,6 +314,9 @@ int main(int, char **)
         secondary_lconv,//secondary envelope angmom
         secondary_lrad, //secondary core angmom
 #endif
+        NULL,           //secondary envelope inclination
+        NULL,           //secondary core inclination
+        NULL,           //secondary core periapsis
         NULL,           //evolution mode
         NULL           //primary wind saturation
 #if %(secondary_is_star)d
@@ -333,10 +392,10 @@ int main(int, char **)
 
     destroy_binary(system);
     destroy_star(primary);
-    destroy_interpolator(primary_interpolator);
+//    destroy_interpolator(primary_interpolator);
 #if %(secondary_is_star)d
     destroy_star(secondary);
-    destroy_interpolator(secondary_interpolator);
+//    destroy_interpolator(secondary_interpolator);
 #endif
     destroy_solver(solver);
     delete[] age;

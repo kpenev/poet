@@ -97,18 +97,27 @@ def create_system(star,
 
 def test_evolution(interpolator,
                    convective_phase_lag = phase_lag(5.5),
-                   planet_phase_lag = 0.0) :
+                   planet_phase_lag = 0.0,
+                   create_c_code='',
+                   eccentricity_expansion_fname=None):
     """Run a single orbital evolution calculation and plot the results."""
 
-    for pdisk, color, wsat_enabled in [(1.4, 'r', '1')] :#,
-#                                       (3.0, 'g', '2'),
-#                                       (7.0, 'b', '3')] :
+    for pdisk, color, wsat_enabled in [
+#            (1.4, 'r', '1'),
+#            (3.0, 'g', '2'),
+            (7.0, 'b', '3')
+    ] :
         star = create_star(interpolator = interpolator,
                            convective_phase_lag=convective_phase_lag)
         planet = create_planet(phase_lag=planet_phase_lag)
         binary = create_system(star, planet, 2.0 * numpy.pi / pdisk)
 
-        binary.evolve(10.0, 0.001, 1e-6, None)
+        binary.evolve(10.0,
+                      0.001,
+                      1e-6,
+                      None,
+                      create_c_code=create_c_code,
+                      eccentricity_expansion_fname=eccentricity_expansion_fname)
         print('====== FINAL STATE ======')
         print(binary.final_state().format())
         print('=========================')
@@ -213,9 +222,10 @@ def test_ic_solver(interpolator) :
     print('IC: Porb0 = %s, P*0 = %s' % (repr(initial_porb),
                                         repr(initial_psurf)))
 
-if __name__ == '__main__' :
+if __name__ == '__main__':
+    eccentricity_expansion_fname = b"eccentricity_expansion_coef.txt"
     orbital_evolution_library.read_eccentricity_expansion_coefficients(
-        b"eccentricity_expansion_coef.txt"
+        eccentricity_expansion_fname
     )
     serialized_dir = '../stellar_evolution_interpolators'
     manager = StellarEvolutionManager(serialized_dir)
@@ -223,5 +233,7 @@ if __name__ == '__main__' :
 
     test_evolution(interpolator,
                    planet_phase_lag=phase_lag(7.0),
-                   convective_phase_lag=0.0*phase_lag(6.0))
+                   convective_phase_lag=phase_lag(4.0),
+                   create_c_code='../poet_src/debug/test_evol.cpp',
+                   eccentricity_expansion_fname=eccentricity_expansion_fname)
 #    test_ic_solver()

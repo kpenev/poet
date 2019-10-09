@@ -113,10 +113,14 @@ class Binary:
                               if isinstance(self.secondary, EvolvingStar) else
                               self.secondary.radius),
             secondary_is_star=isinstance(self.secondary, EvolvingStar),
+            dissipative_primary=bool(self.primary.dissipation),
+            dissipative_secondary=bool(self.secondary.dissipation),
             final_age=final_age,
             max_time_step=max_time_step,
             precision=precision,
-            eccentricity_expansion_fname=eccentricity_expansion_fname,
+            eccentricity_expansion_fname=os.path.abspath(
+                eccentricity_expansion_fname
+            ).decode(),
             **self.initial_conditions
         )
         (
@@ -152,18 +156,29 @@ class Binary:
                         param
                     ] = value
                 for dependence in ['spin', 'tidal']:
-                    breaks = component.dissipation[0][dependence
-                                                      +
-                                                      '_frequency_breaks']
-                    c_code_substitutions[
-                        component_name
-                        +
-                        '_num_'
-                        +
-                        dependence
-                        +
-                        '_frequency_breaks'
-                    ] = (0 if breaks is None else breaks.size)
+                    for tail in ['breaks', 'powers']:
+                        value_list = component.dissipation[0][dependence
+                                                              +
+                                                              '_frequency_'
+                                                              +
+                                                              tail]
+                        if value_list is None:
+                            value_list = []
+                        c_code_substitutions[
+                            component_name
+                            +
+                            dependence
+                            +
+                            '_frequency_'
+                            +
+                            tail
+                        ] = (
+                            '{'
+                            +
+                            ', '.join([repr(value) for value in value_list])
+                            +
+                            '}'
+                        )
             for param in ['wind_strength',
                           'wind_saturation_frequency',
                           'diff_rot_coupling_timescale']:
@@ -174,14 +189,17 @@ class Binary:
                 )
 
             c_code_substitutions[component_name + '_interpolator_fname'] = (
-                component.interpolator.filename
+                os.path.abspath(component.interpolator.filename)
                 if isinstance(component, EvolvingStar) else
                 ''
             )
 
-        print('Substitution keys:\n\t'
-              +
-              '\n\t'.join(c_code_substitutions.keys()))
+        print(
+            'Substitutions:\n\t'
+            +
+            '\n\t'.join(['%s = %s' % item
+                         for item in c_code_substitutions.items()])
+        )
 
         with open(c_code_fname, 'w') as c_code:
             c_code.write(
