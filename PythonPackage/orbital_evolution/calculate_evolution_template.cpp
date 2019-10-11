@@ -128,15 +128,15 @@ EvolvingStar *create_secondary()
     );
 
     double initial_secondary_angmom[] = {
-        %(initial_secondary_envelope_angmom).16e
-        %(initial_secondary_core_angmom).16e,
+        %(initial_secondary_envelope_angmom).16e,
+        %(initial_secondary_core_angmom).16e
     };
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
                                           0.0,
                                           1e10,
-                                          DIFF_ROT_COUPLING_TIMESCALE,
+                                          SECONDARY_DIFF_ROT_COUPLING_TIMESCALE,
                                           secondary_interpolator);
 
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
@@ -314,9 +314,6 @@ int main(int, char **)
         secondary_lconv,//secondary envelope angmom
         secondary_lrad, //secondary core angmom
 #endif
-        NULL,           //secondary envelope inclination
-        NULL,           //secondary core inclination
-        NULL,           //secondary core periapsis
         NULL,           //evolution mode
         NULL           //primary wind saturation
 #if %(secondary_is_star)d
