@@ -141,7 +141,11 @@ class InitialConditionSolver:
         guess_porb_error = porb_error
         step = 2.0 if guess_porb_error < 0 else 0.5
 
-        while porb_error * guess_porb_error > 0 and porb_initial < 100.0:
+        while (
+                porb_error * guess_porb_error > 0
+                and
+                porb_initial < self.max_porb_initial
+        ):
             if porb_error < 0:
                 porb_min = porb_initial
             else:
@@ -189,7 +193,8 @@ class InitialConditionSolver:
                  orbital_period_tolerance=1e-6,
                  spin_tolerance=1e-6,
                  initial_eccentricity=0.0,
-                 initial_inclination=0.0):
+                 initial_inclination=0.0,
+                 max_porb_initial=100.0):
         """
         Initialize the object.
 
@@ -214,6 +219,9 @@ class InitialConditionSolver:
 
             initial_eccentricity:    The initial eccentricity with which to
                 start the evolution.
+
+            max_porb_initial:    The largest initial orbital period in days to
+                try before declaring a set of initial conditions unsolvable.
 
         Returns:
             None
@@ -241,6 +249,7 @@ class InitialConditionSolver:
         self.target = None
         self.primary = None
         self.secondary = None
+        self.max_porb_initial = max_porb_initial
 
     def stellar_wsurf(self,
                       wdisk,
