@@ -2282,8 +2282,17 @@ namespace Evolve {
     void BinarySystem::release_lock(unsigned locked_zone_index, short direction)
     {
         DissipatingBody *body;
-        if(locked_zone_index < __body1.number_locked_zones()) body = &__body1;
-        else {
+        if(locked_zone_index < __body1.number_locked_zones()) {
+            body = &__body1;
+            for(
+                unsigned zone_ind = 0;
+                zone_ind < __body2.number_locked_zones();
+                ++zone_ind
+            )
+                if(__body2.zone(zone_ind).locked())
+                    --__body2.zone(zone_ind).locked_zone_index();
+
+        } else {
             body = &__body2;
             locked_zone_index -= __body1.number_locked_zones();
         }
@@ -2297,6 +2306,9 @@ namespace Evolve {
             ++zone_ind;
         }
         body->unlock_zone_spin(zone_ind, direction);
+        for(; zone_ind < body->number_zones(); ++zone_ind)
+            if(body->zone(zone_ind).locked())
+                --body->zone(zone_ind).locked_zone_index();
     }
 
     void BinarySystem::add_to_evolution()
