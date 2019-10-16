@@ -375,7 +375,8 @@ namespace Evolve {
         if(stop_interval.num_points() == 3) {
             if((c1 - c0) * (c2 - c1) > 0 || ignore_10_diff || ignore_21_diff)
             {
-                return result;}
+                return result;
+            }
             result.x() = Core::quadratic_extremum(t0, c0, t1, c1, t2, c2,
                                                   &(result.y()));
         } else {
@@ -391,6 +392,8 @@ namespace Evolve {
                 (
                     (c1 - c0) * (c2 - c1) > 0
                     ||
+                    abs_c1 >= std::max(abs_c0, abs_c2)
+                    ||
                     ignore_10_diff
                     ||
                     ignore_21_diff
@@ -399,6 +402,8 @@ namespace Evolve {
                 (
                     (c2 - c1) * (c3 - c2) > 0
                     ||
+                    abs_c2 >= std::max(abs_c1, abs_c3)
+                    ||
                     ignore_21_diff
                     ||
                     ignore_32_diff
@@ -406,7 +411,7 @@ namespace Evolve {
             ){
                 return result;
             }
-             double range_low,
+            double range_low,
                    range_high;
             if(
                 !ignore_10_diff
@@ -745,6 +750,10 @@ namespace Evolve {
 #ifdef VERBOSE_DEBUG
     	std::cerr << std::string(77, '@') << std::endl;
     	output_history_and_discarded(std::cerr);
+        std::cerr << "Decreasing e_order is "
+                  << (ignore_e_order_decrease ? "not" : "")
+                  << " allowed"
+                  <<std::endl;
 #endif
         for(
             size_t cond_ind = 0;
@@ -792,7 +801,7 @@ namespace Evolve {
                                                   ? deriv_sign
                                                   : 0.0);
 #ifdef VERBOSE_DEBUG
-            std::cerr << "Condition " << cond_ind
+            std::cerr << "Condition " << cond_ind << " "
                       << __stopping_conditions->describe(cond_ind)
                       << ": " << stop_info
                       << std::endl;
@@ -1055,7 +1064,6 @@ namespace Evolve {
                     step_rejected=false;
                 }
 
-                first_step = false;
             } while(
                 step_rejected
                 &&
@@ -1069,12 +1077,21 @@ namespace Evolve {
                 &&
                 stop.stop_reason() != LARGE_EXPANSION_ERROR
             );
+
+            first_step = false;
             if(!step_rejected) {
 #ifndef NDEBUG
                 std::cerr << "Stepped to t = " << t << std::endl;
 #endif
                 add_to_evolution(t, evolution_mode, system);
             }
+#ifndef NDEBUG
+            std::cerr << "Stop: " << stop
+                      << "e-order: " << system.eccentricity_order()
+                      << "last e upgrade at t=" << __last_e_order_upgrade_age
+                      << "max age: " << max_age
+                      << std::endl;
+#endif
             if(
                 (stop.is_crossing() && stop.stop_reason() != NO_STOP)
                 ||
@@ -1091,6 +1108,9 @@ namespace Evolve {
                 )
             ) {
                 stop_reason = stop.stop_reason();
+#ifndef NDEBUG
+                std::cerr << "Breaking for = " << stop << std::endl;
+#endif
                 break;
             }
         }

@@ -11,6 +11,7 @@
 
 #include "ZoneOrientation.h"
 #include "../Core/SharedLibraryExportMacros.h"
+#include "../Core/Error.h"
 #include "TidalPotentialTerms.h"
 #include "DissipationQuantities.h"
 #include "SpinOrbitLockInfo.h"

@@ -106,26 +106,33 @@ namespace Evolve {
     {
         if(__initializing) return;
         int max_abs_orb_mult = static_cast<int>(__e_order + 2);
-        assert(
-            __lock
-            ||
-            (__lock.lock_direction() * __other_lock.lock_direction( )== -1)
-            ||
-            (
-                __lock.spin_frequency_multiplier() == 1
-                &&
+        if(
+            !(
+                __lock
+                ||
+                (__lock.lock_direction() * __other_lock.lock_direction( )== -1)
+                ||
                 (
-                    __lock.orbital_frequency_multiplier()
-                    ==
-                    __lock.lock_direction() * max_abs_orb_mult
-                )
-                &&
-                __other_lock.orbital_frequency_multiplier() == 1
-                &&
-                __other_lock.spin_frequency_multiplier() == 0
-                &&
-                __other_lock.lock_direction() == 1)
-        );
+                    __lock.spin_frequency_multiplier() == 1
+                    &&
+                    (
+                        __lock.orbital_frequency_multiplier()
+                        ==
+                        __lock.lock_direction() * max_abs_orb_mult
+                    )
+                    &&
+                    __other_lock.orbital_frequency_multiplier() == 1
+                    &&
+                    __other_lock.spin_frequency_multiplier() == 0
+                    &&
+                    __other_lock.lock_direction() == 1)
+            )
+        ) {
+            throw Core::Error::Runtime(
+                "Incosistent lock state encountered for a zone. Likely related "
+                "to initial conditions with a tidal term too close to zero."
+            );
+        }
         assert(__lock.spin_frequency_multiplier() == 1
                ||
                __lock.spin_frequency_multiplier() == 2);
@@ -485,7 +492,7 @@ namespace Evolve {
                 assert(!std::isnan(__torque_z[error_ind]));
                 assert(!std::isnan(__torque_z[error_ind + 1]));
             }
-#ifdef VERBOSE_DEBUG
+#if 0
             if(deriv == Dissipation::NO_DERIV)
                 std::cerr << ", Wzone = "
                           << spin_frequency()
@@ -600,7 +607,7 @@ namespace Evolve {
             U_error.m_plus_one *= esquared;
 
             for(int m = -2; m <= 2; ++m) {
-#ifdef VERBOSE_DEBUG
+#if 0
                 std::cerr << "Term: m' = "
                           << mp
                           << ", m = "
@@ -945,8 +952,12 @@ namespace Evolve {
         }
         if(__lock) {
            __e_order = new_e_order;
-           if(__lock.orbital_frequency_multiplier()>
-                   static_cast<int>(__e_order) + 2) release_lock();
+           if(
+               __lock.orbital_frequency_multiplier()
+               >
+               static_cast<int>(__e_order) + 2
+           )
+               release_lock();
            return;
         }
 #ifndef NDEBUG
