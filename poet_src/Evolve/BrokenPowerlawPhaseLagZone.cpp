@@ -386,32 +386,32 @@ namespace Evolve {
             lag_index = (spin_break_index * __tidal_frequency_breaks.size()
                          +
                          tidal_break_index);
-        double result = (
-            __break_phase_lags[lag_index]
-            *
-            (
-                tidal_power == 0
-                ? 1.0
-                : std::pow(abs_forcing_frequency
-                           /
-                           __tidal_frequency_breaks[tidal_break_index]
-                           ,
-                           tidal_power)
-            )
-            *
-            (
-                spin_power == 0
-                ? 1.0
-                : std::pow(
-                    (
-                        abs_spin_frequency
-                        /
-                        __spin_frequency_breaks[spin_break_index]
-                    ),
-                    spin_power
-                )
+        double tidal_factor = (
+            tidal_power == 0
+            ? 1.0
+            : std::pow(abs_forcing_frequency
+                       /
+                       __tidal_frequency_breaks[tidal_break_index]
+                       ,
+                       tidal_power)
+        );
+        double spin_factor = (
+            spin_power == 0
+            ? 1.0
+            : std::pow(
+                (
+                    abs_spin_frequency
+                    /
+                    __spin_frequency_breaks[spin_break_index]
+                ),
+                spin_power
             )
         );
+        double result = (__break_phase_lags[lag_index]
+                         *
+                         tidal_factor
+                         *
+                         spin_factor);
         switch(entry) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (
@@ -440,6 +440,33 @@ namespace Evolve {
         }
 
         if(forcing_frequency == 0) {
+            if(tidal_power) {
+                if(entry != Dissipation::NO_DERIV) {
+                    assert(
+                        entry == Dissipation::SPIN_FREQUENCY
+                        ||
+                        entry == Dissipation::ORBITAL_FREQUENCY
+                    );
+                    if(tidal_power == 1) {
+                        result = (
+                            (
+                                entry == Dissipation::SPIN_FREQUENCY
+                                ? spin_frequency_multiplier
+                                : -orbital_frequency_multiplier
+                            )
+                            *
+                            __break_phase_lags[lag_index]
+                            *
+                            spin_factor
+                            /
+                            __tidal_frequency_breaks[tidal_break_index]
+                        );
+                    } else {
+                        assert(tidal_power > 1);
+                        result = 0;
+                    }
+                }
+            }
             if(spin_frequency_multiplier >= 0) {
                 above_lock_value = -result;
                 return result;

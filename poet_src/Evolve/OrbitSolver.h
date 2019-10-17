@@ -277,7 +277,9 @@ namespace Evolve {
 
         ///\brief Return true iff the step with the given stop information is
         ///acceptable.
-        bool acceptable_step(double age, const StopInformation &stop_info);
+        bool acceptable_step(double current_age,
+                             double previous_age,
+                             const StopInformation &stop_info);
 
         ///\brief Return -1 if the expansion error is too small (e-order can
         ///safely be decreased, 0 if it is within range, 1 if it is too big

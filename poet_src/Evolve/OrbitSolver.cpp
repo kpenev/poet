@@ -629,14 +629,41 @@ namespace Evolve {
         }
     }*/
 
-    bool OrbitSolver::acceptable_step(double age,
+    bool OrbitSolver::acceptable_step(double current_age,
+                                      double previous_age,
                                       const StopInformation &stop_info)
     {
+#ifdef VERBOSE_DEBUG
+        std::cerr << "From t = " << previous_age
+                  << ", stepped to t = " << current_age
+                  << ", stop at t = " << stop_info.stop_age()
+                  << ", must be at least: "  << previous_age * MIN_RELATIVE_STEP
+                  << std::endl;
+#endif
+        if(
+            stop_info.stop_age()
+            <=
+            previous_age * MIN_RELATIVE_STEP
+        ) {
+            std::cerr << "Failed to meet precision for " << stop_info << std::endl;
+        }
         return (
-            stop_info.stop_age() >= age
+            stop_info.stop_age() >= current_age
             ||
             (
-                std::abs(stop_info.stop_condition_precision()) <= __precision
+                (
+                    (
+                        std::abs(stop_info.stop_condition_precision())
+                        <=
+                        __precision
+                    )
+                    ||
+                    (
+                        stop_info.stop_age()
+                        <
+                        previous_age * MIN_RELATIVE_STEP
+                    )
+                )
                 &&
                 (stop_info.crossed_zero() || !stop_info.is_crossing())
             )
@@ -807,7 +834,9 @@ namespace Evolve {
                       << std::endl;
 #endif
             if(
-                (!acceptable_step(age, stop_info) || is_crossing)
+                (!acceptable_step(age,
+                                  __stop_history_ages.back(),
+                                  stop_info) || is_crossing)
                 &&
                 stop_info.stop_age() < result.stop_age()
             ) {
@@ -819,7 +848,9 @@ namespace Evolve {
 #endif
             }
         }
-        if(acceptable_step(age, result)) {
+        if(acceptable_step(age,
+                           __stop_history_ages.back(),
+                           result)) {
     //		update_skip_history(current_stop_cond, result);
             __stop_history_ages.push_back(age);
             __stop_cond_history.push_back(current_stop_cond);
@@ -900,7 +931,10 @@ namespace Evolve {
                 ]
             );
         max_next_t = stop.stop_age();
-        step_size = 0.1 * (max_next_t - t);
+        step_size = std::max(
+            0.1 * (max_next_t - t),
+            3.0 * (MIN_RELATIVE_STEP * t - t)
+        );
     }
 
     StopInformation OrbitSolver::evolve_until(
@@ -1036,7 +1070,7 @@ namespace Evolve {
                         system.eccentricity_order() == 0
                     );
                 }
-                if(status == GSL_EDOM || !acceptable_step(t, stop)) {
+                if(status == GSL_EDOM || !acceptable_step(t, from_t, stop)) {
                     if(!first_step)
                         reject_step(
                             t,
