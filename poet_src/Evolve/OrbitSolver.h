@@ -269,6 +269,11 @@ namespace Evolve {
         void initialize_skip_history(const StoppingCondition &stop_cond,
                 StoppingConditionType stop_reason);
 
+        ///\brief Is the condition causing a stop match to within the required
+        ///precision?
+        bool at_exact_condition(double previous_age,
+                                const StopInformation &stop_info);
+
         ///\brief Updates the skip_history_zerocrossing and
         ///skip_history_extremum arrays appropriately after an acceptable step.
     /*	void update_skip_history(
