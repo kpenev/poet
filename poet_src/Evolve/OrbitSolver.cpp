@@ -939,10 +939,7 @@ namespace Evolve {
                 ]
             );
         max_next_t = stop.stop_age();
-        step_size = std::max(
-            0.1 * (max_next_t - t),
-            3.0 * (MIN_RELATIVE_STEP * t - t)
-        );
+        step_size = 0.1 * (max_next_t - t);
     }
 
     StopInformation OrbitSolver::evolve_until(
@@ -1026,7 +1023,9 @@ namespace Evolve {
                 std::cerr << std::endl;
 #endif
                 from_t = t;
-                if(!first_step)
+                if(!first_step) {
+                    step_size = std::max(step_size,
+                                         3.0 * (MIN_RELATIVE_STEP * t - t));
                     status = gsl_odeiv2_evolve_apply(evolve,
                                                      step_control,
                                                      step,
@@ -1035,6 +1034,7 @@ namespace Evolve {
                                                      max_next_t,
                                                      &step_size,
                                                      &(orbit[0]));
+                }
                 if (status == GSL_FAILURE) {
 #ifndef NDEBUG
                     std::cerr << "Failed, (presume zero step size)!"
