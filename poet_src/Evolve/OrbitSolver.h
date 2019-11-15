@@ -269,6 +269,11 @@ namespace Evolve {
         void initialize_skip_history(const StoppingCondition &stop_cond,
                 StoppingConditionType stop_reason);
 
+        ///\brief Is the condition causing a stop match to within the required
+        ///precision?
+        bool at_exact_condition(double previous_age,
+                                const StopInformation &stop_info);
+
         ///\brief Updates the skip_history_zerocrossing and
         ///skip_history_extremum arrays appropriately after an acceptable step.
     /*	void update_skip_history(
@@ -277,7 +282,9 @@ namespace Evolve {
 
         ///\brief Return true iff the step with the given stop information is
         ///acceptable.
-        bool acceptable_step(double age, const StopInformation &stop_info);
+        bool acceptable_step(double current_age,
+                             double previous_age,
+                             const StopInformation &stop_info);
 
         ///\brief Return -1 if the expansion error is too small (e-order can
         ///safely be decreased, 0 if it is within range, 1 if it is too big

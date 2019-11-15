@@ -629,14 +629,49 @@ namespace Evolve {
         }
     }*/
 
-    bool OrbitSolver::acceptable_step(double age,
-                                      const StopInformation &stop_info)
+    bool OrbitSolver::at_exact_condition(double previous_age,
+                                         const StopInformation &stop_info)
     {
         return (
-            stop_info.stop_age() >= age
+            (
+                std::abs(stop_info.stop_condition_precision())
+                <=
+                __precision
+            )
             ||
             (
-                std::abs(stop_info.stop_condition_precision()) <= __precision
+                stop_info.stop_age()
+                <
+                previous_age * MIN_RELATIVE_STEP
+            )
+        );
+    }
+
+    bool OrbitSolver::acceptable_step(double current_age,
+                                      double previous_age,
+                                      const StopInformation &stop_info)
+    {
+#ifdef VERBOSE_DEBUG
+        std::cerr << "From t = " << previous_age
+                  << ", stepped to t = " << current_age
+                  << ", stop at t = " << stop_info.stop_age()
+                  << ", must be at least: "  << previous_age * MIN_RELATIVE_STEP
+                  << std::endl;
+        if(
+            at_exact_condition(previous_age, stop_info)
+            &&
+            std::abs(stop_info.stop_condition_precision()) > __precision
+        ) {
+            std::cerr << "Failed to meet precision for "
+                      << stop_info
+                      << std::endl;
+        }
+#endif
+        return (
+            stop_info.stop_age() >= current_age
+            ||
+            (
+                at_exact_condition(previous_age, stop_info)
                 &&
                 (stop_info.crossed_zero() || !stop_info.is_crossing())
             )
@@ -807,7 +842,9 @@ namespace Evolve {
                       << std::endl;
 #endif
             if(
-                (!acceptable_step(age, stop_info) || is_crossing)
+                (!acceptable_step(age,
+                                  __stop_history_ages.back(),
+                                  stop_info) || is_crossing)
                 &&
                 stop_info.stop_age() < result.stop_age()
             ) {
@@ -819,7 +856,9 @@ namespace Evolve {
 #endif
             }
         }
-        if(acceptable_step(age, result)) {
+        if(acceptable_step(age,
+                           __stop_history_ages.back(),
+                           result)) {
     //		update_skip_history(current_stop_cond, result);
             __stop_history_ages.push_back(age);
             __stop_cond_history.push_back(current_stop_cond);
@@ -900,7 +939,10 @@ namespace Evolve {
                 ]
             );
         max_next_t = stop.stop_age();
-        step_size = 0.1 * (max_next_t - t);
+        step_size = std::max(
+            0.1 * (max_next_t - t),
+            3.0 * (MIN_RELATIVE_STEP * t - t)
+        );
     }
 
     StopInformation OrbitSolver::evolve_until(
@@ -966,6 +1008,7 @@ namespace Evolve {
         stop_reason = NO_STOP;
         StopInformation stop;
         bool first_step = true;
+        double from_t;
         while(t<max_age) {
             double max_next_t = std::min(t + max_step, max_age);
             int status=GSL_SUCCESS;
@@ -982,7 +1025,7 @@ namespace Evolve {
                 }
                 std::cerr << std::endl;
 #endif
-                double from_t = t;
+                from_t = t;
                 if(!first_step)
                     status = gsl_odeiv2_evolve_apply(evolve,
                                                      step_control,
@@ -1036,7 +1079,7 @@ namespace Evolve {
                         system.eccentricity_order() == 0
                     );
                 }
-                if(status == GSL_EDOM || !acceptable_step(t, stop)) {
+                if(status == GSL_EDOM || !acceptable_step(t, from_t, stop)) {
                     if(!first_step)
                         reject_step(
                             t,
@@ -1070,7 +1113,7 @@ namespace Evolve {
                 !first_step
                 &&
                 (
-                    std::abs(stop.stop_condition_precision()) > __precision
+                    !at_exact_condition(from_t, stop)
                     ||
                     __stop_history_ages.size() == 1
                 )
@@ -1205,9 +1248,7 @@ namespace Evolve {
                     (
                         stop_i->stop_reason() == stop_reason
                         &&
-                        std::abs(
-                            stop_i->stop_condition_precision()
-                        ) <= __precision
+                        at_exact_condition(stop_age, *stop_i)
                     )
                 )
             ) {
