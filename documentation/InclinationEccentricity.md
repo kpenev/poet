@@ -1,4 +1,4 @@
-Inclined and Eccentric Orbital Evolution (NOT IMPLEMENTED YET!!!) {#InclinationEccentricity}
+Inclined and Eccentric Orbital Evolution {#InclinationEccentricity}
 =================================================================
 
 The implementation of the evolution of inclined/eccentric orbits is based on
