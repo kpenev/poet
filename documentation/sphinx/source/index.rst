@@ -7,10 +7,10 @@ Welcome to (P)lanetary (O)rbital (E)volution due to (T)ides's documentation!
 ============================================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 12
    :caption: Contents:
 
-
+   api/library_root
 
 Indices and tables
 ==================

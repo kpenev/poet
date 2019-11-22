@@ -1,3 +1,8 @@
+"""Configuration for SPHINX to generate documentation."""
+
+import sys
+import inspect
+
 # -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
@@ -12,15 +17,25 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '../../../PythonPackage'
+        )
+    )
+)
 
 
 # -- Project information -----------------------------------------------------
 
 project = '(P)lanetary (O)rbital (E)volution due to (T)ides'
+#pylint: disable=redefined-builtin
 copyright = '2019, Kaloyan Penev'
+#pylint: enable=redefined-builtin
 author = 'Kaloyan Penev'
 
 # The short X.Y version
@@ -47,6 +62,11 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.inheritance_diagram',
+    'nbsphinx',
+    'breathe',
+    'exhale'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -74,7 +94,7 @@ language = None
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'sphinx'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -82,7 +102,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -136,8 +156,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'PlanetaryOrbitalEvolutionduetoTides.tex', '(P)lanetary (O)rbital (E)volution due to (T)ides Documentation',
-     'Kaloyan Penev', 'manual'),
+    (
+        master_doc,
+        'PlanetaryOrbitalEvolutionduetoTides.tex',
+        '(P)lanetary (O)rbital (E)volution due to (T)ides Documentation',
+        'Kaloyan Penev',
+        'manual'
+    ),
 ]
 
 
@@ -146,8 +171,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'planetaryorbitalevolutionduetotides', '(P)lanetary (O)rbital (E)volution due to (T)ides Documentation',
-     [author], 1)
+    (
+        master_doc,
+        'planetaryorbitalevolutionduetotides',
+        '(P)lanetary (O)rbital (E)volution due to (T)ides Documentation',
+        [author],
+        1
+    )
 ]
 
 
@@ -157,9 +187,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PlanetaryOrbitalEvolutionduetoTides', '(P)lanetary (O)rbital (E)volution due to (T)ides Documentation',
-     author, 'PlanetaryOrbitalEvolutionduetoTides', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        'PlanetaryOrbitalEvolutionduetoTides',
+        '(P)lanetary (O)rbital (E)volution due to (T)ides Documentation',
+        author,
+        'PlanetaryOrbitalEvolutionduetoTides',
+        'One line description of project.',
+        'Miscellaneous'
+    ),
 ]
 
 
@@ -192,3 +228,83 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# -- Options for autodoc extension -------------------------------------------
+
+autodoc_default_flags = ['members',
+                         'undoc-members',
+                         'show-inheritance']
+
+#Napolean extension defined names.
+#pylint: disable=invalid-name
+napoleon_include_private_with_doc = True
+napoleon_include_special_with_doc = True
+napoleon_include_init_with_doc = True
+#pylint: enable=invalid-name
+
+inheritance_graph_attrs = dict(rankdir="TB",
+                               fontsize="24",
+                               ratio='auto',
+                               size='120')
+
+#Call signature defined by SPHINX autodoc plugin.
+#pylint: disable=too-many-arguments
+#pylint: disable=unused-argument
+def add_inheritance_diagram(app, what, name, obj, options, lines):
+    """Add an inheritance diagram for all classes."""
+
+    if what == 'module':
+        class_list = [member[0]
+                      for member in inspect.getmembers(sys.modules[name],
+                                                       inspect.isclass)]
+        if class_list:
+            lines.insert(0, '')
+            lines.insert(
+                0, '.. inheritance-diagram:: '
+                +
+                ' '.join(class_list)
+            )
+            lines.insert(0, '=========================')
+            lines.insert(0, 'Class Inheritance Diagram')
+    elif what == 'class':
+        lines.insert(0, '')
+        lines.insert(0,
+                     '.. inheritance-diagram:: ' + name)
+#pylint: enable=too-many-arguments
+
+def setup(app):
+    """Connect handler for adding inheritance diagrams."""
+
+    app.add_stylesheet('unlimited_width.css')
+    app.connect('autodoc-process-docstring', add_inheritance_diagram)
+
+
+doxygen_xml = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        '../../doxygen/build/xml'
+    )
+)
+
+breathe_projects = {
+    'C++ library': doxygen_xml
+}
+
+
+breathe_default_project = "C++ library"
+
+breathe_default_members = ('members',
+                           'protected-members',
+                           'private-members',
+                           'undoc-members')
+
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./api",
+    "rootFileName":          "library_root.rst",
+    "rootFileTitle":         "Library API",
+    "doxygenStripFromPath":  "..",
+    # Suggested optional arguments
+    "createTreeView":        True
+}
