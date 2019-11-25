@@ -4,9 +4,9 @@
    contain the root `toctree` directive.
 
 
-****************************************************************************
-Welcome to (P)lanetary (O)rbital (E)volution due to (T)ides's documentation!
-****************************************************************************
+*******************************************************
+(P)lanetary (O)rbital (E)volution due to (T)ides (POET)
+*******************************************************
 
 **P**\ lanetary **O**\ rbital **E**\ volution due to **T**\ ides (POET) is a
 tool for simulating the evolution of single stars, binary stars, and
@@ -74,9 +74,9 @@ For more details see:
 
     installation
 
-    python_interface
+    Python Interface <_implementation/modules>
 
-    The C++ interface <api/library_root>
+    The C++ interface <cpp_api/library_root>
 
     A detailed derivation of the equations specifying the evolution <inclination_eccentricity_equations>
 

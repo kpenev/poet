@@ -301,9 +301,9 @@ breathe_default_members = ('members',
 # Setup the exhale extension
 exhale_args = {
     # These arguments are required
-    "containmentFolder":     "./api",
+    "containmentFolder":     "./cpp_api",
     "rootFileName":          "library_root.rst",
-    "rootFileTitle":         "Library API",
+    "rootFileTitle":         "C++ API",
     "doxygenStripFromPath":  "..",
     # Suggested optional arguments
     "createTreeView":        True

@@ -25,9 +25,9 @@ namespace Evolve {
         ///The zone being monitored (for more convenient access).
         BrokenPowerlawPhaseLagZone &__zone;
 
-        const DissipatingBody 
+        const DissipatingBody
             ///The body this condition is monitoring.
-            &__body, 
+            &__body,
 
             ///The primary body in the system if not __body.
             &__other_body;
@@ -94,7 +94,7 @@ namespace Evolve {
 
 			///The other body in the system.
 			const DissipatingBody &other_body,
-			
+
 			///Is the body we are monitoring the primary?
 			bool primary,
 
