@@ -1,48 +1,61 @@
-Calculation of the Pm,s Coefficients {#InclinationEccentricity_pms1}
-====================================
+************************************
+Calculation of the Pm,s Coefficients
+************************************
 
-We need only \f$m=0\f$ and \f$m=\pm2\f$.
+We need only :math:`m=0` and :math:`m=\pm2`.
 Clearly:
-\f{eqnarray*}{
+
+.. math::
+
 	p_{m,s}&=&\frac{a^3}{2\pi}\int_0^{2\pi/\omega} 
 		\frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\
 	&=& a^3\int_0^{2\pi/\omega} 
 		e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} 
 		e^{i s \omega t}dt
-\f}
-For \f$m=0\f$:
-\f{eqnarray*}{
+
+For :math:`m=0`:
+
+.. math::
+
 	p_{0,s}&=& \frac{1}{2\pi}\int_{0}^{2\pi} 
 		\frac{e^{i s (u-e\sin u)}}{\omega (1-e\cos u)^2} du\\
 	&=& \frac{1}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du
-\f}
-From \f$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\f$:
-\f[
+
+From :math:`1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k`:
+
+.. math::
+
 	p_{0,s}= \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du
-\f]
-Which for \f$s=0\f$, using 
- \f$\int_0^{2\pi} \cos^{2k} u du = \frac{2\pi (2k)!}{2^{2k}(k!)^2}\f$ gives:
-\f[
+
+Which for :math:`s=0`, using :math:`\int_0^{2\pi} \cos^{2k} u du = \frac{2\pi
+(2k)!}{2^{2k}(k!)^2}` gives:
+
+.. math::
+
 	p_{0,0}=\frac{1}{\omega}
 		\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k}(k!)^2}e^k
-\f]
-And for \f$s \neq 0\f$:
-\f{eqnarray*}{
-	p_{0,s}&=& \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega}
+
+And for :math:`s \neq 0`\ :
+
+.. math::
+
+	p_{0,s} & = & \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}
+	& = & \sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}
 		\int_{0}^{2\pi} e^{i s (u-e\sin u)}
 			\left(e^{iu}+e^{-iu}\right)^k du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
+	& = & \sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
 		{k \choose c} \int_{0}^{2\pi} e^{i s (u-e\sin u)} 
 									e^{icu}e^{-i(k-c)u} du\\
-	&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
+	& = & \sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
 		{k \choose c} \int_{0}^{2\pi} e^{i (s+2c-k) u} e^{-ies\sin u} du
-\f}
-If we change variable \f$u=u'-\pi/2\Rightarrow \sin u = -\cos u'\f$:
-\f{eqnarray*}{
+
+If we change variable :math:`u=u'-\pi/2\Rightarrow \sin u = -\cos u'`\ :
+
+.. math::
+
 	2\pi p_{0,s}&=&\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
 		\sum_{c=0}^k {k \choose c} e^{-i (s+2c-k)\pi/2}
 			\int_{\pi/2}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
@@ -78,41 +91,48 @@ If we change variable \f$u=u'-\pi/2\Rightarrow \sin u = -\cos u'\f$:
 		\sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
 			\frac{(-1)^\lambda (s^2e^2/4)^{\lambda+c}}
 				{\lambda!(\lambda+s+2c-k)!}\\
-\f}
-If we now change indices to
- \f$n=\lambda+c\Rightarrow \lambda=n-c,\quad\lambda+s+2c-k=n+s+c-k\f$. The
-lower limit on \f$\lambda\f$ gives:
- \f$k-s-2c\leq n-c\Rightarrow c\geq k-n-s\f$. Finally, in order for the range
-of \f$c\f$ to not be empty: \f$k-n-s\leq n\Rightarrow k\leq 2n+s\f$. With all
-these we can write:
-\f[
+
+If we now change indices to :math:`n=\lambda+c\Rightarrow
+\lambda=n-c,\quad\lambda+s+2c-k=n+s+c-k`\ . The lower limit on :math:`\lambda`
+gives: :math:`k-s-2c\leq n-c\Rightarrow c\geq k-n-s`\ . Finally, in order for the
+range of :math:`c` to not be empty: :math:`k-n-s\leq n\Rightarrow k\leq 2n+s`. With
+all these we can write:
+
+.. math::
+
 	p_{0,s}=\sum_{n=0}^\infty \alpha_{s,n}\left\{
 		\begin{array}{l@{,\quad}l}
 			e^{2n} & s=0\\
 			(se/2)^{s+2n} & s \neq 0
 		\end{array}\right.
-\f]
+
 with
-\f[
+
+.. math::
+
 	\alpha_{s,n}\equiv\frac{1}{\omega}\left\{\begin{array}{l@{,\quad}l}
 		\frac{(2n+1)!}{2^{2n}(n!)^2} & s=0\\
 		(-1)^n \sum_{k=0}^{2n+s} \frac{k+1}{s^k}
 		\sum_{c=max(0,k-n-s)}^{min(n,k)}
 		{k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!} & s \neq 0
 	\end{array} \right.
-\f]
+
 Verified using Mathematica.
 
-For \f$m=\pm2\f$ we need:
-\f{eqnarray*}{
+For :math:`m=\pm2` we need:
+
+.. math::
+
 	\cos2\phi &=& 1-2\sin^2\phi = 1-2\frac{(1-e^2)\sin^2u}{(1-e\cos u)^2} 
 				= 1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2}\\
 	\sin2\phi &=& 2\sin\phi\cos\phi = 2\sqrt{1-e^2}
 				\frac{\sin u(\cos u - e)}{(1-e\cos u)^2}
 				= 2\sqrt{1-e^2}\frac{\sin 2u - e\sin u}{(1-e\cos u)^2}
-\f}
-Plugging into the expression for \f$p_{\pm2,s}\f$:
-\f{eqnarray*}{
+
+Plugging into the expression for :math:`$p_{\pm2,s}`\ :
+
+.. math::
+
 	p_{\pm2,s}&=& \frac{1}{2\pi}\int_0^{2\pi/\omega} 
 		a^3\exp(\mp 2i\phi_0)\frac{\cos(2\phi(t))\mp i\sin(2\phi(t))}{r^3(t)}
 		\exp[i s (u-e\sin u)]dt\\
@@ -121,10 +141,12 @@ Plugging into the expression for \f$p_{\pm2,s}\f$:
 				\mp
 				i\sqrt{1-e^2}\frac{\sin 2u - 2e\sin u}{(1-e\cos u)^2}\right]
 		\frac{\exp[i s (u-e\sin u)]}{(1-e\cos u)^2} du
-\f}
+
 Thus we need to evaluate 5 different integrals, the first of which was
-already done while calculating \f$p_{0,s}\f$:
-\f{eqnarray*}{
+already done while calculating :math:`p_{0,s}`\ :
+
+.. math::
+
 	p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\
 		&&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\
@@ -137,7 +159,7 @@ already done while calculating \f$p_{0,s}\f$:
 		&&{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4}
 		du\\
-\f}
+
 To solve them we will use 
  \f$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\f$ and we will directly
 calculate the following general integral:
