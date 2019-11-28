@@ -250,7 +250,7 @@ with
 		\frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'}
 
 where we have switched the :math:`m'` and :math:`s` coefficients. Here is a
-:doc:`table <inclination_eccentricity_Ummtable>` of :math:`W_{2,m'}D_{m,m'}`\ .
+:doc:`table <inclination_eccentricity_umm_table>` of :math:`W_{2,m'}D_{m,m'}`\ .
 
 From here we proceed following Lai (2012) again, but we have more than 6
 independent timelags if the orbit is eccentric (for circular orbits,

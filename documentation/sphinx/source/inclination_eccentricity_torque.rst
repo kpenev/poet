@@ -1,7 +1,11 @@
-Tidal Torque for Inclined and Eccentric Orbits {#InclinationEccentricity_torque}
-==============================================
+**********************************************
+Tidal Torque for Inclined and Eccentric Orbits
+**********************************************
+
 Starting from eq. 20 of Lai (2012):
-\f{eqnarray*}{
+
+.. math::
+
 	\mathbf{T}&=&-\int d^3 x \delta\rho(\mathbf{r}, t) \mathbf{r}\times
 		\nabla U*(\mathbf{r}, t)\\
 		&=&-\left(\frac{G M'}{a^3 \omega_0}\right)^2
@@ -17,9 +21,11 @@ Starting from eq. 20 of Lai (2012):
 				\exp(i \mu'\Omega t) 
 				\nabla \left[r^2 Y_{2,\mu}^*(\theta, \phi)\right]
 			\right\}
-\f}
-Since \f$\mathbf{r}\times\nabla r^2=0\f$:
-\f{eqnarray*}{
+
+Since :math:`\mathbf{r}\times\nabla r^2=0`:
+
+.. math::
+
 	\mathbf{T}&=&-\left(\frac{G M'}{a^3 \omega_0}\right)^2
 			\int d^3 x 
 			\left\{
@@ -40,17 +46,17 @@ Since \f$\mathbf{r}\times\nabla r^2=0\f$:
 					\delta\bar{\rho}_{m,m'}(\mathbf{r})
 					r^2 \mathbf{r}\times
 					\nabla Y_{2,\mu}^*(\theta, \phi)
-\f}
 
 The torque in the z direction
------------------------------
+=============================
 
-Taking the dot product of the torque with 
-\f$\hat{z}=\cos\theta \hat{r} - \sin\theta \hat{\theta}\f$, and noting that
-the \f$\hat{r}\f$ part of \f$\hat{z}\f$ does not contribute, since at any 
-point it is orthogonal to 
-\f$\mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi)\f$, we get:
-\f{eqnarray*}{
+Taking the dot product of the torque with :math:`\hat{z}=\cos\theta \hat{r} -
+\sin\theta \hat{\theta}`, and noting that the :math:`\hat{r}` part of
+:math:`\hat{z}` does not contribute, since at any point it is orthogonal to
+:math:`\mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi)`, we get:
+
+.. math::
+
 	T_z&=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2
 			\sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'}
 				\exp(i(\mu'-m')\Omega t + i\Delta_{m,m'})
@@ -87,20 +93,24 @@ point it is orthogonal to
 				\int d^3 x 
 					\delta\bar{\rho}_{m,m'}(\mathbf{r})
 					r^2 Y_{2,\mu}^*(\theta, \phi)
-\f}
+
 Using the fact that
-\f$\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp(im\phi)\f$, we must have
-\f$m=\mu\f$, further if we average over over an orbit we must have
-\f$m'=\mu'\f$:
-\f[
+:math:`\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp(im\phi)`, we must have
+:math:`m=\mu`, further if we average over over an orbit we must have
+:math:`m'=\mu'`:
+
+.. math::
+
 	T_z= -\left(\frac{G M'}{a^3 \omega_0}\right)^2
 			\sum_{m,m'} i m \mathcal{U}_{m,m'}^2
 				\exp(i\Delta_{m,m'})
 				\int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 
 						Y_{2,m}^*(\theta, \phi)
-\f]
+
 The real part of which is:
-\f{eqnarray*}{
+
+.. math::
+
 	T_z&=&\frac{G R^3}{M}\left(\frac{M'}{a^3}\right)^2
 			\sum_{m,m'} m \mathcal{U}_{m,m'}^2
 				\sin(\Delta_{m,m'})
@@ -112,15 +122,16 @@ The real part of which is:
 	\kappa&\equiv&\frac{1}{MR^2}
 			\int d^3 x \delta\bar{\rho}_{m,m'}(\mathbf{r}) r^2 
 						Y_{2,m}^*(\theta, \phi)
-\f}
 
 The torque in the x direction
------------------------------
+=============================
 
-Now we dot with \f$\hat{x}=\sin\theta\cos\phi\hat{r} +
-\cos\theta\cos\phi\hat{\theta} - \sin\phi \hat{\phi}\f$. Again, the
-\f$\hat{r}\f$ term does not contribute:
-\f{eqnarray*}{
+Now we dot with :math:`\hat{x}=\sin\theta\cos\phi\hat{r} +
+\cos\theta\cos\phi\hat{\theta} - \sin\phi \hat{\phi}`. Again, the
+:math:`\hat{r}` term does not contribute:
+
+.. math::
+
 	T_x &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2
 			\sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'}
 				\exp(i(\mu'-m')\Omega t + i\Delta_{m,m'})
@@ -148,9 +159,11 @@ Now we dot with \f$\hat{x}=\sin\theta\cos\phi\hat{r} +
 						\cot\theta\cos\phi\frac{\partial}{\partial \phi} +
 						 \sin\phi\frac{\partial}{\partial \theta}
 					\right) Y_{2,\mu}^*(\theta, \phi)
-\f}
+
 Averaging over an orbit:
-\f{eqnarray*}{
+
+.. math::
+
 	T_x &=& \left(\frac{G M'}{a^3 \omega_0}\right)^2
 			\sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'}
 				\exp(i\Delta_{m,m'})
@@ -161,14 +174,18 @@ Averaging over an orbit:
 						 \sin\phi\frac{\partial Y_{2,\mu}^*(\theta, \phi)}
 									  {\partial \theta}
 					\right)\\
-\f}
+
 Now we use:
-\f[
+
+.. math::
+
 	\frac{\partial Y_{2,\mu}^*}{\partial \theta}=\mu\cot\theta Y_{2,\mu}^* +
 	\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^*
-\f]
+
 To get:
-\f{eqnarray*}{
+
+.. math::
+
 	T_x &=& \frac{T_0}{MR^2}
 			\sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'}
 				i\exp(i\Delta_{m,m'})
@@ -187,10 +204,12 @@ To get:
 						\mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
 						 \sqrt{(2-\mu)(3+\mu)}[\exp(2i\phi)-1] Y_{2,\mu+1}^*
 					\right)\\
-\f}
-Since \f$\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp(im\phi)\f$ the real
+
+Since :math:`\delta\bar{\rho}_{m,m'}(\mathbf{r})\propto\exp(im\phi)` the real
 part of the above expression is:
-\f{eqnarray*}{
+
+.. math::
+
 	T_x &=& -\frac{T_0}{MR^2}
 			\sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'}
 				\sin(\Delta_{m,m'})
@@ -212,12 +231,13 @@ part of the above expression is:
 			(m+1)\cot\theta\exp(i\phi) Y_{2,m+1}^*(\theta,\phi)+
 			\frac{\sqrt{(1-m)(4+m)}}{2}\exp(2i\phi) Y_{2,m+2}^*
 		\right]
-\f}
 
-We have already expressed \f$\kappa_{m,m'}^-\f$ in terms of
-\f$\kappa_{m,m'}\f$, and just as in Lai (2012), we only need \f$\kappa_{m,m'}^+\f$ for 
-\f$m=0, \pm 1, 2\f$. 
-\f{eqnarray*}{
+We have already expressed :math:`\kappa_{m,m'}^-` in terms of
+:math:`\kappa_{m,m'}`, and just as in Lai (2012), we only need
+:math:`\kappa_{m,m'}^+` for :math:`m=0, \pm 1, 2`. 
+
+.. math::
+
 	\kappa_{0,m'}^+&=&-\frac{1}{MR^2} \int d^3 x 
 		\delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2\left[
 			\cot\theta\exp(i\phi) Y_{2,1}^*(\theta,\phi)+
@@ -234,7 +254,6 @@ We have already expressed \f$\kappa_{m,m'}^-\f$ in terms of
 	&=&\frac{\sqrt{3/2}}{MR^2}\int d^3 x 
 		\delta\bar{\rho}_{0,m'}(\mathbf{r}) r^2 Y_{2,0}^*(\theta, \phi)\\
 	\Rightarrow \kappa_{0,m'}^+&=&\sqrt{3/2}\kappa_{0,m'}\\
-
 	\kappa_{-1,m'}^+&=&-\frac{1}{MR^2} \int d^3 x 
 		\delta\bar{\rho}_{-1,m'}(\mathbf{r}) r^2
 		\frac{\sqrt{6}}{2}\exp(2i\phi) Y_{2,1}^*\\
@@ -269,14 +288,16 @@ We have already expressed \f$\kappa_{m,m'}^-\f$ in terms of
 	&=&\frac{1}{MR^2} \int d^3 x 
 		\delta\bar{\rho}_{-2,m'}(\mathbf{r}) r^2 Y_{-2,m}^*(\theta, phi)\\
 	\Rightarrow \kappa_{-2,m'}^+&=&\kappa_{-2,m'}\\
-\f}
 
 The torque in the y direction
------------------------------
-Now we dot with \f$\hat{y}=\sin\theta\sin\phi\hat{r} +
-\cos\theta\sin\phi\hat{\theta} - \cos\phi \hat{\phi}\f$. Again, the
-\f$\hat{r}\f$ term does not contribute:
-\f{eqnarray*}{
+=============================
+
+Now we dot with :math:`\hat{y}=\sin\theta\sin\phi\hat{r} +
+\cos\theta\sin\phi\hat{\theta} - \cos\phi \hat{\phi}`. Again, the
+:math:`\hat{r}` term does not contribute:
+
+.. math::
+
 	T_y &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2
 			\sum_{m,m',\mu,\mu'} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,\mu'}
 				\exp(i(\mu'-m')\Omega t + i\Delta_{m,m'})
@@ -296,9 +317,11 @@ Now we dot with \f$\hat{y}=\sin\theta\sin\phi\hat{r} +
 						\cot\theta\sin\phi\frac{\partial}{\partial \phi} +
 						 \cos\phi\frac{\partial}{\partial \theta}
 					\right) Y_{2,\mu}^*(\theta, \phi)
-\f}
+
 Averaging over an orbit:
-\f{eqnarray*}{
+
+.. math::
+
 	T_y &=& -\left(\frac{G M'}{a^3 \omega_0}\right)^2
 		\sum_{m,m',\mu} \mathcal{U}_{m,m'} \mathcal{U}_{\mu,m'}
 			\exp(i\Delta_{m,m'})
@@ -344,17 +367,18 @@ Averaging over an orbit:
 						\left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+
 					     \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right)
 						\exp(i\Delta_{m,m'})
-\f}
-With the same \f$\kappa^+_{m,m'}\f$ and \f$\kappa^-_{m,m'}\f$ as for
-\f$T_x\f$. So taking the real part gives:
-\f[
+
+With the same :math:`\kappa^+_{m,m'}` and :math:`\kappa^-_{m,m'}` as for
+:math:`T_x`. So taking the real part gives:
+
+.. math::
+
 	T_y = -T_0
 		\sum_{m,m'} \mathcal{U}_{m,m'}
 						\left(\kappa^-_{m,m'}\mathcal{U}_{m-1,m'}+
 					     \kappa^+_{m,m'}\mathcal{U}_{m+1,m'}\right)
 						\cos(\Delta_{m,m'})
-\f]
 
-So the real part is proportional to \f$\cos\Delta_{m,m'}\f$ and so for small
+So the real part is proportional to :math:`\cos\Delta_{m,m'}` and so for small
 tidal dissipation it is independent of the dissipation, as expected since
 this term is responsible for the precession.
