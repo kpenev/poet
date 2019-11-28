@@ -1,24 +1,31 @@
-Calculation of the Pm,s Coefficients {#InclinationEccentricity_pms2}
-=============================================
+************************************
+Calculation of the Pm,s Coefficients
+************************************
 
-We need only \f$m=0\f$ and \f$m=\pm2\f$.
+We need only :math:`m=0` and :math:`m=\pm2`.
 Clearly:
-\f{eqnarray*}{
+
+.. math::
+
 	p_{m,s}&=&\int_0^{2\pi/\omega} 
 		\frac{a^3\exp(-im\Delta \phi(t))}{r^3(t)}e^{i s \omega t}dt\\
 	&=& \int_0^{2\pi/\omega} 
 		a^3\exp(-im\phi_0)\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} 
 		e^{i s \omega t}dt
-\f}
-For \f$m=0\f$:
-\f{eqnarray*}{
+
+For :math:`m=0`:
+
+.. math::
+
 	p_{0,s}&=& \int_{0}^{2\pi} 
 		\frac{\exp(i s (u-e\sin u))}{\omega (1-e\cos u)^2} du\\
 	&=& \frac{1}{\omega}
 		\int_{0}^{2\pi} \frac{\exp(i s (u-e\sin u))} {(1-e\cos u)^2} du
-\f}
-From \f$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\f$:
-\f{eqnarray*}{
+
+From :math:`1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k`:
+
+.. math::
+
 	p_{0,s}&=&\frac{1}{\omega}\int_0^{2\pi} 
 		\left[\cos u + i \sin u\right]^s 
 		\left[\sum_{l=0}^\infty \frac{(-ise)^l\sin^l u}{l!}\right]
@@ -34,14 +41,17 @@ From \f$1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\f$:
 			\sum_{l=0}^n (-1)^l i^{k+l} (n-l+1) \frac{s^l}{l!}
 			I_{k+l,s-k+n-l}\right]e^n
 			
-\f}
-with
-\f[
-	I_{m,n} \equiv \int_0^{2\pi} \sin^m u \cos^n u
-\f]
 
-To find an expression for \f$m=\pm2\f$ consider:
-\f{eqnarray*}{
+with
+
+.. math::
+
+	I_{m,n} \equiv \int_0^{2\pi} \sin^m u \cos^n u
+
+To find an expression for :math:`m=\pm2` consider:
+
+.. math::
+
 	Q_{p,q}&\equiv&
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} \sin^p u
 					    \cos^q udu\\
@@ -50,9 +60,9 @@ To find an expression for \f$m=\pm2\f$ consider:
 				\frac{\sin^{\lambda+p} u \cos^q u 
 					\left(\cos u + i\sin u\right)^s}{(1-e\cos u)^4}
 								
-\f}
-Using: \f$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\f$
-\f{eqnarray*}{
+Using: :math:`1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k`
+
+.. math::
 	Q_{p,q}&=&\sum_{\lambda=0}^\infty \frac{(-ise)^\lambda}{\lambda!}
 			\sum_{k=0}^\infty {k+3 \choose 3} e^k
 			\sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma 
@@ -62,10 +72,10 @@ Using: \f$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\f$
 			{n-\lambda+3 \choose 3} 
 			\sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma 
 				I_{\lambda+\sigma+p, s+n+q-\sigma-\lambda}\right] e^n
-\f}
 
-[here](@ref InclinationEccentricity_pms1) we show:
-\f{eqnarray*}{
+:doc:`here <inclination_eccentricity_pms1>` we show:
+
+.. math::
 	p_{\pm2,s}&=&\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\
 		&&{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\
@@ -87,25 +97,28 @@ Using: \f$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\f$
 		2\frac{(1-e^2)Q_{2,0} \pm i\sqrt{1-e^2}(Q_{1,1} - e Q_{1,0})}{\omega}
 		\right]
 
-\f}
+According to `this page <http://planetmath.org/taylorexpansionofsqrt1x>`_
 
-According to [this page](http://planetmath.org/taylorexpansionofsqrt1x)
-\f[
+.. math::
+
 	\sqrt{1-e^2}=1-\frac{e^2}{2}-
 		\sum_{n=2}^\infty\frac{(2n-3)!}{2^{2n-2} n! (n-2)!} e^{2n}
-\f]
 
-Also not that:
-\f{eqnarray*}{
+Also note that:
+
+.. math::
+
 	I_{m,n}&=&I_{m,n-2}-I_{m+2,n-2}=I_{m,n-2}-\frac{m+1}{n-1}I_{m,n}\\
 	\Rightarrow I_{m,n}&=&\frac{n-1}{n+m}I_{m,n-2}
-\f}
+
 Similarly:
-\f{eqnarray*}{
+
+.. math::
+
 	I_{m,n}&=&I_{m-2,n}-I_{m-2,n+2}=I_{m-2,n}-\frac{n+1}{m-1}I_{m,n}\\
 	\Rightarrow I_{m,n}&=&\frac{m-1}{n+m}I_{m-2,n}
-\f}
-Further \f$I_{m,1}=I_{1,n}=0\f$, so \f$I_{m,n}\f$ is non-zero only if both m
+
+Further :math:`I_{m,1}=I_{1,n}=0`, so :math:`I_{m,n}` is non-zero only if both m
 and n are even.
 
-Finally, \f$I_{m,n}=I_{n,m}\f$.
+Finally, :math:`I_{m,n}=I_{n,m}`.
