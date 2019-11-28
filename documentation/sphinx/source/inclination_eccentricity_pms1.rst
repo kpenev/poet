@@ -129,7 +129,7 @@ For :math:`m=\pm2` we need:
 				\frac{\sin u(\cos u - e)}{(1-e\cos u)^2}
 				= 2\sqrt{1-e^2}\frac{\sin 2u - e\sin u}{(1-e\cos u)^2}
 
-Plugging into the expression for :math:`$p_{\pm2,s}`\ :
+Plugging into the expression for :math:`p_{\pm2,s}`\ :
 
 .. math::
 
@@ -160,10 +160,12 @@ already done while calculating :math:`p_{0,s}`\ :
 		\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4}
 		du\\
 
-To solve them we will use 
- \f$1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\f$ and we will directly
-calculate the following general integral:
-\f{eqnarray*}{
+To solve them we will use :math:`1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3}
+x^k` and we will directly calculate the following general integral:
+
+
+.. math::
+
 	2\pi\omega I_{\lambda,s}&\equiv&
 	\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\exp(i\lambda u)}
 						{(1-e\cos u)^4} du\\
@@ -182,50 +184,62 @@ calculate the following general integral:
 		{{k+3} \choose 3} s^{-k}\sum_{c=0}^k {k \choose c}
 		\sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty}
 			\frac{(-1)^\nu (s^2e^2/4)^{\nu+c}}{\nu!(\nu+s+\lambda+2c-k)!}
-\f}
+
 Similarly to before we would like to group by powers of the eccentricity:
-\f$n=\nu+c\f$. This leads to the following constraints:
-\f{eqnarray*}{
+:math:`n=\nu+c`\ . This leads to the following constraints:
+
+.. math::
+
 	\nu>=0 & \Rightarrow & c \le n\\
 	\nu>=k-s-\lambda-2c & \Rightarrow & c \ge k-s-\lambda-n\\
 	k-s-\lambda-n \le n & \Rightarrow & k \le 2n+\lambda+s\\
 	k-s-\lambda-n \le k & \Rightarrow & n \ge -s - \lambda
-\f}
+
 Plugging into the expression above:
-\f[
+
+.. math::
+
 	I_{\lambda,s} = \sum_{n=\max(0,-s-\lambda)}^\infty \beta_{\lambda,s,n}
 		(se/2)^{s+\lambda+2n}
-\f]
 
 with
-\f[
+
+.. math::
+
 	\beta_{\lambda,s,n}\equiv \frac{(-1)^n}{\omega}
 	\sum_{k=0}^{2n+\lambda+s}
 		{{k+3} \choose 3} s^{-k}\sum_{c=\max(0,k-\lambda-s-n)}^{\min(n,k)}
 			{k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+s+c-k)!}
-\f]
 
-In terms of \f$I_{\lambda,s}\f$:
-\f[
+In terms of :math:`I_{\lambda,s}`\ :
+
+.. math::
+
 	p_{\pm2,s}=\exp(\mp 2i\phi_0)\left\{p_{0,s}
 		+(1-e^2)\left[(I_{2,s}+I_{-2,s})/2-I_{0,s}\right]
 		\mp \sqrt{1-e^2}(I_{2,s}-I_{-2,s})/2
 		\pm e\sqrt{1-e^2}(I_{1,s}-I_{-1,s})
 	\right\}
-\f]
-Verified using Methematica for \f$s\neq0\f$.
+
+Verified using Methematica for :math:`s\neq0`\ .
 
 Using:
-\f[
+
+.. math::
+
 	\sqrt{1-e^2}=\sum_{n=0}^\infty \frac{(2n)!}{4^n (n!)^2(1-2n)} e^{2n}
-\f]
+
 we can rewrite:
-\f[
+
+.. math::
+
 	p_{\pm2,s}=\exp(\mp 2i\phi_0)\sum_{n=-1}^\infty 
 		\gamma^\pm_{s,n}\left(\frac{se}{2}\right)^{2n+s}
-\f]
+
 with:
-\f{eqnarray*}{
+
+.. math::
+
 	\gamma^\pm_{s,n} &\equiv &\alpha_{s,n}
 	+
 	\frac{\beta_{2,s,n-1}+\beta_{-2,s,n+1}}{2}
@@ -237,11 +251,13 @@ with:
 	\sum_{k=0}^{n+1} \frac{(2k)!}{s^{2k}(k!)^2(2k-1)}
 		\left[\frac{1}{2}\left(\beta_{2,s,n-k-1}-\beta_{-2,s,n-k+1}\right)+
 		\frac{2}{s}\left(\beta_{-1,s,n-k}-\beta_{1,s,n-k-1}\right)\right]
-\f}
+
 Verified by Mathematica.
 
 Plugging in the bessel function expressions:
-\f{eqnarray*}{
+
+.. math::
+
 	p_{\pm2,s}&=&\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty 
 		\left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c}
 		\Bigg\{
@@ -256,9 +272,11 @@ Plugging in the bessel function expressions:
 			\pm e\sqrt{1-e^2}\big[J_{s+1+2c-k}(es)-J_{s-1+2c-k}(es)\big]
 		\Bigg]
 		\Bigg\}
-\f}
+
 For s=0 we need to go back to:
-\f{eqnarray*}{
+
+.. math::
+
 	2\pi p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} +
 		\frac{1}{\omega}\left[
 			(1-e^2)\int_{0}^{2\pi} \frac{\cos 2u -1} {(1-e\cos u)^4} du
@@ -275,30 +293,35 @@ For s=0 we need to go back to:
 			\mp
 			ie\sqrt{1-e^2} \int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u
 		\right]\right\} 
-\f}
-\f{eqnarray*}{
+
+.. math::
+
 	\int_{0}^{2\pi}\frac{\cos^{2n} u} {(1-e\cos u)^4} du
 	&=&\sum_{k=0}^\infty {2k+3 \choose 3} e^{2k}
 			\int_{0}^{2\pi}\frac{\cos^{2n+2k} u} du\\
 	&=&2\pi\sum_{k=0}^\infty {2k+3 \choose 3}
 			\frac{(2k+2n)!}{2^{2k+2n}[(k+n)!]^2} e^{2k}
-\f}
-\f{eqnarray*}{
+
+.. math::
+
 	\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u
 	&=&-\frac{1}{e}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d(1-e\cos u)\\
 	&=&\left.\frac{1}{3e(1-e\cos u)^3}\right|_{0}^{2\pi}\\
 	&=&0
-\f}
-\f{eqnarray*}{
+
+.. math::
+
 	\int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u
 	&=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1-e\cos u-1}{(1-e\cos u)^4}
 		d(1-e\cos u)\\
 	&=&\frac{1}{e^2}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^3} d(1-e\cos u)\\
 	&=&-\frac{1}{2e^2(1-e\cos u)^2}\\
 	&=&0
-\f}
+
 So we are left with:
-\f{eqnarray*}{
+
+.. math::
+
 	p_{\pm2,0}&=&\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
 		\frac{2(1-e^2)}{\omega}\left\{\sum_{k=0}^\infty {2k+3 \choose 3}
 			\frac{(2k+2)!}{2^{2k+2}[(k+1)!]^2}-
@@ -328,5 +351,5 @@ So we are left with:
 		\frac{2}{\omega}\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k+1}(k!)^2}
 		e^{2k}\right\}\\
 	&=&0
-\f}
+
 Confirmed by Mathematica.
