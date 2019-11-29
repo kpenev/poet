@@ -1,45 +1,62 @@
-Evolution Equations From Tidal Torque+Power {#EccentricEvolutionEquations}
-===========================================
+*******************************************
+Evolution Equations From Tidal Torque+Power
+*******************************************
 
 The orbital energy and angular momentum are:
-\f{eqnarray*}{
+
+.. math::
+
 	E&=&-\frac{GMM'}{2a}\\
 	L&=&\frac{MM'}{M+M'}a^2\Omega\sqrt{1-e^2}
 			=GMM'\sqrt{\frac{(1-e^2)MM'}{(-2E)(M+M')}}
-\f}
+
 Hence:
-\f{eqnarray*}{
+
+.. math::
+
 	\dot{a}&=&a\frac{-\dot{E}}{E}\\
 	\dot{e}&=&\frac{(M+M')}{G^2(MM')^3}\frac{(\dot{E}L+2E\dot{L})L}{e}\\
-\f}
 
 Now consider a single zone subject to tidal torques. We will use the
 following variables:
- - \f$\mathbf{S}\f$ and \f$S\f$: the spin angular momentum vector of the zone
-   and its absolute value 
- - \f$\mathbf{L}\f$ and \f$L\f$: the orbital angular momentum vector and its
-   absolute value 
- - \f$\theta\f$: angle between the angular momentum vector of the zone and
-   the angular momentum of the orbit (inclination).
- - \f$\omega\f$: the argument of periapsis of the orbit with a plane of
-   reference perpendicular to \f$\mathbf{S}\f$.
- - \f$\mathbf{T}\f$: the tidal torque vector acting on this zone (and of
-   course with a negative sign on the orbit).
- - \f$\mathbf{\tilde{T}}\f$: the negative of the tidal torques on the orbit
-   due to other zones.
- - \f$\mathbf{\mathscr{T}}\f$: the torque on this zone due to coupling to other
-   zones (e.g. due to differential rotation coupling or mass exchange).
- - \f$\mathbf{\hat{p}}\f$: a unit vector along the periapsis of the orbit
- - \f$\mathbf{\hat{z}}\f$: a unit vector along \f$\mathbf{S}\f$.
- - \f$\mathbf{\hat{y}}\f$: a unit vector along the ascending node of the orbit.
- - \f$\mathbf{\hat{x}}\f$: \f$\mathbf{\hat{y}}\times\mathbf{\hat{z}}\f$.
+
+  - :math:`\mathbf{S}` and :math:`S`: the spin angular momentum vector of the
+    zone and its absolute value 
+
+  - :math:`\mathbf{L}` and :math:`L`: the orbital angular momentum vector and
+    its absolute value 
+
+  - :math:`\theta`: angle between the angular momentum vector of the zone and
+    the angular momentum of the orbit (inclination).
+
+  - :math:`\omega`: the argument of periapsis of the orbit with a plane of
+    reference perpendicular to :math:`\mathbf{S}`.
+
+  - :math:`\mathbf{T}`: the tidal torque vector acting on this zone (and of
+    course with a negative sign on the orbit).
+
+  - :math:`\mathbf{\tilde{T}}`: the negative of the tidal torques on the orbit
+    due to other zones.
+
+  - :math:`\mathbf{\mathscr{T}}`: the torque on this zone due to coupling to
+    other zones (e.g. due to differential rotation coupling or mass exchange).
+
+  - :math:`\mathbf{\hat{p}}`: a unit vector along the periapsis of the orbit
+
+  - :math:`\mathbf{\hat{z}}`: a unit vector along :math:`\mathbf{S}`.
+
+  - :math:`\mathbf{\hat{y}}`: a unit vector along the ascending node of the
+    orbit.
+
+  - :math:`\mathbf{\hat{x}}`: :math:`\mathbf{\hat{y}}\times\mathbf{\hat{z}}`.
 
 We will use primed quantities to denote the updated value of a quantity after an
 infinitesimal times step, and will use x, y and z indices to indicate
-projections of quantities alonge \f$\mathbf{\hat{x}}\f$, \f$\mathbf{\hat{y}}\f$
-and \f$\mathbf{\hat{z}}\f$ respectively.
+projections of quantities alonge :math:`\mathbf{\hat{x}}`,
+:math:`\mathbf{\hat{y}}` and :math:`\mathbf{\hat{z}}` respectively.
 
-\f{eqnarray*}{
+.. math::
+
 	\mathbf{S} &=& S\mathbf{\hat{z}}\\
 	\mathbf{L} &=& L\sin\theta\mathbf{\hat{x}}+L\cos\theta\mathbf{\hat{z}}\\
 	\mathbf{\hat{y}} &=& \frac{\mathbf{S}\times\mathbf{L}}{LS\sin\theta}\\
@@ -65,10 +82,11 @@ and \f$\mathbf{\hat{z}}\f$ respectively.
 						  + (T_z+\tilde{T}_z)\cos\theta}{L}
 						  - \frac{T_z+\mathscr{T}_z}{S}
 					\right)
-\f}
 
 In order to derive the evolution rate for the inclination:
-\f{eqnarray*}{
+
+.. math::
+
 	\cos\theta &=& \frac{\mathbf{S}\cdot\mathbf{L}}{LS}\\
 	\cos\theta' &=& \frac{\mathbf{S}'\cdot\mathbf{L}'}{L'S'}\\
 				&=& \frac{L\sin\theta(T_x+\mathscr{T}_x)dt + LS\cos\theta
@@ -90,18 +108,19 @@ In order to derive the evolution rate for the inclination:
 	\Rightarrow \dot{\theta} &=& \frac{(T_z+\tilde{T}_z)\sin\theta}{L} 
 								 - \frac{(T_x+\tilde{T}_x)\cos\theta}{L}
 								 - \frac{T_x+\mathscr{T}_x}{S}
-\f}
 
 Now to derive the evolution rate for the argument of periapsis:
-\f[
+
+.. math::
+
 	\dot{\omega} = -\frac{1}{\sin\omega}\frac{d(\mathbf{\hat{p}}\cdot\mathbf{\hat{y}})}{dt}
 				 = -\frac{1}{\sin\omega}\left(
 						\mathbf{\hat{y}}\cdot\frac{d\mathbf{\hat{p}}}{dt}
 						+ \mathbf{\hat{p}}\cdot\frac{d\mathbf{\hat{y}}}{dt}
 				   \right)
-\f]
 
-\f{eqnarray*}{
+.. math::
+
 	\frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)
 		&=& - S(T_x+\tilde{T}_x)\mathbf{\hat{y}}
             + S(T_y+\tilde{T}_y)\mathbf{\hat{x}}
@@ -109,27 +128,29 @@ Now to derive the evolution rate for the argument of periapsis:
 			+ L\cos\theta(T_y+\mathscr{T}_y)\mathbf{\hat{x}}
 			- L\sin\theta(T_y+\mathscr{T}_y)\mathbf{\hat{z}}
 			+ L\sin\theta(T_z+\mathscr{T}_z)\mathbf{\hat{y}}\\
-
 		&=& \left[S(T_y+\tilde{T}_y)
 				  + L\cos\theta(T_y+\mathscr{T}_y)\right]\mathbf{\hat{x}}
 			+ \left[L\sin\theta(T_z+\mathscr{T}_z)
 					- L\cos\theta(T_x+\mathscr{T}_x) - S(T_x+\tilde{T}_x)
 			  \right]\mathbf{\hat{y}}
 			- L\sin\theta(T_y+\mathscr{T}_y)\mathbf{\hat{z}}
-\f}
 
-From \f$\dot{\theta}\f$:
-\f{eqnarray*}{
-	\frac{d}{dt}\left(\frac{1}{\sin\theta}\right) &=&
-		\frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin^2\theta}
-		+ \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin^2\theta}
-		- \frac{(T_z+\tilde{T}_z)\cos\theta}{L\sin\theta} 
-\f}
+From :math:`\dot{\theta}`:
 
-Combining \f$\frac{d}{dt}\left(\frac{1}{LS}\right)\f$,
-\f$\frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)\f$ and 
-\f$\frac{d}{dt}\left(\frac{1}{\sin\theta}\right)\f$:
-\f{eqnarray*}{
+.. math::
+
+    \frac{d}{dt}\left(\frac{1}{\sin\theta}\right)
+    =
+    \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin^2\theta} +
+    \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin^2\theta} -
+    \frac{(T_z+\tilde{T}_z)\cos\theta}{L\sin\theta}
+
+Combining :math:`\frac{d}{dt}\left(\frac{1}{LS}\right)`,
+:math:`\frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)` and
+:math:`\frac{d}{dt}\left(\frac{1}{\sin\theta}\right)`:
+
+.. math::
+
 	\frac{d}{dt}\mathbf{\hat{y}}
 		&=& \left\{\frac{(T_x+\tilde{T}_x)\sin\theta
 					+ (T_z+\tilde{T}_z)\cos\theta}{L}
@@ -179,10 +200,11 @@ Combining \f$\frac{d}{dt}\left(\frac{1}{LS}\right)\f$,
 			+ \frac{(T_y+\mathscr{T}_y)\sin\theta}{S}\\
 		&=& \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
 			+ \frac{T_y+\mathscr{T}_y}{S\sin\theta}
-\f}
 
 The evolution of the direction of periapsis:
-\f{eqnarray*}{
+
+.. math::
+
 	\frac{d}{dt}\mathbf{\hat{p}}
 		&=& -(\mathbf{T}+\mathbf{\tilde{T}})
 			\cdot\mathbf{\hat{p}}\frac{\mathbf{L}}{L^2}\\
@@ -196,36 +218,41 @@ The evolution of the direction of periapsis:
     \frac{\mathbf{\hat{y}}}{\sin\omega}\cdot\frac{d}{dt}\mathbf{\hat{p}}
     &=&
     0
-\f}
 
 So we get:
-\f[
+
+.. math::
+
 	\dot{\omega} = \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
 				   + \frac{T_y+\mathscr{T}_y}{S\sin\theta}
-\f]
 
 Finally:
-\f{eqnarray*}{
+
+.. math::
+
 	\dot{S} &=& T_z+\mathscr{T}_z\\
 	\dot{L} &=& -T_x\sin\theta - T_z\cos\theta
-\f}
 
-What remanains is to find \f$\tilde{T}_x\f$, \f$\tilde{T}_y\f$ and
-\f$\tilde{T}_z\f$. All that is necessary is to express the coornidate system
+What remanains is to find :math:`\tilde{T}_x`, :math:`\tilde{T}_y` and
+:math:`\tilde{T}_z`. All that is necessary is to express the coornidate system
 unit vectors of all other zones in terms of the ones for this zone. We will use
-\f$\mathbf{\hat{\tilde{x}}}\f$, \f$\mathbf{\hat{\tilde{y}}}\f$ and
-\f$\mathbf{\hat{\tilde{z}}}\f$ to refer to the unit vectors of another zone, and
-we will denote the difference between this zone's argument of periapsis and the
-second zone by \f$\Delta\omega\f$.
+:math:`\mathbf{\hat{\tilde{x}}}`, :math:`\mathbf{\hat{\tilde{y}}}` and
+:math:`\mathbf{\hat{\tilde{z}}}` to refer to the unit vectors of another zone,
+and we will denote the difference between this zone's argument of periapsis and
+the second zone by :math:`\Delta\omega`.
+
 Clearly:
-\f[
+
+.. math::
+
 	\mathbf{\hat{\tilde{y}}}=-\cos\theta\sin\Delta\omega\mathbf{\hat{x}}
 					+ \cos\Delta\omega\mathbf{\hat{y}}
 					+ \sin\theta\sin\Delta\omega\mathbf{\hat{z}}
-\f]
 
 Next:
-\f{eqnarray*}{
+
+.. math::
+
 	\mathbf{\hat{\tilde{z}}}
     &=&
     \cos\tilde{\theta}\mathbf{\hat{L}}
@@ -256,10 +283,11 @@ Next:
         +
         \sin\theta\sin\tilde{\theta}\cos\Delta\omega
     \right)\mathbf{\hat{z}}
-\f}
 
 Finally:
-\f{eqnarray*}{
+
+.. math::
+
         \mathbf{\hat{\tilde{x}}}
     &=&
         \sin\tilde{\theta}\mathbf{\hat{L}}
@@ -279,16 +307,12 @@ Finally:
             -
             \sin\theta\cos\tilde{\theta}\cos\Delta\omega
         \right)\mathbf{\hat{z}}
-\f}
 
-Crosscheck that
-\f$
-    \mathbf{\hat{\tilde{x}}}\times\mathbf{\hat{\tilde{y}}}
-    =
-    \mathbf{\hat{\tilde{z}}}
-\f$:
+Crosscheck that :math:`\mathbf{\hat{\tilde{x}}}\times\mathbf{\hat{\tilde{y}}} =
+\mathbf{\hat{\tilde{z}}}`:
 
-\f{eqnarray*}{
+.. math::
+
 	\mathbf{\hat{\tilde{x}}}\times\mathbf{\hat{\tilde{y}}}
 		&=& \left(\sin\theta\sin\tilde{\theta}
 							  + \cos\theta\cos\tilde{\theta}\cos\Delta\omega
@@ -349,22 +373,22 @@ Crosscheck that
                 +
                 \sin\theta\sin\tilde{\theta}\cos\Delta\omega
 			\right)\mathbf{\hat{z}}
-\f}
-Which is exactly \f$\mathbf{\hat{\tilde{z}}}\f$.
+
+Which is exactly :math:`\mathbf{\hat{\tilde{z}}}`.
 
 Crosscheck that the direction of the orbital angular momentum matches, i.e.
 that
-\f$
-    \sin\tilde{\theta}\mathbf{\hat{\tilde{x}}}
-    +
-    \cos\tilde{\theta}\mathbf{\hat{\tilde{z}}}
-    =
-    \sin\theta\mathbf{\hat{x}}
-    +
-    \cos\theta\mathbf{\hat{z}}
-\f$:
 
-\f{eqnarray*}{
+:math:`\sin\tilde{\theta}\mathbf{\hat{\tilde{x}}}
++
+\cos\tilde{\theta}\mathbf{\hat{\tilde{z}}}
+=
+\sin\theta\mathbf{\hat{x}}
++
+\cos\theta\mathbf{\hat{z}}`:
+
+.. math::
+
 	\sin\tilde{\theta}\mathbf{\hat{\tilde{x}}}
     +
     \cos\tilde{\theta}\mathbf{\hat{\tilde{z}}}
@@ -401,10 +425,11 @@ that
     \right)\mathbf{\hat{z}}\\
     &=&
     \sin\theta\mathbf{\hat{x}} + \cos\theta\mathbf{\hat{z}}
-\f}
 
 Finally, crosscheck that the direction of periapsis is consistent, i.e. that
-\f[ 
+
+.. math::
+
 	- \sin(\omega-\Delta\omega)\cos\tilde{\theta}\mathbf{\hat{\tilde{x}}}
 	+ \cos(\omega-\Delta\omega)\mathbf{\hat{\tilde{y}}}
 	+ \sin(\omega-\Delta\omega)\sin\tilde{\theta}\mathbf{\hat{\tilde{z}}}
@@ -412,10 +437,11 @@ Finally, crosscheck that the direction of periapsis is consistent, i.e. that
 	- \sin\omega\cos\theta\mathbf{\hat{x}}
     + \cos\omega\mathbf{\hat{y}}
 	+ \sin\omega\sin\theta\mathbf{\hat{z}}
-\f]
 
 We will go component by component:
-\f{eqnarray*}{
+
+.. math::
+
 	\mathbf{\hat{\tilde{p}}}\cdot\mathbf{\hat{x}}
     &=&
     -\sin(\omega-\Delta\omega)\cos\tilde{\theta}
@@ -449,10 +475,11 @@ We will go component by component:
     - \sin\omega\cos\theta\\
     &=&
     \mathbf{\hat{p}}\cdot\mathbf{\hat{x}}
-\f}
 
 Next:
-\f{eqnarray*}{
+
+.. math::
+
     \mathbf{\hat{\tilde{p}}}\cdot\mathbf{\hat{y}}
     &=&
     -
@@ -472,10 +499,11 @@ Next:
     \cos\omega\\
     &=&
     \mathbf{\hat{p}}\cdot\mathbf{\hat{y}}
-\f}
 
 Finally:
-\f{eqnarray*}{
+
+.. math::
+
 	\mathbf{\hat{\tilde{p}}}\cdot\mathbf{\hat{z}}
     &=&
     - \sin(\omega-\Delta\omega)\cos\tilde{\theta}
@@ -509,4 +537,3 @@ Finally:
     \sin\theta\sin\omega\\
     &=&
     \mathbf{\hat{p}}\cdot\mathbf{\hat{z}}
-\f}

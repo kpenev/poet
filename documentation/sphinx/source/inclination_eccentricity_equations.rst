@@ -293,7 +293,7 @@ we will follow the evolution of the difference between their argument of
 periapsis and that of the referenc zone - :math:`\Delta\omega`\ . Thus, if the
 two bodies are split into n zones, the evolution of 1+2n variables will be
 followed. The equations for the evolution of these variables are derived 
-[here](@ref EccentricEvolutionEquations).
+:doc:`here <eccentric_evolution_equations>`.
 
 The collected equations are:
 
