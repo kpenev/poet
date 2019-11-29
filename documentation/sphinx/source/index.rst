@@ -74,7 +74,7 @@ For more details see:
 
     installation
 
-    Python Interface <_implementation/modules>
+    python_interface
 
     The C++ interface <cpp_api/library_root>
 
