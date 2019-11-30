@@ -387,3 +387,16 @@ The resulting evolution equations are then the same as before, but with:
 	T_x & = & T_x^0 + \lambda T_x^+ + (1-\lambda)T_x^-\\
 	T_z & = & T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\
 	\dot{E} & = & \dot{E}^0 + \lambda\dot{E}^+ + (1-\lambda)\dot{E}^-
+
+Detailed Derivations of Results Used Above
+==========================================
+
+.. toctree::
+    :maxdepth: 1
+
+    eccentric_evolution_equations
+    inclination_eccentricity_pms1
+    inclination_eccentricity_pms2
+    inclination_eccentricity_umm_table
+    inclination_eccentricity_torque
+    inclination_eccentricity_power

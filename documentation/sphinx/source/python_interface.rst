@@ -5,6 +5,8 @@ Python Interface
 .. toctree::
     :maxdepth: 1
 
-    stellar_evolution
+    python_stellar_evolution
+
+    python_orbital_evolution
 
     Python API <_implementation/modules>
