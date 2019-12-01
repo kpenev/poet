@@ -65,8 +65,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.inheritance_diagram',
     'nbsphinx',
-    'breathe',
-    'exhale'
+#    'breathe',
+#    'exhale'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -286,25 +286,25 @@ doxygen_xml = os.path.abspath(
     )
 )
 
-breathe_projects = {
-    'C++ library': doxygen_xml
-}
+#breathe_projects = {
+#    'C++ library': doxygen_xml
+#}
 
 
-breathe_default_project = "C++ library"
+#breathe_default_project = "C++ library"
 
-breathe_default_members = ('members',
-                           'protected-members',
-                           'private-members',
-                           'undoc-members')
+#breathe_default_members = ('members',
+#                           'protected-members',
+#                           'private-members',
+#                           'undoc-members')
 
-# Setup the exhale extension
-exhale_args = {
-    # These arguments are required
-    "containmentFolder":     "./cpp_api",
-    "rootFileName":          "library_root.rst",
-    "rootFileTitle":         "C++ API",
-    "doxygenStripFromPath":  "..",
-    # Suggested optional arguments
-    "createTreeView":        True
-}
+## Setup the exhale extension
+#exhale_args = {
+#    # These arguments are required
+#    "containmentFolder":     "./cpp_api",
+#    "rootFileName":          "library_root.rst",
+#    "rootFileTitle":         "C++ API",
+#    "doxygenStripFromPath":  "..",
+#    # Suggested optional arguments
+#    "createTreeView":        True
+#}

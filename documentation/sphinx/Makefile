@@ -22,7 +22,7 @@ help:
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	-cd $(DOXYGENDIR) && rm -rf build/xml && doxygen DoxygenConfig && cp images/* build/xml/
+	-cd $(DOXYGENDIR) && rm -rf build/xml build/html && doxygen DoxygenConfig && cp images/* build/xml/ || cp -r build/html ../sphinx/source/_static/cpp_doxygen_html
 	rm -rf $(BUILDDIR)
 	$(SPHINXAPIDOC) "$(MODULEDIR)" $(APIDOCOPTS) -o "$(SOURCEDIR)/_implementation" 
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

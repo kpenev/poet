@@ -68,19 +68,21 @@ to allow for eccentric orbits, where a series expansion in eccentricity is used,
 up to a dynamically adjusted maximum order.
 
 For more details see:
+=====================
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 1
 
     installation
 
     python_interface
 
-    The C++ interface <cpp_api/library_root>
+    The C++ interface <https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html>
 
     A detailed derivation of the equations specifying the evolution <inclination_eccentricity_equations>
 
     acknowledgements
+
 
 Citing POET
 ===========
