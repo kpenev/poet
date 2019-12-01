@@ -1,0 +1,5 @@
+<map id="inheritance6fac977a3f" name="inheritance6fac977a3f">
+<area shape="rect" id="node7" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.c_dissipating_body_p" target="_top" title="Dummy class only used for type checking." alt="" coords="195,77,548,101"/>
+<area shape="rect" id="node8" href="#orbital_evolution.evolve_interface.c_binary_p" target="_top" title="Place holder type for binary systems from the C&#45;library." alt="" coords="571,77,860,101"/>
+<area shape="rect" id="node9" href="#orbital_evolution.evolve_interface.c_solver_p" target="_top" title="Place holder type for orbit evolution solver from the C&#45;library." alt="" coords="884,77,1171,101"/>
+</map>

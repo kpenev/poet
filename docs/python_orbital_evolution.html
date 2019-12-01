@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Python Orbital Evolution Module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PythonPackage" href="_implementation/modules.html" />
+    <link rel="prev" title="The Python Stellar Evolution Module" href="python_stellar_evolution.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Python Orbital Evolution Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-stellar-evolution-interpolator">Create a Stellar Evolution Interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-configure-and-initialize-a-star">Create, Configure and Initialize a Star</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-planet">Create a Planet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#combine-the-two-objects-in-a-binary">Combine the Two Objects in a Binary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calculate-the-evolution-and-query-the-results">Calculate the evolution and query the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="_implementation/modules.html">Python API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="python_interface.html">Python Interface</a> &raquo;</li>
+        
+      <li>The Python Orbital Evolution Module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/python_orbital_evolution.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="the-python-orbital-evolution-module">
+<h1>The Python Orbital Evolution Module<a class="headerlink" href="#the-python-orbital-evolution-module" title="Permalink to this headline">¶</a></h1>
+<p>A module for calculating orbital evolutions of two body systems in cilcular
+orbits. Both bodies are split into a number of zones, some or all of which are
+dissipative. The evolution tracks each zone’s angular momentum vector allowed to
+point in an arbitrary direction. All neighboring zones exchange angular momentum
+and the outermost zone possibly loses angular momentum due to magnetically
+launched wind. All frequency components of the dissipation are treated
+separately with their own tidal frequency. The dissipation efficiency is a
+broken powerlaw of tidal and stellar spin frequency.</p>
+<p>A binray system in poet consists of a primary and a secondary object. With the
+primary object forming first and evolving in isolation until a user specified
+time when the secondary object appears in the system, and binary evolution
+commences. The secondary must be configured before running the evolution to the
+state in which it will first appear. Two types of objects can be part of a
+POET binary system: stars and planets.</p>
+<p>Planets in POET are quite simple. They consist of a single zone of fixed mass,
+radius and moment of inertia, and do not lose angular momentum to wind.
+Dissipation in the (only zone of the) planet can be specified the same way it is
+specified for any other zone (see below).</p>
+<p>With the default stellar evolution included with POET, stars must satisfy:
+<span class="math notranslate nohighlight">\(0.4 M_\odot \leq M_\star \leq 1.2 M_\odot\)</span>, and <span class="math notranslate nohighlight">\(-1 &lt; [Fe/H] &lt;
+0.5\)</span>. The have two zones: a radiative core and a convective envelope, with the
+boundary betweeen these zones both in mass and in radius evolving with age. The
+dissipation of each zone can be specified independently, though theoretically
+the expectation is that the dissipation in the convective zone will have a much
+much bigger effect than any likely dissipation in the core. In addition, the
+zones exchange angular momentum, and the radiative envelope loses angular
+momentum to stelar wind.</p>
+<p>In order to calculate the evolution of a planet-star system the basic steps are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Create a stellar evolution interpolator</p></li>
+<li><p>Create, configure and initialize a star</p></li>
+<li><p>Create a planet</p></li>
+<li><p>Combine the two objects in a binary</p></li>
+<li><p>Calculate the evolution and query the results</p></li>
+</ul>
+</div></blockquote>
+<p>Examples on how to accomplish each step follow. Note that if a zone of an object
+is not dissipative it is better to avoid specifying the disispation rather than
+specifying a zero phase-lag, since in the latter case tidal torque and power are
+still computed though they are guaranteed to always be zero, which just wastes
+CPU time:</p>
+<div class="section" id="create-a-stellar-evolution-interpolator">
+<h2>Create a Stellar Evolution Interpolator<a class="headerlink" href="#create-a-stellar-evolution-interpolator" title="Permalink to this headline">¶</a></h2>
+<p>More details about stellar evolution interpolators are given <a class="reference internal" href="python_stellar_evolution.html"><span class="doc">here</span></a>, but the basic steps are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stellar_evolution.manager</span> <span class="k">import</span> <span class="n">StellarEvolutionManager</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c1">#Create a manager</span>
+<span class="n">manager</span> <span class="o">=</span> <span class="n">StellarEvolutionManager</span><span class="p">(</span><span class="o">&lt;</span><span class="n">path</span> <span class="n">to</span> <span class="n">serialized</span> <span class="n">interpolators</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="c1">#Find and use the default interpolator</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_interpolator_by_name</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-configure-and-initialize-a-star">
+<h2>Create, Configure and Initialize a Star<a class="headerlink" href="#create-configure-and-initialize-a-star" title="Permalink to this headline">¶</a></h2>
+<p>Given an interpolator a star with a given mass, [Fe/H], spin-down model
+parameters and dissipation parameters is created and prepared for evolution as
+follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">orbital_evolution.transformations</span> <span class="k">import</span> <span class="n">phase_lag</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.star_interface</span> <span class="k">import</span> <span class="n">EvolvingStar</span>
+
+<span class="c1">#Create the star with</span>
+<span class="c1">#   mass of 1 solar mass</span>
+<span class="c1">#   [Fe/H] = 0</span>
+<span class="c1">#   Spin-down parameters: K_w = 0.17 in solar units times rad/day per Gyr</span>
+<span class="c1">#                         \omega_{sat} = 2.45 rad/day</span>
+<span class="c1">#   core-envelope coupling timescale of 5Myrs</span>
+<span class="n">star</span> <span class="o">=</span> <span class="n">EvolvingStar</span><span class="p">(</span><span class="n">mass</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">metallicity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="n">wind_strength</span> <span class="o">=</span> <span class="mf">0.17</span><span class="p">,</span>
+                    <span class="n">wind_saturation_frequency</span> <span class="o">=</span> <span class="mf">2.45</span><span class="p">,</span>
+                    <span class="n">diff_rot_coupling_timescale</span> <span class="o">=</span> <span class="mf">5.0e-3</span><span class="p">,</span>
+                    <span class="n">interpolator</span> <span class="o">=</span> <span class="n">interpolator</span><span class="p">)</span>
+
+<span class="c1">#Prepare the stellar evolution interpolation to start following the</span>
+<span class="c1">#evolution of the star as soon as the core stars to form.</span>
+<span class="n">star</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">core_formation_age</span><span class="p">())</span>
+
+<span class="c1">#Define the dissipation of the stellar envelope. In this case, a constant</span>
+<span class="c1">#phase lag corresponding to \f$Q&#39;_\star = 10^6\f$.</span>
+<span class="n">star</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span><span class="n">zone_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                     <span class="n">tidal_frequency_breaks</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">spin_frequency_breaks</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">tidal_frequency_powers</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                     <span class="n">spin_frequency_powers</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                     <span class="n">reference_phase_lag</span> <span class="o">=</span> <span class="n">phase_lag</span><span class="p">(</span><span class="mf">6.0</span><span class="p">))</span>
+
+<span class="c1">#The dissipation in the core of the star is not specified which results in a</span>
+<span class="c1">#non-disspative core</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-planet">
+<h2>Create a Planet<a class="headerlink" href="#create-a-planet" title="Permalink to this headline">¶</a></h2>
+<p>Creating planets is very simple. One only needs to specify the mass and radius
+<strong>in soler units</strong>, we do not specify dissipation, resulting in a
+non-dissipative planet:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">orbital_evolution.planet_interface</span> <span class="k">import</span> <span class="n">LockedPlanet</span>
+<span class="kn">from</span> <span class="nn">astropy</span> <span class="k">import</span> <span class="n">units</span><span class="p">,</span> <span class="n">constants</span>
+
+<span class="c1">#Create a planet with a Jovian mass and radius</span>
+<span class="n">planet</span> <span class="o">=</span> <span class="n">LockedPlanet</span><span class="p">(</span>
+    <span class="n">mass</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">M_jup</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="s1">&#39;M_sun&#39;</span><span class="p">),</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">R_jup</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="s1">&#39;R_sun&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="combine-the-two-objects-in-a-binary">
+<h2>Combine the Two Objects in a Binary<a class="headerlink" href="#combine-the-two-objects-in-a-binary" title="Permalink to this headline">¶</a></h2>
+<p>A star and a planet can be combined in a binary which is then prepared for
+evolution calculations as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">orbital_evolution.binary</span> <span class="k">import</span> <span class="n">Binary</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">pi</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c1">#Create a binary with the primary object being the star and the seconday</span>
+<span class="c1">#being an initially non-existent the planet, which forms when the</span>
+<span class="c1">#protoplanetary disk dissipates (in this case 4Myrs) with an initial orbital</span>
+<span class="c1">#period of 3 days in a circular and aligned orbit.</span>
+<span class="c1">#Prior to the planet formith the stellar envelope spin frequency is held</span>
+<span class="c1">#fixed (presumably locked to the inner edge of the disk) at a period of 7</span>
+<span class="c1">#days.</span>
+<span class="n">disk_dissipation_age</span> <span class="o">=</span> <span class="mf">4e-3</span>
+<span class="n">porb_initial</span> <span class="o">=</span> <span class="mf">3.0</span>
+<span class="n">binary</span> <span class="o">=</span> <span class="n">Binary</span><span class="p">(</span><span class="n">primary</span> <span class="o">=</span> <span class="n">star</span><span class="p">,</span>
+                <span class="n">secondary</span> <span class="o">=</span> <span class="n">planet</span><span class="p">,</span>
+                <span class="n">initial_orbital_period</span> <span class="o">=</span> <span class="n">porb_initial</span><span class="p">,</span>
+                <span class="n">initial_eccentricity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">initial_inclination</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">disk_lock_frequency</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">7.0</span><span class="p">,</span>
+                <span class="n">disk_dissipation_age</span> <span class="o">=</span> <span class="n">disk_dissipation_age</span><span class="p">,</span>
+                <span class="n">secondary_formation_age</span> <span class="o">=</span> <span class="mf">4e-3</span><span class="p">)</span>
+
+<span class="c1">#Specify the initial conditions at which the binary starts. In thisa cese</span>
+<span class="c1">#trivial since the planet does not exist at the start of the evolution</span>
+<span class="c1">#calculations.</span>
+<span class="n">binary</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">age</span> <span class="o">=</span> <span class="n">star</span><span class="o">.</span><span class="n">core_formation_age</span><span class="p">(),</span>
+                 <span class="n">semimajor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">),</span>
+                 <span class="n">eccentricity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">),</span>
+                 <span class="n">spin_angmom</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                 <span class="n">inclination</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">periapsis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">evolution_mode</span> <span class="o">=</span> <span class="s1">&#39;LOCKED_SURFACE_SPIN&#39;</span><span class="p">)</span>
+
+<span class="c1">#Configure the planet in the state in which it will form.</span>
+<span class="n">planet</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">age</span> <span class="o">=</span> <span class="n">disk_dissipation_age</span><span class="p">,</span>
+                 <span class="n">companion_mass</span> <span class="o">=</span> <span class="n">star</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                 <span class="n">semimajor</span> <span class="o">=</span> <span class="n">binary</span><span class="o">.</span><span class="n">semimajor</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">),</span>
+                 <span class="n">eccentricity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">spin_angmom</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                 <span class="n">inclination</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">periapsis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">locked_surface</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">zero_outer_inclination</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">zero_outer_periapsis</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">#Configuring the binary (the first command above) will trigger configuring</span>
+<span class="c1">#the star, and before evolution starts the star needs to set its wind</span>
+<span class="c1">#saturation flag per its current state.</span>
+<span class="n">star</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calculate-the-evolution-and-query-the-results">
+<h2>Calculate the evolution and query the results<a class="headerlink" href="#calculate-the-evolution-and-query-the-results" title="Permalink to this headline">¶</a></h2>
+<p>Once we have a binary system, the following calculates the evolution and obtains
+the specified quantities at each timestep:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">orbital_evolution.evolve_interface</span> <span class="k">import</span> <span class="n">library</span> <span class="k">as</span>\
+<span class="n">orbital_evolution_library</span>
+
+<span class="c1">#Read-in the pre-calculated coefficients giving the expansion of the tidal</span>
+<span class="c1">#potential as a series in eccentricity and frequency.</span>
+<span class="c1">#The filename MUST BE SUPPLIED AS BYTES (not string)!!!</span>
+<span class="n">orbital_evolution_library</span><span class="o">.</span><span class="n">read_eccentricity_expansion_coefficients</span><span class="p">(</span>
+    <span class="o">&lt;</span><span class="n">filename</span> <span class="k">with</span> <span class="n">eccentricity</span> <span class="n">expansion</span> <span class="n">coefficients</span><span class="o">&gt;</span>
+<span class="p">)</span>
+
+<span class="c1">#Calculate the evolution to a final age of 10Gyrs</span>
+<span class="c1">#With a maximum step size of 1Myr</span>
+<span class="c1">#With the ODE solver precision set ot 10^-6</span>
+<span class="c1">#An empty list of ages which the evolution must precisely visit</span>
+<span class="n">binary</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="c1">#Select the quantities to get at each evolution timestep.</span>
+<span class="c1">#Further requests for quantities can be made later without re-calculating</span>
+<span class="c1">#the evolution.</span>
+<span class="n">evolution_quantities</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;semimajor&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;envelope_angmom&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;core_angmom&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;wind_saturation&#39;</span><span class="p">]</span>
+
+<span class="c1">#Get the specified quantities as a numpy record array with record names</span>
+<span class="c1">#given by the quantity names above.</span>
+<span class="n">evolution</span> <span class="o">=</span> <span class="n">binary</span><span class="o">.</span><span class="n">get_evolution</span><span class="p">(</span><span class="n">evolution_quantities</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="_implementation/modules.html" class="btn btn-neutral float-right" title="PythonPackage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="python_stellar_evolution.html" class="btn btn-neutral float-left" title="The Python Stellar Evolution Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

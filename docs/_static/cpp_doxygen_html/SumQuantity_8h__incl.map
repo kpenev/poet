@@ -1,0 +1,18 @@
+<map id="/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/SumQuantity.h" name="/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/SumQuantity.h">
+<area shape="rect" id="node2" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="278,601,498,645"/>
+<area shape="rect" id="node3" href="$EvolvingStellarQuantity_8h.html" title="Declares a class implementing the intepolation of a single stellar quantity from stellar evolution tr..." alt="" coords="946,113,1145,141"/>
+<area shape="rect" id="node4" href="$AllowedGridGrowth_8h.html" title="Declares &amp; defines a class describing how the mass&#45;[Fe/H] interpolation grid is allowed to grow..." alt="" coords="94,281,266,309"/>
+<area shape="rect" id="node5" href="$RemoveLogDeriv_8h.html" title="Declares a class to switch from logarithmic to linear derivative. " alt="" coords="477,197,635,225"/>
+<area shape="rect" id="node7" href="$Functions_8h.html" title="A hierarchy of classes representing functions. " alt="" coords="1251,357,1355,385"/>
+<area shape="rect" id="node21" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="2220,525,2289,553"/>
+<area shape="rect" id="node33" href="$SumDerivatives_8h.html" title="Declares &amp; defines a class for the derivative of a quantity which is the sum of two other quantities..." alt="" coords="392,281,539,309"/>
+<area shape="rect" id="node34" href="$InterpolatedDerivatives_8h_source.html" title="InterpolatedDerivatives.h" alt="" coords="709,197,907,225"/>
+<area shape="rect" id="node35" href="$mass__feh__interp_8h.html" title="Define a single function performing mass&#45;[Fe/H] interpolations. " alt="" coords="589,357,742,385"/>
+<area shape="rect" id="node37" href="$InterpSolutionIterator_8h_source.html" title="../Core/InterpSolutionIterator.h" alt="" coords="1279,281,1515,309"/>
+<area shape="rect" id="node39" href="$InterpolatingFunctionALGLIB_8h_source.html" title="../Core/InterpolatingFunction\lALGLIB.h" alt="" coords="1083,189,1306,233"/>
+<area shape="rect" id="node6" href="$LogDerivatives_8h.html" title="Declares a class for differentiating functions of log(arg) w.r.t. arg. " alt="" coords="664,281,856,309"/>
+<area shape="rect" id="node8" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="1253,441,1352,469"/>
+<area shape="rect" id="node24" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="1639,525,1838,553"/>
+<area shape="rect" id="node25" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="2018,525,2145,553"/>
+<area shape="rect" id="node38" href="$SerializableSpline1dInterpolant_8h_source.html" title="SerializableSpline1dInterpolant.h" alt="" coords="1479,357,1734,385"/>
+</map>

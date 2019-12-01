@@ -1,0 +1,6 @@
+<map id="inheritance648db01efc" name="inheritance648db01efc">
+<area shape="rect" id="node9" href="#stellar_evolution.library_interface.c_interpolator_p" target="_top" title="Type corresponding to pointer to intepolator in the POET library." alt="" coords="392,77,708,101"/>
+<area shape="rect" id="node10" href="#stellar_evolution.library_interface.c_quantity_p" target="_top" title="Type corresponding to pointer to evolution quantities in POET library." alt="" coords="732,77,1027,101"/>
+<area shape="rect" id="node7" href="#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="798,5,1123,29"/>
+<area shape="rect" id="node8" href="#stellar_evolution.library_interface.Quantity" target="_top" title="Callable that evaluates to the value of the quantity at a given age." alt="" coords="1147,5,1417,29"/>
+</map>

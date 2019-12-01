@@ -1,0 +1,31 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classCore_1_1FunctionDerivatives.html" title="A class representing arbitrary order derivatives of a function. " alt="" coords="301,317,507,345"/>
+<area shape="rect" id="node2" href="$classCore_1_1CubicSplineDerivatives.html" title="A class for the derivatives of a cubic spline (=0 for order&gt;2). " alt="" coords="600,57,829,85"/>
+<area shape="rect" id="node3" href="$classCore_1_1ZeroDerivatives.html" title="The derivatives of an identically zero quantity. " alt="" coords="626,109,803,137"/>
+<area shape="rect" id="node4" href="$classCosFunction.html" title="The cosine of a function. " alt="" coords="659,577,770,605"/>
+<area shape="rect" id="node5" href="$classExponentialPlusFunc.html" title="Represents a function of the form offset + scale*exp(rate*x) as well as its derivative. " alt="" coords="629,629,800,657"/>
+<area shape="rect" id="node6" href="$classFuncPlusFunc.html" title="Represents the sum of two functions and the derivative. " alt="" coords="653,265,776,293"/>
+<area shape="rect" id="node7" href="$classFunctionRatio.html" title="The ratio of two functions;. " alt="" coords="655,317,775,345"/>
+<area shape="rect" id="node8" href="$classFunctionToPower.html" title="A function raised to some power. " alt="" coords="642,369,787,397"/>
+<area shape="rect" id="node9" href="$classLogFunction.html" title="The natural logarithm of a function. " alt="" coords="660,421,769,449"/>
+<area shape="rect" id="node10" href="$classPiecewiseFunction.html" title="Several functions stiched together. " alt="" coords="637,473,792,501"/>
+<area shape="rect" id="node11" href="$classScaledFunction.html" title="A function scaled by some constant. " alt="" coords="649,525,780,553"/>
+<area shape="rect" id="node12" href="$classStellarEvolution_1_1LogDerivatives.html" title="Calculate dy/dx given dy/dx, dy/dln(x), dln(y)/dx or dln(y)/dln(x). " alt="" coords="591,161,838,189"/>
+<area shape="rect" id="node15" href="$classStellarEvolution_1_1PolynomialEvolutionQuantity.html" title="An EvolvingStellar quantity that uses a polynomial instead of interpolating. " alt="" coords="908,396,1127,440"/>
+<area shape="rect" id="node16" href="$classStellarEvolution_1_1SumDerivatives.html" title="Derivative class for a quantity that is the sum of two other quantities. " alt="" coords="588,5,841,33"/>
+<area shape="rect" id="node13" href="$classStellarEvolution_1_1InterpolatedDerivatives.html" title="Derivative class for stellar quantities which are interpolated age, mass and [Fe/H]. " alt="" coords="905,188,1130,232"/>
+<area shape="rect" id="node14" href="$classStellarEvolution_1_1RemoveLogDeriv.html" title="Return dy/dx given dy/dln(x), dln(y)/dx or dln(y)/dln(x). " alt="" coords="917,120,1118,164"/>
+<area shape="rect" id="node17" href="$classCore_1_1OneArgumentFunction.html" title="Core::OneArgumentFunction\l\&lt; double, double \&gt;" alt="" coords="5,681,231,725"/>
+<area shape="rect" id="node18" href="$classCore_1_1OneArgumentDiffFunction.html" title="A class representing a once differentiable function of a single argument. " alt="" coords="279,689,529,717"/>
+<area shape="rect" id="node19" href="$classConservedLEConvObliquityEvolution.html" title="ConservedLEConvObliquity\lEvolution" alt="" coords="606,749,824,793"/>
+<area shape="rect" id="node20" href="$classConservedLERadObliquityEvolution.html" title="ConservedLERadObliquityEvolution" alt="" coords="577,817,853,845"/>
+<area shape="rect" id="node21" href="$classCore_1_1InterpolatingFunctionALGLIB.html" title="Function which interpolates, with possible smoothing, between points. " alt="" coords="607,869,822,913"/>
+<area shape="rect" id="node22" href="$classCore_1_1ZeroFunction.html" title="A class representing a function that is identically zero. " alt="" coords="635,937,794,965"/>
+<area shape="rect" id="node23" href="$classInverseFunction.html" title="The invrse of an existing function. " alt="" coords="647,989,782,1017"/>
+<area shape="rect" id="node24" href="$classInverseLinearLconvEvolution.html" title="InverseLinearLconvEvolution\l\&lt; LINEAR_QUANTITY_TYPE \&gt;" alt="" coords="591,1041,838,1085"/>
+<area shape="rect" id="node25" href="$classOblique10LinearQuantity.html" title="A function of the stellar angular momentum expected to evolve linearly with time under the m = 1..." alt="" coords="615,1109,814,1137"/>
+<area shape="rect" id="node26" href="$classOblique20LinearQuantity.html" title="A function of the stellar angular momentum expected to evolve linearly with time under the m = 1..." alt="" coords="615,1161,814,1189"/>
+<area shape="rect" id="node27" href="$classStellarEvolution_1_1EvolvingStellarQuantity.html" title="A class for stellar properties that depend on age. " alt="" coords="614,681,816,725"/>
+<area shape="rect" id="node28" href="$classStellarEvolution_1_1SumQuantity.html" title="A clas for stellar quantities that are the sum of two other quantities. " alt="" coords="901,715,1134,743"/>
+<area shape="rect" id="node29" href="$classStellarEvolution_1_1ZeroQuantity.html" title="StellarEvolution::ZeroQuantity" alt="" coords="901,663,1134,691"/>
+</map>

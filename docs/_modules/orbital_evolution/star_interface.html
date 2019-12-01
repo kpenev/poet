@@ -1,0 +1,678 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>orbital_evolution.star_interface &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>orbital_evolution.star_interface</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for orbital_evolution.star_interface</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;An interface to the POET star library.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">cdll</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_double</span><span class="p">,</span> <span class="n">c_uint</span><span class="p">,</span> <span class="n">byref</span>
+<span class="kn">from</span> <span class="nn">ctypes.util</span> <span class="k">import</span> <span class="n">find_library</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
+
+<span class="c1">#Need to add POEP packageto module search path before importing.</span>
+<span class="c1">#pylint: disable=wrong-import-position</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.library_interface</span> <span class="k">import</span>\
+    <span class="n">library</span> <span class="k">as</span> <span class="n">stellar_evolution_library</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.dissipating_body</span> <span class="k">import</span>\
+    <span class="n">DissipatingBody</span><span class="p">,</span>\
+    <span class="n">c_dissipating_body_p</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.evolve_interface</span> <span class="k">import</span>\
+    <span class="n">library</span> <span class="k">as</span> <span class="n">orbital_evolution_library</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.c_interface_util</span> <span class="k">import</span> <span class="n">ndpointer_or_null</span>
+<span class="c1">#pylint: enable=wrong-import-position</span>
+
+<div class="viewcode-block" id="initialize_library"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.initialize_library">[docs]</a><span class="k">def</span> <span class="nf">initialize_library</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Prepare the planet library for use.&quot;&quot;&quot;</span>
+
+    <span class="n">library_fname</span> <span class="o">=</span> <span class="n">find_library</span><span class="p">(</span><span class="s1">&#39;star&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">library_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Unable to find POET</span><span class="se">\&#39;</span><span class="s1">s star library.&#39;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">library_fname</span><span class="p">)</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_double</span><span class="p">,</span>
+        <span class="n">stellar_evolution_library</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_dissipating_body_p</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">destroy_star</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">destroy_star</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">set_star_dissipation</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_double</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">set_star_dissipation</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+        <span class="n">c_double</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">core_formation_age</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">core_formation_age</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">lifetime</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">lifetime</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">luminosity</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">luminosity</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">luminosity_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">luminosity_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+                                        <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">star_radius</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">star_radius</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">star_radius_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">star_radius_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<span class="n">library</span> <span class="o">=</span> <span class="n">initialize_library</span><span class="p">()</span>
+
+<div class="viewcode-block" id="EvolvingStar"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar">[docs]</a><span class="k">class</span> <span class="nc">EvolvingStar</span><span class="p">(</span><span class="n">DissipatingBody</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for stars following interpolated stellar evolution tracks.&quot;&quot;&quot;</span>
+
+    <span class="n">deriv_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NO&#39;</span><span class="p">,</span> <span class="s1">&#39;AGE&#39;</span><span class="p">,</span> <span class="s1">&#39;SPIN_FREQUENCY&#39;</span><span class="p">,</span> <span class="s1">&#39;ORBITAL_FREQUENCY&#39;</span><span class="p">]</span>
+    <span class="n">deriv_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">:</span> <span class="n">c_int</span><span class="o">.</span><span class="n">in_dll</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">d</span> <span class="o">+</span> <span class="s1">&#39;_DERIV&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">deriv_list</span><span class="p">}</span>
+
+    <span class="n">lib_configure_body</span> <span class="o">=</span> <span class="n">orbital_evolution_library</span><span class="o">.</span><span class="n">configure_star</span>
+
+<div class="viewcode-block" id="EvolvingStar._evaluate_stellar_property"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar._evaluate_stellar_property">[docs]</a>    <span class="k">def</span> <span class="nf">_evaluate_stellar_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate a library function at a single age or array of ages.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                 <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span>
+                                 <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">property_name</span> <span class="o">+</span> <span class="s1">&#39;_array&#39;</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+                                                       <span class="n">age</span><span class="p">,</span>
+                                                       <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                                                       <span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">property_name</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.__init__"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="o">*</span><span class="p">,</span>
+                 <span class="n">mass</span><span class="p">,</span>
+                 <span class="n">metallicity</span><span class="p">,</span>
+                 <span class="n">wind_strength</span><span class="p">,</span>
+                 <span class="n">wind_saturation_frequency</span><span class="p">,</span>
+                 <span class="n">diff_rot_coupling_timescale</span><span class="p">,</span>
+                 <span class="n">interpolator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a star with the given properties and evolution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - mass:</span>
+<span class="sd">                The mass of the star in solar masses.</span>
+
+<span class="sd">            - metallicity:</span>
+<span class="sd">                The metallicity ([Fe/H]) of the star.</span>
+
+<span class="sd">            - wind_strength:</span>
+<span class="sd">                The efficiency of the wind carrying away angular momentum.</span>
+
+<span class="sd">            - wind_saturation_frequency:</span>
+<span class="sd">                The frequency at which the wind loss saturates in rad/day.</span>
+
+<span class="sd">            - diff_rot_coupling_timescale:</span>
+<span class="sd">                The timescale for differential rotation coupling.</span>
+
+<span class="sd">            - interpolator:</span>
+<span class="sd">                An instance of stellar_evolution.MESAInterpolator to base the</span>
+<span class="sd">                stellar evolution on.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metallicity</span> <span class="o">=</span> <span class="n">metallicity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_strength</span> <span class="o">=</span> <span class="n">wind_strength</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_saturation_frequency</span> <span class="o">=</span> <span class="n">wind_saturation_frequency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diff_rot_coupling_timescale</span> <span class="o">=</span> <span class="n">diff_rot_coupling_timescale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">interpolator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_body</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">create_star</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span>
+                                          <span class="n">metallicity</span><span class="p">,</span>
+                                          <span class="n">wind_strength</span><span class="p">,</span>
+                                          <span class="n">wind_saturation_frequency</span><span class="p">,</span>
+                                          <span class="n">diff_rot_coupling_timescale</span><span class="p">,</span>
+                                          <span class="n">interpolator</span><span class="o">.</span><span class="n">interpolator</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.delete"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the library star object created at construction.&quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">destroy_star</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">)</span></div>
+
+    <span class="c1">#The parent method simply saves the parameters, so it need not name them.</span>
+    <span class="c1">#pylint: disable=arguments-differ</span>
+<div class="viewcode-block" id="EvolvingStar.set_dissipation"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.set_dissipation">[docs]</a>    <span class="k">def</span> <span class="nf">set_dissipation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="o">*</span><span class="p">,</span>
+                        <span class="n">zone_index</span><span class="p">,</span>
+                        <span class="n">tidal_frequency_breaks</span><span class="p">,</span>
+                        <span class="n">spin_frequency_breaks</span><span class="p">,</span>
+                        <span class="n">tidal_frequency_powers</span><span class="p">,</span>
+                        <span class="n">spin_frequency_powers</span><span class="p">,</span>
+                        <span class="n">reference_phase_lag</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the dissipative properties of one of the zones of a star.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - zone_index:</span>
+<span class="sd">                Which zone to set the dissiaption for (0 - envelope, 1 -</span>
+<span class="sd">                core).</span>
+<span class="sd">            - tidal_frequency_breaks:</span>
+<span class="sd">                The locations of the breaks in tidal frequency in rad/day.</span>
+<span class="sd">                Entries should be sorted.</span>
+<span class="sd">            - spin_frequency_breaks:</span>
+<span class="sd">                The locations of the breaks in spin frequency in rad/day.</span>
+<span class="sd">                Entries should be sorted.</span>
+<span class="sd">            - tidal_frequency_powers:</span>
+<span class="sd">                The powerlaw indices for the tidal frequency dependence.</span>
+<span class="sd">                Should be indexed in the same order as</span>
+<span class="sd">                tidal_frequency_breaks, but must contain an additional</span>
+<span class="sd">                starting entry for the powerlaw index before the first break.</span>
+<span class="sd">            - spin_frequency_powers:</span>
+<span class="sd">                The powerlaw indices for the spin frequency dependence.</span>
+<span class="sd">                Should be indexed in the same order as spin_frequency_breaks,</span>
+<span class="sd">                but must contain an additional starting entry for the</span>
+<span class="sd">                powerlaw index before the first break.</span>
+<span class="sd">            - reference_phase_lag:</span>
+<span class="sd">                The phase lag at the first tidal and first spin frequency</span>
+<span class="sd">                break. The rest are calculated by imposing continuity.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">set_star_dissipation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+                                     <span class="n">zone_index</span><span class="p">,</span>
+                                     <span class="n">tidal_frequency_powers</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                     <span class="n">spin_frequency_powers</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                     <span class="n">tidal_frequency_breaks</span><span class="p">,</span>
+                                     <span class="n">spin_frequency_breaks</span><span class="p">,</span>
+                                     <span class="n">tidal_frequency_powers</span><span class="p">,</span>
+                                     <span class="n">spin_frequency_powers</span><span class="p">,</span>
+                                     <span class="n">reference_phase_lag</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span>
+            <span class="n">zone_index</span><span class="o">=</span><span class="n">zone_index</span><span class="p">,</span>
+            <span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="n">tidal_frequency_breaks</span><span class="p">,</span>
+            <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">tidal_frequency_powers</span><span class="p">,</span>
+            <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="n">spin_frequency_breaks</span><span class="p">,</span>
+            <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">spin_frequency_powers</span><span class="p">,</span>
+            <span class="n">reference_phase_lag</span><span class="o">=</span><span class="n">reference_phase_lag</span>
+        <span class="p">)</span></div>
+    <span class="c1">#pylint: enable=arguments-differ</span>
+
+<div class="viewcode-block" id="EvolvingStar.detect_stellar_wind_saturation"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.detect_stellar_wind_saturation">[docs]</a>    <span class="k">def</span> <span class="nf">detect_stellar_wind_saturation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tell a fully configured star to set its wind saturation state.&quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.select_interpolation_region"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.select_interpolation_region">[docs]</a>    <span class="k">def</span> <span class="nf">select_interpolation_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare for interpolating stellar quantities around the given age.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - age:</span>
+<span class="sd">                The age around which interpolation will be needed.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.modified_phase_lag"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.modified_phase_lag">[docs]</a>    <span class="k">def</span> <span class="nf">modified_phase_lag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="o">*</span><span class="p">,</span>
+                           <span class="n">zone_index</span><span class="p">,</span>
+                           <span class="n">orbital_frequency_multiplier</span><span class="p">,</span>
+                           <span class="n">spin_frequency_multiplier</span><span class="p">,</span>
+                           <span class="n">forcing_frequency</span><span class="p">,</span>
+                           <span class="n">deriv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the phase lag times the love number.</span>
+
+<span class="sd">        The spin of the star must be set by calling the configure method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - zone_index:</span>
+<span class="sd">                The index of the zone whose lag to return.</span>
+<span class="sd">            - orbital_frequency_multiplier:</span>
+<span class="sd">                The multiplier of the orbital frequency in the expression for</span>
+<span class="sd">                the forcing frequency.</span>
+<span class="sd">            - spin_frequency_multiplier:</span>
+<span class="sd">                The multiplier of the spin frequency in the expression for</span>
+<span class="sd">                the forcing frequency.</span>
+<span class="sd">            - forcing_frequency:</span>
+<span class="sd">                The forcing frequency for which to return the phase lag.</span>
+<span class="sd">            - deriv:</span>
+<span class="sd">                One of the derivative IDs in self.deriv_ids identifying what</span>
+<span class="sd">                derivative of the phase lag to return.</span>
+
+<span class="sd">        Returns: The phase lag times the love number for the given</span>
+<span class="sd">        parameters. If the forcing frequency is exactly 0.0, two values are</span>
+<span class="sd">        returned, the first for infinitesimal positive and the second for</span>
+<span class="sd">        infinitesimal negative forcing frequencies.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">above_lock_value</span> <span class="o">=</span> <span class="n">c_double</span><span class="p">()</span>
+        <span class="n">below_lock_value</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+            <span class="n">c_uint</span><span class="p">(</span><span class="n">zone_index</span><span class="p">),</span>
+            <span class="n">c_int</span><span class="p">(</span><span class="n">orbital_frequency_multiplier</span><span class="p">),</span>
+            <span class="n">c_int</span><span class="p">(</span><span class="n">spin_frequency_multiplier</span><span class="p">),</span>
+            <span class="n">c_double</span><span class="p">(</span><span class="n">forcing_frequency</span><span class="p">),</span>
+            <span class="n">c_int</span><span class="p">(</span><span class="n">deriv</span><span class="p">),</span>
+            <span class="n">byref</span><span class="p">(</span><span class="n">above_lock_value</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">forcing_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">below_lock_value</span><span class="p">,</span> <span class="n">above_lock_value</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">below_lock_value</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.core_formation_age"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.core_formation_age">[docs]</a>    <span class="k">def</span> <span class="nf">core_formation_age</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the age at which the core of the star forms in Gyrs.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">library</span><span class="o">.</span><span class="n">core_formation_age</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.lifetime"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.lifetime">[docs]</a>    <span class="k">def</span> <span class="nf">lifetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the maximum age at which the star can be queried.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">library</span><span class="o">.</span><span class="n">lifetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.luminosity"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.luminosity">[docs]</a>    <span class="k">def</span> <span class="nf">luminosity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the luminosity of the star at the given age.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;luminosity&#39;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.core_inertia"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.core_inertia">[docs]</a>    <span class="k">def</span> <span class="nf">core_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the moment of inertia of the stellar core at the given age.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;core_inertia&#39;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.envelope_inertia"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.envelope_inertia">[docs]</a>    <span class="k">def</span> <span class="nf">envelope_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the moment of inertia of the stellar env. at the given age.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;envelope_inertia&#39;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvolvingStar.radius"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.radius">[docs]</a>    <span class="k">def</span> <span class="nf">radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the luminosity of the star at the given age.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;star_radius&#39;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1">#Only needed for example under __main__</span>
+    <span class="c1">#pylint: disable=ungrouped-imports</span>
+    <span class="kn">from</span> <span class="nn">stellar_evolution.manager</span> <span class="k">import</span> <span class="n">StellarEvolutionManager</span>
+    <span class="c1">#pylint: enable=ungrouped-imports</span>
+
+    <span class="k">def</span> <span class="nf">example</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;An example of how to use this module.&quot;&quot;&quot;</span>
+
+        <span class="n">serialized_dir</span> <span class="o">=</span> <span class="s1">&#39;../../stellar_evolution_interpolators&#39;</span>
+        <span class="n">manager</span> <span class="o">=</span> <span class="n">StellarEvolutionManager</span><span class="p">(</span><span class="n">serialized_dir</span><span class="p">)</span>
+        <span class="n">interpolator</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_interpolator_by_name</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+        <span class="n">star1</span> <span class="o">=</span> <span class="n">EvolvingStar</span><span class="p">(</span><span class="n">mass</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                             <span class="n">metallicity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                             <span class="n">wind_strength</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+                             <span class="n">wind_saturation_frequency</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+                             <span class="n">diff_rot_coupling_timescale</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+                             <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">)</span>
+        <span class="n">star2</span> <span class="o">=</span> <span class="n">EvolvingStar</span><span class="p">(</span><span class="n">mass</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                             <span class="n">metallicity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                             <span class="n">wind_strength</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+                             <span class="n">wind_saturation_frequency</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+                             <span class="n">diff_rot_coupling_timescale</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+                             <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">)</span>
+        <span class="n">star1</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span>
+            <span class="n">zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+            <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+            <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="n">reference_phase_lag</span><span class="o">=</span><span class="mf">0.1</span>
+        <span class="p">)</span>
+        <span class="n">star1</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span>
+            <span class="n">zone_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">]),</span>
+            <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+            <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
+            <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="n">reference_phase_lag</span><span class="o">=</span><span class="mf">0.1</span>
+        <span class="p">)</span>
+        <span class="n">star2</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span>
+            <span class="n">zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]),</span>
+            <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+            <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]),</span>
+            <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="n">reference_phase_lag</span><span class="o">=</span><span class="mf">0.1</span>
+        <span class="p">)</span>
+        <span class="n">star2</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span>
+            <span class="n">zone_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]),</span>
+            <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+            <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]),</span>
+            <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+            <span class="n">reference_phase_lag</span><span class="o">=</span><span class="mf">0.1</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1">&#39;</span>
+              <span class="o">%</span>
+              <span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;Env1(kDt)&#39;</span><span class="p">,</span> <span class="s1">&#39;Core1(kDt)&#39;</span><span class="p">,</span> <span class="s1">&#39;Env2(kDt)&#39;</span><span class="p">,</span> <span class="s1">&#39;Core2(kDt)&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">wtide</span> <span class="ow">in</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="s1">&#39;</span>
+                <span class="o">%</span>
+                <span class="p">(</span>
+                    <span class="n">wtide</span><span class="p">,</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">star1</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="p">(</span>
+                        <span class="n">zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">orbital_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">spin_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">forcing_frequency</span><span class="o">=</span><span class="n">wtide</span><span class="p">,</span>
+                        <span class="n">deriv</span><span class="o">=</span><span class="n">star1</span><span class="o">.</span><span class="n">deriv_ids</span><span class="p">[</span><span class="s1">&#39;NO&#39;</span><span class="p">]</span>
+                    <span class="p">)),</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">star1</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="p">(</span>
+                        <span class="n">zone_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">orbital_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">spin_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">forcing_frequency</span><span class="o">=</span><span class="n">wtide</span><span class="p">,</span>
+                        <span class="n">deriv</span><span class="o">=</span><span class="n">star1</span><span class="o">.</span><span class="n">deriv_ids</span><span class="p">[</span><span class="s1">&#39;NO&#39;</span><span class="p">]</span>
+                    <span class="p">)),</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">star2</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="p">(</span>
+                        <span class="n">zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">orbital_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">spin_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">forcing_frequency</span><span class="o">=</span><span class="n">wtide</span><span class="p">,</span>
+                        <span class="n">deriv</span><span class="o">=</span><span class="n">star2</span><span class="o">.</span><span class="n">deriv_ids</span><span class="p">[</span><span class="s1">&#39;NO&#39;</span><span class="p">]</span>
+                    <span class="p">)),</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">star2</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="p">(</span>
+                        <span class="n">zone_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">orbital_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">spin_frequency_multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">forcing_frequency</span><span class="o">=</span><span class="n">wtide</span><span class="p">,</span>
+                        <span class="n">deriv</span><span class="o">=</span><span class="n">star2</span><span class="o">.</span><span class="n">deriv_ids</span><span class="p">[</span><span class="s1">&#39;NO&#39;</span><span class="p">]</span>
+                    <span class="p">))</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="n">example</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>evolution_cmdline_args &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>evolution_cmdline_args</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for evolution_cmdline_args</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Provide functions for adding parameters defining the evolution model.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">join_paths</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">dirname</span>
+
+<span class="kn">from</span> <span class="nn">stellar_evolution.manager</span> <span class="k">import</span> <span class="n">StellarEvolutionManager</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.evolve_interface</span> <span class="k">import</span> <span class="n">library</span> <span class="k">as</span>\
+    <span class="n">orbital_evolution_library</span>
+
+
+<div class="viewcode-block" id="add_disk_args"><a class="viewcode-back" href="../_implementation/evolution_cmdline_args.html#evolution_cmdline_args.add_disk_args">[docs]</a><span class="k">def</span> <span class="nf">add_disk_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add command line options for the initial disk spin locking.&quot;&quot;&quot;</span>
+
+    <span class="n">wsun</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">25.34</span> <span class="c1">#rad/day</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--disk-lifetime&#39;</span><span class="p">,</span> <span class="s1">&#39;--tdisk&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The scaling and powerlaw index of the age at which the &#39;</span>
+        <span class="s1">&#39;protoplanetary disk evaporates in Gyrs as a function of the disk &#39;</span>
+        <span class="s1">&#39;locking frequency. Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--disk-lock-frequency&#39;</span><span class="p">,</span> <span class="s1">&#39;--wdisk&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mf">3.5</span> <span class="o">*</span> <span class="n">wsun</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The disk locking frequency in rad/day. Default: </span><span class="si">%s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_spindown_args"><a class="viewcode-back" href="../_implementation/evolution_cmdline_args.html#evolution_cmdline_args.add_spindown_args">[docs]</a><span class="k">def</span> <span class="nf">add_spindown_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add command line options for spindown model parameters to parser.&quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--core-env-coupling-timescale&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The timescale in Gyrs on which the differential rotation in &#39;</span>
+        <span class="s1">&#39;the star decays. Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--wind-strength&#39;</span><span class="p">,</span> <span class="s1">&#39;--Kw&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.13</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The normalization constant of the angular momentum loss rate&#39;</span>
+        <span class="s1">&#39; due to magnetized stellar wind. Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--wind-saturation-frequency&#39;</span><span class="p">,</span> <span class="s1">&#39;--wsat&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">2.78</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The frequency at which the angular momentum loss due to wind&#39;</span>
+        <span class="s1">&#39; saturates. Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_orbital_evolution_args"><a class="viewcode-back" href="../_implementation/evolution_cmdline_args.html#evolution_cmdline_args.add_orbital_evolution_args">[docs]</a><span class="k">def</span> <span class="nf">add_orbital_evolution_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add to parser all arguments controlling the orbital evolution.&quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--interpolator-dir&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">join_paths</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span>
+                           <span class="s1">&#39;..&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;stellar_evolution_interpolators&#39;</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The directory contaning managed seralized interpolators to &#39;</span>
+        <span class="s1">&#39;use. Default: </span><span class="se">\&#39;</span><span class="si">%(default)s</span><span class="se">\&#39;</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--lgQ&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;log10(Q</span><span class="se">\&#39;</span><span class="s1">*). Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--max-evolution-step&#39;</span><span class="p">,</span> <span class="s1">&#39;--max-step&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The maximum time step allowed when calculating individual &#39;</span>
+        <span class="s1">&#39;orbital evolutions in Gyr. Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--evolution-precision&#39;</span><span class="p">,</span> <span class="s1">&#39;--precision&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The precision to require of the orbital evolution (both &#39;</span>
+        <span class="s1">&#39;relative and absolute). Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--interpolator&#39;</span><span class="p">,</span> <span class="s1">&#39;-I&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The name of the interpolator which to use for the stellar &#39;</span>
+        <span class="s1">&#39;evolution. Default: </span><span class="se">\&#39;</span><span class="si">%(default)s</span><span class="se">\&#39;</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--eccentricity-coef&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;eccentricity_expansion_coef.txt&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The file containing the tabulated eccentriciy expansion &#39;</span>
+        <span class="s1">&#39;coefficients for the tidal potential. Default: </span><span class="se">\&#39;</span><span class="si">%(default)s</span><span class="se">\&#39;</span><span class="s1">.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--planet-formation-age&#39;</span><span class="p">,</span> <span class="s1">&#39;--formation-age&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The age at which the planet is assumed to form in Gyr. &#39;</span>
+        <span class="s1">&#39;Default: </span><span class="si">%(default)s</span><span class="s1">.&#39;</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_and_parse_evolution_args"><a class="viewcode-back" href="../_implementation/evolution_cmdline_args.html#evolution_cmdline_args.add_and_parse_evolution_args">[docs]</a><span class="k">def</span> <span class="nf">add_and_parse_evolution_args</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">disk_args</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add arguments for the binary evolution, some setup &amp; return interpolator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        - parser:    An instance of argparse.ArgumentParser to fill with</span>
+<span class="sd">            arguments defining the evolution. Must alraedy contain all other</span>
+<span class="sd">            arguments.</span>
+
+<span class="sd">        - disk_args:    Should command line arguments be added for configuring</span>
+<span class="sd">            the initial circumstellar disk holding the primary&#39;s spin locked?</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        same as parser.parse_args():</span>
+<span class="sd">            An object containing the parsed command line arguments as</span>
+<span class="sd">            members.</span>
+
+<span class="sd">        :class:ManagedInterpolator:</span>
+<span class="sd">            A stellar evolution interpolator instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">add_spindown_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">disk_args</span><span class="p">:</span>
+        <span class="n">add_disk_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">add_orbital_evolution_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">cmdline_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">orbital_evolution_library</span><span class="o">.</span><span class="n">read_eccentricity_expansion_coefficients</span><span class="p">(</span>
+        <span class="n">cmdline_args</span><span class="o">.</span><span class="n">eccentricity_coef</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Interp dir: &#39;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">interpolator_dir</span><span class="p">))</span>
+    <span class="n">interpolator</span> <span class="o">=</span> <span class="n">StellarEvolutionManager</span><span class="p">(</span>
+        <span class="n">cmdline_args</span><span class="o">.</span><span class="n">interpolator_dir</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">get_interpolator_by_name</span><span class="p">(</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">interpolator</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmdline_args</span><span class="p">,</span> <span class="n">interpolator</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

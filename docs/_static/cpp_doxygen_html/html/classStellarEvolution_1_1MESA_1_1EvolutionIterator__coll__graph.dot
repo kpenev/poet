@@ -1,0 +1,7 @@
+digraph "StellarEvolution::MESA::EvolutionIterator"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{StellarEvolution::MESA\l::EvolutionIterator\n|+ mass_iter\l+ feh_iter\l+ age_iter\l+ quantity_iter\l|+ EvolutionIterator()\l+ EvolutionIterator()\l+ operator=()\l+ operator++()\l+ operator++()\l+ operator==()\l+ operator!=()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

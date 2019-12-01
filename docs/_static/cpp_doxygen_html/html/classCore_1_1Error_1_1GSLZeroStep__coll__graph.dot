@@ -1,0 +1,13 @@
+digraph "Core::Error::GSLZeroStep"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node4 [label="{Core::Error::GSLZeroStep\n||+ GSLZeroStep()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node5 [label="{Core::Error::Runtime\n||+ Runtime()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1Runtime.html",tooltip="Any runtime error. "];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node6 [label="{Core::Error::General\n|- message\l|+ General()\l+ what()\l+ get_message()\l+ ~General()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1General.html",tooltip="The base class of all exceptions. "];
+  Node7 -> Node6 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node7 [label="{std::exception\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

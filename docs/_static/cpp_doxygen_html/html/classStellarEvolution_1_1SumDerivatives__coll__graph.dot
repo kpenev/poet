@@ -1,0 +1,10 @@
+digraph "StellarEvolution::SumDerivatives"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node2 [label="{StellarEvolution::SumDerivatives\n|- destroy_derivs\l|+ SumDerivatives()\l+ order()\l+ ~SumDerivatives()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{Core::FunctionDerivatives\n||+ order()\l+ ~FunctionDerivatives()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1FunctionDerivatives.html",tooltip="A class representing arbitrary order derivatives of a function. "];
+  Node3 -> Node2 [color="grey25",fontsize="12",style="solid",label=" -q1_deriv\n-q2_deriv" ,arrowhead="odiamond",fontname="Helvetica"];
+}

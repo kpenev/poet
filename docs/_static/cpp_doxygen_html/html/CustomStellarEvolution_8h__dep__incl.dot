@@ -1,0 +1,11 @@
+digraph "/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/CustomStellarEvolution.h"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node10 [label="/Users/kpenev/projects\l/git/poet/poet_src/StellarEvolution\l/CustomStellarEvolution.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node11 [label="/Users/kpenev/projects\l/git/poet/poet_src/poet.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$poet_8h.html",tooltip="Defines the command line options class for the main executable. "];
+  Node10 -> Node12 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node12 [label="/Users/kpenev/projects\l/git/poet/poet_src/StellarEvolution\l/CustomStellarEvolution.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$CustomStellarEvolution_8cpp.html",tooltip="The definitions of the CustomStellarEvolution::Evolution methods. "];
+}

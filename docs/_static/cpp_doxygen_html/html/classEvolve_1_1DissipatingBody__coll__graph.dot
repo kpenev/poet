@@ -1,0 +1,7 @@
+digraph "Evolve::DissipatingBody"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node6 [label="{Evolve::DissipatingBody\n|- __power_norm\l- __orbital_frequency\l- __dorbital_frequency_da\l- __surface_lock_frequency\l- __angular_momentum\l_transfer\l- __tidal_torques_above\l- __tidal_torques_below\l- __orbit_entries\l- __orbit_power\l- __orbit_power_correction\l- __orbit_torque\l- __orbit_torque_correction\l- __num_locked_zones\l- __above_lock_fractions\l|+ DissipatingBody()\l+ configure()\l+ lock_zone_spin()\l+ unlock_zone_spin()\l+ number_locked_zones()\l+ nontidal_torque()\l+ tidal_torque()\l+ tidal_power()\l+ set_above_lock_fractions()\l+ tidal_orbit_power()\land 21 more...\l- normalize_torques()\l- collect_orbit_rates()\l- calculate_orbit_rate\l_corrections()\l- angular_momentum_transfer()\l- angular_momentum_transfer\l_from_top()\l- angular_momentum_transfer\l_from_bottom()\l- angular_momentum_transfer\l_to_zone()\l- calculate_nontidal\l_torques()\l- correct_orbit_power()\l- correct_orbit_torque()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

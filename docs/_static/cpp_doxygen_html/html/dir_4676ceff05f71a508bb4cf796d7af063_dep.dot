@@ -1,0 +1,15 @@
+digraph "/Users/kpenev/projects/git/poet/poet_src/Planet" {
+  compound=true
+  node [ fontsize="12", fontname="Helvetica"];
+  edge [ labelfontsize="12", labelfontname="Helvetica"];
+  subgraph clusterdir_e247b8950c2da2f51dd8497aec65ce0d {
+    graph [ bgcolor="#ddddee", pencolor="black", label="poet_src" fontname="Helvetica", fontsize="12", URL="dir_e247b8950c2da2f51dd8497aec65ce0d.html"]
+  dir_4676ceff05f71a508bb4cf796d7af063 [shape=box, label="Planet", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_4676ceff05f71a508bb4cf796d7af063.html"];
+  }
+  dir_bace5b3272c3045fbaf2ba9e016347ef [shape=box label="Evolve" URL="dir_bace5b3272c3045fbaf2ba9e016347ef.html"];
+  dir_08389f9c72fab3fa939892ce5a81a233 [shape=box label="Core" URL="dir_08389f9c72fab3fa939892ce5a81a233.html"];
+  dir_4676ceff05f71a508bb4cf796d7af063->dir_bace5b3272c3045fbaf2ba9e016347ef [headlabel="4", labeldistance=1.5 headhref="dir_000006_000005.html"];
+  dir_4676ceff05f71a508bb4cf796d7af063->dir_08389f9c72fab3fa939892ce5a81a233 [headlabel="1", labeldistance=1.5 headhref="dir_000006_000002.html"];
+  dir_bace5b3272c3045fbaf2ba9e016347ef->dir_4676ceff05f71a508bb4cf796d7af063 [headlabel="1", labeldistance=1.5 headhref="dir_000005_000006.html"];
+  dir_bace5b3272c3045fbaf2ba9e016347ef->dir_08389f9c72fab3fa939892ce5a81a233 [headlabel="21", labeldistance=1.5 headhref="dir_000005_000002.html"];
+}

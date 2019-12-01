@@ -1,0 +1,4 @@
+<map id="inheritance94542c488a" name="inheritance94542c488a">
+<area shape="rect" id="node1" href="#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="5,77,379,101"/>
+<area shape="rect" id="node2" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="30,5,355,29"/>
+</map>

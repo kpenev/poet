@@ -1,0 +1,9 @@
+digraph "Evolve::OrbitSolver"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{Evolve::OrbitSolver\n|- __end_age\l- __precision\l- __e_order_downgrade\l_threshold\l- __last_e_order_upgrade_age\l- __tabulated_ages\l- __tabulated_evolution\l_modes\l- __skip_history_zerocrossing\l- __skip_history_extremum\l- __stop_history_ages\l- __discarded_stop_ages\land 8 more...\l|+ OrbitSolver()\l+ operator()()\l+ evolution_ages()\l+ mode_evolution()\l+ ~OrbitSolver()\l- output_history_and\l_discarded()\l- clear_discarded()\l- insert_discarded()\l- add_to_evolution()\l- go_back()\l- clear_history()\l- select_stop_condition\l_interval()\l- extremum_from_history\l_no_deriv()\l- extremum_from_history()\l- crossing_from_history\l_no_deriv()\land 13 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="12",style="solid",label=" -__stopping_conditions" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{Evolve::StoppingCondition\n|- __expected_crossing\l_deriv_sign\l|+ StoppingCondition()\l+ operator()()\l+ num_subconditions()\l+ type()\l+ reached()\l+ expected_crossing_deriv_sign()\l+ describe()\l+ ~StoppingCondition()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEvolve_1_1StoppingCondition.html",tooltip="A base class for all stopping conditions. "];
+}

@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File InverseLinearLconvEvolution.h &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File InverseLinearLconvEvolution.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file__Users_kpenev_projects_git_poet_poet_src_unit_tests_testEvolve_InverseLinearLconvEvolution.h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="program-listing-for-file-inverselinearlconvevolution-h">
+<span id="program-listing-file-users-kpenev-projects-git-poet-poet-src-unit-tests-testevolve-inverselinearlconvevolution-h"></span><h1>Program Listing for File InverseLinearLconvEvolution.h<a class="headerlink" href="#program-listing-for-file-inverselinearlconvevolution-h" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file__Users_kpenev_projects_git_poet_poet_src_unit_tests_testEvolve_InverseLinearLconvEvolution.h.html#file-users-kpenev-projects-git-poet-poet-src-unit-tests-testevolve-inverselinearlconvevolution-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">/Users/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/InverseLinearLconvEvolution.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef __INVERSE_LINEAR_LCONV_EVOLUTION_H</span>
+<span class="cp">#define __INVERSE_LINEAR_LCONV_EVOLUTION_H</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;InverseFunction.h&quot;</span><span class="cp"></span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">LINEAR_QUANTITY_TYPE</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">InverseLinearLconvEvolution</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="kt">double</span>
+        <span class="n">__disk_lifetime</span><span class="p">,</span>
+
+        <span class="n">__evolution_rate</span><span class="p">;</span>
+
+    <span class="n">LINEAR_QUANTITY_TYPE</span> <span class="n">__linear_quantity</span><span class="p">;</span>
+
+    <span class="n">InverseFunction</span> <span class="n">__find_lconv</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">InverseLinearLconvEvolution</span><span class="p">(</span>
+        <span class="kt">double</span> <span class="n">disk_lifetime</span><span class="p">,</span>
+
+        <span class="kt">double</span> <span class="n">total_angmom</span><span class="p">,</span>
+
+        <span class="kt">double</span> <span class="n">orbital_angmom</span><span class="p">,</span>
+
+        <span class="kt">double</span> <span class="n">initial_conv_angmom</span><span class="p">,</span>
+
+        <span class="kt">double</span> <span class="n">evolution_rate</span>
+    <span class="p">)</span> <span class="o">:</span>
+        <span class="n">__disk_lifetime</span><span class="p">(</span><span class="n">disk_lifetime</span><span class="p">),</span>
+        <span class="n">__evolution_rate</span><span class="p">(</span><span class="n">evolution_rate</span><span class="p">),</span>
+        <span class="n">__linear_quantity</span><span class="p">(</span><span class="n">total_angmom</span><span class="p">,</span> <span class="n">orbital_angmom</span><span class="p">,</span> <span class="n">initial_conv_angmom</span><span class="p">),</span>
+        <span class="n">__find_lconv</span><span class="p">(</span><span class="n">__linear_quantity</span><span class="p">,</span>
+                     <span class="p">(</span>
+                         <span class="p">(</span><span class="n">total_angmom</span> <span class="o">-</span> <span class="n">orbital_angmom</span><span class="p">)</span>
+                         <span class="o">*</span>
+                         <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">())</span>
+                     <span class="p">),</span>
+                     <span class="n">initial_conv_angmom</span><span class="p">)</span>
+    <span class="p">{}</span>
+
+    <span class="kt">double</span> <span class="k">operator</span><span class="p">()(</span><span class="kt">double</span> <span class="n">age</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">__find_lconv</span><span class="p">(</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">age</span> <span class="o">-</span> <span class="n">__disk_lifetime</span><span class="p">)</span> <span class="o">*</span> <span class="n">__evolution_rate</span><span class="p">)</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">double</span> <span class="n">disk_lifetime</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span><span class="k">return</span> <span class="n">__disk_lifetime</span><span class="p">;}</span>
+
+    <span class="kt">double</span> <span class="n">range_high</span><span class="p">()</span> <span class="k">const</span>
+    <span class="p">{</span><span class="k">return</span> <span class="n">__find_lconv</span><span class="p">.</span><span class="n">range_high</span><span class="p">()</span> <span class="o">/</span> <span class="n">__evolution_rate</span><span class="p">;}</span>
+
+    <span class="kt">double</span> <span class="n">range_low</span><span class="p">()</span> <span class="k">const</span>
+    <span class="p">{</span><span class="k">return</span> <span class="o">-</span><span class="n">Core</span><span class="o">::</span><span class="n">Inf</span><span class="p">;}</span>
+
+    <span class="n">Core</span><span class="o">::</span><span class="n">InterpSolutionIterator</span> <span class="n">crossings</span><span class="p">(</span><span class="kt">double</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span>
+            <span class="s">&quot;Finding all solutinos of ConservedLELconvEvolution not supported!&quot;</span>
+        <span class="p">);</span>
+    <span class="p">};</span>
+
+    <span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">deriv</span><span class="p">(</span><span class="kt">double</span> <span class="n">age</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">age</span> <span class="o">&lt;=</span> <span class="n">__disk_lifetime</span><span class="p">)</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="n">Core</span><span class="o">::</span><span class="n">CubicSplineDerivatives</span><span class="p">(</span><span class="n">__find_lconv</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span>
+                                                    <span class="mf">0.0</span><span class="p">,</span>
+                                                    <span class="mf">0.0</span><span class="p">);</span>
+        <span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">scaled_deriv</span> <span class="o">=</span> <span class="n">__find_lconv</span><span class="p">.</span><span class="n">deriv</span><span class="p">(</span>
+            <span class="o">-</span><span class="p">(</span><span class="n">age</span> <span class="o">-</span> <span class="n">__disk_lifetime</span><span class="p">)</span> <span class="o">*</span> <span class="n">__evolution_rate</span>
+        <span class="p">);</span>
+        <span class="kt">double</span> <span class="n">value</span> <span class="o">=</span> <span class="n">scaled_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+               <span class="n">order1</span> <span class="o">=</span> <span class="o">-</span><span class="n">scaled_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">__evolution_rate</span><span class="p">,</span>
+               <span class="n">order2</span> <span class="o">=</span> <span class="n">scaled_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">__evolution_rate</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+        <span class="k">delete</span> <span class="n">scaled_deriv</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">Core</span><span class="o">::</span><span class="n">CubicSplineDerivatives</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

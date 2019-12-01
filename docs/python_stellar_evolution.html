@@ -1,0 +1,432 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Python Stellar Evolution Module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Python Orbital Evolution Module" href="python_orbital_evolution.html" />
+    <link rel="prev" title="Python Interface" href="python_interface.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Python Stellar Evolution Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-usage">Basic usage:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-interpolation-using-the-package-tracks">Custom interpolation using the package tracks:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-stellar-evolution-tracks">Custom stellar evolution tracks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_implementation/modules.html">Python API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="python_interface.html">Python Interface</a> &raquo;</li>
+        
+      <li>The Python Stellar Evolution Module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/python_stellar_evolution.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="the-python-stellar-evolution-module">
+<h1>The Python Stellar Evolution Module<a class="headerlink" href="#the-python-stellar-evolution-module" title="Permalink to this headline">¶</a></h1>
+<p>A module for interpolating among existing stellar evolution tracks. Since
+generating the interpolation is quite slow, POET supports “serializing” (storing
+as a file on disk) a computed interpolation. The
+<a class="reference internal" href="_implementation/stellar_evolution.manager.html#module-stellar_evolution.manager" title="stellar_evolution.manager"><code class="xref py py-mod docutils literal notranslate"><span class="pre">stellar_evolution.manager</span></code></a> sub-module keeps track of exsiting
+interpolations, reusing them whenever appropriate, so this is the suggested
+interface.</p>
+<div class="section" id="basic-usage">
+<h2>Basic usage:<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>The user requests an interpolator from the manager by specifying either the
+interpolator name (using the
+<a class="reference internal" href="_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.get_interpolator_by_name" title="stellar_evolution.manager.StellarEvolutionManager.get_interpolator_by_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stellar_evolution.manager.StellarEvolutionManager.get_interpolator_by_name()</span></code></a>
+method) or by specifying a configuration for the interpolator. In the former
+case, it is an error to request an intorpolator with a name not previously
+defined (POET comes with a pre-defined interpolator named <cite>default</cite>). In the
+latter case, if the user specifies a name to assign to the new interpolator, the
+manager will automatically generate an interpolator if one does not exist. For
+example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">poet.stellar_evolution.manager</span> <span class="k">import</span> <span class="n">StellarEvolutionManager</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="o">%</span><span class="n">Create</span> <span class="n">a</span> <span class="n">manager</span>
+<span class="n">manager</span> <span class="o">=</span> <span class="n">StellarEvolutionManager</span><span class="p">(</span><span class="o">&lt;</span><span class="n">path</span> <span class="n">to</span> <span class="n">serialized</span> <span class="n">interpolators</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">Find</span> <span class="ow">and</span> <span class="n">use</span> <span class="n">the</span> <span class="n">default</span> <span class="n">interpolator</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_interpolator_by_name</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+
+<span class="o">%</span> <span class="n">The</span> <span class="n">convective</span> <span class="n">zone</span> <span class="n">moment</span> <span class="n">of</span> <span class="n">inertia</span> <span class="k">for</span> <span class="n">a</span> <span class="mf">0.73</span> <span class="n">solar</span> <span class="n">mass</span> <span class="n">star</span> <span class="k">with</span>
+<span class="o">%</span> <span class="p">[</span><span class="n">Fe</span><span class="o">/</span><span class="n">H</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.13</span>
+<span class="n">iconv</span> <span class="o">=</span> <span class="n">interpolator</span><span class="p">(</span><span class="s1">&#39;ICONV&#39;</span><span class="p">,</span> <span class="mf">0.73</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.13</span><span class="p">)</span>
+
+<span class="o">%</span> <span class="n">Evaluate</span> <span class="n">the</span> <span class="n">moment</span> <span class="n">of</span> <span class="n">inertia</span> <span class="n">at</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">ages</span><span class="o">.</span>
+<span class="n">iconv_values</span> <span class="o">=</span> <span class="n">iconv</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-interpolation-using-the-package-tracks">
+<h2>Custom interpolation using the package tracks:<a class="headerlink" href="#custom-interpolation-using-the-package-tracks" title="Permalink to this headline">¶</a></h2>
+<p>If for some reason the standard interpolation is not optimal for your
+purposes, it is possible to modify the parameters for how each quantity’s age
+interpolation is performed (the subsequent interpolation in mass and
+metallicity is always done using a bi-cubic spline):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>% construct an interpolator using only a subset of the tracks, as well
+% as custom smoothing and number of nodes.
+interpolator = manager.get_interpolator(
+    nodes = dict(RADIUS = &lt;int&gt;,    %number of nodes for the radius age
+                                    %interpolation
+                 ICONV  = &lt;int&gt;,    %convective moment of inertia nodes
+                 LUM    = &lt;int&gt;,    %luminosity nodes
+                 IRAD   = &lt;int&gt;,    %radiative moment of inertia nodes
+                 MRAD   = &lt;int&gt;,    %radiative mass nodes
+                 RRAD   = &lt;int&gt;),   %tachocline radius nodes
+    smoothing = dict(RADIUS = &lt;float&gt;,  %smoothing parameter for the
+                                        %radius age interpolation
+                     ICONV  = &lt;float&gt;,  %convective moment of inertia
+                                        %smoothig
+                     LUM    = &lt;float&gt;,  %luminosity smoothing
+                     IRAD   = &lt;float&gt;,  %radiative moment of inertia
+                                        %smoothing
+                     MRAD   = &lt;float&gt;,  %radiative mass smoothing
+                     RRAD   = &lt;float&gt;), %tachocline radius smoothing
+    vs_log_age = dict(RADIUS = &lt;bool&gt;,  %should the independent argument
+                                        %for radius interpolation be
+                                        %log(age) instead of age?
+                     ICONV  = &lt;bool&gt;,   %Same as RADIUS but for the
+                                        %convective moment of inertia.
+                     LUM    = &lt;bool&gt;,   %same as RADIUS but for luminosity.
+                     IRAD   = &lt;float&gt;,  %same as RADIUS but for radiative
+                                        %moment of inertia.
+                     MRAD   = &lt;float&gt;,  %same as RADIUS but for mass in the
+                                        %radiative core.
+                     RRAD   = &lt;float&gt;), %same as RADIUS but for radius in
+    log_quantity = dict(RADIUS = &lt;bool&gt;,  %should the log(radius) be used
+                                          %in the interpolation instead of
+                                          %radius?
+                        ICONV  = &lt;bool&gt;,  %Same as RADIUS but for the
+                                          %convective moment of inertia.
+                        LUM    = &lt;bool&gt;,  %same as RADIUS but for
+                                          %luminosity.
+                        IRAD   = &lt;float&gt;, %same as RADIUS but for radiative
+                                          %moment of inertia.
+                        MRAD   = &lt;float&gt;, %same as RADIUS but for mass in
+                                          %the radiative core.
+                        RRAD   = &lt;float&gt;),%same as RADIUS but for radius in
+                                          %the radiative core.
+    track_fnames = [...], %List of filenames containing stellar evolution
+                          %tracks to interpolate among.
+    masses = [&lt;float&gt;, ...],        %list of stellar masses to use
+    feh = [&lt;float&gt;, ...]            %list of stellar [Fe/H] values to use
+    model_suite = &lt;str&gt;,            %The name of a preiously registered
+                                    %suite of tracks to use in the
+                                    %interpolation. POET comes with a suite
+                                    %named &#39;MESA&#39;.
+    new_interp_name = &lt;str&gt; %A human-readable name to assign should an
+                            %interpolator matching the other arguments
+                            %does not exist.
+    num_threads = &lt;int&gt; %The number of threads to use when deriving the
+                        %interpolation.
+)
+</pre></div>
+</div>
+<p>As explained above, all subsequent calls to
+<a class="reference internal" href="_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.get_interpolator" title="stellar_evolution.manager.StellarEvolutionManager.get_interpolator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stellar_evolution.manager.StellarEvolutionManager.get_interpolator()</span></code></a> using
+the same parameters, will re-use the interpolator generated by the first call.
+Note the <code class="docutils literal notranslate"><span class="pre">new_interp_name</span></code> argument. If that argument is not supplied, and an
+interpolator matching the specified configuration is not found, the result is
+None.</p>
+</div>
+<div class="section" id="custom-stellar-evolution-tracks">
+<h2>Custom stellar evolution tracks<a class="headerlink" href="#custom-stellar-evolution-tracks" title="Permalink to this headline">¶</a></h2>
+<p>In is also possible to construct interpolations based on a set of tracks not
+packaged with POET. The tracks must be formatted as comma separated values,
+with the first line containing the names of the columns.  All quantities
+required by POET must be tabulated. See the set of tracks shipped with POET
+for an example.</p>
+<p>The first step is to register the tracks with the interpolation manager. This
+can be done track by track:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">Register</span> <span class="n">a</span> <span class="n">single</span> <span class="n">stellar</span> <span class="n">evolution</span> <span class="n">track</span><span class="o">.</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">register_track</span><span class="p">(</span><span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span><span class="p">,</span>  <span class="o">%</span><span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">file</span> <span class="n">contaning</span> <span class="n">the</span> <span class="n">track</span>
+                       <span class="n">mass</span><span class="p">,</span>        <span class="o">%</span><span class="n">The</span> <span class="n">stellar</span> <span class="n">mass</span> <span class="n">of</span> <span class="n">the</span> <span class="n">track</span> <span class="p">(</span><span class="n">Msun</span><span class="p">)</span>
+                       <span class="n">metallicity</span><span class="p">,</span> <span class="o">%</span><span class="p">[</span><span class="n">Fe</span><span class="o">/</span><span class="n">H</span><span class="p">]</span> <span class="n">of</span> <span class="n">the</span> <span class="n">track</span><span class="o">.</span>
+                       <span class="n">model_suite</span><span class="p">)</span> <span class="o">%</span><span class="n">Name</span> <span class="n">of</span> <span class="n">a</span> <span class="n">track</span> <span class="n">collection</span> <span class="n">to</span> <span class="n">assign</span>
+                                    <span class="o">%</span><span class="n">this</span> <span class="n">track</span> <span class="n">to</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If the names of the files can be parsed to extract the mass and metallicity,
+there is a shortcut:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">Register</span> <span class="n">an</span> <span class="n">entire</span> <span class="n">collection</span> <span class="n">of</span> <span class="n">tracks</span> <span class="n">at</span> <span class="n">once</span> <span class="k">with</span> <span class="n">stellar</span> <span class="n">mass</span> <span class="ow">and</span>
+<span class="o">%</span><span class="n">metallicity</span> <span class="n">encoded</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">filename</span><span class="o">.</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">register_track_collection</span><span class="p">(</span>
+    <span class="p">[</span><span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span><span class="p">,</span><span class="o">...</span><span class="p">],</span>     <span class="o">%</span><span class="n">List</span> <span class="n">of</span> <span class="n">track</span> <span class="n">files</span>
+    <span class="o">&lt;</span><span class="n">regular</span> <span class="n">expression</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">%</span><span class="n">A</span> <span class="n">compiled</span> <span class="n">python</span> <span class="n">re</span> <span class="n">which</span> <span class="n">defines</span> <span class="n">groups</span>
+                          <span class="o">%</span><span class="n">names</span> <span class="s1">&#39;MASS&#39;</span> <span class="ow">and</span> <span class="n">either</span> <span class="s1">&#39;Z&#39;</span> <span class="ow">or</span> <span class="s1">&#39;[Fe/H]&#39;</span>
+                          <span class="o">%</span><span class="n">The</span> <span class="n">package</span> <span class="n">tracks</span> <span class="n">match</span><span class="p">:</span>
+                          <span class="o">%</span><span class="s1">&#39;M(?P&lt;MASS&gt;[0-9.E+-]+)_Z(?P&lt;Z&gt;[0-9.E+-]+).csv&#39;</span>
+    <span class="n">model_suite</span>           <span class="o">%</span><span class="n">Name</span> <span class="n">of</span> <span class="n">a</span> <span class="n">track</span> <span class="n">collection</span> <span class="n">to</span> <span class="n">assign</span> <span class="n">the</span>
+                          <span class="o">%</span><span class="n">tracks</span> <span class="n">to</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>After registering the tracks, new interpolators can be generated and
+registered with the manager, either like we did above using the custom
+tracks, but this time we specify our new model suite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">construct</span> <span class="n">an</span> <span class="n">interpolator</span> <span class="n">using</span> <span class="n">only</span> <span class="n">a</span> <span class="n">subset</span> <span class="n">of</span> <span class="n">the</span> <span class="n">tracks</span><span class="p">,</span> <span class="k">as</span> <span class="n">well</span>
+<span class="o">%</span> <span class="k">as</span> <span class="n">custom</span> <span class="n">smoothing</span> <span class="ow">and</span> <span class="n">number</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_interpolator</span><span class="p">(</span>
+    <span class="n">masses</span> <span class="o">=</span> <span class="p">[</span><span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>        <span class="o">%</span><span class="nb">list</span> <span class="n">of</span> <span class="n">stellar</span> <span class="n">masses</span> <span class="n">to</span> <span class="n">use</span>
+    <span class="n">metallicities</span> <span class="o">=</span> <span class="p">[</span><span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">%</span><span class="nb">list</span> <span class="n">of</span> <span class="n">stellar</span> <span class="n">metallicities</span> <span class="n">to</span> <span class="n">use</span>
+    <span class="n">model_suite</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>            <span class="o">%</span><span class="n">the</span> <span class="n">model</span> <span class="n">suite</span> <span class="n">defined</span> <span class="n">above</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">RADIUS</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span>    <span class="o">%</span><span class="n">number</span> <span class="n">of</span> <span class="n">nodes</span> <span class="k">for</span> <span class="n">the</span> <span class="n">radius</span> <span class="n">age</span>
+                                    <span class="o">%</span><span class="n">interpolation</span>
+                 <span class="n">ICONV</span>  <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span>    <span class="o">%</span><span class="n">convective</span> <span class="n">moment</span> <span class="n">of</span> <span class="n">inertia</span> <span class="n">nodes</span>
+                 <span class="n">LUM</span>    <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span>      <span class="o">%</span><span class="n">luminosity</span> <span class="n">nodes</span>
+                 <span class="n">IRAD</span>   <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span>    <span class="o">%</span><span class="n">radiative</span> <span class="n">moment</span> <span class="n">of</span> <span class="n">inertia</span> <span class="n">nodes</span>
+                 <span class="n">MRAD</span>   <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span>    <span class="o">%</span><span class="n">radiative</span> <span class="n">mass</span> <span class="n">nodes</span>
+                 <span class="n">RRAD</span>   <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">),</span>   <span class="o">%</span><span class="n">tachocline</span> <span class="n">radius</span> <span class="n">nodes</span>
+    <span class="n">smoothing</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">RADIUS</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">,</span>  <span class="o">%</span><span class="n">smoothing</span> <span class="n">parameter</span> <span class="k">for</span> <span class="n">the</span>
+                                        <span class="o">%</span><span class="n">radius</span> <span class="n">age</span> <span class="n">interpolation</span>
+                     <span class="n">ICONV</span>  <span class="o">=</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">,</span>  <span class="o">%</span><span class="n">convective</span> <span class="n">moment</span> <span class="n">of</span> <span class="n">inertia</span>
+                                        <span class="o">%</span><span class="n">smoothig</span>
+                     <span class="n">LUM</span>    <span class="o">=</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">,</span>  <span class="o">%</span><span class="n">luminosity</span> <span class="n">smoothing</span>
+                     <span class="n">IRAD</span>   <span class="o">=</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">,</span>  <span class="o">%</span><span class="n">radiative</span> <span class="n">moment</span> <span class="n">of</span> <span class="n">inertia</span>
+                                        <span class="o">%</span><span class="n">smoothing</span>
+                     <span class="n">MRAD</span>   <span class="o">=</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">,</span>  <span class="o">%</span><span class="n">radiative</span> <span class="n">mass</span> <span class="n">smoothing</span>
+                     <span class="n">RRAD</span>   <span class="o">=</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span><span class="p">),</span> <span class="o">%</span><span class="n">tachocline</span> <span class="n">radius</span> <span class="n">smoothing</span>
+    <span class="n">new_interp_name</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span> <span class="o">%</span><span class="n">A</span> <span class="n">human</span><span class="o">-</span><span class="n">readable</span> <span class="n">name</span> <span class="n">to</span> <span class="n">assign</span> <span class="n">should</span> <span class="n">an</span>
+                            <span class="o">%</span><span class="n">interpolator</span> <span class="n">matching</span> <span class="n">the</span> <span class="n">other</span> <span class="n">arguments</span>
+                            <span class="o">%</span><span class="ow">not</span> <span class="n">exist</span><span class="o">.</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This only works if the new suite has only one track per mass-metallicity
+combination. If for example the new tracks again use <code class="docutils literal notranslate"><span class="pre">model_suite</span> <span class="pre">=</span> <span class="pre">MESA</span></code>,
+then which tracks to use must be specified by name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">construct</span> <span class="n">an</span> <span class="n">interpolator</span> <span class="n">using</span> <span class="n">a</span> <span class="n">custom</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">tracks</span><span class="p">,</span> <span class="k">as</span> <span class="n">well</span>
+<span class="o">%</span> <span class="k">as</span> <span class="n">custom</span> <span class="n">smoothing</span> <span class="ow">and</span> <span class="n">number</span> <span class="n">of</span> <span class="n">nodes</span><span class="o">.</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_interpolator</span><span class="p">(</span>
+    <span class="n">track_fnames</span> <span class="o">=</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">path</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>   <span class="o">%</span><span class="nb">list</span> <span class="n">of</span> <span class="n">filenames</span> <span class="n">containing</span>
+                                    <span class="o">%</span><span class="n">the</span> <span class="n">stellar</span> <span class="n">evolution</span> <span class="n">tracks</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">same</span> <span class="k">as</span> <span class="n">above</span><span class="o">&gt;</span>
+    <span class="n">smoothing</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">same</span> <span class="k">as</span> <span class="n">above</span><span class="o">&gt;</span>
+    <span class="n">new_interp_name</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">same</span> <span class="k">as</span> <span class="n">above</span><span class="o">&gt;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="python_orbital_evolution.html" class="btn btn-neutral float-right" title="The Python Orbital Evolution Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="python_interface.html" class="btn btn-neutral float-left" title="Python Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

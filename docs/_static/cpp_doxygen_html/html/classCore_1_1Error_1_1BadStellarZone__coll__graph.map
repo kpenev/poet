@@ -1,0 +1,5 @@
+<map id="Core::Error::BadStellarZone" name="Core::Error::BadStellarZone">
+<area shape="rect" id="node2" href="$classCore_1_1Error_1_1BadFunctionArguments.html" title="Function arguments do not satisfy some requirement. " alt="" coords="9,457,222,571"/>
+<area shape="rect" id="node3" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="31,312,200,409"/>
+<area shape="rect" id="node4" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="32,135,198,264"/>
+</map>

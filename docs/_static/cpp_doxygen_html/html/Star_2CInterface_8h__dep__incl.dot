@@ -1,0 +1,16 @@
+digraph "/Users/kpenev/projects/git/poet/poet_src/Star/CInterface.h"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node82 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/CInterface.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node82 -> Node83 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node83 [label="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/CInterface.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Evolve_2CInterface_8h.html",tooltip="Declare C-style functions for accessing the functionality of the Evolve library. "];
+  Node83 -> Node84 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node84 [label="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/CInterface.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Evolve_2CInterface_8cpp.html",tooltip="The definitions of the functions declared in CInterface.h. "];
+  Node83 -> Node85 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node85 [label="/Users/kpenev/projects\l/git/poet/poet_src/Planet\l/CInterface.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Planet_2CInterface_8cpp.html",tooltip="The definitions of the functions declared in CInterface.h. "];
+  Node83 -> Node86 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node86 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/CInterface.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Star_2CInterface_8cpp.html",tooltip="The definitions of the functions declared in CInterface.h. "];
+  Node82 -> Node86 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+}

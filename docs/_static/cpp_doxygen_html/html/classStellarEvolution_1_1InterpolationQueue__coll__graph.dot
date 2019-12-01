@@ -1,0 +1,7 @@
+digraph "StellarEvolution::InterpolationQueue"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{StellarEvolution::Interpolation\lQueue\n|- __x\l- __y\l- __npoints\l- __nodes\l- __smoothing\l- __quantity_id\l- __grid_index\l- __result\l- __sync_mutex\l- __quantity_id_iter\l|+ InterpolationQueue()\l+ push_back()\l+ calculate()\l+ quantity_id()\l+ grid_index()\l+ result()\l+ pop_front()\l+ operator bool()\l- interpolate_thread()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

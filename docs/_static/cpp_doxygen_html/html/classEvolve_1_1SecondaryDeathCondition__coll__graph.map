@@ -1,0 +1,5 @@
+<map id="Evolve::SecondaryDeathCondition" name="Evolve::SecondaryDeathCondition">
+<area shape="rect" id="node2" href="$classEvolve_1_1StoppingCondition.html" title="A base class for all stopping conditions. " alt="" coords="5,1015,266,1224"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1BinarySystem.html" title="Describes a system of two bodies orbiting each other. " alt="" coords="291,791,512,1448"/>
+<area shape="rect" id="node4" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="278,5,525,711"/>
+</map>

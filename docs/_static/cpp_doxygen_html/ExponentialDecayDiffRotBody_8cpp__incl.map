@@ -1,0 +1,20 @@
+<map id="/Users/kpenev/projects/git/poet/poet_src/Star/ExponentialDecayDiffRotBody.cpp" name="/Users/kpenev/projects/git/poet/poet_src/Star/ExponentialDecayDiffRotBody.cpp">
+<area shape="rect" id="node2" href="$ExponentialDecayDiffRotBody_8h.html" title="Declares a DissipatingBody with exponentially decaying differential rotation coupling. " alt="" coords="72,113,320,141"/>
+<area shape="rect" id="node3" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="328,645,549,689"/>
+<area shape="rect" id="node4" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="1293,189,1507,217"/>
+<area shape="rect" id="node6" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="196,417,345,445"/>
+<area shape="rect" id="node5" href="$DissipatingZone_8h.html" title="Declares a class representing one zone of a body dissipative to tidal distortions. " alt="" coords="1180,265,1329,293"/>
+<area shape="rect" id="node10" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="1212,493,1364,521"/>
+<area shape="rect" id="node25" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="2802,569,3001,597"/>
+<area shape="rect" id="node40" href="$OrbitalExpressions_8h.html" title="A collection of functions which calculate various quantities for two body orbits. ..." alt="" coords="2639,493,2860,521"/>
+<area shape="rect" id="node7" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="144,493,328,521"/>
+<area shape="rect" id="node22" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="2420,569,2489,597"/>
+<area shape="rect" id="node28" href="$TidalPotentialTerms_8h.html" title="Declare an interface for evaluating the expansion of the tidal potential. " alt="" coords="1901,417,2075,445"/>
+<area shape="rect" id="node35" href="$SpinOrbitLockInfo_8h.html" title="Defines the SpinOrbitLockInfo class. " alt="" coords="3076,569,3238,597"/>
+<area shape="rect" id="node36" href="$CombinedStoppingCondition_8h.html" title="Declares a class for a stopping condition that combines other stopping conditions. " alt="" coords="841,341,1079,369"/>
+<area shape="rect" id="node38" href="$BreakLockCondition_8h.html" title="Declares a class for a stopping condition monitoring when a locked zone loses the lock..." alt="" coords="1103,341,1281,369"/>
+<area shape="rect" id="node39" href="$SynchronizedCondition_8h.html" title="Declares a stopping condition monitoring spin&#45;orbit synchronization. " alt="" coords="618,341,817,369"/>
+<area shape="rect" id="node26" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="527,569,654,597"/>
+<area shape="rect" id="node30" href="$EccentricityExpansionCoefficients_8h.html" title="Declares a class which provides the [ &#160;coefficients]{InclinationEccentricity_pms1}. " alt="" coords="2092,493,2367,521"/>
+<area shape="rect" id="node37" href="$StoppingCondition_8h.html" title="Defines the various stopping conditions needed by OrbitSolver. " alt="" coords="792,417,957,445"/>
+</map>

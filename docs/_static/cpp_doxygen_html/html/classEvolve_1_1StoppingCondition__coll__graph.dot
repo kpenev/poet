@@ -1,0 +1,7 @@
+digraph "Evolve::StoppingCondition"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node10 [label="{Evolve::StoppingCondition\n|- __expected_crossing\l_deriv_sign\l|+ StoppingCondition()\l+ operator()()\l+ num_subconditions()\l+ type()\l+ reached()\l+ expected_crossing_deriv_sign()\l+ describe()\l+ ~StoppingCondition()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

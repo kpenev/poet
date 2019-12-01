@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File testEvolve.cpp &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File testEvolve.cpp</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file__Users_kpenev_projects_git_poet_poet_src_unit_tests_testEvolve_testEvolve.cpp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="program-listing-for-file-testevolve-cpp">
+<span id="program-listing-file-users-kpenev-projects-git-poet-poet-src-unit-tests-testevolve-testevolve-cpp"></span><h1>Program Listing for File testEvolve.cpp<a class="headerlink" href="#program-listing-for-file-testevolve-cpp" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file__Users_kpenev_projects_git_poet_poet_src_unit_tests_testEvolve_testEvolve.cpp.html#file-users-kpenev-projects-git-poet-poet-src-unit-tests-testevolve-testevolve-cpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">/Users/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/testEvolve.cpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;testGravitationalPotential.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;testOrbitSolver.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;testTidalTorquePower.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;testDifferentialEquations.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#ifdef STANDALONE</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iomanip&gt;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">SinFunction</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="kt">double</span> <span class="n">__frequency</span><span class="p">,</span> <span class="n">__phase</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">SinFunction</span><span class="p">(</span><span class="kt">double</span> <span class="n">frequency</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="kt">double</span> <span class="n">phase</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">:</span>
+        <span class="n">__frequency</span><span class="p">(</span><span class="n">frequency</span><span class="p">),</span> <span class="n">__phase</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="p">{}</span>
+
+    <span class="kt">double</span> <span class="k">operator</span><span class="p">()(</span><span class="kt">double</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span><span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span><span class="n">__frequency</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">__phase</span><span class="p">);}</span>
+
+    <span class="kt">double</span> <span class="n">range_high</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span><span class="k">return</span> <span class="n">Core</span><span class="o">::</span><span class="n">Inf</span><span class="p">;}</span>
+    <span class="kt">double</span> <span class="n">range_low</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span><span class="k">return</span> <span class="o">-</span><span class="n">Core</span><span class="o">::</span><span class="n">Inf</span><span class="p">;}</span>
+
+    <span class="n">Core</span><span class="o">::</span><span class="n">InterpSolutionIterator</span> <span class="n">crossings</span><span class="p">(</span><span class="kt">double</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span>
+            <span class="s">&quot;Finding all solutinos of Sin is not implemented.&quot;</span>
+        <span class="p">);</span>
+    <span class="p">};</span>
+
+    <span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">deriv</span><span class="p">(</span><span class="kt">double</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">Core</span><span class="o">::</span><span class="n">CubicSplineDerivatives</span><span class="p">(</span>
+            <span class="k">operator</span><span class="p">()(</span><span class="n">x</span><span class="p">),</span>
+            <span class="n">__frequency</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">cos</span><span class="p">(</span><span class="n">__frequency</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">__phase</span><span class="p">),</span>
+            <span class="o">-</span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">__frequency</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="k">operator</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">.</span><span class="n">setf</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ios_base</span><span class="o">::</span><span class="n">scientific</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">.</span><span class="n">precision</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    SinFunction sin_function;</span>
+<span class="cm">    InverseFunction arcsin_function(sin_function, -1.0);</span>
+
+<span class="cm">    std::cout &lt;&lt; std::setw(25) &lt;&lt; &quot;x&quot;</span>
+<span class="cm">              &lt;&lt; std::setw(25) &lt;&lt; &quot;f(x)&quot;</span>
+<span class="cm">              &lt;&lt; std::setw(25) &lt;&lt; &quot;inverted&quot;</span>
+<span class="cm">              &lt;&lt; std::setw(25) &lt;&lt; &quot;arcsin(x)&quot;</span>
+<span class="cm">              &lt;&lt; std::endl;</span>
+<span class="cm">    for(double x = -1.0; x &lt;= 1.0; x+=1e-2) {</span>
+<span class="cm">        double solution = arcsin_function(x),</span>
+<span class="cm">               expected = std::asin(x);</span>
+<span class="cm">        solution -= 2.0 * M_PI * std::floor(solution / (2.0 * M_PI));</span>
+<span class="cm">        expected -= 2.0 * M_PI * std::floor(expected / (2.0 * M_PI));</span>
+<span class="cm">        if(solution &gt; 0.5 * M_PI &amp;&amp; solution &lt; 1.5 * M_PI)</span>
+<span class="cm">            solution = 3.0 * M_PI - solution;</span>
+<span class="cm">        std::cout &lt;&lt; std::setw(25) &lt;&lt; x</span>
+<span class="cm">                  &lt;&lt; std::setw(25) &lt;&lt; sin_function(solution)</span>
+<span class="cm">                  &lt;&lt; std::setw(25) &lt;&lt; solution</span>
+<span class="cm">                  &lt;&lt; std::setw(25) &lt;&lt; expected</span>
+<span class="cm">                  &lt;&lt; std::endl;</span>
+<span class="cm">    }</span>
+<span class="cm">    return 0;</span>
+
+<span class="cm">    Oblique10LinearQuantity q10(1.05 * M_PI, M_PI, 0.1 * M_PI);</span>
+<span class="cm">    Oblique20LinearQuantity q20(1.05 * M_PI, M_PI, 0.1 * M_PI);</span>
+<span class="cm">    std::cerr &lt;&lt; std::setw(25) &lt;&lt; &quot;S&quot;</span>
+<span class="cm">              &lt;&lt; std::setw(25) &lt;&lt; &quot;L10(S)&quot;</span>
+<span class="cm">              &lt;&lt; std::setw(25) &lt;&lt; &quot;L20(S)&quot;</span>
+<span class="cm">              &lt;&lt; std::endl;</span>
+<span class="cm">    for(double s = 0.05 * M_PI; s &lt;= 0.1 * M_PI; s+= 0.01 * M_PI)</span>
+<span class="cm">        std::cerr &lt;&lt; std::setw(25) &lt;&lt; s</span>
+<span class="cm">                  &lt;&lt; std::setw(25) &lt;&lt; q10(s)</span>
+<span class="cm">                  &lt;&lt; std::setw(25) &lt;&lt; q20(s)</span>
+<span class="cm">                  &lt;&lt; std::endl;</span>
+<span class="cm">    return 0;</span>
+<span class="cm">    */</span>
+
+    <span class="n">Evolve</span><span class="o">::</span><span class="n">TidalPotentialTerms</span><span class="o">::</span><span class="n">read_eccentricity_expansion</span><span class="p">(</span>
+        <span class="s">&quot;eccentricity_expansion_coef_O200.txt&quot;</span>
+    <span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">.</span><span class="n">setf</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ios_base</span><span class="o">::</span><span class="n">scientific</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">.</span><span class="n">precision</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">.</span><span class="n">setf</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ios_base</span><span class="o">::</span><span class="n">scientific</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">.</span><span class="n">precision</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+    <span class="n">Test</span><span class="o">::</span><span class="n">TextOutput</span> <span class="n">output</span><span class="p">(</span><span class="n">Test</span><span class="o">::</span><span class="n">TextOutput</span><span class="o">::</span><span class="n">Verbose</span><span class="p">);</span>
+
+    <span class="n">Test</span><span class="o">::</span><span class="n">Suite</span> <span class="n">all_tests</span><span class="p">;</span>
+    <span class="n">all_tests</span><span class="p">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">auto_ptr</span><span class="o">&lt;</span><span class="n">Test</span><span class="o">::</span><span class="n">Suite</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">test_GravitationalPotential</span><span class="p">)</span>
+    <span class="p">);</span>
+    <span class="n">all_tests</span><span class="p">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">auto_ptr</span><span class="o">&lt;</span><span class="n">Test</span><span class="o">::</span><span class="n">Suite</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">test_TidalTorquePower</span><span class="p">)</span>
+    <span class="p">);</span>
+    <span class="n">all_tests</span><span class="p">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">auto_ptr</span><span class="o">&lt;</span><span class="n">Test</span><span class="o">::</span><span class="n">Suite</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">test_DifferentialEquations</span><span class="p">)</span>
+    <span class="p">);</span>
+    <span class="n">all_tests</span><span class="p">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">auto_ptr</span><span class="o">&lt;</span><span class="n">Test</span><span class="o">::</span><span class="n">Suite</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">test_OrbitSolver</span><span class="p">)</span>
+    <span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">all_tests</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            <span class="o">?</span> <span class="nl">EXIT_SUCCESS</span>
+            <span class="p">:</span> <span class="n">EXIT_FAILURE</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

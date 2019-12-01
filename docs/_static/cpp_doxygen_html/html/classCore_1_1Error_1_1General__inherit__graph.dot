@@ -1,0 +1,29 @@
+digraph "Core::Error::General"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node0 [label="{Core::Error::General\n|- message\l|+ General()\l+ what()\l+ get_message()\l+ ~General()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node1 [label="{std::exception\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node0 -> Node2 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Core::Error::ALGLIB\n||+ ALGLIB()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1ALGLIB.html",tooltip="Error detected by the ALGLIB library. "];
+  Node0 -> Node3 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{Core::Error::Runtime\n||+ Runtime()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1Runtime.html",tooltip="Any runtime error. "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node4 [label="{Core::Error::BadFunction\lArguments\n||+ BadFunctionArguments()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1BadFunctionArguments.html",tooltip="Function arguments do not satisfy some requirement. "];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node5 [label="{Core::Error::BadStellarZone\n||+ BadStellarZone()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1BadStellarZone.html",tooltip="Exception indicating unrecognized or unsuitable stellar zone. "];
+  Node3 -> Node6 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node6 [label="{Core::Error::CommandLine\n||+ CommandLine()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1CommandLine.html",tooltip="Error related to parsing the command line. "];
+  Node3 -> Node7 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node7 [label="{Core::Error::GSLZeroStep\n||+ GSLZeroStep()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1GSLZeroStep.html",tooltip="GSL step size decreased below machine precision. "];
+  Node3 -> Node8 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node8 [label="{Core::Error::IO\n||+ IO()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1IO.html",tooltip="Input/Output exception. "];
+  Node3 -> Node9 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node9 [label="{Core::Error::NonGSLZeroStep\n||+ NonGSLZeroStep()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1NonGSLZeroStep.html",tooltip="Maximum allowed step size decreased below machine precision. "];
+  Node3 -> Node10 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node10 [label="{Core::Error::NotImplemented\n||+ NotImplemented()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1NotImplemented.html",tooltip="Encountered an unimplemented feature. "];
+  Node3 -> Node11 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node11 [label="{Core::Error::PathNotFound\n|- directory\l|+ PathNotFound()\l+ what()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1Error_1_1PathNotFound.html",tooltip="Exception indicating that a file or a directory was not found. "];
+}

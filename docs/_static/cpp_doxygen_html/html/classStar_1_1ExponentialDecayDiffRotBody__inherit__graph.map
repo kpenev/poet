@@ -1,0 +1,4 @@
+<map id="Star::ExponentialDecayDiffRotBody" name="Star::ExponentialDecayDiffRotBody">
+<area shape="rect" id="node3" href="$classStar_1_1InterpolatedEvolutionStar.html" title="{Star::InterpolatedEvolutionStar\n|&#45; __luminosity\l&#45; __lifetime\l&#45; __envelope\l&#45; __core\l|+ InterpolatedEvolutionStar()\l+ number_zones()\l+ zone()\l+ envelope()\l+ envelope()\l+ core()\l+ core()\l+ zone()\l+ lifetime()\l+ luminosity()\l+ ~InterpolatedEvolutionStar()\l+ reached_critical_age()\l+ next_stop_age()\l+ select_interpolation\l_region()\l}" alt="" coords="16,1000,255,1353"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="12,5,259,711"/>
+</map>

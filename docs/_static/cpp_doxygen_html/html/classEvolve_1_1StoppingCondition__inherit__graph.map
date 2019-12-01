@@ -1,0 +1,11 @@
+<map id="Evolve::StoppingCondition" name="Evolve::StoppingCondition">
+<area shape="rect" id="node2" href="$classEvolve_1_1BreakLockCondition.html" title="Satisfied when the maximum tidal torque that the planet can exert on the star is no longer sufficient..." alt="" coords="5,359,266,552"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1CombinedStoppingCondition.html" title="A class combining the the outputs of multiple stopping conditions. " alt="" coords="291,271,552,640"/>
+<area shape="rect" id="node4" href="$classEvolve_1_1ExternalStoppingCondition.html" title="A base class for all external stopping conditions. " alt="" coords="576,407,776,504"/>
+<area shape="rect" id="node6" href="$classEvolve_1_1LagForcingFrequencyBreakCondition.html" title="satisfied when a forcing frequency reaches a critical value. " alt="" coords="800,263,1061,648"/>
+<area shape="rect" id="node7" href="$classEvolve_1_1NoStopCondition.html" title="A stopping condition that is never satisfied. " alt="" coords="1086,399,1285,512"/>
+<area shape="rect" id="node8" href="$classEvolve_1_1SecondaryDeathCondition.html" title="Satisfied when the planet enters below either the roche sphere or the stellar photosphere. " alt="" coords="1309,383,1574,528"/>
+<area shape="rect" id="node9" href="$classEvolve_1_1SynchronizedCondition.html" title="Satisfied when some multiples of the orbit and stellar rotation are synchronized. ..." alt="" coords="1597,327,1840,584"/>
+<area shape="rect" id="node10" href="$classStar_1_1WindSaturationCondition.html" title="Satisfied when the surface zone of a body is spinning at exactly the wind saturation frequency..." alt="" coords="1864,359,2101,552"/>
+<area shape="rect" id="node5" href="$classEvolve_1_1RotFastCondition.html" title="Satisfied when a zone is rotating faster than a threshold. " alt="" coords="575,696,777,825"/>
+</map>

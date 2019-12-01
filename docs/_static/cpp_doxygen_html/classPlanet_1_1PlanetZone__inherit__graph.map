@@ -1,0 +1,5 @@
+<map id="Planet::PlanetZone" name="Planet::PlanetZone">
+<area shape="rect" id="node2" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="5,856,289,1321"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="36,199,258,808"/>
+<area shape="rect" id="node4" href="$classEvolve_1_1ZoneOrientation.html" title="{Evolve::ZoneOrientation\n|&#45; __inclination\l&#45; __periapsis\l|+ ZoneOrientation()\l+ configure()\l+ inclination()\l+ periapsis()\l}" alt="" coords="51,5,244,151"/>
+</map>

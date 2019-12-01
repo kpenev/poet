@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File CInterface.cpp &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>File CInterface.cpp</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/file__Users_kpenev_projects_git_poet_poet_src_StellarEvolution_CInterface.cpp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="file-cinterface-cpp">
+<span id="file-users-kpenev-projects-git-poet-poet-src-stellarevolution-cinterface-cpp"></span><h1>File CInterface.cpp<a class="headerlink" href="#file-cinterface-cpp" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="dir__Users_kpenev_projects_git_poet_poet_src_StellarEvolution.html#dir-users-kpenev-projects-git-poet-poet-src-stellarevolution"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">/Users/kpenev/projects/git/poet/poet_src/StellarEvolution</span></code>)</p>
+<p>The definitions of the functions declared in CInterface.h.</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-users-kpenev-projects-git-poet-poet-src-stellarevolution-cinterface-cpp" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/CInterface.cpp</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id2">Includes</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id3">Functions</a></p></li>
+<li><p><a class="reference internal" href="#defines" id="id4">Defines</a></p></li>
+<li><p><a class="reference internal" href="#variables" id="id5">Variables</a></p></li>
+</ul>
+</div>
+<div class="section" id="definition-users-kpenev-projects-git-poet-poet-src-stellarevolution-cinterface-cpp">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/CInterface.cpp</span></code>)<a class="headerlink" href="#definition-users-kpenev-projects-git-poet-poet-src-stellarevolution-cinterface-cpp" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file__Users_kpenev_projects_git_poet_poet_src_StellarEvolution_CInterface.cpp.html">Program Listing for File CInterface.cpp</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CInterface.h</span></code> (<a class="reference internal" href="file__Users_kpenev_projects_git_poet_poet_src_Evolve_CInterface.h.html#file-users-kpenev-projects-git-poet-poet-src-evolve-cinterface-h"><span class="std std-ref">File CInterface.h</span></a>)</p></li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gad2064274de7f91cfe873e1d21f916248.html#exhale-function-group-stellarevolution-group-1gad2064274de7f91cfe873e1d21f916248"><span class="std std-ref">Function create_interpolator(const char *, double *, int *, bool *, bool *, unsigned)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga6b01c72fa880007e53434ee075be049d.html#exhale-function-group-stellarevolution-group-1ga6b01c72fa880007e53434ee075be049d"><span class="std std-ref">Function create_quantity(const MESAInterpolator *, int, double, double)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gab8c086dccf608c54e5b11756e747ac4f.html#exhale-function-group-stellarevolution-group-1gab8c086dccf608c54e5b11756e747ac4f"><span class="std std-ref">Function default_log_quantity(int)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga49faea56a8e06dd384d1d146d3beb93d.html#exhale-function-group-stellarevolution-group-1ga49faea56a8e06dd384d1d146d3beb93d"><span class="std std-ref">Function default_nodes(int)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gaa8273d77e587d64a489199fd3d1be07d.html#exhale-function-group-stellarevolution-group-1gaa8273d77e587d64a489199fd3d1be07d"><span class="std std-ref">Function default_smoothing(int)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gae1781661625239b283e5cba4e8058dde.html#exhale-function-group-stellarevolution-group-1gae1781661625239b283e5cba4e8058dde"><span class="std std-ref">Function default_vs_log_age(int)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga2aa284cff26825598dfa1259229a3eea.html#exhale-function-group-stellarevolution-group-1ga2aa284cff26825598dfa1259229a3eea"><span class="std std-ref">Function destroy_interpolator(MESAInterpolator *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga8d168d5c25727670d8423f0e7de43a3e.html#exhale-function-group-stellarevolution-group-1ga8d168d5c25727670d8423f0e7de43a3e"><span class="std std-ref">Function destroy_quantity(EvolvingStellarQuantity *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gafefb39a1092b9c526ea44d24421a6c7e.html#exhale-function-group-stellarevolution-group-1gafefb39a1092b9c526ea44d24421a6c7e"><span class="std std-ref">Function differentiate_quantity(const EvolvingStellarQuantity *, double, double *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gadfdb5715811298801d2d9816bc6fa20f.html#exhale-function-group-stellarevolution-group-1gadfdb5715811298801d2d9816bc6fa20f"><span class="std std-ref">Function differentiate_quantity_array(const EvolvingStellarQuantity *, double *, unsigned, double *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga0a47b7d976e4094e0acf46ec16c9312f.html#exhale-function-group-stellarevolution-group-1ga0a47b7d976e4094e0acf46ec16c9312f"><span class="std std-ref">Function evaluate_quantity(const EvolvingStellarQuantity *, double)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gaef26fc64b7d54168757a473364fbc368.html#exhale-function-group-stellarevolution-group-1gaef26fc64b7d54168757a473364fbc368"><span class="std std-ref">Function evaluate_quantity_array(const EvolvingStellarQuantity *, double *, unsigned, double *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga37b7ed3304c7ea9e0f7d91c80f21efa8.html#exhale-function-group-stellarevolution-group-1ga37b7ed3304c7ea9e0f7d91c80f21efa8"><span class="std std-ref">Function feh_from_metallicity()</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gaadd3fa15cfa27c4364ee841eb3c90ab3.html#exhale-function-group-stellarevolution-group-1gaadd3fa15cfa27c4364ee841eb3c90ab3"><span class="std std-ref">Function feh_from_z(double)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gaa4b7355c34f417a27eddbff4ce35b820.html#exhale-function-group-stellarevolution-group-1gaa4b7355c34f417a27eddbff4ce35b820"><span class="std std-ref">Function load_interpolator(const char *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gadd27d3e66a4ba1fc4e1c430c9673e746.html#exhale-function-group-stellarevolution-group-1gadd27d3e66a4ba1fc4e1c430c9673e746"><span class="std std-ref">Function metallicity_from_feh()</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gaf178584bedcdfe02561c48a67d898faf.html#exhale-function-group-stellarevolution-group-1gaf178584bedcdfe02561c48a67d898faf"><span class="std std-ref">Function quantity_continuous_range(const EvolvingStellarQuantity *, double, double *, double *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga41bd725a9973177b6ac3c0f8fa9a5096.html#exhale-function-group-stellarevolution-group-1ga41bd725a9973177b6ac3c0f8fa9a5096"><span class="std std-ref">Function quantity_max_age(const EvolvingStellarQuantity *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gabba5d3523382717495a76e6ae5fa7f19.html#exhale-function-group-stellarevolution-group-1gabba5d3523382717495a76e6ae5fa7f19"><span class="std std-ref">Function quantity_min_age(const EvolvingStellarQuantity *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1gaf35384334f30131120d342a9e9617075.html#exhale-function-group-stellarevolution-group-1gaf35384334f30131120d342a9e9617075"><span class="std std-ref">Function save_interpolator(MESAInterpolator *, const char *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_group__StellarEvolution__group_1ga6b8b63e13cb806849928575ca9feead1.html#exhale-function-group-stellarevolution-group-1ga6b8b63e13cb806849928575ca9feead1"><span class="std std-ref">Function z_from_feh(double)</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="defines">
+<h2>Defines<a class="headerlink" href="#defines" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="define_StellarEvolution_2CInterface_8cpp_1a9984662919fb47d29bf2c64585f39447.html#exhale-define-stellarevolution-2cinterface-8cpp-1a9984662919fb47d29bf2c64585f39447"><span class="std std-ref">Define BUILDING_LIBRARY</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="variable_group__StellarEvolution__group_1ga6292502daa466ef49d7f0f8d403327af.html#exhale-variable-group-stellarevolution-group-1ga6292502daa466ef49d7f0f8d403327af"><span class="std std-ref">Variable ICONV</span></a></p></li>
+<li><p><a class="reference internal" href="variable_group__StellarEvolution__group_1ga245377742ef5b95df7d5e5d8ae3fa3b8.html#exhale-variable-group-stellarevolution-group-1ga245377742ef5b95df7d5e5d8ae3fa3b8"><span class="std std-ref">Variable IRAD</span></a></p></li>
+<li><p><a class="reference internal" href="variable_group__StellarEvolution__group_1gaac5a423134bdd4d94e389206215aff22.html#exhale-variable-group-stellarevolution-group-1gaac5a423134bdd4d94e389206215aff22"><span class="std std-ref">Variable LUM</span></a></p></li>
+<li><p><a class="reference internal" href="variable_group__StellarEvolution__group_1gab750f0f4b63ec48145d1cafedf72c6ca.html#exhale-variable-group-stellarevolution-group-1gab750f0f4b63ec48145d1cafedf72c6ca"><span class="std std-ref">Variable MRAD</span></a></p></li>
+<li><p><a class="reference internal" href="variable_group__StellarEvolution__group_1gaaa1567a9022dd0ca675e3de26a4b2e35.html#exhale-variable-group-stellarevolution-group-1gaaa1567a9022dd0ca675e3de26a4b2e35"><span class="std std-ref">Variable NUM_QUANTITIES</span></a></p></li>
+<li><p><a class="reference internal" href="variable_group__StellarEvolution__group_1ga9f1210bebab79f1e8fc6a968ce2f122f.html#exhale-variable-group-stellarevolution-group-1ga9f1210bebab79f1e8fc6a968ce2f122f"><span class="std std-ref">Variable RADIUS</span></a></p></li>
+<li><p><a class="reference internal" href="variable_group__StellarEvolution__group_1ga00eb4a451b61849957d6576fd7a81f02.html#exhale-variable-group-stellarevolution-group-1ga00eb4a451b61849957d6576fd7a81f02"><span class="std std-ref">Variable RRAD</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<map id="/Users/kpenev/projects/git/poet/poet_src/Star/CInterface.h" name="/Users/kpenev/projects/git/poet/poet_src/Star/CInterface.h">
+<area shape="rect" id="node2" href="$StellarEvolution_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the StellarEvolution library..." alt="" coords="2356,113,2502,157"/>
+<area shape="rect" id="node3" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="2339,693,2560,737"/>
+<area shape="rect" id="node40" href="$EvolvingStar_8h.html" title="Declares the class for stars that user pre&#45;tabulated stellar evolution tracks. " alt="" coords="2734,121,2858,149"/>
+<area shape="rect" id="node46" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="4266,533,4451,561"/>
+<area shape="rect" id="node4" href="$MESAIO_8h.html" title="Defines the classes for generating stellar evolution interpolators from the MESA tracks. " alt="" coords="896,205,992,233"/>
+<area shape="rect" id="node5" href="$Interpolator_8h.html" title="Defines the StellarEvolution class needed for interpolating among stellar evolution tracks..." alt="" coords="1032,281,1147,309"/>
+<area shape="rect" id="node8" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="2832,533,2931,561"/>
+<area shape="rect" id="node21" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="1715,617,1784,645"/>
+<area shape="rect" id="node24" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="3643,617,3842,645"/>
+<area shape="rect" id="node37" href="$IOUtil_8h_source.html" title="../IO/IOUtil.h" alt="" coords="347,533,456,561"/>
+<area shape="rect" id="node6" href="$EvolvingStellarQuantity_8h.html" title="Declares a class implementing the intepolation of a single stellar quantity from stellar evolution tr..." alt="" coords="1889,365,2087,393"/>
+<area shape="rect" id="node30" href="$InterpolationQuantities_8h.html" title="Defines constant to serve as identifier of the various quantities handled by the stellar evolution in..." alt="" coords="299,449,493,477"/>
+<area shape="rect" id="node32" href="$ThreadedInterpolation_8h.html" title="Declaration of a class that handles multithreaded stellar evolution interpolation. " alt="" coords="352,365,544,393"/>
+<area shape="rect" id="node33" href="$StellarZone_8h.html" title="Defines tags for the stellar zone. " alt="" coords="1074,365,1243,393"/>
+<area shape="rect" id="node7" href="$Functions_8h.html" title="A hierarchy of classes representing functions. " alt="" coords="1800,449,1904,477"/>
+<area shape="rect" id="node25" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="3918,617,4045,645"/>
+<area shape="rect" id="node41" href="$SaturatingSkumanichWindBody_8h.html" title="Decrales a body subject to angular momentum loss . " alt="" coords="2667,281,2925,309"/>
+<area shape="rect" id="node44" href="$ExponentialDecayDiffRotBody_8h.html" title="Declares a DissipatingBody with exponentially decaying differential rotation coupling. " alt="" coords="4043,365,4290,393"/>
+<area shape="rect" id="node48" href="$EvolvingStellarCore_8h.html" title="Declaration of the class representing stellar cores. " alt="" coords="2166,205,2341,233"/>
+<area shape="rect" id="node50" href="$EvolvingStellarEnvelope_8h.html" title="Declares a class representing convective zones in low mass evolving stars or the whole star for high ..." alt="" coords="2536,205,2744,233"/>
+<area shape="rect" id="node42" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="3466,449,3680,477"/>
+<area shape="rect" id="node43" href="$BinarySystem_8h.html" title="Defines the BinarySystem class. " alt="" coords="2696,365,2896,393"/>
+<area shape="rect" id="node45" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="4043,449,4192,477"/>
+<area shape="rect" id="node49" href="$EvolvingStellarZone_8h.html" title="Declares a base class for all stellar zones. " alt="" coords="2165,281,2342,309"/>
+</map>

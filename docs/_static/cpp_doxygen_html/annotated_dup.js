@@ -1,0 +1,65 @@
+var annotated_dup =
+[
+    [ "Core", null, [
+      [ "Error", "namespaceCore_1_1Error.html", "namespaceCore_1_1Error" ],
+      [ "CubicSplineDerivatives", "classCore_1_1CubicSplineDerivatives.html", "classCore_1_1CubicSplineDerivatives" ],
+      [ "FunctionDerivatives", "classCore_1_1FunctionDerivatives.html", "classCore_1_1FunctionDerivatives" ],
+      [ "InterpolatingFunctionALGLIB", "classCore_1_1InterpolatingFunctionALGLIB.html", "classCore_1_1InterpolatingFunctionALGLIB" ],
+      [ "InterpSolutionIterator", "classCore_1_1InterpSolutionIterator.html", "classCore_1_1InterpSolutionIterator" ],
+      [ "OneArgumentDiffFunction", "classCore_1_1OneArgumentDiffFunction.html", "classCore_1_1OneArgumentDiffFunction" ],
+      [ "OneArgumentFunction", "classCore_1_1OneArgumentFunction.html", "classCore_1_1OneArgumentFunction" ],
+      [ "SerializableSpline1dInterpolant", "classCore_1_1SerializableSpline1dInterpolant.html", "classCore_1_1SerializableSpline1dInterpolant" ],
+      [ "ZeroDerivatives", "classCore_1_1ZeroDerivatives.html", "classCore_1_1ZeroDerivatives" ],
+      [ "ZeroFunction", "classCore_1_1ZeroFunction.html", "classCore_1_1ZeroFunction" ]
+    ] ],
+    [ "Evolve", "namespaceEvolve.html", "namespaceEvolve" ],
+    [ "Planet", null, [
+      [ "Planet", "classPlanet_1_1Planet.html", "classPlanet_1_1Planet" ],
+      [ "PlanetZone", "classPlanet_1_1PlanetZone.html", "classPlanet_1_1PlanetZone" ]
+    ] ],
+    [ "Star", null, [
+      [ "EvolvingStellarCore", "classStar_1_1EvolvingStellarCore.html", "classStar_1_1EvolvingStellarCore" ],
+      [ "EvolvingStellarEnvelope", "classStar_1_1EvolvingStellarEnvelope.html", "classStar_1_1EvolvingStellarEnvelope" ],
+      [ "EvolvingStellarZone", "classStar_1_1EvolvingStellarZone.html", "classStar_1_1EvolvingStellarZone" ],
+      [ "ExponentialDecayDiffRotBody", "classStar_1_1ExponentialDecayDiffRotBody.html", "classStar_1_1ExponentialDecayDiffRotBody" ],
+      [ "InterpolatedEvolutionStar", "classStar_1_1InterpolatedEvolutionStar.html", "classStar_1_1InterpolatedEvolutionStar" ],
+      [ "SaturatingSkumanichWindBody", "classStar_1_1SaturatingSkumanichWindBody.html", "classStar_1_1SaturatingSkumanichWindBody" ],
+      [ "WindSaturationCondition", "classStar_1_1WindSaturationCondition.html", "classStar_1_1WindSaturationCondition" ]
+    ] ],
+    [ "StellarEvolution", null, [
+      [ "CustomStellarEvolution", "namespaceStellarEvolution_1_1CustomStellarEvolution.html", "namespaceStellarEvolution_1_1CustomStellarEvolution" ],
+      [ "MESA", "namespaceStellarEvolution_1_1MESA.html", "namespaceStellarEvolution_1_1MESA" ],
+      [ "AllowedGridGrowth", "classStellarEvolution_1_1AllowedGridGrowth.html", "classStellarEvolution_1_1AllowedGridGrowth" ],
+      [ "EvolvingStellarQuantity", "classStellarEvolution_1_1EvolvingStellarQuantity.html", "classStellarEvolution_1_1EvolvingStellarQuantity" ],
+      [ "InterpolatedDerivatives", "classStellarEvolution_1_1InterpolatedDerivatives.html", "classStellarEvolution_1_1InterpolatedDerivatives" ],
+      [ "InterpolationQueue", "classStellarEvolution_1_1InterpolationQueue.html", "classStellarEvolution_1_1InterpolationQueue" ],
+      [ "Interpolator", "classStellarEvolution_1_1Interpolator.html", "classStellarEvolution_1_1Interpolator" ],
+      [ "LogDerivatives", "classStellarEvolution_1_1LogDerivatives.html", "classStellarEvolution_1_1LogDerivatives" ],
+      [ "MockStellarEvolution", "classStellarEvolution_1_1MockStellarEvolution.html", "classStellarEvolution_1_1MockStellarEvolution" ],
+      [ "PolynomialEvolutionQuantity", "classStellarEvolution_1_1PolynomialEvolutionQuantity.html", "classStellarEvolution_1_1PolynomialEvolutionQuantity" ],
+      [ "RemoveLogDeriv", "classStellarEvolution_1_1RemoveLogDeriv.html", "classStellarEvolution_1_1RemoveLogDeriv" ],
+      [ "SumDerivatives", "classStellarEvolution_1_1SumDerivatives.html", "classStellarEvolution_1_1SumDerivatives" ],
+      [ "SumQuantity", "classStellarEvolution_1_1SumQuantity.html", "classStellarEvolution_1_1SumQuantity" ],
+      [ "ZeroQuantity", "classStellarEvolution_1_1ZeroQuantity.html", "classStellarEvolution_1_1ZeroQuantity" ]
+    ] ],
+    [ "CommandLineOptions", "classCommandLineOptions.html", "classCommandLineOptions" ],
+    [ "ConservedLEConvObliquityEvolution", "classConservedLEConvObliquityEvolution.html", "classConservedLEConvObliquityEvolution" ],
+    [ "ConservedLERadObliquityEvolution", "classConservedLERadObliquityEvolution.html", "classConservedLERadObliquityEvolution" ],
+    [ "CosFunction", "classCosFunction.html", "classCosFunction" ],
+    [ "EvolutionIterator", "classEvolutionIterator.html", "classEvolutionIterator" ],
+    [ "ExponentialPlusFunc", "classExponentialPlusFunc.html", "classExponentialPlusFunc" ],
+    [ "FuncPlusFunc", "classFuncPlusFunc.html", "classFuncPlusFunc" ],
+    [ "FunctionRatio", "classFunctionRatio.html", "classFunctionRatio" ],
+    [ "FunctionToPower", "classFunctionToPower.html", "classFunctionToPower" ],
+    [ "InverseFunction", "classInverseFunction.html", "classInverseFunction" ],
+    [ "InverseLinearLconvEvolution", "classInverseLinearLconvEvolution.html", "classInverseLinearLconvEvolution" ],
+    [ "LogFunction", "classLogFunction.html", "classLogFunction" ],
+    [ "Oblique10LinearQuantity", "classOblique10LinearQuantity.html", "classOblique10LinearQuantity" ],
+    [ "Oblique20LinearQuantity", "classOblique20LinearQuantity.html", "classOblique20LinearQuantity" ],
+    [ "PiecewiseFunction", "classPiecewiseFunction.html", "classPiecewiseFunction" ],
+    [ "PowerlawPhaseLagZone", "classPowerlawPhaseLagZone.html", "classPowerlawPhaseLagZone" ],
+    [ "ScaledFunction", "classScaledFunction.html", "classScaledFunction" ],
+    [ "TwoPhaseLagZone", "classTwoPhaseLagZone.html", "classTwoPhaseLagZone" ],
+    [ "YRECEvolution", "classYRECEvolution.html", "classYRECEvolution" ],
+    [ "YRECHeader", "classYRECHeader.html", "classYRECHeader" ]
+];

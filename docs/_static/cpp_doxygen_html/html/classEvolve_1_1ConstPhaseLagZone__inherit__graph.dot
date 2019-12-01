@@ -1,0 +1,13 @@
+digraph "Evolve::ConstPhaseLagZone"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node0 [label="{Evolve::ConstPhaseLagZone\n|- __phase_lag\l|+ ConstPhaseLagZone()\l+ modified_phase_lag()\l+ dissipative()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node1 [label="{Evolve::PolynomialEvolutionZone\n|- __mass_coefficients\l- __radius_coefficients\l- __inertia_coefficients\l- __current_mass\l- __current_radius\l- __current_inertia\l|+ PolynomialEvolutionZone()\l+ configure()\l+ outer_mass()\l+ outer_mass()\l+ outer_radius()\l+ outer_radius()\l+ moment_of_inertia()\l+ moment_of_inertia()\l+ love_coefficient()\l- evaluate_polynomial()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEvolve_1_1PolynomialEvolutionZone.html"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Evolve::DissipatingZone\n|- __e_order\l- __potential_term\l- __angular_momentum\l- __spin_frequency\l- __orbital_frequency\l- __orbital_angmom\l- __power\l- __torque_x\l- __torque_y\l- __torque_z\land 6 more...\l- __torque_x_plus_coef\l- __torque_x_minus_coef\l|+ DissipatingZone()\l+ configure()\l+ forcing_frequency()\l+ set_reference_zone\l_angmom()\l+ periapsis_evolution()\l+ inclination_evolution()\l+ locked()\l+ locked()\l+ lock_held()\l+ release_lock()\land 34 more...\l# initializing()\l# configure_spin()\l- fix_forcing_frequency()\l- update_lock_to_lower\l_e_order()\l- update_locks_to_higher\l_e_order()\l- initialize_locks()\l- add_tidal_term()\l- check_locks_consistency()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEvolve_1_1DissipatingZone.html",tooltip="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..."];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{Evolve::ZoneOrientation\n|- __inclination\l- __periapsis\l|+ ZoneOrientation()\l+ configure()\l+ inclination()\l+ periapsis()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEvolve_1_1ZoneOrientation.html"];
+}

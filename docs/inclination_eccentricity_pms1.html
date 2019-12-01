@@ -1,0 +1,523 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Calculation of the Pm,s Coefficients &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calculation of the Pm,s Coefficients" href="inclination_eccentricity_pms2.html" />
+    <link rel="prev" title="Evolution Equations From Tidal Torque+Power" href="eccentric_evolution_equations.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="inclination_eccentricity_equations.html#detailed-derivations-of-results-used-above">Detailed Derivations of Results Used Above</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="eccentric_evolution_equations.html">Evolution Equations From Tidal Torque+Power</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_pms2.html">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_umm_table.html">A table of curly U values as originally defined in Lai (2012)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_torque.html">Tidal Torque for Inclined and Eccentric Orbits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_power.html">Tidal Power for Inclined and Eccentric Orbits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="inclination_eccentricity_equations.html">Inclined and Eccentric Orbital Evolution</a> &raquo;</li>
+        
+      <li>Calculation of the Pm,s Coefficients</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/inclination_eccentricity_pms1.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="calculation-of-the-pm-s-coefficients">
+<h1>Calculation of the Pm,s Coefficients<a class="headerlink" href="#calculation-of-the-pm-s-coefficients" title="Permalink to this headline">¶</a></h1>
+<p>We need only <span class="math notranslate nohighlight">\(m=0\)</span> and <span class="math notranslate nohighlight">\(m=\pm2\)</span>.
+Clearly:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{m,s}&amp;=&amp;\frac{a^3}{2\pi}\int_0^{2\pi/\omega}
+        \frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\
+&amp;=&amp; a^3\int_0^{2\pi/\omega}
+        e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)}
+        e^{i s \omega t}dt\end{split}\]</div>
+<p>For <span class="math notranslate nohighlight">\(m=0\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{0,s}&amp;=&amp; \frac{1}{2\pi}\int_{0}^{2\pi}
+        \frac{e^{i s (u-e\sin u)}}{\omega (1-e\cos u)^2} du\\
+&amp;=&amp; \frac{1}{2\pi\omega}
+        \int_{0}^{2\pi} \frac{e^{i s (u-e\sin u)}} {(1-e\cos u)^2} du\end{split}\]</div>
+<p>From <span class="math notranslate nohighlight">\(1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[p_{0,s}= \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega}
+        \int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\]</div>
+<p>Which for <span class="math notranslate nohighlight">\(s=0\)</span>, using <span class="math notranslate nohighlight">\(\int_0^{2\pi} \cos^{2k} u du = \frac{2\pi
+(2k)!}{2^{2k}(k!)^2}\)</span> gives:</p>
+<div class="math notranslate nohighlight">
+\[p_{0,0}=\frac{1}{\omega}
+        \sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k}(k!)^2}e^k\]</div>
+<p>And for <span class="math notranslate nohighlight">\(s \neq 0\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{0,s} &amp; = &amp; \sum_{k=0}^\infty \frac{(k+1)e^k}{2\pi\omega}
+        \int_{0}^{2\pi} e^{i s (u-e\sin u)} \cos^k u du\\
+&amp; = &amp; \sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}
+        \int_{0}^{2\pi} e^{i s (u-e\sin u)}
+                \left(e^{iu}+e^{-iu}\right)^k du\\
+&amp; = &amp; \sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
+        {k \choose c} \int_{0}^{2\pi} e^{i s (u-e\sin u)}
+                                                                e^{icu}e^{-i(k-c)u} du\\
+&amp; = &amp; \sum_{k=0}^\infty \frac{(k+1)e^k}{2^{k+1}\pi\omega}\sum_{c=0}^k
+        {k \choose c} \int_{0}^{2\pi} e^{i (s+2c-k) u} e^{-ies\sin u} du\end{split}\]</div>
+<p>If we change variable <span class="math notranslate nohighlight">\(u=u'-\pi/2\Rightarrow \sin u = -\cos u'\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}2\pi p_{0,s}&amp;=&amp;\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
+        \sum_{c=0}^k {k \choose c} e^{-i (s+2c-k)\pi/2}
+                \int_{\pi/2}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
+&amp;=&amp;\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
+        \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{
+                \int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'
+                +
+                \int_{2\pi}^{5\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du'
+        \right\}\\
+&amp;=&amp;\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
+        \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} \left\{
+                \int_{\pi/2}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'
+                +
+                \int_{0}^{\pi/2} e^{i (s+2c-k) u'} e^{ies\cos u'} du' \right\}\\
+&amp;=&amp;\sum_{k=0}^\infty \frac{(k+1)e^k}{2^k\omega}
+        \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k}
+                \int_{0}^{2\pi} e^{i (s+2c-k) u'} e^{ies\cos u'} du'\\
+&amp;=&amp;\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega}
+        \sum_{c=0}^k {k \choose c} (-i)^{s+2c-k} i^{s+2c-k}
+                J_{s+2c-k}(es)\\
+&amp;=&amp;\sum_{k=0}^\infty \frac{2\pi(k+1)e^k}{2^k\omega}
+        \sum_{c=0}^k {k \choose c} J_{s+2c-k}(es)\\
+&amp;=&amp;\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k}
+        \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
+                \frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}}
+                        {2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\
+&amp;=&amp;\sum_{k=0}^\infty \frac{2\pi(k+1)(se)^k}{2^k\omega s^k}
+        \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
+                \frac{(-1)^\lambda (se)^{2\lambda+s+2c-k}}
+                        {2^{2\lambda+s+2c-k}\lambda!(\lambda+s+2c-k)!}\\
+&amp;=&amp;\frac{2\pi}{\omega} \left(\frac{es}{2}\right)^s
+        \sum_{k=0}^\infty \frac{(k+1)}{s^k}
+        \sum_{c=0}^k {k \choose c} \sum_{\lambda=max(0,k-s-2c)}^{\infty}
+                \frac{(-1)^\lambda (s^2e^2/4)^{\lambda+c}}
+                        {\lambda!(\lambda+s+2c-k)!}\\\end{split}\]</div>
+<p>If we now change indices to <span class="math notranslate nohighlight">\(n=\lambda+c\Rightarrow
+\lambda=n-c,\quad\lambda+s+2c-k=n+s+c-k\)</span>. The lower limit on <span class="math notranslate nohighlight">\(\lambda\)</span>
+gives: <span class="math notranslate nohighlight">\(k-s-2c\leq n-c\Rightarrow c\geq k-n-s\)</span>. Finally, in order for the
+range of <span class="math notranslate nohighlight">\(c\)</span> to not be empty: <span class="math notranslate nohighlight">\(k-n-s\leq n\Rightarrow k\leq 2n+s\)</span>. With
+all these we can write:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{0,s}=\sum_{n=0}^\infty \alpha_{s,n}\left\{
+        \begin{array}{l&#64;{,\quad}l}
+                e^{2n} &amp; s=0\\
+                (se/2)^{s+2n} &amp; s \neq 0
+        \end{array}\right.\end{split}\]</div>
+<p>with</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_{s,n}\equiv\frac{1}{\omega}\left\{\begin{array}{l&#64;{,\quad}l}
+        \frac{(2n+1)!}{2^{2n}(n!)^2} &amp; s=0\\
+        (-1)^n \sum_{k=0}^{2n+s} \frac{k+1}{s^k}
+        \sum_{c=max(0,k-n-s)}^{min(n,k)}
+        {k \choose c} \frac{(-1)^c}{(n-c)!(n+s+c-k)!} &amp; s \neq 0
+\end{array} \right.\end{split}\]</div>
+<p>Verified using Mathematica.</p>
+<p>For <span class="math notranslate nohighlight">\(m=\pm2\)</span> we need:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\cos2\phi &amp;=&amp; 1-2\sin^2\phi = 1-2\frac{(1-e^2)\sin^2u}{(1-e\cos u)^2}
+                        = 1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2}\\
+\sin2\phi &amp;=&amp; 2\sin\phi\cos\phi = 2\sqrt{1-e^2}
+                        \frac{\sin u(\cos u - e)}{(1-e\cos u)^2}
+                        = 2\sqrt{1-e^2}\frac{\sin 2u - e\sin u}{(1-e\cos u)^2}\end{split}\]</div>
+<p>Plugging into the expression for <span class="math notranslate nohighlight">\(p_{\pm2,s}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{\pm2,s}&amp;=&amp; \frac{1}{2\pi}\int_0^{2\pi/\omega}
+        a^3\exp(\mp 2i\phi_0)\frac{\cos(2\phi(t))\mp i\sin(2\phi(t))}{r^3(t)}
+        \exp[i s (u-e\sin u)]dt\\
+&amp;=&amp; \frac{e^{\mp 2i\phi_0}}{2\pi\omega}\int_0^{2\pi}
+        \left[1-\frac{(1-e^2)(1-\cos2u)}{(1-e\cos u)^2}
+                        \mp
+                        i\sqrt{1-e^2}\frac{\sin 2u - 2e\sin u}{(1-e\cos u)^2}\right]
+        \frac{\exp[i s (u-e\sin u)]}{(1-e\cos u)^2} du\end{split}\]</div>
+<p>Thus we need to evaluate 5 different integrals, the first of which was
+already done while calculating <span class="math notranslate nohighlight">\(p_{0,s}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{\pm2,s}&amp;=&amp;\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\
+        &amp;&amp;{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\
+        &amp;&amp;{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{2\pi\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4}
+        du\mp\\
+        &amp;&amp;{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4}
+        du\pm\\
+        &amp;&amp;{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{2\pi\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4}
+        du\\\end{split}\]</div>
+<p>To solve them we will use <span class="math notranslate nohighlight">\(1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3}
+x^k\)</span> and we will directly calculate the following general integral:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}2\pi\omega I_{\lambda,s}&amp;\equiv&amp;
+\int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\exp(i\lambda u)}
+                                        {(1-e\cos u)^4} du\\
+&amp;=&amp;\sum_{k=0}^\infty {{k+3} \choose 3} e^k
+\int_{0}^{2\pi} \exp[i (s+\lambda) u]\exp[-ise\sin u)]\cos^k u du\\
+&amp;=&amp;\sum_{k=0}^\infty {{k+3} \choose 3} \left(\frac{e}{2}\right)^k
+\sum_{c=0}^k {k \choose c} \int_{0}^{2\pi}
+                                        \exp[i (s+\lambda+2c-k) u]\exp(-ise\sin u) du\\
+&amp;=&amp;\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k
+        \sum_{c=0}^k {k \choose c} J_{s+\lambda+2c-k}(es)\\
+&amp;=&amp;\sum_{k=0}^\infty {{k+3} \choose 3} 2\pi \left(\frac{e}{2}\right)^k
+        \sum_{c=0}^k {k \choose c} \sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty}
+                \frac{(-1)^\nu (se)^{2\nu+s+\lambda+2c-k}}
+                        {2^{2\nu+s+\lambda+2c-k}\nu!(\nu+s+\lambda+2c-k)!}\\
+&amp;=&amp;2\pi\left(\frac{se}{2}\right)^{s+\lambda}\sum_{k=0}^\infty
+        {{k+3} \choose 3} s^{-k}\sum_{c=0}^k {k \choose c}
+        \sum_{\nu=max(0,k-s-\lambda-2c)}^{\infty}
+                \frac{(-1)^\nu (s^2e^2/4)^{\nu+c}}{\nu!(\nu+s+\lambda+2c-k)!}\end{split}\]</div>
+<p>Similarly to before we would like to group by powers of the eccentricity:
+<span class="math notranslate nohighlight">\(n=\nu+c\)</span>. This leads to the following constraints:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\nu&gt;=0 &amp; \Rightarrow &amp; c \le n\\
+\nu&gt;=k-s-\lambda-2c &amp; \Rightarrow &amp; c \ge k-s-\lambda-n\\
+k-s-\lambda-n \le n &amp; \Rightarrow &amp; k \le 2n+\lambda+s\\
+k-s-\lambda-n \le k &amp; \Rightarrow &amp; n \ge -s - \lambda\end{split}\]</div>
+<p>Plugging into the expression above:</p>
+<div class="math notranslate nohighlight">
+\[I_{\lambda,s} = \sum_{n=\max(0,-s-\lambda)}^\infty \beta_{\lambda,s,n}
+        (se/2)^{s+\lambda+2n}\]</div>
+<p>with</p>
+<div class="math notranslate nohighlight">
+\[\beta_{\lambda,s,n}\equiv \frac{(-1)^n}{\omega}
+\sum_{k=0}^{2n+\lambda+s}
+        {{k+3} \choose 3} s^{-k}\sum_{c=\max(0,k-\lambda-s-n)}^{\min(n,k)}
+                {k \choose c} \frac{(-1)^c}{(n-c)!(n+\lambda+s+c-k)!}\]</div>
+<p>In terms of <span class="math notranslate nohighlight">\(I_{\lambda,s}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[p_{\pm2,s}=\exp(\mp 2i\phi_0)\left\{p_{0,s}
+        +(1-e^2)\left[(I_{2,s}+I_{-2,s})/2-I_{0,s}\right]
+        \mp \sqrt{1-e^2}(I_{2,s}-I_{-2,s})/2
+        \pm e\sqrt{1-e^2}(I_{1,s}-I_{-1,s})
+\right\}\]</div>
+<p>Verified using Methematica for <span class="math notranslate nohighlight">\(s\neq0\)</span>.</p>
+<p>Using:</p>
+<div class="math notranslate nohighlight">
+\[\sqrt{1-e^2}=\sum_{n=0}^\infty \frac{(2n)!}{4^n (n!)^2(1-2n)} e^{2n}\]</div>
+<p>we can rewrite:</p>
+<div class="math notranslate nohighlight">
+\[p_{\pm2,s}=\exp(\mp 2i\phi_0)\sum_{n=-1}^\infty
+        \gamma^\pm_{s,n}\left(\frac{se}{2}\right)^{2n+s}\]</div>
+<p>with:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\gamma^\pm_{s,n} &amp;\equiv &amp;\alpha_{s,n}
++
+\frac{\beta_{2,s,n-1}+\beta_{-2,s,n+1}}{2}
+-
+\beta_{0,s,n}+\frac{4}{s^2}\beta_{0,s,n-1}
+-
+\frac{2}{s^2}\left(\beta_{2,s,n-2}+\beta_{-2,s,n}\right)\\
+&amp;&amp;{}\pm
+\sum_{k=0}^{n+1} \frac{(2k)!}{s^{2k}(k!)^2(2k-1)}
+        \left[\frac{1}{2}\left(\beta_{2,s,n-k-1}-\beta_{-2,s,n-k+1}\right)+
+        \frac{2}{s}\left(\beta_{-1,s,n-k}-\beta_{1,s,n-k-1}\right)\right]\end{split}\]</div>
+<p>Verified by Mathematica.</p>
+<p>Plugging in the bessel function expressions:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{\pm2,s}&amp;=&amp;\frac{\exp(\mp 2i\phi_0)}{\omega}\sum_{k=0}^\infty
+        \left(\frac{e}{2}\right)^k \sum_{c=0}^k {k \choose c}
+        \Bigg\{
+                (k+1)J_{s+2c-k}(es) + \\
+        &amp;&amp;{}+{{k+3} \choose 3} \Bigg[
+                -(1-e^2)J_{s+2c-k}(es)
+                +\frac{1-e^2}{2}\big[J_{s+2+2c-k}(es)+J_{s-2+2c-k}(es)\big]
+                \mp\\
+        &amp;&amp;\quad\quad\quad\quad\quad{}
+                \mp\frac{\sqrt{1-e^2}}{2}\big[J_{s+2+2c-k}(es)-
+                                                                                J_{s-2+2c-k}(es)\big]
+                \pm e\sqrt{1-e^2}\big[J_{s+1+2c-k}(es)-J_{s-1+2c-k}(es)\big]
+        \Bigg]
+        \Bigg\}\end{split}\]</div>
+<p>For s=0 we need to go back to:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}2\pi p_{\pm2,0}&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} +
+        \frac{1}{\omega}\left[
+                (1-e^2)\int_{0}^{2\pi} \frac{\cos 2u -1} {(1-e\cos u)^4} du
+                \mp
+                i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\sin 2u} {(1-e\cos u)^4} du
+                \pm
+                i2e\sqrt{1-e^2} \int_{0}^{2\pi} \frac{\sin u} {(1-e\cos u)^4} du
+        \right]\right\}\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{2\pi p_{0,0} +
+        \frac{2}{\omega}\left[
+                (1-e^2)\int_{0}^{2\pi} \frac{\cos^2 u -1} {(1-e\cos u)^4} du
+                \pm
+                i\sqrt{1-e^2}\int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u
+                \mp
+                ie\sqrt{1-e^2} \int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u
+        \right]\right\}\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\int_{0}^{2\pi}\frac{\cos^{2n} u} {(1-e\cos u)^4} du
+&amp;=&amp;\sum_{k=0}^\infty {2k+3 \choose 3} e^{2k}
+                \int_{0}^{2\pi}\frac{\cos^{2n+2k} u} du\\
+&amp;=&amp;2\pi\sum_{k=0}^\infty {2k+3 \choose 3}
+                \frac{(2k+2n)!}{2^{2k+2n}[(k+n)!]^2} e^{2k}\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d\cos u
+&amp;=&amp;-\frac{1}{e}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^4} d(1-e\cos u)\\
+&amp;=&amp;\left.\frac{1}{3e(1-e\cos u)^3}\right|_{0}^{2\pi}\\
+&amp;=&amp;0\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\int_{0}^{2\pi} \frac{\cos u}{(1-e\cos u)^4}d\cos u
+&amp;=&amp;\frac{1}{e^2}\int_{0}^{2\pi} \frac{1-e\cos u-1}{(1-e\cos u)^4}
+        d(1-e\cos u)\\
+&amp;=&amp;\frac{1}{e^2}\int_{0}^{2\pi} \frac{1}{(1-e\cos u)^3} d(1-e\cos u)\\
+&amp;=&amp;-\frac{1}{2e^2(1-e\cos u)^2}\\
+&amp;=&amp;0\end{split}\]</div>
+<p>So we are left with:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{\pm2,0}&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} +
+        \frac{2(1-e^2)}{\omega}\left\{\sum_{k=0}^\infty {2k+3 \choose 3}
+                \frac{(2k+2)!}{2^{2k+2}[(k+1)!]^2}-
+                \frac{2k!}{2^{2k}(k!)^2}\right\}e^{2k}\right\}\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+        \frac{2(1-e^2)}{\omega}\sum_{k=0}^\infty {2k+3 \choose 3}
+                \frac{2k!}{2^{2k}(k!)^2(2k+2)}e^{2k}\right\}\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+        \frac{2}{\omega}\sum_{k=0}^\infty \left[
+                {2k+3 \choose 3} \frac{2k!}{2^{2k}(k!)^2(2k+2)}
+                -
+                {2k+1 \choose 3} \frac{2(k-1)!}{2^{2k-2}[(k-1)!]^2 2k}
+        \right]e^{2k}\right\}\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+        \frac{2}{\omega}\sum_{k=0}^\infty \left[
+                \frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2}
+                -
+                \frac{4k^2(2k+1)(2k-1)!}{6\,2^2k(k!)^2}
+        \right]e^{2k}\right\}\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+        \frac{2}{\omega}\sum_{k=0}^\infty \left[
+                \frac{(2k+3)(2k+1)!}{6\,2^{2k}(k!)^2}
+                -
+                \frac{2k(2k+1)!}{6\,2^2k(k!)^2}
+        \right]e^{2k}\right\}\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left\{p_{0,0} -
+        \frac{2}{\omega}\sum_{k=0}^\infty \frac{(2k+1)!}{2^{2k+1}(k!)^2}
+        e^{2k}\right\}\\
+&amp;=&amp;0\end{split}\]</div>
+<p>Confirmed by Mathematica.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="inclination_eccentricity_pms2.html" class="btn btn-neutral float-right" title="Calculation of the Pm,s Coefficients" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="eccentric_evolution_equations.html" class="btn btn-neutral float-left" title="Evolution Equations From Tidal Torque+Power" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

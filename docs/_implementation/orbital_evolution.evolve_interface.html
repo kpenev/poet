@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>orbital_evolution.evolve_interface module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="orbital_evolution.initial_condition_solver module" href="orbital_evolution.initial_condition_solver.html" />
+    <link rel="prev" title="orbital_evolution.dissipating_body module" href="orbital_evolution.dissipating_body.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="basic_utils.html">basic_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evolution_cmdline_args.html">evolution_cmdline_args module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="orbital_evolution.html">orbital_evolution package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="orbital_evolution.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="stellar_evolution.html">stellar_evolution package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../python_interface.html">Python Interface</a> &raquo;</li>
+        
+          <li><a href="modules.html">PythonPackage</a> &raquo;</li>
+        
+          <li><a href="orbital_evolution.html">orbital_evolution package</a> &raquo;</li>
+        
+      <li>orbital_evolution.evolve_interface module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_implementation/orbital_evolution.evolve_interface.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-orbital_evolution.evolve_interface">
+<span id="orbital-evolution-evolve-interface-module"></span><h1>orbital_evolution.evolve_interface module<a class="headerlink" href="#module-orbital_evolution.evolve_interface" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-b5d8b88157e1e92f287fb1ce7fa8008341e774e5.png" alt="Inheritance diagram of c_binary_p, c_bool, c_char_p, c_dissipating_body_p, c_double, c_int, c_solver_p, c_uint, c_void_p" usemap="#inheritance6fac977a3f" class="inheritance graphviz" /></div>
+<map id="inheritance6fac977a3f" name="inheritance6fac977a3f">
+<area shape="rect" id="node7" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.c_dissipating_body_p" target="_top" title="Dummy class only used for type checking." alt="" coords="195,77,548,101"/>
+<area shape="rect" id="node8" href="#orbital_evolution.evolve_interface.c_binary_p" target="_top" title="Place holder type for binary systems from the C&#45;library." alt="" coords="571,77,860,101"/>
+<area shape="rect" id="node9" href="#orbital_evolution.evolve_interface.c_solver_p" target="_top" title="Place holder type for orbit evolution solver from the C&#45;library." alt="" coords="884,77,1171,101"/>
+</map><p>An interface to the POET orbital evolution library.</p>
+<dl class="class">
+<dt id="orbital_evolution.evolve_interface.c_binary_p">
+<em class="property">class </em><code class="sig-prename descclassname">orbital_evolution.evolve_interface.</code><code class="sig-name descname">c_binary_p</code><a class="reference internal" href="../_modules/orbital_evolution/evolve_interface.html#c_binary_p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.evolve_interface.c_binary_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/ctypes.html#ctypes.c_void_p" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ctypes.c_void_p</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-0626f982b2028a61e5aa3c02cc0a48e3ee3a915e.png" alt="Inheritance diagram of orbital_evolution.evolve_interface.c_binary_p" usemap="#inheritance6cc5d78001" class="inheritance graphviz" /></div>
+<map id="inheritance6cc5d78001" name="inheritance6cc5d78001">
+<area shape="rect" id="node2" href="#orbital_evolution.evolve_interface.c_binary_p" target="_top" title="Place holder type for binary systems from the C&#45;library." alt="" coords="5,77,294,101"/>
+</map><p>Place holder type for binary systems from the C-library.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="orbital_evolution.evolve_interface.c_solver_p">
+<em class="property">class </em><code class="sig-prename descclassname">orbital_evolution.evolve_interface.</code><code class="sig-name descname">c_solver_p</code><a class="reference internal" href="../_modules/orbital_evolution/evolve_interface.html#c_solver_p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.evolve_interface.c_solver_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/ctypes.html#ctypes.c_void_p" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ctypes.c_void_p</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-3dfb95eabed019e0c006889471a99eeaee7eb359.png" alt="Inheritance diagram of orbital_evolution.evolve_interface.c_solver_p" usemap="#inheritance3b0452820f" class="inheritance graphviz" /></div>
+<map id="inheritance3b0452820f" name="inheritance3b0452820f">
+<area shape="rect" id="node2" href="#orbital_evolution.evolve_interface.c_solver_p" target="_top" title="Place holder type for orbit evolution solver from the C&#45;library." alt="" coords="5,77,293,101"/>
+</map><p>Place holder type for orbit evolution solver from the C-library.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="orbital_evolution.evolve_interface.initialize_library">
+<code class="sig-prename descclassname">orbital_evolution.evolve_interface.</code><code class="sig-name descname">initialize_library</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/evolve_interface.html#initialize_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.evolve_interface.initialize_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare the orbital evolution library for use.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="orbital_evolution.initial_condition_solver.html" class="btn btn-neutral float-right" title="orbital_evolution.initial_condition_solver module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="orbital_evolution.dissipating_body.html" class="btn btn-neutral float-left" title="orbital_evolution.dissipating_body module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

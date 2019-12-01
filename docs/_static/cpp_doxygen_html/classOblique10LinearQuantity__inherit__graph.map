@@ -1,0 +1,5 @@
+<map id="Oblique10LinearQuantity" name="Oblique10LinearQuantity">
+<area shape="rect" id="node2" href="$classCore_1_1OneArgumentDiffFunction.html" title="A class representing a once differentiable function of a single argument. " alt="" coords="20,473,269,587"/>
+<area shape="rect" id="node3" href="$classCore_1_1OneArgumentFunction.html" title="{Core::OneArgumentFunction\l\&lt; double, double \&gt;\n||+ operator()()\l+ range_high()\l+ range_low()\l+ crossings()\l+ ~OneArgumentFunction()\l&#45; serialize()\l}" alt="" coords="32,247,257,424"/>
+<area shape="rect" id="node4" href="$classCore_1_1OneArgumentFunction.html" title="The base class for functions which take a single argument and return a single value. " alt="" coords="5,5,284,183"/>
+</map>

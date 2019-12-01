@@ -1,0 +1,7 @@
+<map id="Star::EvolvingStellarZone" name="Star::EvolvingStellarZone">
+<area shape="rect" id="node5" href="$classStar_1_1EvolvingStellarCore.html" title="Radiative core for low mass evolving stars. " alt="" coords="5,1707,205,1900"/>
+<area shape="rect" id="node6" href="$classStar_1_1EvolvingStellarEnvelope.html" title="Surface convective zone for low mass evolving stars or the entire star for high mass stars..." alt="" coords="229,1715,461,1892"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="84,856,367,1321"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="115,199,336,808"/>
+<area shape="rect" id="node4" href="$classEvolve_1_1ZoneOrientation.html" title="{Evolve::ZoneOrientation\n|&#45; __inclination\l&#45; __periapsis\l|+ ZoneOrientation()\l+ configure()\l+ inclination()\l+ periapsis()\l}" alt="" coords="129,5,322,151"/>
+</map>

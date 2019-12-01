@@ -1,0 +1,11 @@
+digraph "StellarEvolution::InterpolatedDerivatives"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node0 [label="{StellarEvolution::Interpolated\lDerivatives\n|- __stellar_mass\l- __stellar_feh\l- __interp_deriv\l- __interp_masses\l- __interp_feh\l- __delete_derivatives\l|+ InterpolatedDerivatives()\l+ ~InterpolatedDerivatives()\l# calc_deriv()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node1 [label="{StellarEvolution::LogDerivatives\n|- __x\l- __log_x\l- __log_y\l- __underlying_deriv\l_values\l- __deriv_values\l|+ LogDerivatives()\l+ order()\l# calc_deriv()\l- transform_log_x_deriv()\l- transform_log_y_deriv()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classStellarEvolution_1_1LogDerivatives.html",tooltip="Calculate dy/dx given dy/dx, dy/dln(x), dln(y)/dx or dln(y)/dln(x). "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Core::FunctionDerivatives\n||+ order()\l+ ~FunctionDerivatives()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1FunctionDerivatives.html",tooltip="A class representing arbitrary order derivatives of a function. "];
+}

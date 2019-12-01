@@ -1,0 +1,7 @@
+digraph "YRECHeader"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{YRECHeader\n|- track_mass\l- age_col\l- radius_col\l- envelope_mass_col\l- rad_conv_boundary_col\l- rad_inertia_col\l- conv_inertia_col\l- log_luminosity_col\l|+ YRECHeader()\l+ get_mass()\l+ get_age_col()\l+ get_radius_col()\l+ get_log_luminosity_col()\l+ get_envelope_mass_col()\l+ get_core_boundary_col()\l+ get_rad_inertia_col()\l+ get_conv_inertia_col()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

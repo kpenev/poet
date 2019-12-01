@@ -1,0 +1,7 @@
+digraph "Core::OneArgumentFunction&lt; InputDataType, OutputDataType &gt;"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node23 [label="{Core::OneArgumentFunction\l\< InputDataType, OutputDataType \>\n||+ operator()()\l+ range_high()\l+ range_low()\l+ crossings()\l+ ~OneArgumentFunction()\l- serialize()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

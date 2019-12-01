@@ -1,0 +1,767 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>orbital_evolution.binary &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>orbital_evolution.binary</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for orbital_evolution.binary</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Define a class for binaries which can be evolved.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_bool</span><span class="p">,</span> <span class="n">c_double</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">orbital_evolution.star_interface</span> <span class="k">import</span> <span class="n">EvolvingStar</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.planet_interface</span> <span class="k">import</span> <span class="n">LockedPlanet</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.evolve_interface</span> <span class="k">import</span> <span class="n">library</span>
+<span class="kn">from</span> <span class="nn">basic_utils</span> <span class="k">import</span>\
+    <span class="n">Structure</span><span class="p">,</span>\
+    <span class="n">calc_semimajor</span><span class="p">,</span>\
+    <span class="n">calc_orbital_frequency</span><span class="p">,</span>\
+    <span class="n">calc_orbital_angular_momentum</span>
+
+<span class="c1">#Two of the &quot;attributes are actually methods</span>
+<span class="c1">#pylint: disable=too-many-instance-attributes</span>
+<div class="viewcode-block" id="Binary"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary">[docs]</a><span class="k">class</span> <span class="nc">Binary</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A class for binaries POET can evolve.&quot;&quot;&quot;</span>
+
+    <span class="n">evolution_modes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;LOCKED_SURFACE_SPIN&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;BINARY&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;SINGLE&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;TABULATION&#39;</span><span class="p">]</span>
+    <span class="n">_evolution_mode_ids</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">c_int</span><span class="o">.</span><span class="n">in_dll</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">mode</span> <span class="o">+</span> <span class="s1">&#39;_EVOL_MODE&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">evolution_modes</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="Binary._get_evolution_quantities"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary._get_evolution_quantities">[docs]</a>    <span class="k">def</span> <span class="nf">_get_evolution_quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of quantities in the evolution of the binary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]:</span>
+<span class="sd">                A list of the evolution quantities tracked for an evolution of</span>
+<span class="sd">                the current system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">evolution_quantities</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;semimajor&#39;</span><span class="p">,</span> <span class="s1">&#39;eccentricity&#39;</span><span class="p">]</span>
+
+        <span class="n">star_float_quantities</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;envelope_inclination&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;core_inclination&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;envelope_periapsis&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;core_periapsis&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;envelope_angmom&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;core_angmom&#39;</span><span class="p">]</span>
+
+        <span class="n">secondary_is_star</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">secondary_is_star</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">quantity</span> <span class="ow">in</span> <span class="n">star_float_quantities</span><span class="p">:</span>
+                <span class="n">evolution_quantities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;primary_&#39;</span> <span class="o">+</span> <span class="n">quantity</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">quantity</span> <span class="ow">in</span> <span class="n">star_float_quantities</span><span class="p">:</span>
+                <span class="n">evolution_quantities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;secondary_&#39;</span> <span class="o">+</span> <span class="n">quantity</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">evolution_quantities</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">star_float_quantities</span>
+                                        <span class="o">+</span>
+                                        <span class="p">[</span>
+                                            <span class="s1">&#39;planet_inclination&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;planet_periapsis&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;planet_angmom&#39;</span>
+                                        <span class="p">])</span>
+
+        <span class="n">evolution_quantities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;evolution_mode&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">secondary_is_star</span><span class="p">:</span>
+            <span class="n">evolution_quantities</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;primary_wind_saturation&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;secondary_wind_saturation&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">evolution_quantities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;wind_saturation&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">evolution_quantities</span></div>
+
+<div class="viewcode-block" id="Binary.evolution_quantity_c_type"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.evolution_quantity_c_type">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">evolution_quantity_c_type</span><span class="p">(</span><span class="n">quantity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the ctypes type of the given evolution quantity.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">quantity</span> <span class="o">==</span> <span class="s1">&#39;evolution_mode&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">c_int</span>
+        <span class="k">if</span> <span class="n">quantity</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;wind_saturation&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">c_bool</span>
+        <span class="k">return</span> <span class="n">c_double</span></div>
+
+    <span class="c1">#TODO: revive c-code creation</span>
+<div class="viewcode-block" id="Binary._create_c_code"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary._create_c_code">[docs]</a>    <span class="k">def</span> <span class="nf">_create_c_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">c_code_fname</span><span class="p">,</span>
+                       <span class="o">*</span><span class="p">,</span>
+                       <span class="n">final_age</span><span class="p">,</span>
+                       <span class="n">max_time_step</span><span class="p">,</span>
+                       <span class="n">precision</span><span class="p">,</span>
+                       <span class="n">eccentricity_expansion_fname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a c++ file calculating the currently set-up evolution.&quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="n">eccentricity_expansion_fname</span>
+        <span class="n">c_code_substitutions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">poet_include_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;poet_src&#39;</span>
+            <span class="p">),</span>
+            <span class="n">feh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">metallicity</span><span class="p">,</span>
+            <span class="n">secondary_radius</span><span class="o">=</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span>
+                              <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span> <span class="k">else</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">radius</span><span class="p">),</span>
+            <span class="n">secondary_is_star</span><span class="o">=</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">),</span>
+            <span class="n">dissipative_primary</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">dissipation</span><span class="p">),</span>
+            <span class="n">dissipative_secondary</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">dissipation</span><span class="p">),</span>
+            <span class="n">final_age</span><span class="o">=</span><span class="n">final_age</span><span class="p">,</span>
+            <span class="n">max_time_step</span><span class="o">=</span><span class="n">max_time_step</span><span class="p">,</span>
+            <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
+            <span class="n">eccentricity_expansion_fname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+                <span class="n">eccentricity_expansion_fname</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_conditions</span>
+        <span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">c_code_substitutions</span><span class="p">[</span><span class="s1">&#39;initial_secondary_envelope_angmom&#39;</span><span class="p">],</span>
+            <span class="n">c_code_substitutions</span><span class="p">[</span><span class="s1">&#39;initial_secondary_core_angmom&#39;</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">spin_angmom</span>
+             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span> <span class="k">else</span>
+             <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">component_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="s1">&#39;secondary&#39;</span><span class="p">]:</span>
+            <span class="n">component</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_name</span><span class="p">)</span>
+            <span class="n">c_code_substitutions</span><span class="p">[</span><span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">mass</span>
+            <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">dissipation</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">dissipation</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">dissipation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;param: &#39;</span> <span class="o">+</span> <span class="n">param</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">param</span> <span class="o">!=</span> <span class="s1">&#39;reference_phase_lag&#39;</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
+                            <span class="k">else</span> <span class="p">(</span>
+                                <span class="s1">&#39;{&#39;</span>
+                                <span class="o">+</span>
+                                <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.16e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+                                <span class="o">+</span>
+                                <span class="s1">&#39;}&#39;</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="n">c_code_substitutions</span><span class="p">[</span>
+                        <span class="n">component_name</span>
+                        <span class="o">+</span>
+                        <span class="s1">&#39;_&#39;</span>
+                        <span class="o">+</span>
+                        <span class="n">param</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">for</span> <span class="n">dependence</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;spin&#39;</span><span class="p">,</span> <span class="s1">&#39;tidal&#39;</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">tail</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;breaks&#39;</span><span class="p">,</span> <span class="s1">&#39;powers&#39;</span><span class="p">]:</span>
+                        <span class="n">value_list</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">dissipation</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">dependence</span>
+                                                              <span class="o">+</span>
+                                                              <span class="s1">&#39;_frequency_&#39;</span>
+                                                              <span class="o">+</span>
+                                                              <span class="n">tail</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">value_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">value_list</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">c_code_substitutions</span><span class="p">[</span>
+                            <span class="n">component_name</span>
+                            <span class="o">+</span>
+                            <span class="n">dependence</span>
+                            <span class="o">+</span>
+                            <span class="s1">&#39;_frequency_&#39;</span>
+                            <span class="o">+</span>
+                            <span class="n">tail</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s1">&#39;{&#39;</span>
+                            <span class="o">+</span>
+                            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">value_list</span><span class="p">])</span>
+                            <span class="o">+</span>
+                            <span class="s1">&#39;}&#39;</span>
+                        <span class="p">)</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;wind_strength&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;wind_saturation_frequency&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;diff_rot_coupling_timescale&#39;</span><span class="p">]:</span>
+                <span class="n">c_code_substitutions</span><span class="p">[</span><span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span> <span class="k">else</span>
+                    <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span>
+                <span class="p">)</span>
+
+            <span class="n">c_code_substitutions</span><span class="p">[</span><span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_interpolator_fname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span> <span class="k">else</span>
+                <span class="s1">&#39;&#39;</span>
+            <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;Substitutions:</span><span class="se">\n\t</span><span class="s1">&#39;</span>
+            <span class="o">+</span>
+            <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">item</span>
+                         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">c_code_substitutions</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">c_code_fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">c_code</span><span class="p">:</span>
+            <span class="n">c_code</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="nb">open</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span>
+                        <span class="s1">&#39;calculate_evolution_template.cpp&#39;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="o">%</span> <span class="n">c_code_substitutions</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Binary.__init__"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">primary</span><span class="p">,</span>
+                 <span class="n">secondary</span><span class="p">,</span>
+                 <span class="o">*</span><span class="p">,</span>
+                 <span class="n">disk_lock_frequency</span><span class="p">,</span>
+                 <span class="n">disk_dissipation_age</span><span class="p">,</span>
+                 <span class="n">initial_semimajor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">initial_orbital_period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">initial_eccentricity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">initial_inclination</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">secondary_formation_age</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a binary system out of two bodies.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - primary:</span>
+<span class="sd">                The first body in the system. Assumed to always be there, so</span>
+<span class="sd">                for a star-planet system this should be the star.</span>
+
+<span class="sd">            - secondary:</span>
+<span class="sd">                The second body in the system, initially may not be there and</span>
+<span class="sd">                later may be engulfed by the first body.</span>
+
+<span class="sd">            - disk_lock_frequency:</span>
+<span class="sd">                Frequency of the surface spin of the primary when disk is</span>
+<span class="sd">                present in rad/day.</span>
+
+<span class="sd">            - disk_dissipation_age:</span>
+<span class="sd">                Age when disk dissipates in Gyrs.</span>
+
+<span class="sd">            - initial_semimajor:</span>
+<span class="sd">                The semimajor axis of the orbit at which the secondary forms</span>
+<span class="sd">                in solar radii. If omitted, initial_orbital_period must be</span>
+<span class="sd">                specified.</span>
+
+<span class="sd">            - initial_orbital_period:</span>
+<span class="sd">                Alternative to specifying the initial semimajor axis.</span>
+
+<span class="sd">            - initial_eccentricity:</span>
+<span class="sd">                The eccentricity of the orbit at which the secondary forms.</span>
+
+<span class="sd">            - initial_inclination:</span>
+<span class="sd">                Inclination between surface zone of primary and initial orbit</span>
+<span class="sd">                in radians.</span>
+
+<span class="sd">            - secondary_formation_age:</span>
+<span class="sd">                Age when the secondary forms.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">primary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">primary</span> <span class="o">=</span> <span class="n">primary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span> <span class="o">=</span> <span class="n">secondary</span>
+        <span class="k">if</span> <span class="n">initial_semimajor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">initial_semimajor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semimajor</span><span class="p">(</span><span class="n">initial_orbital_period</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="n">secondary_formation_age</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">secondary_formation_age</span> <span class="o">=</span> <span class="n">disk_dissipation_age</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_conditions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">initial_eccentricity</span><span class="o">=</span><span class="n">initial_eccentricity</span><span class="p">,</span>
+            <span class="n">initial_inclination</span><span class="o">=</span><span class="n">initial_inclination</span><span class="p">,</span>
+            <span class="n">disk_dissipation_age</span><span class="o">=</span><span class="n">disk_dissipation_age</span><span class="p">,</span>
+            <span class="n">disk_lock_frequency</span><span class="o">=</span><span class="n">disk_lock_frequency</span><span class="p">,</span>
+            <span class="n">initial_semimajor</span><span class="o">=</span><span class="n">initial_semimajor</span><span class="p">,</span>
+            <span class="n">secondary_formation_age</span><span class="o">=</span><span class="n">secondary_formation_age</span>
+        <span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">evolution_quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_evolution_quantities</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span> <span class="n">LockedPlanet</span><span class="p">):</span>
+            <span class="n">c_create_func</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">create_star_planet_system</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c_get_evolution_func</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">get_star_planet_evolution</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c_get_final_state</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">get_star_planet_final_state</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span>
+            <span class="n">c_create_func</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">create_star_star_system</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c_get_evolution_func</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">get_star_star_evolution</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_c_get_final_state</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">get_star_star_final_state</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_binary</span> <span class="o">=</span> <span class="n">c_create_func</span><span class="p">(</span>
+            <span class="n">primary</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+            <span class="n">secondary</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+            <span class="n">initial_semimajor</span><span class="p">,</span>
+            <span class="n">initial_eccentricity</span><span class="p">,</span>
+            <span class="n">initial_inclination</span><span class="p">,</span>
+            <span class="n">disk_lock_frequency</span><span class="p">,</span>
+            <span class="n">disk_dissipation_age</span><span class="p">,</span>
+            <span class="n">secondary_formation_age</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_evolution_steps</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_solver</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Binary.delete"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the binary created at construction.&quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">destroy_binary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_binary</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;c_solver&#39;</span><span class="p">):</span>
+            <span class="n">library</span><span class="o">.</span><span class="n">destroy_solver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_solver</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Binary.configure"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="o">*</span><span class="p">,</span>
+                  <span class="n">age</span><span class="p">,</span>
+                  <span class="n">semimajor</span><span class="p">,</span>
+                  <span class="n">eccentricity</span><span class="p">,</span>
+                  <span class="n">spin_angmom</span><span class="p">,</span>
+                  <span class="n">inclination</span><span class="p">,</span>
+                  <span class="n">periapsis</span><span class="p">,</span>
+                  <span class="n">evolution_mode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the current state (orbit) of a system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - age:</span>
+<span class="sd">                The age to set the system to.</span>
+
+<span class="sd">            - semimajor:</span>
+<span class="sd">                The semimajor axis of the orbit in solar radii.</span>
+
+<span class="sd">            - eccentricity:</span>
+<span class="sd">                The eccentricity of the orbit.</span>
+
+<span class="sd">            - spin_angmom:</span>
+<span class="sd">                The spin angular momenta of the zones of the bodies (body 1</span>
+<span class="sd">                first, outermost zone to innermost, followed by body 2).</span>
+
+<span class="sd">            - inclination:</span>
+<span class="sd">                The inclinations of the zones of the bodies (same order as</span>
+<span class="sd">                spin_angmom). The surface zone inclination must be omitted</span>
+<span class="sd">                for single body systems.</span>
+
+<span class="sd">            - periapsis:</span>
+<span class="sd">                The arguments of periapsis of the zones of the bodies (same</span>
+<span class="sd">                order as spin_angmom, but not including the surface zone of</span>
+<span class="sd">                the first body).</span>
+
+<span class="sd">            - evolution_mode:</span>
+<span class="sd">                The evolution mode to assume. Must be one of the constants</span>
+<span class="sd">                defined.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">configure_system</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_binary</span><span class="p">,</span>
+                                 <span class="n">age</span><span class="p">,</span>
+                                 <span class="n">semimajor</span><span class="p">,</span>
+                                 <span class="n">eccentricity</span><span class="p">,</span>
+                                 <span class="n">spin_angmom</span><span class="p">,</span>
+                                 <span class="n">inclination</span><span class="p">,</span>
+                                 <span class="n">periapsis</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_evolution_mode_ids</span><span class="p">[</span><span class="n">evolution_mode</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Binary.evolve"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.evolve">[docs]</a>    <span class="k">def</span> <span class="nf">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">final_age</span><span class="p">,</span>
+               <span class="n">max_time_step</span><span class="p">,</span>
+               <span class="n">precision</span><span class="p">,</span>
+               <span class="n">required_ages</span><span class="p">,</span>
+               <span class="o">*</span><span class="p">,</span>
+               <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">create_c_code</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+               <span class="n">eccentricity_expansion_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evolve the system forward from its current state.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - final_age:</span>
+<span class="sd">                The age at which to stop the evolution in Gyrs. The starting</span>
+<span class="sd">                age must be already set for the system through configure.</span>
+
+<span class="sd">            - max_time_step:</span>
+<span class="sd">                The maximum size of the time step allowed in Gyrs.</span>
+
+<span class="sd">            - precision:</span>
+<span class="sd">                The precision to require of the solution.</span>
+
+<span class="sd">            - required_ages:</span>
+<span class="sd">                Ages at which the evolution must stop precisely.</span>
+
+<span class="sd">            - print_progress:</span>
+<span class="sd">                Should output be created to show the progress in time steps.</span>
+
+<span class="sd">            - create_c_code:    The name of a file to create which when compiled</span>
+<span class="sd">                will calculate the exact evolution currently set-up for this</span>
+<span class="sd">                binary. If empty, no such file is created.</span>
+
+<span class="sd">            - eccentricity_expansion_fname:    The filename from which</span>
+<span class="sd">                eccentricity expansion coefficients were read. Only used if</span>
+<span class="sd">                create_c_code is not empty.</span>
+
+<span class="sd">        Returnns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">create_c_code</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_c_code</span><span class="p">(</span>
+                <span class="n">create_c_code</span><span class="p">,</span>
+                <span class="n">final_age</span><span class="o">=</span><span class="n">final_age</span><span class="p">,</span>
+                <span class="n">max_time_step</span><span class="o">=</span><span class="n">max_time_step</span><span class="p">,</span>
+                <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
+                <span class="n">eccentricity_expansion_fname</span><span class="o">=</span><span class="n">eccentricity_expansion_fname</span>
+            <span class="p">)</span>
+
+        <span class="c1">#The point is to check if previous call defined the member</span>
+        <span class="c1">#pylint: disable=access-member-before-definition</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;c_solver&#39;</span><span class="p">):</span>
+            <span class="n">library</span><span class="o">.</span><span class="n">destroy_solver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_solver</span><span class="p">)</span>
+        <span class="c1">#pylint: enable=access-member-before-definition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_solver</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">evolve_system</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_binary</span><span class="p">,</span>
+            <span class="n">final_age</span><span class="p">,</span>
+            <span class="n">max_time_step</span><span class="p">,</span>
+            <span class="n">precision</span><span class="p">,</span>
+            <span class="n">required_ages</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">0</span> <span class="k">if</span> <span class="n">required_ages</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">required_ages</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+            <span class="n">print_progress</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_evolution_steps</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">num_evolution_steps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_solver</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Binary.get_evolution"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.get_evolution">[docs]</a>    <span class="k">def</span> <span class="nf">get_evolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantities</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the last calculated evolution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - quantities:    An iterable of quantities to read the evolution of.</span>
+<span class="sd">                The evolution of omitted quantities can still be obtained later</span>
+<span class="sd">                by subsequent calls to this method. The allowed entries are in</span>
+<span class="sd">                the star_star_evolution_quantities for binary star systems or in</span>
+<span class="sd">                star_planet_evolution_quantities for a star-planet system. If</span>
+<span class="sd">                None, it defaults to the full list of quantities for the given</span>
+<span class="sd">                system.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Sturture:</span>
+<span class="sd">                A structure with mebers named the same way as the input list of</span>
+<span class="sd">                quantities containing the values of the corresponding quantity</span>
+<span class="sd">                at each evolution step. The order is always in increasing age.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">quantities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evolution_quantities</span>
+
+        <span class="k">for</span> <span class="n">quantity_name</span> <span class="ow">in</span> <span class="n">quantities</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="n">result</span><span class="p">,</span>
+                <span class="n">quantity_name</span><span class="p">,</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">num_evolution_steps</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">evolution_quantity_c_type</span><span class="p">(</span><span class="n">quantity_name</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">get_evol_args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c_solver</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">c_binary</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">c_body</span><span class="p">]</span>
+
+        <span class="n">get_evol_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                              <span class="k">for</span> <span class="n">quantity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evolution_quantities</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_get_evolution_func</span><span class="p">(</span><span class="o">*</span><span class="n">get_evol_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Binary.final_state"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.final_state">[docs]</a>    <span class="k">def</span> <span class="nf">final_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the final evolution state of a system (all quantities).&quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">()</span>
+        <span class="n">library_final_state</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">evolution_quantity_c_type</span><span class="p">(</span><span class="n">q</span><span class="p">)()</span>
+                               <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evolution_quantities</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_c_get_final_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_solver</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">c_binary</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+                                <span class="o">*</span><span class="n">library_final_state</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">library_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evolution_quantities</span><span class="p">,</span>
+                                           <span class="n">library_final_state</span><span class="p">):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">library_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Binary.orbital_frequency"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.orbital_frequency">[docs]</a>    <span class="k">def</span> <span class="nf">orbital_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semimajor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The orbital frequency of the system for the given semimajor axis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - semimajor:</span>
+<span class="sd">                The semimajor axis at which the system&#39;s orbital period is</span>
+<span class="sd">                required in solar radii.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The orbital period in days if the two bodies of this system are</span>
+<span class="sd">            in an orbit with the given semimajor axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">calc_orbital_frequency</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                                      <span class="n">semimajor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Binary.orbital_period"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.orbital_period">[docs]</a>    <span class="k">def</span> <span class="nf">orbital_period</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semimajor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The orbital period of the system for the given semimajor axis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - semimajor:</span>
+<span class="sd">                The semimajor axis at which the system&#39;s orbital period is</span>
+<span class="sd">                required in solar radii.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The orbital period in days if the two bodies of this system are</span>
+<span class="sd">            in an orbit with the given semimajor axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">orbital_frequency</span><span class="p">(</span><span class="n">semimajor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Binary.semimajor"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.semimajor">[docs]</a>    <span class="k">def</span> <span class="nf">semimajor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orbital_period</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The semimajor axis of the system for the given orbital period.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - orbital_period:</span>
+<span class="sd">                The orbital period at which the system&#39;s orbital period is</span>
+<span class="sd">                required in days.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The semimajor axis in solar radii if the two bodies of this</span>
+<span class="sd">            system are in an orbit with the given period.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">calc_semimajor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                              <span class="n">orbital_period</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Binary.orbital_angular_momentum"><a class="viewcode-back" href="../../_implementation/orbital_evolution.binary.html#orbital_evolution.binary.Binary.orbital_angular_momentum">[docs]</a>    <span class="k">def</span> <span class="nf">orbital_angular_momentum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semimajor</span><span class="p">,</span> <span class="n">eccentricity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The orbital agular momentum for the given semimajor/eccentricity.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - semimajor:</span>
+<span class="sd">                The semimajor axis of the system.</span>
+
+<span class="sd">            - eccentricity:</span>
+<span class="sd">                The orbital eccentricity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The orbital angular momentum if the two bodies are in an orbit</span>
+<span class="sd">            with the given semimajor axis and eccentricity in solar units.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">calc_orbital_angular_momentum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                                             <span class="n">semimajor</span><span class="p">,</span>
+                                             <span class="n">eccentricity</span><span class="p">)</span></div></div>
+<span class="c1">#pylint: enable=too-many-instance-attributes</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

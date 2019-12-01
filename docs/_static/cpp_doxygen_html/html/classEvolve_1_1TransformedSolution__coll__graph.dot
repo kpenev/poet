@@ -1,0 +1,7 @@
+digraph "Evolve::TransformedSolution"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{Evolve::TransformedSolution\n|- __transformed_orbit\l- __transforms\l- __change_ages\l|+ TransformedSolution()\l+ TransformedSolution()\l+ add_transformation()\l+ operator()()\l+ get_transformed_solution()\l+ ~TransformedSolution()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

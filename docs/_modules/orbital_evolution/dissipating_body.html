@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>orbital_evolution.dissipating_body &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>orbital_evolution.dissipating_body</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for orbital_evolution.dissipating_body</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Define base class for all bodies participating in evolution calc.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">c_void_p</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="c1">#Naming convention follows ctypes.</span>
+<span class="c1">#pylint: disable=invalid-name</span>
+<span class="c1">#Only used for type checking so no need for public methods</span>
+<span class="c1">#pylint: disable=too-few-public-methods</span>
+<div class="viewcode-block" id="c_dissipating_body_p"><a class="viewcode-back" href="../../_implementation/orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.c_dissipating_body_p">[docs]</a><span class="k">class</span> <span class="nc">c_dissipating_body_p</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Dummy class only used for type checking.&quot;&quot;&quot;</span></div>
+<span class="c1">#pylint: enable=invalid-name</span>
+<span class="c1">#pylint: enable=too-few-public-methods</span>
+
+<div class="viewcode-block" id="DissipatingBody"><a class="viewcode-back" href="../../_implementation/orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody">[docs]</a><span class="k">class</span> <span class="nc">DissipatingBody</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A base class for any body in a POET system.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DissipatingBody.lib_configure_body"><a class="viewcode-back" href="../../_implementation/orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody.lib_configure_body">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">lib_configure_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Ensure a function for configuring the body is defined.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="DissipatingBody.__init__"><a class="viewcode-back" href="../../_implementation/orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize some attributes.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dissipation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_angmom</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_dissipative</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="DissipatingBody.configure"><a class="viewcode-back" href="../../_implementation/orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="o">*</span><span class="p">,</span>
+                  <span class="n">age</span><span class="p">,</span>
+                  <span class="n">companion_mass</span><span class="p">,</span>
+                  <span class="n">semimajor</span><span class="p">,</span>
+                  <span class="n">eccentricity</span><span class="p">,</span>
+                  <span class="n">spin_angmom</span><span class="p">,</span>
+                  <span class="n">inclination</span><span class="p">,</span>
+                  <span class="n">periapsis</span><span class="p">,</span>
+                  <span class="n">locked_surface</span><span class="p">,</span>
+                  <span class="n">zero_outer_inclination</span><span class="p">,</span>
+                  <span class="n">zero_outer_periapsis</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tell the body what orbit it is in.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            age:    The age to set the body to.</span>
+
+<span class="sd">            companion_mass:    The mass of the other body in the system.</span>
+
+<span class="sd">            semimajor:    The semimajor axis of the orbit in solar radii.</span>
+
+<span class="sd">            eccentricity:    The eccentricity of the orbit.</span>
+
+<span class="sd">            spin_angmom:    The spin angular momenta of the non-locked zones of</span>
+<span class="sd">                the body (outermost zone to innermost).</span>
+
+<span class="sd">            inclination:    The inclinations of the zones of the body (same</span>
+<span class="sd">                order as spin_angmom).</span>
+
+<span class="sd">            periapsis:    The arguments of periapsis of the zones of the bodies</span>
+<span class="sd">                (same order as spin_angmom).</span>
+
+<span class="sd">            locked_surface:    If true, the outermost zone&#39;s spin is assumed</span>
+<span class="sd">                locked to a disk and spin_angmom is assumed to start from the</span>
+<span class="sd">                next zone.</span>
+
+<span class="sd">            zero_outer_inclination:    If true, the outermost zone&#39;s inclination</span>
+<span class="sd">                is assumed to be zero and the inclination argument is assumed to</span>
+<span class="sd">                start from the next zone.</span>
+
+<span class="sd">            zero_outer_periapsis:    If true, the outermost zone&#39;s periapsis is</span>
+<span class="sd">                assumed to be zero and the inclination argument is assumed to</span>
+<span class="sd">                start from the next zone.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_angmom</span> <span class="o">=</span> <span class="n">spin_angmom</span>
+        <span class="c1">#Objects inheriting from this class are expected to define self.c_body</span>
+        <span class="c1">#before invoking this method</span>
+        <span class="c1">#pylint: disable=no-member</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib_configure_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+                                <span class="n">age</span><span class="p">,</span>
+                                <span class="n">companion_mass</span><span class="p">,</span>
+                                <span class="n">semimajor</span><span class="p">,</span>
+                                <span class="n">eccentricity</span><span class="p">,</span>
+                                <span class="n">spin_angmom</span><span class="p">,</span>
+                                <span class="n">inclination</span><span class="p">,</span>
+                                <span class="n">periapsis</span><span class="p">,</span>
+                                <span class="n">locked_surface</span><span class="p">,</span>
+                                <span class="n">zero_outer_inclination</span><span class="p">,</span>
+                                <span class="n">zero_outer_periapsis</span><span class="p">)</span></div>
+        <span class="c1">#pylint: enable=no-member</span>
+
+<div class="viewcode-block" id="DissipatingBody.set_dissipation"><a class="viewcode-back" href="../../_implementation/orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody.set_dissipation">[docs]</a>    <span class="k">def</span> <span class="nf">set_dissipation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">zone_index</span><span class="p">,</span> <span class="o">**</span><span class="n">dissipation_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Record the dissipation that was defined for a zone of the body.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dissipation</span><span class="p">[</span><span class="n">zone_index</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">dissipation_params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_dissipative</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

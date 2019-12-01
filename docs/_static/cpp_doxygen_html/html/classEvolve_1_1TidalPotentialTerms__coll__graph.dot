@@ -1,0 +1,9 @@
+digraph "Evolve::TidalPotentialTerms"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{Evolve::TidalPotentialTerms\n|- __e_order\l- __Ummp_inclination\l- __arg_of_periapsis\l- __Ummp\l- __Ummp_deriv\l- __Umm_coef\l|+ TidalPotentialTerms()\l+ change_e_order()\l+ current_e_order()\l+ configure()\l+ operator()()\l+ operator()()\l+ read_eccentricity_expansion()\l+ max_e_order()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="12",style="solid",label=" -__pms" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{Evolve::EccentricityExpansion\lCoefficients\n|- __max_e_power\l- __alpha\l- __gamma_plus\l- __gamma_minus\l- __useable\l|+ EccentricityExpansionCoefficients()\l+ read()\l+ max_e_power()\l+ operator()()\l- inner_index()\l- p_m2s()\l- p_0s()\l- p_p2s()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEvolve_1_1EccentricityExpansionCoefficients.html",tooltip="A class which reads-in and provides a convenient interface to the  coefficients. "];
+}

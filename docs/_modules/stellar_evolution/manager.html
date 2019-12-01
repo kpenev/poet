@@ -1,0 +1,872 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.manager &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>stellar_evolution.manager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for stellar_evolution.manager</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Define class for managing many stellar evolution interpolations.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span> <span class="k">as</span> <span class="n">get_uuid</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">isnan</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="n">exists</span><span class="p">,</span> <span class="n">and_</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">create_engine</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
+
+<span class="c1">#Need to add POET package to module search path before importing</span>
+<span class="c1">#pylint: disable=wrong-import-position</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.change_variables</span> <span class="k">import</span> <span class="n">VarChangingInterpolator</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.library_interface</span> <span class="k">import</span>\
+    <span class="n">library_track_fname_rex</span><span class="p">,</span>\
+    <span class="n">library_track_fname</span><span class="p">,</span>\
+    <span class="n">library</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution</span> <span class="k">import</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.basic_utils</span> <span class="k">import</span> <span class="n">db_session_scope</span><span class="p">,</span> <span class="n">tempdir_scope</span>
+<span class="kn">from</span> <span class="nn">basic_utils</span> <span class="k">import</span> <span class="n">Structure</span>
+
+<span class="kn">from</span> <span class="nn">.manager_data_model</span> <span class="k">import</span>\
+    <span class="n">DataModelBase</span><span class="p">,</span>\
+    <span class="n">SerializedInterpolator</span><span class="p">,</span>\
+    <span class="n">InterpolationParameters</span><span class="p">,</span>\
+    <span class="n">Quantity</span><span class="p">,</span>\
+    <span class="n">Track</span><span class="p">,</span>\
+    <span class="n">ModelSuite</span>
+
+<span class="kn">from</span> <span class="nn">.managed_interpolator</span> <span class="k">import</span>\
+    <span class="n">ManagedInterpolator</span><span class="p">,</span>\
+    <span class="n">verify_checksum</span><span class="p">,</span>\
+    <span class="n">checksum_filename</span>
+<span class="c1">#pylint: enable=wrong-import-position</span>
+
+<div class="viewcode-block" id="StellarEvolutionManager"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager">[docs]</a><span class="k">class</span> <span class="nc">StellarEvolutionManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for managing a collection of stellar evolution inteprolations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="StellarEvolutionManager._get_decimal"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._get_decimal">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_decimal</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare a value for db storage as a limited precision decimal.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.0001&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager._define_evolution_quantities"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._define_evolution_quantities">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_define_evolution_quantities</span><span class="p">(</span><span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define the quantities tracked by VarChangingInterpolator instances.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            db_session:    The currently active database session.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">db_quantities</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Quantity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">quantity_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">db_quantities</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager._initialize_database"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._initialize_database">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">,</span> <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure all database tables exist and contain at least required data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            db_session:    An sqlalchemy session, used to update the database.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">DataModelBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">sorted_tables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">db_engine</span><span class="o">.</span><span class="n">has_table</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">db_engine</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">table</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;quantities&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_define_evolution_quantities</span><span class="p">(</span><span class="n">db_session</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">table</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;model_suites&#39;</span><span class="p">:</span>
+                    <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ModelSuite</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;MESA&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager._get_db_config"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._get_db_config">[docs]</a>    <span class="k">def</span> <span class="nf">_get_db_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read some configuration from the database.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quantities</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Structure</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">q</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">q</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Quantity</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suites</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">ModelSuite</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_new_track_id</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Track</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+    <span class="c1">#Not simplifiable without loss of intuitive use.</span>
+    <span class="c1">#pylint: disable=too-many-arguments</span>
+<div class="viewcode-block" id="StellarEvolutionManager._add_track"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._add_track">[docs]</a>    <span class="k">def</span> <span class="nf">_add_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">track_fname</span><span class="p">,</span>
+                   <span class="n">mass</span><span class="p">,</span>
+                   <span class="n">feh</span><span class="p">,</span>
+                   <span class="n">model_suite</span><span class="p">,</span>
+                   <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a track to the database.&quot;&quot;&quot;</span>
+
+        <span class="n">db_track</span> <span class="o">=</span> <span class="n">Track</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_track_id</span><span class="p">,</span>
+                         <span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">track_fname</span><span class="p">),</span>
+                         <span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span>
+                         <span class="n">feh</span><span class="o">=</span><span class="n">feh</span><span class="p">,</span>
+                         <span class="n">checksum</span><span class="o">=</span><span class="n">checksum_filename</span><span class="p">(</span><span class="n">track_fname</span><span class="p">),</span>
+                         <span class="n">suite</span><span class="o">=</span><span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                             <span class="n">ModelSuite</span>
+                         <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                             <span class="n">name</span><span class="o">=</span><span class="n">model_suite</span>
+                         <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">())</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_track</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_new_track_id</span> <span class="o">+=</span> <span class="mi">1</span></div>
+    <span class="c1">#pylint: enable=too-many-arguments</span>
+
+<div class="viewcode-block" id="StellarEvolutionManager._track_grid_from_files"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._track_grid_from_files">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_track_grid_from_files</span><span class="p">(</span><span class="n">track_fnames</span><span class="p">,</span>
+                               <span class="n">db_session</span><span class="p">,</span>
+                               <span class="n">model_suite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Organize track files in a mass - [Fe/H] grid and verify checksums.</span>
+
+<span class="sd">        In addition, if model_suite is not None, all tracks are verified to</span>
+<span class="sd">        belong to this suite.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            track_fnames:    See get_interpolator track_fnames argument.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict:</span>
+<span class="sd">                keys - the masses of tracks; and values - further dictionaries</span>
+<span class="sd">                with keys the [Fe/H] of tracks and values the filename of each</span>
+<span class="sd">                track.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">track_grid</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">track_fnames</span><span class="p">:</span>
+            <span class="n">absolute_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">db_track</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Track</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">absolute_fname</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">model_suite</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">db_track</span><span class="o">.</span><span class="n">suite</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_suite</span>
+            <span class="n">verify_checksum</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">db_track</span><span class="o">.</span><span class="n">checksum</span><span class="p">,</span> <span class="s1">&#39;track&#39;</span><span class="p">)</span>
+
+            <span class="n">mass_key</span> <span class="o">=</span> <span class="n">db_track</span><span class="o">.</span><span class="n">mass</span>
+            <span class="n">feh_key</span> <span class="o">=</span> <span class="n">db_track</span><span class="o">.</span><span class="n">feh</span>
+            <span class="k">if</span> <span class="n">mass_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">track_grid</span><span class="p">:</span>
+                <span class="n">track_grid</span><span class="p">[</span><span class="n">mass_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">feh_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">track_grid</span><span class="p">[</span><span class="n">mass_key</span><span class="p">]</span>
+            <span class="n">track_grid</span><span class="p">[</span><span class="n">mass_key</span><span class="p">][</span><span class="n">feh_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">db_track</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">track_grid</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager._track_grid_from_grid"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._track_grid_from_grid">[docs]</a>    <span class="k">def</span> <span class="nf">_track_grid_from_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">mass_list</span><span class="p">,</span>
+                              <span class="n">feh_list</span><span class="p">,</span>
+                              <span class="n">model_suite</span><span class="p">,</span>
+                              <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a mass - [Fe/H] grid with filenames and checksums.</span>
+
+<span class="sd">        Fails if multiple tracks are registered for some (mass, [Fe/H],</span>
+<span class="sd">        model suite) combination.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mass_list:    The masses for which to include tracks.</span>
+
+<span class="sd">            feh_list:    The [Fe/H values for which to include tracks.</span>
+
+<span class="sd">            model_suite:    The software suite from whose tracks to choose.</span>
+
+<span class="sd">            db_session:    A database session to submit queries to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict:</span>
+<span class="sd">                See _track_grid_from_files()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mass_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mass_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Track</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">Track</span><span class="o">.</span><span class="n">model_suite_id</span> <span class="o">==</span> <span class="n">ModelSuite</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_suite</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Track</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="k">if</span> <span class="n">feh_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feh_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Track</span><span class="o">.</span><span class="n">feh</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">Track</span><span class="o">.</span><span class="n">model_suite_id</span> <span class="o">==</span> <span class="n">ModelSuite</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_suite</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Track</span><span class="o">.</span><span class="n">feh</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="n">track_grid</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mass_list</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">mass</span> <span class="ow">in</span> <span class="n">mass_list</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">feh</span> <span class="ow">in</span> <span class="n">feh_list</span><span class="p">:</span>
+                <span class="n">db_track</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Track</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">Track</span><span class="o">.</span><span class="n">mass</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span><span class="n">mass</span><span class="p">),</span>
+                    <span class="n">Track</span><span class="o">.</span><span class="n">feh</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span><span class="n">feh</span><span class="p">),</span>
+                    <span class="n">Track</span><span class="o">.</span><span class="n">model_suite_id</span> <span class="o">==</span> <span class="n">ModelSuite</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_suite</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+
+                <span class="n">verify_checksum</span><span class="p">(</span><span class="n">db_track</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                                <span class="n">db_track</span><span class="o">.</span><span class="n">checksum</span><span class="p">,</span>
+                                <span class="s1">&#39;track&#39;</span><span class="p">)</span>
+
+                <span class="n">track_grid</span><span class="p">[</span><span class="n">mass</span><span class="p">][</span><span class="n">feh</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">db_track</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">db_track</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">track_grid</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager._find_existing_interpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._find_existing_interpolator">[docs]</a>    <span class="k">def</span> <span class="nf">_find_existing_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                    <span class="o">*</span><span class="p">,</span>
+                                    <span class="n">track_grid</span><span class="p">,</span>
+                                    <span class="n">nodes</span><span class="p">,</span>
+                                    <span class="n">smoothing</span><span class="p">,</span>
+                                    <span class="n">db_session</span><span class="p">,</span>
+                                    <span class="n">vs_log_age</span><span class="p">,</span>
+                                    <span class="n">log_quantity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the specified interpolation if already exists, otherwise None.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            track_grid:    See result of _track_grid_from_files()</span>
+
+<span class="sd">            nodes:    see get_interpolator.</span>
+
+<span class="sd">            smoothing:    see get_interpolator.</span>
+
+<span class="sd">            db_session:    The currently active database session.</span>
+
+<span class="sd">            vs_log_age:    see get_interpolator.</span>
+
+<span class="sd">            log_quantity:    see get_interpolator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VarChangingInterpolator:</span>
+<span class="sd">                Pre-serialized interpolation matching the given arguments if</span>
+<span class="sd">                one is found in the interpolation archive. If no</span>
+<span class="sd">                pre-serialized interpolation exists, returns None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+        <span class="n">num_tracks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">track_grid</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">track_grid</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+
+        <span class="n">track_counts</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s1">&#39;num_tracks&#39;</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">tracks</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span>
+            <span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">subquery</span><span class="p">()</span>
+
+        <span class="n">match_config</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">exists</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">and_</span><span class="p">(</span>
+                        <span class="n">InterpolationParameters</span><span class="o">.</span><span class="n">interpolator_id</span>
+                        <span class="o">==</span>
+                        <span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">id</span>
+                        <span class="p">,</span>
+                        <span class="n">InterpolationParameters</span><span class="o">.</span><span class="n">quantity_id</span> <span class="o">==</span> <span class="n">quantity</span><span class="o">.</span><span class="n">id</span>
+                        <span class="p">,</span>
+                        <span class="n">InterpolationParameters</span><span class="o">.</span><span class="n">smoothing</span>
+                        <span class="o">==</span>
+                        <span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">smoothing</span><span class="p">[</span><span class="n">quantity</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+                         <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span><span class="n">smoothing</span><span class="p">[</span><span class="n">quantity</span><span class="o">.</span><span class="n">name</span><span class="p">]))</span>
+                        <span class="p">,</span>
+                        <span class="n">InterpolationParameters</span><span class="o">.</span><span class="n">nodes</span>
+                        <span class="o">==</span>
+                        <span class="n">nodes</span><span class="p">[</span><span class="n">quantity</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                        <span class="n">InterpolationParameters</span><span class="o">.</span><span class="n">vs_log_age</span>
+                        <span class="o">==</span>
+                        <span class="n">vs_log_age</span><span class="p">[</span><span class="n">quantity</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                        <span class="n">InterpolationParameters</span><span class="o">.</span><span class="n">log_quantity</span>
+                        <span class="o">==</span>
+                        <span class="n">log_quantity</span><span class="p">[</span><span class="n">quantity</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">quantity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quantities</span>
+            <span class="p">]</span>
+            <span class="o">+</span>
+            <span class="p">[</span>
+                <span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Track</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">track_id</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">mass</span><span class="p">,</span> <span class="n">mass_row</span> <span class="ow">in</span> <span class="n">track_grid</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">feh</span><span class="p">,</span> <span class="p">(</span><span class="n">track_fname</span><span class="p">,</span> <span class="n">track_id</span><span class="p">)</span> <span class="ow">in</span> <span class="n">mass_row</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span>
+            <span class="o">+</span>
+            <span class="p">[</span><span class="n">track_counts</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">num_tracks</span> <span class="o">==</span> <span class="n">num_tracks</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="n">SerializedInterpolator</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">track_counts</span><span class="p">,</span>
+            <span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">track_counts</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">match_config</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">one_or_none</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">ManagedInterpolator</span><span class="p">(</span>
+            <span class="n">db_interpolator</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+            <span class="n">serialization_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialization_path</span><span class="p">,</span>
+            <span class="n">db_session</span><span class="o">=</span><span class="n">db_session</span>
+        <span class="p">)</span></div>
+
+    <span class="c1">#TODO: think about breaking this function up.</span>
+    <span class="c1">#pylint: disable=too-many-locals</span>
+<div class="viewcode-block" id="StellarEvolutionManager._create_new_interpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager._create_new_interpolator">[docs]</a>    <span class="k">def</span> <span class="nf">_create_new_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                 <span class="o">*</span><span class="p">,</span>
+                                 <span class="n">track_grid</span><span class="p">,</span>
+                                 <span class="n">nodes</span><span class="p">,</span>
+                                 <span class="n">smoothing</span><span class="p">,</span>
+                                 <span class="n">db_session</span><span class="p">,</span>
+                                 <span class="n">vs_log_age</span><span class="p">,</span>
+                                 <span class="n">log_quantity</span><span class="p">,</span>
+                                 <span class="n">num_threads</span><span class="p">,</span>
+                                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the specified interpolation and add it to the archive.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            track_grid:    See result of _track_grid_from_files()</span>
+
+<span class="sd">            nodes:    see get_interpolator().</span>
+
+<span class="sd">            smoothing:    see get_interpolator().</span>
+
+<span class="sd">            vs_log_age:    see get_interpolator().</span>
+
+<span class="sd">            log_quantity:    see get_interpolator().</span>
+
+<span class="sd">            num_threads:    The number of simultaneous threads to use when</span>
+<span class="sd">                constructing the interpolation.</span>
+
+<span class="sd">            db_session:    The database query session to use.</span>
+
+<span class="sd">            name:    The name to assign to the new interpolator. If None, the</span>
+<span class="sd">                UUID used to form the filename is used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VarChangingInterpolator:</span>
+<span class="sd">                Created from scratch based on the given arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">interp_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_uuid</span><span class="p">())</span>
+        <span class="n">interp_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialization_path</span><span class="p">,</span>
+                                    <span class="n">interp_str</span><span class="p">)</span>
+
+        <span class="n">db_interpolator</span> <span class="o">=</span> <span class="n">SerializedInterpolator</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="p">(</span><span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">SerializedInterpolator</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="n">name</span> <span class="ow">or</span> <span class="n">interp_str</span><span class="p">),</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">interp_str</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">SerializedInterpolator</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Interpolator named </span><span class="si">%s</span><span class="s1"> already exists, with a &#39;</span>
+                             <span class="s1">&#39;different configuration than the one being &#39;</span>
+                             <span class="s1">&#39;constructed!&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="n">tempdir_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">track_dir</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mass</span><span class="p">,</span> <span class="n">mass_row</span> <span class="ow">in</span> <span class="n">track_grid</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">feh</span><span class="p">,</span> <span class="p">(</span><span class="n">track_fname</span><span class="p">,</span> <span class="n">track_id</span><span class="p">)</span> <span class="ow">in</span> <span class="n">mass_row</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">track</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                        <span class="n">Track</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                        <span class="nb">id</span><span class="o">=</span><span class="n">track_id</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+                    <span class="n">db_interpolator</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
+                        <span class="n">track_fname</span><span class="p">,</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">track_dir</span><span class="p">,</span>
+                                     <span class="n">library_track_fname</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">))</span>
+                    <span class="p">)</span>
+            <span class="n">interp_smoothing</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">quantity_list</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span>
+            <span class="p">)</span>
+            <span class="n">interp_nodes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">quantity_list</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+            <span class="p">)</span>
+            <span class="n">interp_vs_log_age</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">quantity_list</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_bool</span>
+            <span class="p">)</span>
+            <span class="n">interp_log_quantity</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">quantity_list</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_bool</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">q_name</span><span class="p">,</span> <span class="n">q_index</span> <span class="ow">in</span> \
+                    <span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">quantity_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">interp_smoothing</span><span class="p">[</span><span class="n">q_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothing</span><span class="p">[</span><span class="n">q_name</span><span class="p">]</span>
+                <span class="n">interp_nodes</span><span class="p">[</span><span class="n">q_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">q_name</span><span class="p">]</span>
+                <span class="n">interp_vs_log_age</span><span class="p">[</span><span class="n">q_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">vs_log_age</span><span class="p">[</span><span class="n">q_name</span><span class="p">]</span>
+                <span class="n">interp_log_quantity</span><span class="p">[</span><span class="n">q_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_quantity</span><span class="p">[</span><span class="n">q_name</span><span class="p">]</span>
+
+            <span class="n">db_interpolator</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">InterpolationParameters</span><span class="p">(</span><span class="n">quantity_id</span><span class="o">=</span><span class="n">q</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                        <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                                        <span class="n">smoothing</span><span class="o">=</span><span class="n">smoothing</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                                        <span class="n">vs_log_age</span><span class="o">=</span><span class="n">vs_log_age</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                                        <span class="n">log_quantity</span><span class="o">=</span><span class="n">log_quantity</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                                        <span class="n">interpolator</span><span class="o">=</span><span class="n">db_interpolator</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quantities</span>
+            <span class="p">]</span>
+
+            <span class="n">actual_interpolator</span> <span class="o">=</span> <span class="n">ManagedInterpolator</span><span class="p">(</span>
+                <span class="n">db_interpolator</span><span class="o">=</span><span class="n">db_interpolator</span><span class="p">,</span>
+                <span class="n">serialization_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialization_path</span><span class="p">,</span>
+                <span class="n">db_session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
+                <span class="n">mesa_dir</span><span class="o">=</span><span class="n">track_dir</span><span class="p">,</span>
+                <span class="n">smoothing</span><span class="o">=</span><span class="n">interp_smoothing</span><span class="p">,</span>
+                <span class="n">nodes</span><span class="o">=</span><span class="n">interp_nodes</span><span class="p">,</span>
+                <span class="n">vs_log_age</span><span class="o">=</span><span class="n">interp_vs_log_age</span><span class="p">,</span>
+                <span class="n">log_quantity</span><span class="o">=</span><span class="n">interp_log_quantity</span><span class="p">,</span>
+                <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span>
+            <span class="p">)</span>
+
+        <span class="n">actual_interpolator</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">interp_fname</span><span class="p">)</span>
+        <span class="n">db_interpolator</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="n">checksum_filename</span><span class="p">(</span><span class="n">interp_fname</span><span class="p">)</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_interpolator</span><span class="p">)</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">db_interpolator</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actual_interpolator</span></div>
+    <span class="c1">#pylint: enable=too-many-locals</span>
+
+<div class="viewcode-block" id="StellarEvolutionManager.__init__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialization_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a manager storing serialized interpolators in the given path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            serialization_path:    The path where to store</span>
+<span class="sd">                serialized interpolators.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">serialization_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">serialization_path</span><span class="p">)</span>
+        <span class="n">db_engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+            <span class="s1">&#39;sqlite:///&#39;</span>
+            <span class="o">+</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialization_path</span><span class="p">,</span> <span class="s1">&#39;serialized.sqlite&#39;</span><span class="p">),</span>
+            <span class="n">echo</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">Session</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">db_engine</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_serialization_path</span> <span class="o">=</span> <span class="n">serialization_path</span>
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_database</span><span class="p">(</span><span class="n">db_engine</span><span class="p">,</span> <span class="n">db_session</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_db_config</span><span class="p">(</span><span class="n">db_session</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager.get_interpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.get_interpolator">[docs]</a>    <span class="k">def</span> <span class="nf">get_interpolator</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">,</span>
+            <span class="n">nodes</span><span class="o">=</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">default_nodes</span><span class="p">,</span>
+            <span class="n">smoothing</span><span class="o">=</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">default_smoothing</span><span class="p">,</span>
+            <span class="n">vs_log_age</span><span class="o">=</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">default_vs_log_age</span><span class="p">,</span>
+            <span class="n">log_quantity</span><span class="o">=</span><span class="n">VarChangingInterpolator</span><span class="o">.</span><span class="n">default_log_quantity</span><span class="p">,</span>
+            <span class="n">track_fnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">masses</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">feh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">model_suite</span><span class="o">=</span><span class="s1">&#39;MESA&#39;</span><span class="p">,</span>
+            <span class="n">new_interp_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">num_threads</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a stellar evolution interpolator with the given configuration.</span>
+
+<span class="sd">        All tracks that the interpolator should be based on must be</span>
+<span class="sd">        pre-registered with the manager. Two ways are supported for</span>
+<span class="sd">        identifying tracks: as a list of filenames or as a mass-[Fe/H]</span>
+<span class="sd">        grid combined with a suite. The first case always works, while the</span>
+<span class="sd">        second requires that the set of identified tracks is unique, i.e. for</span>
+<span class="sd">        none of the mass - [Fe/H] combinations there are two or more</span>
+<span class="sd">        tracks registered for the given suite.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes:    The number of nodes to use for the age interpolation of</span>
+<span class="sd">                each quantity of each track. Should be a dictionary with keys</span>
+<span class="sd">                VarChangingInterpolator.quantity_list. See the POET code</span>
+<span class="sd">                StellarEvolution::Interpolator::create_from() documentation for</span>
+<span class="sd">                a description of what this actually means.</span>
+
+<span class="sd">            smoothing:    The amount of smoothing to use for the age</span>
+<span class="sd">                interpolation of each quantity of each track. Should be a</span>
+<span class="sd">                dictionary with keys VarChangingInterpolator.quantity_list. See</span>
+<span class="sd">                the POET code StellarEvolution::Interpolator::create_from()</span>
+<span class="sd">                documentation for a description of what this actually means.</span>
+
+<span class="sd">            vs_log_age:    Use log(age) instead of age as the independent</span>
+<span class="sd">                argument for the intperpolation? Should be a dictionary with</span>
+<span class="sd">                keys VarChangingInterpolator.quantity_list.</span>
+
+<span class="sd">            log_quantity:    Interpolate log(quantity) instead of quantity?</span>
+<span class="sd">                Should be a dictionary with keys</span>
+<span class="sd">                VarChangingInterpolator.quantity_list.</span>
+
+<span class="sd">            track_fnames:    A list of files containing stellar evolution tracks</span>
+<span class="sd">                the interpolator should be based on.</span>
+
+<span class="sd">            masses:    A list of the stellar masses to include in the</span>
+<span class="sd">                interpolation. Unique tracks with those masses and all selected</span>
+<span class="sd">                [Fe/H] (see next argument) must already be registered</span>
+<span class="sd">                with the database for the given suite. If None, all track</span>
+<span class="sd">                masses from the given suite are used.</span>
+
+<span class="sd">            feh:    A list of the stellar [Fe/H] values to include in the</span>
+<span class="sd">                interpolation. If None, all track [Fe/H] from the</span>
+<span class="sd">                given suite are used.</span>
+
+<span class="sd">            model_suite:    The software suite used to generate the stellar</span>
+<span class="sd">                evolution tracks. May be omitted if tracks are specified by</span>
+<span class="sd">                filename, but must be supplied if using masses and [Fe/H].</span>
+
+<span class="sd">            new_interp_name:    Name to assign to the a newly generated</span>
+<span class="sd">                interolator. Ignored if an interpolator matching all other</span>
+<span class="sd">                arguments already exists. If not specified, and no interpolator</span>
+<span class="sd">                exists matching the remining arguments, a new interpolator is</span>
+<span class="sd">                not generated.</span>
+
+<span class="sd">            num_threads:    If a new interpolator is created this many</span>
+<span class="sd">                simultaneous interpolation threads are used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            VarChangingInterpolator:</span>
+<span class="sd">                Configured per the arguments supplied or None if</span>
+<span class="sd">                no existing interpolator is found and creating a new one is</span>
+<span class="sd">                forbidden (see new_interp_name argument).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">track_fnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">track_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_track_grid_from_grid</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span>
+                                                        <span class="n">feh</span><span class="p">,</span>
+                                                        <span class="n">model_suite</span><span class="p">,</span>
+                                                        <span class="n">db_session</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">track_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_track_grid_from_files</span><span class="p">(</span><span class="n">track_fnames</span><span class="p">,</span>
+                                                         <span class="n">db_session</span><span class="p">,</span>
+                                                         <span class="n">model_suite</span><span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_existing_interpolator</span><span class="p">(</span>
+                <span class="n">track_grid</span><span class="o">=</span><span class="n">track_grid</span><span class="p">,</span>
+                <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span>
+                <span class="n">smoothing</span><span class="o">=</span><span class="n">smoothing</span><span class="p">,</span>
+                <span class="n">vs_log_age</span><span class="o">=</span><span class="n">vs_log_age</span><span class="p">,</span>
+                <span class="n">log_quantity</span><span class="o">=</span><span class="n">log_quantity</span><span class="p">,</span>
+                <span class="n">db_session</span><span class="o">=</span><span class="n">db_session</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+            <span class="k">if</span> <span class="n">new_interp_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_new_interpolator</span><span class="p">(</span>
+                <span class="n">track_grid</span><span class="o">=</span><span class="n">track_grid</span><span class="p">,</span>
+                <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span>
+                <span class="n">smoothing</span><span class="o">=</span><span class="n">smoothing</span><span class="p">,</span>
+                <span class="n">vs_log_age</span><span class="o">=</span><span class="n">vs_log_age</span><span class="p">,</span>
+                <span class="n">log_quantity</span><span class="o">=</span><span class="n">log_quantity</span><span class="p">,</span>
+                <span class="n">db_session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">new_interp_name</span><span class="p">,</span>
+                <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager.get_interpolator_by_name"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.get_interpolator_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_interpolator_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the interpolator with the given name.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ManagedInterpolator</span><span class="p">(</span>
+                <span class="n">db_interpolator</span><span class="o">=</span><span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">SerializedInterpolator</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">name</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">(),</span>
+                <span class="n">serialization_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialization_path</span><span class="p">,</span>
+                <span class="n">db_session</span><span class="o">=</span><span class="n">db_session</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager.list_interpolator_names"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.list_interpolator_names">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">list_interpolator_names</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of all intorpolator names.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span>
+                    <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager.list_suites"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.list_suites">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">list_suites</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of all software suites with available tracks.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span>
+                    <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager.get_suite_tracks"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.get_suite_tracks">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_suite_tracks</span><span class="p">(</span><span class="n">model_suite</span><span class="o">=</span><span class="s1">&#39;MESA&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all tracks from a given suite.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Track</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">and_</span><span class="p">(</span><span class="n">Track</span><span class="o">.</span><span class="n">model_suite_id</span> <span class="o">==</span> <span class="n">ModelSuite</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                     <span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_suite</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager.register_track"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.register_track">[docs]</a>    <span class="k">def</span> <span class="nf">register_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">track_fname</span><span class="p">,</span>
+                       <span class="n">mass</span><span class="p">,</span>
+                       <span class="n">feh</span><span class="p">,</span>
+                       <span class="n">model_suite</span><span class="o">=</span><span class="s1">&#39;MESA&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register a track for use in creating interpolators.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_track</span><span class="p">(</span><span class="n">track_fname</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span><span class="n">mass</span><span class="p">),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span><span class="n">feh</span><span class="p">),</span>
+                            <span class="n">model_suite</span><span class="p">,</span>
+                            <span class="n">db_session</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StellarEvolutionManager.register_track_collection"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.register_track_collection">[docs]</a>    <span class="k">def</span> <span class="nf">register_track_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                  <span class="n">track_fnames</span><span class="p">,</span>
+                                  <span class="n">fname_rex</span><span class="o">=</span><span class="n">library_track_fname_rex</span><span class="p">,</span>
+                                  <span class="n">model_suite</span><span class="o">=</span><span class="s1">&#39;MESA&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a collection of tracks with [Fe/H] and M* encoded in filename.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            -track_fnames:</span>
+<span class="sd">                The filenames of the tracks to add.</span>
+<span class="sd">            - fname_rex:</span>
+<span class="sd">                A regular expression defining groups named &#39;MASS&#39; and</span>
+<span class="sd">                either &#39;Z&#39; or &#39;FeH&#39; used to parse the filename for the</span>
+<span class="sd">                stellar mass and metallicity each track applies to.</span>
+<span class="sd">            - model_suite:</span>
+<span class="sd">                The software suite used to generate the stellar evolution</span>
+<span class="sd">                tracks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">track_fnames</span><span class="p">:</span>
+            <span class="n">parsed_fname</span> <span class="o">=</span> <span class="n">fname_rex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+            <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span><span class="n">parsed_fname</span><span class="p">[</span><span class="s1">&#39;MASS&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;Z&#39;</span> <span class="ow">in</span> <span class="n">parsed_fname</span><span class="p">:</span>
+                <span class="n">feh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span>
+                    <span class="n">library</span><span class="o">.</span><span class="n">feh_from_z</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parsed_fname</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]))</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">feh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_decimal</span><span class="p">(</span><span class="n">parsed_fname</span><span class="p">[</span><span class="s1">&#39;FeH&#39;</span><span class="p">])</span>
+
+            <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_track</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span>
+                                <span class="n">mass</span><span class="p">,</span>
+                                <span class="n">feh</span><span class="p">,</span>
+                                <span class="n">model_suite</span><span class="p">,</span>
+                                <span class="n">db_session</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

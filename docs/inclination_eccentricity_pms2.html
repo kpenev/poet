@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Calculation of the Pm,s Coefficients &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="A table of curly U values as originally defined in Lai (2012)" href="inclination_eccentricity_umm_table.html" />
+    <link rel="prev" title="Calculation of the Pm,s Coefficients" href="inclination_eccentricity_pms1.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="inclination_eccentricity_equations.html#detailed-derivations-of-results-used-above">Detailed Derivations of Results Used Above</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="eccentric_evolution_equations.html">Evolution Equations From Tidal Torque+Power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_pms1.html">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_umm_table.html">A table of curly U values as originally defined in Lai (2012)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_torque.html">Tidal Torque for Inclined and Eccentric Orbits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_power.html">Tidal Power for Inclined and Eccentric Orbits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="inclination_eccentricity_equations.html">Inclined and Eccentric Orbital Evolution</a> &raquo;</li>
+        
+      <li>Calculation of the Pm,s Coefficients</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/inclination_eccentricity_pms2.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="calculation-of-the-pm-s-coefficients">
+<h1>Calculation of the Pm,s Coefficients<a class="headerlink" href="#calculation-of-the-pm-s-coefficients" title="Permalink to this headline">¶</a></h1>
+<p>We need only <span class="math notranslate nohighlight">\(m=0\)</span> and <span class="math notranslate nohighlight">\(m=\pm2\)</span>.
+Clearly:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{m,s}&amp;=&amp;\int_0^{2\pi/\omega}
+        \frac{a^3\exp(-im\Delta \phi(t))}{r^3(t)}e^{i s \omega t}dt\\
+&amp;=&amp; \int_0^{2\pi/\omega}
+        a^3\exp(-im\phi_0)\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)}
+        e^{i s \omega t}dt\end{split}\]</div>
+<p>For <span class="math notranslate nohighlight">\(m=0\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{0,s}&amp;=&amp; \int_{0}^{2\pi}
+        \frac{\exp(i s (u-e\sin u))}{\omega (1-e\cos u)^2} du\\
+&amp;=&amp; \frac{1}{\omega}
+        \int_{0}^{2\pi} \frac{\exp(i s (u-e\sin u))} {(1-e\cos u)^2} du\end{split}\]</div>
+<p>From <span class="math notranslate nohighlight">\(1/(1-x)^2=\sum_{k=0}^\infty (k+1)x^k\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{0,s}&amp;=&amp;\frac{1}{\omega}\int_0^{2\pi}
+        \left[\cos u + i \sin u\right]^s
+        \left[\sum_{l=0}^\infty \frac{(-ise)^l\sin^l u}{l!}\right]
+        \left[\sum_{p=0}^\infty (p+1) e^p\cos^p u\right]\\
+&amp;=&amp;\frac{1}{\omega}\int_0^{2\pi}
+        \left[\sum_{k=0}^s {s \choose k} i^k\cos^{s-k} u \sin^k u\right]
+        \left[\sum_{l=0}^\infty \frac{(-ise)^l\sin^l u}{l!}\right]
+        \left[\sum_{p=0}^\infty (p+1) e^p\cos^p u\right]\\
+&amp;=&amp;\frac{1}{\omega}\sum_{k=0}^s \sum_{l=0}^\infty \sum_{p=0}^\infty
+                (-1)^l i^{k+l} (p+1) {s \choose k} \frac{s^l}{l!} e^{l+p}
+                I_{k+l,s-k+p}\\
+&amp;=&amp;\frac{1}{\omega}\sum_{n=0}^\infty \left[\sum_{k=0}^s {s \choose k}
+                \sum_{l=0}^n (-1)^l i^{k+l} (n-l+1) \frac{s^l}{l!}
+                I_{k+l,s-k+n-l}\right]e^n\end{split}\]</div>
+<p>with</p>
+<div class="math notranslate nohighlight">
+\[I_{m,n} \equiv \int_0^{2\pi} \sin^m u \cos^n u\]</div>
+<p>To find an expression for <span class="math notranslate nohighlight">\(m=\pm2\)</span> consider:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q_{p,q}&amp;\equiv&amp;
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} \sin^p u
+                                    \cos^q udu\\
+        &amp;=&amp; \sum_{\lambda=0}^\infty \frac{(-ise)^\lambda}{\lambda!}
+                \int_{0}^{2\pi}
+                        \frac{\sin^{\lambda+p} u \cos^q u
+                                \left(\cos u + i\sin u\right)^s}{(1-e\cos u)^4}\end{split}\]</div>
+<p>Using: <span class="math notranslate nohighlight">\(1/(1-x)^4=\sum_{k=0}^\infty {{k+3} \choose 3} x^k\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q_{p,q}&amp;=&amp;\sum_{\lambda=0}^\infty \frac{(-ise)^\lambda}{\lambda!}
+                \sum_{k=0}^\infty {k+3 \choose 3} e^k
+                \sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma
+                        I_{\lambda+\sigma+p, s-\sigma+k+q}\\
+Q_{p,q}&amp;=&amp;\sum_{n=0}^\infty \left[
+                \sum_{\lambda=0}^n \frac{(-is)^\lambda}{\lambda!}
+                {n-\lambda+3 \choose 3}
+                \sum_{\sigma=0}^{s} {s \choose \sigma} i^\sigma
+                        I_{\lambda+\sigma+p, s+n+q-\sigma-\lambda}\right] e^n\end{split}\]</div>
+<p><a class="reference internal" href="inclination_eccentricity_pms1.html"><span class="doc">here</span></a> we show:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{\pm2,s}&amp;=&amp;\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\
+        &amp;&amp;{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]} {(1-e\cos u)^4} du+\\
+        &amp;&amp;{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\cos 2u} {(1-e\cos u)^4}
+        du\mp\\
+        &amp;&amp;{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin 2u} {(1-e\cos u)^4}
+        du\pm\\
+        &amp;&amp;{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}
+        \int_{0}^{2\pi} \frac{\exp[i s (u-e\sin u)]\sin u} {(1-e\cos u)^4}
+        du\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) p_{0,s} -\\
+        &amp;&amp;{}-\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}Q_{0,0}+\\
+        &amp;&amp;{}+\frac{\exp(\mp 2i\phi_0)(1-e^2)}{\omega}(Q_{0,0}-2Q_{2,0})\mp\\
+        &amp;&amp;{}\mp i\frac{\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}2Q_{1,1}\pm\\
+        &amp;&amp;{}\pm i\frac{2e\exp(\mp 2i\phi_0)\sqrt{1-e^2}}{\omega}Q_{1,0}\\
+&amp;=&amp;\exp\left(\mp 2i\phi_0\right) \left[p_{0,s} -
+        2\frac{(1-e^2)Q_{2,0} \pm i\sqrt{1-e^2}(Q_{1,1} - e Q_{1,0})}{\omega}
+        \right]\end{split}\]</div>
+<p>According to <a class="reference external" href="http://planetmath.org/taylorexpansionofsqrt1x">this page</a></p>
+<div class="math notranslate nohighlight">
+\[\sqrt{1-e^2}=1-\frac{e^2}{2}-
+        \sum_{n=2}^\infty\frac{(2n-3)!}{2^{2n-2} n! (n-2)!} e^{2n}\]</div>
+<p>Also note that:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}I_{m,n}&amp;=&amp;I_{m,n-2}-I_{m+2,n-2}=I_{m,n-2}-\frac{m+1}{n-1}I_{m,n}\\
+\Rightarrow I_{m,n}&amp;=&amp;\frac{n-1}{n+m}I_{m,n-2}\end{split}\]</div>
+<p>Similarly:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}I_{m,n}&amp;=&amp;I_{m-2,n}-I_{m-2,n+2}=I_{m-2,n}-\frac{n+1}{m-1}I_{m,n}\\
+\Rightarrow I_{m,n}&amp;=&amp;\frac{m-1}{n+m}I_{m-2,n}\end{split}\]</div>
+<p>Further <span class="math notranslate nohighlight">\(I_{m,1}=I_{1,n}=0\)</span>, so <span class="math notranslate nohighlight">\(I_{m,n}\)</span> is non-zero only if both m
+and n are even.</p>
+<p>Finally, <span class="math notranslate nohighlight">\(I_{m,n}=I_{n,m}\)</span>.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="inclination_eccentricity_umm_table.html" class="btn btn-neutral float-right" title="A table of curly U values as originally defined in Lai (2012)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="inclination_eccentricity_pms1.html" class="btn btn-neutral float-left" title="Calculation of the Pm,s Coefficients" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

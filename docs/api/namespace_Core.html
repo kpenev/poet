@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Namespace Core &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Namespace Core</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/namespace_Core.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="namespace-core">
+<span id="id1"></span><h1>Namespace Core<a class="headerlink" href="#namespace-core" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#namespaces" id="id2">Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#classes" id="id3">Classes</a></p></li>
+<li><p><a class="reference internal" href="#enums" id="id4">Enums</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id5">Functions</a></p></li>
+<li><p><a class="reference internal" href="#variables" id="id6">Variables</a></p></li>
+</ul>
+</div>
+<div class="section" id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_Core__AstroConst.html#namespace-core-astroconst"><span class="std std-ref">Namespace Core::AstroConst</span></a></p></li>
+<li><p><a class="reference internal" href="namespace_Core__Error.html#namespace-core-error"><span class="std std-ref">Namespace Core::Error</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="classCore_1_1CubicSplineDerivatives.html#exhale-class-classcore-1-1cubicsplinederivatives"><span class="std std-ref">Class CubicSplineDerivatives</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1FunctionDerivatives.html#exhale-class-classcore-1-1functionderivatives"><span class="std std-ref">Class FunctionDerivatives</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1InterpolatingFunctionALGLIB.html#exhale-class-classcore-1-1interpolatingfunctionalglib"><span class="std std-ref">Class InterpolatingFunctionALGLIB</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1InterpSolutionIterator.html#exhale-class-classcore-1-1interpsolutioniterator"><span class="std std-ref">Class InterpSolutionIterator</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1OneArgumentDiffFunction.html#exhale-class-classcore-1-1oneargumentdifffunction"><span class="std std-ref">Class OneArgumentDiffFunction</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1OneArgumentFunction.html#exhale-class-classcore-1-1oneargumentfunction"><span class="std std-ref">Template Class OneArgumentFunction</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1SerializableSpline1dInterpolant.html#exhale-class-classcore-1-1serializablespline1dinterpolant"><span class="std std-ref">Class SerializableSpline1dInterpolant</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1ZeroDerivatives.html#exhale-class-classcore-1-1zeroderivatives"><span class="std std-ref">Class ZeroDerivatives</span></a></p></li>
+<li><p><a class="reference internal" href="classCore_1_1ZeroFunction.html#exhale-class-classcore-1-1zerofunction"><span class="std std-ref">Class ZeroFunction</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="enum_Core_2Common_8h_1a7953957c8a63c9c2d5c0def3988ff270.html#exhale-enum-core-2common-8h-1a7953957c8a63c9c2d5c0def3988ff270"><span class="std std-ref">Enum EvolModeType</span></a></p></li>
+<li><p><a class="reference internal" href="enum_StellarZone_8h_1a7e8b18a1becf303eafc448511b1ffdd3.html#exhale-enum-stellarzone-8h-1a7e8b18a1becf303eafc448511b1ffdd3"><span class="std std-ref">Enum StellarZone</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_SerializableSpline1dInterpolant_8cpp_1a852323437001f9611d72bc9405c08001.html#exhale-function-serializablespline1dinterpolant-8cpp-1a852323437001f9611d72bc9405c08001"><span class="std std-ref">Function Core::alglib_dtype_name</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1ad76fa01880d186bea054b00d6915d9ed.html#exhale-function-core-2common-8cpp-1ad76fa01880d186bea054b00d6915d9ed"><span class="std std-ref">Function Core::cubic_coefficients</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1a738fb7ef1a852a6aaaef18851e8f7898.html#exhale-function-core-2common-8cpp-1a738fb7ef1a852a6aaaef18851e8f7898"><span class="std std-ref">Function Core::cubic_extremum</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1a04db04bac5ab3678f381ac55dba7394d.html#exhale-function-core-2common-8cpp-1a04db04bac5ab3678f381ac55dba7394d"><span class="std std-ref">Function Core::cubic_zerocrossing</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1a515715bca0d61967103f40fc6a59a001.html#exhale-function-core-2common-8cpp-1a515715bca0d61967103f40fc6a59a001"><span class="std std-ref">Function Core::estimate_extremum</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1a6fdbfef85465419fa6b5eebdf371e0a8.html#exhale-function-core-2common-8cpp-1a6fdbfef85465419fa6b5eebdf371e0a8"><span class="std std-ref">Function Core::estimate_zerocrossing</span></a></p></li>
+<li><p><a class="reference internal" href="function_OrbitalExpressions_8cpp_1a60b54b7e6e30b1a5571e0131c26acfe9.html#exhale-function-orbitalexpressions-8cpp-1a60b54b7e6e30b1a5571e0131c26acfe9"><span class="std std-ref">Function Core::factorial</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1af068053ead3cdd2fe3d7dc2a55abe5e3.html#exhale-function-core-2common-8cpp-1af068053ead3cdd2fe3d7dc2a55abe5e3"><span class="std std-ref">Function Core::indistinguishable</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8h_1a5783fa4491b06475880989b5338c8972.html#exhale-function-core-2common-8h-1a5783fa4491b06475880989b5338c8972"><span class="std std-ref">Function Core::list_to_valarray</span></a></p></li>
+<li><p><a class="reference internal" href="function_SerializableSpline1dInterpolant_8cpp_1ae6c6a8d0e2a68f3fb1d32e3e70f67001.html#exhale-function-serializablespline1dinterpolant-8cpp-1ae6c6a8d0e2a68f3fb1d32e3e70f67001"><span class="std std-ref">Function Core::operator&lt;&lt;(std::ostream&amp;, const SerializableSpline1dInterpolant&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_SerializableSpline1dInterpolant_8cpp_1af8cfd3e1d9a24be4a085042afcae526e.html#exhale-function-serializablespline1dinterpolant-8cpp-1af8cfd3e1d9a24be4a085042afcae526e"><span class="std std-ref">Function Core::operator&lt;&lt;(std::ostream&amp;, const alglib::real_1d_array&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1a06e3abe717c54503208110568e9b8d3f.html#exhale-function-core-2common-8cpp-1a06e3abe717c54503208110568e9b8d3f"><span class="std std-ref">Function Core::operator&lt;&lt;(std::ostream&amp;, const Core::EvolModeType&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_OrbitalExpressions_8cpp_1a6e842363fdfd234c9eb40c633bc7f47e.html#exhale-function-orbitalexpressions-8cpp-1a6e842363fdfd234c9eb40c633bc7f47e"><span class="std std-ref">Function Core::orbital_angular_momentum</span></a></p></li>
+<li><p><a class="reference internal" href="function_OrbitalExpressions_8cpp_1af6938d7f1275538a2575d3d923ce1d10.html#exhale-function-orbitalexpressions-8cpp-1af6938d7f1275538a2575d3d923ce1d10"><span class="std std-ref">Function Core::orbital_angular_velocity</span></a></p></li>
+<li><p><a class="reference internal" href="function_OrbitalExpressions_8cpp_1ad167e6c913867b15c463def866dfb27c.html#exhale-function-orbitalexpressions-8cpp-1ad167e6c913867b15c463def866dfb27c"><span class="std std-ref">Function Core::orbital_energy</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8h_1ae9228c6b8d8e74258bcc7fae018c34c1.html#exhale-function-core-2common-8h-1ae9228c6b8d8e74258bcc7fae018c34c1"><span class="std std-ref">Template Function Core::polynomial_coefficients</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1a77678240dff95a611e18d929414f5f27.html#exhale-function-core-2common-8cpp-1a77678240dff95a611e18d929414f5f27"><span class="std std-ref">Function Core::quadratic_extremum</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1af39b0677d8a9aba8e32663a427e70b79.html#exhale-function-core-2common-8cpp-1af39b0677d8a9aba8e32663a427e70b79"><span class="std std-ref">Function Core::quadratic_zerocrossing</span></a></p></li>
+<li><p><a class="reference internal" href="function_OrbitalExpressions_8cpp_1aa48c9784f6cc64e82fd6b696edaa629b.html#exhale-function-orbitalexpressions-8cpp-1aa48c9784f6cc64e82fd6b696edaa629b"><span class="std std-ref">Function Core::semimajor_from_period</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8cpp_1a1d0f17ad36a8eb7e62d72b9ce3306dd5.html#exhale-function-core-2common-8cpp-1a1d0f17ad36a8eb7e62d72b9ce3306dd5"><span class="std std-ref">Function Core::solve_cubic</span></a></p></li>
+<li><p><a class="reference internal" href="function_Core_2Common_8h_1ad66aae077793faf24aae24c5fbd85d55.html#exhale-function-core-2common-8h-1ad66aae077793faf24aae24c5fbd85d55"><span class="std std-ref">Template Function Core::valarray_from_iterator</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="variable_Core_2Common_8h_1a3493861442e085ee2c913c13bf52a44a.html#exhale-variable-core-2common-8h-1a3493861442e085ee2c913c13bf52a44a"><span class="std std-ref">Variable Core::Inf</span></a></p></li>
+<li><p><a class="reference internal" href="variable_Core_2Common_8h_1a5074e38fbccbd4067c3f16bd62b4d648.html#exhale-variable-core-2common-8h-1a5074e38fbccbd4067c3f16bd62b4d648"><span class="std std-ref">Variable Core::NaN</span></a></p></li>
+<li><p><a class="reference internal" href="variable_Core_2Common_8cpp_1a8dbb9734d4e33ecfa52d4eeb67e5c007.html#exhale-variable-core-2common-8cpp-1a8dbb9734d4e33ecfa52d4eeb67e5c007"><span class="std std-ref">Variable Core::NUMERIC_SAFETY</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

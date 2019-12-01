@@ -1,0 +1,587 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File InclinationEccentricity_torque.md &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File InclinationEccentricity_torque.md</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file_InclinationEccentricity_torque.md.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="program-listing-for-file-inclinationeccentricity-torque-md">
+<span id="program-listing-file-inclinationeccentricity-torque-md"></span><h1>Program Listing for File InclinationEccentricity_torque.md<a class="headerlink" href="#program-listing-for-file-inclinationeccentricity-torque-md" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file_InclinationEccentricity_torque.md.html#file-inclinationeccentricity-torque-md"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">InclinationEccentricity_torque.md</span></code>)</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span>Tidal Torque for Inclined and Eccentric Orbits {#InclinationEccentricity_torque}
+==============================================
+Starting from eq. 20 of Lai (2012):
+\f{eqnarray*}{
+    \mathbf{T}&amp;=&amp;-\int d^3 x \delta\rho(\mathbf{r}, t) \mathbf{r}\times
+        \nabla U*(\mathbf{r}, t)\\
+        &amp;=&amp;-\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \int d^3 x
+            \left\{
+                \sum_{m,m&#39;}\mathcal{U}_{m,m&#39;}
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    \exp(-im&#39;\Omega t + i\Delta_{m,m&#39;})
+            \right\}
+            \mathbf{r}\times
+            \left\{
+                \sum_{\mu,\mu&#39;}\mathcal{U}_{\mu,\mu&#39;}
+                \exp(i \mu&#39;\Omega t)
+                \nabla \left[r^2 Y_{2,\mu}^*(\theta, \phi)\right]
+            \right\}
+\f}
+Since \f$\mathbf{r}\times\nabla r^2=0\f$:
+\f{eqnarray*}{
+    \mathbf{T}&amp;=&amp;-\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \int d^3 x
+            \left\{
+                \sum_{m,m&#39;}\mathcal{U}_{m,m&#39;}
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    \exp(-im&#39;\Omega t + i\Delta_{m,m&#39;})
+            \right\}
+            \mathbf{r}\times
+            \left\{
+                \sum_{\mu,\mu&#39;}\mathcal{U}_{\mu,\mu&#39;}
+                \exp(i \mu&#39;\Omega t) r^2
+                \nabla Y_{2,\mu}^*(\theta, \phi)
+            \right\}\\
+        &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \mathbf{r}\times
+                    \nabla Y_{2,\mu}^*(\theta, \phi)
+\f}
+
+The torque in the z direction
+-----------------------------
+
+Taking the dot product of the torque with
+\f$\hat{z}=\cos\theta \hat{r} - \sin\theta \hat{\theta}\f$, and noting that
+the \f$\hat{r}\f$ part of \f$\hat{z}\f$ does not contribute, since at any
+point it is orthogonal to
+\f$\mathbf{r}\times \nabla Y_{2,\mu}^*(\theta, \phi)\f$, we get:
+\f{eqnarray*}{
+    T_z&amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \sin\theta \hat{\theta}\cdot \left[
+                        \mathbf{r}\times
+                        \nabla Y_{2,\mu}^*(\theta, \phi)
+                    \right]\\
+    &amp;=&amp; \left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \sin \theta (\mathbf{r}\times\hat{\theta})\cdot
+                    \nabla Y_{2,\mu}^*(\theta, \phi)\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^3 \sin\theta
+                    \hat{\phi}\cdot\nabla Y_{2,\mu}^*(\theta, \phi)\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2
+                    \frac{\partial Y_{2,\mu}^*(\theta, \phi)}{\partial\phi}\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} i\mu\mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 Y_{2,\mu}^*(\theta, \phi)
+\f}
+Using the fact that
+\f$\delta\bar{\rho}_{m,m&#39;}(\mathbf{r})\propto\exp(im\phi)\f$, we must have
+\f$m=\mu\f$, further if we average over over an orbit we must have
+\f$m&#39;=\mu&#39;\f$:
+\f[
+    T_z= -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;} i m \mathcal{U}_{m,m&#39;}^2
+                \exp(i\Delta_{m,m&#39;})
+                \int d^3 x \delta\bar{\rho}_{m,m&#39;}(\mathbf{r}) r^2
+                        Y_{2,m}^*(\theta, \phi)
+\f]
+The real part of which is:
+\f{eqnarray*}{
+    T_z&amp;=&amp;\frac{G R^3}{M}\left(\frac{M&#39;}{a^3}\right)^2
+            \sum_{m,m&#39;} m \mathcal{U}_{m,m&#39;}^2
+                \sin(\Delta_{m,m&#39;})
+                \int d^3 x \delta\bar{\rho}_{m,m&#39;}(\mathbf{r}) r^2
+                        Y_{2,m}^*(\theta, \phi)\\
+    T_z&amp;=&amp;T_0 \sum_{m,m&#39;} \mathcal{U}_{m,m&#39;}^2 m \kappa_{m,m&#39;}
+            \sin(\Delta_{m,m&#39;})\\
+    T_0&amp;\equiv&amp; G R^5\left(\frac{M&#39;}{a^3}\right)^2\\
+    \kappa&amp;\equiv&amp;\frac{1}{MR^2}
+            \int d^3 x \delta\bar{\rho}_{m,m&#39;}(\mathbf{r}) r^2
+                        Y_{2,m}^*(\theta, \phi)
+\f}
+
+The torque in the x direction
+-----------------------------
+
+Now we dot with \f$\hat{x}=\sin\theta\cos\phi\hat{r} +
+\cos\theta\cos\phi\hat{\theta} - \sin\phi \hat{\phi}\f$. Again, the
+\f$\hat{r}\f$ term does not contribute:
+\f{eqnarray*}{
+    T_x &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 (\cos\theta\cos\phi\hat{\theta} -
+                         \sin\phi\hat{\phi}) \left[
+                        \mathbf{r}\times
+                        \nabla Y_{2,\mu}^*(\theta, \phi)
+                    \right]\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^3 (\cos\theta\cos\phi\hat{\phi} +
+                         \sin\phi\hat{\theta})\cdot
+                        \nabla Y_{2,\mu}^*(\theta, \phi)\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \left(
+                        \cot\theta\cos\phi\frac{\partial}{\partial \phi} +
+                         \sin\phi\frac{\partial}{\partial \theta}
+                    \right) Y_{2,\mu}^*(\theta, \phi)
+\f}
+Averaging over an orbit:
+\f{eqnarray*}{
+    T_x &amp;=&amp; \left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+                \exp(i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \left(
+                        i\mu\cot\theta\cos\phi Y_{2,\mu}^*(\theta, \phi) -
+                         \sin\phi\frac{\partial Y_{2,\mu}^*(\theta, \phi)}
+                                      {\partial \theta}
+                    \right)\\
+\f}
+Now we use:
+\f[
+    \frac{\partial Y_{2,\mu}^*}{\partial \theta}=\mu\cot\theta Y_{2,\mu}^* +
+    \sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^*
+\f]
+To get:
+\f{eqnarray*}{
+    T_x &amp;=&amp; \frac{T_0}{MR^2}
+            \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+                i\exp(i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \left(
+                        \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
+                         i\sin\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^*
+                    \right)\\
+        &amp;=&amp; \frac{T_0}{MR^2}
+            \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+                i\exp(i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \left(
+                        \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
+                         \sqrt{(2-\mu)(3+\mu)}[\exp(2i\phi)-1] Y_{2,\mu+1}^*
+                    \right)\\
+\f}
+Since \f$\delta\bar{\rho}_{m,m&#39;}(\mathbf{r})\propto\exp(im\phi)\f$ the real
+part of the above expression is:
+\f{eqnarray*}{
+    T_x &amp;=&amp; -\frac{T_0}{MR^2}
+            \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+                \sin(\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \left(
+                        \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
+                         \frac{\sqrt{(2-\mu)(3+\mu)}}{2}[\exp(2i\phi)-1] Y_{2,\mu+1}^*
+                    \right)\\
+        &amp;=&amp; T_0
+            \sum_{m,m&#39;} \mathcal{U}_{m,m&#39;} \sin(\Delta_{m,m&#39;})(
+                \kappa_{m,m&#39;}^-\mathcal{U}_{m-1,m&#39;}+
+                \kappa_{m,m&#39;}^+\mathcal{U}_{m+1,m&#39;})\\
+    \kappa_{m,m&#39;}^-&amp;\equiv&amp; \frac{\sqrt{(3-m)(2+m)}}{2MR^2}
+        \int d^3 x \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+        r^2 Y_{2,m}^*=\frac{\sqrt{(3-m)(2+m)}}{2}\kappa_{m,m&#39;}\\
+    \kappa_{m,m&#39;}^+&amp;\equiv&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{m,m&#39;}(\mathbf{r}) r^2\left[
+            (m+1)\cot\theta\exp(i\phi) Y_{2,m+1}^*(\theta,\phi)+
+            \frac{\sqrt{(1-m)(4+m)}}{2}\exp(2i\phi) Y_{2,m+2}^*
+        \right]
+\f}
+
+We have already expressed \f$\kappa_{m,m&#39;}^-\f$ in terms of
+\f$\kappa_{m,m&#39;}\f$, and just as in Lai (2012), we only need \f$\kappa_{m,m&#39;}^+\f$ for
+\f$m=0, \pm 1, 2\f$.
+\f{eqnarray*}{
+    \kappa_{0,m&#39;}^+&amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{0,m&#39;}(\mathbf{r}) r^2\left[
+            \cot\theta\exp(i\phi) Y_{2,1}^*(\theta,\phi)+
+            \exp(2i\phi) Y_{2,2}^*(\theta,\phi)
+        \right]\\
+    &amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{0,m&#39;}(\mathbf{r}) r^2\left[
+            -\frac{1}{2}\sqrt{\frac{15}{2\pi}}\cos^2\theta+
+            \frac{1}{4}\sqrt{\frac{15}{2\pi}}\sin^2\theta
+        \right]\\
+    &amp;=&amp;\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{0,m&#39;}(\mathbf{r}) r^2
+        \frac{1}{4}\sqrt{\frac{15}{2\pi}}(3\cos^2\theta-1)\\
+    &amp;=&amp;\frac{\sqrt{3/2}}{MR^2}\int d^3 x
+        \delta\bar{\rho}_{0,m&#39;}(\mathbf{r}) r^2 Y_{2,0}^*(\theta, \phi)\\
+    \Rightarrow \kappa_{0,m&#39;}^+&amp;=&amp;\sqrt{3/2}\kappa_{0,m&#39;}\\
+
+    \kappa_{-1,m&#39;}^+&amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{-1,m&#39;}(\mathbf{r}) r^2
+        \frac{\sqrt{6}}{2}\exp(2i\phi) Y_{2,1}^*\\
+    &amp;=&amp;\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{-1,m&#39;}(\mathbf{r}) r^2
+        \frac{\sqrt{6}}{2}\exp(2i\phi) Y_{2,-1}^*\\
+    \Rightarrow\kappa_{-1,m&#39;}^+&amp;=&amp;\sqrt{3/2}\kappa_{-1,m&#39;}\\
+    \kappa_{1,m&#39;}^+&amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{1,m&#39;}(\mathbf{r}) r^2
+        2\cot\theta\exp(i\phi) Y_{2,2}^*(\theta,\phi)\\
+    &amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{1,m&#39;}(\mathbf{r}) r^2
+        \frac{1}{2}\sqrt{\frac{15}{2\pi}}\sin\theta\cos\theta\exp(-i\phi)\\
+    &amp;=&amp;\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{1,m&#39;}(\mathbf{r}) r^2 Y_{2,1}^*(\theta,\phi)\\
+    \Rightarrow\kappa_{1,m&#39;}^+&amp;=&amp;\kappa_{1,m&#39;}\\
+    \kappa_{-2,m&#39;}^+&amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{-2,m&#39;}(\mathbf{r}) r^2\left[
+            -\cot\theta\exp(i\phi) Y_{2,-1}^*(\theta,\phi)+
+            \sqrt{\frac{3}{2}}\exp(2i\phi) Y_{2,0}^*
+        \right]\\
+    &amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{-2,m&#39;}(\mathbf{r}) r^2\left[
+            -\frac{1}{2}\sqrt{\frac{15}{2\pi}}\cos^2\theta\exp(2i\phi)+
+            \frac{1}{4}\sqrt{\frac{15}{2\pi}}\exp(2i\phi)(3\cos^2\theta-1)
+        \right]\\
+    &amp;=&amp;-\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{-2,m&#39;}(\mathbf{r}) r^2
+        \frac{1}{4}\sqrt{\frac{15}{2\pi}}\exp(2i\phi)\left[
+            -\cos^2\theta+3\cos^2\theta-1
+        \right]\\
+    &amp;=&amp;\frac{1}{MR^2} \int d^3 x
+        \delta\bar{\rho}_{-2,m&#39;}(\mathbf{r}) r^2 Y_{-2,m}^*(\theta, phi)\\
+    \Rightarrow \kappa_{-2,m&#39;}^+&amp;=&amp;\kappa_{-2,m&#39;}\\
+\f}
+
+The torque in the y direction
+-----------------------------
+Now we dot with \f$\hat{y}=\sin\theta\sin\phi\hat{r} +
+\cos\theta\sin\phi\hat{\theta} - \cos\phi \hat{\phi}\f$. Again, the
+\f$\hat{r}\f$ term does not contribute:
+\f{eqnarray*}{
+    T_y &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 (\cos\theta\sin\phi\hat{\theta} -
+                         \cos\phi\hat{\phi}) \left[
+                        \mathbf{r}\times
+                        \nabla Y_{2,\mu}^*(\theta, \phi)
+                    \right]\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+            \sum_{m,m&#39;,\mu,\mu&#39;} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,\mu&#39;}
+                \exp(i(\mu&#39;-m&#39;)\Omega t + i\Delta_{m,m&#39;})
+                \int d^3 x
+                    \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                    r^2 \left(
+                        \cot\theta\sin\phi\frac{\partial}{\partial \phi} +
+                         \cos\phi\frac{\partial}{\partial \theta}
+                    \right) Y_{2,\mu}^*(\theta, \phi)
+\f}
+Averaging over an orbit:
+\f{eqnarray*}{
+    T_y &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+        \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+            \exp(i\Delta_{m,m&#39;})
+            \int d^3 x
+                \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                r^2 \left(
+                    i\mu\cot\theta\sin\phi Y_{2,\mu}^*(\theta, \phi) +
+                     \cos\phi\frac{\partial Y_{2,\mu}^*(\theta, \phi)}
+                                  {\partial \theta}
+                \right)\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+        \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+            \exp(i\Delta_{m,m&#39;})
+            \int d^3 x
+                \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                r^2 \left\{
+                    i\mu\cot\theta\sin\phi Y_{2,\mu}^*(\theta, \phi) +
+                    \cos\phi\left[\mu\cot\theta Y_{2,\mu}^* +
+                        \sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^*
+                    \right]
+                \right\}\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+        \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+            \exp(i\Delta_{m,m&#39;})
+            \int d^3 x
+                \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                r^2 \left[
+                    \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
+                    \cos\phi\sqrt{(2-\mu)(3+\mu)}\exp(i\phi) Y_{2,\mu+1}^*
+                \right]\\
+    &amp;=&amp; -\left(\frac{G M&#39;}{a^3 \omega_0}\right)^2
+        \sum_{m,m&#39;,\mu} \mathcal{U}_{m,m&#39;} \mathcal{U}_{\mu,m&#39;}
+            \exp(i\Delta_{m,m&#39;})
+            \int d^3 x
+                \delta\bar{\rho}_{m,m&#39;}(\mathbf{r})
+                r^2 \left[
+                    \mu\cot\theta\exp(i\phi) Y_{2,\mu}^*(\theta, \phi) +
+                    \frac{\sqrt{(2-\mu)(3+\mu)}}{2}(\exp(2i\phi)+1)
+                    Y_{2,\mu+1}^*
+                \right]\\
+    &amp;=&amp; -\frac{T_0}{MR^2}
+        \sum_{m,m&#39;} \mathcal{U}_{m,m&#39;}
+                        \left(\kappa^-_{m,m&#39;}\mathcal{U}_{m-1,m&#39;}+
+                         \kappa^+_{m,m&#39;}\mathcal{U}_{m+1,m&#39;}\right)
+                        \exp(i\Delta_{m,m&#39;})
+\f}
+With the same \f$\kappa^+_{m,m&#39;}\f$ and \f$\kappa^-_{m,m&#39;}\f$ as for
+\f$T_x\f$. So taking the real part gives:
+\f[
+    T_y = -T_0
+        \sum_{m,m&#39;} \mathcal{U}_{m,m&#39;}
+                        \left(\kappa^-_{m,m&#39;}\mathcal{U}_{m-1,m&#39;}+
+                         \kappa^+_{m,m&#39;}\mathcal{U}_{m+1,m&#39;}\right)
+                        \cos(\Delta_{m,m&#39;})
+\f]
+
+So the real part is proportional to \f$\cos\Delta_{m,m&#39;}\f$ and so for small
+tidal dissipation it is independent of the dissipation, as expected since
+this term is responsible for the precession.
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

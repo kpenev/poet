@@ -1,0 +1,11 @@
+digraph "/Users/kpenev/projects/git/poet/poet_src/StellarEvolution" {
+  compound=true
+  node [ fontsize="12", fontname="Helvetica"];
+  edge [ labelfontsize="12", labelfontname="Helvetica"];
+  subgraph clusterdir_e247b8950c2da2f51dd8497aec65ce0d {
+    graph [ bgcolor="#ddddee", pencolor="black", label="poet_src" fontname="Helvetica", fontsize="12", URL="dir_e247b8950c2da2f51dd8497aec65ce0d.html"]
+  dir_775c09f450d254cf7dec4bdc09cace5f [shape=box, label="StellarEvolution", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_775c09f450d254cf7dec4bdc09cace5f.html"];
+  }
+  dir_08389f9c72fab3fa939892ce5a81a233 [shape=box label="Core" URL="dir_08389f9c72fab3fa939892ce5a81a233.html"];
+  dir_775c09f450d254cf7dec4bdc09cace5f->dir_08389f9c72fab3fa939892ce5a81a233 [headlabel="14", labeldistance=1.5 headhref="dir_000008_000002.html"];
+}

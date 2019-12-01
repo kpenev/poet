@@ -1,0 +1,10 @@
+<map id="/Users/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/TidalPotentialExpansion.h" name="/Users/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/TidalPotentialExpansion.h">
+<area shape="rect" id="node2" href="$EccentricOrbit_8h.html" title="Declare an interface for working with eccentric orbits. " alt="" coords="339,145,474,173"/>
+<area shape="rect" id="node26" href="$TidalPotentialTerms_8h.html" title="Declare an interface for evaluating the expansion of the tidal potential. " alt="" coords="1934,137,2131,181"/>
+<area shape="rect" id="node3" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="1286,237,1452,265"/>
+<area shape="rect" id="node20" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="256,313,455,341"/>
+<area shape="rect" id="node16" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="2169,389,2390,433"/>
+<area shape="rect" id="node17" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="2122,313,2192,341"/>
+<area shape="rect" id="node21" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="479,313,606,341"/>
+<area shape="rect" id="node28" href="$EccentricityExpansionCoefficients_8h.html" title="Declares a class which provides the [ &#160;coefficients]{InclinationEccentricity_pms1}. " alt="" coords="2020,237,2294,265"/>
+</map>

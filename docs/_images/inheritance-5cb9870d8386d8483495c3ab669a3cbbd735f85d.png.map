@@ -1,0 +1,5 @@
+<map id="inheritanced44e0c3e1e" name="inheritanced44e0c3e1e">
+<area shape="rect" id="node1" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="7,77,381,101"/>
+<area shape="rect" id="node3" href="#stellar_evolution.managed_interpolator.ManagedInterpolator" target="_top" title="Add properties describing the configuration of an interpolator." alt="" coords="5,149,382,173"/>
+<area shape="rect" id="node2" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="31,5,356,29"/>
+</map>

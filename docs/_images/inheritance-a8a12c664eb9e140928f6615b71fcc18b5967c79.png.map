@@ -1,0 +1,41 @@
+<map id="inheritanced6bc575c1c" name="inheritanced6bc575c1c">
+<area shape="rect" id="node1" title="The most base type" alt="" coords="1937,5,2169,29"/>
+<area shape="rect" id="node28" href="#stellar_evolution.manager_data_model.InterpolationParameters" target="_top" title="The nodes and smoothing arguments for a given interpolator/quantity." alt="" coords="2661,77,3058,101"/>
+<area shape="rect" id="node29" href="#stellar_evolution.manager_data_model.ModelSuite" target="_top" title="The various stellar evolution suites (e.g. MESA, YREC, ...)." alt="" coords="5,77,327,101"/>
+<area shape="rect" id="node30" href="#stellar_evolution.manager_data_model.Quantity" target="_top" title="The set of quantities tracked by stellar evolution." alt="" coords="351,77,656,101"/>
+<area shape="rect" id="node31" href="#stellar_evolution.manager_data_model.SerializedInterpolator" target="_top" title="The current set of serialized stellar evolution interpolators." alt="" coords="680,77,1061,101"/>
+<area shape="rect" id="node32" href="#stellar_evolution.manager_data_model.Track" target="_top" title="The available stellar evolution tracks." alt="" coords="1085,77,1373,101"/>
+<area shape="rect" id="node33" href="#stellar_evolution.manager_data_model.VarchangeAgeNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="3082,77,3456,101"/>
+<area shape="rect" id="node35" href="#stellar_evolution.manager_data_model.VarchangeDependentValue" target="_top" title="The values of the dependent variables at the grid nodes." alt="" coords="1396,77,1813,101"/>
+<area shape="rect" id="node36" href="#stellar_evolution.manager_data_model.VarchangeDependentVariable" target="_top" title="The variables from which to transforming to M*, [Fe/H] and age." alt="" coords="1837,77,2269,101"/>
+<area shape="rect" id="node37" href="#stellar_evolution.manager_data_model.VarchangeFeHNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="3480,77,3855,101"/>
+<area shape="rect" id="node38" href="#stellar_evolution.manager_data_model.VarchangeGrid" target="_top" title="The currently saved variable change grids." alt="" coords="2293,77,2637,101"/>
+<area shape="rect" id="node39" href="#stellar_evolution.manager_data_model.VarchangeMassNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="3879,77,4261,101"/>
+<area shape="rect" id="node2" title="Mark a class&#45;level method as representing the definition of" alt="" coords="3880,5,4159,29"/>
+<area shape="rect" id="node3" title="Establish the ability for a class to have dialect&#45;specific arguments" alt="" coords="3987,221,4220,245"/>
+<area shape="rect" id="node14" title="Defines a dependency between two columns." alt="" coords="4139,293,4369,317"/>
+<area shape="rect" id="node15" title="Represent a table in a database." alt="" coords="4309,365,4503,389"/>
+<area shape="rect" id="node4" title="mark a ClauseElement as &#39;immutable&#39; when expressions are cloned." alt="" coords="4691,149,4897,173"/>
+<area shape="rect" id="node8" title="Represents a column expression from any textual string." alt="" coords="4504,221,4761,245"/>
+<area shape="rect" id="node16" title="Represents a minimal &quot;table&quot; construct." alt="" coords="4675,293,4924,317"/>
+<area shape="rect" id="node5" title="Base class for elements that are the targets of :class:`.DDLEvents`" alt="" coords="4183,5,4448,29"/>
+<area shape="rect" id="node13" title="Base class for items that define a database schema." alt="" coords="4244,221,4480,245"/>
+<area shape="rect" id="node22" title="Mark a type as possibly requiring schema&#45;level DDL for usage." alt="" coords="5234,77,5476,101"/>
+<area shape="rect" id="node6" title="Base class for elements of a programmatically constructed SQL" alt="" coords="4404,77,4664,101"/>
+<area shape="rect" id="node9" title="Represent a column&#45;oriented SQL expression suitable for usage in the" alt="" coords="4403,149,4668,173"/>
+<area shape="rect" id="node18" title="mark a class as being selectable" alt="" coords="4921,149,5158,173"/>
+<area shape="rect" id="node7" title="Base class for visitable objects, applies the" alt="" coords="4472,5,4679,29"/>
+<area shape="rect" id="node21" title="The ultimate base class for all SQL datatypes." alt="" coords="5500,77,5736,101"/>
+<area shape="rect" id="node12" title="Represents a column in a database table." alt="" coords="4444,293,4651,317"/>
+<area shape="rect" id="node10" title="Defines boolean, comparison, and other operators for" alt="" coords="4688,77,4964,101"/>
+<area shape="rect" id="node11" title="Base of comparison and logical operators." alt="" coords="4711,5,4942,29"/>
+<area shape="rect" id="node17" title="Represent an element that can be used within the ``FROM``" alt="" coords="4878,221,5126,245"/>
+<area shape="rect" id="node19" title="A bool datatype." alt="" coords="5214,149,5427,173"/>
+<area shape="rect" id="node20" title="Mixin for base types that emulate the behavior of a DB&#45;native type." alt="" coords="4988,77,5210,101"/>
+<area shape="rect" id="node25" title="A type for fixed precision numbers, such as ``NUMERIC`` or ``DECIMAL``." alt="" coords="5451,149,5665,173"/>
+<area shape="rect" id="node26" title="A type for ``int`` integers." alt="" coords="5689,149,5894,173"/>
+<area shape="rect" id="node27" title="The base for all string and character types." alt="" coords="5919,149,6118,173"/>
+<area shape="rect" id="node23" title="A mixin that marks a type as supporting &#39;concatenation&#39;," alt="" coords="5895,77,6141,101"/>
+<area shape="rect" id="node24" title="Type representing floating point types, such as ``FLOAT`` or ``REAL``." alt="" coords="5461,221,5655,245"/>
+<area shape="rect" id="node34" href="#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="3480,5,3855,29"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Evolve::DissipatingBody" name="Evolve::DissipatingBody">
+<area shape="rect" id="node2" href="$classPlanet_1_1Planet.html" title="Single zone non&#45;evolving planets with huge dissipation, so they always remain locked to the disk..." alt="" coords="5,831,262,1040"/>
+<area shape="rect" id="node3" href="$classStar_1_1ExponentialDecayDiffRotBody.html" title="A body with differential rotation torque between two zones given by: . " alt="" coords="286,839,546,1032"/>
+<area shape="rect" id="node5" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="570,759,850,1112"/>
+<area shape="rect" id="node4" href="$classStar_1_1InterpolatedEvolutionStar.html" title="{Star::InterpolatedEvolutionStar\n|&#45; __luminosity\l&#45; __lifetime\l&#45; __envelope\l&#45; __core\l|+ InterpolatedEvolutionStar()\l+ number_zones()\l+ zone()\l+ envelope()\l+ envelope()\l+ core()\l+ core()\l+ zone()\l+ lifetime()\l+ luminosity()\l+ ~InterpolatedEvolutionStar()\l+ reached_critical_age()\l+ next_stop_age()\l+ select_interpolation\l_region()\l}" alt="" coords="307,1160,547,1513"/>
+<area shape="rect" id="node6" href="$classEvolve_1_1SingleTidalTermBody.html" title="A skumanich wind body with a single zone dissipative to only a single tidal term. ..." alt="" coords="581,1264,838,1409"/>
+</map>

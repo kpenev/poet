@@ -1,0 +1,9 @@
+<map id="Star::EvolvingStellarEnvelope" name="Star::EvolvingStellarEnvelope">
+<area shape="rect" id="node2" href="$classStar_1_1EvolvingStellarZone.html" title="Base class for zones of low mass evolving stars. " alt="" coords="236,1933,450,2223"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="201,1419,485,1884"/>
+<area shape="rect" id="node4" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="232,728,454,1369"/>
+<area shape="rect" id="node5" href="$classEvolve_1_1ZoneOrientation.html" title="{Evolve::ZoneOrientation\n|&#45; __inclination\l&#45; __periapsis\l|+ ZoneOrientation()\l+ configure()\l+ inclination()\l+ periapsis()\l}" alt="" coords="5,423,198,568"/>
+<area shape="rect" id="node6" href="$classEvolve_1_1SpinOrbitLockInfo.html" title="Defines a lock between the spin of a dissipating body and the orbit. " alt="" coords="222,343,464,648"/>
+<area shape="rect" id="node7" href="$classEvolve_1_1TidalPotentialTerms.html" title="{Evolve::TidalPotentialTerms\n|&#45; __e_order\l&#45; __Ummp_inclination\l&#45; __arg_of_periapsis\l&#45; __Ummp\l&#45; __Ummp_deriv\l&#45; __Umm_coef\l|+ TidalPotentialTerms()\l+ change_e_order()\l+ current_e_order()\l+ configure()\l+ operator()()\l+ operator()()\l+ read_eccentricity_expansion()\l+ max_e_order()\l}" alt="" coords="488,359,737,632"/>
+<area shape="rect" id="node8" href="$classEvolve_1_1EccentricityExpansionCoefficients.html" title="A class which reads&#45;in and provides a convenient interface to the &#160;coefficients. " alt="" coords="470,5,755,279"/>
+</map>

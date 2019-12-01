@@ -1,0 +1,779 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.change_variables &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>stellar_evolution.change_variables</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for stellar_evolution.change_variables</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Allows finding mass and age given other properties at fixed [Fe/H].&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span>
+<span class="kn">import</span> <span class="nn">scipy.optimize</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
+
+<span class="c1">#Need to add POET package path to module search path before importing</span>
+<span class="c1">#pylint: disable=wrong-import-position</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.library_interface</span> <span class="k">import</span> <span class="n">MESAInterpolator</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.derived_stellar_quantities</span> <span class="k">import</span>\
+    <span class="n">TeffK</span><span class="p">,</span>\
+    <span class="n">LogGCGS</span><span class="p">,</span>\
+    <span class="n">RhoCGS</span>
+<span class="kn">from</span> <span class="nn">basic_utils</span> <span class="k">import</span> <span class="n">Structure</span>
+<span class="c1">#pylint: enable=wrong-import-position</span>
+
+<div class="viewcode-block" id="QuantityEvaluator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator">[docs]</a><span class="k">class</span> <span class="nc">QuantityEvaluator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Evaluate stellar quantities fixing out of range issues etc.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="QuantityEvaluator.__init__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">interpolator</span><span class="p">,</span>
+                 <span class="n">feh</span><span class="p">,</span>
+                 <span class="n">min_mass</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">max_mass</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">reference_values</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set-up to use the given interpolator.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interp</span> <span class="o">=</span> <span class="n">interpolator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feh</span> <span class="o">=</span> <span class="n">feh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span> <span class="o">=</span> <span class="n">reference_values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="o">=</span> <span class="n">min_mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span> <span class="o">=</span> <span class="n">max_mass</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;teff&#39;</span><span class="p">,</span> <span class="s1">&#39;logg&#39;</span><span class="p">,</span> <span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="s1">&#39;rho&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reference_values</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator._evaluate"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator._evaluate">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="n">quantity</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate the given quantity at the given age.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">age</span> <span class="o">&lt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">min_age</span> <span class="ow">or</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">max_age</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="n">quantity</span><span class="p">(</span><span class="n">age</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator.teff"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.teff">[docs]</a>    <span class="k">def</span> <span class="nf">teff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the effective temperature for the given stellar params.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+            <span class="n">TeffK</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">),</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)),</span>
+            <span class="n">age</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;teff&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator.rho"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.rho">[docs]</a>    <span class="k">def</span> <span class="nf">rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the density for the given stellar params.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+            <span class="n">RhoCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)),</span>
+            <span class="n">age</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator.logg"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.logg">[docs]</a>    <span class="k">def</span> <span class="nf">logg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return log10(surface gravity) for the given stellar params.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+            <span class="n">LogGCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)),</span>
+            <span class="n">age</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;logg&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator.lum"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.lum">[docs]</a>    <span class="k">def</span> <span class="nf">lum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return log10(surface gravity) for the given stellar params.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">),</span>
+            <span class="n">age</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;lum&#39;</span><span class="p">]</span></div></div>
+
+<div class="viewcode-block" id="VarChangingInterpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator">[docs]</a><span class="k">class</span> <span class="nc">VarChangingInterpolator</span><span class="p">(</span><span class="n">MESAInterpolator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enhance interpolators to find mass and age given other properties.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        grid:    A structure with attributes:</span>
+<span class="sd">            - masses:</span>
+<span class="sd">                Stellar masses of the grid nodes at which the dependent</span>
+<span class="sd">                variables are known.</span>
+
+<span class="sd">            - ages:</span>
+<span class="sd">                Stellar ages of the grid nodes at which the dependent</span>
+<span class="sd">                variables are known.</span>
+
+<span class="sd">            - feh:</span>
+<span class="sd">                [Fe/H] values of the grid nodes at which the dependent</span>
+<span class="sd">                variables are known.</span>
+
+<span class="sd">            - weights:</span>
+<span class="sd">                The weights to use when interpolating the grid to a</span>
+<span class="sd">                specified [Fe/H].</span>
+
+<span class="sd">            - teff (may not be present):</span>
+<span class="sd">                The stellar effective temperature in Kelvin at the grid</span>
+<span class="sd">                nodes.</span>
+
+<span class="sd">            - logg (may not be present):</span>
+<span class="sd">                The log10(stellar gravity in cgs) at the grid nodes.</span>
+
+<span class="sd">            - lum (may not be present):</span>
+<span class="sd">                The stellar luminosity, in solar luminosities at the grid</span>
+<span class="sd">                nodes.</span>
+
+<span class="sd">            - rho(may not be present):</span>
+<span class="sd">                The stellar density in cgs at the grid nodes.</span>
+
+<span class="sd">            The first index for each variable or the weights attribute is</span>
+<span class="sd">            mass, followed by age and finally [Fe/H].</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The grid must be fine enough to ensure that no grid cell entirely</span>
+<span class="sd">        contains an iso-contour of either dependent variable where</span>
+<span class="sd">        interpolation will be attempted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VarChangingInterpolator._get_quantity"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator._get_quantity">[docs]</a>    <span class="k">def</span> <span class="nf">_get_quantity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a quantity at the given mass and [Fe/H].</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name:    The name of the quantity to return.</span>
+
+<span class="sd">            mass:    The stellar mass for which this quantity should apply</span>
+
+<span class="sd">            feh:    The [Fe/H] for which this quantity should apply.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            callable:</span>
+<span class="sd">                A callable returning the value of the quantity at a given age.</span>
+<span class="sd">                Also has min_age and max_age attributes defining the range over</span>
+<span class="sd">                which it is defined.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;teff&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TeffK</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">),</span>
+                         <span class="bp">self</span><span class="p">(</span><span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;logg&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LogGCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;rho&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RhoCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VarChangingInterpolator.search_near"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator.search_near">[docs]</a>    <span class="k">def</span> <span class="nf">search_near</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">feh</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search for mass &amp; age near the given ones to match two other vars.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mass:    The value of the mass to search near.</span>
+
+<span class="sd">            age:    The value of the age to search near.</span>
+
+<span class="sd">            feh:    The value of [Fe/H] at which the variable change is taking</span>
+<span class="sd">                place.</span>
+
+<span class="sd">            kwargs:    must be exactly two of the following:</span>
+
+<span class="sd">                - teff:</span>
+<span class="sd">                    The effective temperature to match.</span>
+
+<span class="sd">                - logg:</span>
+<span class="sd">                    The log10(gravitation acceleration) to match.</span>
+
+<span class="sd">                - lum:</span>
+<span class="sd">                    The luminosity to match.</span>
+
+<span class="sd">                - rho:</span>
+<span class="sd">                    The density to match.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (float, float):</span>
+<span class="sd">                The mass and age where the given dependent variables are</span>
+<span class="sd">                matched.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="c1">#False positive, members created by setattr, so pylint does not see them</span>
+        <span class="c1">#pylint: disable=no-member</span>
+        <span class="n">evaluator</span> <span class="o">=</span> <span class="n">QuantityEvaluator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                      <span class="n">feh</span><span class="p">,</span>
+                                      <span class="n">min_mass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                      <span class="n">max_mass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1">#pylint: enable=no-member</span>
+        <span class="n">missmatch</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">evaluator</span><span class="p">,</span> <span class="n">quantity_name</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">quantity_name</span><span class="p">,</span> <span class="n">reference</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">solution</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">m_t</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">miss</span><span class="p">(</span><span class="o">*</span><span class="n">m_t</span><span class="p">)</span> <span class="k">for</span> <span class="n">miss</span> <span class="ow">in</span> <span class="n">missmatch</span><span class="p">]),</span>
+            <span class="p">[</span><span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">],</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;lm&#39;</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ftol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">solution</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">solution</span><span class="o">.</span><span class="n">x</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="VarChangingInterpolator._add_grid_variable"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator._add_grid_variable">[docs]</a>    <span class="k">def</span> <span class="nf">_add_grid_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds another dependent variable to self.grid.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            variable:    The name of the variable to add. See class</span>
+<span class="sd">                documentation for details.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#False positive, members created by setattr, so pylint does not see them</span>
+        <span class="c1">#pylint: disable=no-member</span>
+        <span class="nb">setattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+            <span class="n">variable</span><span class="p">,</span>
+            <span class="n">scipy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">feh_index</span><span class="p">,</span> <span class="n">feh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mass_index</span><span class="p">,</span> <span class="n">mass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="p">):</span>
+                <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_quantity</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">)</span>
+                <span class="n">age_in_range</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span> <span class="o">&gt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">min_age</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span> <span class="o">&lt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">max_age</span>
+                <span class="p">)</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">variable</span><span class="p">)[</span>
+                    <span class="n">mass_index</span><span class="p">,</span>
+                    <span class="n">age_in_range</span><span class="p">,</span>
+                    <span class="n">feh_index</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="p">[</span><span class="n">age_in_range</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">mass_index</span><span class="p">,</span>
+                                      <span class="p">:,</span>
+                                      <span class="n">feh_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">age_in_range</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">assert</span><span class="p">(</span>
+                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">mass_index</span><span class="p">,</span> <span class="p">:,</span> <span class="n">feh_index</span><span class="p">]</span>
+                         <span class="o">==</span>
+                         <span class="n">age_in_range</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                    <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="c1">#pylint: enable=no-member</span>
+
+<div class="viewcode-block" id="VarChangingInterpolator._interpolate_grid_variable"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator._interpolate_grid_variable">[docs]</a>    <span class="k">def</span> <span class="nf">_interpolate_grid_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interpolate one of the grid variables to a specified [Fe/H].</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            var_name:    The name of the variable to interpolate.</span>
+
+<span class="sd">            feh:    The [Fe/H] value to inteprolate to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            2-D scipy array:</span>
+<span class="sd">                The interepolated variable at the grid masses and ages.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#False positive, members created by setattr, so pylint does not see them</span>
+        <span class="c1">#pylint: disable=no-member</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">mass_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">age_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">interp_y</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)[</span><span class="n">mass_index</span><span class="p">,</span>
+                                                        <span class="n">age_index</span><span class="p">,</span>
+                                                        <span class="p">:]</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span>
+                        <span class="n">mass_index</span><span class="p">,</span>
+                        <span class="n">age_index</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">InterpolatedUnivariateSpline</span><span class="p">(</span>
+                        <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="p">,</span>
+                        <span class="n">y</span><span class="o">=</span><span class="n">interp_y</span><span class="p">,</span>
+                        <span class="n">k</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">)(</span><span class="n">feh</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+        <span class="c1">#pylint: enable=no-member</span>
+
+<div class="viewcode-block" id="VarChangingInterpolator._define_var_change_grid"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator._define_var_change_grid">[docs]</a>    <span class="k">def</span> <span class="nf">_define_var_change_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feh</span><span class="p">,</span> <span class="n">masses</span><span class="p">,</span> <span class="n">ages</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new grid with the given locations of the nodes.</span>
+
+<span class="sd">        Creates self.grid with all arguments as same-name members and an</span>
+<span class="sd">        additional weight member containing an empty array to fill with weights</span>
+<span class="sd">        later when grid variables start to be calculated. Also creates</span>
+<span class="sd">        self._defined_weigths to keep track if weights have been previously</span>
+<span class="sd">        initialized.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feh:    The [Fe/H] values at which to tabulate the dependent</span>
+<span class="sd">                variables.</span>
+
+<span class="sd">            masses:    The stellar masses at which to tabulate the dependent</span>
+<span class="sd">                variables.</span>
+
+<span class="sd">            - ages:    The ages (in Gyrs) at which to tabulate the dependent</span>
+<span class="sd">                variables.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="n">feh</span><span class="o">=</span><span class="n">feh</span><span class="p">,</span>
+                              <span class="n">masses</span><span class="o">=</span><span class="n">masses</span><span class="p">,</span>
+                              <span class="n">ages</span><span class="o">=</span><span class="n">ages</span><span class="p">)</span>
+        <span class="c1">#False positive, members created by setattr, so pylint does not see them</span>
+        <span class="c1">#pylint: disable=no-member</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="o">.</span><span class="n">size</span>
+            <span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span>
+        <span class="p">)</span>
+        <span class="c1">#pylint: enable=no-member</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="VarChangingInterpolator._find_candidate_cells"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator._find_candidate_cells">[docs]</a>    <span class="k">def</span> <span class="nf">_find_candidate_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feh</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Identify grid cells possibly containing a solution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feh:    See change_variables().</span>
+
+<span class="sd">            kwargs:    See change_variables().</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            2-D array:</span>
+<span class="sd">                Matching the shape of grid variables with True entries for</span>
+<span class="sd">                grid cells which may contain a solution.</span>
+
+<span class="sd">            3-D array:</span>
+<span class="sd">                The last two dimensions matching the shape of grid</span>
+<span class="sd">                variables, consisting of two slabs giving the difference</span>
+<span class="sd">                from the target values of each of the grid variables used</span>
+<span class="sd">                for variable change.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">possible_solutions</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1">#False positive, members created by setattr, so pylint does not</span>
+        <span class="c1">#see them</span>
+        <span class="c1">#pylint: disable=no-member</span>
+        <span class="n">var_diff</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1">#pylint: enable=no-member</span>
+        <span class="k">for</span> <span class="n">var_index</span><span class="p">,</span> <span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">var_value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_grid_variable</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+            <span class="n">var_diff</span><span class="p">[</span><span class="n">var_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_grid_variable</span><span class="p">(</span>
+                <span class="n">var_name</span><span class="p">,</span>
+                <span class="n">feh</span>
+            <span class="p">)</span> <span class="o">-</span> <span class="n">var_value</span>
+            <span class="n">sign_change_right</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">var_diff</span><span class="p">[</span><span class="n">var_index</span><span class="p">][</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span>
+                 <span class="o">*</span>
+                 <span class="n">var_diff</span><span class="p">[</span><span class="n">var_index</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="o">&lt;=</span>
+                <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">sign_change_up</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">var_diff</span><span class="p">[</span><span class="n">var_index</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">:]</span>
+                 <span class="o">*</span>
+                 <span class="n">var_diff</span><span class="p">[</span><span class="n">var_index</span><span class="p">][:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="o">&lt;=</span>
+                <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">sign_change</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span>
+                <span class="n">scipy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">sign_change_right</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                 <span class="n">sign_change_up</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span>
+                <span class="n">scipy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">sign_change_right</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span>
+                                 <span class="n">sign_change_up</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:])</span>
+            <span class="p">)</span>
+            <span class="n">possible_solutions</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">possible_solutions</span><span class="p">,</span>
+                                                   <span class="n">sign_change</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">possible_solutions</span><span class="p">,</span> <span class="n">var_diff</span></div>
+
+<div class="viewcode-block" id="VarChangingInterpolator._bilinear_coef_equations"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator._bilinear_coef_equations">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_bilinear_coef_equations</span><span class="p">(</span><span class="n">m_low</span><span class="p">,</span> <span class="n">m_high</span><span class="p">,</span> <span class="n">age_low</span><span class="p">,</span> <span class="n">age_high</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Equations for the coef. of a bi-linear func. over mass/age cell.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            m_low:    The lower mass boundary of the cell.</span>
+
+<span class="sd">            m_high:    The upper mass boundary of the cell.</span>
+
+<span class="sd">            age_low:    The lower age boundary of the cell.</span>
+
+<span class="sd">            age_high:    The upper age boundary of the cell.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            2-D scipy array:</span>
+<span class="sd">                The matrix defining the equations for the coefficients of a</span>
+<span class="sd">                bi-linear function over the specified cell.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">coef_equations</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">coef_equations</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_low</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_high</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">age_low</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">age_high</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_low</span> <span class="o">*</span> <span class="n">age_low</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_low</span> <span class="o">*</span> <span class="n">age_high</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_high</span> <span class="o">*</span> <span class="n">age_low</span>
+        <span class="n">coef_equations</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_high</span> <span class="o">*</span> <span class="n">age_high</span>
+        <span class="k">return</span> <span class="n">coef_equations</span></div>
+
+<div class="viewcode-block" id="VarChangingInterpolator._find_bilinear_roots"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator._find_bilinear_roots">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_find_bilinear_roots</span><span class="p">(</span><span class="n">coef</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the simultaneous roots of two bilinear functions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coef:    The coefficients of the two bilinear functions. Should</span>
+<span class="sd">                be a 2-D scipy array with the outer index iterating over the</span>
+<span class="sd">                function and the inner indices iterating over the</span>
+<span class="sd">                coefficients of the corresponding bilinear function.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [(float, float), ...]:</span>
+<span class="sd">                A list of 2-tuples contaning the simultaneous zeros of the</span>
+<span class="sd">                two functions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#These are standard names for quadratic equation.</span>
+        <span class="c1">#pylint: disable=invalid-name</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">coef</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">:])</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">coef</span><span class="p">[:,</span> <span class="p">::</span><span class="mi">3</span><span class="p">])</span>
+             <span class="o">-</span>
+             <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">coef</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]))</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">coef</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="c1">#pylint: enable=invalid-name</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">b</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="n">c</span>
+
+        <span class="k">if</span> <span class="n">det</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">sqrt_det</span> <span class="o">=</span> <span class="n">det</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">time_roots</span> <span class="o">=</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="o">-</span><span class="n">b</span> <span class="o">-</span> <span class="n">sqrt_det</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">+</span> <span class="n">sqrt_det</span><span class="p">)])</span>
+                      <span class="o">/</span>
+                      <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span><span class="p">))</span>
+        <span class="n">mass_roots</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">coef</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">coef</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">time_roots</span><span class="p">)</span>
+            <span class="o">/</span>
+            <span class="p">(</span><span class="n">coef</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">coef</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">time_roots</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">mass_roots</span><span class="p">,</span> <span class="n">time_roots</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VarChangingInterpolator.__init__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">grid_feh</span><span class="p">,</span>
+                 <span class="n">grid_masses</span><span class="p">,</span>
+                 <span class="n">grid_ages</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare an interpolator able to find mass, age from other quantities.</span>
+
+<span class="sd">        Keyword only arguments: see MESAInterpolator.__init__</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define_var_change_grid</span><span class="p">(</span>
+            <span class="n">feh</span><span class="o">=</span><span class="n">grid_feh</span><span class="p">,</span>
+            <span class="n">masses</span><span class="o">=</span><span class="n">grid_masses</span><span class="p">,</span>
+            <span class="n">ages</span><span class="o">=</span><span class="n">grid_ages</span>
+        <span class="p">)</span></div>
+
+    <span class="c1">#Attempting to simplify furthe results in a mess.</span>
+    <span class="c1">#pylint: disable=too-many-locals</span>
+<div class="viewcode-block" id="VarChangingInterpolator.change_variables"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator.change_variables">[docs]</a>    <span class="k">def</span> <span class="nf">change_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feh</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change from two of (lum, rho, logg, Teff) to mass &amp; age.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feh:    The value of [Fe/H] at which this variable change is taking</span>
+<span class="sd">                place.</span>
+
+<span class="sd">            kwargs:    must be exactly two of the following:</span>
+
+<span class="sd">                - teff:</span>
+<span class="sd">                    The effective temperature to match.</span>
+
+<span class="sd">                - logg:</span>
+<span class="sd">                    The log10(gravitation acceleration) to match.</span>
+
+<span class="sd">                - lum:</span>
+<span class="sd">                    The luminosity to match.</span>
+
+<span class="sd">                - rho:</span>
+<span class="sd">                    The density to match.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [(float, float), ...]:</span>
+<span class="sd">                The mass and age at which the keyword arguments are matched</span>
+<span class="sd">                as list of tuples of (mass, age).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">possible_solutions</span><span class="p">,</span> <span class="n">var_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_candidate_cells</span><span class="p">(</span><span class="n">feh</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span> <span class="ow">in</span> <span class="n">scipy</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                <span class="n">scipy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">possible_solutions</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="c1">#False positive, members created by setattr, so pylint does not see</span>
+            <span class="c1">#them</span>
+            <span class="c1">#pylint: disable=no-member</span>
+            <span class="n">age_low</span><span class="p">,</span> <span class="n">age_high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="p">[</span><span class="n">age_index</span><span class="p">:</span> <span class="n">age_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">m_low</span><span class="p">,</span> <span class="n">m_high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="p">[</span><span class="n">mass_index</span><span class="p">:</span> <span class="n">mass_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="c1">#pylint: enable=no-member</span>
+            <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span>
+                    <span class="n">var_diff</span><span class="p">[</span>
+                        <span class="p">:,</span>
+                        <span class="n">mass_index</span> <span class="p">:</span> <span class="n">mass_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="n">age_index</span> <span class="p">:</span> <span class="n">age_index</span> <span class="o">+</span> <span class="mi">2</span>
+                    <span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">continue</span>
+
+            <span class="n">coef_equations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bilinear_coef_equations</span><span class="p">(</span><span class="n">m_low</span><span class="p">,</span>
+                                                           <span class="n">m_high</span><span class="p">,</span>
+                                                           <span class="n">age_low</span><span class="p">,</span>
+                                                           <span class="n">age_high</span><span class="p">)</span>
+            <span class="n">coef</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">var_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">coef</span><span class="p">[</span><span class="n">var_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+                    <span class="n">coef_equations</span><span class="p">,</span>
+                    <span class="n">var_diff</span><span class="p">[</span><span class="n">var_index</span><span class="p">,</span>
+                             <span class="n">mass_index</span> <span class="p">:</span> <span class="n">mass_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">age_index</span> <span class="p">:</span> <span class="n">age_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="n">candidate_solutions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_bilinear_roots</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">candidate_solutions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">m_low</span> <span class="o">&lt;=</span> <span class="n">mass</span> <span class="o">&lt;=</span> <span class="n">m_high</span> <span class="ow">and</span> <span class="n">age_low</span> <span class="o">&lt;=</span> <span class="n">age</span> <span class="o">&lt;=</span> <span class="n">age_high</span><span class="p">:</span>
+                    <span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_near</span><span class="p">(</span><span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span>
+                                                <span class="n">age</span><span class="o">=</span><span class="n">age</span><span class="p">,</span>
+                                                <span class="n">feh</span><span class="o">=</span><span class="n">feh</span><span class="p">,</span>
+                                                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">solution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div></div>
+    <span class="c1">#pylint: enable=too-many-locals</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

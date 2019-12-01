@@ -1,0 +1,739 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File EccentricEvolutionEquations.md &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File EccentricEvolutionEquations.md</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file_EccentricEvolutionEquations.md.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="program-listing-for-file-eccentricevolutionequations-md">
+<span id="program-listing-file-eccentricevolutionequations-md"></span><h1>Program Listing for File EccentricEvolutionEquations.md<a class="headerlink" href="#program-listing-for-file-eccentricevolutionequations-md" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file_EccentricEvolutionEquations.md.html#file-eccentricevolutionequations-md"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">EccentricEvolutionEquations.md</span></code>)</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span>Evolution Equations From Tidal Torque+Power {#EccentricEvolutionEquations}
+===========================================
+
+The orbital energy and angular momentum are:
+\f{eqnarray*}{
+    E&amp;=&amp;-\frac{GMM&#39;}{2a}\\
+    L&amp;=&amp;\frac{MM&#39;}{M+M&#39;}a^2\Omega\sqrt{1-e^2}
+            =GMM&#39;\sqrt{\frac{(1-e^2)MM&#39;}{(-2E)(M+M&#39;)}}
+\f}
+Hence:
+\f{eqnarray*}{
+    \dot{a}&amp;=&amp;a\frac{-\dot{E}}{E}\\
+    \dot{e}&amp;=&amp;\frac{(M+M&#39;)}{G^2(MM&#39;)^3}\frac{(\dot{E}L+2E\dot{L})L}{e}\\
+\f}
+
+Now consider a single zone subject to tidal torques. We will use the
+following variables:
+ - \f$\mathbf{S}\f$ and \f$S\f$: the spin angular momentum vector of the zone
+   and its absolute value
+ - \f$\mathbf{L}\f$ and \f$L\f$: the orbital angular momentum vector and its
+   absolute value
+ - \f$\theta\f$: angle between the angular momentum vector of the zone and
+   the angular momentum of the orbit (inclination).
+ - \f$\omega\f$: the argument of periapsis of the orbit with a plane of
+   reference perpendicular to \f$\mathbf{S}\f$.
+ - \f$\mathbf{T}\f$: the tidal torque vector acting on this zone (and of
+   course with a negative sign on the orbit).
+ - \f$\mathbf{\tilde{T}}\f$: the negative of the tidal torques on the orbit
+   due to other zones.
+ - \f$\mathbf{\mathscr{T}}\f$: the torque on this zone due to coupling to other
+   zones (e.g. due to differential rotation coupling or mass exchange).
+ - \f$\mathbf{\hat{p}}\f$: a unit vector along the periapsis of the orbit
+ - \f$\mathbf{\hat{z}}\f$: a unit vector along \f$\mathbf{S}\f$.
+ - \f$\mathbf{\hat{y}}\f$: a unit vector along the ascending node of the orbit.
+ - \f$\mathbf{\hat{x}}\f$: \f$\mathbf{\hat{y}}\times\mathbf{\hat{z}}\f$.
+
+We will use primed quantities to denote the updated value of a quantity after an
+infinitesimal times step, and will use x, y and z indices to indicate
+projections of quantities alonge \f$\mathbf{\hat{x}}\f$, \f$\mathbf{\hat{y}}\f$
+and \f$\mathbf{\hat{z}}\f$ respectively.
+
+\f{eqnarray*}{
+    \mathbf{S} &amp;=&amp; S\mathbf{\hat{z}}\\
+    \mathbf{L} &amp;=&amp; L\sin\theta\mathbf{\hat{x}}+L\cos\theta\mathbf{\hat{z}}\\
+    \mathbf{\hat{y}} &amp;=&amp; \frac{\mathbf{S}\times\mathbf{L}}{LS\sin\theta}\\
+    \mathbf{\hat{p}} &amp;=&amp; - \sin\omega\cos\theta\mathbf{\hat{x}}
+                         + \cos\omega\mathbf{\hat{y}}
+                         + \sin\omega\sin\theta\mathbf{\hat{z}}\\
+    \mathbf{S}&#39; &amp;=&amp; (T_x+\mathscr{T}_x)dt\mathbf{\hat{x}}
+                    + (T_y+\mathscr{T}_y)dt\mathbf{\hat{y}}
+                    + (S+T_zdt+\mathscr{T}_zdt)\mathbf{\hat{z}}\\
+    \mathbf{L}&#39; &amp;=&amp; (L\sin\theta-T_xdt-\tilde{T}_xdt)\mathbf{\hat{x}}
+                    - (T_y+\tilde{T}_y)dt\mathbf{\hat{y}}
+                    + (L\cos\theta-T_zdt-\tilde{T}_zdt)\mathbf{\hat{z}}\\
+    \frac{1}{S&#39;} &amp;=&amp; \frac{1}{S} - \frac{T_z+\mathscr{T}_z}{S^2}dt\\
+    \frac{1}{L&#39;} &amp;=&amp; \frac{1}{L}
+                     + \frac{(T_x+\tilde{T}_x)\sin\theta
+                             + (T_z+\tilde{T}_z)\cos\theta}{L^2}dt\\
+    \frac{1}{L&#39;S&#39;} &amp;=&amp; \frac{1}{LS}\left(1 - \frac{T_z+\mathscr{T}_z}{S}dt
+                                        + \frac{(T_x+\tilde{T}_x)\sin\theta
+                                        + (T_z+\tilde{T}_z)\cos\theta}{L}dt
+                                    \right)\\
+    \Rightarrow \frac{d}{dt}\left(\frac{1}{LS}\right) &amp;=&amp;
+        \frac{1}{LS}\left(\frac{(T_x+\tilde{T}_x)\sin\theta
+                          + (T_z+\tilde{T}_z)\cos\theta}{L}
+                          - \frac{T_z+\mathscr{T}_z}{S}
+                    \right)
+\f}
+
+In order to derive the evolution rate for the inclination:
+\f{eqnarray*}{
+    \cos\theta &amp;=&amp; \frac{\mathbf{S}\cdot\mathbf{L}}{LS}\\
+    \cos\theta&#39; &amp;=&amp; \frac{\mathbf{S}&#39;\cdot\mathbf{L}&#39;}{L&#39;S&#39;}\\
+                &amp;=&amp; \frac{L\sin\theta(T_x+\mathscr{T}_x)dt + LS\cos\theta
+                          + L\cos\theta(T_z+\mathscr{T}_z)dt
+                          - S(T_z+\tilde{T}_z)dt}{LS}
+                    \left(1 - \frac{T_z+\mathscr{T}_z}{S}dt
+                          + \frac{(T_x+\tilde{T}_x)\sin\theta
+                          + (T_z+\tilde{T}_z)\cos\theta}{L}dt
+                    \right)\\
+                &amp;=&amp; \cos\theta -\frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt
+                    + \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta
+                            + (T_z+\tilde{T}_z)\cos^2\theta}{L}dt
+                    +\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt
+                    + \frac{\cos\theta(T_z+\mathscr{T}_z)}{S}dt
+                    - \frac{T_z+\tilde{T}_z}{L}dt\\
+                &amp;=&amp; \cos\theta + \frac{(T_x+\tilde{T}_x)\sin\theta\cos\theta
+                            - (T_z+\tilde{T}_z)\sin^2\theta}{L}dt
+                    +\frac{\sin\theta(T_x+\mathscr{T}_x)}{S}dt\\
+    \Rightarrow \dot{\theta} &amp;=&amp; \frac{(T_z+\tilde{T}_z)\sin\theta}{L}
+                                 - \frac{(T_x+\tilde{T}_x)\cos\theta}{L}
+                                 - \frac{T_x+\mathscr{T}_x}{S}
+\f}
+
+Now to derive the evolution rate for the argument of periapsis:
+\f[
+    \dot{\omega} = -\frac{1}{\sin\omega}\frac{d(\mathbf{\hat{p}}\cdot\mathbf{\hat{y}})}{dt}
+                 = -\frac{1}{\sin\omega}\left(
+                        \mathbf{\hat{y}}\cdot\frac{d\mathbf{\hat{p}}}{dt}
+                        + \mathbf{\hat{p}}\cdot\frac{d\mathbf{\hat{y}}}{dt}
+                   \right)
+\f]
+
+\f{eqnarray*}{
+    \frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)
+        &amp;=&amp; - S(T_x+\tilde{T}_x)\mathbf{\hat{y}}
+            + S(T_y+\tilde{T}_y)\mathbf{\hat{x}}
+            - L\cos\theta(T_x+\mathscr{T}_x)\mathbf{\hat{y}}
+            + L\cos\theta(T_y+\mathscr{T}_y)\mathbf{\hat{x}}
+            - L\sin\theta(T_y+\mathscr{T}_y)\mathbf{\hat{z}}
+            + L\sin\theta(T_z+\mathscr{T}_z)\mathbf{\hat{y}}\\
+
+        &amp;=&amp; \left[S(T_y+\tilde{T}_y)
+                  + L\cos\theta(T_y+\mathscr{T}_y)\right]\mathbf{\hat{x}}
+            + \left[L\sin\theta(T_z+\mathscr{T}_z)
+                    - L\cos\theta(T_x+\mathscr{T}_x) - S(T_x+\tilde{T}_x)
+              \right]\mathbf{\hat{y}}
+            - L\sin\theta(T_y+\mathscr{T}_y)\mathbf{\hat{z}}
+\f}
+
+From \f$\dot{\theta}\f$:
+\f{eqnarray*}{
+    \frac{d}{dt}\left(\frac{1}{\sin\theta}\right) &amp;=&amp;
+        \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin^2\theta}
+        + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin^2\theta}
+        - \frac{(T_z+\tilde{T}_z)\cos\theta}{L\sin\theta}
+\f}
+
+Combining \f$\frac{d}{dt}\left(\frac{1}{LS}\right)\f$,
+\f$\frac{d}{dt}\left(\mathbf{S}\times\mathbf{L}\right)\f$ and
+\f$\frac{d}{dt}\left(\frac{1}{\sin\theta}\right)\f$:
+\f{eqnarray*}{
+    \frac{d}{dt}\mathbf{\hat{y}}
+        &amp;=&amp; \left\{\frac{(T_x+\tilde{T}_x)\sin\theta
+                    + (T_z+\tilde{T}_z)\cos\theta}{L}
+                    - \frac{T_z+\mathscr{T}_z}{S}
+            \right\}\mathbf{\hat{y}}\\
+        &amp;&amp; +
+            \frac{1}{LS\sin\theta}\left\{
+                \left[S(T_y+\tilde{T}_y)
+                      + L\cos\theta(T_y+\mathscr{T}_y)\right]\mathbf{\hat{x}}
+                + \left[L\sin\theta(T_z+\mathscr{T}_z)
+                        - L\cos\theta(T_x+\mathscr{T}_x)
+                        - S(T_x+\tilde{T}_x)
+                  \right]\mathbf{\hat{y}}
+                - L\sin\theta(T_y+\mathscr{T}_y)\mathbf{\hat{z}}
+            \right\}\\
+        &amp;&amp; +
+            \left\{\frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta}
+                + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta}
+                - \frac{(T_z+\tilde{T}_z)\cos\theta}{L}
+            \right\}\mathbf{\hat{y}}\\
+        &amp;=&amp; \left[\frac{T_y+\tilde{T}_y}{L\sin\theta} +
+                  \frac{\cos\theta(T_y+\mathscr{T}_y)}{S\sin\theta}
+            \right]\mathbf{\hat{x}}\\
+        &amp;&amp; +
+            \left[\frac{(T_x+\tilde{T}_x)\sin\theta}{L}
+                  + \frac{(T_z+\tilde{T}_z)\cos\theta}{L}
+                  - \frac{T_z+\mathscr{T}_z}{S}
+                  - \frac{\cos\theta(T_x+\mathscr{T}_x)}{S\sin\theta}
+                  + \frac{T_z+\mathscr{T}_z}{S}
+                  - \frac{T_x+\tilde{T}_x}{L\sin\theta}
+                  + \frac{(T_x+\tilde{T}_x)\cos^2\theta}{L\sin\theta}
+                  + \frac{(T_x+\mathscr{T}_x)\cos\theta}{S\sin\theta}
+                  - \frac{(T_z+\tilde{T}_z)\cos\theta}{L}
+            \right]\mathbf{\hat{y}}\\
+        &amp;&amp; - \frac{T_y+\mathscr{T}_y}{S}\mathbf{\hat{z}}\\
+        &amp;=&amp; \left[
+                \frac{T_y+\tilde{T}_y}{L\sin\theta}
+                +
+                \frac{(T_y+\mathscr{T}_y)\cos\theta}{S\sin\theta}
+            \right]\mathbf{\hat{x}}
+            -
+            \frac{T_y+\mathscr{T}_y}{S}\mathbf{\hat{z}}\\
+    \Rightarrow
+        -\frac{\mathbf{\hat{p}}}{\sin\omega}\cdot\frac{d}{dt}\mathbf{\hat{y}}
+        &amp;=&amp; \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
+            + \frac{(T_y+\mathscr{T}_y)\cos^2\theta}{S\sin\theta}
+            + \frac{(T_y+\mathscr{T}_y)\sin\theta}{S}\\
+        &amp;=&amp; \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
+            + \frac{T_y+\mathscr{T}_y}{S\sin\theta}
+\f}
+
+The evolution of the direction of periapsis:
+\f{eqnarray*}{
+    \frac{d}{dt}\mathbf{\hat{p}}
+        &amp;=&amp; -(\mathbf{T}+\mathbf{\tilde{T}})
+            \cdot\mathbf{\hat{p}}\frac{\mathbf{L}}{L^2}\\
+        &amp;=&amp; \left(\frac{(T_x+\tilde{T}_x)\sin\omega\cos\theta}{L}
+                  - \frac{(T_y+\tilde{T}_y)\cos\omega}{L}
+                  - \frac{(T_z+\tilde{T}_z)\sin\omega\sin\theta}{L}
+            \right)
+            \left(\sin\theta\mathbf{\hat{x}}+\cos\theta\mathbf{\hat{z}}\right)\\
+    \Rightarrow
+    -
+    \frac{\mathbf{\hat{y}}}{\sin\omega}\cdot\frac{d}{dt}\mathbf{\hat{p}}
+    &amp;=&amp;
+    0
+\f}
+
+So we get:
+\f[
+    \dot{\omega} = \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
+                   + \frac{T_y+\mathscr{T}_y}{S\sin\theta}
+\f]
+
+Finally:
+\f{eqnarray*}{
+    \dot{S} &amp;=&amp; T_z+\mathscr{T}_z\\
+    \dot{L} &amp;=&amp; -T_x\sin\theta - T_z\cos\theta
+\f}
+
+What remanains is to find \f$\tilde{T}_x\f$, \f$\tilde{T}_y\f$ and
+\f$\tilde{T}_z\f$. All that is necessary is to express the coornidate system
+unit vectors of all other zones in terms of the ones for this zone. We will use
+\f$\mathbf{\hat{\tilde{x}}}\f$, \f$\mathbf{\hat{\tilde{y}}}\f$ and
+\f$\mathbf{\hat{\tilde{z}}}\f$ to refer to the unit vectors of another zone, and
+we will denote the difference between this zone&#39;s argument of periapsis and the
+second zone by \f$\Delta\omega\f$.
+Clearly:
+\f[
+    \mathbf{\hat{\tilde{y}}}=-\cos\theta\sin\Delta\omega\mathbf{\hat{x}}
+                    + \cos\Delta\omega\mathbf{\hat{y}}
+                    + \sin\theta\sin\Delta\omega\mathbf{\hat{z}}
+\f]
+
+Next:
+\f{eqnarray*}{
+    \mathbf{\hat{\tilde{z}}}
+    &amp;=&amp;
+    \cos\tilde{\theta}\mathbf{\hat{L}}
+    +
+    \sin\tilde{\theta}\mathbf{\hat{L}}\times\mathbf{\hat{\tilde{y}}}\\
+    &amp;=&amp;
+    \sin\theta\cos\tilde{\theta}\mathbf{\hat{x}}
+    +
+    \cos\theta\cos\tilde{\theta}\mathbf{\hat{z}}
+    +
+    \sin\tilde{\theta}\left(
+        \sin\theta\cos\Delta\omega\mathbf{\hat{z}}
+        - \sin^2\theta\sin\Delta\omega\mathbf{\hat{y}}
+        - \cos^2\theta\sin\Delta\omega\mathbf{\hat{y}}
+        - \cos\theta\cos\Delta\omega\mathbf{\hat{x}}
+    \right)\\
+    &amp;=&amp;
+    \left(
+        \sin\theta\cos\tilde{\theta}
+        -
+        \cos\theta\sin\tilde{\theta}\cos\Delta\omega
+    \right)\mathbf{\hat{x}}
+    -
+    \sin\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
+    +
+    \left(
+        \cos\theta\cos\tilde{\theta}
+        +
+        \sin\theta\sin\tilde{\theta}\cos\Delta\omega
+    \right)\mathbf{\hat{z}}
+\f}
+
+Finally:
+\f{eqnarray*}{
+        \mathbf{\hat{\tilde{x}}}
+    &amp;=&amp;
+        \sin\tilde{\theta}\mathbf{\hat{L}}
+        -
+        \cos\tilde{\theta}\mathbf{\hat{L}}\times\mathbf{\hat{\tilde{y}}}\\
+    &amp;=&amp;
+        \left(
+            \sin\theta\sin\tilde{\theta}
+            +
+            \cos\theta\cos\tilde{\theta}\cos\Delta\omega
+        \right)\mathbf{\hat{x}}
+        +
+        \cos\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
+        +
+        \left(
+            \cos\theta\sin\tilde{\theta}
+            -
+            \sin\theta\cos\tilde{\theta}\cos\Delta\omega
+        \right)\mathbf{\hat{z}}
+\f}
+
+Crosscheck that
+\f$
+    \mathbf{\hat{\tilde{x}}}\times\mathbf{\hat{\tilde{y}}}
+    =
+    \mathbf{\hat{\tilde{z}}}
+\f$:
+
+\f{eqnarray*}{
+    \mathbf{\hat{\tilde{x}}}\times\mathbf{\hat{\tilde{y}}}
+        &amp;=&amp; \left(\sin\theta\sin\tilde{\theta}
+                              + \cos\theta\cos\tilde{\theta}\cos\Delta\omega
+            \right)\cos\Delta\omega\mathbf{\hat{z}}
+            -
+            \left(\sin\theta\sin\tilde{\theta}
+                  + \cos\theta\cos\tilde{\theta}\cos\Delta\omega
+            \right)\sin\theta\sin\Delta\omega\mathbf{\hat{y}}\\
+            &amp;&amp; +
+            \cos\tilde{\theta}\sin\Delta\omega \cos\theta\sin\Delta\omega
+            \mathbf{\hat{z}}
+            +
+            \cos\tilde{\theta}\sin\Delta\omega \sin\theta\sin\Delta\omega
+            \mathbf{\hat{x}}\\
+            &amp;&amp; -
+            \left(\cos\theta\sin\tilde{\theta}
+                  - \sin\theta\cos\tilde{\theta}\cos\Delta\omega
+            \right)\cos\theta\sin\Delta\omega\mathbf{\hat{y}}
+            -
+            \left(\cos\theta\sin\tilde{\theta}
+                  - \sin\theta\cos\tilde{\theta}\cos\Delta\omega
+            \right)\cos\Delta\omega\mathbf{\hat{x}}\\
+        &amp;=&amp; \left(
+                \sin\theta\cos\tilde{\theta}\sin^2\Delta\omega
+                -
+                \cos\theta\sin\tilde{\theta}\cos\Delta\omega
+                +
+                \sin\theta\cos\tilde{\theta}\cos^2\Delta\omega
+            \right)\mathbf{\hat{x}}
+            -\left(
+                \sin^2\theta\sin\tilde{\theta}\sin\Delta\omega
+                +
+                \sin\theta\cos\theta\cos\tilde{\theta}
+                \sin\Delta\omega\cos\Delta\omega
+                +
+                \cos^2\theta\sin\tilde{\theta}\sin\Delta\omega
+                -
+                \sin\theta\cos\theta\cos\tilde{\theta}
+                \sin\Delta\omega\cos\Delta\omega
+            \right)\mathbf{\hat{y}}
+            +\left(
+                \sin\theta\sin\tilde{\theta}\cos\Delta\omega
+                +
+                \cos\theta\cos\tilde{\theta}\cos^2\Delta\omega
+                +
+                \cos\theta\cos\tilde{\theta}\sin^2\Delta\omega
+            \right)\mathbf{\hat{z}}\\
+        &amp;=&amp; \left(
+                \sin\theta\cos\tilde{\theta}
+                -
+                \cos\theta\sin\tilde{\theta}\cos\Delta\omega
+            \right)\mathbf{\hat{x}}
+            -
+            \sin\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
+            +
+            \left(
+                \cos\theta\cos\tilde{\theta}
+                +
+                \sin\theta\sin\tilde{\theta}\cos\Delta\omega
+            \right)\mathbf{\hat{z}}
+\f}
+Which is exactly \f$\mathbf{\hat{\tilde{z}}}\f$.
+
+Crosscheck that the direction of the orbital angular momentum matches, i.e.
+that
+\f$
+    \sin\tilde{\theta}\mathbf{\hat{\tilde{x}}}
+    +
+    \cos\tilde{\theta}\mathbf{\hat{\tilde{z}}}
+    =
+    \sin\theta\mathbf{\hat{x}}
+    +
+    \cos\theta\mathbf{\hat{z}}
+\f$:
+
+\f{eqnarray*}{
+    \sin\tilde{\theta}\mathbf{\hat{\tilde{x}}}
+    +
+    \cos\tilde{\theta}\mathbf{\hat{\tilde{z}}}
+    &amp;=&amp;
+    \left(
+        \sin\theta\sin^2\tilde{\theta}
+        +
+        \cos\theta\sin\tilde{\theta}\cos\tilde{\theta}\cos\Delta\omega
+    \right)\mathbf{\hat{x}}
+    +
+    \sin\tilde{\theta}\cos\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
+    +
+    \left(
+        \cos\theta\sin^2\tilde{\theta}
+        -
+        \sin\theta\sin\tilde{\theta}\cos\tilde{\theta}
+        \cos\Delta\omega
+    \right)\mathbf{\hat{z}}\\
+    &amp;&amp;
+    +
+    \left(
+        \sin\theta\cos^2\tilde{\theta}
+        -
+        \cos\theta\sin\tilde{\theta}\cos\tilde{\theta}\cos\Delta\omega
+    \right)\mathbf{\hat{x}}
+    -
+    \sin\tilde{\theta}\cos\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
+    +
+    \left(
+        \cos\theta\cos^2\tilde{\theta}
+        +
+        \sin\theta\sin\tilde{\theta}\cos\tilde{\theta}
+        \cos\Delta\omega
+    \right)\mathbf{\hat{z}}\\
+    &amp;=&amp;
+    \sin\theta\mathbf{\hat{x}} + \cos\theta\mathbf{\hat{z}}
+\f}
+
+Finally, crosscheck that the direction of periapsis is consistent, i.e. that
+\f[
+    - \sin(\omega-\Delta\omega)\cos\tilde{\theta}\mathbf{\hat{\tilde{x}}}
+    + \cos(\omega-\Delta\omega)\mathbf{\hat{\tilde{y}}}
+    + \sin(\omega-\Delta\omega)\sin\tilde{\theta}\mathbf{\hat{\tilde{z}}}
+    =
+    - \sin\omega\cos\theta\mathbf{\hat{x}}
+    + \cos\omega\mathbf{\hat{y}}
+    + \sin\omega\sin\theta\mathbf{\hat{z}}
+\f]
+
+We will go component by component:
+\f{eqnarray*}{
+    \mathbf{\hat{\tilde{p}}}\cdot\mathbf{\hat{x}}
+    &amp;=&amp;
+    -\sin(\omega-\Delta\omega)\cos\tilde{\theta}
+    \left(
+        \sin\theta\sin\tilde{\theta}
+        +
+        \cos\theta\cos\tilde{\theta}\cos\Delta\omega
+    \right)\\
+    &amp;&amp;
+    -\cos(\omega-\Delta\omega)\cos\theta\sin\Delta\omega\\
+    &amp;&amp;
+    +\sin(\omega-\Delta\omega)\sin\tilde{\theta}
+    \left(
+        \sin\theta\cos\tilde{\theta}
+        -
+        \cos\theta\sin\tilde{\theta}\cos\Delta\omega
+    \right)\\
+    &amp;=&amp;
+    -
+    \cos\theta\cos^2\tilde{\theta}\sin(\omega-\Delta\omega)\cos\Delta\omega
+    -
+    \cos\theta\cos(\omega-\Delta\omega)\sin\Delta\omega
+    -
+    \cos\theta\sin^2\tilde{\theta} \sin(\omega-\Delta\omega)\cos\Delta\omega\\
+    &amp;=&amp;
+    -
+    \cos\theta\sin(\omega-\Delta\omega)\cos\Delta\omega
+    -
+    \cos\theta\cos(\omega-\Delta\omega)\sin\Delta\omega\\
+    &amp;=&amp;
+    - \sin\omega\cos\theta\\
+    &amp;=&amp;
+    \mathbf{\hat{p}}\cdot\mathbf{\hat{x}}
+\f}
+
+Next:
+\f{eqnarray*}{
+    \mathbf{\hat{\tilde{p}}}\cdot\mathbf{\hat{y}}
+    &amp;=&amp;
+    -
+    \sin(\omega-\Delta\omega)\cos\tilde{\theta}
+    \cos\tilde{\theta}\sin\Delta\omega
+    +
+    \cos(\omega-\Delta\omega)\cos\Delta\omega
+    -
+    \sin(\omega-\Delta\omega)\sin\tilde{\theta}
+    \sin\tilde{\theta}\sin\Delta\omega\\
+    &amp;=&amp;
+    -
+    \sin(\omega-\Delta\omega)\sin\Delta\omega
+    +
+    \cos(\omega-\Delta\omega)\cos\Delta\omega\\
+    &amp;=&amp;
+    \cos\omega\\
+    &amp;=&amp;
+    \mathbf{\hat{p}}\cdot\mathbf{\hat{y}}
+\f}
+
+Finally:
+\f{eqnarray*}{
+    \mathbf{\hat{\tilde{p}}}\cdot\mathbf{\hat{z}}
+    &amp;=&amp;
+    - \sin(\omega-\Delta\omega)\cos\tilde{\theta}
+    \left(
+        \cos\theta\sin\tilde{\theta}
+        -
+        \sin\theta\cos\tilde{\theta}\cos\Delta\omega
+    \right)\\
+    &amp;&amp;
+    + \cos(\omega-\Delta\omega)\sin\theta\sin\Delta\omega\\
+    &amp;&amp;
+    + \sin(\omega-\Delta\omega)\sin\tilde{\theta}
+    \left(
+        \cos\theta\cos\tilde{\theta}
+        +
+        \sin\theta\sin\tilde{\theta}\cos\Delta\omega
+    \right)\\
+    &amp;=&amp;
+    +
+    \sin\theta\cos^2\tilde{\theta}\sin(\omega-\Delta\omega)\cos\Delta\omega
+    +
+    \cos(\omega-\Delta\omega)\sin\theta\sin\Delta\omega
+    +
+    \sin\theta\sin^2\tilde{\theta}
+    \sin(\omega-\Delta\omega)\cos\Delta\omega\\
+    &amp;=&amp;
+    \sin\theta\sin(\omega-\Delta\omega)\cos\Delta\omega
+    +
+    \sin\theta\cos(\omega-\Delta\omega)\sin\Delta\omega\\
+    &amp;=&amp;
+    \sin\theta\sin\omega\\
+    &amp;=&amp;
+    \mathbf{\hat{p}}\cdot\mathbf{\hat{z}}
+\f}
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

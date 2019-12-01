@@ -1,0 +1,29 @@
+<map id="/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/RemoveLogDeriv.h" name="/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/RemoveLogDeriv.h">
+<area shape="rect" id="node2" href="$EvolvingStellarQuantity_8h.html" title="Declares a class implementing the intepolation of a single stellar quantity from stellar evolution tr..." alt="" coords="965,113,1225,173"/>
+<area shape="rect" id="node3" href="$Interpolator_8h.html" title="Defines the StellarEvolution class needed for interpolating among stellar evolution tracks..." alt="" coords="432,221,692,281"/>
+<area shape="rect" id="node22" href="$EvolvingStellarZone_8h.html" title="Declares a base class for all stellar zones. " alt="" coords="1332,221,1517,281"/>
+<area shape="rect" id="node23" href="$EvolvingStellarCore_8h.html" title="Declaration of the class representing stellar cores. " alt="" coords="964,329,1149,389"/>
+<area shape="rect" id="node26" href="$EvolvingStellarQuantity_8cpp.html" title="Defines some of the methods of the EvolvingStellarQuantity class used for interpolating among stellar..." alt="" coords="1049,221,1309,281"/>
+<area shape="rect" id="node27" href="$SumQuantity_8h.html" title="Declare a class for a stellar evolution quantity which is the sum of two other quantities. " alt="" coords="716,221,976,281"/>
+<area shape="rect" id="node28" href="$ZeroQuantity_8h.html" title="Declare a class for an identically zero stellar evolution quantity. " alt="" coords="1540,221,1800,281"/>
+<area shape="rect" id="node4" href="$MESAIO_8h.html" title="Defines the classes for generating stellar evolution interpolators from the MESA tracks. " alt="" coords="289,329,549,389"/>
+<area shape="rect" id="node13" href="$EvolvingStar_8h.html" title="Declares the class for stars that user pre&#45;tabulated stellar evolution tracks. " alt="" coords="964,437,1149,497"/>
+<area shape="rect" id="node21" href="$Interpolator_8cpp.html" title="Defines some of the methods of the StellarEvolution class. " alt="" coords="673,329,933,389"/>
+<area shape="rect" id="node5" href="$StellarEvolution_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the StellarEvolution library..." alt="" coords="289,437,549,497"/>
+<area shape="rect" id="node12" href="$MESAIO_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/StellarEvolution\l/MESAIO.cpp" alt="" coords="5,437,265,497"/>
+<area shape="rect" id="node6" href="$Star_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Star library. " alt="" coords="327,545,511,605"/>
+<area shape="rect" id="node11" href="$StellarEvolution_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="44,545,304,605"/>
+<area shape="rect" id="node7" href="$Evolve_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Evolve library. " alt="" coords="320,661,516,721"/>
+<area shape="rect" id="node10" href="$Star_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="108,785,293,845"/>
+<area shape="rect" id="node8" href="$Evolve_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="317,785,513,845"/>
+<area shape="rect" id="node9" href="$Planet_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="537,785,731,845"/>
+<area shape="rect" id="node14" href="$MakeStar_8h.html" title="Declares functions for creating stars used by unit tests. " alt="" coords="1023,545,1226,605"/>
+<area shape="rect" id="node19" href="$testOrbitSolver_8h.html" title="Declares the test suite that exercises the OrbitSolver class and some other clasess necessary to acco..." alt="" coords="1268,661,1533,721"/>
+<area shape="rect" id="node15" href="$MakeStar_8cpp.html" title="Implement the functions defined in MakeStar.h. " alt="" coords="1024,661,1244,721"/>
+<area shape="rect" id="node16" href="$testDifferentialEquations_8h.html" title="Unit tests that check the differential equations for eccentricity and semimajor against analytic expr..." alt="" coords="751,653,1000,729"/>
+<area shape="rect" id="node17" href="$testDifferentialEquations_8cpp.html" title="Implement the non&#45;inline methods of test_DifferentialEquations. " alt="" coords="755,777,1004,853"/>
+<area shape="rect" id="node18" href="$testEvolve_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testEvolve.cpp" alt="" coords="1027,785,1278,845"/>
+<area shape="rect" id="node20" href="$testOrbitSolver_8cpp.html" title="Defines some of the methods of the test suite that exercises the OrbitSolver class and the other clas..." alt="" coords="1302,785,1584,845"/>
+<area shape="rect" id="node24" href="$EvolvingStellarEnvelope_8h.html" title="Declares a class representing convective zones in low mass evolving stars or the whole star for high ..." alt="" coords="1172,329,1384,389"/>
+<area shape="rect" id="node25" href="$EvolvingStellarZone_8cpp.html" title="Definitions of some of the methods of EvolvingStellarZone. " alt="" coords="1408,329,1606,389"/>
+</map>

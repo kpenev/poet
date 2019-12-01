@@ -1,0 +1,520 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.library_interface module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="stellar_evolution.managed_interpolator module" href="stellar_evolution.managed_interpolator.html" />
+    <link rel="prev" title="stellar_evolution.derived_stellar_quantities module" href="stellar_evolution.derived_stellar_quantities.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="basic_utils.html">basic_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evolution_cmdline_args.html">evolution_cmdline_args module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="orbital_evolution.html">orbital_evolution package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="stellar_evolution.html">stellar_evolution package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="stellar_evolution.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="stellar_evolution.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../python_interface.html">Python Interface</a> &raquo;</li>
+        
+          <li><a href="modules.html">PythonPackage</a> &raquo;</li>
+        
+          <li><a href="stellar_evolution.html">stellar_evolution package</a> &raquo;</li>
+        
+      <li>stellar_evolution.library_interface module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_implementation/stellar_evolution.library_interface.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-stellar_evolution.library_interface">
+<span id="stellar-evolution-library-interface-module"></span><h1>stellar_evolution.library_interface module<a class="headerlink" href="#module-stellar_evolution.library_interface" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-4ca672e065b2da573d3852a82593bbd90fff5a86.png" alt="Inheritance diagram of MESAInterpolator, Quantity, c_bool, c_char_p, c_double, c_int, c_interpolator_p, c_quantity_p, c_uint, c_void_p" usemap="#inheritance648db01efc" class="inheritance graphviz" /></div>
+<map id="inheritance648db01efc" name="inheritance648db01efc">
+<area shape="rect" id="node9" href="#stellar_evolution.library_interface.c_interpolator_p" target="_top" title="Type corresponding to pointer to intepolator in the POET library." alt="" coords="392,77,708,101"/>
+<area shape="rect" id="node10" href="#stellar_evolution.library_interface.c_quantity_p" target="_top" title="Type corresponding to pointer to evolution quantities in POET library." alt="" coords="732,77,1027,101"/>
+<area shape="rect" id="node7" href="#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="798,5,1123,29"/>
+<area shape="rect" id="node8" href="#stellar_evolution.library_interface.Quantity" target="_top" title="Callable that evaluates to the value of the quantity at a given age." alt="" coords="1147,5,1417,29"/>
+</map><p>An interface to the POET stellar evolution interpolation utilities.</p>
+<dl class="class">
+<dt id="stellar_evolution.library_interface.MESAInterpolator">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.library_interface.</code><code class="sig-name descname">MESAInterpolator</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#MESAInterpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-557135b380e263c68aed2f417f50f3f923cc0b2c.png" alt="Inheritance diagram of stellar_evolution.library_interface.MESAInterpolator" usemap="#inheritanceac58e72176" class="inheritance graphviz" /></div>
+<map id="inheritanceac58e72176" name="inheritanceac58e72176">
+<area shape="rect" id="node1" href="#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="5,5,331,29"/>
+</map><p>A class for interpolating among a set of MESA tracks.</p>
+<dl class="method">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">quantity</em>, <em class="sig-param">mass</em>, <em class="sig-param">feh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#MESAInterpolator.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a stellar quantity interpolated to the given mass and [Fe/H].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quantity</strong> – A string identifying the quantity to interpolate. The
+following values are allowed: ‘radius’, ‘iconv’, ‘lum’,
+‘irad’, ‘mrad’, ‘rrad’. This is a case insensitive argument.</p></li>
+<li><p><strong>mass</strong> – The mass of the star for which this quantity should be
+defined in solar masses.</p></li>
+<li><p><strong>feh</strong> – The [Fe/H] of the star for which this  quantity  should
+be defined.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>callable with an age parameter evaluating to the quantity at the
+given age.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#stellar_evolution.library_interface.Quantity" title="stellar_evolution.library_interface.Quantity">Quantity</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#MESAInterpolator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare a MESA based interpolation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesa_dir</strong> – A directory contaning a grid (mass and metallicity) of
+MESA tracks to base the interpolation on. Must not be specified
+if interpolator_fname is.</p></li>
+<li><p><strong>smoothing</strong> – A numpy float array of the smoothing arguments to use
+for the interpolation of each quantity. Should be in the order
+defined by quantity_ids.</p></li>
+<li><p><strong>nodes</strong> – A numpy integer array of the nodes to use for the
+interpolation of each quantity. Same order as smoothing.</p></li>
+<li><p><strong>vs_log_age</strong> – A numpy boolean array indicating whether the
+interpolation for each quantity should be done vs log(age)
+instead of age.</p></li>
+<li><p><strong>log_quantity</strong> – A numpy boolean array indicating whether the
+interpolation for each quantity should be of log(quantity)
+instead of quantity.</p></li>
+<li><p><strong>interpolator_fname</strong> – The filename of a previously saved
+interpolator state. Must not be specified together with
+mesa_dir. If passed, the smoothing and nodes arguments are
+ignored.</p></li>
+<li><p><strong>num_threads</strong> – The number of simultaneous threads to use when
+constructing the interpolation.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.default_log_quantity">
+<code class="sig-name descname">default_log_quantity</code><em class="property"> = {'ICONV': 0, 'IRAD': 0, 'LUM': 0, 'MRAD': 0, 'RADIUS': 0, 'RRAD': 0}</em><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.default_log_quantity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.default_nodes">
+<code class="sig-name descname">default_nodes</code><em class="property"> = {'ICONV': 3000, 'IRAD': 3000, 'LUM': 0, 'MRAD': 6000, 'RADIUS': 0, 'RRAD': 3000}</em><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.default_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.default_smoothing">
+<code class="sig-name descname">default_smoothing</code><em class="property"> = {'ICONV': 5.0, 'IRAD': 6.0, 'LUM': nan, 'MRAD': 7.0, 'RADIUS': nan, 'RRAD': 6.0}</em><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.default_smoothing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.default_vs_log_age">
+<code class="sig-name descname">default_vs_log_age</code><em class="property"> = {'ICONV': True, 'IRAD': True, 'LUM': True, 'MRAD': True, 'RADIUS': True, 'RRAD': True}</em><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.default_vs_log_age" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#MESAInterpolator.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free the resources allocated at construction.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.quantity_ids">
+<code class="sig-name descname">quantity_ids</code><em class="property"> = {'ICONV': 1, 'IRAD': 3, 'LUM': 2, 'MRAD': 4, 'RADIUS': 0, 'RRAD': 5}</em><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.quantity_ids" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.quantity_list">
+<code class="sig-name descname">quantity_list</code><em class="property"> = ['RADIUS', 'ICONV', 'LUM', 'IRAD', 'MRAD', 'RRAD']</em><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.quantity_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.quantity_names">
+<code class="sig-name descname">quantity_names</code><em class="property"> = {0: 'RADIUS', 1: 'ICONV', 2: 'LUM', 3: 'IRAD', 4: 'MRAD', 5: 'RRAD'}</em><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.quantity_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.library_interface.MESAInterpolator.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#MESAInterpolator.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.MESAInterpolator.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the interpolator created to the given file for faster creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – The name of the file to use for saving the state.
+Overwritten if exists.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.library_interface.Quantity">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.library_interface.</code><code class="sig-name descname">Quantity</code><span class="sig-paren">(</span><em class="sig-param">underlying_quantity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#Quantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.Quantity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-ed91eeb33c1364000aebec5f23e4f37281a96281.png" alt="Inheritance diagram of stellar_evolution.library_interface.Quantity" usemap="#inheritancefac22030ed" class="inheritance graphviz" /></div>
+<map id="inheritancefac22030ed" name="inheritancefac22030ed">
+<area shape="rect" id="node1" href="#stellar_evolution.library_interface.Quantity" target="_top" title="Callable that evaluates to the value of the quantity at a given age." alt="" coords="5,5,275,29"/>
+</map><p>Callable that evaluates to the value of the quantity at a given age.</p>
+<dl class="method">
+<dt id="stellar_evolution.library_interface.Quantity.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#Quantity.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.Quantity.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the underlying quantity at the given age(s) (in Gyr).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>age</strong> – Either a single float or a numpy array of floats giving
+the ages at which to evaluate the quantity.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value(s) of the quantity in the same format as age.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.8)">type</a>(age)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.library_interface.Quantity.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">underlying_quantity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#Quantity.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.Quantity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap the underlying EvolvingStellarQuantity into a callable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.library_interface.Quantity.continuous_range">
+<code class="sig-name descname">continuous_range</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#Quantity.continuous_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.Quantity.continuous_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the range around age over which the quantity is continuous.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>age</strong> (<em>-</em>) – The age around which the continuous region is required.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns: A 2-tuple of the minimum and maximum ages surrounding age</dt><dd><p>over thich the quantity is guaranteed continuous</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.library_interface.Quantity.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#Quantity.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.Quantity.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy the underlying quantity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.library_interface.Quantity.deriv">
+<code class="sig-name descname">deriv</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#Quantity.deriv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.Quantity.deriv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the 0-th, 1-st and 2-nd order derivatives of the quantity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>age</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em> or </em><em>numpy array</em>) – Either a single float or a numpy array
+of floats giving the ages at which to evaluate the quantity.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Either 1-D (if age is a single float) or 2-D array if age is a
+numpy array where the outside (or only) index is the derivative
+order.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.library_interface.c_interpolator_p">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.library_interface.</code><code class="sig-name descname">c_interpolator_p</code><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#c_interpolator_p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.c_interpolator_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/ctypes.html#ctypes.c_void_p" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ctypes.c_void_p</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-95964db2e14acaf397d9d1dcc7fa18f54e99d28f.png" alt="Inheritance diagram of stellar_evolution.library_interface.c_interpolator_p" usemap="#inheritance31de29abd1" class="inheritance graphviz" /></div>
+<map id="inheritance31de29abd1" name="inheritance31de29abd1">
+<area shape="rect" id="node2" href="#stellar_evolution.library_interface.c_interpolator_p" target="_top" title="Type corresponding to pointer to intepolator in the POET library." alt="" coords="5,77,321,101"/>
+</map><p>Type corresponding to pointer to intepolator in the POET library.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.library_interface.c_quantity_p">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.library_interface.</code><code class="sig-name descname">c_quantity_p</code><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#c_quantity_p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.c_quantity_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/ctypes.html#ctypes.c_void_p" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ctypes.c_void_p</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-58452d70619f034773a0741746dff4ca8b1ba820.png" alt="Inheritance diagram of stellar_evolution.library_interface.c_quantity_p" usemap="#inheritance87a830f069" class="inheritance graphviz" /></div>
+<map id="inheritance87a830f069" name="inheritance87a830f069">
+<area shape="rect" id="node2" href="#stellar_evolution.library_interface.c_quantity_p" target="_top" title="Type corresponding to pointer to evolution quantities in POET library." alt="" coords="5,77,301,101"/>
+</map><p>Type corresponding to pointer to evolution quantities in POET library.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stellar_evolution.library_interface.example">
+<code class="sig-prename descclassname">stellar_evolution.library_interface.</code><code class="sig-name descname">example</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.example" title="Permalink to this definition">¶</a></dt>
+<dd><p>Example of the usage of the interface.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stellar_evolution.library_interface.initialize_library">
+<code class="sig-prename descclassname">stellar_evolution.library_interface.</code><code class="sig-name descname">initialize_library</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#initialize_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.initialize_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare the stellarEvolution library for use.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stellar_evolution.library_interface.library_track_fname">
+<code class="sig-prename descclassname">stellar_evolution.library_interface.</code><code class="sig-name descname">library_track_fname</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">feh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/library_interface.html#library_track_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.library_interface.library_track_fname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the base name expected by library for a track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mass</strong> – The mass of the star whose evolution is stored in the track.</p></li>
+<li><p><strong>feh</strong> – The [Fe/H] value of the star whose evolution is stored in the
+track.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The base filename the stellar evolution library expects to be used
+for the given track.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="stellar_evolution.managed_interpolator.html" class="btn btn-neutral float-right" title="stellar_evolution.managed_interpolator module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="stellar_evolution.derived_stellar_quantities.html" class="btn btn-neutral float-left" title="stellar_evolution.derived_stellar_quantities module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

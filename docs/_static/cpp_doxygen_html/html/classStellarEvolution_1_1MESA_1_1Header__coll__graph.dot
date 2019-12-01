@@ -1,0 +1,7 @@
+digraph "StellarEvolution::MESA::Header"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{StellarEvolution::MESA\l::Header\n|- __column_names\l- __column_numbers\l|+ Header()\l+ get_column()\l+ get_all_columns()\l- read_column_numbers()\l- set_column_names()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

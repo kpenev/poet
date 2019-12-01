@@ -1,0 +1,6 @@
+<map id="inheritance88359b2d84" name="inheritance88359b2d84">
+<area shape="rect" id="node1" title="Helper class that provides a standard way to create an ABC using" alt="" coords="128,5,202,29"/>
+<area shape="rect" id="node5" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="5,77,325,101"/>
+<area shape="rect" id="node6" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.c_dissipating_body_p" target="_top" title="Dummy class only used for type checking." alt="" coords="373,77,725,101"/>
+<area shape="rect" id="node7" href="#orbital_evolution.planet_interface.LockedPlanet" target="_top" title="A class for tidally locked and thus non&#45;dissipative planets." alt="" coords="14,149,316,173"/>
+</map>

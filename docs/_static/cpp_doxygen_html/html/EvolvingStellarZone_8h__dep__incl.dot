@@ -1,0 +1,43 @@
+digraph "/Users/kpenev/projects/git/poet/poet_src/Star/EvolvingStellarZone.h"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node64 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/EvolvingStellarZone.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node64 -> Node65 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node65 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/EvolvingStellarCore.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$EvolvingStellarCore_8h.html",tooltip="Declaration of the class representing stellar cores. "];
+  Node65 -> Node66 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node66 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/EvolvingStar.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$EvolvingStar_8h.html",tooltip="Declares the class for stars that user pre-tabulated stellar evolution tracks. "];
+  Node66 -> Node67 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node67 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/CInterface.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Star_2CInterface_8h.html",tooltip="Declare C-style functions for accessing the functionality of the Star library. "];
+  Node67 -> Node68 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node68 [label="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/CInterface.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Evolve_2CInterface_8h.html",tooltip="Declare C-style functions for accessing the functionality of the Evolve library. "];
+  Node68 -> Node69 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node69 [label="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/CInterface.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Evolve_2CInterface_8cpp.html",tooltip="The definitions of the functions declared in CInterface.h. "];
+  Node68 -> Node70 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node70 [label="/Users/kpenev/projects\l/git/poet/poet_src/Planet\l/CInterface.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Planet_2CInterface_8cpp.html",tooltip="The definitions of the functions declared in CInterface.h. "];
+  Node68 -> Node71 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node71 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/CInterface.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Star_2CInterface_8cpp.html",tooltip="The definitions of the functions declared in CInterface.h. "];
+  Node67 -> Node71 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node66 -> Node72 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node72 [label="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/shared/MakeStar.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$MakeStar_8h.html",tooltip="Declares functions for creating stars used by unit tests. "];
+  Node72 -> Node73 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node73 [label="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/shared/MakeStar.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$MakeStar_8cpp.html",tooltip="Implement the functions defined in MakeStar.h. "];
+  Node72 -> Node74 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node74 [label="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testDifferential\lEquations.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$testDifferentialEquations_8h.html",tooltip="Unit tests that check the differential equations for eccentricity and semimajor against analytic expr..."];
+  Node74 -> Node75 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node75 [label="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testDifferential\lEquations.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$testDifferentialEquations_8cpp.html",tooltip="Implement the non-inline methods of test_DifferentialEquations. "];
+  Node74 -> Node76 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node76 [label="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testEvolve.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$testEvolve_8cpp_source.html"];
+  Node72 -> Node77 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node77 [label="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testOrbitSolver.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$testOrbitSolver_8h.html",tooltip="Declares the test suite that exercises the OrbitSolver class and some other clasess necessary to acco..."];
+  Node77 -> Node76 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node77 -> Node78 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node78 [label="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testOrbitSolver.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$testOrbitSolver_8cpp.html",tooltip="Defines some of the methods of the test suite that exercises the OrbitSolver class and the other clas..."];
+  Node66 -> Node77 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node64 -> Node79 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node79 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/EvolvingStellarEnvelope.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$EvolvingStellarEnvelope_8h.html",tooltip="Declares a class representing convective zones in low mass evolving stars or the whole star for high ..."];
+  Node79 -> Node66 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node64 -> Node80 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
+  Node80 [label="/Users/kpenev/projects\l/git/poet/poet_src/Star\l/EvolvingStellarZone.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$EvolvingStellarZone_8cpp.html",tooltip="Definitions of some of the methods of EvolvingStellarZone. "];
+}

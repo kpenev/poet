@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File testOrbitSolver.h &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File testOrbitSolver.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file__Users_kpenev_projects_git_poet_poet_src_unit_tests_testEvolve_testOrbitSolver.h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="program-listing-for-file-testorbitsolver-h">
+<span id="program-listing-file-users-kpenev-projects-git-poet-poet-src-unit-tests-testevolve-testorbitsolver-h"></span><h1>Program Listing for File testOrbitSolver.h<a class="headerlink" href="#program-listing-for-file-testorbitsolver-h" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file__Users_kpenev_projects_git_poet_poet_src_unit_tests_testEvolve_testOrbitSolver.h.html#file-users-kpenev-projects-git-poet-poet-src-unit-tests-testevolve-testorbitsolver-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">/Users/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/testOrbitSolver.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef __TEST_ORBIT_SOLVER_H</span>
+<span class="cp">#define __TEST_ORBIT_SOLVER_H</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;TransformedSolution.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;RealEvolutionQuantity.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;ExpectedEvolutionMode.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Oblique10LinearQuantity.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Oblique20LinearQuantity.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;InverseLinearLconvEvolution.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;ConservedLEObliquityEvolution.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../../Evolve/OrbitSolver.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../../Star/EvolvingStar.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../../Planet/Planet.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../../Evolve/DiskBinarySystem.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../../Core/AstronomicalConstants.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../shared/PolynomialEvolution.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../shared/Common.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../shared/MakeStar.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="k">namespace</span> <span class="n">Evolve</span> <span class="p">{</span>
+
+    <span class="k">class</span> <span class="nc">test_OrbitSolver</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Test</span><span class="o">::</span><span class="n">Suite</span> <span class="p">{</span>
+    <span class="k">private</span><span class="o">:</span>
+        <span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">__solver</span><span class="p">;</span>
+
+        <span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">__system</span><span class="p">;</span>
+
+        <span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span> <span class="o">*</span><span class="n">__star</span><span class="p">;</span>
+
+        <span class="n">Planet</span><span class="o">::</span><span class="n">Planet</span> <span class="o">*</span><span class="n">__primary_planet</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span><span class="o">*</span> <span class="o">&gt;</span> <span class="n">__temp_functions</span><span class="p">;</span>
+
+        <span class="c1">//component.</span>
+        <span class="kt">void</span> <span class="nf">set_single_component_dissipation</span><span class="p">(</span>
+            <span class="kt">double</span> <span class="n">min_frequency</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">max_frequency</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">decay_scale</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">phase_lag</span> <span class="o">=</span> <span class="mf">1.0e-5</span>
+        <span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">make_single_component_star</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">StellarEvolution</span><span class="o">::</span><span class="n">Interpolator</span> <span class="o">&amp;</span><span class="n">evolution</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">wind_strength</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">wind_sat_freq</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">coupling_timescale</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">min_frequency</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">max_frequency</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">decay_scale</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">phase_lag</span> <span class="o">=</span> <span class="mf">1.0e-5</span>
+        <span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">evolve</span><span class="p">(</span>
+            <span class="kt">double</span> <span class="n">wdisk</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">tdisk</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">initial_a</span><span class="p">,</span>
+            <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">initial_Lstar</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">initial_incl</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">secondary_mass</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">tsecondary</span> <span class="o">=</span> <span class="n">Core</span><span class="o">::</span><span class="n">NaN</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">max_age</span> <span class="o">=</span> <span class="n">MAX_AGE</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">secondary_radius</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">precision</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">max_step_factor</span> <span class="o">=</span> <span class="mf">1e-3</span>
+        <span class="p">);</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">*&gt;</span> <span class="n">get_evolution</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="kt">void</span> <span class="nf">test_solution</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">*</span> <span class="o">&gt;</span> <span class="o">&amp;</span>
+                <span class="n">tabulated_real_quantities</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span>
+                <span class="n">expected_real_quantities</span><span class="p">,</span>
+            <span class="k">const</span> <span class="n">ExpectedEvolutionMode</span><span class="o">&lt;</span><span class="n">Core</span><span class="o">::</span><span class="n">EvolModeType</span><span class="o">&gt;</span> <span class="o">&amp;</span>
+                <span class="n">expected_evol_mode</span><span class="p">,</span>
+            <span class="k">const</span> <span class="n">ExpectedEvolutionMode</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">expected_wind_mode</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">min_age</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">max_age</span><span class="p">,</span>
+            <span class="kt">bool</span> <span class="n">debug_mode</span> <span class="o">=</span> <span class="nb">false</span>
+        <span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">test_no_planet_scenario</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">StellarEvolution</span><span class="o">::</span><span class="n">Interpolator</span> <span class="o">&amp;</span><span class="n">stellar_evol</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="o">*</span><span class="n">initial_Lstar</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">windK</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">wind_sat_freq</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">core_env_coupling_time</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span>
+                <span class="o">&amp;</span><span class="n">expected_evolution</span><span class="p">,</span>
+            <span class="k">const</span> <span class="n">ExpectedEvolutionMode</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">expected_wind_mode</span><span class="p">,</span>
+            <span class="kt">double</span> <span class="n">max_age</span> <span class="o">=</span> <span class="n">MAX_AGE</span><span class="p">,</span>
+            <span class="kt">bool</span> <span class="n">debug_mode</span> <span class="o">=</span> <span class="nb">false</span>
+        <span class="p">);</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span>
+            <span class="n">calculate_expected_unlocked_evolution</span><span class="p">(</span>
+                <span class="kt">double</span> <span class="n">phase_lag</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">secondary_mass</span><span class="p">,</span>
+
+                <span class="kt">bool</span> <span class="n">decaying</span><span class="o">=</span><span class="nb">true</span>
+            <span class="p">);</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span>
+            <span class="n">calculate_expected_disklocked_to_fast_to_locked</span><span class="p">(</span>
+                <span class="kt">double</span> <span class="n">lgQ</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">tdisk</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">async</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">tsync</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">tend</span><span class="p">,</span>
+
+                <span class="kt">bool</span> <span class="n">include_disk_lock</span><span class="o">=</span><span class="nb">true</span>
+            <span class="p">);</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span>
+            <span class="n">calculate_expected_polar_1_0</span><span class="p">(</span>
+                <span class="kt">double</span> <span class="n">tdisk</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">wstar</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">worb</span>
+            <span class="p">);</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span>
+            <span class="n">calculate_expected_polar_2_0</span><span class="p">(</span>
+                <span class="kt">double</span> <span class="n">tdisk</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">wstar</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">worb</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">phase_lag</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="o">&amp;</span><span class="n">lconv_decay_rate</span><span class="p">,</span>
+
+                <span class="c1">//envolve).</span>
+                <span class="kt">double</span> <span class="o">&amp;</span><span class="n">semimajor</span>
+            <span class="p">);</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span>
+            <span class="n">calculate_expected_oblique_m_0</span><span class="p">(</span>
+                <span class="kt">unsigned</span> <span class="n">m</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">tdisk</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">worb</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">initial_inc</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">initial_wstar</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="n">phase_lag</span><span class="p">,</span>
+
+                <span class="kt">double</span> <span class="o">&amp;</span><span class="n">min_wstar</span>
+            <span class="p">);</span>
+
+    <span class="k">protected</span><span class="o">:</span>
+        <span class="kt">void</span> <span class="n">setup</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">tear_down</span><span class="p">();</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">test_OrbitSolver</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_disk_locked_no_stellar_evolution</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_disk_locked_with_stellar_evolution</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_no_planet_evolution</span><span class="p">();</span>
+
+        <span class="c1">//</span>
+        <span class="kt">void</span> <span class="nf">test_unlocked_evolution</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_locked_evolution</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_disklocked_to_locked_to_noplanet</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_disklocked_to_fast_to_noplanet</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_disklocked_to_fast_to_locked</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_disklocked_to_locked_to_fast</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_polar_1_0_evolution</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_polar_2_0_evolution</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_oblique_1_0_evolution</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">test_oblique_2_0_evolution</span><span class="p">();</span>
+    <span class="p">};</span><span class="c1">//End test_OrbitSolver class.</span>
+
+<span class="p">}</span><span class="c1">//End Evolve namespace.</span>
+
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

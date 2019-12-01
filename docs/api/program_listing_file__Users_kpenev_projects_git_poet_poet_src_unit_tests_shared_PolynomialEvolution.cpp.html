@@ -1,0 +1,922 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File PolynomialEvolution.cpp &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File PolynomialEvolution.cpp</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file__Users_kpenev_projects_git_poet_poet_src_unit_tests_shared_PolynomialEvolution.cpp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="program-listing-for-file-polynomialevolution-cpp">
+<span id="program-listing-file-users-kpenev-projects-git-poet-poet-src-unit-tests-shared-polynomialevolution-cpp"></span><h1>Program Listing for File PolynomialEvolution.cpp<a class="headerlink" href="#program-listing-for-file-polynomialevolution-cpp" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file__Users_kpenev_projects_git_poet_poet_src_unit_tests_shared_PolynomialEvolution.cpp.html#file-users-kpenev-projects-git-poet-poet-src-unit-tests-shared-polynomialevolution-cpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">/Users/kpenev/projects/git/poet/poet_src/unit_tests/shared/PolynomialEvolution.cpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;PolynomialEvolution.h&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span> <span class="n">StellarEvolution</span> <span class="p">{</span>
+
+    <span class="kt">double</span> <span class="n">PolynomialEvolutionQuantity</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">__deriv_x</span> <span class="o">&lt;</span> <span class="n">__xmin</span> <span class="o">||</span> <span class="n">__deriv_x</span> <span class="o">&gt;</span> <span class="n">__xmax</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span> <span class="n">msg</span><span class="p">;</span>
+            <span class="n">msg</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="s">&quot;Attempt to evaluate a PolynomialEvolutionQuantity &quot;</span>
+                    <span class="s">&quot;defined over &quot;</span><span class="p">)</span>
+                <span class="o">&lt;&lt;</span> <span class="n">__xmin</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &lt; x &lt; &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">__xmax</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; at x=&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">__deriv_x</span>
+                <span class="o">&lt;&lt;</span> <span class="s">&quot;, polynomial coefficients:&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">__poly_coef</span><span class="p">;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">msg</span><span class="p">.</span><span class="n">str</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="c1">//            *static_cast&lt;int*&gt;(NULL) = 0;</span>
+            <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="n">str</span><span class="p">());</span>
+        <span class="p">}</span>
+        <span class="kt">double</span> <span class="n">xn</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">n</span> <span class="o">=</span> <span class="n">deriv_order</span><span class="p">;</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">__poly_coef</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">double</span> <span class="n">coef_mod</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">deriv_order</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">coef_mod</span> <span class="o">*=</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">i</span><span class="p">);</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">coef_mod</span> <span class="o">*</span> <span class="n">__poly_coef</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">xn</span><span class="p">;</span>
+            <span class="n">xn</span> <span class="o">*=</span> <span class="n">__deriv_x</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">MockStellarEvolution</span><span class="o">::</span><span class="n">MockStellarEvolution</span><span class="p">(</span>
+        <span class="kt">double</span> <span class="n">core_formation_age</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">R</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">Iconv</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">Irad</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">Rcore</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">Mcore</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">Lum</span>
+    <span class="p">)</span> <span class="o">:</span>
+        <span class="n">__R</span><span class="p">(</span><span class="n">R</span><span class="p">),</span>
+        <span class="n">__Iconv</span><span class="p">(</span><span class="n">Iconv</span><span class="p">),</span>
+        <span class="n">__Irad</span><span class="p">(</span><span class="n">Irad</span><span class="p">),</span>
+        <span class="n">__Rcore</span><span class="p">(</span><span class="n">Rcore</span><span class="p">),</span>
+        <span class="n">__Mcore</span><span class="p">(</span><span class="n">Mcore</span><span class="p">),</span>
+        <span class="n">__Lum</span><span class="p">(</span><span class="n">Lum</span><span class="p">),</span>
+        <span class="n">__core_formation_age</span><span class="p">(</span><span class="n">core_formation_age</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">__core_formation_age</span><span class="p">))</span>
+            <span class="n">__core_formation_age</span> <span class="o">=</span> <span class="n">rand_value</span><span class="p">(</span><span class="n">MIN_AGE</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">__R</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">rand_poly_coef</span><span class="p">(</span><span class="n">__R</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">__Iconv</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="n">rand_poly_coef</span><span class="p">(</span><span class="n">__Iconv</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">__Irad</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="n">rand_poly_coef</span><span class="p">(</span><span class="n">__Irad</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">__Rcore</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="n">rand_poly_coef</span><span class="p">(</span><span class="n">__Rcore</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">__Mcore</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="n">rand_poly_coef</span><span class="p">(</span><span class="n">__Mcore</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">__Lum</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="n">rand_poly_coef</span><span class="p">(</span><span class="n">__Lum</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">core_formation_age</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">__Irad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="n">__Rcore</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="n">__Mcore</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="n">__Irad</span> <span class="o">=</span> <span class="n">offset_age</span><span class="p">(</span><span class="n">Irad</span><span class="p">,</span> <span class="n">core_formation_age</span><span class="p">);</span>
+            <span class="n">__Rcore</span> <span class="o">=</span> <span class="n">offset_age</span><span class="p">(</span><span class="n">Rcore</span><span class="p">,</span> <span class="n">core_formation_age</span><span class="p">);</span>
+            <span class="n">__Mcore</span> <span class="o">=</span> <span class="n">offset_age</span><span class="p">(</span><span class="n">Mcore</span><span class="p">,</span> <span class="n">core_formation_age</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">__Menv</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span>
+            <span class="n">__Mcore</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span>
+                                  <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">__Mcore</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">(),</span> <span class="kt">size_t</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+        <span class="p">);</span>
+        <span class="n">__Itot</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">__Iconv</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
+                      <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">__Iconv</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">()));</span>
+        <span class="n">__Itot</span> <span class="o">=</span> <span class="n">__Iconv</span> <span class="o">+</span> <span class="n">__Irad</span><span class="p">;</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">mass_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">mass_i</span> <span class="o">&lt;</span> <span class="n">__Mcore</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">mass_i</span><span class="p">)</span>
+            <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">age_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">age_i</span> <span class="o">&lt;</span> <span class="n">__Mcore</span><span class="p">[</span><span class="n">mass_i</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">age_i</span><span class="p">)</span>
+                <span class="n">__Menv</span><span class="p">[</span><span class="n">mass_i</span><span class="p">][</span><span class="n">age_i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">__Mcore</span><span class="p">[</span><span class="n">mass_i</span><span class="p">][</span><span class="n">age_i</span><span class="p">];</span>
+        <span class="n">__Menv</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">EvolvingStellarQuantity</span> <span class="o">*</span><span class="n">MockStellarEvolution</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span>
+        <span class="n">QuantityID</span> <span class="n">quantity</span><span class="p">,</span>
+        <span class="kt">double</span> <span class="n">mass</span><span class="p">,</span>
+        <span class="kt">double</span>
+    <span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">quantity</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="nl">RADIUS</span><span class="p">:</span> <span class="k">return</span> <span class="n">exact_track</span><span class="p">(</span><span class="n">__R</span><span class="p">,</span> <span class="n">mass</span><span class="p">);</span>
+            <span class="k">case</span> <span class="nl">ICONV</span><span class="p">:</span> <span class="k">return</span> <span class="n">exact_track</span><span class="p">(</span><span class="n">__Iconv</span><span class="p">,</span> <span class="n">mass</span><span class="p">);</span>
+            <span class="k">case</span> <span class="nl">LUM</span><span class="p">:</span> <span class="k">return</span> <span class="n">exact_track</span><span class="p">(</span><span class="n">__Lum</span><span class="p">,</span> <span class="n">mass</span><span class="p">);</span>
+            <span class="k">case</span> <span class="nl">IRAD</span><span class="p">:</span> <span class="k">return</span> <span class="n">exact_track</span><span class="p">(</span><span class="n">__Irad</span><span class="p">,</span> <span class="n">mass</span><span class="p">);</span>
+            <span class="k">case</span> <span class="nl">MRAD</span><span class="p">:</span> <span class="k">return</span> <span class="n">exact_track</span><span class="p">(</span><span class="n">__Mcore</span><span class="p">,</span> <span class="n">mass</span><span class="p">);</span>
+            <span class="k">case</span> <span class="nl">RRAD</span><span class="p">:</span> <span class="k">return</span> <span class="n">exact_track</span><span class="p">(</span><span class="n">__Rcore</span><span class="p">,</span> <span class="n">mass</span><span class="p">);</span>
+            <span class="k">default</span><span class="o">:</span> <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">BadFunctionArguments</span><span class="p">(</span>
+                         <span class="s">&quot;Unknown quantity ID&quot;</span>
+                     <span class="p">);</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="n">MockStellarEvolution</span> <span class="o">*</span><span class="n">make_no_evolution</span><span class="p">(</span><span class="kt">double</span> <span class="n">Rstar</span><span class="p">,</span> <span class="kt">double</span> <span class="n">Iconv</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">StellarEvolution</span><span class="o">::</span><span class="n">MockStellarEvolution</span><span class="p">(</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//R</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Rstar</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Iconv</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Iconv</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Irad</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Rcore</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Mcore</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Lum</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">MockStellarEvolution</span> <span class="o">*</span><span class="n">make_linear_I_evolution</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">StellarEvolution</span><span class="o">::</span><span class="n">MockStellarEvolution</span><span class="p">(</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//R</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Iconv</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">2</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Irad</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">2</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Rcore</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Mcore</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="c1">//Lum</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span><span class="c1">//End StellarEvolution namespace.</span>
+
+<span class="cp">#if 0</span><span class="c"></span>
+<span class="c">    StarData::StarData() :</span>
+<span class="c">        num_stars_created(0),</span>
+<span class="c">        Lrad_track(NULL),</span>
+<span class="c">        Lconv_track(NULL),</span>
+<span class="c">        evolution_masses(100),</span>
+<span class="c">        evolution_ages(100),</span>
+<span class="c">        r_coef(rand_poly_coef()),</span>
+<span class="c">        Iconv_coef(rand_poly_coef()),</span>
+<span class="c">        Irad_coef(rand_poly_coef()),</span>
+<span class="c">        Mrad_coef(rand_poly_coef()),</span>
+<span class="c">        Rcore_coef(rand_poly_coef())</span>
+<span class="c">    {</span>
+<span class="c">        for (size_t age_ind=0; age_ind &lt; evolution_ages.size(); age_ind++) {</span>
+<span class="c">            evolution_ages[age_ind] = (</span>
+<span class="c">                MIN_AGE</span>
+<span class="c">                +</span>
+<span class="c">                age_ind * (max_age - MIN_AGE) / evolution_ages.size()</span>
+<span class="c">            );</span>
+<span class="c">        }</span>
+
+<span class="c">        for (</span>
+<span class="c">            size_t mass_ind = 0;</span>
+<span class="c">            mass_ind &lt; evolution_masses.size();</span>
+<span class="c">            ++mass_ind</span>
+<span class="c">        ) {</span>
+<span class="c">            evolution_masses[mass_ind] = (</span>
+<span class="c">                min_stellar_mass</span>
+<span class="c">                +</span>
+<span class="c">                mass_ind</span>
+<span class="c">                *</span>
+<span class="c">                (max_stellar_mass - min_stellar_mass)</span>
+<span class="c">                /</span>
+<span class="c">                evolution_masses.size()</span>
+<span class="c">            );</span>
+<span class="c">        }</span>
+<span class="c">    }</span>
+
+
+<span class="c">    StarData::~StarData()</span>
+<span class="c">    {</span>
+<span class="c">        if(Lrad_track) delete Lrad_track;</span>
+<span class="c">        if(Lconv_track) delete Lconv_track;</span>
+<span class="c">    }</span>
+
+<span class="c">    void StarData::create_random_star(Star::InterpolatedEvolutionStar **star)</span>
+<span class="c">    {</span>
+<span class="c">        mass = rand_value(min_stellar_mass, max_stellar_mass);</span>
+<span class="c">        feh = rand_value(-1.0, 0.5);</span>
+<span class="c">        age = rand_value(MIN_AGE, 2.1);</span>
+<span class="c">        radius = (rand_value(0.9, 1.1)) * eval_poly(r_coef, mass, age);</span>
+<span class="c">        conv_spin = rand_value(0.0, 1.0);</span>
+<span class="c">        rad_spin = rand_value(0.0, 1.0);</span>
+<span class="c">        tidal_Q = std::pow(10.0, rand_value(5.0,10.0));</span>
+<span class="c">        wind_strength = rand_value(0.0, 1.0);</span>
+<span class="c">        wind_sat_freq = rand_value(0.0, 1.0);</span>
+<span class="c">        disk_lock_w = rand_value(0.0, wind_sat_freq);</span>
+<span class="c">        disk_lock_time = evolution_ages[rand_value(0, evolution_ages.size()-1)];</span>
+<span class="c">        coupling_timescale = rand_value(0.0, 1.0);</span>
+<span class="c">        Q_trans_width = 0;</span>
+
+<span class="c">        MockStellarEvolution evol(Core::NaN,</span>
+<span class="c">                                  r_coef,</span>
+<span class="c">                                  Iconv_coef,</span>
+<span class="c">                                  Irad_coef,</span>
+<span class="c">                                  Rcore_coef,</span>
+<span class="c">                                  Mcore_coef);</span>
+<span class="c">        (*star) = new Star(mass,</span>
+<span class="c">                           feh,</span>
+<span class="c">                           wind_strength,</span>
+<span class="c">                           wind_sat_freq,</span>
+<span class="c">                           coupling_timescale,</span>
+<span class="c">                           evol);</span>
+
+<span class="c">        Lconv_track=exact_track(rand_poly_coef(), mass);</span>
+<span class="c">        Lrad_track=exact_track(rand_poly_coef(), mass);</span>
+<span class="c">        Lconv.resize(evolution_ages.size());</span>
+<span class="c">        Lconv = tabulate_track(Lconv_track, evolution_ages);</span>
+<span class="c">        Lrad.resize(evolution_ages.size());</span>
+<span class="c">        Lrad = tabulate_track(Lrad_track, evolution_ages);</span>
+<span class="c">        Iconv.resize(evolution_ages.size());</span>
+<span class="c">        Iconv = tabulate_track(exact_track(Iconv_coef, mass), evolution_ages);</span>
+<span class="c">        std::valarray&lt;double&gt; Itot =</span>
+<span class="c">            tabulate_track(exact_track(Itot_coef, mass), evolution_ages);</span>
+
+<span class="c">        std::list&lt;double&gt; Irad_list;</span>
+<span class="c">        for (size_t i=0; i &lt; evolution_ages.size(); i++)</span>
+<span class="c">            Irad_list.push_back(Itot[i]-Iconv[i]);</span>
+<span class="c">        Irad = list_to_valarray(Irad_list);</span>
+
+<span class="c">        Mrad_deriv = tabulate_track(exact_track(Mrad_coef, mass),</span>
+<span class="c">                                    evolution_ages, 1);</span>
+<span class="c">        Lconv_deriv = tabulate_track(Lconv_track, evolution_ages, 1);</span>
+<span class="c">        Lrad_deriv = tabulate_track(Lrad_track, evolution_ages, 1);</span>
+<span class="c">        Rrad = tabulate_track(exact_track(Rcore_coef, mass), evolution_ages);</span>
+<span class="c">        all_radii = tabulate_track(exact_track(r_coef, mass), evolution_ages);</span>
+
+<span class="c">        std::valarray&lt;double&gt; fake_derivs;</span>
+<span class="c">        (*star)-&gt;set_angular_momentum_evolution(evolution_ages,</span>
+<span class="c">                                                tabulate_track(Lrad_track, evolution_ages),</span>
+<span class="c">                                                tabulate_track(Lrad_track, evolution_ages, 1), radiative);</span>
+<span class="c">        (*star)-&gt;set_angular_momentum_evolution(evolution_ages,</span>
+<span class="c">                                                tabulate_track(Lconv_track, evolution_ages),</span>
+<span class="c">                                                tabulate_track(Lconv_track, evolution_ages, 1), convective);</span>
+<span class="c">        num_stars_created++;</span>
+<span class="c">    }</span>
+
+<span class="c">void PlanetData::create_random_planet(Planet** planet)</span>
+<span class="c">{</span>
+<span class="c">    mass = rand_value(min_planet_mass, max_planet_mass);</span>
+<span class="c">    radius = rand_value(min_planet_radius, max_planet_radius);</span>
+
+<span class="c">    std::list&lt;double&gt; semis;</span>
+<span class="c">    std::list&lt;double&gt; ages;</span>
+<span class="c">    for (double age=0; age &lt; 3; age += 0.1) {</span>
+<span class="c">        ages.push_back(age);</span>
+<span class="c">        semis.push_back(get_semi(age));</span>
+<span class="c">    }</span>
+<span class="c">    this-&gt;ages.resize(ages.size());</span>
+<span class="c">    this-&gt;ages = list_to_valarray(ages);</span>
+<span class="c">    this-&gt;semis.resize(semis.size());</span>
+<span class="c">    this-&gt;semis = list_to_valarray(semis);</span>
+
+<span class="c">    std::valarray&lt;double&gt; fakeDerivs;</span>
+<span class="c">    double curr_semi = get_semi(star-&gt;age());</span>
+<span class="c">    (*planet) = new Planet(*star, mass, radius, curr_semi);</span>
+<span class="c">    (*planet)-&gt;set_semimajor_evolution(this-&gt;ages,</span>
+<span class="c">            this-&gt;semis, fakeDerivs);</span>
+<span class="c">}</span>
+
+<span class="c">double PlanetData::get_semi(double age)</span>
+<span class="c">{</span>
+<span class="c">    return (-age*age*age + 1.5*age*age + 2*age + 3)/50;</span>
+<span class="c">}</span>
+
+<span class="c">PlanetData::~PlanetData()</span>
+<span class="c">{</span>
+<span class="c">    delete sdata;</span>
+<span class="c">    if(star) delete star;</span>
+<span class="c">}</span>
+
+<span class="c">std::ostream &amp;operator&lt;&lt;(std::ostream &amp;os,</span>
+<span class="c">            const PolynomialEvolutionTrack &amp;track)</span>
+<span class="c">{</span>
+
+<span class="c">    for(size_t p=0; p&lt;track.poly_coef.size(); p++) {</span>
+<span class="c">        os &lt;&lt; track.poly_coef[p];</span>
+<span class="c">        if(p) os &lt;&lt; &quot;x&quot;;</span>
+<span class="c">        if(p&gt;1) os &lt;&lt; &quot;^&quot; &lt;&lt; p;</span>
+<span class="c">        if(p&lt;track.poly_coef.size()-1) os &lt;&lt; &quot; + &quot;;</span>
+<span class="c">    }</span>
+<span class="c">    os &lt;&lt; &quot;, &quot; &lt;&lt; track.xmin &lt;&lt; &quot; &lt; x &lt; &quot; &lt;&lt; track.xmax;</span>
+<span class="c">    return os;</span>
+<span class="c">}</span>
+<span class="cp">#endif</span>
+
+<span class="k">namespace</span> <span class="n">StellarEvolution</span> <span class="p">{</span>
+
+    <span class="n">PolynomialEvolutionQuantity</span> <span class="o">*</span><span class="n">exact_track</span><span class="p">(</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">poly_coef</span><span class="p">,</span>
+        <span class="kt">double</span> <span class="n">mass</span><span class="p">,</span>
+        <span class="kt">double</span> <span class="n">low_mass_age_scaling</span><span class="p">,</span>
+        <span class="kt">double</span> <span class="n">high_mass_age_scaling</span><span class="p">,</span>
+        <span class="kt">double</span> <span class="n">scale_mass</span>
+    <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">scale_mass</span><span class="p">))</span> <span class="n">scale_mass</span><span class="o">=</span><span class="n">mass</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">age_poly_coeff</span><span class="p">(</span><span class="n">poly_coef</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+        <span class="kt">double</span> <span class="n">age_scaling</span><span class="o">=</span><span class="p">(</span><span class="n">mass</span> <span class="o">&lt;=</span> <span class="n">MAX_LOW_MASS</span> <span class="o">?</span> <span class="nl">low_mass_age_scaling</span>
+                                                 <span class="p">:</span> <span class="n">high_mass_age_scaling</span><span class="p">);</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">age_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">age_i</span> <span class="o">&lt;</span> <span class="n">poly_coef</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">age_i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">double</span> <span class="n">mass_pow</span><span class="o">=</span><span class="mf">1.0</span><span class="p">;</span>
+            <span class="n">age_poly_coeff</span><span class="p">[</span><span class="n">age_i</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span><span class="p">;</span>
+            <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">mass_i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">mass_i</span><span class="o">&lt;</span><span class="n">poly_coef</span><span class="p">[</span><span class="n">age_i</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="n">mass_i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">age_poly_coeff</span><span class="p">[</span><span class="n">age_i</span><span class="p">]</span><span class="o">+=</span><span class="n">mass_pow</span><span class="o">*</span><span class="n">poly_coef</span><span class="p">[</span><span class="n">age_i</span><span class="p">][</span><span class="n">mass_i</span><span class="p">];</span>
+                <span class="n">mass_pow</span><span class="o">*=</span><span class="n">mass</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="n">age_poly_coeff</span><span class="p">[</span><span class="n">age_i</span><span class="p">]</span><span class="o">*=</span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">scale_mass</span><span class="p">,</span> <span class="n">age_scaling</span><span class="o">*</span><span class="n">age_i</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">PolynomialEvolutionQuantity</span><span class="p">(</span>
+            <span class="n">age_poly_coeff</span><span class="p">,</span>
+            <span class="n">MIN_AGE</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">()</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span><span class="c1">//End StellarEvolution namespace.</span>
+
+<span class="cp">#if 0</span><span class="c"></span>
+<span class="c">double eval_poly(const std::valarray&lt; std::valarray&lt;double&gt; &gt; &amp;poly_coef,</span>
+<span class="c">        double mass, double age, double low_mass_age_scaling,</span>
+<span class="c">        double high_mass_age_scaling, double scale_mass)</span>
+<span class="c">{</span>
+<span class="c">    if(std::isnan(scale_mass)) scale_mass=mass;</span>
+<span class="c">    double age_scaling=(mass&lt;=max_low_mass ? low_mass_age_scaling :</span>
+<span class="c">            high_mass_age_scaling), result=0.0, age_pow=1.0;</span>
+<span class="c">    for(size_t age_i=0; age_i&lt;poly_coef.size(); age_i++) {</span>
+<span class="c">        double mass_pow=1.0, mass_result=0.0;</span>
+<span class="c">        for(size_t mass_i=0; mass_i&lt;poly_coef[age_i].size(); mass_i++) {</span>
+<span class="c">            mass_result+=mass_pow*poly_coef[age_i][mass_i];</span>
+<span class="c">            mass_pow*=mass;</span>
+<span class="c">        }</span>
+<span class="c">        result+=mass_result*age_pow*std::pow(scale_mass, age_scaling*age_i);</span>
+<span class="c">        age_pow*=age;</span>
+<span class="c">    }</span>
+<span class="c">    return result;</span>
+<span class="c">}</span>
+
+<span class="c">std::valarray&lt;double&gt; tabulate_track(PolynomialEvolutionQuantity *track,</span>
+<span class="c">        std::valarray&lt;double&gt; ages, unsigned deriv_order)</span>
+<span class="c">{</span>
+<span class="c">    std::valarray&lt;double&gt; data(ages.size());</span>
+<span class="c">    for(unsigned a=0; a&lt;ages.size(); a++) {</span>
+<span class="c">        (*track)(ages[a]);</span>
+<span class="c">        data[a]=track-&gt;order(deriv_order);</span>
+<span class="c">    }</span>
+<span class="c">    return data;</span>
+<span class="c">}</span>
+
+<span class="c">PolynomialStellarEvolution::PolynomialStellarEvolution(</span>
+<span class="c">            const std::valarray&lt;double&gt; &amp;masses,</span>
+<span class="c">            const std::valarray&lt;double&gt; &amp;ages,</span>
+<span class="c">            const std::valarray&lt; std::valarray&lt;double&gt; &gt; &amp;r_coef,</span>
+<span class="c">            const std::valarray&lt; std::valarray&lt;double&gt; &gt; &amp;Iconv_coef,</span>
+<span class="c">            const std::valarray&lt; std::valarray&lt;double&gt; &gt; &amp;Itot_coef,</span>
+<span class="c">            const std::valarray&lt; std::valarray&lt;double&gt; &gt; &amp;Mrad_coef,</span>
+<span class="c">            const std::valarray&lt; std::valarray&lt;double&gt; &gt; &amp;Rcore_coef,</span>
+<span class="c">            double low_mass_age_scaling, double high_mass_age_scaling)</span>
+<span class="c">{</span>
+<span class="c">    std::list&lt; std::valarray&lt;double&gt; &gt; r_data, Iconv_data, Irad_data,</span>
+<span class="c">    Mrad_data, Rcore_data;</span>
+<span class="c">    PolynomialEvolutionQuantity *track;</span>
+<span class="c">    for(unsigned i=0; i&lt;masses.size(); i++) {</span>
+<span class="c">        track=exact_track(r_coef, masses[i], low_mass_age_scaling,</span>
+<span class="c">                high_mass_age_scaling);</span>
+<span class="c">        r_data.push_back(tabulate_track(track, ages));</span>
+<span class="c">        delete track;</span>
+<span class="c">        track=exact_track(Iconv_coef, masses[i],</span>
+<span class="c">                low_mass_age_scaling, high_mass_age_scaling);</span>
+<span class="c">        Iconv_data.push_back(tabulate_track(track, ages));</span>
+<span class="c">        delete track;</span>
+<span class="c">        track=exact_track(Itot_coef-Iconv_coef, masses[i],</span>
+<span class="c">                low_mass_age_scaling, high_mass_age_scaling);</span>
+<span class="c">        Irad_data.push_back(tabulate_track(track, ages));</span>
+<span class="c">        delete track;</span>
+<span class="c">        track=exact_track(Mrad_coef, masses[i],</span>
+<span class="c">                low_mass_age_scaling, high_mass_age_scaling);</span>
+<span class="c">        Mrad_data.push_back(tabulate_track(track, ages));</span>
+<span class="c">        delete track;</span>
+<span class="c">        track=exact_track(Rcore_coef, masses[i],</span>
+<span class="c">                low_mass_age_scaling, high_mass_age_scaling);</span>
+<span class="c">        Rcore_data.push_back(tabulate_track(track, ages));</span>
+<span class="c">        delete track;</span>
+<span class="c">    };</span>
+<span class="c">    interpolate_from(masses,</span>
+<span class="c">            std::list&lt; std::valarray&lt;double&gt; &gt;(masses.size(), ages),</span>
+<span class="c">            r_data, Iconv_data, Irad_data, Mrad_data, Rcore_data, NaN, NaN,</span>
+<span class="c">            NaN, NaN, NaN, 0, 0, 0, 0, 0,</span>
+<span class="c">            std::list&lt; std::valarray&lt;double&gt; &gt;(), 0,</span>
+<span class="c">            max_low_mass, low_mass_age_scaling, high_mass_age_scaling);</span>
+<span class="c">}</span>
+<span class="cp">#endif</span>
+
+<span class="kt">double</span> <span class="n">ExponentialPlusFunc</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="k">const</span> <span class="n">Core</span><span class="o">::</span><span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">offset_deriv</span> <span class="o">=</span> <span class="n">__offset</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">__scale</span>
+                     <span class="o">*</span>
+                     <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">__rate</span><span class="p">,</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">))</span>
+                     <span class="o">*</span>
+                     <span class="n">std</span><span class="o">::</span><span class="n">exp</span><span class="p">(</span><span class="n">__rate</span> <span class="o">*</span> <span class="n">__deriv_x</span><span class="p">)</span>
+                     <span class="o">+</span>
+                     <span class="n">offset_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">));</span>
+    <span class="k">delete</span> <span class="n">offset_deriv</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">FuncPlusFunc</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">f1_deriv</span> <span class="o">=</span> <span class="n">__f1</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">),</span>
+                              <span class="o">*</span><span class="n">f2_deriv</span> <span class="o">=</span> <span class="n">__f2</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">)</span>
+                     <span class="o">+</span>
+                     <span class="n">f2_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">));</span>
+    <span class="k">delete</span> <span class="n">f1_deriv</span><span class="p">;</span>
+    <span class="k">delete</span> <span class="n">f2_deriv</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="n">PiecewiseFunction</span><span class="o">::</span><span class="n">PiecewiseFunction</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;</span> <span class="o">&amp;</span><span class="n">pieces</span><span class="p">,</span>
+    <span class="kt">double</span> <span class="n">deriv_x</span>
+<span class="p">)</span> <span class="o">:</span>
+    <span class="n">__deriv_x</span><span class="p">(</span><span class="n">deriv_x</span><span class="p">),</span>
+    <span class="n">__range_low</span><span class="p">(</span><span class="n">Core</span><span class="o">::</span><span class="n">Inf</span><span class="p">),</span>
+    <span class="n">__range_high</span><span class="p">(</span><span class="o">-</span><span class="n">Core</span><span class="o">::</span><span class="n">Inf</span><span class="p">),</span>
+    <span class="n">__pieces</span><span class="p">(</span><span class="n">pieces</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;::</span><span class="n">const_iterator</span>
+            <span class="n">piece_i</span> <span class="o">=</span> <span class="n">__pieces</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+        <span class="n">piece_i</span><span class="o">!=</span><span class="n">__pieces</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+        <span class="n">piece_i</span><span class="o">++</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">((</span><span class="o">*</span><span class="n">piece_i</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">range_low</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">__range_low</span><span class="p">)</span>
+            <span class="n">__range_low</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">piece_i</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">range_low</span><span class="p">();</span>
+        <span class="k">if</span><span class="p">((</span><span class="o">*</span><span class="n">piece_i</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">range_high</span><span class="p">()</span><span class="o">&gt;</span><span class="n">__range_high</span><span class="p">)</span>
+            <span class="n">__range_high</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">piece_i</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">range_high</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">PiecewiseFunction</span><span class="o">::</span><span class="n">add_piece</span><span class="p">(</span><span class="k">const</span> <span class="n">OneArgumentDiffFunction</span> <span class="o">*</span><span class="n">piece</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">__pieces</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">piece</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">piece</span><span class="o">-&gt;</span><span class="n">range_low</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">__range_low</span><span class="p">)</span>
+        <span class="n">__range_low</span> <span class="o">=</span> <span class="n">piece</span><span class="o">-&gt;</span><span class="n">range_low</span><span class="p">();</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">piece</span><span class="o">-&gt;</span><span class="n">range_high</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">__range_high</span><span class="p">)</span>
+        <span class="n">__range_high</span> <span class="o">=</span> <span class="n">piece</span><span class="o">-&gt;</span><span class="n">range_high</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">PiecewiseFunction</span><span class="o">::</span><span class="k">operator</span><span class="p">()(</span><span class="kt">double</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="kt">double</span> <span class="n">deriv_x</span> <span class="o">=</span> <span class="n">__deriv_x</span><span class="p">;</span>
+    <span class="k">const_cast</span><span class="o">&lt;</span><span class="n">PiecewiseFunction</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">__deriv_x</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="k">const_cast</span><span class="o">&lt;</span><span class="n">PiecewiseFunction</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">__deriv_x</span> <span class="o">=</span> <span class="n">deriv_x</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">PiecewiseFunction</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">))</span> <span class="k">return</span> <span class="n">Core</span><span class="o">::</span><span class="n">NaN</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">OneArgumentDiffFunction</span> <span class="o">*&gt;::</span><span class="n">const_iterator</span>
+            <span class="n">fi</span> <span class="o">=</span> <span class="n">__pieces</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+        <span class="n">fi</span> <span class="o">!=</span> <span class="n">__pieces</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+        <span class="o">++</span><span class="n">fi</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span>
+            <span class="n">__deriv_x</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="o">*</span><span class="n">fi</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">range_low</span><span class="p">()</span>
+            <span class="o">&amp;&amp;</span>
+            <span class="n">__deriv_x</span> <span class="o">&lt;</span> <span class="p">(</span><span class="o">*</span><span class="n">fi</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">range_high</span><span class="p">()</span>
+        <span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="o">**</span><span class="n">fi</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+            <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">df</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">fi</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+            <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">);</span>
+            <span class="k">delete</span> <span class="n">df</span><span class="p">;</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="o">++</span><span class="n">index</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">__deriv_x</span> <span class="o">==</span> <span class="n">__pieces</span><span class="p">.</span><span class="n">back</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">range_high</span><span class="p">())</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">__pieces</span><span class="p">.</span><span class="n">back</span><span class="p">()))(</span><span class="n">__deriv_x</span><span class="p">);</span>
+        <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">df</span> <span class="o">=</span> <span class="n">__pieces</span><span class="p">.</span><span class="n">back</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">);</span>
+        <span class="k">delete</span> <span class="n">df</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span> <span class="n">msg</span><span class="p">;</span>
+    <span class="n">msg</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Requested derivative or function value at age=&quot;</span>
+        <span class="o">&lt;&lt;</span> <span class="n">__deriv_x</span>
+        <span class="o">&lt;&lt;</span> <span class="s">&quot;, outside the range of any piece in PiecewiseFunction::order.&quot;</span><span class="p">;</span>
+    <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">BadFunctionArguments</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="n">str</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">FunctionRatio</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">df1</span> <span class="o">=</span> <span class="n">__f1</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">),</span>
+                                  <span class="o">*</span><span class="n">df2</span> <span class="o">=</span> <span class="n">__f2</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="n">result</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">df1</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="o">-</span>
+                <span class="n">df1</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="p">);</span>
+        <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">df1</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="o">-</span>
+                <span class="p">(</span>
+                    <span class="mf">2.0</span> <span class="o">*</span> <span class="n">df1</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="o">/</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="o">-</span>
+                <span class="n">df1</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">+</span>
+                <span class="p">(</span>
+                    <span class="n">df1</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="o">/</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df2</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">);</span>
+        <span class="k">else</span>
+            <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">BadFunctionArguments</span><span class="p">(</span>
+                <span class="s">&quot;Function ratio derivatives are only implemneted up to and &quot;</span>
+                <span class="s">&quot;including order 2.&quot;</span>
+            <span class="p">);</span>
+        <span class="k">delete</span> <span class="n">df1</span><span class="p">;</span>
+        <span class="k">delete</span> <span class="n">df2</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">FunctionToPower</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">df</span> <span class="o">=</span> <span class="n">__f</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="n">result</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">__power</span>
+                      <span class="o">*</span>
+                      <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">__power</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                      <span class="o">*</span>
+                      <span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+        <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">__power</span>
+                <span class="o">*</span>
+                <span class="p">(</span>
+                    <span class="p">(</span><span class="n">__power</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="o">*</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">__power</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="o">*</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="o">+</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">__power</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">df</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">);</span>
+        <span class="k">else</span>
+            <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">BadFunctionArguments</span><span class="p">(</span>
+                <span class="s">&quot;Function to power derivatives are only implemneted up to &quot;</span>
+                <span class="s">&quot;and including order 2.&quot;</span>
+            <span class="p">);</span>
+        <span class="k">delete</span> <span class="n">df</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">ScaledFunction</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">f_deriv</span> <span class="o">=</span> <span class="n">__f</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">__scale</span><span class="o">*</span><span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">);</span>
+    <span class="k">delete</span> <span class="n">f_deriv</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">LogFunction</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">f_deriv</span><span class="o">=</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="n">result</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+        <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                      <span class="o">-</span>
+                      <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">));</span>
+        <span class="k">else</span>
+            <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">BadFunctionArguments</span><span class="p">(</span>
+                <span class="s">&quot;Log(Function) derivatives are only implemneted up to and &quot;</span>
+                <span class="s">&quot;including order 2.&quot;</span>
+            <span class="p">);</span>
+        <span class="k">delete</span> <span class="n">f_deriv</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">CosFunction</span><span class="o">::</span><span class="n">order</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">deriv_order</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)(</span><span class="n">__deriv_x</span><span class="p">);</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="n">FunctionDerivatives</span> <span class="o">*</span><span class="n">f_deriv</span><span class="o">=</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">deriv</span><span class="p">(</span><span class="n">__deriv_x</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="n">result</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="o">-</span> <span class="n">std</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span><span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">*</span> <span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">deriv_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">cos</span><span class="p">(</span><span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">+</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span><span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">f_deriv</span><span class="o">-&gt;</span><span class="n">order</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="p">);</span>
+        <span class="k">else</span>
+            <span class="k">throw</span> <span class="n">Core</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="n">BadFunctionArguments</span><span class="p">(</span>
+                <span class="s">&quot;Cos(Function) derivatives are only implemneted up to and &quot;</span>
+                <span class="s">&quot;including order 2.&quot;</span>
+            <span class="p">);</span>
+        <span class="k">delete</span> <span class="n">f_deriv</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">solve</span><span class="p">(</span><span class="kt">double</span> <span class="n">guess_x</span><span class="p">,</span>
+             <span class="kt">double</span> <span class="n">abs_precision</span><span class="p">,</span>
+             <span class="kt">double</span> <span class="n">rel_precision</span><span class="p">,</span>
+             <span class="kt">double</span> <span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">params</span><span class="p">),</span>
+             <span class="kt">double</span> <span class="p">(</span><span class="o">*</span><span class="n">df</span><span class="p">)</span> <span class="p">(</span><span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">params</span><span class="p">),</span>
+             <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">fdf</span><span class="p">)</span> <span class="p">(</span><span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">params</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">df</span><span class="p">),</span>
+             <span class="kt">void</span> <span class="o">*</span><span class="n">params</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">status</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">iter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">const</span> <span class="n">gsl_root_fdfsolver_type</span> <span class="o">*</span><span class="n">T</span><span class="p">;</span>
+    <span class="n">gsl_root_fdfsolver</span> <span class="o">*</span><span class="n">s</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">guess_x</span><span class="p">;</span>
+    <span class="n">gsl_function_fdf</span> <span class="n">FDF</span><span class="p">;</span>
+
+    <span class="n">FDF</span><span class="p">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="p">;</span>
+    <span class="n">FDF</span><span class="p">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">;</span>
+    <span class="n">FDF</span><span class="p">.</span><span class="n">fdf</span> <span class="o">=</span> <span class="n">fdf</span><span class="p">;</span>
+    <span class="n">FDF</span><span class="p">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">;</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="n">gsl_root_fdfsolver_newton</span><span class="p">;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">gsl_root_fdfsolver_alloc</span> <span class="p">(</span><span class="n">T</span><span class="p">);</span>
+    <span class="n">gsl_root_fdfsolver_set</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">FDF</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="n">iter</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">gsl_root_fdfsolver_iterate</span> <span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">gsl_root_fdfsolver_root</span> <span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">gsl_root_test_delta</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">abs_precision</span><span class="p">,</span> <span class="n">rel_precision</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">GSL_CONTINUE</span><span class="p">);</span>
+
+    <span class="n">gsl_root_fdfsolver_free</span> <span class="p">(</span><span class="n">s</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

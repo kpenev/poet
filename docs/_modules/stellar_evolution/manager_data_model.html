@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.manager_data_model &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>stellar_evolution.manager_data_model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for stellar_evolution.manager_data_model</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3 -u</span>
+
+<span class="sd">&quot;&quot;&quot;Define the data model for stellar_evolution_manager sqlalchemy based.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span>\
+    <span class="n">Column</span><span class="p">,</span>\
+    <span class="n">Integer</span><span class="p">,</span>\
+    <span class="n">String</span><span class="p">,</span>\
+    <span class="n">Boolean</span><span class="p">,</span>\
+    <span class="n">Numeric</span><span class="p">,</span>\
+    <span class="n">Float</span><span class="p">,</span>\
+    <span class="n">ForeignKey</span><span class="p">,</span>\
+    <span class="n">Table</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="k">import</span> <span class="n">relationship</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="k">import</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">declared_attr</span>
+
+<span class="n">DataModelBase</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+<span class="n">interpolator_tracks_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s1">&#39;interpolator_tracks&#39;</span><span class="p">,</span>
+    <span class="n">DataModelBase</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;interpolator_id&#39;</span><span class="p">,</span>
+           <span class="n">Integer</span><span class="p">,</span>
+           <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;interpolators.id&#39;</span><span class="p">,</span>
+                      <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                      <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">)),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;track_id&#39;</span><span class="p">,</span>
+           <span class="n">Integer</span><span class="p">,</span>
+           <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;tracks.id&#39;</span><span class="p">,</span>
+                      <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                      <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="c1">#Usage dictated by SQLAlchemy</span>
+<span class="c1">#pylint: disable=too-few-public-methods</span>
+<div class="viewcode-block" id="Quantity"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.Quantity">[docs]</a><span class="k">class</span> <span class="nc">Quantity</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The set of quantities tracked by stellar evolution.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;quantities&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A unique identifier for each quantity.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The name used for this quantity by the stellar_evolution module.&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;(</span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></div>
+
+<div class="viewcode-block" id="ModelSuite"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.ModelSuite">[docs]</a><span class="k">class</span> <span class="nc">ModelSuite</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The various stellar evolution suites (e.g. MESA, YREC, ...).&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;model_suites&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A unique identifier for the suite.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The name of the suite.&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></div>
+
+<div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The available stellar evolution tracks.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;tracks&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A unique identifier for each track.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The absolute name of the file containing the track.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">mass</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Numeric</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The stellar mass of the track contained in the given file.&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">feh</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Numeric</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The [Fe/H] of the track contained in the given file.&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">model_suite_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;model_suites.id&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The stellar evolution suite used to calculate the tracks.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">checksum</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">suite</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;ModelSuite&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Track.__str__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.Track.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Human readable representation.&quot;&quot;&quot;</span>
+
+        <span class="c1">#SQLAlchemy defined appropriate conversion.</span>
+        <span class="c1">#pylint: disable=bad-string-format-type</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">suite</span><span class="p">)</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;(M = </span><span class="si">%g</span><span class="s1"> Msun, [Fe/H] = </span><span class="si">%g</span><span class="s1">) [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span><span class="p">))</span></div></div>
+        <span class="c1">#pylint: enable=bad-string-format-type</span>
+
+<div class="viewcode-block" id="InterpolationParameters"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.InterpolationParameters">[docs]</a><span class="k">class</span> <span class="nc">InterpolationParameters</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The nodes and smoothing arguments for a given interpolator/quantity.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;interpolation_parameters&#39;</span>
+
+    <span class="n">interpolator_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;interpolators.id&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The interpolator this set of nodes applies to.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">quantity_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;quantities.id&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The ID of the quantity to which this set of nodes applies.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span>
+        <span class="n">type_</span><span class="o">=</span><span class="n">Integer</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The number of nodes used when constructing the interpolator &#39;</span>
+        <span class="s1">&#39;for the given quantity.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">smoothing</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;smoothing&#39;</span><span class="p">,</span>
+        <span class="n">type_</span><span class="o">=</span><span class="n">Numeric</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The smoothing argument used when constructing the &#39;</span>
+        <span class="s1">&#39;interpolator for the given quantity.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">vs_log_age</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;vs_log_age&#39;</span><span class="p">,</span>
+        <span class="n">type_</span><span class="o">=</span><span class="n">Boolean</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Is the given quantity interpolation vs log(age) instead of &#39;</span>
+        <span class="s1">&#39;age?&#39;</span>
+    <span class="p">)</span>
+    <span class="n">log_quantity</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;log_quantity&#39;</span><span class="p">,</span>
+        <span class="n">type_</span><span class="o">=</span><span class="n">Boolean</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Is the log of the given quantity interpolated instead of &#39;</span>
+        <span class="s1">&#39;the quantity?&#39;</span>
+    <span class="p">)</span>
+    <span class="n">quantity</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;Quantity&#39;</span><span class="p">)</span>
+    <span class="n">interpolator</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;SerializedInterpolator&#39;</span><span class="p">,</span>
+                                <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;parameters&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#SQLAlchemy defined appropriate conversion.</span>
+        <span class="c1">#pylint: disable=bad-string-format-type</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="p">)</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;(</span><span class="si">%d</span><span class="s1"> nodes, </span><span class="si">%g</span><span class="s1"> smoothing)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span><span class="p">))</span></div>
+        <span class="c1">#pylint: enable=bad-string-format-type</span>
+
+<div class="viewcode-block" id="SerializedInterpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.SerializedInterpolator">[docs]</a><span class="k">class</span> <span class="nc">SerializedInterpolator</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The current set of serialized stellar evolution interpolators.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;interpolators&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A uniquie identifier for each serialized interpolator&#39;</span>
+    <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A unique human-readable name assigned to this interpolator.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The name of the file containing the serialized interpolator.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">checksum</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A checksum of the serialized interpolator file.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;InterpolationParameters&#39;</span><span class="p">,</span>
+                              <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;interpolator&#39;</span><span class="p">)</span>
+    <span class="n">tracks</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Track&quot;</span><span class="p">,</span>
+                          <span class="n">secondary</span><span class="o">=</span><span class="n">interpolator_tracks_table</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#SQLAlchemy defined appropriate conversion.</span>
+        <span class="c1">#pylint: disable=bad-string-format-type</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%d</span><span class="s1">(</span><span class="si">%s</span><span class="s1">), Parameters: </span><span class="si">%s</span><span class="s1">, Tracks: </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="o">%</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                 <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]),</span>
+                 <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">])))</span></div>
+        <span class="c1">#pylint: enable=bad-string-format-type</span>
+
+<div class="viewcode-block" id="VarchangeDependentVariable"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeDependentVariable">[docs]</a><span class="k">class</span> <span class="nc">VarchangeDependentVariable</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The variables from which to transforming to M*, [Fe/H] and age.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;varchange_dependent_variables&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A unique identifier for each dependent variable.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The name used for this variable by the stellar_evolution module.&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;(</span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></div>
+
+<div class="viewcode-block" id="VarchangeGridNode"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeGridNode">[docs]</a><span class="k">class</span> <span class="nc">VarchangeGridNode</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The nodes of each variable change grid along a single dimension.&quot;&quot;&quot;</span>
+
+    <span class="c1">#False positive.</span>
+    <span class="c1">#pylint: disable=no-self-argument</span>
+    <span class="nd">@declared_attr</span>
+    <span class="k">def</span> <span class="nf">grid_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Declare a column referring to the grid this node belongs to.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">Column</span><span class="p">(</span>
+            <span class="n">Integer</span><span class="p">,</span>
+            <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;varchange_grids.id&#39;</span><span class="p">,</span>
+                       <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                       <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+            <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The grid this set of nodes belongs to.&#39;</span>
+        <span class="p">)</span>
+    <span class="c1">#pylint: enable=no-self-argument</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The index of the node along the relevant dimension of the grid.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The value of the independent variable at the node.&#39;</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="VarchangeFeHNode"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeFeHNode">[docs]</a><span class="k">class</span> <span class="nc">VarchangeFeHNode</span><span class="p">(</span><span class="n">VarchangeGridNode</span><span class="p">,</span> <span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The nodes in the mass dimension for a variable change grid.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;varchange_feh_nodes&#39;</span></div>
+
+<div class="viewcode-block" id="VarchangeMassNode"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeMassNode">[docs]</a><span class="k">class</span> <span class="nc">VarchangeMassNode</span><span class="p">(</span><span class="n">VarchangeGridNode</span><span class="p">,</span> <span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The nodes in the mass dimension for a variable change grid.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;varchange_mass_nodes&#39;</span></div>
+
+<div class="viewcode-block" id="VarchangeAgeNode"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeAgeNode">[docs]</a><span class="k">class</span> <span class="nc">VarchangeAgeNode</span><span class="p">(</span><span class="n">VarchangeGridNode</span><span class="p">,</span> <span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The nodes in the mass dimension for a variable change grid.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;varchange_age_nodes&#39;</span></div>
+
+<div class="viewcode-block" id="VarchangeDependentValue"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeDependentValue">[docs]</a><span class="k">class</span> <span class="nc">VarchangeDependentValue</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The values of the dependent variables at the grid nodes.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;varchange_dependent_values&#39;</span>
+
+    <span class="n">variable_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;varchange_dependent_variables.id&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">grid_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;varchange_grids.id&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The grid at which this variable is tabulated.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">feh_node_index</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;varchange_feh_nodes.index&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The [Fe/H] index of the tabulated value.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">mass_node_index</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;varchange_mass_nodes.index&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The mass index of the tabulated value.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">age_node_index</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;varchange_age_nodes.index&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The age index of the tabulated value.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The value of the dependent variable at the node.&#39;</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="VarchangeGrid"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeGrid">[docs]</a><span class="k">class</span> <span class="nc">VarchangeGrid</span><span class="p">(</span><span class="n">DataModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The currently saved variable change grids.&quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;varchange_grids&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A unique identifier for each grid.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;A unique name assigned to this grid.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">interpolator_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;interpolators.id&#39;</span><span class="p">,</span>
+                   <span class="n">onupdate</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">,</span>
+                   <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;RESTRICT&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;The interpolator used to generat this grid.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">feh_nodes</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;VarchangeFeHNode&#39;</span><span class="p">)</span>
+    <span class="n">mass_nodes</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;VarchangeMassNode&#39;</span><span class="p">)</span>
+    <span class="n">age_nodes</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;VarchangeAgeNode&#39;</span><span class="p">)</span>
+    <span class="n">dependent_values</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s1">&#39;VarchangeDependentValue&#39;</span><span class="p">)</span></div>
+<span class="c1">#pylint: enable=too-few-public-methods</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

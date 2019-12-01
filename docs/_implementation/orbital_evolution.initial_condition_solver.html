@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>orbital_evolution.initial_condition_solver module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="orbital_evolution.planet_interface module" href="orbital_evolution.planet_interface.html" />
+    <link rel="prev" title="orbital_evolution.evolve_interface module" href="orbital_evolution.evolve_interface.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="basic_utils.html">basic_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evolution_cmdline_args.html">evolution_cmdline_args module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="orbital_evolution.html">orbital_evolution package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="orbital_evolution.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="stellar_evolution.html">stellar_evolution package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../python_interface.html">Python Interface</a> &raquo;</li>
+        
+          <li><a href="modules.html">PythonPackage</a> &raquo;</li>
+        
+          <li><a href="orbital_evolution.html">orbital_evolution package</a> &raquo;</li>
+        
+      <li>orbital_evolution.initial_condition_solver module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_implementation/orbital_evolution.initial_condition_solver.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-orbital_evolution.initial_condition_solver">
+<span id="orbital-evolution-initial-condition-solver-module"></span><h1>orbital_evolution.initial_condition_solver module<a class="headerlink" href="#module-orbital_evolution.initial_condition_solver" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-4324d892c0f98782274fdaa6e417752fd38e42af.png" alt="Inheritance diagram of Binary, EvolvingStar, InitialConditionSolver, Structure" usemap="#inheritance1ad3d0bfcb" class="inheritance graphviz" /></div>
+<map id="inheritance1ad3d0bfcb" name="inheritance1ad3d0bfcb">
+<area shape="rect" id="node4" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="5,77,325,101"/>
+<area shape="rect" id="node2" href="basic_utils.html#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="227,5,368,29"/>
+<area shape="rect" id="node3" href="orbital_evolution.binary.html#orbital_evolution.binary.Binary" target="_top" title="A class for binaries POET can evolve." alt="" coords="392,5,591,29"/>
+<area shape="rect" id="node6" href="orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar" target="_top" title="A class for stars following interpolated stellar evolution tracks." alt="" coords="24,149,306,173"/>
+<area shape="rect" id="node5" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver" target="_top" title="Find initial conditions which reproduce a given system now." alt="" coords="616,5,1000,29"/>
+</map><p>Define class for finding initial conditions to match current properties.</p>
+<dl class="class">
+<dt id="orbital_evolution.initial_condition_solver.InitialConditionSolver">
+<em class="property">class </em><code class="sig-prename descclassname">orbital_evolution.initial_condition_solver.</code><code class="sig-name descname">InitialConditionSolver</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">planet_formation_age=None</em>, <em class="sig-param">disk_dissipation_age=None</em>, <em class="sig-param">evolution_max_time_step=1.0</em>, <em class="sig-param">evolution_precision=1e-06</em>, <em class="sig-param">orbital_period_tolerance=1e-06</em>, <em class="sig-param">spin_tolerance=1e-06</em>, <em class="sig-param">initial_eccentricity=0.0</em>, <em class="sig-param">initial_inclination=0.0</em>, <em class="sig-param">max_porb_initial=100.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/initial_condition_solver.html#InitialConditionSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-9acc0510ace1640792421dbc1298f11642dc1331.png" alt="Inheritance diagram of orbital_evolution.initial_condition_solver.InitialConditionSolver" usemap="#inheritance700f1926ee" class="inheritance graphviz" /></div>
+<map id="inheritance700f1926ee" name="inheritance700f1926ee">
+<area shape="rect" id="node1" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver" target="_top" title="Find initial conditions which reproduce a given system now." alt="" coords="5,5,390,29"/>
+</map><p>Find initial conditions which reproduce a given system now.</p>
+<dl class="method">
+<dt id="orbital_evolution.initial_condition_solver.InitialConditionSolver.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">star</em>, <em class="sig-param">planet</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/initial_condition_solver.html#InitialConditionSolver.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find initial conditions which reproduce the given system now.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – <p>The target configuration to reproduce by tuning the the
+initial conditions for. The following attributes must be
+defined:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt>age:</dt><dd><p>The age at which the system configuration is known.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Porb:</dt><dd><p>The orbital period to reproduce.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Psurf | Pdisk | Wdisk:</dt><dd><p>The stellar surface spin period to reproduce or the
+disk locking period or the disk locking frequency.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>The following optional attributes can be specified:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt>planet_formation_age:</dt><dd><p>The age at which the planet forms in Gyrs. If not
+specified the planet is assumed to form either
+‘-past_lifetime’ Gyrs before ‘-age’ or as soon as
+the disk dissipates.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>past_lifetime:</dt><dd><p>An alternative way of specifying when the planet
+forms. If the ‘-planet_formation-age’ attribute is
+not defined, the planet is assumed to form this many
+Gyr before ‘-age’.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>disk_dissipation_age:</dt><dd><p>The age at which the disk dissipates in Gyrs. If not
+specified, it must have been defined when this solver
+was initialized.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>star</strong> – The star to use in the evolution, should be instance of
+evolve_interface.EvolvingStar and its dissipative properties
+should be defined.</p></li>
+<li><p><strong>planet</strong> – The planet to use in the evolution. Should be an instance
+of evolve_interface.LockedPlanet</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p>Initial orbital period.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Initial disk period if matching observed stellar spin or
+stellar spin if initial disk period is specified.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>Further, the solver object has an attribute named ‘binary’ (an
+instance of (evolve_interface.Binary) which was evolved from
+the initial conditions found to most closely reproduce the
+specified target configuration.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="orbital_evolution.initial_condition_solver.InitialConditionSolver.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">planet_formation_age=None</em>, <em class="sig-param">disk_dissipation_age=None</em>, <em class="sig-param">evolution_max_time_step=1.0</em>, <em class="sig-param">evolution_precision=1e-06</em>, <em class="sig-param">orbital_period_tolerance=1e-06</em>, <em class="sig-param">spin_tolerance=1e-06</em>, <em class="sig-param">initial_eccentricity=0.0</em>, <em class="sig-param">initial_inclination=0.0</em>, <em class="sig-param">max_porb_initial=100.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/initial_condition_solver.html#InitialConditionSolver.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>planet_formation_age</strong> – If not None, the planet is assumed to form
+at the given age (in Gyr). Otherwise, the starting age must be
+specified each time this object is called.</p></li>
+<li><p><strong>disk_dissipation_age</strong> – The age at which the disk dissipates in
+Gyrs.</p></li>
+<li><p><strong>evolution_max_time_step</strong> – The maximum timestep the evolution is
+allowed to make.</p></li>
+<li><p><strong>evolution_precision</strong> – The precision to require of the evolution.</p></li>
+<li><p><strong>orbital_period_tolerance</strong> – The required precision with which the
+orbital period at the present age must be reproduced.</p></li>
+<li><p><strong>spin_tolerance</strong> – The required precision with which the
+primary spin period at the present age must be reproduced.</p></li>
+<li><p><strong>initial_eccentricity</strong> – The initial eccentricity with which to
+start the evolution.</p></li>
+<li><p><strong>max_porb_initial</strong> – The largest initial orbital period in days to
+try before declaring a set of initial conditions unsolvable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="orbital_evolution.initial_condition_solver.InitialConditionSolver._find_porb_range">
+<code class="sig-name descname">_find_porb_range</code><span class="sig-paren">(</span><em class="sig-param">guess_porb_initial</em>, <em class="sig-param">disk_period</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/initial_condition_solver.html#InitialConditionSolver._find_porb_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver._find_porb_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find initial orbital period range where final porb error flips sign.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>guess_porb_initial</strong> – An initial guess for where the sign change
+occurs.</p></li>
+<li><p><strong>disk_period</strong> – The disk locking period to assume during the search.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pair of initial orbital periods for which the sign of the
+final orbital period error changes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="orbital_evolution.initial_condition_solver.InitialConditionSolver._try_initial_conditions">
+<code class="sig-name descname">_try_initial_conditions</code><span class="sig-paren">(</span><em class="sig-param">initial_orbital_period</em>, <em class="sig-param">disk_period</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/initial_condition_solver.html#InitialConditionSolver._try_initial_conditions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver._try_initial_conditions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get present orbital and stellar spin periods for initial conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initial_orbital_period</strong> – The initial orbital period to calculate
+the deviation for.</p></li>
+<li><p><strong>disk_period</strong> – The disk locking period to calculate the deviation
+for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>The present day orbital period of the system resulting when
+the evolution is started with the input periods.</p>
+<p>The present day surface spin of the star resulting when the
+evolution is started with the input periods.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="orbital_evolution.initial_condition_solver.InitialConditionSolver.stellar_wsurf">
+<code class="sig-name descname">stellar_wsurf</code><span class="sig-paren">(</span><em class="sig-param">wdisk</em>, <em class="sig-param">orbital_period_guess</em>, <em class="sig-param">return_difference=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/initial_condition_solver.html#InitialConditionSolver.stellar_wsurf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.initial_condition_solver.InitialConditionSolver.stellar_wsurf" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stellar spin frquency when reproducing current porb.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>disk_frequency</strong> – The angular velocity of the star when it forms.</p></li>
+<li><p><strong>orbital_period_guess</strong> – A best guess value for the initial orbital
+period.</p></li>
+<li><p><strong>return_difference</strong> – If True, instead of the actual stellar
+angular velocity, the function returns the difference from the
+observed value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>The angular velocity with which the star spins at the present
+age for an evolution scenario which reproduces the current
+orbital period. Or the difference between the spin frequency
+and the target spin frequency if return_difference is True.</p></li>
+</ul>
+<p>The following are returned only if return_difference is False:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The initial orbital period which reproduces the specified
+final orbital period as close as possible.</p></li>
+<li><p>The closest final orbital period found (starting with
+porb_initial).</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a> or (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="orbital_evolution.planet_interface.html" class="btn btn-neutral float-right" title="orbital_evolution.planet_interface module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="orbital_evolution.evolve_interface.html" class="btn btn-neutral float-left" title="orbital_evolution.evolve_interface module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

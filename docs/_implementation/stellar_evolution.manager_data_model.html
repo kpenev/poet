@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.manager_data_model module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Inclined and Eccentric Orbital Evolution" href="../inclination_eccentricity_equations.html" />
+    <link rel="prev" title="stellar_evolution.manager module" href="stellar_evolution.manager.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="basic_utils.html">basic_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evolution_cmdline_args.html">evolution_cmdline_args module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="orbital_evolution.html">orbital_evolution package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="stellar_evolution.html">stellar_evolution package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="stellar_evolution.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="stellar_evolution.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../python_interface.html">Python Interface</a> &raquo;</li>
+        
+          <li><a href="modules.html">PythonPackage</a> &raquo;</li>
+        
+          <li><a href="stellar_evolution.html">stellar_evolution package</a> &raquo;</li>
+        
+      <li>stellar_evolution.manager_data_model module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_implementation/stellar_evolution.manager_data_model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-stellar_evolution.manager_data_model">
+<span id="stellar-evolution-manager-data-model-module"></span><h1>stellar_evolution.manager_data_model module<a class="headerlink" href="#module-stellar_evolution.manager_data_model" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-a8a12c664eb9e140928f6615b71fcc18b5967c79.png" alt="Inheritance diagram of Boolean, Column, DataModelBase, Float, ForeignKey, Integer, InterpolationParameters, ModelSuite, Numeric, Quantity, SerializedInterpolator, String, Table, Track, VarchangeAgeNode, VarchangeDependentValue, VarchangeDependentVariable, VarchangeFeHNode, VarchangeGrid, VarchangeGridNode, VarchangeMassNode, declared_attr" usemap="#inheritanced6bc575c1c" class="inheritance graphviz" /></div>
+<map id="inheritanced6bc575c1c" name="inheritanced6bc575c1c">
+<area shape="rect" id="node28" href="#stellar_evolution.manager_data_model.InterpolationParameters" target="_top" title="The nodes and smoothing arguments for a given interpolator/quantity." alt="" coords="2661,77,3058,101"/>
+<area shape="rect" id="node29" href="#stellar_evolution.manager_data_model.ModelSuite" target="_top" title="The various stellar evolution suites (e.g. MESA, YREC, ...)." alt="" coords="5,77,327,101"/>
+<area shape="rect" id="node30" href="#stellar_evolution.manager_data_model.Quantity" target="_top" title="The set of quantities tracked by stellar evolution." alt="" coords="351,77,656,101"/>
+<area shape="rect" id="node31" href="#stellar_evolution.manager_data_model.SerializedInterpolator" target="_top" title="The current set of serialized stellar evolution interpolators." alt="" coords="680,77,1061,101"/>
+<area shape="rect" id="node32" href="#stellar_evolution.manager_data_model.Track" target="_top" title="The available stellar evolution tracks." alt="" coords="1085,77,1373,101"/>
+<area shape="rect" id="node33" href="#stellar_evolution.manager_data_model.VarchangeAgeNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="3082,77,3456,101"/>
+<area shape="rect" id="node35" href="#stellar_evolution.manager_data_model.VarchangeDependentValue" target="_top" title="The values of the dependent variables at the grid nodes." alt="" coords="1396,77,1813,101"/>
+<area shape="rect" id="node36" href="#stellar_evolution.manager_data_model.VarchangeDependentVariable" target="_top" title="The variables from which to transforming to M*, [Fe/H] and age." alt="" coords="1837,77,2269,101"/>
+<area shape="rect" id="node37" href="#stellar_evolution.manager_data_model.VarchangeFeHNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="3480,77,3855,101"/>
+<area shape="rect" id="node38" href="#stellar_evolution.manager_data_model.VarchangeGrid" target="_top" title="The currently saved variable change grids." alt="" coords="2293,77,2637,101"/>
+<area shape="rect" id="node39" href="#stellar_evolution.manager_data_model.VarchangeMassNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="3879,77,4261,101"/>
+<area shape="rect" id="node34" href="#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="3480,5,3855,29"/>
+</map><p>Define the data model for stellar_evolution_manager sqlalchemy based.</p>
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">InterpolationParameters</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#InterpolationParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-80f7fe7910b07ff81a941c6b7ac6d9bb478ae31f.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.InterpolationParameters" usemap="#inheritance0efd99d59a" class="inheritance graphviz" /></div>
+<map id="inheritance0efd99d59a" name="inheritance0efd99d59a">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.InterpolationParameters" target="_top" title="The nodes and smoothing arguments for a given interpolator/quantity." alt="" coords="5,77,402,101"/>
+</map><p>The nodes and smoothing arguments for a given interpolator/quantity.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.interpolator">
+<code class="sig-name descname">interpolator</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.interpolator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.interpolator_id">
+<code class="sig-name descname">interpolator_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.interpolator_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The interpolator this set of nodes applies to.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.log_quantity">
+<code class="sig-name descname">log_quantity</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.log_quantity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the log of the given quantity interpolated instead of the quantity?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.nodes">
+<code class="sig-name descname">nodes</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of nodes used when constructing the interpolator for the given quantity.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.quantity">
+<code class="sig-name descname">quantity</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.quantity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.quantity_id">
+<code class="sig-name descname">quantity_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.quantity_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ID of the quantity to which this set of nodes applies.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.smoothing">
+<code class="sig-name descname">smoothing</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.smoothing" title="Permalink to this definition">¶</a></dt>
+<dd><p>The smoothing argument used when constructing the interpolator for the given quantity.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.InterpolationParameters.vs_log_age">
+<code class="sig-name descname">vs_log_age</code><a class="headerlink" href="#stellar_evolution.manager_data_model.InterpolationParameters.vs_log_age" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the given quantity interpolation vs log(age) instead of age?</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.ModelSuite">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">ModelSuite</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#ModelSuite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.ModelSuite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-a18350534405d7bedccac8000573481398f3213b.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.ModelSuite" usemap="#inheritance4879ce06b4" class="inheritance graphviz" /></div>
+<map id="inheritance4879ce06b4" name="inheritance4879ce06b4">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.ModelSuite" target="_top" title="The various stellar evolution suites (e.g. MESA, YREC, ...)." alt="" coords="5,77,327,101"/>
+</map><p>The various stellar evolution suites (e.g. MESA, YREC, …).</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.ModelSuite.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.ModelSuite.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for the suite.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.ModelSuite.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#stellar_evolution.manager_data_model.ModelSuite.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the suite.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.Quantity">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">Quantity</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#Quantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.Quantity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-da4fb674ad1f382e24623ea727495a6b5b212dac.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.Quantity" usemap="#inheritance104990a0c5" class="inheritance graphviz" /></div>
+<map id="inheritance104990a0c5" name="inheritance104990a0c5">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.Quantity" target="_top" title="The set of quantities tracked by stellar evolution." alt="" coords="5,77,310,101"/>
+</map><p>The set of quantities tracked by stellar evolution.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Quantity.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Quantity.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for each quantity.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Quantity.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Quantity.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name used for this quantity by the stellar_evolution module.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.SerializedInterpolator">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">SerializedInterpolator</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#SerializedInterpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.SerializedInterpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-6912127e4fc0fa0b37fec2f526c6af2391595c27.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.SerializedInterpolator" usemap="#inheritance7f475838ad" class="inheritance graphviz" /></div>
+<map id="inheritance7f475838ad" name="inheritance7f475838ad">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.SerializedInterpolator" target="_top" title="The current set of serialized stellar evolution interpolators." alt="" coords="5,77,386,101"/>
+</map><p>The current set of serialized stellar evolution interpolators.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.SerializedInterpolator.checksum">
+<code class="sig-name descname">checksum</code><a class="headerlink" href="#stellar_evolution.manager_data_model.SerializedInterpolator.checksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>A checksum of the serialized interpolator file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.SerializedInterpolator.filename">
+<code class="sig-name descname">filename</code><a class="headerlink" href="#stellar_evolution.manager_data_model.SerializedInterpolator.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the file containing the serialized interpolator.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.SerializedInterpolator.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.SerializedInterpolator.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A uniquie identifier for each serialized interpolator</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.SerializedInterpolator.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#stellar_evolution.manager_data_model.SerializedInterpolator.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique human-readable name assigned to this interpolator.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.SerializedInterpolator.parameters">
+<code class="sig-name descname">parameters</code><a class="headerlink" href="#stellar_evolution.manager_data_model.SerializedInterpolator.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.SerializedInterpolator.tracks">
+<code class="sig-name descname">tracks</code><a class="headerlink" href="#stellar_evolution.manager_data_model.SerializedInterpolator.tracks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.Track">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.Track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-453cd2b53c00733baea51cdcd45a30b9c428661d.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.Track" usemap="#inheritancec6e5571464" class="inheritance graphviz" /></div>
+<map id="inheritancec6e5571464" name="inheritancec6e5571464">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.Track" target="_top" title="The available stellar evolution tracks." alt="" coords="5,77,293,101"/>
+</map><p>The available stellar evolution tracks.</p>
+<dl class="method">
+<dt id="stellar_evolution.manager_data_model.Track.__str__">
+<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#Track.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Human readable representation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Track.checksum">
+<code class="sig-name descname">checksum</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.checksum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Track.feh">
+<code class="sig-name descname">feh</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.feh" title="Permalink to this definition">¶</a></dt>
+<dd><p>The [Fe/H] of the track contained in the given file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Track.filename">
+<code class="sig-name descname">filename</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The absolute name of the file containing the track.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Track.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for each track.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Track.mass">
+<code class="sig-name descname">mass</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stellar mass of the track contained in the given file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Track.model_suite_id">
+<code class="sig-name descname">model_suite_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.model_suite_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stellar evolution suite used to calculate the tracks.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.Track.suite">
+<code class="sig-name descname">suite</code><a class="headerlink" href="#stellar_evolution.manager_data_model.Track.suite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.VarchangeAgeNode">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">VarchangeAgeNode</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#VarchangeAgeNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeAgeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stellar_evolution.manager_data_model.VarchangeGridNode" title="stellar_evolution.manager_data_model.VarchangeGridNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">stellar_evolution.manager_data_model.VarchangeGridNode</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-19707cae39ad3dd446c2c058cae7a0d41ca5372e.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.VarchangeAgeNode" usemap="#inheritance2567c684e8" class="inheritance graphviz" /></div>
+<map id="inheritance2567c684e8" name="inheritance2567c684e8">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.VarchangeAgeNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="99,77,472,101"/>
+<area shape="rect" id="node3" href="#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="262,5,637,29"/>
+</map><p>The nodes in the mass dimension for a variable change grid.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeAgeNode.grid_id">
+<code class="sig-name descname">grid_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeAgeNode.grid_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The grid this set of nodes belongs to.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeAgeNode.index">
+<code class="sig-name descname">index</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeAgeNode.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The index of the node along the relevant dimension of the grid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeAgeNode.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeAgeNode.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value of the independent variable at the node.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentValue">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">VarchangeDependentValue</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#VarchangeDependentValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-c460b68d8b5fcd61ee4cad3aada3b9b2636c08a8.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.VarchangeDependentValue" usemap="#inheritancee83e734876" class="inheritance graphviz" /></div>
+<map id="inheritancee83e734876" name="inheritancee83e734876">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.VarchangeDependentValue" target="_top" title="The values of the dependent variables at the grid nodes." alt="" coords="5,77,422,101"/>
+</map><p>The values of the dependent variables at the grid nodes.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentValue.age_node_index">
+<code class="sig-name descname">age_node_index</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentValue.age_node_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The age index of the tabulated value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentValue.feh_node_index">
+<code class="sig-name descname">feh_node_index</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentValue.feh_node_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The [Fe/H] index of the tabulated value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentValue.grid_id">
+<code class="sig-name descname">grid_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentValue.grid_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The grid at which this variable is tabulated.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentValue.mass_node_index">
+<code class="sig-name descname">mass_node_index</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentValue.mass_node_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mass index of the tabulated value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentValue.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentValue.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value of the dependent variable at the node.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentValue.variable_id">
+<code class="sig-name descname">variable_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentValue.variable_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentVariable">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">VarchangeDependentVariable</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#VarchangeDependentVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-313253bf1a6676664b6ff527252e0e3130b01e1e.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.VarchangeDependentVariable" usemap="#inheritance3ee2538d6c" class="inheritance graphviz" /></div>
+<map id="inheritance3ee2538d6c" name="inheritance3ee2538d6c">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.VarchangeDependentVariable" target="_top" title="The variables from which to transforming to M*, [Fe/H] and age." alt="" coords="5,77,437,101"/>
+</map><p>The variables from which to transforming to M*, [Fe/H] and age.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentVariable.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentVariable.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for each dependent variable.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeDependentVariable.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeDependentVariable.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name used for this variable by the stellar_evolution module.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.VarchangeFeHNode">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">VarchangeFeHNode</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#VarchangeFeHNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeFeHNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stellar_evolution.manager_data_model.VarchangeGridNode" title="stellar_evolution.manager_data_model.VarchangeGridNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">stellar_evolution.manager_data_model.VarchangeGridNode</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-860e71d108b3b36294fb01841c0bb5051d25a6ff.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.VarchangeFeHNode" usemap="#inheritance2f80c63b4c" class="inheritance graphviz" /></div>
+<map id="inheritance2f80c63b4c" name="inheritance2f80c63b4c">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.VarchangeFeHNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="98,77,473,101"/>
+<area shape="rect" id="node3" href="#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="262,5,637,29"/>
+</map><p>The nodes in the mass dimension for a variable change grid.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeFeHNode.grid_id">
+<code class="sig-name descname">grid_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeFeHNode.grid_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The grid this set of nodes belongs to.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeFeHNode.index">
+<code class="sig-name descname">index</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeFeHNode.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The index of the node along the relevant dimension of the grid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeFeHNode.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeFeHNode.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value of the independent variable at the node.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">VarchangeGrid</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#VarchangeGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-0f063f2cbbd522ddc76ad7061312b83b3c7e93ce.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.VarchangeGrid" usemap="#inheritance12d453105a" class="inheritance graphviz" /></div>
+<map id="inheritance12d453105a" name="inheritance12d453105a">
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.VarchangeGrid" target="_top" title="The currently saved variable change grids." alt="" coords="5,77,349,101"/>
+</map><p>The currently saved variable change grids.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid.age_nodes">
+<code class="sig-name descname">age_nodes</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid.age_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid.dependent_values">
+<code class="sig-name descname">dependent_values</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid.dependent_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid.feh_nodes">
+<code class="sig-name descname">feh_nodes</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid.feh_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for each grid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid.interpolator_id">
+<code class="sig-name descname">interpolator_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid.interpolator_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The interpolator used to generat this grid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid.mass_nodes">
+<code class="sig-name descname">mass_nodes</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid.mass_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGrid.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGrid.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique name assigned to this grid.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.VarchangeGridNode">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">VarchangeGridNode</code><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#VarchangeGridNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGridNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-73b435818f2fed10caf1ebdca388721cd22ebd01.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.VarchangeGridNode" usemap="#inheritance8f07ebf348" class="inheritance graphviz" /></div>
+<map id="inheritance8f07ebf348" name="inheritance8f07ebf348">
+<area shape="rect" id="node1" href="#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="5,5,381,29"/>
+</map><p>The nodes of each variable change grid along a single dimension.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGridNode.grid_id">
+<code class="sig-name descname">grid_id</code><em class="property"> = Column(None, Integer(), ForeignKey('varchange_grids.id'), table=None, primary_key=True, nullable=False)</em><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGridNode.grid_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGridNode.index">
+<code class="sig-name descname">index</code><em class="property"> = Column(None, Integer(), table=None, primary_key=True, nullable=False)</em><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGridNode.index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeGridNode.value">
+<code class="sig-name descname">value</code><em class="property"> = Column(None, Float(), table=None)</em><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeGridNode.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.manager_data_model.VarchangeMassNode">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager_data_model.</code><code class="sig-name descname">VarchangeMassNode</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager_data_model.html#VarchangeMassNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeMassNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stellar_evolution.manager_data_model.VarchangeGridNode" title="stellar_evolution.manager_data_model.VarchangeGridNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">stellar_evolution.manager_data_model.VarchangeGridNode</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<div class="graphviz"><img src="../_images/inheritance-fbef48608b5fa8b4a855305a6b335c383d8bce75.png" alt="Inheritance diagram of stellar_evolution.manager_data_model.VarchangeMassNode" usemap="#inheritance12e8a80b40" class="inheritance graphviz" /></div>
+<map id="inheritance12e8a80b40" name="inheritance12e8a80b40">
+<area shape="rect" id="node3" href="#stellar_evolution.manager_data_model.VarchangeMassNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="94,77,477,101"/>
+<area shape="rect" id="node2" href="#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="262,5,637,29"/>
+</map><p>The nodes in the mass dimension for a variable change grid.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeMassNode.grid_id">
+<code class="sig-name descname">grid_id</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeMassNode.grid_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The grid this set of nodes belongs to.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeMassNode.index">
+<code class="sig-name descname">index</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeMassNode.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The index of the node along the relevant dimension of the grid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stellar_evolution.manager_data_model.VarchangeMassNode.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#stellar_evolution.manager_data_model.VarchangeMassNode.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value of the independent variable at the node.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../inclination_eccentricity_equations.html" class="btn btn-neutral float-right" title="Inclined and Eccentric Orbital Evolution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="stellar_evolution.manager.html" class="btn btn-neutral float-left" title="stellar_evolution.manager module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

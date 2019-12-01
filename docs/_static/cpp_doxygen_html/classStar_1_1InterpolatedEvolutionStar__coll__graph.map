@@ -1,0 +1,18 @@
+<map id="Star::InterpolatedEvolutionStar" name="Star::InterpolatedEvolutionStar">
+<area shape="rect" id="node2" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="5,2855,285,3208"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="310,1948,557,2653"/>
+<area shape="rect" id="node4" href="$classStar_1_1ExponentialDecayDiffRotBody.html" title="A body with differential rotation torque between two zones given by: . " alt="" coords="309,2935,569,3128"/>
+<area shape="rect" id="node5" href="$classStar_1_1EvolvingStellarCore.html" title="Radiative core for low mass evolving stars. " alt="" coords="592,2935,792,3128"/>
+<area shape="rect" id="node6" href="$classStar_1_1EvolvingStellarZone.html" title="Base class for zones of low mass evolving stars. " alt="" coords="597,2156,811,2445"/>
+<area shape="rect" id="node17" href="$classStar_1_1EvolvingStellarEnvelope.html" title="Surface convective zone for low mass evolving stars or the entire star for high mass stars..." alt="" coords="816,2943,1048,3120"/>
+<area shape="rect" id="node7" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="562,1433,846,1899"/>
+<area shape="rect" id="node8" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="593,728,815,1369"/>
+<area shape="rect" id="node9" href="$classEvolve_1_1ZoneOrientation.html" title="{Evolve::ZoneOrientation\n|&#45; __inclination\l&#45; __periapsis\l|+ ZoneOrientation()\l+ configure()\l+ inclination()\l+ periapsis()\l}" alt="" coords="366,423,559,568"/>
+<area shape="rect" id="node10" href="$classEvolve_1_1SpinOrbitLockInfo.html" title="Defines a lock between the spin of a dissipating body and the orbit. " alt="" coords="583,343,825,648"/>
+<area shape="rect" id="node11" href="$classEvolve_1_1TidalPotentialTerms.html" title="{Evolve::TidalPotentialTerms\n|&#45; __e_order\l&#45; __Ummp_inclination\l&#45; __arg_of_periapsis\l&#45; __Ummp\l&#45; __Ummp_deriv\l&#45; __Umm_coef\l|+ TidalPotentialTerms()\l+ change_e_order()\l+ current_e_order()\l+ configure()\l+ operator()()\l+ operator()()\l+ read_eccentricity_expansion()\l+ max_e_order()\l}" alt="" coords="849,359,1098,632"/>
+<area shape="rect" id="node12" href="$classEvolve_1_1EccentricityExpansionCoefficients.html" title="A class which reads&#45;in and provides a convenient interface to the &#160;coefficients. " alt="" coords="830,5,1116,279"/>
+<area shape="rect" id="node13" href="$classStellarEvolution_1_1EvolvingStellarQuantity.html" title="A class for stellar properties that depend on age. " alt="" coords="1072,2703,1294,3360"/>
+<area shape="rect" id="node14" href="$classCore_1_1OneArgumentDiffFunction.html" title="A class representing a once differentiable function of a single argument. " alt="" coords="1058,2244,1308,2357"/>
+<area shape="rect" id="node15" href="$classCore_1_1OneArgumentFunction.html" title="{Core::OneArgumentFunction\l\&lt; double, double \&gt;\n||+ operator()()\l+ range_high()\l+ range_low()\l+ crossings()\l+ ~OneArgumentFunction()\l&#45; serialize()\l}" alt="" coords="1070,1577,1296,1755"/>
+<area shape="rect" id="node16" href="$classCore_1_1OneArgumentFunction.html" title="The base class for functions which take a single argument and return a single value. " alt="" coords="1044,960,1322,1137"/>
+</map>

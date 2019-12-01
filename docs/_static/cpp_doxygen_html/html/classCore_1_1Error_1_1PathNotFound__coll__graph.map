@@ -1,0 +1,4 @@
+<map id="Core::Error::PathNotFound" name="Core::Error::PathNotFound">
+<area shape="rect" id="node2" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="27,312,196,409"/>
+<area shape="rect" id="node3" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="28,135,195,264"/>
+</map>

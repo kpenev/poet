@@ -1,0 +1,7 @@
+digraph "Evolve::EccentricOrbit"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node1 [label="{Evolve::EccentricOrbit\n|- __primary_mass\l- __secondary_mass\l- __semimajor\l- __eccentricity\l|+ EccentricOrbit()\l+ primary_mass()\l+ primary_mass()\l+ secondary_mass()\l+ secondary_mass()\l+ semimajor()\l+ semimajor()\l+ eccentricity()\l+ eccentricity()\l+ eccentric_anomaly()\l+ secondary_position()\l+ orbital_angmom()\l+ orbital_energy()\l+ orbital_period()\l- reduced_mass()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

@@ -1,0 +1,614 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.library_interface &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>stellar_evolution.library_interface</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for stellar_evolution.library_interface</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;An interface to the POET stellar evolution interpolation utilities.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span>\
+    <span class="n">cdll</span><span class="p">,</span>\
+    <span class="n">c_int</span><span class="p">,</span> <span class="n">c_double</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_uint</span><span class="p">,</span> <span class="n">c_bool</span><span class="p">,</span>\
+    <span class="n">byref</span>
+<span class="kn">from</span> <span class="nn">ctypes.util</span> <span class="k">import</span> <span class="n">find_library</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c1">#class naming convention mimicks ctypes naming</span>
+<span class="c1">#This is just a placeholder, so no public methods.</span>
+<span class="c1">#pylint: disable=invalid-name</span>
+<span class="c1">#pylint: disable=too-few-public-methods</span>
+<div class="viewcode-block" id="c_interpolator_p"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.c_interpolator_p">[docs]</a><span class="k">class</span> <span class="nc">c_interpolator_p</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Type corresponding to pointer to intepolator in the POET library.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="c_quantity_p"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.c_quantity_p">[docs]</a><span class="k">class</span> <span class="nc">c_quantity_p</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Type corresponding to pointer to evolution quantities in POET library.&quot;&quot;&quot;</span></div>
+<span class="c1">#pylint: enable=invalid-name</span>
+<span class="c1">#pylint: enable=too-few-public-methods</span>
+
+<div class="viewcode-block" id="initialize_library"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.initialize_library">[docs]</a><span class="k">def</span> <span class="nf">initialize_library</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Prepare the stellarEvolution library for use.&quot;&quot;&quot;</span>
+
+    <span class="n">library_fname</span> <span class="o">=</span> <span class="n">find_library</span><span class="p">(</span><span class="s1">&#39;stellarEvolution&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">library_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Unable to find POET</span><span class="se">\&#39;</span><span class="s1">s stellarEvolution library.&#39;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">library_fname</span><span class="p">)</span>
+
+    <span class="n">num_quantities</span> <span class="o">=</span> <span class="n">c_int</span><span class="o">.</span><span class="n">in_dll</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">&#39;NUM_QUANTITIES&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_char_p</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">num_quantities</span><span class="p">,),</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_int</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">num_quantities</span><span class="p">,),</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">num_quantities</span><span class="p">,),</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">num_quantities</span><span class="p">,),</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_interpolator_p</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">destroy_interpolator</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">destroy_interpolator</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">create_quantity</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+                                       <span class="n">c_int</span><span class="p">,</span>
+                                       <span class="n">c_double</span><span class="p">,</span>
+                                       <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">create_quantity</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_quantity_p</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">destroy_quantity</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_quantity_p</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">destroy_quantity</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">evaluate_quantity</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_quantity_p</span><span class="p">,</span> <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">evaluate_quantity</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">evaluate_quantity_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_quantity_p</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">quantity_min_age</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">quantity_max_age</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">quantity_continuous_range</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">save_interpolator</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
+        <span class="n">c_char_p</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">save_interpolator</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">load_interpolator</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">load_interpolator</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">differentiate_quantity</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_quantity_p</span><span class="p">,</span>
+        <span class="n">c_double</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">differentiate_quantity_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_quantity_p</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">default_smoothing</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">default_smoothing</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">default_vs_log_age</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">default_vs_log_age</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_bool</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">default_nodes</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">default_nodes</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">metallicity_from_feh</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">metallicity_from_feh</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">feh_from_metallicity</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">feh_from_metallicity</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">feh_from_z</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">feh_from_z</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">z_from_feh</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">z_from_feh</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<span class="n">library</span> <span class="o">=</span> <span class="n">initialize_library</span><span class="p">()</span>
+
+<span class="n">library_track_fname_rex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="s1">&#39;M(?P&lt;MASS&gt;[0-9.E+-]+)_Z(?P&lt;Z&gt;[0-9.E+-]+).csv&#39;</span>
+<span class="p">)</span>
+
+<div class="viewcode-block" id="library_track_fname"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.library_track_fname">[docs]</a><span class="k">def</span> <span class="nf">library_track_fname</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the base name expected by library for a track.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mass:    The mass of the star whose evolution is stored in the track.</span>
+
+<span class="sd">        feh:    The [Fe/H] value of the star whose evolution is stored in the</span>
+<span class="sd">            track.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str:</span>
+<span class="sd">            The base filename the stellar evolution library expects to be used</span>
+<span class="sd">            for the given track.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="s1">&#39;M</span><span class="si">%s</span><span class="s1">_Z</span><span class="si">%s</span><span class="s1">.csv&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">mass</span><span class="p">)),</span>
+                            <span class="nb">repr</span><span class="p">(</span><span class="n">library</span><span class="o">.</span><span class="n">z_from_feh</span><span class="p">(</span><span class="n">feh</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="MESAInterpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator">[docs]</a><span class="k">class</span> <span class="nc">MESAInterpolator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A class for interpolating among a set of MESA tracks.&quot;&quot;&quot;</span>
+
+    <span class="n">quantity_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RADIUS&#39;</span><span class="p">,</span> <span class="s1">&#39;ICONV&#39;</span><span class="p">,</span> <span class="s1">&#39;LUM&#39;</span><span class="p">,</span> <span class="s1">&#39;IRAD&#39;</span><span class="p">,</span> <span class="s1">&#39;MRAD&#39;</span><span class="p">,</span> <span class="s1">&#39;RRAD&#39;</span><span class="p">]</span>
+
+    <span class="n">quantity_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">q</span><span class="p">:</span> <span class="n">c_int</span><span class="o">.</span><span class="n">in_dll</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantity_list</span><span class="p">}</span>
+    <span class="n">quantity_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">c_int</span><span class="o">.</span><span class="n">in_dll</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">q</span>
+                      <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantity_list</span><span class="p">}</span>
+
+    <span class="n">default_smoothing</span> <span class="o">=</span> <span class="p">{</span><span class="n">q_name</span><span class="p">:</span> <span class="n">library</span><span class="o">.</span><span class="n">default_smoothing</span><span class="p">(</span><span class="n">q_id</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">q_name</span><span class="p">,</span> <span class="n">q_id</span> <span class="ow">in</span> <span class="n">quantity_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">default_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">q_name</span><span class="p">:</span> <span class="n">library</span><span class="o">.</span><span class="n">default_nodes</span><span class="p">(</span><span class="n">q_id</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">q_name</span><span class="p">,</span> <span class="n">q_id</span> <span class="ow">in</span> <span class="n">quantity_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">default_vs_log_age</span> <span class="o">=</span> <span class="p">{</span><span class="n">q_name</span><span class="p">:</span> <span class="n">library</span><span class="o">.</span><span class="n">default_vs_log_age</span><span class="p">(</span><span class="n">q_id</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">q_name</span><span class="p">,</span> <span class="n">q_id</span> <span class="ow">in</span> <span class="n">quantity_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">default_log_quantity</span> <span class="o">=</span> <span class="p">{</span><span class="n">q_name</span><span class="p">:</span> <span class="n">library</span><span class="o">.</span><span class="n">default_log_quantity</span><span class="p">(</span><span class="n">q_id</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">q_name</span><span class="p">,</span> <span class="n">q_id</span> <span class="ow">in</span> <span class="n">quantity_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+<div class="viewcode-block" id="MESAInterpolator.__init__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare a MESA based interpolation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mesa_dir:    A directory contaning a grid (mass and metallicity) of</span>
+<span class="sd">                MESA tracks to base the interpolation on. Must not be specified</span>
+<span class="sd">                if interpolator_fname is.</span>
+
+<span class="sd">            smoothing:    A numpy float array of the smoothing arguments to use</span>
+<span class="sd">                for the interpolation of each quantity. Should be in the order</span>
+<span class="sd">                defined by quantity_ids.</span>
+
+<span class="sd">            nodes:    A numpy integer array of the nodes to use for the</span>
+<span class="sd">                interpolation of each quantity. Same order as smoothing.</span>
+
+<span class="sd">            vs_log_age:    A numpy boolean array indicating whether the</span>
+<span class="sd">                interpolation for each quantity should be done vs log(age)</span>
+<span class="sd">                instead of age.</span>
+
+<span class="sd">            log_quantity:    A numpy boolean array indicating whether the</span>
+<span class="sd">                interpolation for each quantity should be of log(quantity)</span>
+<span class="sd">                instead of quantity.</span>
+
+<span class="sd">            interpolator_fname:    The filename of a previously saved</span>
+<span class="sd">                interpolator state. Must not be specified together with</span>
+<span class="sd">                mesa_dir. If passed, the smoothing and nodes arguments are</span>
+<span class="sd">                ignored.</span>
+
+<span class="sd">            num_threads:    The number of simultaneous threads to use when</span>
+<span class="sd">                constructing the interpolation.</span>
+
+<span class="sd">        Returns: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;mesa_dir&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">create_interpolator</span><span class="p">(</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;mesa_dir&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">),</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;smoothing&#39;</span><span class="p">],</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">],</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;vs_log_age&#39;</span><span class="p">],</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;log_quantity&#39;</span><span class="p">],</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;num_threads&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="s1">&#39;interpolator_fname&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;interpolator_fname&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">load_interpolator</span><span class="p">(</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;interpolator_fname&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MESAInterpolator.delete"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Free the resources allocated at construction.&quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">destroy_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MESAInterpolator.save"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the interpolator created to the given file for faster creation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename:    The name of the file to use for saving the state.</span>
+<span class="sd">                Overwritten if exists.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="n">library</span><span class="o">.</span><span class="n">save_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">,</span>
+                                  <span class="n">filename</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MESAInterpolator.__call__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a stellar quantity interpolated to the given mass and [Fe/H].</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            quantity:    A string identifying the quantity to interpolate. The</span>
+<span class="sd">                following values are allowed: &#39;radius&#39;, &#39;iconv&#39;, &#39;lum&#39;,</span>
+<span class="sd">                &#39;irad&#39;, &#39;mrad&#39;, &#39;rrad&#39;. This is a case insensitive argument.</span>
+
+<span class="sd">            mass:    The mass of the star for which this quantity should be</span>
+<span class="sd">                defined in solar masses.</span>
+
+<span class="sd">            feh:    The [Fe/H] of the star for which this  quantity  should</span>
+<span class="sd">                be defined.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Quantity:</span>
+<span class="sd">                callable with an age parameter evaluating to the quantity at the</span>
+<span class="sd">                given age.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">Quantity</span><span class="p">(</span>
+            <span class="n">library</span><span class="o">.</span><span class="n">create_quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">quantity_ids</span><span class="p">[</span><span class="n">quantity</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+                                    <span class="n">c_double</span><span class="p">(</span><span class="n">mass</span><span class="p">),</span>
+                                    <span class="n">c_double</span><span class="p">(</span><span class="n">feh</span><span class="p">))</span>
+        <span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Quantity"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.Quantity">[docs]</a><span class="k">class</span> <span class="nc">Quantity</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Callable that evaluates to the value of the quantity at a given age.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Quantity.__init__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.Quantity.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">underlying_quantity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Wrap the underlying EvolvingStellarQuantity into a callable.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">underlying_quantity</span> <span class="o">=</span> <span class="n">underlying_quantity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_age</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">quantity_min_age</span><span class="p">(</span><span class="n">underlying_quantity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_age</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">quantity_max_age</span><span class="p">(</span><span class="n">underlying_quantity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Quantity.delete"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.Quantity.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the underlying quantity.&quot;&quot;&quot;</span>
+
+        <span class="n">library</span><span class="o">.</span><span class="n">destroy_quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">underlying_quantity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Quantity.__call__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.Quantity.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the underlying quantity at the given age(s) (in Gyr).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            age:    Either a single float or a numpy array of floats giving</span>
+<span class="sd">               the ages at which to evaluate the quantity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            type(age):</span>
+<span class="sd">                The value(s) of the quantity in the same format as age.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">age</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_age</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">age</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_age</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                 <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span>
+                                 <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+            <span class="n">library</span><span class="o">.</span><span class="n">evaluate_quantity_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">underlying_quantity</span><span class="p">,</span>
+                                            <span class="n">age</span><span class="p">,</span>
+                                            <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                                            <span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">assert</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_age</span>
+        <span class="k">assert</span> <span class="n">age</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_age</span>
+        <span class="k">return</span> <span class="n">library</span><span class="o">.</span><span class="n">evaluate_quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">underlying_quantity</span><span class="p">,</span>
+                                         <span class="n">c_double</span><span class="p">(</span><span class="n">age</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Quantity.deriv"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.Quantity.deriv">[docs]</a>    <span class="k">def</span> <span class="nf">deriv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the 0-th, 1-st and 2-nd order derivatives of the quantity.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            age(float or numpy array):    Either a single float or a numpy array</span>
+<span class="sd">                of floats giving the ages at which to evaluate the quantity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy array:</span>
+<span class="sd">                Either 1-D (if age is a single float) or 2-D array if age is a</span>
+<span class="sd">                numpy array where the outside (or only) index is the derivative</span>
+<span class="sd">                order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                 <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+                                 <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+            <span class="n">library</span><span class="o">.</span><span class="n">differentiate_quantity_array</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">underlying_quantity</span><span class="p">,</span>
+                <span class="n">age</span><span class="p">,</span>
+                <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+                                 <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,),</span>
+                                 <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+            <span class="n">library</span><span class="o">.</span><span class="n">differentiate_quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">underlying_quantity</span><span class="p">,</span>
+                                           <span class="n">c_double</span><span class="p">(</span><span class="n">age</span><span class="p">),</span>
+                                           <span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Quantity.continuous_range"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.Quantity.continuous_range">[docs]</a>    <span class="k">def</span> <span class="nf">continuous_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the range around age over which the quantity is continuous.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - age: The age around which the continuous region is required.</span>
+
+<span class="sd">        Returns: A 2-tuple of the minimum and maximum ages surrounding age</span>
+<span class="sd">                 over thich the quantity is guaranteed continuous</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span> <span class="o">=</span> <span class="n">c_double</span><span class="p">(),</span> <span class="n">c_double</span><span class="p">()</span>
+        <span class="n">library</span><span class="o">.</span><span class="n">quantity_continuous_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">underlying_quantity</span><span class="p">,</span>
+                                          <span class="n">c_double</span><span class="p">(</span><span class="n">age</span><span class="p">),</span>
+                                          <span class="n">byref</span><span class="p">(</span><span class="n">min_age</span><span class="p">),</span>
+                                          <span class="n">byref</span><span class="p">(</span><span class="n">max_age</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">min_age</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">max_age</span><span class="o">.</span><span class="n">value</span></div></div>
+
+<div class="viewcode-block" id="example"><a class="viewcode-back" href="../../_implementation/stellar_evolution.library_interface.html#stellar_evolution.library_interface.example">[docs]</a><span class="k">def</span> <span class="nf">example</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Example of the usage of the interface.&quot;&quot;&quot;</span>
+
+<span class="c1">#    mesa_dir = &#39;../poet_src/StellarEvolution/MESA&#39;</span>
+<span class="c1">#    interpolator = MESAInterpolator(mesa_dir = mesa_dir)</span>
+<span class="c1">#    interpolator.save(mesa_dir + &#39;/saved_interpolator&#39;)</span>
+<span class="c1">#    for quantity_name in MESAInterpolator.quantity_list :</span>
+<span class="c1">#        quantity = interpolator(quantity_name, 1.0, 0.0)</span>
+<span class="c1">#        print(quantity_name + &#39;(1.0) = &#39; + repr(quantity(1.0)))</span>
+<span class="c1">#        print(quantity_name + &#39;(4.6) = &#39; + repr(quantity(4.6)))</span>
+    <span class="n">loaded_interpolator</span> <span class="o">=</span> <span class="n">MESAInterpolator</span><span class="p">(</span>
+        <span class="n">interpolator_fname</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;saved_interpolator&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">quantity_name</span> <span class="ow">in</span> <span class="n">MESAInterpolator</span><span class="o">.</span><span class="n">quantity_list</span><span class="p">:</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="n">loaded_interpolator</span><span class="p">(</span><span class="n">quantity_name</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+        <span class="n">ages</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">quantity</span><span class="o">.</span><span class="n">min_age</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)),</span>
+                           <span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">quantity</span><span class="o">.</span><span class="n">max_age</span><span class="p">),</span>
+                           <span class="mi">5</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">quantity_name</span>
+              <span class="o">+</span>
+              <span class="s1">&#39;(&#39;</span>
+              <span class="o">+</span>
+              <span class="nb">repr</span><span class="p">(</span><span class="n">ages</span><span class="p">)</span>
+              <span class="o">+</span>
+              <span class="s1">&#39;) = &#39;</span>
+              <span class="o">+</span>
+              <span class="nb">repr</span><span class="p">(</span><span class="n">quantity</span><span class="p">(</span><span class="n">ages</span><span class="p">)))</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">example</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

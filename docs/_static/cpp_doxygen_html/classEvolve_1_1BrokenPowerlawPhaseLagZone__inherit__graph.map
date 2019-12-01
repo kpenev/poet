@@ -1,0 +1,8 @@
+<map id="Evolve::BrokenPowerlawPhaseLagZone" name="Evolve::BrokenPowerlawPhaseLagZone">
+<area shape="rect" id="node4" href="$classPlanet_1_1PlanetZone.html" title="The only zone of a LockedPlanet. " alt="" coords="5,1385,187,1643"/>
+<area shape="rect" id="node5" href="$classStar_1_1EvolvingStellarZone.html" title="Base class for zones of low mass evolving stars. " alt="" coords="211,1369,424,1659"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="96,199,317,808"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1ZoneOrientation.html" title="{Evolve::ZoneOrientation\n|&#45; __inclination\l&#45; __periapsis\l|+ ZoneOrientation()\l+ configure()\l+ inclination()\l+ periapsis()\l}" alt="" coords="110,5,303,151"/>
+<area shape="rect" id="node6" href="$classStar_1_1EvolvingStellarCore.html" title="Radiative core for low mass evolving stars. " alt="" coords="97,1707,297,1900"/>
+<area shape="rect" id="node7" href="$classStar_1_1EvolvingStellarEnvelope.html" title="Surface convective zone for low mass evolving stars or the entire star for high mass stars..." alt="" coords="321,1715,553,1892"/>
+</map>

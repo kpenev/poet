@@ -1,0 +1,642 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.change_variables module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="stellar_evolution.derived_stellar_quantities module" href="stellar_evolution.derived_stellar_quantities.html" />
+    <link rel="prev" title="stellar_evolution.basic_utils module" href="stellar_evolution.basic_utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="basic_utils.html">basic_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evolution_cmdline_args.html">evolution_cmdline_args module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="orbital_evolution.html">orbital_evolution package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="stellar_evolution.html">stellar_evolution package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="stellar_evolution.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="stellar_evolution.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../python_interface.html">Python Interface</a> &raquo;</li>
+        
+          <li><a href="modules.html">PythonPackage</a> &raquo;</li>
+        
+          <li><a href="stellar_evolution.html">stellar_evolution package</a> &raquo;</li>
+        
+      <li>stellar_evolution.change_variables module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_implementation/stellar_evolution.change_variables.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-stellar_evolution.change_variables">
+<span id="stellar-evolution-change-variables-module"></span><h1>stellar_evolution.change_variables module<a class="headerlink" href="#module-stellar_evolution.change_variables" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-105c84d712eacb2bc9b9b4de1f7165d734c77ffb.png" alt="Inheritance diagram of LogGCGS, MESAInterpolator, QuantityEvaluator, RhoCGS, Structure, TeffK, VarChangingInterpolator" usemap="#inheritance6624e14e57" class="inheritance graphviz" /></div>
+<map id="inheritance6624e14e57" name="inheritance6624e14e57">
+<area shape="rect" id="node1" href="basic_utils.html#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="5,5,147,29"/>
+<area shape="rect" id="node2" href="#stellar_evolution.change_variables.QuantityEvaluator" target="_top" title="Evaluate stellar quantities fixing out of range issues etc." alt="" coords="171,5,506,29"/>
+<area shape="rect" id="node3" href="#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="506,77,880,101"/>
+<area shape="rect" id="node4" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="531,5,856,29"/>
+<area shape="rect" id="node5" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.LogGCGS" target="_top" title="Log10 of stellar surface gravity it cgs units." alt="" coords="880,5,1218,29"/>
+<area shape="rect" id="node6" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.RhoCGS" target="_top" title="Mean stellar density in cgs units." alt="" coords="1242,5,1572,29"/>
+<area shape="rect" id="node7" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.TeffK" target="_top" title="Stellar effective temperature in Kelvin." alt="" coords="1596,5,1903,29"/>
+</map><p>Allows finding mass and age given other properties at fixed [Fe/H].</p>
+<dl class="class">
+<dt id="stellar_evolution.change_variables.QuantityEvaluator">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.change_variables.</code><code class="sig-name descname">QuantityEvaluator</code><span class="sig-paren">(</span><em class="sig-param">interpolator</em>, <em class="sig-param">feh</em>, <em class="sig-param">min_mass=0.0</em>, <em class="sig-param">max_mass=inf</em>, <em class="sig-param">**reference_values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#QuantityEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.QuantityEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-a1f985ad094d5f25147b8989f64c1d634c5361d6.png" alt="Inheritance diagram of stellar_evolution.change_variables.QuantityEvaluator" usemap="#inheritance95bbb1fa55" class="inheritance graphviz" /></div>
+<map id="inheritance95bbb1fa55" name="inheritance95bbb1fa55">
+<area shape="rect" id="node1" href="#stellar_evolution.change_variables.QuantityEvaluator" target="_top" title="Evaluate stellar quantities fixing out of range issues etc." alt="" coords="5,5,341,29"/>
+</map><p>Evaluate stellar quantities fixing out of range issues etc.</p>
+<dl class="method">
+<dt id="stellar_evolution.change_variables.QuantityEvaluator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">interpolator</em>, <em class="sig-param">feh</em>, <em class="sig-param">min_mass=0.0</em>, <em class="sig-param">max_mass=inf</em>, <em class="sig-param">**reference_values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#QuantityEvaluator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.QuantityEvaluator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set-up to use the given interpolator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.QuantityEvaluator._evaluate">
+<em class="property">static </em><code class="sig-name descname">_evaluate</code><span class="sig-paren">(</span><em class="sig-param">quantity</em>, <em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#QuantityEvaluator._evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.QuantityEvaluator._evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the given quantity at the given age.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.QuantityEvaluator.logg">
+<code class="sig-name descname">logg</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#QuantityEvaluator.logg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.QuantityEvaluator.logg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return log10(surface gravity) for the given stellar params.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.QuantityEvaluator.lum">
+<code class="sig-name descname">lum</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#QuantityEvaluator.lum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.QuantityEvaluator.lum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return log10(surface gravity) for the given stellar params.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.QuantityEvaluator.rho">
+<code class="sig-name descname">rho</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#QuantityEvaluator.rho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.QuantityEvaluator.rho" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the density for the given stellar params.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.QuantityEvaluator.teff">
+<code class="sig-name descname">teff</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#QuantityEvaluator.teff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.QuantityEvaluator.teff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the effective temperature for the given stellar params.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator">
+<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.change_variables.</code><code class="sig-name descname">VarChangingInterpolator</code><span class="sig-paren">(</span><em class="sig-param">grid_feh</em>, <em class="sig-param">grid_masses</em>, <em class="sig-param">grid_ages</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" title="stellar_evolution.library_interface.MESAInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">stellar_evolution.library_interface.MESAInterpolator</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-3e575485facdd019efcafd06a68219a07ea319b2.png" alt="Inheritance diagram of stellar_evolution.change_variables.VarChangingInterpolator" usemap="#inheritance94542c488a" class="inheritance graphviz" /></div>
+<map id="inheritance94542c488a" name="inheritance94542c488a">
+<area shape="rect" id="node1" href="#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="5,77,379,101"/>
+<area shape="rect" id="node2" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="30,5,355,29"/>
+</map><p>Enhance interpolators to find mass and age given other properties.</p>
+<dl class="attribute">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator.grid">
+<code class="sig-name descname">grid</code><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>A structure with attributes:
+- masses:</p>
+<blockquote>
+<div><p>Stellar masses of the grid nodes at which the dependent
+variables are known.</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>ages:</dt><dd><p>Stellar ages of the grid nodes at which the dependent
+variables are known.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>feh:</dt><dd><p>[Fe/H] values of the grid nodes at which the dependent
+variables are known.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>weights:</dt><dd><p>The weights to use when interpolating the grid to a
+specified [Fe/H].</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>teff (may not be present):</dt><dd><p>The stellar effective temperature in Kelvin at the grid
+nodes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>logg (may not be present):</dt><dd><p>The log10(stellar gravity in cgs) at the grid nodes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>lum (may not be present):</dt><dd><p>The stellar luminosity, in solar luminosities at the grid
+nodes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>rho(may not be present):</dt><dd><p>The stellar density in cgs at the grid nodes.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The first index for each variable or the weights attribute is
+mass, followed by age and finally [Fe/H].</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The grid must be fine enough to ensure that no grid cell entirely
+contains an iso-contour of either dependent variable where
+interpolation will be attempted.</p>
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">grid_feh</em>, <em class="sig-param">grid_masses</em>, <em class="sig-param">grid_ages</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare an interpolator able to find mass, age from other quantities.</p>
+<p>Keyword only arguments: see MESAInterpolator.__init__</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator._add_grid_variable">
+<code class="sig-name descname">_add_grid_variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator._add_grid_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator._add_grid_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds another dependent variable to self.grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>variable</strong> – The name of the variable to add. See class
+documentation for details.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator._bilinear_coef_equations">
+<em class="property">static </em><code class="sig-name descname">_bilinear_coef_equations</code><span class="sig-paren">(</span><em class="sig-param">m_low</em>, <em class="sig-param">m_high</em>, <em class="sig-param">age_low</em>, <em class="sig-param">age_high</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator._bilinear_coef_equations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator._bilinear_coef_equations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equations for the coef. of a bi-linear func. over mass/age cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m_low</strong> – The lower mass boundary of the cell.</p></li>
+<li><p><strong>m_high</strong> – The upper mass boundary of the cell.</p></li>
+<li><p><strong>age_low</strong> – The lower age boundary of the cell.</p></li>
+<li><p><strong>age_high</strong> – The upper age boundary of the cell.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The matrix defining the equations for the coefficients of a
+bi-linear function over the specified cell.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2-D scipy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator._define_var_change_grid">
+<code class="sig-name descname">_define_var_change_grid</code><span class="sig-paren">(</span><em class="sig-param">feh</em>, <em class="sig-param">masses</em>, <em class="sig-param">ages</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator._define_var_change_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator._define_var_change_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new grid with the given locations of the nodes.</p>
+<p>Creates self.grid with all arguments as same-name members and an
+additional weight member containing an empty array to fill with weights
+later when grid variables start to be calculated. Also creates
+self._defined_weigths to keep track if weights have been previously
+initialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feh</strong> – The [Fe/H] values at which to tabulate the dependent
+variables.</p></li>
+<li><p><strong>masses</strong> – The stellar masses at which to tabulate the dependent
+variables.</p></li>
+<li><p><strong>ages</strong> (<em>-</em>) – The ages (in Gyrs) at which to tabulate the dependent
+variables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator._find_bilinear_roots">
+<em class="property">static </em><code class="sig-name descname">_find_bilinear_roots</code><span class="sig-paren">(</span><em class="sig-param">coef</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator._find_bilinear_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator._find_bilinear_roots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the simultaneous roots of two bilinear functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coef</strong> – The coefficients of the two bilinear functions. Should
+be a 2-D scipy array with the outer index iterating over the
+function and the inner indices iterating over the
+coefficients of the corresponding bilinear function.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of 2-tuples contaning the simultaneous zeros of the
+two functions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>), ..]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator._find_candidate_cells">
+<code class="sig-name descname">_find_candidate_cells</code><span class="sig-paren">(</span><em class="sig-param">feh</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator._find_candidate_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator._find_candidate_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify grid cells possibly containing a solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feh</strong> – See change_variables().</p></li>
+<li><p><strong>kwargs</strong> – See change_variables().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Matching the shape of grid variables with True entries for</dt><dd><p>grid cells which may contain a solution.</p>
+</dd>
+<dt>3-D array:</dt><dd><p>The last two dimensions matching the shape of grid
+variables, consisting of two slabs giving the difference
+from the target values of each of the grid variables used
+for variable change.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2-D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator._get_quantity">
+<code class="sig-name descname">_get_quantity</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">mass</em>, <em class="sig-param">feh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator._get_quantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator._get_quantity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a quantity at the given mass and [Fe/H].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the quantity to return.</p></li>
+<li><p><strong>mass</strong> – The stellar mass for which this quantity should apply</p></li>
+<li><p><strong>feh</strong> – The [Fe/H] for which this quantity should apply.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A callable returning the value of the quantity at a given age.
+Also has min_age and max_age attributes defining the range over
+which it is defined.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator._interpolate_grid_variable">
+<code class="sig-name descname">_interpolate_grid_variable</code><span class="sig-paren">(</span><em class="sig-param">var_name</em>, <em class="sig-param">feh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator._interpolate_grid_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator._interpolate_grid_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate one of the grid variables to a specified [Fe/H].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var_name</strong> – The name of the variable to interpolate.</p></li>
+<li><p><strong>feh</strong> – The [Fe/H] value to inteprolate to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The interepolated variable at the grid masses and ages.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2-D scipy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator.change_variables">
+<code class="sig-name descname">change_variables</code><span class="sig-paren">(</span><em class="sig-param">feh</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator.change_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator.change_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change from two of (lum, rho, logg, Teff) to mass &amp; age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feh</strong> – The value of [Fe/H] at which this variable change is taking
+place.</p></li>
+<li><p><strong>kwargs</strong> – <p>must be exactly two of the following:</p>
+<ul>
+<li><dl class="simple">
+<dt>teff:</dt><dd><p>The effective temperature to match.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>logg:</dt><dd><p>The log10(gravitation acceleration) to match.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>lum:</dt><dd><p>The luminosity to match.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>rho:</dt><dd><p>The density to match.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The mass and age at which the keyword arguments are matched
+as list of tuples of (mass, age).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>), ..]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.change_variables.VarChangingInterpolator.search_near">
+<code class="sig-name descname">search_near</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">age</em>, <em class="sig-param">feh</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/change_variables.html#VarChangingInterpolator.search_near"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.change_variables.VarChangingInterpolator.search_near" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for mass &amp; age near the given ones to match two other vars.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mass</strong> – The value of the mass to search near.</p></li>
+<li><p><strong>age</strong> – The value of the age to search near.</p></li>
+<li><p><strong>feh</strong> – The value of [Fe/H] at which the variable change is taking
+place.</p></li>
+<li><p><strong>kwargs</strong> – <p>must be exactly two of the following:</p>
+<ul>
+<li><dl class="simple">
+<dt>teff:</dt><dd><p>The effective temperature to match.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>logg:</dt><dd><p>The log10(gravitation acceleration) to match.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>lum:</dt><dd><p>The luminosity to match.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>rho:</dt><dd><p>The density to match.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The mass and age where the given dependent variables are
+matched.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="stellar_evolution.derived_stellar_quantities.html" class="btn btn-neutral float-right" title="stellar_evolution.derived_stellar_quantities module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="stellar_evolution.basic_utils.html" class="btn btn-neutral float-left" title="stellar_evolution.basic_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

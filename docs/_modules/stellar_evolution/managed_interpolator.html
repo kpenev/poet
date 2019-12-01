@@ -1,0 +1,639 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stellar_evolution.managed_interpolator &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>stellar_evolution.managed_interpolator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for stellar_evolution.managed_interpolator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Define a stellar evolution interpolator class managed through a database.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
+
+<span class="c1">#Need to add POET package to module search path before importing</span>
+<span class="c1">#pylint: disable=wrong-import-position</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.basic_utils</span> <span class="k">import</span> <span class="n">db_session_scope</span>
+<span class="kn">from</span> <span class="nn">stellar_evolution.change_variables</span> <span class="k">import</span> <span class="n">VarChangingInterpolator</span>
+
+<span class="kn">from</span> <span class="nn">.manager_data_model</span> <span class="k">import</span> \
+    <span class="n">VarchangeGrid</span><span class="p">,</span>\
+    <span class="n">VarchangeDependentValue</span><span class="p">,</span>\
+    <span class="n">VarchangeAgeNode</span><span class="p">,</span>\
+    <span class="n">VarchangeMassNode</span><span class="p">,</span>\
+    <span class="n">VarchangeFeHNode</span><span class="p">,</span>\
+    <span class="n">VarchangeDependentVariable</span>
+<span class="c1">#pylint: enable=wrong-import-position</span>
+
+<div class="viewcode-block" id="checksum_filename"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.checksum_filename">[docs]</a><span class="k">def</span> <span class="nf">checksum_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a str checksum of the file with the given name.&quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">opened_file</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">(</span><span class="n">opened_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="verify_checksum"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.verify_checksum">[docs]</a><span class="k">def</span> <span class="nf">verify_checksum</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">checksum</span><span class="p">,</span> <span class="n">what</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the given file has the expected checksum.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename:    The name of the file whose checksum to verify.</span>
+
+<span class="sd">        checksum:    The expected value of the checksum.</span>
+
+<span class="sd">        what:    What is being verified (only used if error message if checksums</span>
+<span class="sd">            do not match).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">checksum</span> <span class="o">!=</span> <span class="n">checksum_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> with filename </span><span class="si">%s</span><span class="s1"> registered, with a different checksum!&#39;</span>
+            <span class="o">%</span>
+            <span class="p">(</span><span class="n">what</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+<span class="c1">#This may be something to try to pick apart at a later time.</span>
+<span class="c1">#pylint: disable=too-many-instance-attributes</span>
+<div class="viewcode-block" id="ManagedInterpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator">[docs]</a><span class="k">class</span> <span class="nc">ManagedInterpolator</span><span class="p">(</span><span class="n">VarChangingInterpolator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add properties describing the configuration of an interpolator.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ManagedInterpolator._new_var_change_grid"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator._new_var_change_grid">[docs]</a>    <span class="k">def</span> <span class="nf">_new_var_change_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="o">*</span><span class="p">,</span>
+                             <span class="n">grid_name</span><span class="p">,</span>
+                             <span class="n">feh</span><span class="p">,</span>
+                             <span class="n">masses</span><span class="p">,</span>
+                             <span class="n">ages</span><span class="p">,</span>
+                             <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new grid with the given nodes and register it with the DB.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            grid_name:    The name to assign to the new grid in the database.</span>
+
+<span class="sd">            feh:    The [Fe/H] values at which to tabulate the dependent</span>
+<span class="sd">                variables.</span>
+
+<span class="sd">            masses:    The stellar masses at which to tabulate the dependent</span>
+<span class="sd">                variables.</span>
+
+<span class="sd">            ages:    The ages (in Gyrs) at which to tabulate the dependent</span>
+<span class="sd">                variables.</span>
+
+<span class="sd">            db_session:    A database session to submit queries to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_varchange_grid_name</span> <span class="o">=</span> <span class="n">grid_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define_var_change_grid</span><span class="p">(</span><span class="n">feh</span><span class="p">,</span> <span class="n">masses</span><span class="p">,</span> <span class="n">ages</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VarchangeGrid</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">db_grid</span> <span class="o">=</span> <span class="n">VarchangeGrid</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">grid_name</span><span class="p">,</span>
+            <span class="n">interpolator_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_id</span>
+        <span class="p">)</span>
+        <span class="n">db_grid</span><span class="o">.</span><span class="n">feh_nodes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">VarchangeFeHNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feh</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">db_grid</span><span class="o">.</span><span class="n">mass_nodes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">VarchangeMassNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">masses</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">db_grid</span><span class="o">.</span><span class="n">age_nodes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">VarchangeAgeNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ages</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_grid</span><span class="p">)</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">db_grid</span><span class="o">.</span><span class="n">feh_nodes</span><span class="p">)</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">db_grid</span><span class="o">.</span><span class="n">mass_nodes</span><span class="p">)</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">db_grid</span><span class="o">.</span><span class="n">age_nodes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ManagedInterpolator._variable_db_id"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator._variable_db_id">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_variable_db_id</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">db_session</span><span class="p">,</span> <span class="n">must_exist</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the ID of the given varibale in the database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - variable:</span>
+<span class="sd">                The name of the variable whose ID to return.</span>
+
+<span class="sd">            - must_exst:</span>
+<span class="sd">                If False, and the variable is not yet in the</span>
+<span class="sd">                varchange_dependent_variables table, a new entry is added.</span>
+<span class="sd">                Otherwise, an exception is raised if it is not there.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            - variable_db_id:</span>
+<span class="sd">                The ID of the variable in the database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">variable_db_id</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="n">VarchangeDependentVariable</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">variable</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">must_exist</span> <span class="ow">or</span> <span class="n">variable_db_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">variable_db_id</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">variable_db_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VarchangeDependentVariable</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">VarchangeDependentVariable</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">variable_db_id</span><span class="p">,</span>
+                                                  <span class="n">name</span><span class="o">=</span><span class="n">variable</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">variable_db_id</span></div>
+
+<div class="viewcode-block" id="ManagedInterpolator._read_variable_from_db"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator._read_variable_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">_read_variable_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the given variable&#39;s grid values from the DB.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - variable_name:</span>
+<span class="sd">                The name of the variable to add.</span>
+
+<span class="sd">            - db_session:</span>
+<span class="sd">                A database session for queries.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None, but has the same effect as calling</span>
+<span class="sd">            VarChangingInterpolator._add_grid_variable, but finishes much</span>
+<span class="sd">            faster.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">variable_db_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_db_id</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">db_session</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+            <span class="n">variable</span><span class="p">,</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="c1">#Fales positive</span>
+                    <span class="c1">#pylint: disable=no-member</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="o">.</span><span class="n">size</span>
+                    <span class="c1">#pylint: enable=no-member</span>
+                <span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="p">(</span><span class="nb">bool</span> <span class="k">if</span> <span class="n">variable</span> <span class="o">==</span> <span class="s1">&#39;weights&#39;</span> <span class="k">else</span> <span class="nb">float</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">grid_var</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">variable</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">feh_i</span><span class="p">,</span> <span class="n">mass_i</span><span class="p">,</span> <span class="n">age_i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                <span class="n">VarchangeDependentValue</span><span class="o">.</span><span class="n">feh_node_index</span><span class="p">,</span>
+                <span class="n">VarchangeDependentValue</span><span class="o">.</span><span class="n">mass_node_index</span><span class="p">,</span>
+                <span class="n">VarchangeDependentValue</span><span class="o">.</span><span class="n">age_node_index</span><span class="p">,</span>
+                <span class="n">VarchangeDependentValue</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+            <span class="n">variable_id</span><span class="o">=</span><span class="n">variable_db_id</span><span class="p">,</span>
+            <span class="n">grid_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span>
+        <span class="p">):</span>
+            <span class="n">grid_var</span><span class="p">[</span><span class="n">mass_i</span><span class="p">,</span> <span class="n">age_i</span><span class="p">,</span> <span class="n">feh_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ManagedInterpolator._add_variable_to_db"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator._add_variable_to_db">[docs]</a>    <span class="k">def</span> <span class="nf">_add_variable_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add pre-calculated node values of a variable to DB.&quot;&quot;&quot;</span>
+
+        <span class="n">variable_db_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_db_id</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">db_session</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">grid_var</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">variable</span><span class="p">)</span>
+        <span class="n">db_session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">VarchangeDependentValue</span><span class="p">(</span>
+                    <span class="n">variable_id</span><span class="o">=</span><span class="n">variable_db_id</span><span class="p">,</span>
+                    <span class="n">grid_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span><span class="p">,</span>
+                    <span class="n">feh_node_index</span><span class="o">=</span><span class="n">feh_i</span><span class="p">,</span>
+                    <span class="n">mass_node_index</span><span class="o">=</span><span class="n">mass_i</span><span class="p">,</span>
+                    <span class="n">age_node_index</span><span class="o">=</span><span class="n">age_i</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">grid_var</span><span class="p">[</span><span class="n">mass_i</span><span class="p">,</span> <span class="n">age_i</span><span class="p">,</span> <span class="n">feh_i</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="c1">#Fales positive</span>
+                <span class="c1">#pylint: disable=no-member</span>
+                <span class="k">for</span> <span class="n">feh_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">mass_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">age_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                <span class="c1">#pylint: enable=no-member</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ManagedInterpolator._add_grid_variable"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator._add_grid_variable">[docs]</a>    <span class="k">def</span> <span class="nf">_add_grid_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares to use another dependent variable to change from.</span>
+
+<span class="sd">        Args: see VarChangingInterpolator._add_grid_variable.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="n">variable_db_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_db_id</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span>
+                                                  <span class="n">db_session</span><span class="p">,</span>
+                                                  <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                        <span class="n">VarchangeDependentValue</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                        <span class="n">variable_id</span><span class="o">=</span><span class="n">variable_db_id</span><span class="p">,</span>
+                        <span class="n">grid_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_variable_from_db</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">db_session</span><span class="p">)</span>
+                <span class="c1">#Attribute defined_weights defined by parent class.</span>
+                <span class="c1">#pylint: disable=access-member-before-definition</span>
+                <span class="c1">#pylint: disable=attribute-defined-outside-init</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_read_variable_from_db</span><span class="p">(</span><span class="s1">&#39;weights&#39;</span><span class="p">,</span> <span class="n">db_session</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1">#pylint: enable=access-member-before-definition</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_weights</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_add_grid_variable</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">defined_weights</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_variable_to_db</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">db_session</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_weights</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_variable_to_db</span><span class="p">(</span><span class="s1">&#39;weights&#39;</span><span class="p">,</span> <span class="n">db_session</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ManagedInterpolator._set_var_change_grid"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator._set_var_change_grid">[docs]</a>    <span class="k">def</span> <span class="nf">_set_var_change_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">db_session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read a varchange grid from the DB and set the interpolator to use it.</span>
+
+<span class="sd">        See VarChangingInterpolator._define_var_change_grid for newly created</span>
+<span class="sd">        members of self.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - grid_name:</span>
+<span class="sd">                The name of the grid in the database to read.</span>
+
+<span class="sd">            - db_session:</span>
+<span class="sd">                A database session for queries.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if a grid with the given name exists, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">grid_db_id</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="n">VarchangeGrid</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">grid_name</span><span class="p">,</span>
+            <span class="n">interpolator_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_id</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">grid_db_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span> <span class="o">=</span> <span class="n">grid_db_id</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define_var_change_grid</span><span class="p">(</span>
+            <span class="n">feh</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">VarchangeFeHNode</span><span class="o">.</span><span class="n">value</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                    <span class="n">grid_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+                    <span class="n">VarchangeFeHNode</span><span class="o">.</span><span class="n">index</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+            <span class="n">masses</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">VarchangeMassNode</span><span class="o">.</span><span class="n">value</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                    <span class="n">grid_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+                    <span class="n">VarchangeMassNode</span><span class="o">.</span><span class="n">index</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+            <span class="n">ages</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">VarchangeAgeNode</span><span class="o">.</span><span class="n">value</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+                    <span class="n">grid_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_db_id</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+                    <span class="n">VarchangeAgeNode</span><span class="o">.</span><span class="n">index</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ManagedInterpolator.__init__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">db_interpolator</span><span class="p">,</span>
+                 <span class="n">serialization_path</span><span class="p">,</span>
+                 <span class="n">db_session</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create VarChangingInterpolator and add properties describing config.</span>
+
+<span class="sd">        Defines the following properties containing the information from</span>
+<span class="sd">        db_interpolator:</span>
+<span class="sd">            - name:</span>
+<span class="sd">                The human readable name of the interpolator</span>
+
+<span class="sd">            - _db_id:</span>
+<span class="sd">                The ID of the interpolator in the database.</span>
+
+<span class="sd">            - filename:</span>
+<span class="sd">                The filename from which the interpolator was read.</span>
+
+<span class="sd">            - nodes:</span>
+<span class="sd">                A dictionary indexed by quantity giving the number of</span>
+<span class="sd">                interpolation nodes used.</span>
+
+<span class="sd">            - smoothing:</span>
+<span class="sd">                Same as nodes but for the smoothing arguments.</span>
+
+<span class="sd">            - suite:</span>
+<span class="sd">                The software suite used to generate the tracks on which the</span>
+<span class="sd">                interpolator is based.</span>
+
+<span class="sd">            - track_masses:</span>
+<span class="sd">                List of stellar masses on whose tracks the interpolation is</span>
+<span class="sd">                based.</span>
+
+<span class="sd">            - track_feh:</span>
+<span class="sd">                List of stellar [Fe/H] on whose tracks the interpolation is</span>
+<span class="sd">                based.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - db_interpolator:</span>
+<span class="sd">                SerializedInterpolator instance from which to initialize</span>
+<span class="sd">                self.</span>
+<span class="sd">            - serialization_path:</span>
+<span class="sd">                The directory where serialized interpolators are stored.</span>
+
+<span class="sd">        Keyword only arguments:</span>
+<span class="sd">            If not an empty dictionary, the underlying interpolator is</span>
+<span class="sd">            constructed using those instead of the serialized filename.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">interpolator_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialization_path</span><span class="p">,</span>
+                                          <span class="n">db_interpolator</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">checksum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">verify_checksum</span><span class="p">(</span><span class="n">interpolator_fname</span><span class="p">,</span>
+                            <span class="n">db_interpolator</span><span class="o">.</span><span class="n">checksum</span><span class="p">,</span>
+                            <span class="s1">&#39;interpolator&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_id</span> <span class="o">=</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vs_log_age</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_quantity</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="p">{</span><span class="n">track</span><span class="o">.</span><span class="n">suite</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">tracks</span><span class="p">}</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">suite</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suite</span> <span class="o">=</span> <span class="n">suite</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity_names</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">quantity_id</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">smoothing</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">nodes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vs_log_age</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">vs_log_age</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_quantity</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">log_quantity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_masses</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">track</span><span class="o">.</span><span class="n">mass</span>  <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">tracks</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_feh</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">track</span><span class="o">.</span><span class="n">feh</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">db_interpolator</span><span class="o">.</span><span class="n">tracks</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">grid_feh</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+                             <span class="n">grid_masses</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+                             <span class="n">grid_ages</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+                             <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">grid_feh</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+                             <span class="n">grid_masses</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+                             <span class="n">grid_ages</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span>
+                             <span class="n">interpolator_fname</span><span class="o">=</span><span class="n">interpolator_fname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_var_change_grid</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">db_session</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_new_var_change_grid</span><span class="p">(</span>
+                <span class="n">grid_name</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
+                <span class="n">feh</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_feh</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.99</span><span class="p">,</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_feh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.99</span><span class="p">,</span>
+                    <span class="mi">3</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_feh</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">masses</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_masses</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_masses</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                    <span class="mi">10</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_masses</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">ages</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">13.71</span><span class="p">,</span> <span class="mi">412</span><span class="p">),</span>
+                <span class="n">db_session</span><span class="o">=</span><span class="n">db_session</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ManagedInterpolator.__str__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Human readable representation of the interpolator.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;[&#39;</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(n: </span><span class="si">%d</span><span class="s1">, s: </span><span class="si">%g</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">quantity</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">quantity</span><span class="p">],</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span><span class="p">[</span><span class="n">quantity</span><span class="p">])</span>
+                           <span class="k">for</span> <span class="n">quantity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity_list</span><span class="p">])</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;] masses: [&#39;</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_masses</span><span class="p">])</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;], [Fe/H]: [&#39;</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">feh</span><span class="p">)</span> <span class="k">for</span> <span class="n">feh</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_feh</span><span class="p">])</span>
+                <span class="o">+</span>
+                <span class="s1">&#39;]&#39;</span><span class="p">)</span></div></div>
+<span class="c1">#pylint: enable=too-many-instance-attributes</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+digraph "InverseLinearLconvEvolution&lt; LINEAR_QUANTITY_TYPE &gt;"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node0 [label="{InverseLinearLconvEvolution\l\< LINEAR_QUANTITY_TYPE \>\n|- __disk_lifetime\l- __evolution_rate\l- __linear_quantity\l- __find_lconv\l|+ InverseLinearLconvEvolution()\l+ operator()()\l+ disk_lifetime()\l+ range_high()\l+ range_low()\l+ crossings()\l+ deriv()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node1 [label="{Core::OneArgumentDiffFunction\n||+ deriv()\l+ ~OneArgumentDiffFunction()\l- serialize()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1OneArgumentDiffFunction.html",tooltip="A class representing a once differentiable function of a single argument. "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Core::OneArgumentFunction\l\< double, double \>\n||+ operator()()\l+ range_high()\l+ range_low()\l+ crossings()\l+ ~OneArgumentFunction()\l- serialize()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1OneArgumentFunction.html"];
+  Node3 -> Node2 [dir="back",color="orange",fontsize="12",style="solid",label=" \< double, double \>" ,fontname="Helvetica"];
+  Node3 [label="{Core::OneArgumentFunction\l\< InputDataType, OutputDataType \>\n||+ operator()()\l+ range_high()\l+ range_low()\l+ crossings()\l+ ~OneArgumentFunction()\l- serialize()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1OneArgumentFunction.html",tooltip="The base class for functions which take a single argument and return a single value. "];
+}

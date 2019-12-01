@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inclined and Eccentric Orbital Evolution &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Evolution Equations From Tidal Torque+Power" href="eccentric_evolution_equations.html" />
+    <link rel="prev" title="stellar_evolution.manager_data_model module" href="_implementation/stellar_evolution.manager_data_model.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">A detailed derivation of the equations specifying the evolution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-derivations-of-results-used-above">Detailed Derivations of Results Used Above</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eccentric_evolution_equations.html">Evolution Equations From Tidal Torque+Power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_pms1.html">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_pms2.html">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_umm_table.html">A table of curly U values as originally defined in Lai (2012)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_torque.html">Tidal Torque for Inclined and Eccentric Orbits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inclination_eccentricity_power.html">Tidal Power for Inclined and Eccentric Orbits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Inclined and Eccentric Orbital Evolution</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/inclination_eccentricity_equations.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="inclined-and-eccentric-orbital-evolution">
+<h1>Inclined and Eccentric Orbital Evolution<a class="headerlink" href="#inclined-and-eccentric-orbital-evolution" title="Permalink to this headline">¶</a></h1>
+<p>The implementation of the evolution of inclined/eccentric orbits is based on
+the formalism of Lai 2012, hence we will use the same notation.</p>
+<p>The first thing is to derive the spherical harmonic expansion of the tidal
+potential.</p>
+<div class="math notranslate nohighlight">
+\[    U(\mathbf{r}, t) = \frac{GM'}{|\mathbf{r}_{M'}|}\left(
+            \frac{\mathbf{r}\cdot\mathbf{r}_{M'}}{\left|\mathbf{r}_{M'}\right|^2}
+    -
+    \frac{\left|\mathbf{r_{M'}}\right|}{\left|\mathbf{r} - \mathbf{r}_{M'}\right|}
+\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{r}_{M'}(t)\)</span> is the vector from the centers of <span class="math notranslate nohighlight">\(M\)</span> to
+<span class="math notranslate nohighlight">\(M'\)</span> and <span class="math notranslate nohighlight">\(\mathbf{r}\)</span> is the point where the potential is being
+evaluated. Obviously for a circular orbit
+<span class="math notranslate nohighlight">\(\left|\mathbf{r}_{M'}(t)\right|\)</span> is a constant.</p>
+<p>Letting <span class="math notranslate nohighlight">\(r(t) \equiv \left|\mathbf{r}_{M'}(t)\right|\)</span> We start with the
+expansion in a coordinate system with <span class="math notranslate nohighlight">\(\mathbf{\hat{z}}=\mathbf{\hat{L}}\)</span>,
+and <span class="math notranslate nohighlight">\(\mathbf{\hat{y}}=\mathbf{\hat{S}}\times\mathbf{\hat{L}}\)</span>.</p>
+<p>Let us define this expansion as:</p>
+<div class="math notranslate nohighlight">
+\[U(\mathbf{r}, t) = \frac{GM'}{r(t)}\sum_{l,m} c_{l,m}(\rho)
+        Y_{l,m}(\theta, \phi)\]</div>
+<p>With <span class="math notranslate nohighlight">\(\mathbf{r}=(\rho, \theta, \phi)\)</span> in spherical coordinates.</p>
+<p>Clearly:</p>
+<div class="math notranslate nohighlight">
+\[c_{l,m}(\rho, t) = \int_{0}^{2\pi} d\phi \int_{0}^{\pi} d\theta
+        \tilde{U}(\mathbf{r}, t) Y_{l,m}^*(\theta, \phi)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tilde{U}(\mathbf{r}, t)\equiv U(\mathbf{r}, t)r(t)/(GM')\)</span>.</p>
+<p>The integrals are calulated the easiest by writing both <span class="math notranslate nohighlight">\(U(\mathbf{r}, t)\)</span>
+and <span class="math notranslate nohighlight">\(Y_{l,m}(\theta, \phi)\)</span> in a coondinate system where
+<span class="math notranslate nohighlight">\(\hat{\tilde{z}}\)</span> points from <span class="math notranslate nohighlight">\(M\)</span> to <span class="math notranslate nohighlight">\(M'\)</span>. Tilde will be used
+to identify coordinates in that system.</p>
+<div class="math notranslate nohighlight">
+\[\tilde{U}(\mathbf{r}, t) = \tilde{z} - \frac{1}{\sqrt{(1-\tilde{z})^2 +
+        \tilde{x}^2 + \tilde{y}^2}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tilde{x}\)</span>, <span class="math notranslate nohighlight">\(\tilde{y}\)</span> and <span class="math notranslate nohighlight">\(\tilde{z}\)</span> are the
+coordinates of the point the potential is being evaluated scaled by
+<span class="math notranslate nohighlight">\(r(t)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\tilde{x} &amp; = &amp; \tilde{\rho}\sin\tilde{\theta}\cos\tilde{\phi}\\
+\tilde{y} &amp; = &amp;\tilde{\rho}\sin\tilde{\theta}\sin\tilde{\phi}\\
+\tilde{z} &amp; = &amp;\tilde{\rho}\cos\tilde{\theta}\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\tilde{\rho}\)</span> also scaled by <span class="math notranslate nohighlight">\(r(t)\)</span>.</p>
+<p>With these we have:</p>
+<div class="math notranslate nohighlight">
+\[    \tilde{U}(\tilde{\rho}, \tilde{\theta}, t)
+=
+\tilde{\rho}\cos\tilde{\theta}
+-
+\frac{1}{\sqrt{1-2\tilde{\rho}\cos\tilde{\theta} + \tilde{\rho}^2}}\]</div>
+<p>As expected there is no <span class="math notranslate nohighlight">\(\tilde{\phi}\)</span> dependence.</p>
+<p>Now we need to write <span class="math notranslate nohighlight">\(Y_{l,m}\)</span> in the tilde coordinate system:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}x_{rot} &amp;=&amp; \tilde{z}\\
+y_{rot} &amp;=&amp; \tilde{y}\\
+z_{rot} &amp;=&amp; -\tilde{x}\\
+\rho=\rho_{rot} &amp;=&amp; \tilde{\rho}\\
+\theta = \theta_{rot} &amp;\Rightarrow&amp; \sin\theta = \sqrt{
+        \sin^2\tilde{\theta}\sin^2\tilde{\phi} + \cos^2\tilde{\theta}},\quad
+        \cos\theta = -\sin\tilde{\theta}\cos\tilde{\phi}\\
+\phi&amp;=&amp;\phi_{rot}-\Delta\phi(t)\\
+\sin\phi_{rot}&amp;=&amp; \frac{\sin\tilde{\theta}\sin\tilde{\phi}}
+        {
+                \sqrt{\sin^2\tilde{\theta}\sin^2\tilde{\phi}
+                +
+                \cos^2\tilde{\theta}}
+        }\\
+\cos\phi_{rot}&amp;=&amp; \frac{\cos\tilde{\theta}}
+        {
+                \sqrt{\sin^2\tilde{\theta}\sin^2\tilde{\phi}
+                +
+                \cos^2\tilde{\theta}}
+        }\end{split}\]</div>
+<p>Where coordinates with “rot” subscript are in a coordinate system where
+<span class="math notranslate nohighlight">\(\mathbf{\hat{z}_{rot}}=\mathbf{\hat{L}}\)</span> and <span class="math notranslate nohighlight">\(\hat{x}_{rot}\)</span> points
+from the center of <span class="math notranslate nohighlight">\(M\)</span> to the center of <span class="math notranslate nohighlight">\(M'\)</span>, and
+<span class="math notranslate nohighlight">\(\Delta\phi(t)\)</span> is the angle between <span class="math notranslate nohighlight">\(\hat{x}_{rot}\)</span> and
+<span class="math notranslate nohighlight">\(\hat{x}\)</span> (<span class="math notranslate nohighlight">\(\Delta\phi(t)=\Omega t\)</span> for a circular orbit with
+angular velocity <span class="math notranslate nohighlight">\(\Omega\)</span>).</p>
+<p>Note that:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}c_{l,m}(\rho, t) &amp;=&amp; \int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)}
+        d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
+        Y_{l,m}^*(\theta,\phi_{rot}-\Delta\phi(t))\\
+        &amp;=&amp; exp(-im\Delta\phi(t))\int_{\Delta\phi(t)}^{2\pi+\Delta\phi(t)}
+                d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
+                        Y_{l,m}^*(\theta, \phi_{rot})\\
+        &amp;=&amp; \exp(-im\Delta\phi(t))\left\{
+                \int_{\Delta\phi(t)}^{2\pi}  d\phi_{rot}
+                        \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
+                        Y_{l,m}^*(\theta, \phi_{rot})
+                +
+                \int_{2\pi}^{2\pi+\Delta\phi(t)}  d\phi_{rot}
+                        \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
+                        Y_{l,m}^*(\theta, \phi_{rot})\right\}\\
+        &amp;=&amp; \exp(-im\Delta\phi(t))\left\{
+                \int_{\Delta\phi(t)}^{2\pi}  d\phi_{rot}
+                        \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
+                        Y_{l,m}^*(\theta, \phi_{rot})
+                +
+                \int_{0}^{\Delta\phi(t)}  d\phi_{rot}
+                        \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
+                        Y_{l,m}^*(\theta, \phi_{rot}+2\pi)\right\}\\
+        &amp;=&amp; \exp(-im\Delta\phi(t)) \int_{0}^{2\pi}
+                d\phi_{rot} \int_{0}^{\pi} d\theta \tilde{U}(\mathbf{r}, t)
+                Y_{l,m}^*(\theta, \phi_{rot})\end{split}\]</div>
+<p>We can then use Mathematica to evaluate:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}c_{0,0} = c_{1,0} = c_{2,\pm1} &amp; = &amp; 0\\
+\quad c_{1,\pm 1} &amp; = &amp; \pm\sqrt{\frac{2\pi}{3}}\tilde{\rho}
+        \exp(-im\Delta\phi(t))\\
+\quad c_{2,0} &amp; = &amp; \sqrt{\frac{\pi}{5}}\rho^2\exp(-im\Delta\phi(t))\\
+\quad c_{2,\pm 2} &amp; = &amp; -\sqrt{\frac{3\pi}{10}}\rho^2\exp(-im\Delta\phi(t))\end{split}\]</div>
+<p>The <span class="math notranslate nohighlight">\(c_{1,\pm 1}\)</span> coefficients represent the gravitational acceleration of
+the center of mass of <span class="math notranslate nohighlight">\(M\)</span> due to <span class="math notranslate nohighlight">\(m\)</span>, and <span class="math notranslate nohighlight">\(c_{2,*}\)</span> are the
+lowest order tidal potential terms, so we have reproduced eq. (4) of Lai 2012.</p>
+<p>Now we need to transform the <span class="math notranslate nohighlight">\(Y_{2,m}\)</span> functions to a coordinate system where
+the <span class="math notranslate nohighlight">\(z\)</span> axis is along <span class="math notranslate nohighlight">\(\hat{S}\)</span> and the <span class="math notranslate nohighlight">\(y\)</span> axis is along
+<span class="math notranslate nohighlight">\(\hat{S}\times\hat{L}\)</span>. We will use primes for the coordinates in the new
+system. We have the following relations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y&amp;=&amp;y'=\rho'\sin\theta'\sin\phi'\\
+z&amp;=&amp;x'\sin\Theta + z'\cos\Theta
+        =\rho'\sin\theta'\cos\phi'\sin\Theta + \rho'\cos\theta'\cos\Theta\\
+x&amp;=&amp;x'\cos\Theta - z'\sin\Theta
+        =\rho'\sin\theta'\cos\phi'\cos\Theta - \rho'\cos\theta'\sin\Theta\\
+\rho&amp;=&amp;\rho'\\
+\cos\theta&amp;=&amp;z/\rho=\sin\theta'\cos\phi'\sin\Theta+\cos\theta'\cos\Theta\\
+\exp(i\phi)&amp;=&amp;\frac{x+iy}{\rho\sin\theta}
+        =\frac{\sin\theta'\sin\phi'+i\left(\sin\theta'\cos\phi'\cos\Theta -
+                                                                \cos\theta'\sin\Theta\right)}
+                {\sqrt{1-\cos^2\theta}}\end{split}\]</div>
+<p>Then using mathematica we show that the transformation between the prime and
+non-prime coordinate system is indeed given by the Wigner D matrices quoted
+in Lai 2012 (Equations 6-11).</p>
+<p>The equivalent of Lai 2014 eq. 12 is then:</p>
+<div class="math notranslate nohighlight">
+\[U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi')
+        \frac{\exp\left(-im'\Delta\phi(t)\right)a^3}{r^3(t)}\]</div>
+<p>with</p>
+<div class="math notranslate nohighlight">
+\[U_{m,m'} \equiv \frac{GM'}{a^3}W_{2,m'}D_{m,m'}(\Theta)\]</div>
+<p>This is where we diverge from Lai 2012 because we wish to consider elliptical
+orbits. For general elliptical orbits it is convenient to define the origin of
+time so that the planet is at periastron at <span class="math notranslate nohighlight">\(t=0\)</span>. Further we will take
+<span class="math notranslate nohighlight">\(\Delta\phi(t)=\phi(t)+\phi_0\)</span> where <span class="math notranslate nohighlight">\(\phi(0)=0\)</span>, which implies that
+<span class="math notranslate nohighlight">\(\phi_0\)</span> is the angle between periastron and <span class="math notranslate nohighlight">\(\hat{x}\)</span> or
+<span class="math notranslate nohighlight">\(90^\circ\)</span> less than the angle between periastron and
+<span class="math notranslate nohighlight">\(\hat{S}\times\hat{L}\)</span>. With these definitions:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}r(t) &amp; = &amp; a(1-e\cos u)\\
+\tan\left(\frac{\phi}{2}\right)&amp;=&amp;\sqrt{\frac{1+e}{1-e}}
+        \tan\left(\frac{u}{2}\right)\\
+\Rightarrow
+1+\tan^2\left(\frac{\phi}{2}\right)&amp;=&amp;\frac{1-e\cos u}
+        {(1-e)\cos^2\left(\frac{u}{2}\right)}\\
+1-\tan^2\left(\frac{\phi}{2}\right)&amp;=&amp;\frac{\cos u - e}
+        {(1-e)\cos^2\left(\frac{u}{2}\right)}\\
+\Rightarrow
+\cos\phi &amp; = &amp; \frac{\cos u - e}{1 - e\cos u}\\
+\sin\phi &amp; = &amp; \frac{\sqrt{1-e^2}\sin u}{1 - e\cos u}\end{split}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(u\)</span> is the eccentric anomaly:</p>
+<div class="math notranslate nohighlight">
+\[u-e\sin u = \Omega t,\quad\Omega=\sqrt{\frac{G(M+M')}{a^3}}\]</div>
+<p>Differentiating:</p>
+<div class="math notranslate nohighlight">
+\[dt=\frac{1-e\cos u}{\Omega}du\]</div>
+<p>Since the orbital solution <span class="math notranslate nohighlight">\(r(t)\)</span> and <span class="math notranslate nohighlight">\(\Delta \phi(t)\)</span> is periodic
+with a period of <span class="math notranslate nohighlight">\(2\pi/\Omega\)</span>, we can expand:</p>
+<div class="math notranslate nohighlight">
+\[\frac{a^3\exp(-im'\Delta \phi(t))}{r^3(t)}=\sum_s p_{m',s}
+        \exp\left(-i s \Omega t\right)\]</div>
+<p>Expressions for the <span class="math notranslate nohighlight">\(p_{m',s}(e)\)</span> coefficients are derived <a class="reference internal" href="inclination_eccentricity_pms1.html"><span class="doc">here</span></a> or <a class="reference internal" href="inclination_eccentricity_pms2.html"><span class="doc">here</span></a>.</p>
+<p>Hence, our tidal potential can be written exactly as in Lai (2012), eq. 12,
+except with <span class="math notranslate nohighlight">\(m'\)</span> not limited to only 0 and 2:</p>
+<div class="math notranslate nohighlight">
+\[U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi')
+        \exp\left(-im'\Omega t\right)\]</div>
+<p>with</p>
+<div class="math notranslate nohighlight">
+\[U_{m,m'} \equiv \frac{GM'}{a^3} \mathcal{U}_{m,m'}\equiv
+        \frac{GM'}{a^3} \sum_s W_{2,s}D_{m,s}(\Theta) p_{s,m'}\]</div>
+<p>where we have switched the <span class="math notranslate nohighlight">\(m'\)</span> and <span class="math notranslate nohighlight">\(s\)</span> coefficients. Here is a
+<a class="reference internal" href="inclination_eccentricity_umm_table.html"><span class="doc">table</span></a> of <span class="math notranslate nohighlight">\(W_{2,m'}D_{m,m'}\)</span>.</p>
+<p>From here we proceed following Lai (2012) again, but we have more than 6
+independent timelags if the orbit is eccentric (for circular orbits,
+<span class="math notranslate nohighlight">\(p_{m',s}=\delta_{m',s}\)</span>).</p>
+<p>The ansatz:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{\xi}_{m,s}(\mathbf{r},t)&amp;=&amp;
+        \frac{U_{m,s}}{\omega_0^2}\mathbf{\bar{\xi}}_{m,s}(\mathbf{r})
+        \exp(-is\Omega t + i\Delta_{m,s})\\
+\delta\rho(\mathbf{r},t)&amp;=&amp;\frac{U_{m,s}}{\omega_0^2}
+        \delta\bar{\rho}_{m,s}(\mathbf{r})
+        \exp(-is\Omega t + i\Delta_{m,s})\\
+\Delta_{m,s}&amp;=&amp;\tilde{\omega}_{m,s}t_{m,s}\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})\)</span>,
+<span class="math notranslate nohighlight">\(\tilde{\omega}_{m,s}=s\Omega-m\Omega_s\)</span>, where <span class="math notranslate nohighlight">\(\Omega_s\)</span> is the
+spin angular velocity of <span class="math notranslate nohighlight">\(M\)</span>, and <span class="math notranslate nohighlight">\(\omega_0\equiv\sqrt{GM/R^3}\)</span> is
+the dynamical frequency of <span class="math notranslate nohighlight">\(M\)</span>.</p>
+<p>Here are the detailed devirations of <a class="reference internal" href="inclination_eccentricity_torque.html"><span class="doc">the tidal torque</span></a> and <a class="reference internal" href="inclination_eccentricity_power.html"><span class="doc">the tidal power</span></a>.</p>
+<p>As noted before, for general eccentric orbits, the number of timelags is not
+only six, like in Lai (2012), but could be arbitrarily large, depending on
+the precision required of the expansion and the value of the eccentricity. In
+order to preserve full generality, we allow the user to specify each tidal
+lag <span class="math notranslate nohighlight">\(\Delta'_{m,m'}\equiv\kappa_{m,m'}\sin(\Delta_{m,m'})\)</span> and each love
+coefficient <span class="math notranslate nohighlight">\(\kappa'_{m,m'}\equiv\kappa_{m,m'}\cos(\Delta_{m,m'})\)</span>
+separately.</p>
+<p>The variables evolved will be the usual orbital
+elements (the semimajor axis - <span class="math notranslate nohighlight">\(a\)</span> and eccentricity <span class="math notranslate nohighlight">\(e\)</span>), and for
+each zone we will use the inclination relative to the orbit - <span class="math notranslate nohighlight">\(i\)</span>.
+Finally, one zone will be designated as a reference and for all other zones,
+we will follow the evolution of the difference between their argument of
+periapsis and that of the referenc zone - <span class="math notranslate nohighlight">\(\Delta\omega\)</span>. Thus, if the
+two bodies are split into n zones, the evolution of 1+2n variables will be
+followed. The equations for the evolution of these variables are derived
+<a class="reference internal" href="eccentric_evolution_equations.html"><span class="doc">here</span></a>.</p>
+<p>The collected equations are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\dot{a} &amp; = &amp; a\frac{-\dot{E}}{E}\\
+\dot{e} &amp; = &amp; \frac{2(\dot{E}L+2E\dot{L})L(M+M')}{G(MM')^3}\\
+\dot{\theta} &amp; = &amp; \frac{(T_z+\tilde{T}_z)\sin\theta}{L}
+                                 - \frac{(T_x+\tilde{T}_x)\cos\theta}{L}
+                                 - \frac{T_x+\mathscr{T}_x}{S}\\
+\dot{\omega} &amp; = &amp; \frac{(T_y+\tilde{T}_y)\cos\theta}{L\sin\theta}
+                             + \frac{T_y+\mathscr{T}_y}{S\sin\theta}\\
+\mathbf{\hat{\tilde{x}}} &amp; = &amp; \left(\sin\theta\sin\tilde{\theta}
+                                                  + \cos\theta\cos\tilde{\theta}\cos\Delta\omega
+                                        \right)\mathbf{\hat{x}}
+                                        + \cos\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
+                                        + \left(\cos\theta\sin\tilde{\theta}
+                                                        -
+                                                        \sin\theta\cos\tilde{\theta}\cos\Delta\omega
+                                        \right)\mathbf{\hat{z}}\\
+\mathbf{\hat{\tilde{y}}} &amp; = &amp; -\cos\theta\sin\Delta\omega\mathbf{\hat{x}}
+                                    + \cos\Delta\omega\mathbf{\hat{y}}
+                                    + \sin\theta\sin\Delta\omega\mathbf{\hat{z}}\\
+\mathbf{\hat{\tilde{z}}} &amp; = &amp; \left(\sin\theta\cos\tilde{\theta}
+                                                  - \cos\theta\sin\tilde{\theta}\cos\Delta\omega
+                                        \right)\mathbf{\hat{x}}
+                                        - \sin\tilde{\theta}\sin\Delta\omega\mathbf{\hat{y}}
+                                        + \left(\cos\theta\cos\tilde{\theta}
+                                                        +
+                                                        \sin\theta\sin\tilde{\theta}\cos\Delta\omega
+                                        \right)\mathbf{\hat{z}}\end{split}\]</div>
+<p>If the system ever gets in a state where the forcing frequency
+<span class="math notranslate nohighlight">\(\tilde{\omega}\equiv m'\Omega-mS^{conv}/I_{conv}\)</span> for some (m,m’)
+combination from the expansion of the potential (see above), and the
+corresponding <span class="math notranslate nohighlight">\(\sin(\Delta_{m,m'}(\tilde{\omega})\kappa_{m,m'}\)</span> is
+discontinuous at zero, it is possible that locks between the spin of some zones
+of the bodies and the orbit will be established. In that case, for each locked
+zone, let us  split the tidal dissipation torque and power into components
+<span class="math notranslate nohighlight">\(T_x^\pm\)</span>, <span class="math notranslate nohighlight">\(T_z^\pm\)</span> and <span class="math notranslate nohighlight">\(\dot{E}^\pm\)</span> with the (+) terms
+assuming that the spin frequency is just above the lock and the (-) terms
+assuming it is just below. Further, let <span class="math notranslate nohighlight">\(T_x^0\)</span>, <span class="math notranslate nohighlight">\(T_z^0\)</span> and
+<span class="math notranslate nohighlight">\(\dot{E}^0\)</span> be the tidal torques and power due to all other zones. We can
+imagine taking an infinitesimally small timestep, during which the not-locked
+components will contribute as usual, but over a fraction (<span class="math notranslate nohighlight">\(\lambda\)</span>) the
+timestep the (+) locked components contribute and over the remaining fraction
+(<span class="math notranslate nohighlight">\(1-\lambda\)</span>) the (-) locked components contribute.</p>
+<p>In order to maintain the lock, we must have for each locked zone (denoted by
+index i):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}&amp;&amp;m'\frac{\partial}{\partial t}\sqrt{\frac{G(M+M')}{a^3}}=
+        m\frac{\partial}{\partial t}\frac{S_i}{I_i}\\
+\Rightarrow &amp;&amp; -\frac{3m'}{2}\sqrt{\frac{G(M+M')}{a^5}}\dot{a}=
+        m\frac{\dot{S}_i}{I_i}
+        -
+        m\frac{S_i\dot{I}_i}{I_i^2}\\
+\Rightarrow &amp;&amp; -\frac{3 m S_i}{2 I_i}\frac{\dot{a}}{a} =
+        m\frac{\dot{S}_i}{I_i}
+        -
+        m\frac{S_i\dot{I}_i}{I_i^2}\\
+\Rightarrow &amp;&amp; -\frac{3}{2}\frac{\dot{a}}{a}=
+        \frac{\dot{S}_i}{S_i} - \frac{\dot{I}_i}{I}\\
+\Rightarrow &amp;&amp; -\frac{3}{2}\frac{\dot{E}^0 +
+                                                                 \sum_k\left[\lambda_k\dot{E}_k^+ +
+                                                                 (1-\lambda_k)\dot{E}_k^-\right]}{E}
+                           =
+                           \frac{\dot{I_i}}{I_i}
+                           -
+                           \frac{\dot{S}_i^0 + \lambda_i\dot{S}_i^+
+                                         + (1-\lambda_i)\dot{S}_i^-}{S_i}\\
+\Rightarrow &amp;&amp; \lambda_i\left(\frac{\dot{S}_i^+
+                                                          -
+                                                      \dot{S}_i^-}{S_i}\right)
+                                                        -\sum_k \lambda_k
+                                                        \left(1.5\frac{\dot{E}_k^+ - \dot{E}_k^-}{E}
+                                                        \right)
+                                =\frac{\dot{I_i}}{I_i}
+                           -
+                           \frac{\dot{S}_i^0 + \dot{S}_i^-}{S_i}
+                           +\frac{3}{2}\frac{\dot{E}^0+\sum_k\dot{E}_k^-}{E}\end{split}\]</div>
+<p>And the lock is maintained as long as <span class="math notranslate nohighlight">\(0&lt;\lambda&lt;1\)</span>.</p>
+<p>The resulting evolution equations are then the same as before, but with:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}T_x &amp; = &amp; T_x^0 + \lambda T_x^+ + (1-\lambda)T_x^-\\
+T_z &amp; = &amp; T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\
+\dot{E} &amp; = &amp; \dot{E}^0 + \lambda\dot{E}^+ + (1-\lambda)\dot{E}^-\end{split}\]</div>
+<div class="section" id="detailed-derivations-of-results-used-above">
+<h2>Detailed Derivations of Results Used Above<a class="headerlink" href="#detailed-derivations-of-results-used-above" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="eccentric_evolution_equations.html">Evolution Equations From Tidal Torque+Power</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inclination_eccentricity_pms1.html">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inclination_eccentricity_pms2.html">Calculation of the Pm,s Coefficients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inclination_eccentricity_umm_table.html">A table of curly U values as originally defined in Lai (2012)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inclination_eccentricity_torque.html">Tidal Torque for Inclined and Eccentric Orbits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inclination_eccentricity_power.html">Tidal Power for Inclined and Eccentric Orbits</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="eccentric_evolution_equations.html" class="btn btn-neutral float-right" title="Evolution Equations From Tidal Torque+Power" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="_implementation/stellar_evolution.manager_data_model.html" class="btn btn-neutral float-left" title="stellar_evolution.manager_data_model module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

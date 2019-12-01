@@ -1,0 +1,5 @@
+<map id="Star::InterpolatedEvolutionStar" name="Star::InterpolatedEvolutionStar">
+<area shape="rect" id="node2" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="5,759,285,1112"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="168,5,416,711"/>
+<area shape="rect" id="node4" href="$classStar_1_1ExponentialDecayDiffRotBody.html" title="A body with differential rotation torque between two zones given by: . " alt="" coords="309,839,569,1032"/>
+</map>

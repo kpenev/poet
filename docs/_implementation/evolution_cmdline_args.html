@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>evolution_cmdline_args module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="orbital_evolution package" href="orbital_evolution.html" />
+    <link rel="prev" title="basic_utils module" href="basic_utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="basic_utils.html">basic_utils module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">evolution_cmdline_args module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="orbital_evolution.html">orbital_evolution package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stellar_evolution.html">stellar_evolution package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../python_interface.html">Python Interface</a> &raquo;</li>
+        
+          <li><a href="modules.html">PythonPackage</a> &raquo;</li>
+        
+      <li>evolution_cmdline_args module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_implementation/evolution_cmdline_args.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-evolution_cmdline_args">
+<span id="evolution-cmdline-args-module"></span><h1>evolution_cmdline_args module<a class="headerlink" href="#module-evolution_cmdline_args" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-63d1c47d51493f6e422cf6d30ae624c0ae914ad6.png" alt="Inheritance diagram of StellarEvolutionManager" usemap="#inheritance8b571c8692" class="inheritance graphviz" /></div>
+<map id="inheritance8b571c8692" name="inheritance8b571c8692">
+<area shape="rect" id="node1" href="stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager" target="_top" title="Class for managing a collection of stellar evolution inteprolations." alt="" coords="5,5,328,29"/>
+</map><p>Provide functions for adding parameters defining the evolution model.</p>
+<dl class="function">
+<dt id="evolution_cmdline_args.add_and_parse_evolution_args">
+<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_and_parse_evolution_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em>, <em class="sig-param">disk_args=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_and_parse_evolution_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_and_parse_evolution_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add arguments for the binary evolution, some setup &amp; return interpolator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parser</strong> (<em>-</em>) – An instance of argparse.ArgumentParser to fill with
+arguments defining the evolution. Must alraedy contain all other
+arguments.</p></li>
+<li><p><strong>disk_args</strong> (<em>-</em>) – Should command line arguments be added for configuring
+the initial circumstellar disk holding the primary’s spin locked?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>An object containing the parsed command line arguments as</dt><dd><p>members.</p>
+</dd>
+<dt>:class:ManagedInterpolator:</dt><dd><p>A stellar evolution interpolator instance.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>same as parser.parse_args()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evolution_cmdline_args.add_disk_args">
+<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_disk_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_disk_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_disk_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add command line options for the initial disk spin locking.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="evolution_cmdline_args.add_orbital_evolution_args">
+<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_orbital_evolution_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_orbital_evolution_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_orbital_evolution_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add to parser all arguments controlling the orbital evolution.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="evolution_cmdline_args.add_spindown_args">
+<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_spindown_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_spindown_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_spindown_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add command line options for spindown model parameters to parser.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="orbital_evolution.html" class="btn btn-neutral float-right" title="orbital_evolution package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="basic_utils.html" class="btn btn-neutral float-left" title="basic_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

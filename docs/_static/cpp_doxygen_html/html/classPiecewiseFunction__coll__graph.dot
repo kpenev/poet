@@ -1,0 +1,15 @@
+digraph "PiecewiseFunction"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
+  node [fontname="Helvetica",fontsize="12",shape=record];
+  Node5 [label="{PiecewiseFunction\n|- __deriv_x\l- __range_low\l- __range_high\l- __pieces\l|+ PiecewiseFunction()\l+ add_piece()\l+ operator()()\l+ deriv()\l+ order()\l+ range_high()\l+ range_low()\l+ crossings()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node6 [label="{Core::OneArgumentDiffFunction\n||+ deriv()\l+ ~OneArgumentDiffFunction()\l- serialize()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1OneArgumentDiffFunction.html",tooltip="A class representing a once differentiable function of a single argument. "];
+  Node7 -> Node6 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node7 [label="{Core::OneArgumentFunction\l\< double, double \>\n||+ operator()()\l+ range_high()\l+ range_low()\l+ crossings()\l+ ~OneArgumentFunction()\l- serialize()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1OneArgumentFunction.html"];
+  Node8 -> Node7 [dir="back",color="orange",fontsize="12",style="solid",label=" \< double, double \>" ,fontname="Helvetica"];
+  Node8 [label="{Core::OneArgumentFunction\l\< InputDataType, OutputDataType \>\n||+ operator()()\l+ range_high()\l+ range_low()\l+ crossings()\l+ ~OneArgumentFunction()\l- serialize()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1OneArgumentFunction.html",tooltip="The base class for functions which take a single argument and return a single value. "];
+  Node9 -> Node5 [dir="back",color="firebrick4",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node9 [label="{Core::FunctionDerivatives\n||+ order()\l+ ~FunctionDerivatives()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1FunctionDerivatives.html",tooltip="A class representing arbitrary order derivatives of a function. "];
+}

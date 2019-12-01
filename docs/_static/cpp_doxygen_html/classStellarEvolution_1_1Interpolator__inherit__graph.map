@@ -1,0 +1,5 @@
+<map id="StellarEvolution::Interpolator" name="StellarEvolution::Interpolator">
+<area shape="rect" id="node2" href="$classStellarEvolution_1_1CustomStellarEvolution_1_1Interpolator.html" title="A stellar evolution interpolator using only a single track, assumed to apply to all stars..." alt="" coords="5,591,228,704"/>
+<area shape="rect" id="node3" href="$classStellarEvolution_1_1MESA_1_1Interpolator.html" title="A stellar evolution interpolator based on the MESA tracks. " alt="" coords="252,391,467,904"/>
+<area shape="rect" id="node4" href="$classStellarEvolution_1_1MockStellarEvolution.html" title="Implements a StellarEvolution based on polynomial evolution quantities. " alt="" coords="491,519,716,776"/>
+</map>

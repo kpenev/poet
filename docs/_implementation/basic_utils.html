@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>basic_utils module &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evolution_cmdline_args module" href="evolution_cmdline_args.html" />
+    <link rel="prev" title="PythonPackage" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../python_interface.html">Python Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../python_stellar_evolution.html">The Python Stellar Evolution Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_orbital_evolution.html">The Python Orbital Evolution Module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">basic_utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="evolution_cmdline_args.html">evolution_cmdline_args module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="orbital_evolution.html">orbital_evolution package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stellar_evolution.html">stellar_evolution package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../python_interface.html">Python Interface</a> &raquo;</li>
+        
+          <li><a href="modules.html">PythonPackage</a> &raquo;</li>
+        
+      <li>basic_utils module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_implementation/basic_utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-basic_utils">
+<span id="basic-utils-module"></span><h1>basic_utils module<a class="headerlink" href="#module-basic_utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-9ec2c81d7c35e246fe480303463ebb739ce825c8.png" alt="Inheritance diagram of Structure" usemap="#inheritance1cec5e4573" class="inheritance graphviz" /></div>
+<map id="inheritance1cec5e4573" name="inheritance1cec5e4573">
+<area shape="rect" id="node1" href="#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="5,5,147,29"/>
+</map><p>A collection of orbital functions and a class for storing data.</p>
+<dl class="class">
+<dt id="basic_utils.Structure">
+<em class="property">class </em><code class="sig-prename descclassname">basic_utils.</code><code class="sig-name descname">Structure</code><span class="sig-paren">(</span><em class="sig-param">**initial_attributes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/basic_utils.html#Structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basic_utils.Structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<div class="graphviz"><img src="../_images/inheritance-8f5cb7e009f4cde3ead27aa7d0279f86e9b9e2f1.png" alt="Inheritance diagram of basic_utils.Structure" usemap="#inheritance5f09a89144" class="inheritance graphviz" /></div>
+<map id="inheritance5f09a89144" name="inheritance5f09a89144">
+<area shape="rect" id="node1" href="#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="5,5,147,29"/>
+</map><p>An empty class used only to hold user defined attributes.</p>
+<dl class="method">
+<dt id="basic_utils.Structure.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**initial_attributes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/basic_utils.html#Structure.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basic_utils.Structure.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a class with (optionally) initial attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basic_utils.Structure.format">
+<code class="sig-name descname">format</code><span class="sig-paren">(</span><em class="sig-param">prefix=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/basic_utils.html#Structure.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basic_utils.Structure.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a tree-like representation of self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="basic_utils.calc_orbital_angular_momentum">
+<code class="sig-prename descclassname">basic_utils.</code><code class="sig-name descname">calc_orbital_angular_momentum</code><span class="sig-paren">(</span><em class="sig-param">m1</em>, <em class="sig-param">m2</em>, <em class="sig-param">semimajor</em>, <em class="sig-param">eccentricity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/basic_utils.html#calc_orbital_angular_momentum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basic_utils.calc_orbital_angular_momentum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the angular momentum of the given orbit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m1</strong> (<em>-</em>) – Mass of the first body in the system</p></li>
+<li><p><strong>m2</strong> (<em>-</em>) – Mass of the second body in the system.</p></li>
+<li><p><strong>semimajor</strong> (<em>-</em>) – The semimajor axis of the binary in solar radii.</p></li>
+<li><p><strong>eccentricity</strong> (<em>-</em>) – The eccentricity of the orbit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The orbital angular momentum in solar units for a binary with the
+given bodies in the given orbit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="basic_utils.calc_orbital_frequency">
+<code class="sig-prename descclassname">basic_utils.</code><code class="sig-name descname">calc_orbital_frequency</code><span class="sig-paren">(</span><em class="sig-param">m1</em>, <em class="sig-param">m2</em>, <em class="sig-param">semimajor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/basic_utils.html#calc_orbital_frequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basic_utils.calc_orbital_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the orbital for a binary with the given orbit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m1</strong> (<em>-</em>) – Mass of the first body in the system</p></li>
+<li><p><strong>m2</strong> (<em>-</em>) – Mass of the second body in the system.</p></li>
+<li><p><strong>semimajor</strong> (<em>-</em>) – The semimajor axis of the binary in solar radii.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The orbital angular velocity in rad / day.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="basic_utils.calc_semimajor">
+<code class="sig-prename descclassname">basic_utils.</code><code class="sig-name descname">calc_semimajor</code><span class="sig-paren">(</span><em class="sig-param">m1</em>, <em class="sig-param">m2</em>, <em class="sig-param">orbital_period</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/basic_utils.html#calc_semimajor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basic_utils.calc_semimajor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the semimajor axis for a binary with the given orbit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m1</strong> (<em>-</em>) – Mass of the first body in the system</p></li>
+<li><p><strong>m2</strong> (<em>-</em>) – Mass of the second body in the system.</p></li>
+<li><p><strong>orbital_period</strong> (<em>-</em>) – The orbital period of the binary in days.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The semimajor axis in solar radii.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="evolution_cmdline_args.html" class="btn btn-neutral float-right" title="evolution_cmdline_args module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="PythonPackage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
