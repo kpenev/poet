@@ -16,7 +16,7 @@ Installation Steps:
   
   2. Install required libraries:
   
-     2.1 gls
+     2.1 gsl
 
      2.2 glscblas
 
