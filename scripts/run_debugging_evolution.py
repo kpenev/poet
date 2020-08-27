@@ -159,6 +159,11 @@ def parse_configuration():
         ignore_unknown_config_file_keys=False
     )
     parser.add_argument(
+        '--config', '-c',
+        is_config_file=True,
+        help='Config file to use instead of default.'
+    )
+    parser.add_argument(
         '--metallicity', '--feh',
         type=float,
         default=0.0,
