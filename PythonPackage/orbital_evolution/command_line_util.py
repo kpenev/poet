@@ -543,4 +543,6 @@ def run_evolution(cmdline_args, interpolator=None):
                     getattr(component, zone + '_inertia')(evolution.age)
                     #pylint: enable=no-member
                 )
+    evolution.orbital_period = binary.orbital_period(evolution.semimajor)
+    binary.delete()
     return evolution

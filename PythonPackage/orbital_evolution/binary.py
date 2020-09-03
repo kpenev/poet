@@ -311,6 +311,12 @@ class Binary:
     def delete(self):
         """Destroy the binary created at construction."""
 
+        if hasattr(self.primary, 'destroy_star'):
+            self.primary.destroy_star()
+            self.primary = None
+        if hasattr(self.secondary, 'destroy_star'):
+            self.secondary.destroy_star()
+            self.secondary = None
         library.destroy_binary(self.c_binary)
         if hasattr(self, 'c_solver'):
             library.destroy_solver(self.c_solver)
