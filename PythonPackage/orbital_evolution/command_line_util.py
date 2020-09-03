@@ -1,8 +1,19 @@
-"""Add command line/config file options for defining an evolution to run."""
+"""Add and use commandline/config file options for defining evolution to run."""
 
 from math import pi
+from os.path import dirname, join as join_paths
 
-def add_star_config(parser, primary=True):
+import numpy
+from astropy import constants
+
+from stellar_evolution.manager import StellarEvolutionManager
+from orbital_evolution.evolve_interface import library as\
+    orbital_evolution_library
+from orbital_evolution.binary import Binary
+from orbital_evolution.star_interface import EvolvingStar
+from orbital_evolution.planet_interface import LockedPlanet
+
+def add_star_config(parser, primary=True, require_secondary=False):
     """
     Add to the parser arguments to configure a star.
 
@@ -17,6 +28,9 @@ def add_star_config(parser, primary=True):
         primary(bool):    Whether the star being configured is the primary or
             the secondary in the system.
 
+        require_secondary(bool):    If true, removes the possibility of leaving
+            secondary mass unspecified.
+
     Returns:
         None
     """
@@ -30,13 +44,13 @@ def add_star_config(parser, primary=True):
     parser.add_argument(
         prefix + '-mass', '--m' + suffix,
         type=float,
-        default=(1.0 if primary else None),
+        default=(1.0 if (primary or require_secondary) else None),
         help=(
             'The mass of the ' + component_name + ' star.'
             +
             (
                 ''
-                if primary else
+                if (primary or require_secondary) else
                 ' If not specified, a single star evolution is calculated.'
             )
         )
@@ -134,7 +148,7 @@ def add_star_config(parser, primary=True):
         'away from the reference.'
     )
 
-def add_binary_config(parser, skip=()):
+def add_binary_config(parser, skip=(), require_secondary=False):
     """
     Add command line/config file options to specify the binary to evolve.
 
@@ -144,6 +158,9 @@ def add_binary_config(parser, skip=()):
 
         skip:    Collection of configuration options to exclude. Presumaly those
             will be denifen in some other way.
+
+        require_secondary(bool):    If true, removes the possibility of leaving
+            secondary mass unspecified.
 
     Returns:
         None
@@ -175,8 +192,23 @@ def add_binary_config(parser, skip=()):
             'the disk dissipates.'
         )
 
-    add_star_config(parser, True)
-    add_star_config(parser, False)
+    add_star_config(parser, primary=True, require_secondary=require_secondary)
+    add_star_config(parser, primary=False, require_secondary=require_secondary)
+
+    if (
+            'Porb' not in skip
+            and
+            'Porb0' not in skip
+            and
+            'initial_orbital_period' not in skip
+    ):
+        parser.add_argument(
+            '--initial-orbital-period', '--Porb0', '--Porb',
+            type=float,
+            default=5.0,
+            help='The initial orbital period (in days) in which the binary '
+            'forms.'
+        )
 
     if (
             'e' not in skip
@@ -257,3 +289,258 @@ def add_evolution_config(parser):
         default='eccentricity_expansion_coef.txt',
         help='The filename storing the eccentricity expansion coefficienst.'
     )
+    parser.add_argument(
+        '--stellar-evolution',
+        nargs=2,
+        metavar=('INTERP_DIR', 'INTERP_NAME'),
+        default=(
+            join_paths(
+                dirname(dirname(dirname(__file__))),
+                'stellar_evolution_interpolators'
+            ),
+            'default'
+        ),
+        help='The directory containing serialized stellar evolutions and the '
+        'name of the interpolator to use.'
+    )
+
+def set_up_library(cmdline_args):
+    """Define eccentricity expansion and return stellar evol interpolator."""
+
+    orbital_evolution_library.read_eccentricity_expansion_coefficients(
+        cmdline_args.eccentricity_expansion_fname.encode('ascii')
+    )
+    manager = StellarEvolutionManager(cmdline_args.stellar_evolution[0])
+    return manager.get_interpolator_by_name(
+        cmdline_args.stellar_evolution[1]
+    )
+
+#Pylint false positive for astropy constants
+#pylint: disable=no-member
+def create_planet(mass=(constants.M_jup / constants.M_sun).to(''),
+                  radius=(constants.R_jup / constants.R_sun).to(''),
+                  phase_lag=0.0):
+    """Return a configured planet to use in the evolution."""
+
+    planet = LockedPlanet(
+        mass=mass,
+        radius=radius
+    )
+    if phase_lag:
+        print('Setting planet dissipation')
+        try:
+            planet.set_dissipation(tidal_frequency_breaks=None,
+                                   spin_frequency_breaks=None,
+                                   tidal_frequency_powers=numpy.array([0.0]),
+                                   spin_frequency_powers=numpy.array([0.0]),
+                                   reference_phase_lag=float(phase_lag))
+        except TypeError:
+            planet.set_dissipation(**phase_lag)
+    return planet
+#pylint: enable=no-member
+
+def create_star(interpolator,
+                convective_phase_lag,
+                *,
+                mass=1.0,
+                metallicity=0.0,
+                wind_strength=0.17,
+                wind_saturation_frequency=2.45,
+                diff_rot_coupling_timescale=5.0e-3,
+                interp_age=None):
+    """Create the star to use in the evolution."""
+
+    star = EvolvingStar(mass=mass,
+                        metallicity=metallicity,
+                        wind_strength=wind_strength,
+                        wind_saturation_frequency=wind_saturation_frequency,
+                        diff_rot_coupling_timescale=diff_rot_coupling_timescale,
+                        interpolator=interpolator)
+    if convective_phase_lag:
+        try:
+            star.set_dissipation(
+                zone_index=0,
+                tidal_frequency_breaks=None,
+                spin_frequency_breaks=None,
+                tidal_frequency_powers=numpy.array([0.0]),
+                spin_frequency_powers=numpy.array([0.0]),
+                reference_phase_lag=float(convective_phase_lag)
+            )
+        except TypeError:
+            star.set_dissipation(zone_index=0,
+                                 **convective_phase_lag)
+    star.select_interpolation_region(star.core_formation_age()
+                                     if interp_age is None else
+                                     interp_age)
+    return star
+
+def create_system(primary,
+                  secondary,
+                  disk_lock_frequency,
+                  *,
+                  initial_eccentricity=0.0,
+                  porb_initial=3.5,
+                  disk_dissipation_age=4e-3,
+                  initial_inclination=0.0,
+                  secondary_formation_age=None):
+    """Combine the given primary and secondar in a system ready to evolve."""
+
+    binary = Binary(primary=primary,
+                    secondary=secondary,
+                    initial_orbital_period=porb_initial,
+                    initial_eccentricity=initial_eccentricity,
+                    initial_inclination=initial_inclination,
+                    disk_lock_frequency=disk_lock_frequency,
+                    disk_dissipation_age=disk_dissipation_age,
+                    secondary_formation_age=(secondary_formation_age
+                                             or
+                                             disk_dissipation_age))
+    binary.configure(age=primary.core_formation_age(),
+                     semimajor=float('nan'),
+                     eccentricity=float('nan'),
+                     spin_angmom=numpy.array([0.0]),
+                     inclination=None,
+                     periapsis=None,
+                     evolution_mode='LOCKED_SURFACE_SPIN')
+
+    if isinstance(secondary, EvolvingStar):
+        initial_obliquity = numpy.array([0.0])
+        initial_periapsis = numpy.array([0.0])
+    else:
+        initial_obliquity = None
+        initial_periapsis = None
+    secondary.configure(age=disk_dissipation_age,
+                        companion_mass=primary.mass,
+                        semimajor=binary.semimajor(porb_initial),
+                        eccentricity=initial_eccentricity,
+                        spin_angmom=(
+                            numpy.array([0.01, 0.01])
+                            if isinstance(secondary, EvolvingStar) else
+                            numpy.array([0.0])
+                        ),
+                        inclination=initial_obliquity,
+                        periapsis=initial_periapsis,
+                        locked_surface=False,
+                        zero_outer_inclination=True,
+                        zero_outer_periapsis=True)
+
+    primary.detect_stellar_wind_saturation()
+    if isinstance(secondary, EvolvingStar):
+        secondary.detect_stellar_wind_saturation()
+
+    return binary
+
+def get_phase_lag_config(cmdline_args, primary=True):
+    """Return a phase lag configuration to pass directly to create_star."""
+
+    component_name = ('primary' if primary else 'secondary')
+    reference_dissipation = getattr(cmdline_args,
+                                    component_name + '_reference_dissipation')
+    if reference_dissipation is None:
+        return None
+
+    result = dict(
+        reference_phase_lag=reference_dissipation[0],
+        spin_frequency_breaks=None,
+        spin_frequency_powers=numpy.array([0.0]),
+    )
+    dissipation_breaks = getattr(cmdline_args,
+                                 component_name + '_dissipation_break')
+
+    if (
+            reference_dissipation[2] == reference_dissipation[3] == 0
+            and
+            not dissipation_breaks
+    ):
+        result['tidal_frequency_powers'] = numpy.array([0.0])
+        result['tidal_frequency_breaks'] = None
+    else:
+        raise NotImplementedError('Not implemented yet')
+
+    return result
+
+def get_component(cmdline_args, interpolator, primary=True):
+    """Return one of the components of the system."""
+
+    component_name = ('primary' if primary else 'secondary')
+
+    if getattr(cmdline_args, component_name + '_mass') is None:
+        assert not primary
+        return create_planet()
+
+    radius = getattr(cmdline_args, component_name + '_radius')
+    phase_lag_config = get_phase_lag_config(cmdline_args, primary)
+    mass = getattr(cmdline_args, component_name + '_mass')
+    if radius is not None:
+        return create_planet(mass=mass,
+                             radius=radius,
+                             phase_lag=phase_lag_config)
+
+    return create_star(
+        interpolator=interpolator,
+        convective_phase_lag=phase_lag_config,
+        mass=mass,
+        metallicity=cmdline_args.metallicity,
+        wind_strength=getattr(
+            cmdline_args,
+            component_name + '_wind_strength'
+        ),
+        wind_saturation_frequency=getattr(
+            cmdline_args,
+            component_name + '_wind_saturation_frequency'
+        ),
+        diff_rot_coupling_timescale=getattr(
+            cmdline_args,
+            component_name + '_diff_rot_coupling_timescale'
+        )
+    )
+
+def get_binary(cmdline_args, interpolator):
+    """Return the fully constructed binary to evolve."""
+
+    return create_system(
+        primary=get_component(cmdline_args, interpolator, True),
+        secondary=get_component(cmdline_args, interpolator, False),
+        disk_lock_frequency=cmdline_args.disk_lock_frequency,
+        porb_initial=cmdline_args.initial_orbital_period,
+        initial_eccentricity=cmdline_args.initial_eccentricity,
+        initial_inclination=cmdline_args.initial_obliquity,
+        disk_dissipation_age=cmdline_args.disk_dissipation_age,
+        secondary_formation_age=(
+            cmdline_args.secondary_formation_age
+            if cmdline_args.secondary_mass else
+            cmdline_args.final_age
+        )
+    )
+
+def run_evolution(cmdline_args, interpolator=None):
+    """Run the evolution specified on the command line."""
+
+    if interpolator is None:
+        interpolator = set_up_library(cmdline_args)
+
+    binary = get_binary(cmdline_args, interpolator)
+    binary.evolve(
+        cmdline_args.final_age,
+        cmdline_args.max_time_step,
+        cmdline_args.precision,
+        None,
+        create_c_code=cmdline_args.create_c_code,
+        eccentricity_expansion_fname=(
+            cmdline_args.eccentricity_expansion_fname.encode('ascii')
+        )
+    )
+    evolution = binary.get_evolution()
+    for component_name in ['primary', 'secondary']:
+        component = getattr(binary, component_name)
+        if isinstance(component, EvolvingStar):
+            for zone in ['core', 'envelope']:
+                setattr(
+                    evolution,
+                    '_'.join([component_name, zone, 'inertia']),
+                    #False positive
+                    #pylint: disable=no-member
+                    getattr(component, zone + '_inertia')(evolution.age)
+                    #pylint: enable=no-member
+                )
+    return evolution
