@@ -476,24 +476,25 @@ def get_component(cmdline_args, interpolator, primary=True):
                              radius=radius,
                              phase_lag=phase_lag_config)
 
-    return create_star(
+    create_args = dict(
         interpolator=interpolator,
         convective_phase_lag=phase_lag_config,
         mass=mass,
-        metallicity=cmdline_args.metallicity,
-        wind_strength=getattr(
-            cmdline_args,
-            component_name + '_wind_strength'
-        ),
-        wind_saturation_frequency=getattr(
-            cmdline_args,
-            component_name + '_wind_saturation_frequency'
-        ),
-        diff_rot_coupling_timescale=getattr(
-            cmdline_args,
-            component_name + '_diff_rot_coupling_timescale'
-        )
+        metallicity=cmdline_args.metallicity
     )
+    for arg_name in ['wind_strength',
+                     'wind_saturation_frequency',
+                     'diff_rot_coupling_timescale']:
+        create_args[arg_name] = getattr(
+            cmdline_args,
+            component_name + '_' + arg_name
+        )
+        if not primary and create_args[arg_name] is None:
+            create_args[arg_name] = getattr(
+                cmdline_args,
+                'primary_' + arg_name
+            )
+    return create_star(**create_args)
 
 def get_binary(cmdline_args, interpolator):
     """Return the fully constructed binary to evolve."""
@@ -513,24 +514,31 @@ def get_binary(cmdline_args, interpolator):
         )
     )
 
-def run_evolution(cmdline_args, interpolator=None):
+def run_evolution(cmdline_args,
+                  interpolator=None,
+                  required_ages_only=False,
+                  **extra_evolve_args):
     """Run the evolution specified on the command line."""
 
     if interpolator is None:
         interpolator = set_up_library(cmdline_args)
+
+    if 'required_ages' not in extra_evolve_args:
+        extra_evolve_args['required_ages'] = None
 
     binary = get_binary(cmdline_args, interpolator)
     binary.evolve(
         cmdline_args.final_age,
         cmdline_args.max_time_step,
         cmdline_args.precision,
-        None,
         create_c_code=cmdline_args.create_c_code,
         eccentricity_expansion_fname=(
             cmdline_args.eccentricity_expansion_fname.encode('ascii')
-        )
+        ),
+        **extra_evolve_args
     )
-    evolution = binary.get_evolution()
+    evolution = binary.get_evolution(required_ages_only=required_ages_only)
+    print('Evolution: ' + repr(evolution))
     for component_name in ['primary', 'secondary']:
         component = getattr(binary, component_name)
         if isinstance(component, EvolvingStar):
@@ -538,10 +546,7 @@ def run_evolution(cmdline_args, interpolator=None):
                 setattr(
                     evolution,
                     '_'.join([component_name, zone, 'inertia']),
-                    #False positive
-                    #pylint: disable=no-member
                     getattr(component, zone + '_inertia')(evolution.age)
-                    #pylint: enable=no-member
                 )
     evolution.orbital_period = binary.orbital_period(evolution.semimajor)
     binary.delete()
