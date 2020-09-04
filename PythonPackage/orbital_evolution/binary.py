@@ -2,6 +2,7 @@
 
 import os.path
 from ctypes import c_int, c_bool, c_double
+from types import SimpleNamespace
 
 import numpy
 
@@ -9,7 +10,6 @@ from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 from orbital_evolution.evolve_interface import library
 from basic_utils import\
-    Structure,\
     calc_semimajor,\
     calc_orbital_frequency,\
     calc_orbital_angular_momentum
@@ -212,6 +212,26 @@ class Binary:
                 % c_code_substitutions
             )
 
+    def _get_required_age_indices(self, evolution_ages):
+        """Return the indices within evolution_ages of `self._required_ages`."""
+
+        indices = {
+            side:  numpy.searchsorted(evolution_ages,
+                                      self._required_ages,
+                                      side=side)
+            for side in ['left', 'right']
+        }
+        indices['right'][indices['right'] == evolution_ages.size] = (
+            evolution_ages.size - 1
+        )
+        return numpy.where(
+            numpy.abs(evolution_ages[indices['right']] - self._required_ages)
+            <
+            numpy.abs(evolution_ages[indices['left']] - self._required_ages),
+            indices['right'],
+            indices['left']
+        )
+
     def __init__(self,
                  primary,
                  secondary,
@@ -307,6 +327,7 @@ class Binary:
 
         self.num_evolution_steps = 0
         self.c_solver = None
+        self._required_ages = None
 
     def delete(self):
         """Destroy the binary created at construction."""
@@ -422,6 +443,8 @@ class Binary:
                 eccentricity_expansion_fname=eccentricity_expansion_fname
             )
 
+        self._required_ages = required_ages
+
         #The point is to check if previous call defined the member
         #pylint: disable=access-member-before-definition
         if hasattr(self, 'c_solver'):
@@ -438,18 +461,22 @@ class Binary:
         )
         self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
 
-    def get_evolution(self, quantities=None):
+    def get_evolution(self, quantities=None, required_ages_only=False):
         """
         Return the last calculated evolution.
 
         Args:
-            - quantities:    An iterable of quantities to read the evolution of.
+            quantities:    An iterable of quantities to read the evolution of.
                 The evolution of omitted quantities can still be obtained later
                 by subsequent calls to this method. The allowed entries are in
                 the star_star_evolution_quantities for binary star systems or in
                 star_planet_evolution_quantities for a star-planet system. If
                 None, it defaults to the full list of quantities for the given
                 system.
+
+            required_ages_only(bool):    If True, the evolution returned
+                contains only the values of the quantities at the
+                `required_ages` specified when evolve() was called.
 
         Returns:
             Sturture:
@@ -458,7 +485,7 @@ class Binary:
                 at each evolution step. The order is always in increasing age.
         """
 
-        result = Structure()
+        result = SimpleNamespace()
 
         if quantities is None:
             quantities = self.evolution_quantities
@@ -482,12 +509,20 @@ class Binary:
                               for quantity in self.evolution_quantities])
 
         self._c_get_evolution_func(*get_evol_args)
+        if required_ages_only:
+            keep_indices = self._get_required_age_indices(result.age)
+            for quantity_name in quantities:
+                setattr(
+                    result,
+                    quantity_name,
+                    getattr(result, quantity_name)[keep_indices]
+                )
         return result
 
     def final_state(self):
         """Return the final evolution state of a system (all quantities)."""
 
-        result = Structure()
+        result = SimpleNamespace()
         library_final_state = [self.evolution_quantity_c_type(q)()
                                for q in self.evolution_quantities]
 
