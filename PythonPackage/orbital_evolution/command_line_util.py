@@ -327,7 +327,6 @@ def create_planet(mass=(constants.M_jup / constants.M_sun).to(''),
         radius=radius
     )
     if phase_lag:
-        print('Setting planet dissipation')
         try:
             planet.set_dissipation(tidal_frequency_breaks=None,
                                    spin_frequency_breaks=None,
@@ -538,7 +537,6 @@ def run_evolution(cmdline_args,
         **extra_evolve_args
     )
     evolution = binary.get_evolution(required_ages_only=required_ages_only)
-    print('Evolution: ' + repr(evolution))
     for component_name in ['primary', 'secondary']:
         component = getattr(binary, component_name)
         if isinstance(component, EvolvingStar):
