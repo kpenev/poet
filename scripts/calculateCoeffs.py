@@ -25,6 +25,9 @@ import scipy.integrate as integrate
 #	return var1+var2
 
 # The overall coefficient thing
+def pMS(m,s):
+	
+	h
 
 # Documentation goes here
 # Gets the specified coefficient of the (Chebyshev?) expansion
