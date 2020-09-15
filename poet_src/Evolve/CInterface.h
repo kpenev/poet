@@ -301,7 +301,12 @@ extern "C" {
         unsigned num_required_ages,
 
         ///See print_progress argument to Evolve::OrbitSolver::OrbitSolver()
-        bool print_progress
+        bool print_progress,
+
+        ///The maximum time in seconds the evolutions is allowed to run.
+        ///Partially calculated evolution can be queried. Any non-positive
+        //values results in infinite timeout.
+        double max_runtime
     );
 
     ///Destroy a solver created by evolve_system.

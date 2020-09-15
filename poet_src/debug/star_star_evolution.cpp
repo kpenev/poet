@@ -147,7 +147,8 @@ int main(int, char **)
         1e-6,   //precision
         NULL,   //required ages
         0,      //num required ages
-        true    //Print stepping progress?
+        true,   //Print stepping progress?
+        0
     );
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],

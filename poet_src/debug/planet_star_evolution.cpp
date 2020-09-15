@@ -73,7 +73,8 @@ int main(int, char **)
         1e-6,
         NULL,
         0,
-        true
+        true,
+        0
     );
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],

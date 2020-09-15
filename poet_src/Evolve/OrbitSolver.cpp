@@ -1046,6 +1046,18 @@ namespace Evolve {
                     msg << "GSL signaled failure while evolving (error code " <<
                         status << ")";
                     throw Core::Error::Runtime(msg.str());
+                } else if (
+                    __runtime_limit > 0
+                    &&
+                    difftime(time(NULL), __evolution_start_time)
+                    >
+                    __runtime_limit
+                ) {
+                    std::ostringstream msg;
+                    msg << "Exceeded evolution time limit of "
+                        << __runtime_limit
+                        << " seconds!";
+                    throw Core::Error::Runtime(msg.str());
                 }
                 if(status == GSL_SUCCESS) {
 #ifdef NDEBUG
@@ -1388,12 +1400,15 @@ namespace Evolve {
 
     void OrbitSolver::operator()(BinarySystem &system,
                                  double max_step,
-                                 const std::list<double> &required_ages)
+                                 const std::list<double> &required_ages,
+                                 double max_runtime)
     {
 #ifndef NDEBUG
         std::cerr << "Calculating evolution from t = " << system.age()
                   << " to t = " << __end_age << std::endl;
 #endif
+        time(&__evolution_start_time);
+        __runtime_limit = max_runtime;
 
         double stop_evol_age = __end_age;
 
