@@ -215,15 +215,15 @@ class Binary:
     def _get_required_age_indices(self, evolution_ages):
         """Return the indices within evolution_ages of `self._required_ages`."""
 
-        indices = {
-            side:  numpy.searchsorted(evolution_ages,
-                                      self._required_ages,
-                                      side=side)
-            for side in ['left', 'right']
-        }
-        indices['right'][indices['right'] == evolution_ages.size] = (
-            evolution_ages.size - 1
-        )
+
+        indices = dict()
+        for side in ['left', 'right']:
+            indices[side] = numpy.searchsorted(evolution_ages,
+                                               self._required_ages,
+                                               side=side)
+            indices[side][indices[side] == evolution_ages.size] = (
+                evolution_ages.size - 1
+            )
         return numpy.where(
             numpy.abs(evolution_ages[indices['right']] - self._required_ages)
             <
