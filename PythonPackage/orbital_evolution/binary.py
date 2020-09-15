@@ -224,12 +224,14 @@ class Binary:
             indices[side][indices[side] == evolution_ages.size] = (
                 evolution_ages.size - 1
             )
-        return numpy.where(
-            numpy.abs(evolution_ages[indices['right']] - self._required_ages)
-            <
-            numpy.abs(evolution_ages[indices['left']] - self._required_ages),
-            indices['right'],
-            indices['left']
+        return numpy.unique(
+            numpy.where(
+                numpy.abs(evolution_ages[indices['right']] - self._required_ages)
+                <
+                numpy.abs(evolution_ages[indices['left']] - self._required_ages),
+                indices['right'],
+                indices['left']
+            )
         )
 
     def __init__(self,
