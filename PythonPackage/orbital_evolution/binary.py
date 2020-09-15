@@ -402,7 +402,8 @@ class Binary:
                *,
                print_progress=False,
                create_c_code='',
-               eccentricity_expansion_fname=None):
+               eccentricity_expansion_fname=None,
+               timeout=0):
         """
         Evolve the system forward from its current state.
 
@@ -431,6 +432,11 @@ class Binary:
                 eccentricity expansion coefficients were read. Only used if
                 create_c_code is not empty.
 
+            - timeout:
+                The maximum number of seconds the evolution is allowed to run.
+                Non-positive value results in no timeout. Partially cumputed
+                evolutions that time out can still be querried.
+
         Returnns: None
         """
 
@@ -457,7 +463,8 @@ class Binary:
             precision,
             required_ages,
             (0 if required_ages is None else required_ages.size),
-            print_progress
+            print_progress,
+            timeout
         )
         self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
 

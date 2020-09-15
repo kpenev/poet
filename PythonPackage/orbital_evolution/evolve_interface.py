@@ -116,7 +116,8 @@ def initialize_library():
                           ndim=1,
                           flags='C_CONTIGUOUS'),
         c_uint,
-        c_bool
+        c_bool,
+        c_double
     ]
     result.evolve_system.restype = c_solver_p
 

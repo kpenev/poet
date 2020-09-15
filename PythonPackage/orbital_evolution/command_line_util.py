@@ -303,6 +303,14 @@ def add_evolution_config(parser):
         help='The directory containing serialized stellar evolutions and the '
         'name of the interpolator to use.'
     )
+    parser.add_argument(
+        '--max-evolution-runtime', '--timeout',
+        dtype=float,
+        default=0,
+        help='The maximum number of seconds calculating the orbital evolution '
+        'is allowed to take. Non-positive value results in no timeout. '
+        'Partially cumputed evolutions that time out can still be querried.'
+    )
 
 def set_up_library(cmdline_args):
     """Define eccentricity expansion and return stellar evol interpolator."""
@@ -534,6 +542,7 @@ def run_evolution(cmdline_args,
         eccentricity_expansion_fname=(
             cmdline_args.eccentricity_expansion_fname.encode('ascii')
         ),
+        timeout=cmdline_args.max_evolution_runtime,
         **extra_evolve_args
     )
     evolution = binary.get_evolution(required_ages_only=required_ages_only)
