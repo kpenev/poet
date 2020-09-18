@@ -305,7 +305,7 @@ def add_evolution_config(parser):
     )
     parser.add_argument(
         '--max-evolution-runtime', '--timeout',
-        dtype=float,
+        type=float,
         default=0,
         help='The maximum number of seconds calculating the orbital evolution '
         'is allowed to take. Non-positive value results in no timeout. '
