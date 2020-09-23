@@ -18,6 +18,7 @@ from integrate import quad
 
 ### Declare constants here
 #MAX_TERMS = 400
+GRID = 101 # The number of grid points to divide 0<=e<=1 into; should be power of ten plus one
 
 ### Classes
 #class Classy:
@@ -91,14 +92,14 @@ def getCoefficients(coeffDeg,eList,yList):
 	# return lOC
 
 # Checks if we're accurate enough
-def checkAccuracy(ListOfCoefficients, equation, [range of e], pms):
+#def checkAccuracy(ListOfCoefficients, equation, [range of e], pms):
 	# pms is a numerically integrated version of p_ms that we did beforehand for just this comparison
-	I'm not entirely sure how to do this
-		1. Choose regularly spaced positions in range and get the percent error?
-		2. is there some other way to quantify how closely one function emulates another?
-	if we have multiple terms, do we average them for the overall accuracy or combine them in some other way?
-	else if there's only one term, problem solved I guess
-	return accuracy
+#	I'm not entirely sure how to do this
+#		1. Choose regularly spaced positions in range and get the percent error?
+#		2. is there some other way to quantify how closely one function emulates another?
+#	if we have multiple terms, do we average them for the overall accuracy or combine them in some other way?
+#	else if there's only one term, problem solved I guess
+#	return accuracy
 
 # I'm not sure if I want the user to specify a range of m and s or just a specific p_ms (the latter would need
 # the program to be run individually for each p_ms coefficient)
@@ -109,7 +110,7 @@ def main(m=0, s=1, accuracyGoal, maxCoeffs):
 		# If not, complain and exit
 		
 	# Initialize my variables
-	coeffDeg = [0,5] # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
+	coeffDeg = [0:5] # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
 	listOfCoeff = np.zeros(2,however many coefficients)
 	
 	# Optional?
@@ -121,19 +122,16 @@ def main(m=0, s=1, accuracyGoal, maxCoeffs):
 	# Precalculate p_ms(e) itself to compare to? Can I do that? Would be convenient
 	
 	#Calculate some number of data points for 0<=e<=1
-	eList = np.zeros(101)
-	for i in range(1,100):
-		eList[i] = i*1/100
+	eList = np.zeros(GRID)
+	for i in range(1,GRID-1):
+		eList[i] = i*1/(GRID-1)
 	
 	# Calculate the value of p_ms for each point on that list
 	vec_pms = vecorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
 	yList = vec_pms(m,s,eList)
 	
-	for not accurate enough or number of terms is below maxCoeffs (?):
+	while (acc < accuracyGoal && length(listOfCoeff[1]) < maxCoeffs):
 		
-		#listOfCoeff += [ [termsToFind] , getCoefficients(equation, [termsToFind], ) ] # Find however many more coefficients
-																							 #I think I want lOC to be [ChebNumber,Coef] (2d)
-																							 #That way the next step doesn't cause problems
 		newTerms = getCoefficients(termsToFind,eList,yList)
 		listOfCoeff = np.concatenate((listOfCoeff,np.array([termsToFind,newTerms])) )
 		
