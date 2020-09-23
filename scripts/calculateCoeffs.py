@@ -76,11 +76,12 @@ def p_MS(m,s,e):
 
 # Documentation goes here
 # Gets the specified coefficient of the (Chebyshev?) expansion
-# def getCoefficients(equation, [termsToFind], ):
-	# for each term to find
-		# result[] += findChebyshevExpansion(equation, termsToFind[i]) # There will be some built in thing, I'm sure
+def getCoefficients(coeffDeg,eList,yList):
+	#for each term to find
+		#result[] += findChebyshevExpansion(equation, termsToFind[i]) # There will be some built in thing, I'm sure
 																	 #If not, I guess I'll be defining this function later
-	# return result
+	
+	return np.polynomial.chebyshev.chebfit(eList,yList,coeffDeg)
 
 # Removes junk terms
 # def prune(lOC):
@@ -109,7 +110,7 @@ def main(m=0, s=1, accuracyGoal, maxCoeffs):
 		
 	# Initialize my variables
 	coeffDeg = [0,5] # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
-	listOfCoeff = []
+	listOfCoeff = np.zeros(2,however many coefficients)
 	
 	# Optional?
 	# Determine range of e we need to deal with (for speed purposes)
@@ -120,7 +121,9 @@ def main(m=0, s=1, accuracyGoal, maxCoeffs):
 	# Precalculate p_ms(e) itself to compare to? Can I do that? Would be convenient
 	
 	#Calculate some number of data points for 0<=e<=1
-	eList = that
+	eList = np.zeros(101)
+	for i in range(1,100):
+		eList[i] = i*1/100
 	
 	# Calculate the value of p_ms for each point on that list
 	vec_pms = vecorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
@@ -129,9 +132,10 @@ def main(m=0, s=1, accuracyGoal, maxCoeffs):
 	for not accurate enough or number of terms is below maxCoeffs (?):
 		
 		#listOfCoeff += [ [termsToFind] , getCoefficients(equation, [termsToFind], ) ] # Find however many more coefficients
-																							 I think I want lOC to be [ChebNumber,Coef] (2d)
-																							 That way the next step doesn't cause problems
-		listOfCoeff += np.polynomial.chebyshev.chebfit(eList,yList,coeffDeg)
+																							 #I think I want lOC to be [ChebNumber,Coef] (2d)
+																							 #That way the next step doesn't cause problems
+		newTerms = getCoefficients(termsToFind,eList,yList)
+		listOfCoeff = np.concatenate((listOfCoeff,np.array([termsToFind,newTerms])) )
 		
 		# Wait to do this one until you have something running so you can see if it's necessary
 		# ListOfCoefficients = prune(listOfC...) # In Mathematica, sometimes we got terms that exploded, but then ones after that
