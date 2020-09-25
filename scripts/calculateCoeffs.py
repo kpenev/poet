@@ -12,7 +12,7 @@ import numpy as np
 # import scipy.stats as stats
 import scipy.integrate as integrate
 #from scipy.integrate import quad
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # from matplotlib import gridspec
 ####
 
@@ -30,40 +30,41 @@ GRID = 10001 # The number of grid points to divide 0<=e<=1 into; should be power
 #####
 # The following are all defining the coefficients
 # which we're trying to find expansions of
+# I will have removed the poles for all of them eventually some day (1-e**2)**(3/2)*
 # For more info, see (documentation url)
 
 # Term inside integral for p0s
-def p_0s(x,m,s,e):
-	return np.exp(1j*s*(x-e*np.sin(x)))/(1-e*np.cos(x))**2
+def p_0s(u,s,e):
+	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**2).real
 
 # The next four terms are the constituent parts
 # of m=+/-2
-def t1(x,m,s,e):
-	return np.exp(1j*s*(x-e*np.sin(x)))/(1-e*np.cos(x))**4
+def t1(u,s,e):
+	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**4).real
 
-def t2(x,m,s,e):
-	return np.exp(1j*s*(x-e*np.sin(x)))*np.cos(2*x)/(1-e*np.cos(x))**4
+def t2(u,s,e):
+	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))*np.cos(2*u)/(1-e*np.cos(u))**4).real
 
-def t3(x,m,s,e):
-	return np.exp(1j*s*(x-e*np.sin(x)))*np.sin(2*x)/(1-e*np.cos(x))**4
+def t3(u,s,e):
+	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))*np.sin(2*u)/(1-e*np.cos(u))**4).real
 
-def t4(x,m,s,e):
-	return np.exp(1j*s*(x-e*np.sin(x)))*np.sin(x)/(1-e*np.cos(x))**4
+def t4(u,s,e):
+	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))*np.sin(u)/(1-e*np.cos(u))**4).real
 	
 # The overall coefficient thing
 def p_MS(m,s,e):
 	
-	p0s = integrate.quad(p_0s,0,2*np.pi,args=(m,s,e))
+	p0s = integrate.quad(p_0s,0,2*np.pi,args=(s,e))[0]
 	
 	if abs(m) == 2:
 	
 		sC1 = 1-e**2    # Some constant
-		sC2 = sqrt(sC1) # Some other constant
+		sC2 = np.sqrt(sC1) # Some other constant
 		
-		term1 = -sC1*integrate.quad(t1,0,2*np.pi,args=(m,s,e))
-		term2 = sC1*integrate.quad(t2,0,2*np.pi,args=(m,s,e))
-		term3 = i*sC2*integrate.quad(t3,0,2*np.pi,args=(m,s,e))
-		term4 = i*2*e*sC2*integrate.quad(t4,0,2*np.pi,args=(m,s,e))
+		term1 = -sC1*integrate.quad(t1,0,2*np.pi,args=(s,e))[0]
+		term2 = sC1*integrate.quad(t2,0,2*np.pi,args=(s,e))[0]
+		term3 = 1j*sC2*integrate.quad(t3,0,2*np.pi,args=(s,e))[0]
+		term4 = 1j*2*e*sC2*integrate.quad(t4,0,2*np.pi,args=(s,e))[0]
 		
 		if m > 0:
 			term3 = -term3
@@ -71,9 +72,9 @@ def p_MS(m,s,e):
 			term4 = -term4
 		
 	else:
-		term1=term2=term3=term4 = (0,0)
+		term1 = term2 = term3 = term4 = 0
 		
-	return (1/(2*np.pi))*(p0s[1]+term1[1]+term2[1]+term3[1]+term4[1])
+	return (1/(2*np.pi))*(p0s+term1+term2+term3+term4).real
 
 # Documentation goes here
 # Gets the specified coefficient of the (Chebyshev?) expansion
@@ -103,7 +104,7 @@ def getCoefficients(coeffDeg,eList,yList):
 
 # I'm not sure if I want the user to specify a range of m and s or just a specific p_ms (the latter would need
 # the program to be run individually for each p_ms coefficient)
-def main(m=0, s=1, accuracyGoal=3, maxCoeffs=30):
+def main(m=2, s=2, accuracyGoal=3, maxCoeffs=30):
 	
 	# Sanity check input arguments
 		# Correct number of them? Correct type? Acceptable values?
@@ -124,24 +125,31 @@ def main(m=0, s=1, accuracyGoal=3, maxCoeffs=30):
 	print("hi")
 	#Calculate some number of data points for 0<=e<=1
 	eList = np.zeros(GRID)
-	for i in range(1,GRID-1):
+	for i in range(1,GRID):
 		eList[i] = i*1/(GRID-1)
 	
 	# Calculate the value of p_ms for each point on that list
 	vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
 	yList = vec_pms(m,s,eList)
 	
+	#print(eList)
+	#print(yList)
+	plt.plot(eList,yList)
+	plt.show()
+	
 	while (acc < accuracyGoal and coeffDeg <= maxCoeffs):
 		
-		newTerm = getCoefficients(coeffDeg,eList,yList)
+		#newTerm = getCoefficients(coeffDeg,eList,yList)
+		listOfCoeff = getCoefficients(coeffDeg,eList,yList)
 		
 		# if does not blow up (use prune, return true or false) # Wait to do this one until you have something running so you can see if it's necessary
-		#print(listOfCoeff)
-		#print(coeffDeg)
-		#print(newTerm[0])
-		#print((coeffDeg,newTerm[0]))
-		#print(np.array([[coeffDeg],[newTerm[0]]]))
-		listOfCoeff = np.concatenate((listOfCoeff,np.array([[coeffDeg],[newTerm[0]]])) )
+		
+		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		# double check if you're just doing one coefficient at a time here please
+		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		# update: that is not what's happening
+		
+		#listOfCoeff = np.concatenate((listOfCoeff,np.array([[coeffDeg],[newTerm[0]]])) )
 		
 		# ListOfCoefficients = prune(listOfC...) # In Mathematica, sometimes we got terms that exploded, but then ones after that
 											   #were fine, so I want to be able to remove problematic terms
@@ -151,6 +159,7 @@ def main(m=0, s=1, accuracyGoal=3, maxCoeffs=30):
 		coeffDeg += 1
 	
 	# Report results
+	# Remove the empty first index, unless I change how that works
 	print(listOfCoeff)
 
 if __name__ == "__main__":
