@@ -54,6 +54,9 @@ def t4(u,s,e):
 # The overall coefficient thing
 def p_MS(m,s,e):
 	
+	##### ~~!!!!!!!!~
+	### How good is this calculation??? What can I do about improving that as needed?
+	
 	p0s = integrate.quad(p_0s,0,2*np.pi,args=(s,e))[0]
 	
 	if abs(m) == 2:
@@ -85,13 +88,6 @@ def getCoefficients(coeffDeg,eList,yList):
 	
 	return np.polynomial.chebyshev.chebfit(eList,yList,coeffDeg)
 
-# Removes junk terms
-# def prune(lOC):
-	# for each term in lOC
-		# if term is greater than 10
-			# delete the term from lOC
-	# return lOC
-
 # Checks if we're accurate enough
 #def checkAccuracy(ListOfCoefficients, equation, [range of e], pms):
 	# pms is a numerically integrated version of p_ms that we did beforehand for just this comparison
@@ -104,7 +100,7 @@ def getCoefficients(coeffDeg,eList,yList):
 
 # I'm not sure if I want the user to specify a range of m and s or just a specific p_ms (the latter would need
 # the program to be run individually for each p_ms coefficient)
-def main(m=2, s=2, accuracyGoal=3, maxCoeffs=30):
+def main(m=2, s=100, accuracyGoal=3, maxCoeffs=30):
 	
 	# Sanity check input arguments
 		# Correct number of them? Correct type? Acceptable values?
@@ -120,13 +116,14 @@ def main(m=2, s=2, accuracyGoal=3, maxCoeffs=30):
 		# As s increases, the point where there's noticeable divergence goes further right
 		# Obviously need full range for getting coeffs, but maybe not for confirming accuracy?
 	
-	# Optional.
-	# Precalculate p_ms(e) itself to compare to? Can I do that? Would be convenient
-	print("hi")
 	#Calculate some number of data points for 0<=e<=1
 	eList = np.zeros(GRID)
 	for i in range(1,GRID):
 		eList[i] = i*1/(GRID-1)
+		
+	#####~~!!!! ^^^ - dynamic resolution for when there's only a hundred points doing interesting things? evidence
+	### calculating a middle point and then comparing to fit
+	### or just two res and res/2 and see if residual changes much
 	
 	# Calculate the value of p_ms for each point on that list
 	vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
@@ -137,7 +134,7 @@ def main(m=2, s=2, accuracyGoal=3, maxCoeffs=30):
 	plt.plot(eList,yList)
 	plt.show()
 	
-	while (acc < accuracyGoal and coeffDeg <= maxCoeffs):
+	while (acc < accuracyGoal and coeffDeg <= maxCoeffs): ####### <<---- residual (maybe make a plot of precision vs. (degree/resolution)
 		
 		#newTerm = getCoefficients(coeffDeg,eList,yList)
 		listOfCoeff = getCoefficients(coeffDeg,eList,yList)
@@ -161,6 +158,8 @@ def main(m=2, s=2, accuracyGoal=3, maxCoeffs=30):
 	# Report results
 	# Remove the empty first index, unless I change how that works
 	print(listOfCoeff)
+	
+	#sql alchemy
 
 if __name__ == "__main__":
 	main()
