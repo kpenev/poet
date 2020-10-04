@@ -180,7 +180,21 @@ int main(int, char **)
         secondary_lrad, //secondary core angmom
         NULL,           //evolution mode
         NULL,           //primary wind saturation
-        NULL            //secondary wind saturation
+        NULL,           //secondary wind saturation
+        NULL,           //semimajor rate
+        NULL,           //eeccentricity rate
+        NULL,           //primary envelope inclination rate
+        NULL,           //primary core inclination rate
+        NULL,           //primary envelope periapsis rate
+        NULL,           //primary core periapsis rate
+        NULL,           //primary envelope angmom rate
+        NULL,           //primary core angmom rate
+        NULL,           //secondary envelope inclination rate
+        NULL,           //secondary core inclination rate
+        NULL,           //secondary envelope periapsis rate
+        NULL,           //secondary core periapsis rate
+        NULL,           //secondary envelope angmom rate
+        NULL            //secondary core angmom rate
     );
     std::cout.precision(16);
     std::cout.setf(std::ios::scientific, std::ios::floatfield);

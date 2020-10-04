@@ -8,9 +8,12 @@ namespace Evolve {
                              const ZoneEvolutionQuantities &evol_var)
     {
         switch(evol_var) {
-            case ANGULAR_MOMENTUM : os << "AGE"; break;
+            case ANGULAR_MOMENTUM : os << "ANGULAR_MOMENTUM"; break;
+            case ANGULAR_MOMENTUM_DERIV : os << "ANGULAR_MOMENTUM_DERIV"; break;
             case INCLINATION : os << "INCLINATION"; break;
+            case INCLINATION_DERIV : os << "INCLINATION_DERIV"; break;
             case PERIAPSIS : os << "PERIAPSIS"; break;
+            case PERIAPSIS_DERIV : os << "PERIAPSIS_DERIV"; break;
             case MOMENT_OF_INERTIA : os << "MOMENT_OF_INERTIA"; break;
             case MOMENT_OF_INERTIA_FIRST_DERIV :
                                      os << "DMOMENT_OF_INERTIA_DT"; break;
@@ -983,10 +986,15 @@ namespace Evolve {
     void DissipatingZone::add_to_evolution()
     {
         __evolution_real[ANGULAR_MOMENTUM].push_back(__angular_momentum);
+        __evolution_real[ANGULAR_MOMENTUM_DERIV].push_back(
+            __angular_momentum_evolution_rate
+        );
 
         __evolution_real[INCLINATION].push_back(inclination());
+        __evolution_real[INCLINATION_DERIV].push_back(inclination(true));
 
         __evolution_real[PERIAPSIS].push_back(periapsis());
+        __evolution_real[PERIAPSIS_DERIV].push_back(periapsis(true));
 
         __evolution_real[MOMENT_OF_INERTIA].push_back(moment_of_inertia());
 

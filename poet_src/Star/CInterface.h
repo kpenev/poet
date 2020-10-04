@@ -181,6 +181,19 @@ extern "C" {
         double age
     );
 
+    ///\brief One of the derivatives of the moment of inertia of the stellar
+    ///core at a given age.
+    LIB_PUBLIC double core_inertia_deriv(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The age at which to return the luminosity.
+        double age,
+
+        ///The order of the derivative to return (0, 1, or 2).
+        int deriv_order
+    );
+
     ///The moment of inertia of the stellar core at a given array of ages.
     LIB_PUBLIC void core_inertia_array(
         ///The star whose luminosity to return.
@@ -188,6 +201,25 @@ extern "C" {
 
         ///The ages at which to return the moment of inertia.
         const double *age,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: nvalues) where to place the result.
+        double *result
+    );
+
+    ///\brief One of the derivatives of the moment of inertia of the stellar
+    ///core at a given array of ages.
+    LIB_PUBLIC void core_inertia_deriv_array(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The ages at which to return the moment of inertia.
+        const double *age,
+
+        ///The orde of the derivate to return (0, 1, or 2).
+        int deriv_order,
 
         ///The number of ages at which evaluation is required.
         unsigned nvalues,
@@ -205,6 +237,20 @@ extern "C" {
         double age
     );
 
+    ///\brief One of the derivatives of the moment of inertia of the stellar
+    ///envelope at a given age.
+    LIB_PUBLIC double envelope_inertia_deriv(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The age at which to return the luminosity.
+        double age,
+
+        ///The order of the derivative to return (0, 1, or 2).
+        int deriv_order
+    );
+
+
     ///\brief The moment of inertia of the stellar envelope at a given array
     ///of ages.
     LIB_PUBLIC void envelope_inertia_array(
@@ -220,6 +266,26 @@ extern "C" {
         ///A pre-allocated memory (size: nvalues) where to place the result.
         double *result
     );
+
+    ///\brief One of the derivatives of the moment of inertia of the stellar
+    ///envelope at a given array of ages.
+    LIB_PUBLIC void envelope_inertia_deriv_array(
+        ///The star whose luminosity to return.
+        EvolvingStar *star,
+
+        ///The ages at which to return the moment of inertia.
+        const double *age,
+
+        ///The orde of the derivate to return (0, 1, or 2).
+        int deriv_order,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: nvalues) where to place the result.
+        double *result
+    );
+
 
     ///The radius of the star at a given age.
     LIB_PUBLIC double star_radius(

@@ -28,11 +28,20 @@ namespace Evolve {
         ///Angular momentum of the zone.
         ANGULAR_MOMENTUM,
 
+        ///The rate at which angular momentum changes.
+        ANGULAR_MOMENTUM_DERIV,
+
         ///Inclination of the zone.
         INCLINATION,
 
+        ///The rate at  which the the inclination changes
+        INCLINATION_DERIV,
+
         ///Periapsis of the zone.
         PERIAPSIS,
+
+        ///The rate at which periapsis changes
+        PERIAPSIS_DERIV,
 
         ///Moment of inertia of the zone.
         MOMENT_OF_INERTIA,
@@ -138,6 +147,9 @@ namespace Evolve {
         double
             ///The current angular momentum of the zone.
             __angular_momentum,
+
+            ///The current rate of angular momentum evolution of the zone.
+            __angular_momentum_evolution_rate,
 
             ///The current spin frequency of the zone.
             __spin_frequency,
@@ -321,6 +333,23 @@ namespace Evolve {
             ///or a spin frequency?
             bool spin_is_frequency
         );
+
+        ///\brief Set evolution rates for this zone's properties for storing in
+        ///the eveloution.
+        void set_evolution_rates(
+            ///The rate at which the magnitude of the angular momentum changes
+            double angular_momentum,
+
+            ///The rate at which the obliquity changes
+            double inclination,
+
+            ///The rate at which the periapsis changes
+            double periapsis
+        )
+        {
+            __angular_momentum_evolution_rate = angular_momentum;
+            ZoneOrientation::set_evolution_rates(inclination, periapsis);
+        }
 
         ///\brief The tidal forcing frequency for the given term and orbital
         ///frequency.

@@ -249,10 +249,17 @@ void get_star_evolution(const EvolvingStar *star_arg,
                         double *core_periapsis,
                         double *envelope_angmom,
                         double *core_angmom,
-                        bool *wind_saturation)
+                        bool *wind_saturation,
+                        double *envelope_inclination_rate,
+                        double *core_inclination_rate,
+                        double *envelope_periapsis_rate,
+                        double *core_periapsis_rate,
+                        double *envelope_angmom_rate,
+                        double *core_angmom_rate)
 {
     const Star::InterpolatedEvolutionStar *star =
         reinterpret_cast<const Star::InterpolatedEvolutionStar*>(star_arg);
+
     list_to_array(star->envelope().get_evolution_real(Evolve::INCLINATION),
                   envelope_inclination);
 
@@ -274,13 +281,42 @@ void get_star_evolution(const EvolvingStar *star_arg,
                   core_angmom);
 
     list_to_array(star->wind_saturation_evolution(), wind_saturation);
+
+    list_to_array(
+        star->envelope().get_evolution_real(Evolve::INCLINATION_DERIV),
+        envelope_inclination_rate
+    );
+
+    list_to_array(
+        star->core().get_evolution_real(Evolve::INCLINATION_DERIV),
+        core_inclination_rate
+    );
+
+    list_to_array(star->envelope().get_evolution_real(Evolve::PERIAPSIS_DERIV),
+                  envelope_periapsis_rate);
+
+    list_to_array(star->core().get_evolution_real(Evolve::PERIAPSIS_DERIV),
+                  core_periapsis_rate);
+
+    list_to_array(
+        star->envelope().get_evolution_real(Evolve::ANGULAR_MOMENTUM_DERIV),
+        envelope_angmom_rate
+    );
+
+    list_to_array(
+        star->core().get_evolution_real(Evolve::ANGULAR_MOMENTUM_DERIV),
+        core_angmom_rate
+    );
 }
 
 ///Fill the given array with the part of the evolution tracked by the planet.
 void get_planet_evolution(const CPlanet *planet_arg,
                           double *inclination,
                           double *periapsis,
-                          double *angmom)
+                          double *angmom,
+                          double *inclination_rate,
+                          double *periapsis_rate,
+                          double *angmom_rate)
 {
     const Planet::Planet *planet = reinterpret_cast<const Planet::Planet*>(
         planet_arg
@@ -298,20 +334,37 @@ void get_planet_evolution(const CPlanet *planet_arg,
         planet->zone().get_evolution_real(Evolve::ANGULAR_MOMENTUM),
         angmom
     );
+
+    list_to_array(
+        planet->zone().get_evolution_real(Evolve::INCLINATION_DERIV),
+        inclination_rate
+    );
+    list_to_array(
+        planet->zone().get_evolution_real(Evolve::PERIAPSIS_DERIV),
+        periapsis_rate
+    );
+    list_to_array(
+        planet->zone().get_evolution_real(Evolve::ANGULAR_MOMENTUM_DERIV),
+        angmom_rate
+    );
 }
 
 ///\brief Fill the given arrays with the part of the evolution (the orbital
 ///state) tracked by the binary system.
 void get_binary_evolution(const DiskBinarySystem *system_arg,
                           double *semimajor,
-                          double *eccentricity)
+                          double *eccentricity,
+                          double *semimajor_rate,
+                          double *eccentricity_rate)
 {
     const Evolve::DiskBinarySystem *system =
         reinterpret_cast<const Evolve::DiskBinarySystem*>(system_arg);
 
     list_to_array(system->semimajor_evolution(), semimajor);
-
     list_to_array(system->eccentricity_evolution(), eccentricity);
+
+    list_to_array(system->semimajor_evolution_rate(), semimajor_rate);
+    list_to_array(system->eccentricity_evolution_rate(), eccentricity_rate);
 }
 
 ///\brief Fill the given arrays with the part of the evolution tracked by the
@@ -348,12 +401,27 @@ void get_star_planet_evolution(const OrbitSolver *solver,
                                double *planet_periapsis,
                                double *planet_angmom,
                                int *evolution_mode,
-                               bool *wind_saturation)
+                               bool *wind_saturation,
+                               double *semimajor_rate,
+                               double *eccentricity_rate,
+                               double *envelope_inclination_rate,
+                               double *core_inclination_rate,
+                               double *envelope_periapsis_rate,
+                               double *core_periapsis_rate,
+                               double *envelope_angmom_rate,
+                               double *core_angmom_rate,
+                               double *planet_inclination_rate,
+                               double *planet_periapsis_rate,
+                               double *planet_angmom_rate)
 {
 
     get_solver_evolution(solver, age, evolution_mode);
 
-    get_binary_evolution(system, semimajor, eccentricity);
+    get_binary_evolution(system,
+                         semimajor,
+                         eccentricity,
+                         semimajor_rate,
+                         eccentricity_rate);
 
     get_star_evolution(star,
                        envelope_inclination,
@@ -362,12 +430,21 @@ void get_star_planet_evolution(const OrbitSolver *solver,
                        core_periapsis,
                        envelope_angmom,
                        core_angmom,
-                       wind_saturation);
+                       wind_saturation,
+                       envelope_inclination_rate,
+                       core_inclination_rate,
+                       envelope_periapsis_rate,
+                       core_periapsis_rate,
+                       envelope_angmom_rate,
+                       core_angmom_rate);
 
     get_planet_evolution(planet,
                          planet_inclination,
                          planet_periapsis,
-                         planet_angmom);
+                         planet_angmom,
+                         planet_inclination_rate,
+                         planet_periapsis_rate,
+                         planet_angmom_rate);
 }
 
 void get_star_star_evolution(const OrbitSolver *solver,
@@ -391,11 +468,29 @@ void get_star_star_evolution(const OrbitSolver *solver,
                              double *secondary_core_angmom,
                              int *evolution_mode,
                              bool *primary_wind_saturation,
-                             bool *secondary_wind_saturation)
+                             bool *secondary_wind_saturation,
+                             double *semimajor_rate,
+                             double *eccentricity_rate,
+                             double *primary_envelope_inclination_rate,
+                             double *primary_core_inclination_rate,
+                             double *primary_envelope_periapsis_rate,
+                             double *primary_core_periapsis_rate,
+                             double *primary_envelope_angmom_rate,
+                             double *primary_core_angmom_rate,
+                             double *secondary_envelope_inclination_rate,
+                             double *secondary_core_inclination_rate,
+                             double *secondary_envelope_periapsis_rate,
+                             double *secondary_core_periapsis_rate,
+                             double *secondary_envelope_angmom_rate,
+                             double *secondary_core_angmom_rate)
 {
     get_solver_evolution(solver, age, evolution_mode);
 
-    get_binary_evolution(system, semimajor, eccentricity);
+    get_binary_evolution(system,
+                         semimajor,
+                         eccentricity,
+                         semimajor_rate,
+                         eccentricity_rate);
 
     get_star_evolution(primary,
                        primary_envelope_inclination,
@@ -404,7 +499,13 @@ void get_star_star_evolution(const OrbitSolver *solver,
                        primary_core_periapsis,
                        primary_envelope_angmom,
                        primary_core_angmom,
-                       primary_wind_saturation);
+                       primary_wind_saturation,
+                       primary_envelope_inclination_rate,
+                       primary_core_inclination_rate,
+                       primary_envelope_periapsis_rate,
+                       primary_core_periapsis_rate,
+                       primary_envelope_angmom_rate,
+                       primary_core_angmom_rate);
 
     get_star_evolution(secondary,
                        secondary_envelope_inclination,
@@ -413,7 +514,13 @@ void get_star_star_evolution(const OrbitSolver *solver,
                        secondary_core_periapsis,
                        secondary_envelope_angmom,
                        secondary_core_angmom,
-                       secondary_wind_saturation);
+                       secondary_wind_saturation,
+                       secondary_envelope_inclination_rate,
+                       secondary_core_inclination_rate,
+                       secondary_envelope_periapsis_rate,
+                       secondary_core_periapsis_rate,
+                       secondary_envelope_angmom_rate,
+                       secondary_core_angmom_rate);
 }
 
 ///\brief Fill the given pointers with the state of the given star at the end

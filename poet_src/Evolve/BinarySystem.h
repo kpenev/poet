@@ -65,7 +65,15 @@ namespace Evolve {
 
             ///\brief The evolution of the eccentricity recorded by
             ///add_to_evolution() so far
-            __eccentricity_evolution;
+            __eccentricity_evolution,
+
+            ///\brief The rate at which the semimajor axis evolved at each
+            //currently recorded step.
+            __semimajor_rate_evolution,
+
+            ///\brief The rate at which the eccentricity evolved at each
+            //currently recorded step.
+            __eccentricity_rate_evolution;
 
         double
             ///The present age of the stellar system in Gyrs.
@@ -97,6 +105,13 @@ namespace Evolve {
             ///\brief Estimate of the error in __orbit_angmom_gain due to
             ///truncating the tidal potential eccentricity expansion
             __orbit_angmom_gain_expansion_error;
+
+        mutable double
+            ///The current rate at which the semiamjor axis is changing
+            __semimajor_rate,
+
+             ///The current rate at which the eccentricity is changing
+            __eccentricity_rate;
 
         Eigen::Vector3d
             ///\brief The torque on the orbit in the coordinate system of the
@@ -393,7 +408,10 @@ namespace Evolve {
         void fill_orbit_torque_and_power();
 
 
-        ///The differential equations for a system with both bodies present.
+        ///\brief The differential equations for a system with both bodies present.
+        ///
+        ///Also updates the current evolution rate private members if
+        ///expansion_error is false.
         int binary_differential_equations(
             ///On output is set to the rates of change of the evolution
             ///variables. See differintal_equations() for details.
@@ -870,7 +888,10 @@ namespace Evolve {
         ///\brief The differential equation and jacobian for the evolution of the
         ///system.
         ///
-        ///Calls configure().
+        ///Deliberate side effects:
+        ///  - Calls configure().
+        ///  - Updates instantaneous evolution rates if expansion_error is
+        ///    false.
         int differential_equations(
             ///The current age of the system.
             double age,
@@ -1023,9 +1044,17 @@ namespace Evolve {
         const std::list<double> &semimajor_evolution() const
         {return __semimajor_evolution;}
 
+        ///The tabulated evolution of the semimajor axis so far.
+        const std::list<double> &semimajor_evolution_rate() const
+        {return __semimajor_rate_evolution;}
+
         ///The tabulated evolution of the eccentricity so far.
         const std::list<double> &eccentricity_evolution() const
         {return __eccentricity_evolution;}
+
+        ///The tabulated evolution of the eccentricity so far.
+        const std::list<double> &eccentricity_evolution_rate() const
+        {return __eccentricity_rate_evolution;}
 
         ///Change the eccentricity expansion order for all dissipative zones.
         virtual void change_e_order(

@@ -99,7 +99,18 @@ int main(int, char **)
         NULL, //planet periapsis
         NULL, //planet angular momentum
         NULL, //evolution mode
-        NULL  //wind saturation
+        NULL, //wind saturation
+        NULL, //semimajor rate
+        NULL, //eeccentricity rate
+        NULL, //envelope inclination rate
+        NULL, //core inclination rate
+        NULL, //envelope periapsis rate
+        NULL, //core periapsis rate
+        NULL, //envelope angmom rate
+        NULL, //core angmom rate
+        NULL, //planet inclination rate
+        NULL, //planet periapsis rate
+        NULL  //planet angular momentum rate
     );
     std::cout.precision(16);
     std::cout.setf(std::ios::scientific, std::ios::floatfield);
