@@ -550,11 +550,15 @@ def run_evolution(cmdline_args,
         component = getattr(binary, component_name)
         if isinstance(component, EvolvingStar):
             for zone in ['core', 'envelope']:
-                setattr(
-                    evolution,
-                    '_'.join([component_name, zone, 'inertia']),
-                    getattr(component, zone + '_inertia')(evolution.age)
-                )
+                for deriv_order in range(3):
+                    setattr(
+                        evolution,
+                        '_'.join([component_name, zone, 'inertia']
+                                 +
+                                 (['d%d' % deriv_order] if deriv_order else [])),
+                        getattr(component, zone + '_inertia')(evolution.age,
+                                                              deriv_order)
+                    )
     evolution.orbital_period = binary.orbital_period(evolution.semimajor)
     binary.delete()
     return evolution

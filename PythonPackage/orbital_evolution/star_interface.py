@@ -101,6 +101,11 @@ def initialize_library():
     result.core_inertia.argtypes = [result.create_star.restype, c_double]
     result.core_inertia.restype = c_double
 
+    result.core_inertia_deriv.argtypes = [result.create_star.restype,
+                                          c_double,
+                                          c_int]
+    result.core_inertia_deriv.restype = c_double
+
     result.core_inertia_array.argtypes = [
         result.create_star.restype,
         numpy.ctypeslib.ndpointer(dtype=c_double,
@@ -113,9 +118,27 @@ def initialize_library():
     ]
     result.core_inertia_array.restype = None
 
+    result.core_inertia_deriv_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        c_int,
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
+    ]
+    result.core_inertia_array.restype = None
+
     result.envelope_inertia.argtypes = [result.create_star.restype,
                                         c_double]
     result.envelope_inertia.restype = c_double
+
+    result.envelope_inertia_deriv.argtypes = [result.create_star.restype,
+                                              c_int,
+                                              c_double]
+    result.envelope_inertia_deriv.restype = c_double
 
     result.envelope_inertia_array.argtypes = [
         result.create_star.restype,
@@ -128,6 +151,19 @@ def initialize_library():
                                   flags='C_CONTIGUOUS')
     ]
     result.envelope_inertia_array.restype = None
+
+    result.envelope_inertia_deriv_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        c_int,
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
+    ]
+    result.envelope_inertia_deriv_array.restype = None
 
     result.star_radius.argtypes = [result.create_star.restype, c_double]
     result.star_radius.restype = c_double
@@ -157,20 +193,26 @@ class EvolvingStar(DissipatingBody):
 
     lib_configure_body = orbital_evolution_library.configure_star
 
-    def _evaluate_stellar_property(self, property_name, age):
+    def _evaluate_stellar_property(self, property_name, age, deriv_order=None):
         """Evaluate a library function at a single age or array of ages."""
 
         if isinstance(age, numpy.ndarray):
             result = numpy.empty(dtype=c_double,
                                  shape=(age.size,),
                                  order='C')
-            getattr(library, property_name + '_array')(self.c_body,
-                                                       age,
-                                                       age.size,
-                                                       result)
+            c_function = getattr(library, property_name + '_array')
+            if deriv_order is None:
+                c_function(self.c_body, age, age.size, result)
+            else:
+                c_function(self.c_body, age, deriv_order, age.size, result)
             return result
 
-        return getattr(library, property_name)(self.c_body, age)
+        if deriv_order is None:
+            return getattr(library, property_name)(self.c_body, age)
+        else:
+            return getattr(library, property_name)(self.c_body,
+                                                   age,
+                                                   deriv_order)
 
     def __init__(self,
                  *,
@@ -364,19 +406,23 @@ class EvolvingStar(DissipatingBody):
 
         return self._evaluate_stellar_property('luminosity', age)
 
-    def core_inertia(self, age):
+    def core_inertia(self, age, deriv_order=0):
         """
         Return the moment of inertia of the stellar core at the given age.
         """
 
-        return self._evaluate_stellar_property('core_inertia', age)
+        return self._evaluate_stellar_property('core_inertia_deriv',
+                                               age,
+                                               deriv_order)
 
-    def envelope_inertia(self, age):
+    def envelope_inertia(self, age, deriv_order=0):
         """
         Return the moment of inertia of the stellar env. at the given age.
         """
 
-        return self._evaluate_stellar_property('envelope_inertia', age)
+        return self._evaluate_stellar_property('envelope_inertia_deriv',
+                                               age,
+                                               deriv_order)
 
     def radius(self, age):
         """Return the luminosity of the star at the given age."""

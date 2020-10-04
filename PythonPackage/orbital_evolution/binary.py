@@ -41,7 +41,9 @@ class Binary:
                 the current system.
         """
 
-        evolution_quantities = ['age', 'semimajor', 'eccentricity']
+        evolution_quantities = ['age',
+                                'semimajor',
+                                'eccentricity']
 
         star_float_quantities = ['envelope_inclination',
                                  'core_inclination',
@@ -68,6 +70,10 @@ class Binary:
                                             'planet_angmom'
                                         ])
 
+        rate_quantities = (
+            [q + '_rate' for q in evolution_quantities[1:]]
+        )
+
         evolution_quantities.append('evolution_mode')
 
         if secondary_is_star:
@@ -75,6 +81,8 @@ class Binary:
                                          'secondary_wind_saturation'])
         else:
             evolution_quantities.append('wind_saturation')
+
+        evolution_quantities.extend(rate_quantities)
 
         return evolution_quantities
 
