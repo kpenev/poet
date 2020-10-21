@@ -136,8 +136,8 @@ def initialize_library():
     result.envelope_inertia.restype = c_double
 
     result.envelope_inertia_deriv.argtypes = [result.create_star.restype,
-                                              c_int,
-                                              c_double]
+                                              c_double,
+                                              c_int]
     result.envelope_inertia_deriv.restype = c_double
 
     result.envelope_inertia_array.argtypes = [
