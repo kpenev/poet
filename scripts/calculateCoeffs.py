@@ -1,33 +1,25 @@
-""" Some initial documentation
+""" calculateCoeffs.py
 
-(details)
+Calculates multiple expansions of p_ms coefficients
+up to some level of accuracy.
 @author: Joshua Aaron Schussler
 """
 
-### Import things here
+### Importing relevant libraries
 import sys, getopt
-# import os
-# import math
 import numpy as np
-# import scipy.stats as stats
 import scipy.integrate as integrate
-#from scipy.integrate import quad
 import matplotlib.pyplot as plt
-# from matplotlib import gridspec
 ####
 
-### Declare constants here
-#MAX_TERMS = 400
+### Constants
 GRID = 10001 # The number of grid points to divide 0<=e<=1 into; should be power of ten plus one
-
-### Classes
-#class Classy:
 
 #####
 # The following are all defining the coefficients
 # which we're trying to find expansions of
 # I will have removed the poles for all of them eventually some day (1-e**2)**(3/2)*
-# For more info, see (documentation url)
+# For more info, see https://kpenev.github.io/poet/inclination_eccentricity_pms1.html
 
 # Term inside integral for p0s
 def p_0s(u,s,e):
@@ -47,12 +39,12 @@ def t3(u,s,e):
 def t4(u,s,e):
 	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))*np.sin(u)/(1-e*np.cos(u))**4).real
 	
-# The overall coefficient thing
+# The p_ms coefficient proper
 def p_MS(m,s,e):
 	
-	##### ~~!!!!!!!!~
-	### How good is this calculation??? What can I do about improving that as needed?
-	
+	# We want to adjust the numerical integration limit as s
+	# increases, but we don't want to go below the default value
+	# for small s
 	limitBreak = 10*s
 	if limitBreak < 50:
 		limitBreak = 50
@@ -65,15 +57,13 @@ def p_MS(m,s,e):
 			return 0
 	
 	else:
-		p0s = integrate.quad(p_0s,0,2*np.pi,args=(s,e),limit=limitBreak)[0] ######### INCREASE LIMIT
-															#### literally directly from s
-															### limit: at least 10*s
-															# don't go below default 50
+		p0s = integrate.quad(p_0s,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
 		
 		if abs(m) == 2:
 		
-			sC1 = 1-e**2    # Some constant
-			sC2 = np.sqrt(sC1) # Some other constant
+			# Define a couple of constants that show up across terms
+			sC1 = 1-e**2
+			sC2 = np.sqrt(sC1)
 			
 			term1 = -sC1*integrate.quad(t1,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
 			term2 = sC1*integrate.quad(t2,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
@@ -90,39 +80,19 @@ def p_MS(m,s,e):
 		
 	return (1/(2*np.pi))*(p0s+term1+term2+term3+term4).real
 
-# Documentation goes here
 # Gets the specified coefficient of the (Chebyshev?) expansion
 def getCoefficients(coeffDeg,eList,yList):
-	#for each term to find
-		#result[] += findChebyshevExpansion(equation, termsToFind[i]) # There will be some built in thing, I'm sure
-																	 #If not, I guess I'll be defining this function later
-	
-	#print(np.polynomial.chebyshev.chebfit(eList,yList,coeffDeg,True)[0])
-	#print(np.polynomial.chebyshev.chebfit(eList,yList,coeffDeg,True)[1])
-	#bob, george = np.polynomial.chebyshev.chebfit(eList,yList,coeffDeg,None,True)
-	#print(eList.size)
-	#print(eList.ndim)
-	#print((eList.T).size)
-	#print((eList.T).ndim)
-	
-	# 2*e-1
 	
 	return np.polynomial.chebyshev.chebfit(2*eList.T-1,yList.T,coeffDeg,None,True)
 
 # Checks if we're accurate enough
 #def checkAccuracy(ListOfCoefficients, equation, [range of e], pms):
-	# pms is a numerically integrated version of p_ms that we did beforehand for just this comparison
-#	I'm not entirely sure how to do this
-#		1. Choose regularly spaced positions in range and get the percent error?
-#		2. is there some other way to quantify how closely one function emulates another?
-#	if we have multiple terms, do we average them for the overall accuracy or combine them in some other way?
-#	else if there's only one term, problem solved I guess
 #	return accuracy
 
 # I'm not sure if I want the user to specify a range of m and s or just a specific p_ms (the latter would need
 # the program to be run individually for each p_ms coefficient)
-def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
-	
+def main(m=2, s=100, accuracyGoal=3, maxCoeffs=np.inf):
+	print("Starting\n")
 	# Sanity check input arguments
 		# Correct number of them? Correct type? Acceptable values?
 		# If not, complain and exit
@@ -133,10 +103,9 @@ def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
 	notDone = 1 # Whether we're done looping because we've found a good result or not
 	# Variables related to accuracy
 	acc = 10000000
-	#bestResult = fsf # residual,{other relevant bits}
-	resid = np.array(100) # Residual
+	resid = np.array(2) # Residual
 	# Variables related to reporting
-	listOfCoeff = np.zeros((2,1))
+	#listOfCoeff = np.zeros((2,1))
 	# Miscellaneous variables
 	startAt = 0 # A number between 0 and 1 at which interesting things start happening
 	
@@ -164,6 +133,8 @@ def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
 		for i in range(np.around(startAt*GRID),GRID):
 			eList[i] = i*(1-startAt)/(GRID-1)
 	eList = np.linspace(startAt,1,GRID)
+	#eList = np.linspace(.95,1,501)
+	#eList = np.array([0.999,0.9991,0.9992,0.9993,0.9994,0.9995,0.9996,0.9997,0.9998,0.9999,1])
 	#eListCheck = np.zeros(GRID*2-1)
 	#for i in range(np.around(startAt*(GRID*2-1)),GRID*2-1):
 	#	eListCheck[i] = i*(1-startAt)/(GRID*2-2)
@@ -171,17 +142,10 @@ def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
 	#####~~!!!! ^^^ - dynamic resolution for when there's only a hundred points doing interesting things? evidence
 	### calculating a middle point and then comparing to fit
 	### or just two res and res/2 and see if residual changes much
-	
+	print("Calculating p_ms\n")
 	# Calculate the value of p_ms for each point on that list
 	vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
 	yList = vec_pms(m,s,eList)
-	
-	#print(eList)
-	#print(yList)
-	
-	# This bit is plotting
-	#plt.plot(eList,yList)
-	#plt.show()
 	
 	# while overall
 		# loop number coefficients
@@ -193,7 +157,7 @@ def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
 	#while notDone:
 	
 	#while coeffDeg <= maxCoeffs:
-	
+	print("Fitting\n")
 	while (resid.size and coeffDeg <= maxCoeffs): ####### <<---- residual (maybe make a plot of precision vs. (degree/resolution)
 		
 		#newTerm = getCoefficients(coeffDeg,eList,yList)
@@ -201,18 +165,8 @@ def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
 		print(diag[0])
 		print(diag[0].size)
 		resid = diag[0]
-		# if does not blow up (use prune, return true or false) # Wait to do this one until you have something running so you can see if it's necessary
 		
-		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		# double check if you're just doing one coefficient at a time here please
-		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		# update: that is not what's happening
-		
-		#listOfCoeff = np.concatenate((listOfCoeff,np.array([[coeffDeg],[newTerm[0]]])) )
-		
-		# accuracy = checkAccuracy(ListOfCoefficients, equation, [range of e], pms) # Check to see how accurate we are
-		####### accuracy: residuals < some cutoff value OR all results for second array less than some percent error?
-		if abs((acc - diag[0])) < 1:
+		if diag[0] < 1e-6: # Don't change this below 1e-7
 			
 			# We're accurate enough
 			maxCoeffs = coeffDeg
@@ -222,16 +176,13 @@ def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
 	
 	# The loop is going to increase coeffDeg too far, so fix that
 	coeffDeg = coeffDeg - 1
-	#f
 	
 	# Report results
-	# Remove the empty first index, unless I change how that works
-	#print(listOfCoeff)
-	#print(diag)
-	#print(diag[0])
-	#print(diag[1])
-	#print(diag[2])
-	
+	try:
+		print("We used this many coefficients: " + str(coeffDef))
+	except:
+		print("We used this many coefficients: ")
+		print(coeffDeg)
 	theCheb = np.polynomial.chebyshev.Chebyshev(listOfCoeff)
 	plt.plot(eList,yList,'o')
 	#dirtX = theCheb.linspace(GRID)[0]
@@ -244,6 +195,9 @@ def main(m=0, s=10, accuracyGoal=3, maxCoeffs=30):
 	plt.show()
 	
 	#sql alchemy
+	## database normal forms
+	# relational databases
+	# read about sql
 
 if __name__ == "__main__":
 	main()
