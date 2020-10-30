@@ -91,21 +91,29 @@ def getCoefficients(coeffDeg,eList,yList):
 
 # I'm not sure if I want the user to specify a range of m and s or just a specific p_ms (the latter would need
 # the program to be run individually for each p_ms coefficient)
-def main(m=2, s=100, accuracyGoal=3, maxCoeffs=np.inf):
+def main(m=0, s=1, accuracyGoal=1e-6, maxCoeffs=np.inf):
+	
 	print("Starting\n")
+	
 	# Sanity check input arguments
-		# Correct number of them? Correct type? Acceptable values?
-		# If not, complain and exit
+	if (m!=0 and abs(m)!=2 or (not isinstance(m,int))):
+		print("Improper m")
+		return
+	if (s<0 or (not isinstance(s,int))):
+		print("Improper s")
+		return
+	#more
 		
 	# Initialize my variables
 	# Variables related to looping
 	coeffDeg = 0# Current degree(s) of Chebyshev polynomial for which we are finding coefficients
 	notDone = 1 # Whether we're done looping because we've found a good result or not
+	#diag=[]
 	# Variables related to accuracy
 	acc = 10000000
-	resid = np.array(2) # Residual
+	resid = [] # Residual
 	# Variables related to reporting
-	#listOfCoeff = np.zeros((2,1))
+	listOfCoeff=[]
 	# Miscellaneous variables
 	startAt = 0 # A number between 0 and 1 at which interesting things start happening
 	
@@ -118,16 +126,6 @@ def main(m=2, s=100, accuracyGoal=3, maxCoeffs=np.inf):
 	# Calculate some number of data points for 0<=e<=1
 	# Make two; the first is for getting coefficients, the second is for checking the accuracy of them
 	
-	##############!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	## LINSPACE <<<<<< --------- !!!!!!
-	##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	# ^
-	# |
-	# |
-	# | (but need transformations for big s)
-	# |
-	# |
-	
 	if 0:
 		eList = np.zeros(GRID)
 		for i in range(np.around(startAt*GRID),GRID):
@@ -139,56 +137,39 @@ def main(m=2, s=100, accuracyGoal=3, maxCoeffs=np.inf):
 	#for i in range(np.around(startAt*(GRID*2-1)),GRID*2-1):
 	#	eListCheck[i] = i*(1-startAt)/(GRID*2-2)
 		
-	#####~~!!!! ^^^ - dynamic resolution for when there's only a hundred points doing interesting things? evidence
-	### calculating a middle point and then comparing to fit
-	### or just two res and res/2 and see if residual changes much
 	print("Calculating p_ms\n")
 	# Calculate the value of p_ms for each point on that list
 	vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
 	yList = vec_pms(m,s,eList)
 	
-	# while overall
-		# loop number coefficients
-			# loop residual
-	# Find point where residual was lowest?
-	# Re-get that point
-	# Wait why do I need to do that? How many things do I really have available to adjust?
-	
-	#while notDone:
-	
-	#while coeffDeg <= maxCoeffs:
 	print("Fitting\n")
-	while (resid.size and coeffDeg <= maxCoeffs): ####### <<---- residual (maybe make a plot of precision vs. (degree/resolution)
+	while coeffDeg <= maxCoeffs:
 		
-		#newTerm = getCoefficients(coeffDeg,eList,yList)
-		listOfCoeff, diag = getCoefficients(coeffDeg,eList,yList) #########<---------- I may need to flip the points to go -1 to 1
-		print(diag[0])
-		print(diag[0].size)
-		resid = diag[0]
+		newCoeff, diag = getCoefficients(coeffDeg,eList,yList)
+		listOfCoeff.append(newCoeff)
+		resid.append(diag[0][0]) # Diag is an array of four items, the one we want is itself an array of a single element
+		#print(resid[coeffDeg])
+		#print(resid[coeffDeg].size)
 		
-		if diag[0] < 1e-6: # Don't change this below 1e-7
+		if resid[coeffDeg] < accuracyGoal: # Don't change this below 1e-7
 			
 			# We're accurate enough
 			maxCoeffs = coeffDeg
 		
-		acc = diag[0]
+		acc = resid[coeffDeg]
 		coeffDeg += 1
 	
 	# The loop is going to increase coeffDeg too far, so fix that
 	coeffDeg = coeffDeg - 1
 	
 	# Report results
-	try:
-		print("We used this many coefficients: " + str(coeffDef))
-	except:
-		print("We used this many coefficients: ")
-		print(coeffDeg)
-	theCheb = np.polynomial.chebyshev.Chebyshev(listOfCoeff)
+	print("We used this many coefficients: " + str(coeffDeg))
+	theCheb = np.polynomial.chebyshev.Chebyshev(listOfCoeff[coeffDeg])
 	plt.plot(eList,yList,'o')
 	#dirtX = theCheb.linspace(GRID)[0]
 	#dirtX = dirtX[int(np.around(dirtX.size/2)):int(dirtX.size)]
 	#dirtX = np.take(dirtX,eList[(GRID-1)/2:GRID]*(GRID-1))
-	dirtY = np.polynomial.chebyshev.chebval(2*eList-1,listOfCoeff)
+	dirtY = np.polynomial.chebyshev.chebval(2*eList-1,listOfCoeff[coeffDeg])
 	#dirtY = theCheb.linspace(GRID)[1]
 	#dirtY = dirtY[int(np.around(dirtY.size/2)):int(dirtY.size)]
 	plt.plot(eList,dirtY)

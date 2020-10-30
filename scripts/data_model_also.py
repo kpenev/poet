@@ -1,6 +1,12 @@
 """Define the data model for class records."""
 # I'm starting from the phys2325 model, forgive any irregularities please
 
+
+# sqlite browser     does it come by default or do I install it separately?
+#database_interface.py 
+#initialize_database.py 
+#poet: python, stellar_ev, manager.py (also manager data model
+
 from sqlalchemy import\
     Column,\
     Integer,\
