@@ -144,14 +144,11 @@ def main(m=0, s=1, accuracyGoal=1e-6, maxCoeffs=np.inf):
 	print("We used this many coefficients: " + str(coeffDeg))
 	theCheb = np.polynomial.chebyshev.Chebyshev(listOfCoeff[coeffDeg])
 	plt.plot(eList,yList,'o')
-	#dirtX = theCheb.linspace(GRID)[0]
-	#dirtX = dirtX[int(np.around(dirtX.size/2)):int(dirtX.size)]
-	#dirtX = np.take(dirtX,eList[(GRID-1)/2:GRID]*(GRID-1))
 	dirtY = np.polynomial.chebyshev.chebval(2*eList-1,listOfCoeff[coeffDeg])
-	#dirtY = theCheb.linspace(GRID)[1]
-	#dirtY = dirtY[int(np.around(dirtY.size/2)):int(dirtY.size)]
-	plt.plot(eList,dirtY)
-	plt.show()
+	#plt.plot(eList,dirtY)
+	#plt.show()
+	
+	return listOfCoeff, resid
 	
 	#sql alchemy
 	## database normal forms
