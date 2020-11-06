@@ -25,8 +25,7 @@ GRID = 10001 # The number of grid points to divide 0<=e<=1 into; should be power
 def p_0s(u,s,e):
 	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**2).real
 
-# The next four terms are the constituent parts
-# of m=+/-2
+# The next four terms are the constituent parts of m=+/-2
 def t1(u,s,e):
 	return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**4).real
 
@@ -89,12 +88,9 @@ def getCoefficients(coeffDeg,eList,yList):
 #def checkAccuracy(ListOfCoefficients, equation, [range of e], pms):
 #	return accuracy
 
-# I'm not sure if I want the user to specify a range of m and s or just a specific p_ms (the latter would need
-# the program to be run individually for each p_ms coefficient)
 def main(m=0, s=1, accuracyGoal=1e-6, maxCoeffs=np.inf):
 	
 	print("Starting\n")
-	
 	# Sanity check input arguments
 	if (m!=0 and abs(m)!=2 or (not isinstance(m,int))):
 		print("Improper m")
@@ -105,27 +101,12 @@ def main(m=0, s=1, accuracyGoal=1e-6, maxCoeffs=np.inf):
 	#more
 		
 	# Initialize my variables
-	# Variables related to looping
-	coeffDeg = 0# Current degree(s) of Chebyshev polynomial for which we are finding coefficients
-	notDone = 1 # Whether we're done looping because we've found a good result or not
-	#diag=[]
-	# Variables related to accuracy
-	acc = 10000000
+	coeffDeg = 0 # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
 	resid = [] # Residual
-	# Variables related to reporting
 	listOfCoeff=[]
-	# Miscellaneous variables
 	startAt = 0 # A number between 0 and 1 at which interesting things start happening
 	
-	# Determine range of e we need to deal with (for speed purposes)
-		# As s increases, the point where there's noticeable divergence goes further right
-		# Obviously need full range for getting coeffs, but maybe not for confirming accuracy?
-		
-		# Do guess your number thing? bouncing back and forth and stuff
-	
 	# Calculate some number of data points for 0<=e<=1
-	# Make two; the first is for getting coefficients, the second is for checking the accuracy of them
-	
 	if 0:
 		eList = np.zeros(GRID)
 		for i in range(np.around(startAt*GRID),GRID):
@@ -148,15 +129,12 @@ def main(m=0, s=1, accuracyGoal=1e-6, maxCoeffs=np.inf):
 		newCoeff, diag = getCoefficients(coeffDeg,eList,yList)
 		listOfCoeff.append(newCoeff)
 		resid.append(diag[0][0]) # Diag is an array of four items, the one we want is itself an array of a single element
-		#print(resid[coeffDeg])
-		#print(resid[coeffDeg].size)
 		
 		if resid[coeffDeg] < accuracyGoal: # Don't change this below 1e-7
 			
 			# We're accurate enough
 			maxCoeffs = coeffDeg
 		
-		acc = resid[coeffDeg]
 		coeffDeg += 1
 	
 	# The loop is going to increase coeffDeg too far, so fix that
