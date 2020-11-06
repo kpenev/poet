@@ -44,36 +44,45 @@ def main(brandNew = 0):
 	#print('\n\n\n hi \n\n\n')
 	#print(Accurs)
 	
-	#Expansions = [
-	#		model.ChebCo(chebOrder = y,
-	#				value = i[y])
-	#		for y in range(len(i))
-	#	for i in chebCoeffs
-	#]
-	Expansions = []
-	for i in range(len(chebCoeffs)):
-		for y in range(len(chebCoeffs[i])):
-			Expansions.append(model.ChebCo(chebOrder=y,value = chebCoeffs[i][y],
-			timestamp = datetime.now(timezone.utc)))
-	#PmsCoeffs = [
-	#	#print(i)
-	#	model.PmsVAcc(m=0,s=1,
-	#				accur = Accurs[i.astype(np.int)],
-	#				chebCoeffs = Expansions[i.astype(np.int)])
-	#	for i in Accurs
-	#]
-	PmsCoeffs = []
-	for i in range(len(Accurs)):
-		#print(i)
-		PmsCoeffs.append(model.PmsVAcc(m=0,s=1,
-					accur = Accurs[i],timestamp = datetime.now(timezone.utc)))#,
-					#chebCoeffs = Expansions[i]))
-
-	#bob = model.PmsVAcc(m=0,s=1,accur=7)
-	
-	#conn.close()
-	
 	with db_session_scope() as db_session:
+		
+		# query biggest id so far
+		
+		PmsCoeffs = []
+		for i in range(len(Accurs)):
+			#print(i)
+			PmsCoeffs.append(model.PmsVAcc(id=biggest + 1 + i,m=0,s=1,
+						accur = Accurs[i],timestamp = datetime.now(timezone.utc)))#,
+						#chebCoeffs = Expansions[i]))
+		
+		#Expansions = [
+		#		model.ChebCo(chebOrder = y,
+		#				value = i[y])
+		#		for y in range(len(i))
+		#	for i in chebCoeffs
+		#]
+		Expansions = []
+		# bob = zip  (pms & chebco)
+		# (i,j) in that
+		# = pms[i],chebco[i,:]
+		for i,bethune in see above(chebCoeffs):
+			for index,val in enumerate(chebCoeffs[i]):
+				Expansions.append(model.ChebCo(p_id = grab the id from the appropriate pmscough,chebOrder=y,value = chebCoeffs[i][y],
+				timestamp = datetime.now(timezone.utc)))
+		#PmsCoeffs = [
+		#	#print(i)
+		#	model.PmsVAcc(m=0,s=1,
+		#				accur = Accurs[i.astype(np.int)],
+		#				chebCoeffs = Expansions[i.astype(np.int)])
+		#	for i in Accurs
+		#]
+
+
+		#bob = model.PmsVAcc(m=0,s=1,accur=7)
+		
+		#conn.close()
+		
+		
 		db_session.add_all(PmsCoeffs)
 		db_session.add_all(Expansions)
 
