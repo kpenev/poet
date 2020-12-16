@@ -48,16 +48,16 @@ def main(em = 0, es = 1):
 	with db_session_scope() as db_session:
 		
 		# Find the biggest id so far
-		for bob in db_session.query(model.PmsVAcc):
+		for bob in db_session.query(model.MAndSToAccuracy):
 			if bob.id > biggest:
 				biggest = bob.id
 		
 		# Loop through the data we generated, prep it for the database
 		for i in range(len(Accurs)):
-			PmsCoeffs.append(model.PmsVAcc(id=biggest + 1 + i,m=em,s=es,
-						accur = Accurs[i],timestamp = datetime.now(timezone.utc)))
+			PmsCoeffs.append(model.MAndSToAccuracy(id=biggest + 1 + i,m=em,s=es,
+						accuracy = Accurs[i],timestamp = datetime.now(timezone.utc)))
 			for y in range(len(chebCoeffs[i])):
-				Expansions.append(model.ChebCo(p_id = biggest + 1 + i,chebOrder=y,value = chebCoeffs[i][y],
+				Expansions.append(model.ChebExpansionCoeffs(p_id = biggest + 1 + i,place_in_expansion=y,coefficient_value = chebCoeffs[i][y],
 				timestamp = datetime.now(timezone.utc)))
 		
 		# Add everything to the database

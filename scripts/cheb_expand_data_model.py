@@ -12,10 +12,10 @@ from sqlalchemy.ext.declarative import declarative_base
 
 DataModelBase = declarative_base()
 
-class PmsVAcc(DataModelBase):
+class MAndSToAccuracy(DataModelBase):
 	"""The available coefficient expansions."""
 	
-	__tablename__ = 'pVacc'
+	__tablename__ = 'm_and_s_to_accuracy'
 	
 	id = Column(
 		Integer,
@@ -34,7 +34,7 @@ class PmsVAcc(DataModelBase):
         server_default='',
         doc='The sth coefficient; all integer values 0 and up.'
 	)
-	accur = Column(
+	accuracy = Column(
         Float,
         nullable=False,
         doc='The accuracy the coefficient was expanded to.'
@@ -45,27 +45,27 @@ class PmsVAcc(DataModelBase):
         doc='When was this record last changed.'
 	)
 
-	chebCoeffs = relationship('ChebCo', back_populates='pmsvaccs')
+	chebCoeffs = relationship('ChebExpansionCoeffs', back_populates='MAndSToAccuracys')
 
-class ChebCo(DataModelBase):
+class ChebExpansionCoeffs(DataModelBase):
     """The Chebyeshev coefficients for each expansion."""
 
-    __tablename__ = 'cheb'
+    __tablename__ = 'cheb_expansion_coeffs'
 
     p_id = Column(
         Integer,
-        ForeignKey('pVacc.id',
+        ForeignKey('m_and_s_to_accuracy.id',
                    onupdate='CASCADE',
                    ondelete='RESTRICT'),
         primary_key=True,
         doc='The expansion this coefficient corresponds to.'
     )
-    chebOrder = Column(
+    place_in_expansion = Column(
         Integer,
         primary_key=True,
         doc='The position in the overall expansion the coefficient should be placed.'
     )
-    value = Column(
+    coefficient_value = Column(
         Float,
         primary_key=False,
         doc='The value of the coefficient.'
@@ -76,4 +76,4 @@ class ChebCo(DataModelBase):
         doc='When was this record last changed.'
     )
 	
-    pmsvaccs = relationship('PmsVAcc', back_populates='chebCoeffs')
+    MAndSToAccuracys = relationship('MAndSToAccuracy', back_populates='chebCoeffs')
