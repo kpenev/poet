@@ -1,33 +1,16 @@
-"""Define the data model for class records."""
-# I'm starting from the phys2325 model, forgive any irregularities please
-
-
-# sqlite browser     does it come by default or do I install it separately?
-#database_interface.py 
-#initialize_database.py 
-#poet: python, stellar_ev, manager.py (also manager data model
+"""Define the data model for the p_ms coefficient expansions."""
 
 from sqlalchemy import\
     Column,\
     Integer,\
-    String,\
     Float,\
-    Date,\
     TIMESTAMP,\
-    ForeignKey,\
-    Index,\
-    ForeignKeyConstraint
+    ForeignKey
 
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-#pylint false positive: this is actually a class name
-#pylint: disable=invalid-name
 DataModelBase = declarative_base()
-#pylint: enable=invalid-name
-
-#The standard use of SQLAlchemy ORM requires classes with no public methods.
-#pylint: disable=too-few-public-methods
 
 class PmsVAcc(DataModelBase):
 	"""The available coefficient expansions."""
@@ -94,5 +77,3 @@ class ChebCo(DataModelBase):
     )
 	
     pmsvaccs = relationship('PmsVAcc', back_populates='chebCoeffs')
-
-#pylint: enable=too-few-public-methods
