@@ -30,6 +30,7 @@ namespace StellarEvolution {
             )
         ) {
             std::ostringstream msg;
+            msg.precision(16);
             msg << "Stellar mass: "
                 << __mass
                 << " and [Fe/H]: "
