@@ -39,10 +39,9 @@ class QuantityEvaluator:
     def _evaluate(quantity, age):
         """Evaluate the given quantity at the given age."""
 
-        if age < quantity.min_age or age > quantity.max_age:
-            return scipy.nan
-
-        return quantity(age)
+        if quantity.min_age < age < quantity.max_age:
+            return quantity(age)
+        return scipy.nan
 
     def teff(self, mass, age, feh=None):
         """Return the effective temperature for the given stellar params."""
