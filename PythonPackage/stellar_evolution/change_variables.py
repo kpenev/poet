@@ -24,17 +24,13 @@ class QuantityEvaluator:
 
     def __init__(self,
                  interpolator,
-                 feh,
-                 min_mass=0.0,
-                 max_mass=scipy.inf,
+                 feh=0.0,
                  **reference_values):
         """Set-up to use the given interpolator."""
 
         self.interp = interpolator
         self.feh = feh
         self.reference_values = reference_values
-        self.min_mass = min_mass
-        self.max_mass = max_mass
         for var in ['teff', 'logg', 'lum', 'rho']:
             if var not in reference_values:
                 self.reference_values[var] = 0.0
@@ -48,50 +44,62 @@ class QuantityEvaluator:
 
         return quantity(age)
 
-    def teff(self, mass, age):
+    def teff(self, mass, age, feh=None):
         """Return the effective temperature for the given stellar params."""
 
-        if mass < self.min_mass or mass > self.max_mass:
-            return scipy.nan
+        if feh is None:
+            feh = self.feh
 
-        return self._evaluate(
-            TeffK(self.interp('radius', mass, self.feh),
-                  self.interp('lum', mass, self.feh)),
-            age
-        ) - self.reference_values['teff']
+        if self.interp.in_range(mass, feh):
+            return self._evaluate(
+                TeffK(self.interp('radius', mass, feh),
+                      self.interp('lum', mass, feh)),
+                age
+            ) - self.reference_values['teff']
 
-    def rho(self, mass, age):
+        return scipy.nan
+
+    def rho(self, mass, age, feh=None):
         """Return the density for the given stellar params."""
 
-        if mass < self.min_mass or mass > self.max_mass:
-            return scipy.nan
+        if feh is None:
+            feh = self.feh
 
-        return self._evaluate(
-            RhoCGS(mass, self.interp('radius', mass, self.feh)),
-            age
-        ) - self.reference_values['rho']
+        if self.interp.in_range(mass, feh):
+            return self._evaluate(
+                RhoCGS(mass, self.interp('radius', mass, self.feh)),
+                age
+            ) - self.reference_values['rho']
 
-    def logg(self, mass, age):
+        return scipy.nan
+
+    def logg(self, mass, age, feh=None):
         """Return log10(surface gravity) for the given stellar params."""
 
-        if mass < self.min_mass or mass > self.max_mass:
-            return scipy.nan
+        if feh is None:
+            feh = self.feh
 
-        return self._evaluate(
-            LogGCGS(mass, self.interp('radius', mass, self.feh)),
-            age
-        ) - self.reference_values['logg']
+        if self.interp.in_range(mass, feh):
+            return self._evaluate(
+                LogGCGS(mass, self.interp('radius', mass, self.feh)),
+                age
+            ) - self.reference_values['logg']
 
-    def lum(self, mass, age):
+        return scipy.nan
+
+    def lum(self, mass, age, feh=None):
         """Return log10(surface gravity) for the given stellar params."""
 
-        if mass < self.min_mass or mass > self.max_mass:
-            return scipy.nan
+        if feh is None:
+            feh = self.feh
 
-        return self._evaluate(
-            self.interp('lum', mass, self.feh),
-            age
-        ) - self.reference_values['lum']
+        if self.interp.in_range(mass, feh):
+            return self._evaluate(
+                self.interp('lum', mass, self.feh),
+                age
+            ) - self.reference_values['lum']
+
+        return scipy.nan
 
 class VarChangingInterpolator(MESAInterpolator):
     """
