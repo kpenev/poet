@@ -419,6 +419,50 @@ class ManagedInterpolator(VarChangingInterpolator):
                 db_session=db_session
             )
 
+    def mass_range(self):
+        """Return the range of masess covered by the interpolation grid."""
+
+        return (
+            round(float(self.track_masses[0]), 3),
+            round(float(self.track_masses[-1]), 3)
+        )
+
+    def feh_range(self):
+        """Return the range of [Fe/H] covered by the interpolation grid."""
+
+        return (
+            round(float(self.track_feh[0]), 3),
+            round(float(self.track_feh[-1]), 3)
+        )
+
+    def mass_in_range(self, mass):
+        """True iff the given mass is within the interpolation grid."""
+
+        return (
+            round(float(self.track_masses[0]), 3)
+            <=
+            mass
+            <=
+            round(float(self.track_masses[-1]), 3)
+        )
+
+    def feh_in_range(self, feh):
+        """True iff the given [Fe/H] is within the interpolation grid."""
+
+        return (
+            round(float(self.track_feh[0]), 3)
+            <=
+            feh
+            <=
+            round(float(self.track_feh[-1]), 3)
+
+        )
+
+    def in_range(self, mass, feh):
+        """True iff mass and [Fe/H] are within the interpolation grid."""
+
+        return self.mass_in_range(mass) and self.feh_in_range(feh)
+
     def __str__(self):
         """Human readable representation of the interpolator."""
 
