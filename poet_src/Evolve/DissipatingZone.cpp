@@ -104,7 +104,6 @@ namespace Evolve {
                              limit.lock_direction());
     }
 
-#ifndef NDEBUG
     void DissipatingZone::check_locks_consistency() const
     {
         if(__initializing) return;
@@ -187,14 +186,11 @@ namespace Evolve {
             0
         );
     }
-#endif
 
     void DissipatingZone::update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
     {
-#ifndef NDEBUG
         assert(lock.lock_direction());
         check_locks_consistency();
-#endif
         if(
             static_cast<unsigned>(std::abs(lock.orbital_frequency_multiplier()))
             >
@@ -231,9 +227,7 @@ namespace Evolve {
             else
                 lock.set_lock(-static_cast<int>(__e_order) - 2, 1, -1);
         }
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
     }
 
     void DissipatingZone::update_locks_to_higher_e_order(unsigned new_e_order)
@@ -336,9 +330,7 @@ namespace Evolve {
                 __lock.set_lock(-max_abs_orb_mult, 1, -1);
             __other_lock.set_lock(1, 0, 1);
         }
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
     }
 
     void DissipatingZone::add_tidal_term(int m,
@@ -664,9 +656,7 @@ namespace Evolve {
         double orbital_frequency
     ) const
     {
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
         if(__lock(orbital_frequency_multiplier, spin_frequency_multiplier))
             return 0;
         double forcing_freq = (
@@ -963,9 +953,7 @@ namespace Evolve {
                release_lock();
            return;
         }
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
         if(new_e_order > __e_order) {
             update_locks_to_higher_e_order(new_e_order);
             __e_order = new_e_order;
@@ -978,9 +966,7 @@ namespace Evolve {
                 __other_lock.set_lock(1, 0, 1);
             }
         }
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
     }
 
     void DissipatingZone::add_to_evolution()

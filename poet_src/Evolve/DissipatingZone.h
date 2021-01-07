@@ -278,11 +278,9 @@ namespace Evolve {
             const TidalTermTriplet &U_error
         );
 
-#ifndef NDEBUG
         ///\brief Runs a bunch of asserts to check the consistency of __lock and
         ///__other_lock.
         virtual void check_locks_consistency() const;
-#endif
 
     protected:
         ///Notify the zone that it is in the process of initializing or not.
