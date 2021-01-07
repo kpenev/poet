@@ -234,9 +234,13 @@ class Binary:
             )
         return numpy.unique(
             numpy.where(
-                numpy.abs(evolution_ages[indices['right']] - self._required_ages)
+                numpy.abs(evolution_ages[indices['right']]
+                          -
+                          self._required_ages)
                 <
-                numpy.abs(evolution_ages[indices['left']] - self._required_ages),
+                numpy.abs(evolution_ages[indices['left']]
+                          -
+                          self._required_ages),
                 indices['right'],
                 indices['left']
             )

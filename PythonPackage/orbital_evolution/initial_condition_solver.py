@@ -7,6 +7,8 @@ from orbital_evolution.binary import Binary
 from orbital_evolution.star_interface import EvolvingStar
 from basic_utils import Structure
 
+#No good way found to simplify
+#pylint: disable=too-many-instance-attributes
 class InitialConditionSolver:
     """Find initial conditions which reproduce a given system now."""
 
@@ -76,7 +78,7 @@ class InitialConditionSolver:
             companion_mass=self.binary.primary.mass,
             semimajor=self.binary.semimajor(initial_orbital_period),
             eccentricity=self.parameters['initial eccentricity'],
-            spin_angmom=scipy.array([0.0, 0.0]),
+            spin_angmom=self.parameters['initial_secondary_angmom'],
             locked_surface=False,
             zero_outer_inclination=True,
             zero_outer_periapsis=True,
@@ -194,7 +196,8 @@ class InitialConditionSolver:
                  spin_tolerance=1e-6,
                  initial_eccentricity=0.0,
                  initial_inclination=0.0,
-                 max_porb_initial=100.0):
+                 max_porb_initial=100.0,
+                 initial_secondary_angmom=(0.0, 0.0)):
         """
         Initialize the object.
 
@@ -232,7 +235,8 @@ class InitialConditionSolver:
 
         self.parameters = {
             'initial eccentricity': initial_eccentricity,
-            'initial inclination': initial_inclination
+            'initial inclination': initial_inclination,
+            'initial_secondary_angmom': scipy.array(initial_secondary_angmom)
         }
         if planet_formation_age:
             self.parameters['planet formation age'] = planet_formation_age
@@ -490,3 +494,4 @@ class InitialConditionSolver:
             return (self._best_initial_conditions.initial_orbital_period,
                     self._best_initial_conditions.disk_period)
             #pylint: enable=no-member
+#pylint: enable=too-many-instance-attributes
