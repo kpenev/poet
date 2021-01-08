@@ -2,7 +2,7 @@
 
 import sys
 
-import scipy
+import numpy
 import scipy.interpolate
 import scipy.linalg
 import scipy.optimize
@@ -41,7 +41,7 @@ class QuantityEvaluator:
 
         if quantity.min_age < age < quantity.max_age:
             return quantity(age)
-        return scipy.nan
+        return numpy.nan
 
     def teff(self, mass, age, feh=None):
         """Return the effective temperature for the given stellar params."""
@@ -50,13 +50,17 @@ class QuantityEvaluator:
             feh = self.feh
 
         if self.interp.in_range(mass, feh):
-            return self._evaluate(
-                TeffK(self.interp('radius', mass, feh),
-                      self.interp('lum', mass, feh)),
+            radius = self.interp('radius', mass, feh)
+            luminosity = self.interp('lum', mass, feh)
+            result = self._evaluate(
+                TeffK(radius, luminosity),
                 age
             ) - self.reference_values['teff']
+            radius.delete()
+            luminosity.delete()
+            return result
 
-        return scipy.nan
+        return numpy.nan
 
     def rho(self, mass, age, feh=None):
         """Return the density for the given stellar params."""
@@ -65,12 +69,15 @@ class QuantityEvaluator:
             feh = self.feh
 
         if self.interp.in_range(mass, feh):
-            return self._evaluate(
-                RhoCGS(mass, self.interp('radius', mass, self.feh)),
+            radius = self.interp('radius', mass, self.feh)
+            result = self._evaluate(
+                RhoCGS(mass, radius),
                 age
             ) - self.reference_values['rho']
+            radius.delete()
+            return result
 
-        return scipy.nan
+        return numpy.nan
 
     def logg(self, mass, age, feh=None):
         """Return log10(surface gravity) for the given stellar params."""
@@ -79,12 +86,15 @@ class QuantityEvaluator:
             feh = self.feh
 
         if self.interp.in_range(mass, feh):
-            return self._evaluate(
-                LogGCGS(mass, self.interp('radius', mass, self.feh)),
+            radius = self.interp('radius', mass, self.feh)
+            result = self._evaluate(
+                LogGCGS(mass, radius),
                 age
             ) - self.reference_values['logg']
+            radius.delete()
+            return result
 
-        return scipy.nan
+        return numpy.nan
 
     def lum(self, mass, age, feh=None):
         """Return log10(surface gravity) for the given stellar params."""
@@ -93,12 +103,15 @@ class QuantityEvaluator:
             feh = self.feh
 
         if self.interp.in_range(mass, feh):
-            return self._evaluate(
-                self.interp('lum', mass, self.feh),
+            luminosity = self.interp('lum', mass, self.feh)
+            result = self._evaluate(
+                luminosity,
                 age
             ) - self.reference_values['lum']
+            luminosity.delete()
+            return result
 
-        return scipy.nan
+        return numpy.nan
 
 class VarChangingInterpolator(MESAInterpolator):
     """
@@ -221,7 +234,7 @@ class VarChangingInterpolator(MESAInterpolator):
         missmatch = [getattr(evaluator, quantity_name)
                      for quantity_name, reference in kwargs.items()]
         solution = scipy.optimize.root(
-            lambda m_t: scipy.array([miss(*m_t) for miss in missmatch]),
+            lambda m_t: numpy.array([miss(*m_t) for miss in missmatch]),
             [mass, age],
             method='lm',
             options=dict(ftol=1e-15, xtol=1e-15)
@@ -248,7 +261,7 @@ class VarChangingInterpolator(MESAInterpolator):
         setattr(
             self.grid,
             variable,
-            scipy.zeros((self.grid.masses.size,
+            numpy.zeros((self.grid.masses.size,
                          self.grid.ages.size,
                          self.grid.feh.size))
         )
@@ -256,7 +269,7 @@ class VarChangingInterpolator(MESAInterpolator):
         for feh_index, feh in enumerate(self.grid.feh):
             for mass_index, mass in enumerate(self.grid.masses):
                 quantity = self._get_quantity(variable, mass, feh)
-                age_in_range = scipy.logical_and(
+                age_in_range = numpy.logical_and(
                     self.grid.ages > quantity.min_age,
                     self.grid.ages < quantity.max_age
                 )
@@ -290,13 +303,13 @@ class VarChangingInterpolator(MESAInterpolator):
             feh:    The [Fe/H] value to inteprolate to.
 
         Returns:
-            2-D scipy array:
+            2-D numpy array:
                 The interepolated variable at the grid masses and ages.
         """
 
         #False positive, members created by setattr, so pylint does not see them
         #pylint: disable=no-member
-        result = scipy.empty((self.grid.masses.size, self.grid.ages.size))
+        result = numpy.empty((self.grid.masses.size, self.grid.ages.size))
         for mass_index in range(self.grid.masses.size):
             for age_index in range(self.grid.ages.size):
                 interp_y = getattr(self.grid, var_name)[mass_index,
@@ -304,7 +317,7 @@ class VarChangingInterpolator(MESAInterpolator):
                                                         :]
                 weights = self.grid.weights[mass_index, age_index, :]
                 if weights.sum() < 2:
-                    result[mass_index, age_index] = scipy.nan
+                    result[mass_index, age_index] = numpy.nan
                 else:
                     result[
                         mass_index,
@@ -346,7 +359,7 @@ class VarChangingInterpolator(MESAInterpolator):
                               ages=ages)
         #False positive, members created by setattr, so pylint does not see them
         #pylint: disable=no-member
-        self.grid.weights = scipy.empty(
+        self.grid.weights = numpy.empty(
             (
                 self.grid.masses.size,
                 self.grid.ages.size,
@@ -383,7 +396,7 @@ class VarChangingInterpolator(MESAInterpolator):
         #False positive, members created by setattr, so pylint does not
         #see them
         #pylint: disable=no-member
-        var_diff = scipy.empty(
+        var_diff = numpy.empty(
             (2, self.grid.masses.size, self.grid.ages.size)
         )
         #pylint: enable=no-member
@@ -410,13 +423,13 @@ class VarChangingInterpolator(MESAInterpolator):
                 <=
                 0
             )
-            sign_change = scipy.logical_or(
-                scipy.logical_or(sign_change_right[:, :-1],
+            sign_change = numpy.logical_or(
+                numpy.logical_or(sign_change_right[:, :-1],
                                  sign_change_up[:-1, :]),
-                scipy.logical_or(sign_change_right[:, 1:],
+                numpy.logical_or(sign_change_right[:, 1:],
                                  sign_change_up[1:, :])
             )
-            possible_solutions = scipy.logical_and(possible_solutions,
+            possible_solutions = numpy.logical_and(possible_solutions,
                                                    sign_change)
 
         return possible_solutions, var_diff
@@ -436,12 +449,12 @@ class VarChangingInterpolator(MESAInterpolator):
             age_high:    The upper age boundary of the cell.
 
         Returns:
-            2-D scipy array:
+            2-D numpy array:
                 The matrix defining the equations for the coefficients of a
                 bi-linear function over the specified cell.
         """
 
-        coef_equations = scipy.empty((4, 4))
+        coef_equations = numpy.empty((4, 4))
         coef_equations[:, 0] = 1
         coef_equations[0:2, 1] = m_low
         coef_equations[2:4, 1] = m_high
@@ -460,7 +473,7 @@ class VarChangingInterpolator(MESAInterpolator):
 
         Args:
             coef:    The coefficients of the two bilinear functions. Should
-                be a 2-D scipy array with the outer index iterating over the
+                be a 2-D numpy array with the outer index iterating over the
                 function and the inner indices iterating over the
                 coefficients of the corresponding bilinear function.
 
@@ -484,7 +497,7 @@ class VarChangingInterpolator(MESAInterpolator):
             return []
 
         sqrt_det = det**0.5
-        time_roots = (scipy.array([(-b - sqrt_det), (-b + sqrt_det)])
+        time_roots = (numpy.array([(-b - sqrt_det), (-b + sqrt_det)])
                       /
                       (2.0 * a))
         mass_roots = -(
@@ -547,8 +560,8 @@ class VarChangingInterpolator(MESAInterpolator):
 
         possible_solutions, var_diff = self._find_candidate_cells(feh, **kwargs)
         result = []
-        for mass_index, age_index in scipy.transpose(
-                scipy.nonzero(possible_solutions)
+        for mass_index, age_index in numpy.transpose(
+                numpy.nonzero(possible_solutions)
         ):
             #False positive, members created by setattr, so pylint does not see
             #them
@@ -556,7 +569,7 @@ class VarChangingInterpolator(MESAInterpolator):
             age_low, age_high = self.grid.ages[age_index: age_index + 2]
             m_low, m_high = self.grid.masses[mass_index: mass_index + 2]
             #pylint: enable=no-member
-            if scipy.isnan(
+            if numpy.isnan(
                     var_diff[
                         :,
                         mass_index : mass_index + 2,
@@ -569,7 +582,7 @@ class VarChangingInterpolator(MESAInterpolator):
                                                            m_high,
                                                            age_low,
                                                            age_high)
-            coef = scipy.empty((2, 4))
+            coef = numpy.empty((2, 4))
             for var_index in range(2):
                 coef[var_index] = scipy.linalg.solve(
                     coef_equations,
