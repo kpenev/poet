@@ -105,18 +105,23 @@ namespace Evolve {
 
     void EccentricityExpansionCoefficients::read(
         const std::string &tabulated_pms_fname,
-        int max_e_power
+        double precision
     )
     {
-        std::ifstream tabulated_coef(tabulated_pms_fname.c_str());
-        if(!tabulated_coef) throw Core::Error::IO(
+        sqlite3 *db;
+		int rc;
+		
+		rc = sqlite3_open(tabulated_pms_fname.c_str(),&db)
+		
+		/*std::ifstream tabulated_coef(tabulated_pms_fname.c_str());*/
+        if(rc) throw Core::Error::IO(
             "Unable to open eccentricity expansion file: "
             +
             tabulated_pms_fname
             +
             "!"
         );
-        tabulated_coef >> __max_e_power;
+        /* tabulated_coef >> __max_e_power;
         if(max_e_power >= 0) {
             if(__max_e_power<static_cast<unsigned>(max_e_power)) {
                 std::ostringstream msg;
@@ -130,13 +135,57 @@ namespace Evolve {
                 throw Core::Error::BadFunctionArguments(msg.str());
             }
             __max_e_power = max_e_power;
-        }
+        } */
 
         __alpha.resize(2 * __max_e_power + 1);
         __gamma_plus.resize(2 * __max_e_power + 1);
         __gamma_minus.resize(2 * __max_e_power + 1);
 
-        for(
+        bool doneCounting=false;
+		int m = 0;
+		int s = 0;
+		char *poll_tab1 = "SELECT m,s,accuracy FROM table1 WHERE id = " << i?;
+		char *poll_tab2 = "SELECT coefficients FROM table2 WHERE id,m,s are correct ORDER BY expansion_order";
+		for(
+			// all lines in database 1
+		} {
+			// Read a line
+			rc = sqlite3_exec(db,poll_tab1,update_line,data,error_message);
+			// check rc for issues, call errors if needed
+			if(rc!=SQLITE_OK){
+				error time
+			}
+			// If m is correct and s is correct
+			if(__loaded_m == m && __loaded_s == s) {
+				// If precision meets or exceeds requirement
+				if(__loaded_precision<=precision) {
+					// Grab data from database 2
+					rc = sqlite3_exec(db,poll_tab2,update_other_line,data,error_message);
+					// check rc for issues, call errors if needed
+					if(rc!=SQLITE_OK){
+						error time
+					}
+					__pms_expansions.resize(by one);
+					__pms_expansions[whichever]=the_new_data;
+					// Depending on value of m
+						// Advance m or (s and m)
+					switch(m) {
+						case 0:
+							m=2;
+							break;
+						case 2:
+							m=-2;
+							break;
+						case -2:
+							m=0;
+							s++;
+							break;
+					}
+				}
+			}
+			// Are we at the end of the file?
+				// if so, doneCounting=true
+		/*for(
             int epower = 0;
             epower <= static_cast<int>(__max_e_power);
             ++epower
@@ -186,7 +235,8 @@ namespace Evolve {
                     tabulated_coef >> destination[inner_index(1, s, epower)];
                 }
             }
-        }
+        }*/
+		sqlite3_close(db);
         __useable = true;
     }
 

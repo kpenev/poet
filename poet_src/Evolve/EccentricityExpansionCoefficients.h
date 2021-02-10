@@ -18,6 +18,7 @@
 #include <sstream>
 #include <cassert>
 #include <algorithm>
+#include <sqlite3.h>
 
 namespace Evolve {
 
@@ -55,6 +56,19 @@ namespace Evolve {
 
         ///Is the object ready to be used?
         bool __useable;
+		
+		///If you're seeing this, it means I haven't properly sorted
+		///out new documentation stuff or moved new variables/functions
+		///into a better place
+		// The currently loaded m, s, and precision values from the SQL table
+		int __loaded_m;
+		int __loaded_s;
+		double __loaded_precision;
+		// The callback SQL function that updates the above values
+		void update_line(appropriate args) const; // Don't know what const does here
+		void update_other_line(appropriate args) const;
+		// This should be up above
+		std::vector< std::vector<double> > __pms_expansions;
 
         ///\brief The inner index in the __alpha/gamma_plus/gamma_minus arrays
         //corresponding to the given term.
@@ -130,10 +144,10 @@ namespace Evolve {
                 ///The name of the file to read pre-tabulated coefficients from.
                 const std::string &tabulated_pms_fname="",
 
-                ///Only reads the file until all coefficients necessary for
-                ///expansions of up to this power are read-in. If this is
-                ///negative, the full file is read.
-                int max_e_power=-1);
+                ///Only reads the coefficients of the expansion which
+                ///most closely achieves the indicated precision, erring on
+                ///the side of being more precise.
+                double precision=1);
 
 
         ///Maximum eccentricity power with all necessary coefficients known.
