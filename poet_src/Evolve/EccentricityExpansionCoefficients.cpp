@@ -103,6 +103,25 @@ namespace Evolve {
         return result;
     }
 
+	void EccentricityExpansionCoefficients::get_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
+	{
+		// I assume I successfully managed to make this go in order of increasing i, so
+		__last_line = std::strtod(*fieldsInRow); // double to int though
+	}
+	
+	void EccentricityExpansionCoefficients::identify_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
+	{
+		//
+		__loaded_m; //1
+		__loaded_s;//2
+		__loaded_precision=std::strtod(*fieldsInRow[3]); //3 // this should be a float though
+	}
+	
+	void EccentricityExpansionCoefficients::get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
+	{
+		//
+	}
+
     void EccentricityExpansionCoefficients::read(
         const std::string &tabulated_pms_fname,
         double precision
@@ -110,6 +129,8 @@ namespace Evolve {
     {
         sqlite3 *db;
 		int rc;
+		
+		__last_line = 0; // Maybe this should go in the constructor? Or maybe it shouldn't be available to the entire class in the first place
 		
 		rc = sqlite3_open(tabulated_pms_fname.c_str(),&db)
 		
@@ -141,29 +162,45 @@ namespace Evolve {
         __gamma_plus.resize(2 * __max_e_power + 1);
         __gamma_minus.resize(2 * __max_e_power + 1);
 
-        bool doneCounting=false;
 		int m = 0;
 		int s = 0;
-		char *poll_tab1 = "SELECT m,s,accuracy FROM table1 WHERE id = " << i?;
-		char *poll_tab2 = "SELECT coefficients FROM table2 WHERE id,m,s are correct ORDER BY expansion_order";
+		std::string poll_last_line ("SELECT id FROM m_and_s_to_accuracy ORDER BY id");
+		std::string poll_tab1 ("SELECT m,s,accuracy FROM m_and_s_to_accuracy WHERE id = ");
+		std::string poll_tab2_a ("SELECT coefficient_value FROM cheb_expansion_coeffs WHERE id = ");
+		std::string poll_tab2_b (" ORDER BY place_in_expansion");
+		rc = sqlite3_exec(db,poll_last_line.c_str(),get_line,data,error_message);
+		if(rc!=SQLITE_OK) {
+			throw Core::Error::IO("Unable to find number of lines in eccentricity expansion file: "+tabulated_pms_fname+"!");
+			// do I need to also handle sqlite3?
+		}
 		for(
 			// all lines in database 1
-		} {
+			i = 0;
+			i <= __last_line;
+			i++
+		) {
 			// Read a line
-			rc = sqlite3_exec(db,poll_tab1,update_line,data,error_message);
+			std::string instruc1 (poll_tab1);
+			instruc1+=std::to_string(i);
+			rc = sqlite3_exec(db,instruc1.c_str(),identify_expansion,data,error_message);
 			// check rc for issues, call errors if needed
 			if(rc!=SQLITE_OK){
-				error time
+				throw Core::Error::IO("Unable to search expansions in eccentricity expansion file: "+tabulated_pms_fname+"!");
+				// do I need to also handle sqlite3?
 			}
 			// If m is correct and s is correct
 			if(__loaded_m == m && __loaded_s == s) {
 				// If precision meets or exceeds requirement
 				if(__loaded_precision<=precision) {
 					// Grab data from database 2
-					rc = sqlite3_exec(db,poll_tab2,update_other_line,data,error_message);
+					std::string instruc2 (poll_tab2_a);
+					instruc2+=std::to_string(i);
+					instruc2+=poll_tab2_b;
+					rc = sqlite3_exec(db,instruc2.c_str(),get_expansion,data,error_message);
 					// check rc for issues, call errors if needed
 					if(rc!=SQLITE_OK){
-						error time
+						throw Core::Error::IO("Unable to find number of lines in eccentricity expansion file: "+tabulated_pms_fname+"!");
+						// do I need to also handle sqlite3?
 					}
 					__pms_expansions.resize(by one);
 					__pms_expansions[whichever]=the_new_data;
@@ -183,8 +220,6 @@ namespace Evolve {
 					}
 				}
 			}
-			// Are we at the end of the file?
-				// if so, doneCounting=true
 		/*for(
             int epower = 0;
             epower <= static_cast<int>(__max_e_power);
@@ -234,8 +269,8 @@ namespace Evolve {
                             <static_cast<int>(destination.size()));
                     tabulated_coef >> destination[inner_index(1, s, epower)];
                 }
-            }
-        }*/
+            }*/
+        }
 		sqlite3_close(db);
         __useable = true;
     }

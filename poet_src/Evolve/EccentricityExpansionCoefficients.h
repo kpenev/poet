@@ -18,7 +18,7 @@
 #include <sstream>
 #include <cassert>
 #include <algorithm>
-#include <sqlite3.h>
+#include <sqlite3>
 
 namespace Evolve {
 
@@ -60,13 +60,15 @@ namespace Evolve {
 		///If you're seeing this, it means I haven't properly sorted
 		///out new documentation stuff or moved new variables/functions
 		///into a better place
+		int __last_line;
 		// The currently loaded m, s, and precision values from the SQL table
 		int __loaded_m;
 		int __loaded_s;
 		double __loaded_precision;
 		// The callback SQL function that updates the above values
-		void update_line(appropriate args) const; // Don't know what const does here
-		void update_other_line(appropriate args) const;
+		void get_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames) const;
+		void identify_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames) const; // Don't know what const does here
+		void get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames) const;
 		// This should be up above
 		std::vector< std::vector<double> > __pms_expansions;
 
