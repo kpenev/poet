@@ -66,9 +66,10 @@ namespace Evolve {
 		int __loaded_s;
 		double __loaded_precision;
 		// The callback SQL function that updates the above values
-		void get_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames) const;
-		void identify_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames) const; // Don't know what const does here
-		void get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames) const;
+		void learning_func();
+		void get_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames);
+		void identify_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames);
+		void get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames);
 		// This should be up above
 		std::vector< std::vector<double> > __pms_expansions;
 

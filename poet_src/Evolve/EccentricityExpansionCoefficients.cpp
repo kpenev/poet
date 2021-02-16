@@ -102,6 +102,37 @@ namespace Evolve {
         }
         return result;
     }
+	// while learning_func() etc.
+	// or not, might as well put logic in the function itself
+	bool learning_func(sqlite3* db)
+	{
+		//
+		sqlite3_stmt **statement;
+		const char *sql = "specific to the function so why make it an argument?";
+		int value;
+		
+		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+		{
+			
+			int result = sqlite3_step(*statement);
+			while(result==SQLITE_ROW)
+			{
+				//column
+				value = sqlite3_column_(int or double)(*statement,the column we want (int))
+				result=sqlite3_step(*statement);
+			}
+			
+			// check error codes
+			// I could possibly make another function that just handles all of these
+			// and closes out any memory handling stuff if need be
+			if (result==SQLITE_DONE)
+				return false;
+			if(sqlite3_finalize(*statement)!=SQLITE_OK)
+				// do an error
+			
+			return value;
+		}
+	}
 
 	void EccentricityExpansionCoefficients::get_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
 	{
@@ -114,7 +145,7 @@ namespace Evolve {
 		//
 		__loaded_m; //1
 		__loaded_s;//2
-		__loaded_precision=std::strtod(*fieldsInRow[3]); //3 // this should be a float though
+		__loaded_precision=std::strtod(*fieldsInRow[3]); //3
 	}
 	
 	void EccentricityExpansionCoefficients::get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
