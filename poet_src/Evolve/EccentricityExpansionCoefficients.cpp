@@ -133,12 +133,18 @@ namespace Evolve {
 			return value;
 		}
 	}
-
-	int EccentricityExpansionCoefficients::get_last_line(sqlite3* db)
+	
+	void EccentricityExpansionCoefficients::get_expansion(sqlite3* db,int id)
 	{
+		//
 		sqlite3_stmt **statement;
-		const char *sql = "SELECT id FROM m_and_s_to_accuracy ORDER BY id";
+		std::string instruc2 ("SELECT coefficient_value FROM cheb_expansion_coeffs WHERE id = ");
+		instruc2+=std::to_string(id);
+		instruc2+=" ORDER BY place_in_expansion";
+		const char *sql = instruc2.c_str();
 		int value;
+		
+		int number_of_terms = 0;
 		
 		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
 		{
@@ -146,7 +152,11 @@ namespace Evolve {
 			int result = sqlite3_step(*statement);
 			while(result==SQLITE_ROW)
 			{
-				value=sqlite3_column_int(*statement,0)
+				number_of_terms++;
+				loaded_precision=sqlite3_column_double(*statement,0);
+				
+				// do something
+				
 				result=sqlite3_step(*statement);
 			}
 			
@@ -166,15 +176,18 @@ namespace Evolve {
 		}
 	}
 	
-	void EccentricityExpansionCoefficients::identify_expansion(sqlite3* db)
+	void EccentricityExpansionCoefficients::identify_expansion(sqlite3* db,double precision)
 	{
 		//
-		__loaded_m; //1
-		__loaded_s;//2
-		__loaded_precision=std::strtod(*fieldsInRow[3]); //3
+		int load_id;
+		int loaded_m;
+		int loaded_s;
+		double loaded_precision;
 		
+		int m = 0;
+		int s = 0;
 		sqlite3_stmt **statement;
-		const char *sql = "SELECT id FROM m_and_s_to_accuracy ORDER BY id";
+		const char *sql = "SELECT id,m,s,accuracy FROM m_and_s_to_accuracy";
 		int value;
 		
 		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
@@ -183,7 +196,30 @@ namespace Evolve {
 			int result = sqlite3_step(*statement);
 			while(result==SQLITE_ROW)
 			{
-				value=sqlite3_column_int(*statement,0)
+				load_id=sqlite3_column_int(*statement,0);
+				loaded_m=sqlite3_column_int(*statement,1);
+				loaded_s=sqlite3_column_int(*statement,2);
+				loaded_precision=sqlite3_column_double(*statement,3);
+				
+				if(loaded_m == m && loaded_s == s) {
+					if(loaded_precision<=precision) {
+						get_expansion(db,load_id);
+						
+						switch(m) {
+						case 0:
+							m=2;
+							break;
+						case 2:
+							m=-2;
+							break;
+						case -2:
+							m=0;
+							s++;
+							break;
+						}
+					}
+				}
+				
 				result=sqlite3_step(*statement);
 			}
 			
@@ -201,11 +237,6 @@ namespace Evolve {
 			
 			return value;
 		}
-	}
-	
-	void EccentricityExpansionCoefficients::get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
-	{
-		//
 	}
 
     void EccentricityExpansionCoefficients::read(
@@ -213,10 +244,8 @@ namespace Evolve {
         double precision
     )
     {
-        sqlite3 *db;
+        sqlite3 *db; // check to make sure this is closed even when there's errors
 		int rc;
-		
-		__last_line = 0; // Maybe this should go in the constructor? Or maybe it shouldn't be available to the entire class in the first place
 		
 		rc = sqlite3_open(tabulated_pms_fname.c_str(),&db)
 		
@@ -248,12 +277,6 @@ namespace Evolve {
         __gamma_plus.resize(2 * __max_e_power + 1);
         __gamma_minus.resize(2 * __max_e_power + 1);
 
-		int m = 0;
-		int s = 0;
-		std::string poll_last_line ("SELECT id FROM m_and_s_to_accuracy ORDER BY id");
-		std::string poll_tab1 ("SELECT m,s,accuracy FROM m_and_s_to_accuracy WHERE id = ");
-		std::string poll_tab2_a ("SELECT coefficient_value FROM cheb_expansion_coeffs WHERE id = ");
-		std::string poll_tab2_b (" ORDER BY place_in_expansion");
 		rc = sqlite3_exec(db,poll_last_line.c_str(),get_line,data,error_message);
 		if(rc!=SQLITE_OK) {
 			throw Core::Error::IO("Unable to find number of lines in eccentricity expansion file: "+tabulated_pms_fname+"!");
