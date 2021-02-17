@@ -67,7 +67,7 @@ namespace Evolve {
 		double __loaded_precision;
 		// The callback SQL function that updates the above values
 		void learning_func();
-		void get_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames);
+		int get_last_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames);
 		void identify_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames);
 		void get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames);
 		// This should be up above

@@ -134,18 +134,73 @@ namespace Evolve {
 		}
 	}
 
-	void EccentricityExpansionCoefficients::get_line(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
+	int EccentricityExpansionCoefficients::get_last_line(sqlite3* db)
 	{
-		// I assume I successfully managed to make this go in order of increasing i, so
-		__last_line = std::strtod(*fieldsInRow); // double to int though
+		sqlite3_stmt **statement;
+		const char *sql = "SELECT id FROM m_and_s_to_accuracy ORDER BY id";
+		int value;
+		
+		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+		{
+			
+			int result = sqlite3_step(*statement);
+			while(result==SQLITE_ROW)
+			{
+				value=sqlite3_column_int(*statement,0)
+				result=sqlite3_step(*statement);
+			}
+			
+			sqlite3_finalize(*statement);
+			
+			// check error codes
+			// I could possibly make another function that just handles all of these
+			// and closes out any memory handling stuff if need be
+			if (result==SQLITE_DONE)
+				return false;
+			if(!=SQLITE_OK)
+				// do an error
+			
+			
+			
+			return value;
+		}
 	}
 	
-	void EccentricityExpansionCoefficients::identify_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
+	void EccentricityExpansionCoefficients::identify_expansion(sqlite3* db)
 	{
 		//
 		__loaded_m; //1
 		__loaded_s;//2
 		__loaded_precision=std::strtod(*fieldsInRow[3]); //3
+		
+		sqlite3_stmt **statement;
+		const char *sql = "SELECT id FROM m_and_s_to_accuracy ORDER BY id";
+		int value;
+		
+		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+		{
+			
+			int result = sqlite3_step(*statement);
+			while(result==SQLITE_ROW)
+			{
+				value=sqlite3_column_int(*statement,0)
+				result=sqlite3_step(*statement);
+			}
+			
+			sqlite3_finalize(*statement);
+			
+			// check error codes
+			// I could possibly make another function that just handles all of these
+			// and closes out any memory handling stuff if need be
+			if (result==SQLITE_DONE)
+				return false;
+			if(!=SQLITE_OK)
+				// do an error
+			
+			
+			
+			return value;
+		}
 	}
 	
 	void EccentricityExpansionCoefficients::get_expansion(void *data,int numberOfColumns,char **fieldsInRow,char **columnNames)
