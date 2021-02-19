@@ -61,7 +61,6 @@ namespace Evolve {
 		///out new documentation stuff or moved new variables/functions
 		///into a better place
 		// The callback SQL function that updates the above values
-		void learning_func();
 		void get_expansion(sqlite3* db,int id);
 		void identify_expansion(sqlite3* db,double precision);
 		// This should be up above
