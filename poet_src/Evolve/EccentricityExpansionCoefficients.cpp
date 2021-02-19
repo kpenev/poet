@@ -106,9 +106,7 @@ namespace Evolve {
 	void EccentricityExpansionCoefficients::get_expansion(sqlite3* db,int id)
 	{
 		sqlite3_stmt **statement;
-		std::string instruc2 ("SELECT coefficient_value FROM cheb_expansion_coeffs WHERE id = ");
-		instruc2+=std::to_string(id);
-		instruc2+=" ORDER BY place_in_expansion";
+		std::string instruc2="SELECT coefficient_value FROM cheb_expansion_coeffs WHERE id = "+std::to_string(id)+" ORDER BY place_in_expansion";
 		const char *sql = instruc2.c_str();
 		
 		bool error_flag = false;
@@ -119,15 +117,15 @@ namespace Evolve {
 		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
 		{
 			
-			int result = sqlite3_step(*statement);
-			while(result==SQLITE_ROW)
+			int rc = sqlite3_step(*statement);
+			while(rc==SQLITE_ROW)
 			{
 				new_expansion.push_back( sqlite3_column_double(*statement,0) );
-				result=sqlite3_step(*statement);
+				rc=sqlite3_step(*statement);
 			}
 			
 			// check error codes
-			if (result==SQLITE_DONE) __pms_expansions.push_back( new_expansion );
+			if (rc==SQLITE_DONE) __pms_expansions.push_back( new_expansion );
 			else error_flag=true;
 		}
 		else error_flag=true;
@@ -149,44 +147,38 @@ namespace Evolve {
 		
 		int load_id, loaded_m, loaded_s;
 		double loaded_precision;
-		
 		int m = 0, s = 0;
 		
 		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
 		{
-			
-			int result = sqlite3_step(*statement);
-			while(result==SQLITE_ROW)
+			int rc = sqlite3_step(*statement);
+			while(rc==SQLITE_ROW)
 			{
 				load_id=sqlite3_column_int(*statement,0);
 				loaded_m=sqlite3_column_int(*statement,1);
 				loaded_s=sqlite3_column_int(*statement,2);
 				loaded_precision=sqlite3_column_double(*statement,3);
-				
-				if(loaded_m == m && loaded_s == s) {
-					if(loaded_precision<=precision) {
-						get_expansion(db,load_id);
-						
-						switch(m) { // Should remember to change order for real table
-						case 0: {
-							m=2;
-							break; }
-						case 2: {
-							m=-2;
-							break; }
+				if(
+					loaded_m == m
+					&&
+					loaded_s == s
+					&&
+					loaded_precision <= precision
+				) {
+					get_expansion(db,load_id);
+					switch(m) { // Should remember to change order for real table
+						case 0: m=2;
+						case 2: m=-2;
 						case -2: {
 							m=0;
 							s++;
 							break; }
-						}
-					}
+					};
 				}
 				
-				result=sqlite3_step(*statement);
+				rc=sqlite3_step(*statement);
 			}
-			
-			// check error codes
-			if (result!=SQLITE_DONE) error_flag=true;
+			if (rc!=SQLITE_DONE) error_flag=true;
 		}
 		else error_flag=true;
 		
@@ -199,33 +191,26 @@ namespace Evolve {
 		}
 	}
 	
-	std::pair<double, bool> EccentricityExpansionCoefficients::confirm_precision(sqlite3* db,double precision)
+	std::pair<double, bool> EccentricityExpansionCoefficients::get_precision(sqlite3* db)
 	{
+		std::pair<double, bool> result(0.0,false);
+		
 		sqlite3_stmt **statement;
 		const char *sql = "SELECT accuracy FROM m_and_s_to_accuracy WHERE m=0,s=0 ORDER BY id";
-		
-		std::pair<double, bool> loaded_precision;
-		loaded_precision[1] = false;
-		
 		int m = 0, s = 0;
-		
 		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
 		{
-			
-			int result = sqlite3_step(*statement);
-			while(result==SQLITE_ROW)
+			int rc = sqlite3_step(*statement);
+			while(rc==SQLITE_ROW)
 			{
-				loaded_precision[0]=sqlite3_column_double(*statement,0);
-				result=sqlite3_step(*statement);
+				result.first=sqlite3_column_double(*statement,0);
+				rc=sqlite3_step(*statement);
 			}
-			
-			if (result!=SQLITE_DONE) loaded_precision[1]=true;
+			if (rc!=SQLITE_DONE) result.second=true;
 		}
-		else loaded_precision[1]=true;
-		
+		else result.second=true;
 		sqlite3_finalize(*statement);
-		
-		return loaded_precision;
+		return result;
 	}
 
     void EccentricityExpansionCoefficients::read(
@@ -238,29 +223,31 @@ namespace Evolve {
 		std::pair<double, bool> max_precision;
 		
 		rc = sqlite3_open(tabulated_pms_fname.c_str(),&db)
+        if(rc!=SQLITE_OK) {
+			sqlite3_close(db);
+			throw Core::Error::IO(
+				"Unable to open eccentricity expansion file: "
+				+
+				tabulated_pms_fname
+				+
+				"!"
+			);
+		}
 		
-        if(rc) throw Core::Error::IO(
-            "Unable to open eccentricity expansion file: "
-            +
-            tabulated_pms_fname
-            +
-            "!"
-        );
-		
-		max_precision = confirm_precision(db,precision);
-		if(!max_precision[1]) {
-			if(max_precision[0] != precision) {
+		max_precision = get_precision(db);
+		if(!max_precision.second) {
+			if(max_precision.first != precision) {
 				std::ostringstream msg;
 				msg << "Eccentricity expansion file '"
 					<< tabulated_pms_fname
 					<< "' stops at less precision ("
-					<< max_precision
+					<< max_precision.first
 					<<") than requested ("
 					<< precision 
 					<< ") in EccentricityExpansionCoefficients::read()!";
 				throw Core::Error::BadFunctionArguments(msg.str());
 				
-				precision = max_precision;
+				precision = max_precision.first;
 			}
 			
 			identify_expansion(db,precision);
@@ -270,12 +257,11 @@ namespace Evolve {
 		
 		sqlite3_close(db);
 		
-		if(max_precision[1]) {
-			throw Core::Error::IO("Unable to verify precision in eccentricity expansion file!");
-		}
-		else
-		{
-			if (other errors)
+		if(max_precision.second) throw Core::Error::IO("Unable to verify precision in eccentricity expansion file!");
+		else {
+			if (error finding an expansion) //throw error
+			else if (error getting an expansion) //throw error
+			else // useable now
 		}
     }
 

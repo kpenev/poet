@@ -63,11 +63,12 @@ namespace Evolve {
 		// The callback SQL function that updates the above values
 		void get_expansion(sqlite3* db,int id);
 		void identify_expansion(sqlite3* db,double precision);
+		std::pair<double, bool> get_precision(sqlite3* db)
 		// This should be up above
 		std::vector< std::vector<double> > __pms_expansions;
 
         ///\brief The inner index in the __alpha/gamma_plus/gamma_minus arrays
-        //corresponding to the given term.
+        ///corresponding to the given term.
         int inner_index( 
                 ///If -1 returns the index within __gamma_minus, if 0 returns the
                 ///index within __alpha and if 1 returns the index within
