@@ -77,7 +77,16 @@ extern "C" {
 
         ///The phase lag at the first tidal and first spin frequency break.
         ///The rest are calculated by imposing continuity.
-        double reference_phase_lag
+        double reference_phase_lag,
+
+        ///Factor by which the dissipation in the inertial mode range is
+        ///enhanced relative to what is defined by all other parameters. Must be
+        ///greater than 1.
+        double inertial_mode_enhancement,
+
+        ///Parameter controlling how sharp the transition between inertial mode
+        ///non-enhanced and inertial mode enhanced dissipation is.
+        double inertial_mode_sharpness
     );
 
     ///Create a binary system out of a star and a planet.

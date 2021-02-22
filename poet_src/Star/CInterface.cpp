@@ -54,7 +54,9 @@ void set_star_dissipation(EvolvingStar *star,
                      double *spin_frequency_breaks,
                      double *tidal_frequency_powers,
                      double *spin_frequency_powers,
-                     double reference_phase_lag)
+                     double reference_phase_lag,
+                     double inertial_mode_enhancement,
+                     double inertial_mode_sharpness)
 {
     Star::InterpolatedEvolutionStar* real_star =
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
@@ -81,7 +83,9 @@ void set_star_dissipation(EvolvingStar *star,
         spin_frequency_breaks,
         tidal_frequency_powers,
         spin_frequency_powers,
-        reference_phase_lag
+        reference_phase_lag,
+        inertial_mode_enhancement,
+        inertial_mode_sharpness
     );
 }
 

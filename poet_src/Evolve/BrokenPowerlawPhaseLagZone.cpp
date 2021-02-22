@@ -15,6 +15,62 @@ namespace Evolve {
         );
     }
 
+    double BrokenPowerlawPhaseLagZone::get_inertial_mode_factor(
+        double forcing_frequency,
+        int orbital_frequency_multiplier,
+        int spin_frequency_multiplier,
+        Dissipation::QuantityEntry entry
+    ) const
+    {
+        if(__inertial_mode_enhancement == 1) {
+            if(entry == Dissipation::NO_DERIV)
+                return 1.0;
+            return 0.0;
+        }
+
+        double abs_spin_frequency = std::abs(spin_frequency()),
+               abs_forcing_frequency = std::abs(forcing_frequency);
+        if(entry == Dissipation::NO_DERIV)
+            return (
+                abs_forcing_frequency > 2.0 * abs_spin_frequency
+                ? 1.0
+                : std::min(
+                    std::pow(
+                        2.0 * abs_spin_frequency / abs_forcing_frequency,
+                        __inertial_mode_sharpness
+                    ),
+                    __inertial_mode_enhancement
+                )
+            );
+
+        if(
+            abs_forcing_frequency > 2.0 * abs_spin_frequency
+            ||
+            (
+                std::pow(
+                    2.0 * abs_spin_frequency / abs_forcing_frequency,
+                    __inertial_mode_sharpness
+                )
+                >
+                __inertial_mode_enhancement
+            )
+        )
+            return 0.0;
+
+        if(entry == Dissipation::ORBITAL_FREQUENCY)
+            return -(__inertial_mode_sharpness * orbital_frequency_multiplier
+                     /
+                     forcing_frequency);
+
+        if(entry == Dissipation::SPIN_FREQUENCY)
+            return __inertial_mode_sharpness * (
+                1.0 / spin_frequency()
+                +
+                spin_frequency_multiplier / forcing_frequency
+            );
+        return 0.0;
+    }
+
     void BrokenPowerlawPhaseLagZone::reset()
     {
         __tidal_frequency_breaks.clear();
@@ -164,7 +220,9 @@ namespace Evolve {
         const std::vector<double> &spin_frequency_breaks,
         const std::vector<double> &tidal_frequency_powers,
         const std::vector<double> &spin_frequency_powers,
-        double reference_phase_lag
+        double reference_phase_lag,
+        double inertial_mode_enhancement,
+        double inertial_mode_sharpness
     )
     {
         __dissipative = true;
@@ -251,6 +309,19 @@ namespace Evolve {
             }
         }
 
+        __inertial_mode_enhancement = inertial_mode_enhancement;
+        __inertial_mode_sharpness = inertial_mode_sharpness;
+        if(__inertial_mode_enhancement != 1) {
+            if(__inertial_mode_enhancement < 1)
+                throw Core::Error::BadFunctionArguments(
+                    "Inertial mode enhancement must be greater than 1."
+                );
+            if(__inertial_mode_sharpness <= 0)
+                throw Core::Error::BadFunctionArguments(
+                    "Sharpness parameter for inertial mode enhancement must be "
+                    "strictly positive."
+                );
+        }
 #ifndef NDEBUG
         print_configuration();
 #endif
@@ -411,7 +482,11 @@ namespace Evolve {
                          *
                          tidal_factor
                          *
-                         spin_factor);
+                         spin_factor
+                         *
+                         get_inertial_mode_factor(forcing_frequency,
+                                                  orbital_frequency_multiplier,
+                                                  spin_frequency_multiplier));
         switch(entry) {
             case Dissipation::SPIN_FREQUENCY :
                 result *= (
@@ -424,15 +499,27 @@ namespace Evolve {
                            forcing_frequency)
                         : 0.0
                     )
+                    +
+                    get_inertial_mode_factor(forcing_frequency,
+                                             orbital_frequency_multiplier,
+                                             spin_frequency_multiplier,
+                                             Dissipation::SPIN_FREQUENCY)
                 );
                 break;
             case Dissipation::ORBITAL_FREQUENCY :
                 result *= (
-                    tidal_power
-                    ? (orbital_frequency_multiplier * tidal_power
-                       /
-                       forcing_frequency)
-                    : 0.0
+                    (
+                        tidal_power
+                        ? (orbital_frequency_multiplier * tidal_power
+                           /
+                           forcing_frequency)
+                        : 0.0
+                    )
+                    +
+                    get_inertial_mode_factor(forcing_frequency,
+                                             orbital_frequency_multiplier,
+                                             spin_frequency_multiplier,
+                                             Dissipation::ORBITAL_FREQUENCY)
                 );
                 break;
             default :
@@ -440,31 +527,33 @@ namespace Evolve {
         }
 
         if(forcing_frequency == 0) {
-            if(tidal_power) {
-                if(entry != Dissipation::NO_DERIV) {
-                    assert(
-                        entry == Dissipation::SPIN_FREQUENCY
-                        ||
-                        entry == Dissipation::ORBITAL_FREQUENCY
+            if(
+                tidal_power
+                &&
+                entry != Dissipation::NO_DERIV
+            ) {
+                assert(
+                    entry == Dissipation::SPIN_FREQUENCY
+                    ||
+                    entry == Dissipation::ORBITAL_FREQUENCY
+                );
+                if(tidal_power == 1) {
+                    result = (
+                        (
+                            entry == Dissipation::SPIN_FREQUENCY
+                            ? spin_frequency_multiplier
+                            : -orbital_frequency_multiplier
+                        )
+                        *
+                        __break_phase_lags[lag_index]
+                        *
+                        spin_factor
+                        /
+                        __tidal_frequency_breaks[tidal_break_index]
                     );
-                    if(tidal_power == 1) {
-                        result = (
-                            (
-                                entry == Dissipation::SPIN_FREQUENCY
-                                ? spin_frequency_multiplier
-                                : -orbital_frequency_multiplier
-                            )
-                            *
-                            __break_phase_lags[lag_index]
-                            *
-                            spin_factor
-                            /
-                            __tidal_frequency_breaks[tidal_break_index]
-                        );
-                    } else {
-                        assert(tidal_power > 1);
-                        result = 0;
-                    }
+                } else {
+                    assert(tidal_power > 1);
+                    result = 0;
                 }
             }
             if(spin_frequency_multiplier >= 0) {

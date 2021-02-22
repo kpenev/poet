@@ -88,7 +88,9 @@ int main(int, char **)
                          NULL,       //spin frequency breaks
                          &zero,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         PRIMARY_PHASE_LAG);
+                         PRIMARY_PHASE_LAG,
+                         1.0,
+                         0.0);
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
@@ -105,7 +107,9 @@ int main(int, char **)
                          NULL,       //spin frequency breaks
                          &zero,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         SECONDARY_PHASE_LAG);
+                         SECONDARY_PHASE_LAG,
+                         1.0,
+                         0.0);
 
     configure_star(secondary,
                    DISK_DISSIPATION_AGE,        //formation age

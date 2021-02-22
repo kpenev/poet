@@ -50,7 +50,13 @@ extern "C" {
         double *spin_frequency_powers,
 
         ///See same name argument to set_zone_dissipation()
-        double reference_phase_lag
+        double reference_phase_lag,
+
+        ///See same name argument to set_zone_dissipation()
+        double inertial_mode_enhancement,
+
+        ///See same name argument to set_zone_dissipation()
+        double inertial_mode_sharpness
     );
 
 }; //End extern "C"

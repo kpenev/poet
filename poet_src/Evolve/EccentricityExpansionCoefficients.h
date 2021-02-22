@@ -21,7 +21,7 @@
 
 namespace Evolve {
 
-    ///\brief A class which reads-in and provides a convenient interface to the 
+    ///\brief A class which reads-in and provides a convenient interface to the
     /// \f$p_{m,s}\f$ coefficients
     class LIB_PUBLIC EccentricityExpansionCoefficients {
     private:
@@ -33,7 +33,7 @@ namespace Evolve {
             ///(\f$\alpha\f$ along with the s factior in the
             /// [documentation]{@ref InclinationEccentricity_pms1}).
             ///
-            ///The outer index is s+__max_e_power and the inner one is 
+            ///The outer index is s+__max_e_power and the inner one is
             ///min(n, n+s).
             __alpha,
 
@@ -41,7 +41,7 @@ namespace Evolve {
             ///(\f$\gamma_{s,n}^+(s/2)^{s+2n}\f$ in the
             /// [documentation]{@ref InclinationEccentricity_pms1}).
             ///
-            ///The outer index is s+__max_e_power-2 and the inner one is 
+            ///The outer index is s+__max_e_power-2 and the inner one is
             ///min(n+1, n+s-1).
             __gamma_plus,
 
@@ -49,7 +49,7 @@ namespace Evolve {
             ///(\f$\gamma_{s,n}^-(s/2)^{s+2n}\f$ in the
             /// [documentation]{@ref InclinationEccentricity_pms1}).
             ///
-            ///The outer index is s+__max_e_power+2 and the inner one is 
+            ///The outer index is s+__max_e_power+2 and the inner one is
             ///min(n-1, n+s+1).
             __gamma_minus;
 
@@ -58,7 +58,7 @@ namespace Evolve {
 
         ///\brief The inner index in the __alpha/gamma_plus/gamma_minus arrays
         //corresponding to the given term.
-        int inner_index( 
+        int inner_index(
                 ///If -1 returns the index within __gamma_minus, if 0 returns the
                 ///index within __alpha and if 1 returns the index within
                 ///__gamma_plus.
@@ -74,31 +74,31 @@ namespace Evolve {
         ///contribution of the highest power eccentricity terms.
         std::pair<double, double> p_m2s(
                 ///The eccentricity
-                double e, 
+                double e,
 
                 ///The s index.
-                int s, 
-                
+                int s,
+
                 ///Where to truncate the taylor series.
                 unsigned max_e_power,
-                
+
                 ///If true the result is differentiated w.r.t. to the
                 ///eccentricity.
                 bool deriv
         ) const;
-        
+
         ///Taylor series approximation of \f$p_{0,s}(e)\f$, and the
         ///contribution of the highest power eccentricity terms.
         std::pair<double, double> p_0s(
                 ///The eccentricity
-                double e, 
+                double e,
 
                 ///The s index.
-                int s, 
-                
+                int s,
+
                 ///Where to truncate the taylor series.
                 unsigned max_e_power,
-                
+
                 ///If true the result is differentiated w.r.t. to the
                 ///eccentricity.
                 bool deriv
@@ -108,14 +108,14 @@ namespace Evolve {
         ///contribution of the highest power eccentricity terms.
         std::pair<double, double> p_p2s(
                 ///The eccentricity
-                double e, 
+                double e,
 
                 ///The s index.
-                int s, 
-                
+                int s,
+
                 ///Where to truncate the taylor series.
                 unsigned max_e_power,
-                
+
                 ///If true the result is differentiated w.r.t. to the
                 ///eccentricity.
                 bool deriv
@@ -143,7 +143,7 @@ namespace Evolve {
         ///contribution of the highest power eccentricity terms.
         std::pair<double, double> operator()(
                 ///The first index (0 or +-2).
-                int m, 
+                int m,
 
                 ///The second index.
                 int s,
@@ -154,7 +154,7 @@ namespace Evolve {
                 ///The maximum eccentricity order to include in the Taylor
                 ///series.
                 unsigned max_e_power,
-                
+
                 ///If true the result is differentiated w.r.t. to the
                 ///eccentricity.
                 bool deriv) const;

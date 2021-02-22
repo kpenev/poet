@@ -49,6 +49,13 @@ namespace Evolve {
             ///frequency breaks index changes slower.
             __break_phase_lags;
 
+        double
+            ///See setup()
+            __inertial_mode_enhancement,
+
+            ///See setup()
+            __inertial_mode_sharpness;
+
         ///\brief The index within __spin_frequency_powers of the powerlaw
         ///now in effect.
         std::vector<double>::size_type __spin_index;
@@ -90,6 +97,28 @@ namespace Evolve {
 
         ///Return the current orbital frequency of the given system.
         double get_orbital_frequency(const BinarySystem &system) const;
+
+        ///\brief Calculate the factor by which dissipation is enhanced due to
+        ///inertial modes or one of its logarithmic derivatives.
+        double get_inertial_mode_factor(
+            ///Absolute value of the frequency of the tidal term for which
+            //inertial mode enhancement is required.
+            double abs_forcing_frequency,
+
+            ///The multiplier of the orbital frequency in the expression for the
+            ///forcing frequency. Only used if derivative is requested.
+            int orbital_frequency_multiplier,
+
+            ///The multiplier of the spin frequency in the expression for the
+            ///forcing frequency. Only used if derivative is requested.
+            int spin_frequency_multiplier,
+
+            ///If Dissipation::NO_DERIV, return the enhancement factor. If
+            //Dissipation::SPIN_FREQUENCY or Dissipation::ORBITAL_FREQUENCY,
+            //return the derivative of the log of the enhancement factor w.r.t.
+            ///the specified quantity. If anything else, derivative is zero.
+            Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
+        ) const;
 
         ///Cleanup either during destruction or in preparation for changing
         ///dissipation.
@@ -139,8 +168,9 @@ namespace Evolve {
         ///the zone is dissipative.
         BrokenPowerlawPhaseLagZone() : __dissipative(false) {}
 
-        ///\brief Seup the zone with the given breaks/powers imposing
-        ///continuity accress all breaks. Must only be called before use.
+        ///\brief Seup the zone with the given breaks/powers and inertial mode
+        ///enhancement. Continuous accress all breaks. Must only be called
+        ///before use.
         void setup(
             ///The locations of the breaks in tidal frequency in rad/day.
             ///Entries should be sorted.
@@ -164,7 +194,21 @@ namespace Evolve {
 
             ///The phase lag at the first tidal and first spin frequency
             ///break. The rest are calculated by imposing continuity.
-            double reference_phase_lag
+            double reference_phase_lag,
+
+            ///The factor by which dissipation is enhanced in the inertial mode
+            ///range.
+            double inertial_mode_enhancement = 1.0,
+
+            ///A parameter controlling how sharp the transition between
+            ///non-enhanced and enhanced dissipation is near the inertial mode
+            ///boundary.
+            ///
+            ///The expression for the enhancement factor is:
+            /// \f$ \max\left[\left|\frac{2\Omega_\star}{\Omega_{m,s}}\right|^\beta, \gamma\right] \f$
+            ///Where \f$\beta\f$ is inertial_mode_sharpness, and
+            /// \f$\gamma\f$ is inertial_mode_enhancement.
+            double inertial_mode_sharpness = 10.0
         );
 
         ///See DissipatingZone::configure().

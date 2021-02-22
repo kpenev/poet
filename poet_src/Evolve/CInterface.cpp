@@ -26,7 +26,9 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
                           double *spin_frequency_breaks,
                           double *tidal_frequency_powers,
                           double *spin_frequency_powers,
-                          double reference_phase_lag)
+                          double reference_phase_lag,
+                          double inertial_mode_enhancement,
+                          double inertial_mode_sharpness)
 {
     Evolve::BrokenPowerlawPhaseLagZone *real_zone =
         reinterpret_cast<Evolve::BrokenPowerlawPhaseLagZone*>(zone);
@@ -56,7 +58,9 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
             spin_frequency_powers,
             spin_frequency_powers + num_spin_frequency_breaks + 1
         ),
-        reference_phase_lag
+        reference_phase_lag,
+        inertial_mode_enhancement,
+        inertial_mode_sharpness
     );
 
 }
