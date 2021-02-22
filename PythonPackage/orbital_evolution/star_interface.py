@@ -60,6 +60,8 @@ def initialize_library():
         numpy.ctypeslib.ndpointer(dtype=c_double,
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
+        c_double,
+        c_double,
         c_double
     ]
     result.set_star_dissipation.restype = None
@@ -276,7 +278,9 @@ class EvolvingStar(DissipatingBody):
                         spin_frequency_breaks,
                         tidal_frequency_powers,
                         spin_frequency_powers,
-                        reference_phase_lag):
+                        reference_phase_lag,
+                        inertial_mode_enhancement=1.0,
+                        inertial_mode_sharpness=10.0):
         """
         Set the dissipative properties of one of the zones of a star.
 
@@ -304,6 +308,14 @@ class EvolvingStar(DissipatingBody):
                 The phase lag at the first tidal and first spin frequency
                 break. The rest are calculated by imposing continuity.
 
+            - inertial_mode_enhancement:
+                A factor by which the dissipation is enhanced in the inertial
+                mode range. Must be >= 1 (1 for no enhancement).
+
+            - inertial_mode_sharpness:
+                Parameter controlling how sharp the transition between enhanced
+                and non-enhanced dissipation is.
+
         Returns: None
         """
 
@@ -315,14 +327,18 @@ class EvolvingStar(DissipatingBody):
                                      spin_frequency_breaks,
                                      tidal_frequency_powers,
                                      spin_frequency_powers,
-                                     reference_phase_lag)
+                                     reference_phase_lag,
+                                     inertial_mode_enhancement,
+                                     inertial_mode_sharpness)
         super().set_dissipation(
             zone_index=zone_index,
             tidal_frequency_breaks=tidal_frequency_breaks,
             tidal_frequency_powers=tidal_frequency_powers,
             spin_frequency_breaks=spin_frequency_breaks,
             spin_frequency_powers=spin_frequency_powers,
-            reference_phase_lag=reference_phase_lag
+            reference_phase_lag=reference_phase_lag,
+            inertial_mode_enhancement=inertial_mode_enhancement,
+            inertial_mode_sharpness=inertial_mode_sharpness
         )
     #pylint: enable=arguments-differ
 
