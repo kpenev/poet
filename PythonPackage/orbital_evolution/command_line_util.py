@@ -147,6 +147,22 @@ def add_star_config(parser, primary=True, require_secondary=False):
         'index at each break is defined to apply for the frequency range '
         'away from the reference.'
     )
+    parser.add_argument(
+        prefix + '-inertial-mode-enhancement',
+        type=float,
+        default=1.0,
+        help='A factor by which the dissipation is larger in the inertial mode '
+        'range relative to outside of it. This is applied on top of the spin '
+        'and forcing frequency dependencies defined by the other arguments.'
+    )
+    parser.add_argument(
+        prefix + '-inertial-mode-sharpness',
+        type=float,
+        default=10.0,
+        help='A parameter controlling how suddenly the enhancement due to '
+        'inertial modes gets turned on near the inertial mode range boundaries.'
+    )
+
 
 def add_binary_config(parser, skip=(), require_secondary=False):
     """
@@ -463,6 +479,9 @@ def get_phase_lag_config(cmdline_args, primary=True):
         result['tidal_frequency_breaks'] = None
     else:
         raise NotImplementedError('Not implemented yet')
+
+    for param in ['inertial_mode_enhancement', 'inertial_mode_sharpness']:
+        result[param] = getattr(cmdline_args, component_name + '_' + param)
 
     return result
 
