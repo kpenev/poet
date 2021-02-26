@@ -191,35 +191,32 @@ namespace Evolve {
 	}
 	
 // WITH meets_precision AS (
-	// SELECT m,s,accuracy
+	// SELECT id,m,s,MAX(accuracy) as precision
 	// FROM m_and_s_to_accuracy
-	// WHERE accuracy <= goal_accuracy
-	// ORDER BY id),
-  // one_of_each AS (
-	// SELECT DISTINCT m,s
-	// FROM meets_precision
-	// GROUP BY s),
-  // all_three AS (
-	// SELECT COUNT(m),s
-	// FROM one_of_each
-	// GROUP BY s
-	// HAVING COUNT(m)=3),//// make sure it starts at zero
-  // do a join AS (
-	// SELECT A.s
-	// FROM all_three A
-	// INNER JOIN all_three B
-	  // ON 
-	// WHERE )
-  // contiguous AS (
-	// values where 0 included up to first null
-	// FROM all_three )
-// SELECT COUNT(m)
-// FROM contiguous
+	// GROUP BY m,s
+	// HAVING accuracy <= goal_accuracy), 
+// SELECT COUNT(m),s
+// FROM meets_precision
+// GROUP BY s
+// HAVING COUNT(m)=3
+
+//////////////////////////// eyyyy s has three ms, then c++
+//// make sure it starts at zero
+
+// WITH meets_precision AS (SELECT id,m,s,MAX(accuracy) AS precision FROM m_and_s_to_accuracy WHERE accuracy <= .0066 GROUP BY s,m)
+// SELECT COUNT(m),s
+// FROM meets_precision
+// GROUP BY s
+// HAVING COUNT(m)=3;
 	
 	std::pair<double, bool> EccentricityExpansionCoefficients::get_precision(sqlite3* db)
-	{
+	{ // hey there maybe do a minimum accuracy in python plz notice me when you're deleting comments
 		std::pair<double, bool> result(0.0,false);
-		
+		//WITH meets_precision AS (SELECT m,s FROM m_and_s_to_accuracy WHERE accuracy <=.0066 GROUP BY s,m)
+//SELECT s
+//FROM meets_precision
+//GROUP BY s
+//HAVING COUNT(m)=3;
 		sqlite3_stmt **statement;  //// nevermind
 		const char *sql = "SELECT accuracy FROM m_and_s_to_accuracy WHERE m=0,s=0 ORDER BY id";
 		int m = 0, s = 0;
