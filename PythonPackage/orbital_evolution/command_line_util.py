@@ -467,8 +467,11 @@ def get_phase_lag_config(cmdline_args, primary=True):
         spin_frequency_breaks=None,
         spin_frequency_powers=numpy.array([0.0]),
     )
-    dissipation_breaks = getattr(cmdline_args,
-                                 component_name + '_dissipation_break')
+    dissipation_breaks = (
+        getattr(cmdline_args, component_name + '_dissipation_break')
+        or
+        []
+    )
 
     if (
             reference_dissipation[2] == reference_dissipation[3] == 0
