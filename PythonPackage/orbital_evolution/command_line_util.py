@@ -478,7 +478,20 @@ def get_phase_lag_config(cmdline_args, primary=True):
         result['tidal_frequency_powers'] = numpy.array([0.0])
         result['tidal_frequency_breaks'] = None
     else:
-        raise NotImplementedError('Not implemented yet')
+        result['tidal_frequency_breaks'] = numpy.empty(
+            1 + len(dissipation_breaks),
+            dtype=float
+        )
+        result['tidal_frequency_powers'] = numpy.empty(
+            2 + len(dissipation_breaks),
+            dtype=float
+        )
+        result['tidal_frequency_breaks'][0] = reference_dissipation[1]
+        result['tidal_frequency_powers'][0] = reference_dissipation[2]
+        result['tidal_frequency_powers'][1] = reference_dissipation[3]
+        for index, (frequency, power) in enumerate(dissipation_breaks):
+            result['tidal_frequency_breaks'][index + 1] = frequency
+            result['tidal_frequency_powers'][index + 2] = power
 
     for param in ['inertial_mode_enhancement', 'inertial_mode_sharpness']:
         result[param] = getattr(cmdline_args, component_name + '_' + param)
@@ -572,9 +585,11 @@ def run_evolution(cmdline_args,
                 for deriv_order in range(3):
                     setattr(
                         evolution,
-                        '_'.join([component_name, zone, 'inertia']
-                                 +
-                                 (['d%d' % deriv_order] if deriv_order else [])),
+                        '_'.join(
+                            [component_name, zone, 'inertia']
+                            +
+                            (['d%d' % deriv_order] if deriv_order else [])
+                        ),
                         getattr(component, zone + '_inertia')(evolution.age,
                                                               deriv_order)
                     )
