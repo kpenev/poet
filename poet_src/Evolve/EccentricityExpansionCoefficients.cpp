@@ -12,7 +12,7 @@ namespace Evolve {
         return (epower - s + 2 * std::min(msign, s - msign)) / 2;
     }
 
-    std::pair<double, double> EccentricityExpansionCoefficients::p_m2s(
+    std::pair<double, double> EccentricityExpansionCoefficients::p_m2s( // boost
         double e,
         int s, 
         unsigned max_e_power,
@@ -104,28 +104,27 @@ namespace Evolve {
     }
 	
 	void EccentricityExpansionCoefficients::get_expansion(sqlite3* db,int id)
-	{
+	{ // sanity checking? get m and s and fill in proper thing. COUNT (new function, prefill __pms(etc))
 		sqlite3_stmt **statement;
 		std::string instruc2="SELECT coefficient_value FROM cheb_expansion_coeffs WHERE id = "+std::to_string(id)+" ORDER BY place_in_expansion";
 		const char *sql = instruc2.c_str();
-		
+		// different statement count first for knowing wherefore many of your friends are there romeo
 		bool error_flag = false;
 		
-		// need info about errors so that I know if I should close db in these functions as well
 		std::vector<double> new_expansion;
-		
+		// iterator bob = specific part of __pms for happy typing time (if I want, I have the power)
 		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
 		{
 			
 			int rc = sqlite3_step(*statement);
 			while(rc==SQLITE_ROW)
 			{
-				new_expansion.push_back( sqlite3_column_double(*statement,0) );
+				new_expansion[i]=( sqlite3_column_double(*statement,0) ); // just do __pms b/c we'll know how big it is
 				rc=sqlite3_step(*statement);
 			}
 			
 			// check error codes
-			if (rc==SQLITE_DONE) __pms_expansions.push_back( new_expansion );
+			if (rc==SQLITE_DONE) __pms_expansions[3*sfs/2^17]=.push_back( new_expansion );
 			else error_flag=true;
 		}
 		else error_flag=true;
@@ -140,7 +139,7 @@ namespace Evolve {
 	}
 	
 	void EccentricityExpansionCoefficients::identify_expansion(sqlite3* db,double precision)
-	{
+	{ // but can keep but have more arguments?
 		sqlite3_stmt **statement;
 		const char *sql = "SELECT id,m,s,accuracy FROM m_and_s_to_accuracy";
 		bool error_flag = false;
@@ -191,11 +190,37 @@ namespace Evolve {
 		}
 	}
 	
+// WITH meets_precision AS (
+	// SELECT m,s,accuracy
+	// FROM m_and_s_to_accuracy
+	// WHERE accuracy <= goal_accuracy
+	// ORDER BY id),
+  // one_of_each AS (
+	// SELECT DISTINCT m,s
+	// FROM meets_precision
+	// GROUP BY s),
+  // all_three AS (
+	// SELECT COUNT(m),s
+	// FROM one_of_each
+	// GROUP BY s
+	// HAVING COUNT(m)=3),//// make sure it starts at zero
+  // do a join AS (
+	// SELECT A.s
+	// FROM all_three A
+	// INNER JOIN all_three B
+	  // ON 
+	// WHERE )
+  // contiguous AS (
+	// values where 0 included up to first null
+	// FROM all_three )
+// SELECT COUNT(m)
+// FROM contiguous
+	
 	std::pair<double, bool> EccentricityExpansionCoefficients::get_precision(sqlite3* db)
 	{
 		std::pair<double, bool> result(0.0,false);
 		
-		sqlite3_stmt **statement;
+		sqlite3_stmt **statement;  //// nevermind
 		const char *sql = "SELECT accuracy FROM m_and_s_to_accuracy WHERE m=0,s=0 ORDER BY id";
 		int m = 0, s = 0;
 		if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
@@ -233,8 +258,8 @@ namespace Evolve {
 				"!"
 			);
 		}
-		
-		max_precision = get_precision(db);
+		// try catch
+		max_precision = get_precision(db); // maximum s given precision reqs
 		if(!max_precision.second) {
 			if(max_precision.first != precision) {
 				std::ostringstream msg;
@@ -247,9 +272,9 @@ namespace Evolve {
 					<< ") in EccentricityExpansionCoefficients::read()!";
 				throw Core::Error::BadFunctionArguments(msg.str());
 				
-				precision = max_precision.first;
+				precision = max_precision.first; // why is this here????
 			}
-			
+			// allocate __pms space b/c we know how many exist now
 			identify_expansion(db,precision);
 			//errors
 			__useable = true;
@@ -281,7 +306,7 @@ namespace Evolve {
 
         std::pair<double, double> zero(0.0, 0.0);
 
-        if(
+        if( // throw exception here if m or s not available b/c of us doing clever SQL stuff and stopping before a set of -2,0,2 that has a gap due to precision not being enough etc.
             s < -static_cast<int>(max_e_power) + m
             ||
             s > static_cast<int>(max_e_power) + m
