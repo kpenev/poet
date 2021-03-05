@@ -56,18 +56,18 @@ namespace Evolve {
 
         ///Is the object ready to be used?
         bool __useable;
-		
-		///If you're seeing this, it means I haven't properly sorted
-		///out new documentation stuff or moved new variables/functions
-		///into a better place
-		// The callback SQL function that updates the above values
-		void get_expansion(sqlite3* db,int id);
-		void identify_expansions(sqlite3* db,double precision);
-		/// Highest s available for requested precision
-		/// It is possible for file to accommodate precision but only for s=0
-		int get_max_s(sqlite3* db,double precision)
-		// This should be up above
-		std::vector< std::vector<double> > __pms_expansions;
+        
+        ///If you're seeing this, it means I haven't properly sorted
+        ///out new documentation stuff or moved new variables/functions
+        ///into a better place
+        // The callback SQL function that updates the above values
+        void get_expansion(sqlite3* db,int id);
+        void identify_expansions(sqlite3* db,double precision);
+        /// Highest s available for requested precision
+        /// It is possible for file to accommodate precision but only for s=0
+        int get_max_s(sqlite3* db,double precision)
+        // This should be up above
+        std::vector< std::vector<double> > __pms_expansions;
 
         ///\brief The inner index in the __alpha/gamma_plus/gamma_minus arrays
         ///corresponding to the given term.
