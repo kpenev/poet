@@ -113,6 +113,23 @@ namespace Evolve {
             ),
             message.str().c_str()
         );
+
+        TEST_ASSERT_MSG(
+            expected_lock_above.term(
+                selected_lock_above.orbital_frequency_multiplier(),
+                selected_lock_above.spin_frequency_multiplier()
+            )
+            &&
+            (
+                expected_lock_above.lock_direction()
+                *
+                selected_lock_above.lock_direction()
+                >
+                0
+            ),
+            message.str().c_str()
+        );
+
     }
 
     double test_LockMonitoring::sample_range(std::pair<double, double> range,
