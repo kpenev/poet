@@ -34,6 +34,7 @@ model {
                 cppCompiler.args "-W", "-Wall",
                                  "-std=c++11",
                                  "-fvisibility=hidden"
+                "gsl-config --cflags".execute().text.tokenize().each{cppCompiler.args it}
 
                 getGSLLinkerArgs().each{linker.args it}
                 linker.args "-l" + ensureLibraryVersion(
@@ -293,7 +294,7 @@ model {
 
 doxygen {
     generate_html true
-    template "documentation/DoxygenConfig"
+    template "documentation/doxygen/DoxygenConfig"
     source "poet_src/Core"
     source "poet_src/StellarEvolution"
     source "poet_src/Evolve"
