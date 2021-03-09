@@ -103,45 +103,43 @@ namespace Evolve {
         return result;
     }
     
-    void EccentricityExpansionCoefficients::get_expansion(sqlite3* db,std::vector<int> id)
+    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db,std::vector<int> id_list)
     { // sanity checking? get m and s and fill in proper thing. COUNT (new function, prefill __pms(etc))
-        sqlite3_stmt **statement;
-        std::string instruc2="SELECT coefficient_value FROM cheb_expansion_coeffs WHERE id = "+std::to_string(id)+" ORDER BY place_in_expansion";
-        const char *sql = instruc2.c_str();
         // different statement count first for knowing wherefore many of your friends are there romeo
         bool error_flag = false;
         
-        std::vector<double> new_expansion;
-        // iterator bob = specific part of __pms for happy typing time (if I want, I have the power)
-        if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+        for(i_a==0; i_a < id_list.size() && !error_flag; i_a++)
         {
-            
-            int rc = sqlite3_step(*statement);
-            while(rc==SQLITE_ROW)
+            sqlite3_stmt **statement;
+            std::string instruc2="SELECT coefficient_value, place_in_expansion FROM cheb_expansion_coeffs WHERE p_id = "+std::to_string(id_list[i_a])+" ORDER BY place_in_expansion DESC";
+            const char *sql = instruc2.c_str();
+            if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
             {
-                new_expansion[i]=( sqlite3_column_double(*statement,0) ); // just do __pms b/c we'll know how big it is
-                rc=sqlite3_step(*statement);
+                std::vector<double> new_expansion;
+                int rc = sqlite3_step(*statement);
+                int i_b = sqlite3_column_int(*statement,1);
+                new_expansion.resize(i_b+1);
+                while(rc==SQLITE_ROW)
+                {
+                    new_expansion[i_b]=( sqlite3_column_double(*statement,0) );
+                    rc=sqlite3_step(*statement);
+                    i_b--;
+                }
+                
+                if (rc==SQLITE_DONE) __pms_expansions[i_a].push_back( new_expansion );
+                else error_flag=true;
             }
-            
-            // check error codes
-            if (rc==SQLITE_DONE) __pms_expansions[3*sfs/2^17]=.push_back( new_expansion );
             else error_flag=true;
+            
+            sqlite3_finalize(*statement);
         }
-        else error_flag=true;
         
-        sqlite3_finalize(*statement);
-        
-        if(error_flag)
-        {
-            throw Core::Error::IO("Unable to retrieve expansion in eccentricity expansion file!");
-            // do I need to also handle sqlite3?
-        }
+        if(error_flag) throw Core::Error::IO("Unable to retrieve expansion in eccentricity expansion file!");
     }
     
     std::vector<int> EccentricityExpansionCoefficients::identify_expansions(sqlite3* db,int max_s,double precision)
     { // but can keep but have more arguments?
         sqlite3_stmt **statement;
-        //const char *sql = "SELECT id,m,s,accuracy FROM m_and_s_to_accuracy";
         std::string instruc2="SELECT id,m,s,accuracy FROM m_and_s_to_accuracy WHERE accuracy <= "+std::to_string(precision)+" ORDER BY s,m,accuracy DESC";
         const char *sql = instruc2.c_str();
         bool error_flag = false;
@@ -173,7 +171,6 @@ namespace Evolve {
                     }
                     else m+=2;
                 }
-                
                 rc=sqlite3_step(*statement);
             }
             if (rc!=SQLITE_DONE) error_flag=true;
@@ -267,6 +264,7 @@ namespace Evolve {
         sqlite3 *db; // check to make sure this is closed even when there's errors
         int rc;
         int max_s;
+        std::vector<int> expansion_ids;
         
         rc = sqlite3_open(tabulated_pms_fname.c_str(),&db)
         if(rc!=SQLITE_OK) {
@@ -281,25 +279,18 @@ namespace Evolve {
         }
         
         try {
-            max_s = get_max_s(db,precision); // maximum s given precision reqs
+            max_s = get_max_s(db,precision);
+            __pms_expansions.resize(3*(max_s+1));
+            expansion_ids = identify_expansions(db,max_s,precision);
+            get_expansions(db,expansion_ids);
         } catch(...) {
             sqlite3_close(db);
         }
-        // allocate __pms space b/c we know how many exist now
-        __pms_expansions.resize(3*(s+1));
         
-        identify_expansion(db,precision);
         //errors
         __useable = true;
         
         sqlite3_close(db);
-        
-        if(max_precision.second) throw Core::Error::IO("Unable to verify precision in eccentricity expansion file!");
-        else {
-            if (error finding an expansion) //throw error
-            else if (error getting an expansion) //throw error
-            else // useable now
-        }
     }
 
     std::pair<double, double> EccentricityExpansionCoefficients::operator()(
