@@ -344,8 +344,16 @@ namespace Evolve {
             initializing(true);
 
 #ifndef NDEBUG
-            std::cerr << "Initializing broken powerlaw lag zone"
-                      << (initialize ? " for the first time." : ".")
+            std::cerr << "Initializing broken powerlaw lag zone at t = "
+                      << age
+                      << (initialize ? " for the first time " : " ")
+                      << "with Worb = " << orbital_frequency
+                      << ", " << (spin_is_frequency ? "W" : "L") << "* = "
+                      << spin
+                      << ", e = " << eccentricity
+                      << ", inclination = " << inclination
+                      << ", periapsis = " << periapsis
+                      << "."
                       << std::endl;
 #endif
 

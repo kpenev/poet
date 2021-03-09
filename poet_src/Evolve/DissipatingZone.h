@@ -20,6 +20,7 @@
 #include "SynchronizedCondition.h"
 #include "../Core/Common.h"
 #include <valarray>
+#include <boost/math/special_functions/sign.hpp>
 
 namespace Evolve {
 
@@ -242,8 +243,30 @@ namespace Evolve {
         ///__e_order must already be updated to the new value.
         void update_lock_to_lower_e_order(SpinOrbitLockInfo &lock);
 
-        ///Updates __lock and __other_lock to accomodate increasing __e_order.
-        void update_locks_to_higher_e_order(unsigned new_e_order);
+        ///\brief Set up __other_lock to the closest term above, given the term
+        ///that would be used without limit to the orbital multiplier.
+        void limit_above_lock_per_expansion_order(
+            int proposed_orbital_multiplier,
+            int proposed_spin_multiplier
+        );
+
+        ///\brief Set up the lock that would be triggered if the spin increased
+        ///by absolute value, given the closest term from an infinite expansion.
+        void set_faster_spin_lock(
+            ///The proposed coefficient for the orbital frequency for the closest
+            ///term to the current combination of orbital and spin frequencies
+            ///that would lock if the spin got larger by absolute value, if the
+            ///tidal potential expansion was calculated up to infinitely large
+            ///s. Should be negative if the spin of the zone is negative.
+            int proposed_orbital_multiplier,
+
+            ///The proposed coefficient of the zone spin frequency for the closest
+            ///term to the current combination of orbital and spin frequencies
+            ///that would lock if the spin got larger by absolute value, if the
+            ///tidal potential expansion was calculated up to infinitely large
+            ///s.
+            int proposed_spin_multiplier
+        );
 
         ///\brief Initializes the locks the first time the zone is
         ///configure() -ed.
@@ -878,6 +901,15 @@ namespace Evolve {
         ///change in one of the bodies.
         virtual double next_stop_age() const
         {return Core::Inf;}
+
+        ///Useful for debugging.
+        const SpinOrbitLockInfo &lock_monitored(bool other=false) const
+        {
+            if(other)
+                return __other_lock;
+            else
+                return __lock;
+        }
     }; //End DissipatingZone class.
 
 } //End Evolve namespace.
