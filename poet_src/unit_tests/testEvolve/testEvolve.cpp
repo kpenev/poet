@@ -2,6 +2,7 @@
 #include "testOrbitSolver.h"
 #include "testTidalTorquePower.h"
 #include "testDifferentialEquations.h"
+#include "testLockMonitoring.h"
 
 #ifdef STANDALONE
 
@@ -99,7 +100,7 @@ int main()
 	Test::TextOutput output(Test::TextOutput::Verbose);
 
     Test::Suite all_tests;
-    all_tests.add(
+/*    all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_GravitationalPotential)
     );
     all_tests.add(
@@ -110,6 +111,9 @@ int main()
     );
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_OrbitSolver)
+    );*/
+    all_tests.add(
+        std::auto_ptr<Test::Suite>(new Evolve::test_LockMonitoring)
     );
     return (all_tests.run(output)
             ? EXIT_SUCCESS
