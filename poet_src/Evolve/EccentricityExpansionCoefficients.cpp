@@ -3,106 +3,6 @@
 
 namespace Evolve {
 
-    int EccentricityExpansionCoefficients::inner_index(int msign,
-                                                       int s,
-                                                       int epower) const
-    {
-        assert(std::abs(msign) < 2);
-
-        return (epower - s + 2 * std::min(msign, s - msign)) / 2;
-    }
-
-    std::pair<double, double> EccentricityExpansionCoefficients::p_m2s( // boost
-        double e,
-        int s, 
-        unsigned max_e_power,
-        bool deriv
-    ) const
-    {
-        std::pair<double, double> result(0.0, 0.0);
-
-        double e2 = std::pow(e, 2);
-        int min_n = std::max(1, -s - 1),
-            gamma_ind1 = s + __max_e_power + 2,
-            e_pow_ind = s + 2 * min_n - (deriv ? 1 : 0);
-        assert(e_pow_ind + (deriv ? 1 : 0) >= 0);
-        double e_pow = (e_pow_ind < 0 ? 0.0 : std::pow(e, e_pow_ind)),
-               coef = (deriv ? s + 2 * min_n : 1);
-        for(
-            int gamma_ind2 = 0;
-            gamma_ind2 <= inner_index(-1, s, max_e_power);
-            ++gamma_ind2
-        ) {
-            result.second = (coef
-                             *
-                             __gamma_minus[gamma_ind1][gamma_ind2]
-                             *
-                             e_pow);
-            result.first += result.second;
-            e_pow *= e2;
-            if(deriv) coef += 2;
-        }
-        return result;
-    }
-
-    std::pair<double, double> EccentricityExpansionCoefficients::p_0s(
-        double e,
-        int s, 
-        unsigned max_e_power,
-        bool deriv
-    ) const
-    {
-        std::pair<double, double> result(0.0, 0.0);
-
-        double e2 = std::pow(e, 2);
-        int min_n = std::max(0, -s),
-            alpha_ind1 = s + __max_e_power,
-            e_pow_ind = s + 2 * min_n - (deriv ? 1 : 0);
-        assert(e_pow_ind + (deriv ? 1 : 0) >= 0);
-        double e_pow = (e_pow_ind < 0 ? 0.0 : std::pow(e, e_pow_ind)),
-               coef = (deriv ? s + 2 * min_n : 1);
-        for(
-            int alpha_ind2 = 0;
-            alpha_ind2 <= inner_index(0, s, max_e_power);
-            ++alpha_ind2
-        ) {
-            result.second = coef * __alpha[alpha_ind1][alpha_ind2] * e_pow;
-            result.first += result.second;
-            e_pow *= e2;
-            if(deriv) coef += 2;
-        }
-        return result;
-    }
-
-    std::pair<double, double> EccentricityExpansionCoefficients::p_p2s(
-        double e,
-        int s,
-        unsigned max_e_power,
-        bool deriv
-    ) const
-    {
-        std::pair<double, double> result(0.0, 0.0);
-
-        double e2 = std::pow(e, 2);
-        int min_n = std::max(-1, -s + 1),
-            gamma_ind1 = s + __max_e_power - 2,
-            e_pow_ind = s + 2 * min_n - (deriv ? 1 : 0);
-        assert(e_pow_ind + (deriv ? 1 : 0) >= 0);
-        double e_pow = (e_pow_ind < 0 ? 0.0 : std::pow(e, e_pow_ind)),
-               coef = (deriv ? s + 2 * min_n : 1);
-        for(
-            int gamma_ind2 = 0;
-            gamma_ind2 <= inner_index(1, s, max_e_power);
-            ++gamma_ind2
-        ) {
-            result.second = coef * __gamma_plus[gamma_ind1][gamma_ind2] * e_pow;
-            result.first += result.second;
-            e_pow *= e2;
-            if(deriv) coef += 2;
-        }
-        return result;
-    }
-    
     void EccentricityExpansionCoefficients::get_expansions(sqlite3* db,std::vector<int> id_list)
     { // sanity checking? get m and s and fill in proper thing. COUNT (new function, prefill __pms(etc))
         // different statement count first for knowing wherefore many of your friends are there romeo
@@ -187,25 +87,6 @@ namespace Evolve {
         return expansion_ids;
     }
     
-// WITH meets_precision AS (
-    // SELECT id,m,s,MAX(accuracy) as precision
-    // FROM m_and_s_to_accuracy
-    // GROUP BY m,s
-    // HAVING accuracy <= goal_accuracy), 
-// SELECT COUNT(m),s
-// FROM meets_precision
-// GROUP BY s
-// HAVING COUNT(m)=3
-
-//////////////////////////// eyyyy s has three ms, then c++
-//// make sure it starts at zero
-
-// WITH meets_precision AS (SELECT id,m,s,MAX(accuracy) AS precision FROM m_and_s_to_accuracy WHERE accuracy <= .0066 GROUP BY s,m)
-// SELECT COUNT(m),s
-// FROM meets_precision
-// GROUP BY s
-// HAVING COUNT(m)=3;
-    
     int EccentricityExpansionCoefficients::get_max_s(sqlite3* db,double precision)
     { // hey there maybe do a minimum accuracy in python plz notice me when you're deleting comments
         sqlite3_stmt **statement;
@@ -263,7 +144,6 @@ namespace Evolve {
     {
         sqlite3 *db; // check to make sure this is closed even when there's errors
         int rc;
-        int max_s;
         std::vector<int> expansion_ids;
         
         rc = sqlite3_open(tabulated_pms_fname.c_str(),&db)
@@ -279,21 +159,21 @@ namespace Evolve {
         }
         
         try {
-            max_s = get_max_s(db,precision);
-            __pms_expansions.resize(3*(max_s+1));
-            expansion_ids = identify_expansions(db,max_s,precision);
+            __max_s = get_max_s(db,precision);
+            __pms_expansions.resize(3*(__max_s+1));
+            expansion_ids = identify_expansions(db,__max_s,precision);
             get_expansions(db,expansion_ids);
         } catch(...) {
             sqlite3_close(db);
         }
         
+        sqlite3_close(db);
+        
         //errors
         __useable = true;
-        
-        sqlite3_close(db);
     }
 
-    std::pair<double, double> EccentricityExpansionCoefficients::operator()(
+    double EccentricityExpansionCoefficients::operator()(
         int m,
         int s,
         double e,
@@ -306,24 +186,21 @@ namespace Evolve {
                 "Attempting to evaluate Pms before reading in eccentricity "
                 "expansion coefficients!"
             );
-
-        std::pair<double, double> zero(0.0, 0.0);
-
-        if( // throw exception here if m or s not available b/c of us doing clever SQL stuff and stopping before a set of -2,0,2 that has a gap due to precision not being enough etc.
-            s < -static_cast<int>(max_e_power) + m
-            ||
-            s > static_cast<int>(max_e_power) + m
-        )
-            return zero;
+        
+        if(s > __max_s) throw Core::Error::Runtime("Attempting to evaluate larger s than is available at requested precision!");
+        
+        std::vector<double> exp_coefs;
 
         switch(m) {
-            case -2 : return (s == 0 ? zero : p_m2s(e, s, max_e_power, deriv));
-            case 0  : return p_0s(e, s, max_e_power, deriv);
-            case 2  : return (s == 0 ? zero : p_p2s(e, s, max_e_power, deriv));
+            case -2 : exp_coefs=__pms_expansions[(s*3)+0];
+            case 0  : exp_coefs=__pms_expansions[(s*3)+1];
+            case 2  : exp_coefs=__pms_expansions[(s*3)+2];
             default : throw Core::Error::BadFunctionArguments(
                           "Asking for p_{m,s} with m other than +-2 and 0"
                       );
         };
+        // double check if I need to do 2*e+1 etc. sort of thing
+        return chebyshev_clenshaw_recurrence(exp_coefs.data(),exp_coefs.size(),e);
     }
 
 } //End Evolve namespace.

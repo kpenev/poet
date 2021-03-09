@@ -19,6 +19,7 @@
 #include <cassert>
 #include <algorithm>
 #include <sqlite3>
+#include <boost/math/special_functions/chebyshev.hpp>
 
 namespace Evolve {
 
@@ -30,29 +31,10 @@ namespace Evolve {
         unsigned __max_e_power;
 
         std::vector< std::vector<double> >
-            ///\brief The expansion coefficients of \f$p_{0,s}\f$
-            ///(\f$\alpha\f$ along with the s factior in the
-            /// [documentation]{@ref InclinationEccentricity_pms1}).
+            ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
-            ///The outer index is s+__max_e_power and the inner one is 
-            ///min(n, n+s).
-            __alpha,
-
-            ///\brief The expansion coefficients of \f$p_{2,s}\f$
-            ///(\f$\gamma_{s,n}^+(s/2)^{s+2n}\f$ in the
-            /// [documentation]{@ref InclinationEccentricity_pms1}).
-            ///
-            ///The outer index is s+__max_e_power-2 and the inner one is 
-            ///min(n+1, n+s-1).
-            __gamma_plus,
-
-            ///\brief The expansion coefficients of \f$p_{-2,s}\f$
-            ///(\f$\gamma_{s,n}^-(s/2)^{s+2n}\f$ in the
-            /// [documentation]{@ref InclinationEccentricity_pms1}).
-            ///
-            ///The outer index is s+__max_e_power+2 and the inner one is 
-            ///min(n-1, n+s+1).
-            __gamma_minus;
+            ///Stored in the order m=-2,0,+2 for increasing s.
+            __pms_expansions;
 
         ///Is the object ready to be used?
         bool __useable;
@@ -66,73 +48,7 @@ namespace Evolve {
         /// Highest s available for requested precision
         /// It is possible for file to accommodate precision but only for s=0
         int get_max_s(sqlite3* db,double precision)
-        // This should be up above
-        std::vector< std::vector<double> > __pms_expansions;
-
-        ///\brief The inner index in the __alpha/gamma_plus/gamma_minus arrays
-        ///corresponding to the given term.
-        int inner_index( 
-                ///If -1 returns the index within __gamma_minus, if 0 returns the
-                ///index within __alpha and if 1 returns the index within
-                ///__gamma_plus.
-                int msign,
-
-                ///The multiplier of the orbital frequency of the desired term.
-                int s,
-
-                ///The power of the eccentricity in the desired term.
-                int epower) const;
-
-        ///Taylor series approximation of \f$p_{-2,s}(e)\f$, and the
-        ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> p_m2s(
-                ///The eccentricity
-                double e, 
-
-                ///The s index.
-                int s, 
-                
-                ///Where to truncate the taylor series.
-                unsigned max_e_power,
-                
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
-                bool deriv
-        ) const;
-        
-        ///Taylor series approximation of \f$p_{0,s}(e)\f$, and the
-        ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> p_0s(
-                ///The eccentricity
-                double e, 
-
-                ///The s index.
-                int s, 
-                
-                ///Where to truncate the taylor series.
-                unsigned max_e_power,
-                
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
-                bool deriv
-        ) const;
-
-        ///Taylor series approximation of \f$p_{2,s}(e)\f$, and the
-        ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> p_p2s(
-                ///The eccentricity
-                double e, 
-
-                ///The s index.
-                int s, 
-                
-                ///Where to truncate the taylor series.
-                unsigned max_e_power,
-                
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
-                bool deriv
-        ) const;
+        int __max_s;
 
     public:
         ///Create an uninitialized object.
@@ -154,7 +70,7 @@ namespace Evolve {
 
         ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
         ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> operator()(
+        double operator()(
                 ///The first index (0 or +-2).
                 int m, 
 
@@ -164,12 +80,12 @@ namespace Evolve {
                 ///The value of the eccentricity to use.
                 double e,
 
-                ///The maximum eccentricity order to include in the Taylor
-                ///series.
+                ///Prevision, the maximum eccentricity order to include in the Taylor
+                ///series. Currently does nothing.
                 unsigned max_e_power,
                 
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
+                ///Previously, if true the result was differentiated w.r.t. to the
+                ///eccentricity. Currently does nothing.
                 bool deriv) const;
     }; //End EccentricityExpansionCoefficients class.
 
