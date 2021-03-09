@@ -243,9 +243,6 @@ namespace Evolve {
         ///__e_order must already be updated to the new value.
         void update_lock_to_lower_e_order(SpinOrbitLockInfo &lock);
 
-        ///Updates __lock and __other_lock to accomodate increasing __e_order.
-        void update_locks_to_higher_e_order(unsigned new_e_order);
-
         ///\brief Set up __other_lock to the closest term above, given the term
         ///that would be used without limit to the orbital multiplier.
         void limit_above_lock_per_expansion_order(
