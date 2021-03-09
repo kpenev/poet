@@ -95,7 +95,7 @@ class InitialConditionSolver:
             print_progress=False
         )
         final_state = self.binary.final_state()
-        print('Final state:\n' + final_state.format('\t'))
+        print('Final state: ' + repr(final_state))
         #False positives
         #pylint: disable=no-member
         assert final_state.age == self.target.age
