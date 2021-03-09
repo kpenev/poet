@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Defines the SpinOrbitLockInfo class.
  *
  * \ingroup StellarSystem_group
@@ -34,17 +34,17 @@ namespace Evolve {
         ///approached?
         ///
         ///The values have the following meanings:
-        /// - <0 	: the spin frequency of the body is slightly lagrer than
-        ///			  necessary for a lock (or the orbital freqency is slightly
-        ///		      smaller).
+        /// - <0 	: the actual spin frequency of the body is slightly smaller
+        ///			  than necessary for a lock (or the orbital freqency is
+        ///		      slightly larger).
         ///
         /// - 0 	: The spin frequency and the orbital frequency have precisely
         ///			  the values to result in zero forcing frequency for this
         ///			  term.
         ///
-        /// - >0 	: the spin frequency of the body is slightly smaller than
-        ///			  necessary for a lock (or the orbital freqency is slightly
-        ///		      larger).
+        /// - >0 	: the actual spin frequency of the body is slightly larger
+        ///			  than necessary for a lock (or the orbital freqency is
+        ///		      slightly smaller).
         short __lock_direction;
 
     public:
@@ -102,7 +102,7 @@ namespace Evolve {
 
         ///Returns true if the lock is referring to the given term, regardless of
         ///whether it is locked or not.
-        bool term(			
+        bool term(
                 ///The multiple of the orbital frequency to consider.
                 int orbital_freq_mult,
 
