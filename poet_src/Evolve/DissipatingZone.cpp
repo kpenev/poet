@@ -81,7 +81,7 @@ namespace Evolve {
                 );
             return;
         }
-        int expected_sign = (
+        int expected_sign = boost::math::sign(
             limit.spin_frequency_multiplier()
             *
             (
@@ -94,14 +94,20 @@ namespace Evolve {
                 spin_frequency_multiplier
             )
         );
-        if(expected_sign * limit.lock_direction() > 0) return;
+        if(
+            expected_sign * limit.lock_direction() * spin_frequency_multiplier
+            >
+            0
+        ) return;
         if(forcing_frequency * expected_sign > 0) return;
 
         assert(limit.lock_direction());
 
-        forcing_frequency = (std::numeric_limits<double>::epsilon()
-                             *
-                             limit.lock_direction());
+        forcing_frequency = (
+            std::numeric_limits<double>::epsilon()
+            *
+            expected_sign
+        );
     }
 
     void DissipatingZone::check_locks_consistency() const
@@ -131,7 +137,7 @@ namespace Evolve {
             )
         ) {
             throw Core::Error::Runtime(
-                "Incosistent lock state encountered for a zone. Likely related "
+                "Inconsistent lock state encountered for a zone. Likely related "
                 "to initial conditions with a tidal term too close to zero."
             );
         }
@@ -279,10 +285,78 @@ namespace Evolve {
         }
     }
 
+    void DissipatingZone::limit_above_lock_per_expansion_order(
+        int proposed_orbital_multiplier,
+        int proposed_spin_multiplier
+    )
+    {
+        int max_abs_orb_mult=static_cast<int>(__e_order + 2);
+        if(proposed_spin_multiplier == 0) {
+            __other_lock.set_lock(1, 0, -1);
+        } else if(std::abs(proposed_orbital_multiplier) <= max_abs_orb_mult) {
+            __other_lock.set_lock(proposed_orbital_multiplier,
+                                  proposed_spin_multiplier,
+                                  -1);
+        } else if(
+            proposed_spin_multiplier == 1
+            ||
+            proposed_orbital_multiplier > 2 * max_abs_orb_mult
+        ) {
+            if(proposed_orbital_multiplier > 0)
+                __other_lock.set_lock(1, 0, -1);
+            else
+                __other_lock.set_lock(-max_abs_orb_mult, 1, 1);
+        } else {
+            //Works for both positive and negative proposed multipliers
+            __other_lock.set_lock(
+                (proposed_orbital_multiplier + 1) / 2,
+                -1
+            );
+        }
+    }
+
+    void DissipatingZone::set_faster_spin_lock(
+        int proposed_orbital_multiplier,
+        int proposed_spin_multiplier
+    )
+    {
+        assert(proposed_orbital_multiplier != 0);
+        assert(proposed_spin_multiplier >= 0);
+        assert(proposed_spin_multiplier <= 2);
+
+        int max_abs_orb_mult = static_cast<int>(__e_order + 2),
+            sign = (proposed_orbital_multiplier > 0 ? 1 : -1),
+            abs_orbital_multplier = std::abs(proposed_orbital_multiplier);
+
+        assert(sign * __spin_frequency > 0);
+        SpinOrbitLockInfo *destination = (sign > 0 ? &__other_lock : &__lock);
+
+
+        if(proposed_spin_multiplier == 0)
+            destination->set_lock(sign, 0, sign);
+        else if(abs_orbital_multplier <= max_abs_orb_mult)
+            destination->set_lock(proposed_orbital_multiplier,
+                                  proposed_spin_multiplier);
+        else if(
+            proposed_spin_multiplier == 1
+            ||
+            abs_orbital_multplier > 2 * max_abs_orb_mult
+        )
+            destination->set_lock(sign, 0, sign);
+        else
+            destination->set_lock(sign * ((abs_orbital_multplier + 1) / 2),
+                                  1,
+                                  sign);
+    }
+
     void DissipatingZone::initialize_locks()
     {
 #ifndef NDEBUG
-        std::cerr << "Initializing locks" << std::endl;
+        std::cerr << "Initializing locks for Worb = "
+                  << __orbital_frequency
+                  << ", W* = "
+                  << __spin_frequency
+                  << "." << std::endl;
 #endif
         int below_orb_mult = std::floor(2.0
                                         *
@@ -656,7 +730,13 @@ namespace Evolve {
         double orbital_frequency
     ) const
     {
-        check_locks_consistency();
+        if(
+            __lock.spin_frequency_multiplier() != 0
+            ||
+            __lock.orbital_frequency_multiplier() != 0
+
+        )
+            check_locks_consistency();
         if(__lock(orbital_frequency_multiplier, spin_frequency_multiplier))
             return 0;
         double forcing_freq = (
@@ -672,10 +752,16 @@ namespace Evolve {
                   << "Wtide = " << forcing_freq << " -> ";
 #endif
 
-        fix_forcing_frequency(__lock,
-                              orbital_frequency_multiplier,
-                              spin_frequency_multiplier,
-                              forcing_freq);
+        if(
+            __lock.spin_frequency_multiplier() != 0
+            ||
+            __lock.orbital_frequency_multiplier() != 0
+
+        )
+            fix_forcing_frequency(__lock,
+                                  orbital_frequency_multiplier,
+                                  spin_frequency_multiplier,
+                                  forcing_freq);
         if(!__lock && __other_lock.spin_frequency_multiplier() != 0)
             fix_forcing_frequency(__other_lock,
                                   orbital_frequency_multiplier,
@@ -938,11 +1024,16 @@ namespace Evolve {
         unsigned
     )
     {
+        std::cerr << "Changing eccentricity order to "
+                  << new_e_order
+                  << std::endl;
         __potential_term.change_e_order(new_e_order);
         if(__lock.spin_frequency_multiplier() == 0) {
             __e_order = new_e_order;
+            std::cerr << "No lock defined, simple e-order change." << std::endl;
             return;
         }
+        std::cerr << "Locks define, must update" << std::endl;
         if(__lock) {
            __e_order = new_e_order;
            if(
