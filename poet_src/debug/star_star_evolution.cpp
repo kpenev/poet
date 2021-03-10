@@ -40,10 +40,10 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 1.02505108176533;
-    const double SECONDARY_MASS = 0.9994248047211968;
-    const double FEH = -0.06;
-    const double INITIAL_PERIOD = 14.2;
+    const double PRIMARY_MASS = 0.788165335452802;
+    const double SECONDARY_MASS = 0.5225536174052078;
+    const double FEH = -0.9294609523488673;
+    const double INITIAL_PERIOD = 8.460057054499767;
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -52,15 +52,15 @@ int main(int, char **)
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
-    const double DISK_PERIOD = 4.687960373696023;
-    const double PRIMARY_PHASE_LAG =2.984155182973038e-09;
-    const double SECONDARY_PHASE_LAG =2.984155182973038e-09;
+    const double DISK_PERIOD =1.9226552838280029;
+    const double PRIMARY_PHASE_LAG =6.9347684005443166e-12;
+    const double SECONDARY_PHASE_LAG =6.9347684005443166e-12;
     const double DISK_DISSIPATION_AGE = 5e-3;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
     const double WIND_STRENGTH = 0.17;
     const double INCLINATION = 0.0;
-    const double INITIAL_ECCENTRICITY = 0.0241;
+    const double INITIAL_ECCENTRICITY = 0.05196318051352325;
 
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
@@ -71,7 +71,7 @@ int main(int, char **)
 
 
     double zero = 0.0;
-    double initial_secondary_angmom[] = {0.0, 0.0};
+    double initial_secondary_angmom[] = {0.32715884, 0.00199022};
 
     EvolvingStar *primary = create_star(PRIMARY_MASS,
                                         FEH,
@@ -146,7 +146,7 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        8.705870938160976,    //final age
+        1.5412008140087565,    //final age
         1e-3,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
