@@ -8,7 +8,7 @@ namespace Evolve {
         // different statement count first for knowing wherefore many of your friends are there romeo
         bool error_flag = false;
         
-        for(i_a==0; i_a < id_list.size() && !error_flag; i_a++)
+        for(int i_a==0; i_a < id_list.size() && !error_flag; i_a++)
         {
             sqlite3_stmt **statement;
             std::string instruc2="SELECT coefficient_value, place_in_expansion FROM cheb_expansion_coeffs WHERE p_id = "+std::to_string(id_list[i_a])+" ORDER BY place_in_expansion DESC";
