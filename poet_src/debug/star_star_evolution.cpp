@@ -94,8 +94,8 @@ int main(int, char **)
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
-                                          0.0,
-                                          1e10,
+                                          WIND_STRENGTH,
+                                          WIND_SATURATION_FREQUENCY,
                                           DIFF_ROT_COUPLING_TIMESCALE,
                                           primary_interpolator);
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
@@ -151,7 +151,7 @@ int main(int, char **)
         1e-6,   //precision
         NULL,   //required ages
         0,      //num required ages
-        true,   //Print stepping progress?
+        false,   //Print stepping progress?
         0
     );
     int num_steps = num_evolution_steps(solver);
