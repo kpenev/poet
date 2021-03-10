@@ -899,15 +899,22 @@ namespace Evolve {
         unsigned
     )
     {
+#ifndef NDEBUG
         std::cerr << "Changing eccentricity order to "
                   << new_e_order
                   << std::endl;
+#endif
         __potential_term.change_e_order(new_e_order);
         if(__lock.spin_frequency_multiplier() == 0) {
             __e_order = new_e_order;
+#ifdef VERBOSE_DEBUG
             std::cerr << "No lock defined, simple e-order change." << std::endl;
+#endif
             return;
         }
+#ifdef VERBOSE_DEBUG
+        std::cerr << "Lock(s) defined, updating." << std::endl;
+#endif
         if(__lock) {
            __e_order = new_e_order;
            if(

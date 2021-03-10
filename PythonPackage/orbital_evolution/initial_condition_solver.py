@@ -47,7 +47,6 @@ class InitialConditionSolver:
             disk_dissipation_age=self.target.disk_dissipation_age,
             secondary_formation_age=self.target.planet_formation_age
         )
-        print('Constructed binary')
 
         self.primary.select_interpolation_region(
             self.primary.core_formation_age()
@@ -60,7 +59,6 @@ class InitialConditionSolver:
                               inclination=None,
                               periapsis=None,
                               evolution_mode='LOCKED_SURFACE_SPIN')
-        print('Configured binary')
 
         self.primary.detect_stellar_wind_saturation()
         if isinstance(self.secondary, EvolvingStar):
@@ -84,7 +82,6 @@ class InitialConditionSolver:
             zero_outer_periapsis=True,
             **secondary_inclination_periapsis
         )
-        print('Configured secondary')
         if isinstance(self.secondary, EvolvingStar):
             self.secondary.detect_stellar_wind_saturation()
         self.binary.evolve(
@@ -95,7 +92,6 @@ class InitialConditionSolver:
             print_progress=False
         )
         final_state = self.binary.final_state()
-        print('Final state: ' + repr(final_state))
         #False positives
         #pylint: disable=no-member
         assert final_state.age == self.target.age
