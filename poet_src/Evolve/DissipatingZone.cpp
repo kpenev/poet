@@ -908,7 +908,6 @@ namespace Evolve {
             std::cerr << "No lock defined, simple e-order change." << std::endl;
             return;
         }
-        std::cerr << "Locks define, must update" << std::endl;
         if(__lock) {
            __e_order = new_e_order;
            if(
