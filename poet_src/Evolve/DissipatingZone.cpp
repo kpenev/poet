@@ -205,14 +205,14 @@ namespace Evolve {
             if(lock.lock_direction() > 0)
                 lock.set_lock(__e_order + 2, 1, 1);
             else
-                lock.set_lock(1, 0, 1);
+                lock.set_lock(1, 0, -1);
         } else if(
             lock.orbital_frequency_multiplier()
             <
             -static_cast<int>(__e_order)-2
         ) {
             if(lock.lock_direction() > 0)
-                lock.set_lock(1, 0, 1);
+                lock.set_lock(-1, 0, 1);
             else
                 lock.set_lock(-static_cast<int>(__e_order) - 2, 1, -1);
         }
