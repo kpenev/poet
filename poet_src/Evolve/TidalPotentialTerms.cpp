@@ -131,13 +131,13 @@ namespace Evolve {
         no_deriv = inclination_deriv = eccentricity_deriv = 0;
         for(int i = 0; i < 3; ++i) {
             int s = 2 * (i - 1);
-            std::pair<double, double> pms = __pms(s, mp, e, __e_order, false);
+            double pms = __pms(s, mp, e, __e_order, false);
             std::complex<double> periapsis_factor(
                 std::cos(s * __arg_of_periapsis),
                 -std::sin(s * __arg_of_periapsis)
             );
-            no_deriv += pms.first * __Ummp[m+2][i] * periapsis_factor;
-            inclination_deriv += (pms.first
+            no_deriv += pms * __Ummp[m+2][i] * periapsis_factor;
+            inclination_deriv += (pms
                                   *
                                   __Ummp_deriv[m+2][i]
                                   *
@@ -149,7 +149,7 @@ namespace Evolve {
                 *
                 periapsis_factor
             );
-            highest_e_order_term += (pms.second
+            highest_e_order_term += (pms.max_precision(s,mp)
                                      *
                                      __Ummp[m+2][i]
                                      *

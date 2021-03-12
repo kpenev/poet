@@ -35,6 +35,9 @@ namespace Evolve {
             ///
             ///Stored in the order m=-2,0,+2 for increasing s.
             __pms_expansions;
+        
+        \\\
+        std::vector<double> __max_precision;
 
         ///Is the object ready to be used?
         bool __useable;
@@ -67,6 +70,9 @@ namespace Evolve {
 
         ///Maximum eccentricity power with all necessary coefficients known.
         unsigned max_e_power() const {return __max_e_power;}
+        
+        ///Maximum precision for a given expansion.
+        double max_precision(int m, int s) const;
 
         ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
         ///contribution of the highest power eccentricity terms.

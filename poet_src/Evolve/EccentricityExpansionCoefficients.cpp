@@ -3,7 +3,7 @@
 
 namespace Evolve {
 
-    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db,std::vector<int> id_list)
+    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db,std::vector<int> id_list)             // bring back pair, store error for a series?
     { // sanity checking? get m and s and fill in proper thing. COUNT (new function, prefill __pms(etc))
         // different statement count first for knowing wherefore many of your friends are there romeo
         bool error_flag = false;
@@ -26,7 +26,7 @@ namespace Evolve {
                     i_b--;
                 }
                 
-                if (rc==SQLITE_DONE) __pms_expansions[i_a].push_back( new_expansion );
+                if (rc==SQLITE_DONE) __pms_expansions[i_a].push_back( new_expansion ); // fix this
                 else error_flag=true;
             }
             else error_flag=true;
@@ -44,8 +44,6 @@ namespace Evolve {
         const char *sql = instruc2.c_str();
         bool error_flag = false;
         
-        int load_id, loaded_m, loaded_s;
-        double loaded_precision;
         int m = -2, s = 0, i = 0;
         std::vector<int> expansion_ids;
         
@@ -56,14 +54,13 @@ namespace Evolve {
             int rc = sqlite3_step(*statement);
             while(rc==SQLITE_ROW && i+1<=3*(max_s+1))
             {
-                loaded_m=sqlite3_column_int(*statement,1);
-                loaded_s=sqlite3_column_int(*statement,2);
                 if(
-                    loaded_m == m
+                    sqlite3_column_int(*statement,1) == m
                     &&
-                    loaded_s == s
+                    sqlite3_column_int(*statement,2) == s
                 ) {
                     expansion_ids[i]=sqlite3_column_int(*statement,0);
+                    __max_precision[i]=sqlite3_column_double(*statement,3);
                     i++;
                     if(m==2) {
                         m=-2;
@@ -86,12 +83,12 @@ namespace Evolve {
         
         return expansion_ids;
     }
-    
+    ////////////////// if derivative, NaN and fix the code crash later. No pairs.
     int EccentricityExpansionCoefficients::get_max_s(sqlite3* db,double precision)
     { // hey there maybe do a minimum accuracy in python plz notice me when you're deleting comments
         sqlite3_stmt **statement;
         std::string instruc2="WITH meets_precision AS (SELECT m,s FROM m_and_s_to_accuracy WHERE accuracy <= "+std::to_string(precision)+" GROUP BY s,m) ";
-        instruc2 += "SELECT s FROM meets_precision GROUP BY s HAVING COUNT(m)=3";
+        instruc2 += "SELECT s FROM meets_precision GROUP BY s HAVING COUNT(m)=3";  //aaaa   save actual precision?
         const char *sql = instruc2.c_str();
         bool keep_going=true;
         int compare_s = 0;
@@ -161,6 +158,7 @@ namespace Evolve {
         try {
             __max_s = get_max_s(db,precision);
             __pms_expansions.resize(3*(__max_s+1));
+            __max_precision.resize(3*(__max_s+1));
             expansion_ids = identify_expansions(db,__max_s,precision);
             get_expansions(db,expansion_ids);
         } catch(...) {
@@ -169,8 +167,19 @@ namespace Evolve {
         
         sqlite3_close(db);
         
-        //errors
         __useable = true;
+    }
+
+    double EccentricityExpansionCoefficients::max_precision(int m, int s)
+    {
+        switch(m) {
+            case -2 : return __max_precision[(s*3)+0];
+            case 0  : return __max_precision[(s*3)+1];
+            case 2  : return __max_precision[(s*3)+2];
+            default : throw Core::Error::BadFunctionArguments(
+                          "Asking for p_{m,s} with m other than +-2 and 0"
+                      );
+        };
     }
 
     double EccentricityExpansionCoefficients::operator()(
@@ -178,7 +187,7 @@ namespace Evolve {
         int s,
         double e,
         unsigned max_e_power,
-        bool deriv
+        bool deriv // is this easy to do?     maybe not, make next bit NaN if it wants derivative
     ) const
     {
         if(!__useable)
@@ -188,6 +197,8 @@ namespace Evolve {
             );
         
         if(s > __max_s) throw Core::Error::Runtime("Attempting to evaluate larger s than is available at requested precision!");
+        
+        if(deriv) return Core::NaN;
         
         std::vector<double> exp_coefs;
 
@@ -200,7 +211,7 @@ namespace Evolve {
                       );
         };
         // double check if I need to do 2*e+1 etc. sort of thing
-        return chebyshev_clenshaw_recurrence(exp_coefs.data(),exp_coefs.size(),e);
+        return chebyshev_clenshaw_recurrence(exp_coefs.data(),exp_coefs.size(),e); // using the right one? for t0 term? between psipy and boost
     }
 
 } //End Evolve namespace.
