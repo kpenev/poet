@@ -26,7 +26,7 @@ namespace Evolve {
                     i_b--;
                 }
                 
-                if (rc==SQLITE_DONE) __pms_expansions[i_a].push_back( new_expansion ); // fix this
+                if (rc==SQLITE_DONE) __pms_expansions[i_a] = new_expansion;
                 else error_flag=true;
             }
             else error_flag=true;
