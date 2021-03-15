@@ -228,12 +228,15 @@ class ManagedInterpolator(VarChangingInterpolator):
                                                   db_session,
                                                   False)
             if (
+                    #False positive
+                    #pylint: disable=no-member
                     db_session.query(
                         VarchangeDependentValue
                     ).filter_by(
                         variable_id=variable_db_id,
                         grid_id=self._grid_db_id
                     ).count() > 0
+                    #pylint: enable=no-member
             ):
                 self._read_variable_from_db(variable, db_session)
                 #Attribute defined_weights defined by parent class.

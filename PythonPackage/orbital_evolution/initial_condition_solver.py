@@ -1,5 +1,7 @@
 """Define class for finding initial conditions to match current properties."""
 
+import logging
+
 from scipy.optimize import brentq
 import scipy
 
@@ -32,9 +34,9 @@ class InitialConditionSolver:
                 evolution is started with the input periods.
         """
 
-        print('Trying P0 = %s, Pdisk = %s'
-              %
-              (repr(initial_orbital_period), repr(disk_period)))
+        self._logger.debug('Trying P0 = %s, Pdisk = %s',
+                           repr(initial_orbital_period),
+                           repr(disk_period))
         if self.binary is not None:
             self.binary.delete()
         self.binary = Binary(
@@ -108,9 +110,9 @@ class InitialConditionSolver:
             )
         )
         #pylint: enable=no-member
-        print('Got Porb = %s, P* = %s'
-              %
-              (repr(orbital_period), repr(stellar_spin_period)))
+        self._logger.debug('Got Porb = %s, P* = %s',
+                           repr(orbital_period),
+                           repr(stellar_spin_period))
 
         if scipy.isnan(orbital_period):
             orbital_period = 0.0
@@ -149,21 +151,25 @@ class InitialConditionSolver:
             else:
                 porb_max = porb_initial
             porb_initial *= step
-            print('Before evolution:'
-                  +
-                  '\n\tporb_error = %s' % repr(porb_error)
-                  +
-                  '\n\tguess_porb_error = %s' % repr(guess_porb_error)
-                  +
-                  '\n\tporb_initial = %s' % repr(porb_initial)
-                  +
-                  '\n\tporb_min = %s' % porb_min
-                  +
-                  '\n\tporb_max = %s' % porb_max
-                  +
-                  '\n\tstep = %s' % step)
+            self._logger.debug(
+                (
+                    'Before evolution:'
+                    '\n\tporb_error = %s'
+                    '\n\tguess_porb_error = %s'
+                    '\n\tporb_initial = %s'
+                    '\n\tporb_min = %s'
+                    '\n\tporb_max = %s'
+                    '\n\tstep = %s'
+                ),
+                repr(porb_error),
+                repr(guess_porb_error),
+                repr(porb_initial),
+                porb_min,
+                porb_max,
+                step
+            )
             porb = self._try_initial_conditions(porb_initial, disk_period)[0]
-            print('After evolution: porb = %s' % repr(porb))
+            self._logger.debug('After evolution: porb = %s', repr(porb))
             if not scipy.isnan(porb):
                 porb_error = porb - self.target.Porb
 
@@ -177,9 +183,12 @@ class InitialConditionSolver:
             if porb_error == 0:
                 porb_min = porb_initial
 
-        print('For Pdisk = %s, orbital period range: %s < Porb < %s'
-              %
-              (repr(disk_period), repr(porb_min), repr(porb_max)))
+        self._logger.info(
+            'For Pdisk = %s, orbital period range: %s < Porb < %s',
+            repr(disk_period),
+            repr(porb_min),
+            repr(porb_max)
+        )
         return porb_min, porb_max
 
     def __init__(self,
@@ -226,6 +235,7 @@ class InitialConditionSolver:
             None
         """
 
+        self._logger = logging.getLogger(__name__)
         self.binary = None
         self._best_initial_conditions = None
 
@@ -423,19 +433,20 @@ class InitialConditionSolver:
                 for wdisk in wdisk_grid
             ]
 
-            print('##    %25s %25s\n' % ('disk_period',
-                                         'current_stellar_spin'))
+            self._logger.debug('##    %25s %25s\n',
+                               'disk_period',
+                               'current_stellar_spin')
             for wdisk, wsurf_residual in zip(wdisk_grid,
                                              stellar_wsurf_residual_grid):
-                print('##    %25.16e %25.16e\n'
-                      %
-                      (2.0 * scipy.pi / wdisk,
-                       wsurf_residual + 2.0 * scipy.pi / self.target.Psurf))
-            print('## Target current stellar spin: '
-                  +
-                  repr(2.0 * scipy.pi / self.target.Psurf)
-                  +
-                  '\n')
+                self._logger.debug(
+                    '##    %25.16e %25.16e\n',
+                    2.0 * scipy.pi / wdisk,
+                    wsurf_residual + 2.0 * scipy.pi / self.target.Psurf
+                )
+            self._logger.debug(
+                '## Target current stellar spin: %s',
+                repr(2.0 * scipy.pi / self.target.Psurf)
+            )
 
             return wdisk_grid, stellar_wsurf_residual_grid
 

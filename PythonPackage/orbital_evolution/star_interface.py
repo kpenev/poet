@@ -211,10 +211,10 @@ class EvolvingStar(DissipatingBody):
 
         if deriv_order is None:
             return getattr(library, property_name)(self.c_body, age)
-        else:
-            return getattr(library, property_name)(self.c_body,
-                                                   age,
-                                                   deriv_order)
+
+        return getattr(library, property_name)(self.c_body,
+                                               age,
+                                               deriv_order)
 
     def __init__(self,
                  *,

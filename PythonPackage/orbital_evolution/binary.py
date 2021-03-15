@@ -144,7 +144,6 @@ class Binary:
             if component.dissipation:
                 assert set(component.dissipation.keys()) == set([0])
                 for param, value in component.dissipation[0].items():
-                    print('param: ' + param)
                     if param != 'reference_phase_lag':
                         value = (
                             '{}' if value is None
@@ -201,13 +200,6 @@ class Binary:
                 if isinstance(component, EvolvingStar) else
                 ''
             )
-
-        print(
-            'Substitutions:\n\t'
-            +
-            '\n\t'.join(['%s = %s' % item
-                         for item in c_code_substitutions.items()])
-        )
 
         with open(c_code_fname, 'w') as c_code:
             c_code.write(
