@@ -14,7 +14,10 @@ from basic_utils import Structure
 class InitialConditionSolver:
     """Find initial conditions which reproduce a given system now."""
 
-    def _try_initial_conditions(self, initial_orbital_period, disk_period):
+    def _try_initial_conditions(self,
+                                initial_orbital_period,
+                                disk_period,
+                                save=False):
         """
         Get present orbital and stellar spin periods for initial conditions.
 
@@ -34,6 +37,14 @@ class InitialConditionSolver:
                 evolution is started with the input periods.
         """
 
+        if(
+                (initial_orbital_period, disk_period)
+                in
+                self._saved_initial_condition_trials
+        ):
+            return self._saved_initial_condition_trials[
+                (initial_orbital_period, disk_period)
+            ]
         self._logger.debug('Trying P0 = %s, Pdisk = %s',
                            repr(initial_orbital_period),
                            repr(disk_period))
@@ -116,6 +127,10 @@ class InitialConditionSolver:
 
         if scipy.isnan(orbital_period):
             orbital_period = 0.0
+        if save:
+            self._saved_initial_condition_trials[
+                (initial_orbital_period, disk_period)
+            ] = (orbital_period, stellar_spin_period)
         return orbital_period, stellar_spin_period
 
     def _find_porb_range(self, guess_porb_initial, disk_period):
@@ -136,7 +151,7 @@ class InitialConditionSolver:
 
         porb_min, porb_max = scipy.nan, scipy.nan
         porb_initial = guess_porb_initial
-        porb = self._try_initial_conditions(porb_initial, disk_period)[0]
+        porb = self._try_initial_conditions(porb_initial, disk_period, True)[0]
         porb_error = porb - self.target.Porb
         guess_porb_error = porb_error
         step = 2.0 if guess_porb_error < 0 else 0.5
@@ -168,7 +183,9 @@ class InitialConditionSolver:
                 porb_max,
                 step
             )
-            porb = self._try_initial_conditions(porb_initial, disk_period)[0]
+            porb = self._try_initial_conditions(porb_initial,
+                                                disk_period,
+                                                True)[0]
             self._logger.debug('After evolution: porb = %s', repr(porb))
             if not scipy.isnan(porb):
                 porb_error = porb - self.target.Porb
@@ -260,6 +277,7 @@ class InitialConditionSolver:
         self.primary = None
         self.secondary = None
         self.max_porb_initial = max_porb_initial
+        self._saved_initial_condition_trials = dict()
 
     def stellar_wsurf(self,
                       wdisk,
@@ -301,6 +319,7 @@ class InitialConditionSolver:
                                                    disk_period)
 
         if scipy.isnan(porb_min):
+            self._saved_initial_condition_trials = dict()
             assert scipy.isnan(porb_max)
             return (scipy.nan if return_difference else (scipy.nan,
                                                          scipy.nan,
@@ -320,6 +339,7 @@ class InitialConditionSolver:
             porb_initial,
             disk_period,
         )
+        self._saved_initial_condition_trials = dict()
 
         spin_frequency = 2.0 * scipy.pi / spin_period
 
