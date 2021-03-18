@@ -101,6 +101,7 @@ class InitialConditionSolver:
             final_age=self.target.age,
             max_time_step=self.configuration['max time step'],
             precision=self.configuration['precision'],
+            timeout=self.configuration['timeout'],
             required_ages=None,
             print_progress=False
         )
@@ -214,6 +215,7 @@ class InitialConditionSolver:
                  disk_dissipation_age=None,
                  evolution_max_time_step=1.0,
                  evolution_precision=1e-6,
+                 evolution_timeout=0,
                  orbital_period_tolerance=1e-6,
                  spin_tolerance=1e-6,
                  initial_eccentricity=0.0,
@@ -270,7 +272,8 @@ class InitialConditionSolver:
             'max time step': evolution_max_time_step,
             'precision': evolution_precision,
             'orbital period tolerance': orbital_period_tolerance,
-            'spin tolerance': spin_tolerance
+            'spin tolerance': spin_tolerance,
+            'timeout': evolution_timeout
         }
 
         self.target = None
