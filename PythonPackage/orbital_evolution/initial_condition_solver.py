@@ -134,7 +134,9 @@ class InitialConditionSolver:
             ] = (orbital_period, stellar_spin_period)
         return orbital_period, stellar_spin_period
 
-    def _find_porb_range(self, guess_porb_initial, disk_period):
+    def _find_porb_range(self,
+                         guess_porb_initial,
+                         disk_period):
         """
         Find initial orbital period range where final porb error flips sign.
 
@@ -155,7 +157,8 @@ class InitialConditionSolver:
         porb = self._try_initial_conditions(porb_initial, disk_period, True)[0]
         porb_error = porb - self.target.Porb
         guess_porb_error = porb_error
-        step = 2.0 if guess_porb_error < 0 else 0.5
+        step = (self.period_search_factor if guess_porb_error < 0
+                else 1.0 / self.period_search_factor)
 
         while (
                 porb_error * guess_porb_error > 0
@@ -220,6 +223,8 @@ class InitialConditionSolver:
                  spin_tolerance=1e-6,
                  initial_eccentricity=0.0,
                  initial_inclination=0.0,
+                 period_search_factor=2.0,
+                 scaled_period_guess=1.0,
                  max_porb_initial=100.0,
                  initial_secondary_angmom=(0.0, 0.0)):
         """
@@ -246,6 +251,14 @@ class InitialConditionSolver:
 
             initial_eccentricity:    The initial eccentricity with which to
                 start the evolution.
+
+            period_search_factor:    The factor by which to change the initial
+                period guess while searching for a range surrounding the known
+                present day orbital period.
+
+            scaled_period_guess:    The search for initial period to bracked the
+                observed final period will start from this value multiplied by
+                the final orbital period.
 
             max_porb_initial:    The largest initial orbital period in days to
                 try before declaring a set of initial conditions unsolvable.
@@ -279,6 +292,8 @@ class InitialConditionSolver:
         self.target = None
         self.primary = None
         self.secondary = None
+        self.period_search_factor = period_search_factor
+        self.scaled_period_guess = scaled_period_guess
         self.max_porb_initial = max_porb_initial
         self._saved_initial_condition_trials = dict()
 
@@ -433,7 +448,7 @@ class InitialConditionSolver:
                 disk_period=scipy.nan
             )
 
-        def get_initial_grid():
+        def get_initial_grid(orbital_period_guess):
             """Tabulate stellar spin errors for a grid of disk periods."""
 
             reset_best_initial_conditions()
@@ -452,7 +467,7 @@ class InitialConditionSolver:
                           200.0 * scipy.pi]
 
             stellar_wsurf_residual_grid = [
-                self.stellar_wsurf(wdisk, target.Porb, True)
+                self.stellar_wsurf(wdisk, orbital_period_guess, True)
                 for wdisk in wdisk_grid
             ]
 
@@ -476,6 +491,7 @@ class InitialConditionSolver:
         self.target = target
         self.primary = star
         self.secondary = planet
+        orbital_period_guess = target.Porb * self.scaled_period_guess
 
         if not hasattr(self.target, 'disk_dissipation_age'):
             self.target.disk_dissipation_age = (
@@ -494,10 +510,13 @@ class InitialConditionSolver:
         if not hasattr(target, 'Psurf'):
             wdisk = (target.Wdisk if hasattr(target, 'Wdisk')
                      else 2.0 * scipy.pi / target.Pdisk)
-            wstar, porb_initial = self.stellar_wsurf(wdisk, target.Porb)[:2]
+            wstar, porb_initial = self.stellar_wsurf(wdisk,
+                                                     orbital_period_guess)[:2]
             return porb_initial, 2.0 * scipy.pi / wstar
 
-        wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid()
+        wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid(
+            orbital_period_guess
+        )
 
         nsolutions = 0
         for i in range(len(wdisk_grid)-1):
@@ -512,7 +531,7 @@ class InitialConditionSolver:
                     f=self.stellar_wsurf,
                     a=wdisk_grid[i],
                     b=wdisk_grid[i+1],
-                    args=(target.Porb, True),
+                    args=(orbital_period_guess, True),
                     xtol=self.configuration['spin tolerance'],
                     rtol=self.configuration['spin tolerance']
                 )
