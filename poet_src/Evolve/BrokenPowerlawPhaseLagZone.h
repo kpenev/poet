@@ -27,8 +27,13 @@ namespace Evolve {
         friend class LagForcingFrequencyBreakCondition;
         friend class LagSpinBreakCondition;
     private:
-        ///Is the zone dissipative.
-        bool __dissipative;
+        bool
+            ///Is the zone dissipative.
+            __dissipative,
+
+            ///Is the zone's dissipation discontinuous at zero frequency (hence
+            ///spin-orbit locks are a possibility).
+            __can_lock;
 
         std::vector<double>
             ///\brief The locations of the breaks in tidal frequency in rad/day.
@@ -166,7 +171,8 @@ namespace Evolve {
     public:
         ///\brief Create a non-dissipative zone. Must call setup() if
         ///the zone is dissipative.
-        BrokenPowerlawPhaseLagZone() : __dissipative(false) {}
+        BrokenPowerlawPhaseLagZone()
+            : __dissipative(false), __can_lock(false) {}
 
         ///\brief Seup the zone with the given breaks/powers and inertial mode
         ///enhancement. Continuous accress all breaks. Must only be called
@@ -304,6 +310,9 @@ namespace Evolve {
         ///\brief Return true iff disspation has been defined for the zone.
         virtual bool dissipative() const
         {return __dissipative;}
+
+        virtual bool can_lock() const
+        {return __can_lock;}
 
         ///Cleanup.
         ~BrokenPowerlawPhaseLagZone() {

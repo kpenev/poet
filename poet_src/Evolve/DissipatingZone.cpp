@@ -52,7 +52,7 @@ namespace Evolve {
         double &forcing_frequency
     ) const
     {
-        if(__initializing) return;
+        if(__initializing || !can_lock()) return;
         assert(limit.spin_frequency_multiplier() == 1
                ||
                limit.spin_frequency_multiplier() == 2);
@@ -221,6 +221,11 @@ namespace Evolve {
 
     void DissipatingZone::initialize_locks()
     {
+        if(!can_lock()) {
+            __lock.set_lock(-1, 0, 1);
+            __other_lock.set_lock(1, 0, -1);
+            return;
+        }
 #ifndef NDEBUG
         std::cerr << "Initializing locks for Worb = "
                   << __orbital_frequency
@@ -849,6 +854,7 @@ namespace Evolve {
 
     void DissipatingZone::release_lock()
     {
+        assert(can_lock());
         if(__lock.spin_frequency_multiplier() == 2) {
             assert(__lock.orbital_frequency_multiplier() % 2 == 1);
             __other_lock.set_lock(
@@ -872,6 +878,7 @@ namespace Evolve {
 
     void DissipatingZone::release_lock(short direction)
     {
+        assert(can_lock());
         assert(__lock);
         assert(direction == 1 || direction == -1);
         assert(
@@ -1019,7 +1026,7 @@ namespace Evolve {
     )
     {
         CombinedStoppingCondition *result = new CombinedStoppingCondition();
-        if(!dissipative()) return result;
+        if(!can_lock()) return result;
         if(__lock)
             (*result) |= new BreakLockCondition(system, __locked_zone_index);
         else if(system.evolution_mode() == Core::BINARY) {

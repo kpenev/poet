@@ -40,10 +40,10 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.788165335452802;
-    const double SECONDARY_MASS = 0.5225536174052078;
-    const double FEH = -0.9294609523488673;
-    const double INITIAL_PERIOD = 8.460057054499767;
+    const double PRIMARY_MASS = 1.0;
+    const double SECONDARY_MASS = 0.8;
+    const double FEH = 0.0;
+    const double INITIAL_PERIOD = 12.0;
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -52,15 +52,15 @@ int main(int, char **)
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
-    const double DISK_PERIOD =1.9226552838280029;
-    const double PRIMARY_PHASE_LAG =6.9347684005443166e-12;
-    const double SECONDARY_PHASE_LAG =6.9347684005443166e-12;
-    const double DISK_DISSIPATION_AGE = 5e-3;
+    const double DISK_PERIOD =10.0;
+    const double PRIMARY_PHASE_LAG =1e-7;
+    const double SECONDARY_PHASE_LAG =1e-7;
+    const double DISK_DISSIPATION_AGE = 2e-2;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
     const double WIND_STRENGTH = 0.17;
     const double INCLINATION = 0.0;
-    const double INITIAL_ECCENTRICITY = 0.05196318051352325;
+    const double INITIAL_ECCENTRICITY = 0.5;
 
     read_eccentricity_expansion_coefficients(
         "eccentricity_expansion_coef_O200.txt"
@@ -71,7 +71,11 @@ int main(int, char **)
 
 
     double zero = 0.0;
-    double initial_secondary_angmom[] = {0.32715884, 0.00199022};
+    double initial_secondary_angmom[] = {0.2, 0.001};
+
+    double tidal_frequency_breaks[] = {2.0 * M_PI / 100.0};
+    double tidal_frequency_powers[] = {1.0, 0.0};
+
 
     EvolvingStar *primary = create_star(PRIMARY_MASS,
                                         FEH,
@@ -82,11 +86,11 @@ int main(int, char **)
     select_interpolation_region(primary, core_formation_age(primary));
     set_star_dissipation(primary,
                          0,          //zone index
-                         0,          //# tidal frequency breaks
+                         1,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         NULL,       //tidal frequency breaks
+                         tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         &zero,      //tidal frequency powers
+                         tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
                          PRIMARY_PHASE_LAG,
                          1.0,
@@ -101,11 +105,11 @@ int main(int, char **)
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index
-                         0,          //# tidal frequency breaks
+                         1,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         NULL,       //tidal frequency breaks
+                         tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         &zero,      //tidal frequency powers
+                         tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
                          SECONDARY_PHASE_LAG,
                          1.0,
@@ -146,12 +150,12 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        1.5412008140087565,    //final age
+        7.0,    //final age
         1e-3,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
         0,      //num required ages
-        false,   //Print stepping progress?
+        true,   //Print stepping progress?
         0
     );
     int num_steps = num_evolution_steps(solver);

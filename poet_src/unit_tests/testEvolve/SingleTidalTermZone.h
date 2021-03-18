@@ -14,7 +14,7 @@
 namespace Evolve {
 
     /**\brief A zone dissipative to only a single tidal term.
-     * 
+     *
      * \ingroup UnitTests_group
      */
     class SingleTidalTermZone : public PolynomialEvolutionZone {
@@ -103,6 +103,9 @@ namespace Evolve {
 
         ///See DissipatingZone::dissipative()
         bool dissipative() const {return true;}
+
+        ///See DissipatingZone::can_lock()
+        bool can_lock() const {return true;}
 
     };//End SingleTidalTermZone class.
 

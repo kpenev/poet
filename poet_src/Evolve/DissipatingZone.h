@@ -872,6 +872,10 @@ namespace Evolve {
         ///\brief Should return true iff the zone has some non-zero dissipation.
         virtual bool dissipative() const =0;
 
+        ///\brief Should return true iff the zone's dissipation is discontinuous
+        ///at zero frequency.
+        virtual bool can_lock() const =0;
+
         ///\brief Conditions detecting the next possible discontinuities in the
         ///evolution due to this zone.
         ///

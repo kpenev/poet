@@ -72,6 +72,9 @@ namespace Evolve {
 
         ///See DissipatingZone::dissipative()
         bool dissipative() const {return true;}
+
+        ///See DissipatingZone::can_lock()
+        bool can_lock() const {return true;}
     };//End ConstPhaseLagZone class.
 }//End Evolve namespace.
 

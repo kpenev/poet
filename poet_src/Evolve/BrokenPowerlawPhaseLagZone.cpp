@@ -225,7 +225,6 @@ namespace Evolve {
         double inertial_mode_sharpness
     )
     {
-        __dissipative = true;
         reset();
         assert(__spin_frequency_breaks.size() == 0);
         assert(__tidal_frequency_breaks.size() == 0);
@@ -244,6 +243,9 @@ namespace Evolve {
         assert(spin_frequency_breaks.size() > 0
                ||
                spin_frequency_powers.front() == 0);
+
+        __dissipative = true;
+        __can_lock = tidal_frequency_powers.front() <= 0;
 
         __tidal_frequency_breaks = tidal_frequency_breaks;
         __spin_frequency_breaks = spin_frequency_breaks;

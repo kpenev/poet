@@ -32,7 +32,7 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
 {
     Evolve::BrokenPowerlawPhaseLagZone *real_zone =
         reinterpret_cast<Evolve::BrokenPowerlawPhaseLagZone*>(zone);
-
+    std::cerr << "Defining zone dissipation" << std::endl;
     real_zone->setup(
         (
             num_tidal_frequency_breaks

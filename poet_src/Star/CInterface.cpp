@@ -47,16 +47,16 @@ void destroy_star(EvolvingStar *star)
 }
 
 void set_star_dissipation(EvolvingStar *star,
-                     unsigned zone_index,
-                     unsigned num_tidal_frequency_breaks,
-                     unsigned num_spin_frequency_breaks,
-                     double *tidal_frequency_breaks,
-                     double *spin_frequency_breaks,
-                     double *tidal_frequency_powers,
-                     double *spin_frequency_powers,
-                     double reference_phase_lag,
-                     double inertial_mode_enhancement,
-                     double inertial_mode_sharpness)
+                          unsigned zone_index,
+                          unsigned num_tidal_frequency_breaks,
+                          unsigned num_spin_frequency_breaks,
+                          double *tidal_frequency_breaks,
+                          double *spin_frequency_breaks,
+                          double *tidal_frequency_powers,
+                          double *spin_frequency_powers,
+                          double reference_phase_lag,
+                          double inertial_mode_enhancement,
+                          double inertial_mode_sharpness)
 {
     Star::InterpolatedEvolutionStar* real_star =
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
