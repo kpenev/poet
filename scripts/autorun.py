@@ -5,10 +5,10 @@ import generate_new_cheb_data as gen
 
 def main():
 
-	for i in range(51):
-		gen.main(0,i,1e-2)
-		gen.main(+2,i,1e-2)
-		gen.main(-2,i,1e-2)
+	for i in range(101):
+		gen.main(0,i,1e-6)
+		gen.main(+2,i,1e-6)
+		gen.main(-2,i,1e-6)
 	
 if __name__ == '__main__':
     main()
