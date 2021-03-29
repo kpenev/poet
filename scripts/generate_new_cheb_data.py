@@ -27,7 +27,7 @@ def db_session_scope():
     finally:
         session.close()
 
-def main(em = 0, es = 1):
+def main(em = 0, es = 1, accGoal = 1e-6):
 	
 	# Check if the appropriate file already exists; if not, create it
 	for table in model.DataModelBase.metadata.sorted_tables:
@@ -35,7 +35,7 @@ def main(em = 0, es = 1):
 			table.create(db_engine)
 
 	# Calculate some expansions for a specified coefficient
-	chebCoeffs, Accurs = pms.main(m=em,s=es)
+	chebCoeffs, Accurs = pms.main(m=em,s=es,accuracyGoal=accGoal)
 	
 	# Prep our lists of values to be put in the database
 	PmsCoeffs = []

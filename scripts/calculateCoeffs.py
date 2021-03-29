@@ -5,6 +5,11 @@ up to some level of accuracy.
 @author: Joshua Aaron Schussler
 """
 
+# A bit more detail on the expansion:
+# 1. A given p_ms is found numerically as a function of e, eccentricity
+# 2. A fit is found for some number of chebyshev polynomials
+# 3. The number of polynomials used in the fit is gradually increased until we hit a target accuracy
+
 ### Importing relevant libraries
 import sys, getopt
 import numpy as np
@@ -97,7 +102,6 @@ def main(m=2, s=10, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
 	if (s<0 or (not isinstance(s,int))):
 		print("Improper s")
 		return [[-1]],[-1]
-	#more
 		
 	# Initialize my variables
 	coeffDeg = 0 # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
@@ -131,11 +135,11 @@ def main(m=2, s=10, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
 	
 	# Report results
 	print("We used this many coefficients: " + str(coeffDeg))
-	theCheb = np.polynomial.chebyshev.Chebyshev(listOfCoeff[coeffDeg])
-	plt.plot(eList,yList,'o')
-	dirtY = np.polynomial.chebyshev.chebval(2*eList-1,listOfCoeff[coeffDeg])
-	plt.plot(eList,dirtY)
-	plt.show()
+	#theCheb = np.polynomial.chebyshev.Chebyshev(listOfCoeff[coeffDeg])
+	#plt.plot(eList,yList,'o')
+	#dirtY = np.polynomial.chebyshev.chebval(2*eList-1,listOfCoeff[coeffDeg])
+	#plt.plot(eList,dirtY)
+	#plt.show()
 	
 	return listOfCoeff, resid
 
