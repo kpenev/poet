@@ -125,7 +125,7 @@ def main(m=2, s=10, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
             listOfCoeff.append(newCoeff)
             resid.append(diag[0][0]) # Diag is an array of four items, the one we want is itself an array of a single element
         
-        if resid[coeffDeg] < accuracyGoal: # Don't change this below 1e-7
+        if diag[0][0] < accuracyGoal: # Don't change this below 1e-7
             
             # We're accurate enough
             maxCoeffs = coeffDeg
