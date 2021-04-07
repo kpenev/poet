@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 ####
 
 ### Constants
-GRID = 10001 # The number of grid points to divide 0<=e<=1 into; should be power of ten plus one
+GRID = 100001 # The number of grid points to divide 0<=e<=1 into; should be power of ten plus one
 
 #####
 # The following are all defining the coefficients
@@ -92,7 +92,7 @@ def getCoefficients(coeffDeg,eList,yList):
     
     return np.polynomial.chebyshev.chebfit(2*eList.T-1,yList.T,coeffDeg,None,True)
 
-def main(m=2, s=10, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
+def main(m=2, s=48, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
     
     print("Starting")
     # Sanity check input arguments
@@ -104,7 +104,7 @@ def main(m=2, s=10, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
         return [[-1]],[-1]
         
     # Initialize my variables
-    coeffDeg = 0 # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
+    coeffDeg = 0#794#0 # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
     resid = [] # Residual
     listOfCoeff=[]
     
@@ -115,17 +115,23 @@ def main(m=2, s=10, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
     # Calculate the value of p_ms for each point on that list
     vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
     yList = vec_pms(m,s,eList)
-    
+    # or you know just delete everything below this and do a ~linear~ interpolation
+    # store it. constant step size, just store y values (we would know # from size of array)
+    # or maybe x and y. I should think about it. Figure out what s=200 looks like and how small the steps would be and stuff (2 gazillion y values w/ uniform step size?)
+    # for the 200 thing, calculate grid, interpolate, find the next one down and see how well it does, keep going if necessary
     print("Fitting")
     while coeffDeg <= maxCoeffs:
-        
+        # i guess I'm changing grid and getting more yList points here?
+        # grid*2 for 200*2^something
+        #      so like *2 @ 200 then *2 at 200*2=400 then *2 at 800
         newCoeff, diag = getCoefficients(coeffDeg,eList,yList)
-        print(str(diag[0][0]))
-        if diag[0][0] < 1e-2:
+        rmsResid=np.sqrt(diag[0][0]/GRID)
+        print(str(rmsResid) + " also " + str(diag[1]))
+        if rmsResid < 1e-2:
             listOfCoeff.append(newCoeff)
-            resid.append(diag[0][0]) # Diag is an array of four items, the one we want is itself an array of a single element
+            resid.append(rmsResid) # Diag is an array of four items, the one we want is itself an array of a single element
         
-        if diag[0][0] < accuracyGoal: # Don't change this below 1e-7
+        if rmsResid < accuracyGoal: # Don't change this below 1e-7
             
             # We're accurate enough
             maxCoeffs = coeffDeg
