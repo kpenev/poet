@@ -251,6 +251,41 @@ class EvolvingStar(DissipatingBody):
         """
 
         super().__init__()
+        if (
+                mass < interpolator.mass_range()[0]
+                or
+                mass > interpolator.mass_range()[1]
+        ):
+            raise ValueError(
+                (
+                    'Stellar mass: %s is outside the range supported by the '
+                    'stelalr evolution interpolator: %s - %s'
+                )
+                %
+                (
+                    repr(mass),
+                    repr(interpolator.mass_range()[0]),
+                    repr(interpolator.mass_range()[1])
+                )
+            )
+        if (
+                metallicity < interpolator.feh_range()[0]
+                or
+                metallicity > interpolator.feh_range()[1]
+        ):
+            raise ValueError(
+                (
+                    'Stellar metallicity: %s is outside the range supported by '
+                    'the stelalr evolution interpolator: %s - %s'
+                )
+                %
+                (
+                    repr(metallicity),
+                    repr(interpolator.feh_range()[0]),
+                    repr(interpolator.feh_range()[1])
+                )
+            )
+
         self.mass = mass
         self.metallicity = metallicity
         self.wind_strength = wind_strength
