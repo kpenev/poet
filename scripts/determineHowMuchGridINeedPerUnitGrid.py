@@ -92,7 +92,7 @@ def getCoefficients(coeffDeg,eList,yList):
     
     return np.polynomial.chebyshev.chebfit(2*eList.T-1,yList.T,coeffDeg,None,True)
 
-def main(m=2, s=2, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
+def main(m=2, s=200, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
     
     print("Starting")
     # Sanity check input arguments
@@ -104,7 +104,7 @@ def main(m=2, s=2, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
         return [[-1]],[-1]
         
     # Initialize my variables
-    maxLoops = 9#100
+    maxLoops = np.inf#100
     loops = 0
     goalAchieved = 0
     GRID = 11
@@ -152,8 +152,8 @@ def main(m=2, s=2, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
     
     # Report results
     print("We used this many grid points: " + str(GRID))
-    plt.plot(eList,yList,'o')
-    plt.show()
+    #plt.plot(eList,yList,'o')
+    #plt.show()
     
     #return listOfCoeff, resid
 
