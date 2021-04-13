@@ -104,7 +104,7 @@ def main(m=2, s=2, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
         return [[-1]],[-1]
         
     # Initialize my variables
-    maxLoops = 0#100
+    maxLoops = 9#100
     loops = 0
     goalAchieved = 0
     GRID = 11
@@ -116,10 +116,7 @@ def main(m=2, s=2, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
     # Calculate the value of p_ms for each point on that list
     vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
     yList = vec_pms(m,s,eList)
-    # or you know just delete everything below this and do a ~linear~ interpolation
-    # store it. constant step size, just store y values (we would know # from size of array)
-    # or maybe x and y. I should think about it. Figure out what s=200 looks like and how small the steps would be and stuff (2 gazillion y values w/ uniform step size?)
-    # for the 200 thing, calculate grid, interpolate, find the next one down and see how well it does, keep going if necessary
+    
     print("--- BEGIN EXPLORING ---")
     while ((loops <= maxLoops) and (not goalAchieved)):
         print("Increasing Resolution")
@@ -132,9 +129,9 @@ def main(m=2, s=2, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
         
         print("Comparing")
         #goalAchieved = isGoalAchieved(eList,yList,eListTemp,yListTemp)
-        # so like (interp-numeric) < 1e-7 # EVERY point satisfying this ### absolute difference? max(abs(difference)))))))
-        # also double check what's going on w/ 2 pi in mathematica vs. what you're doing here, possibly 2*pie-7
-        #         (so basically what's the value of e at whatever 2pi/1 for m=+2 happens at)
+        print(str(np.max( np.abs(yListTemp - interpolant) )))
+        if np.max( np.abs(yListTemp - interpolant) ) < 1e-7:
+            goalAchieved = True
         
         if (not goalAchieved):
             print("Combining")
@@ -146,8 +143,6 @@ def main(m=2, s=2, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
             newArray[0::2] = yList
             newArray[1::2] = yListTemp
             yList = newArray
-            #eList = np.array(list(zip( eList,np.concatenate((eListTemp,[0])) ))).ravel()[:-1]
-            #yList = np.array(list(zip( yList,np.concatenate((yListTemp,[0])) ))).ravel()[:-1]
         
         loops += 1
     
