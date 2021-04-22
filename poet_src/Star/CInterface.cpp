@@ -62,7 +62,11 @@ void set_star_dissipation(EvolvingStar *star,
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
     Evolve::BrokenPowerlawPhaseLagZone *zone;
     if(zone_index == 0) zone = &(real_star->envelope());
-    else zone = &(real_star->core());
+    else {
+        std::cerr << "Warning core dissipation may not be properly normalized!"
+                  << std::endl;
+        zone = &(real_star->core());
+    }
 
 #ifndef NDEBUG
     std::cerr << "Setting zone "

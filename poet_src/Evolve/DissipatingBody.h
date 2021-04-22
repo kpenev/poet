@@ -116,6 +116,8 @@ namespace Evolve {
 
         ///\brief Scales the dimensionless torques as appropriate and corrects
         ///the relevant derivatives returning the normalization used.
+        ///
+        ///TODO: Fix normalization of internal zones if broken!!!
         double normalize_torques(
             ///The mass of the other object in the system.
             double companion_mass,
