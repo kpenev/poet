@@ -41,6 +41,8 @@ class c_broken_powerlaw_phase_lag_zone_p(c_void_p):
 #pylint: enable=invalid-name
 #pylint: enable=too-few-public-methods
 
+#Define interface to c library, does not make sense to split
+#pylint: disable=too-many-statements
 def initialize_library():
     """Prepare the orbital evolution library for use."""
 
@@ -453,18 +455,19 @@ def initialize_library():
     result.get_envelope.argtypes = [c_dissipating_body_p]
     result.get_envelope.restype = result.set_zone_dissipation.argtypes[0]
 
-    result.get_zone_tidal_power.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_power.argtypes = [c_dissipating_zone_p]
     result.get_zone_tidal_power.restype = c_double
 
-    result.get_zone_tidal_torque_x.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_torque_x.argtypes = [c_dissipating_zone_p]
     result.get_zone_tidal_torque_x.restype = c_double
 
-    result.get_zone_tidal_torque_y.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_torque_y.argtypes = [c_dissipating_zone_p]
     result.get_zone_tidal_torque_y.restype = c_double
 
-    result.get_zone_tidal_torque_z.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_torque_z.argtypes = [c_dissipating_zone_p]
     result.get_zone_tidal_torque_z.restype = c_double
 
     return result
+#pylint: enable=too-many-statements
 
 library = initialize_library()

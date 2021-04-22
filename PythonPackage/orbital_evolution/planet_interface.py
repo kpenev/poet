@@ -10,10 +10,10 @@ from astropy import constants
 
 from orbital_evolution.c_interface_util import ndpointer_or_null
 from orbital_evolution.dissipating_body import\
-    c_dissipating_body_p,\
     DissipatingBody
 from orbital_evolution.evolve_interface import\
-    library as orbital_evolution_library
+    library as orbital_evolution_library,\
+    c_dissipating_body_p
 
 def initialize_library():
     """Prepare the planet library for use and return it."""

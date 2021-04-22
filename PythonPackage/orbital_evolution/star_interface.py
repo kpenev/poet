@@ -15,10 +15,10 @@ sys.path.append('..')
 from stellar_evolution.library_interface import\
     library as stellar_evolution_library
 from orbital_evolution.dissipating_body import\
-    DissipatingBody,\
-    c_dissipating_body_p
+    DissipatingBody
 from orbital_evolution.evolve_interface import\
-    library as orbital_evolution_library
+    library as orbital_evolution_library,\
+    c_dissipating_body_p
 from orbital_evolution.c_interface_util import ndpointer_or_null
 #pylint: enable=wrong-import-position
 

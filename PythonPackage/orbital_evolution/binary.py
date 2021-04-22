@@ -662,12 +662,13 @@ class Binary:
 
         Returns:
             float:
-                The tidal power for the selected zone and optionally tidal term
-                in units of [M_sun R_sun^2 day^-2 Gyr^-1].
+                The tidal power for the selected zone, and optionally tidal
+                term, scaled by G M'^2 R^5 Worb / a^6
+
 
             float:
-                The x component of the tidal torque in units of
-                [M_sun R_sun^2 day^-1 Gyr^-1]
+                The x component of the tidal torque, scaled by
+                G M'^2 R^5 / a^6
 
             float:
                 The y component of the tidal torque
