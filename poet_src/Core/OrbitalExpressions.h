@@ -14,6 +14,8 @@
 
 namespace Core {
 
+    extern "C" {
+
     ///Returns the orbital angular velocity of the given orbit in rad/day.
     LIB_PUBLIC double orbital_angular_velocity(
         ///The mass of the first body in \f$M_\odot\f$.
@@ -46,7 +48,7 @@ namespace Core {
         unsigned deriv_order=0
     );
 
-    ///\brief The angular momentum of the orbit in 
+    ///\brief The angular momentum of the orbit in
     /// \f$\frac{M_\odot R_\odot^2 rad}{day}\f$.
     LIB_PUBLIC double orbital_angular_momentum(
         ///The mass of the first body in \f$M_\odot\f$.
@@ -74,6 +76,8 @@ namespace Core {
         ///The orbital period in days
         double period
     );
+
+    }
 
 }//End Core namespace.
 

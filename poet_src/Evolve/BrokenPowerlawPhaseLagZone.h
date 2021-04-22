@@ -227,7 +227,9 @@ namespace Evolve {
             double spin,
             double inclination,
             double periapsis,
-            bool spin_is_frequency
+            bool spin_is_frequency,
+            std::pair<int, int> *single_term=NULL
+
         );
 
         ///\brief Should return the tidal phase lag times the love number for

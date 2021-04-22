@@ -352,7 +352,12 @@ namespace Evolve {
 
             ///Should the spin argument be interpreted as an angular momentum
             ///or a spin frequency?
-            bool spin_is_frequency
+            bool spin_is_frequency,
+
+            ///If specified, only a single tidal term is included in the tidal
+            ///rates. The two values specify the spin and orbital frequency
+            ///multipliers of the term to add (in that order).
+            std::pair<int, int> *single_term=NULL
         );
 
         ///\brief Set evolution rates for this zone's properties for storing in

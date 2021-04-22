@@ -65,6 +65,79 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
 
 }
 
+DissipatingZone *get_envelope(DissipatingBody *body)
+{
+    return reinterpret_cast<DissipatingZone*>(
+        &reinterpret_cast<Evolve::DissipatingBody*>(
+            body
+        )->zone(0)
+    );
+}
+
+void configure_zone(DissipatingZone *zone,
+                    bool initialize,
+                    double age,
+                    double orbital_frequency,
+                    double eccentricity,
+                    double orbital_angmom,
+                    double spin,
+                    double inclination,
+                    double periapsis,
+                    bool spin_is_frequency,
+                    int *single_term)
+{
+    std::pair<int, int> *real_single_term = (
+        single_term
+        ? new std::pair<int, int>(single_term[0], single_term[1])
+        : NULL
+    );
+    reinterpret_cast<Evolve::DissipatingZone*>(
+        zone
+    )->configure(
+        initialize,
+        age,
+        orbital_frequency,
+        eccentricity,
+        orbital_angmom,
+        spin,
+        inclination,
+        periapsis,
+        spin_is_frequency,
+        real_single_term
+    );
+    if(real_single_term)
+        delete real_single_term;
+}
+
+
+double get_zone_tidal_power(const DissipatingZone *zone)
+{
+    return reinterpret_cast<const Evolve::DissipatingZone*>(
+        zone
+    )->tidal_power(false);
+}
+
+double get_zone_tidal_torque_x(const DissipatingZone *zone)
+{
+    return reinterpret_cast<const Evolve::DissipatingZone*>(
+        zone
+    )->tidal_torque_x(false);
+}
+
+double get_zone_tidal_torque_y(const DissipatingZone *zone)
+{
+    return reinterpret_cast<const Evolve::DissipatingZone*>(
+        zone
+    )->tidal_torque_y(false);
+}
+
+double get_zone_tidal_torque_z(const DissipatingZone *zone)
+{
+    return reinterpret_cast<const Evolve::DissipatingZone*>(
+        zone
+    )->tidal_torque_z(false);
+}
+
 DiskBinarySystem *create_star_planet_system(EvolvingStar *star,
                                             CPlanet *planet,
                                             double initial_semimajor,

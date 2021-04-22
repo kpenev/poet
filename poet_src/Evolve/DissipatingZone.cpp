@@ -494,7 +494,8 @@ namespace Evolve {
                                     double spin,
                                     double inclination,
                                     double periapsis,
-                                    bool spin_is_frequency)
+                                    bool spin_is_frequency,
+                                    std::pair<int, int> *single_term)
     {
         assert(age >= 0);
 
@@ -542,6 +543,8 @@ namespace Evolve {
             mp <= static_cast<int>(__e_order) + 2;
             ++mp
         ) {
+            if(single_term && single_term->second != mp)
+                continue;
             TidalTermTriplet U_value,
                              U_error,
                              U_i_deriv,
@@ -556,6 +559,8 @@ namespace Evolve {
             U_error.m_plus_one *= esquared;
 
             for(int m = -2; m <= 2; ++m) {
+                if(single_term && single_term->first != m)
+                    continue;
 #if 0
                 std::cerr << "Term: m' = "
                           << mp

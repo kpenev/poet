@@ -1,16 +1,6 @@
 """Define base class for all bodies participating in evolution calc."""
 
-from ctypes import c_void_p
 from abc import ABC, abstractmethod
-
-#Naming convention follows ctypes.
-#pylint: disable=invalid-name
-#Only used for type checking so no need for public methods
-#pylint: disable=too-few-public-methods
-class c_dissipating_body_p(c_void_p):
-    """Dummy class only used for type checking."""
-#pylint: enable=invalid-name
-#pylint: enable=too-few-public-methods
 
 class DissipatingBody(ABC):
     """A base class for any body in a POET system."""

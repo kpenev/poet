@@ -37,8 +37,14 @@ extern "C" {
     ///Opaque struct to cast to/from Evolve::OrbitSolver.
     struct LIB_PUBLIC OrbitSolver;
 
-    ///Opaque struct to cant to/from Evolve::BrokenPowerlawPhasLagZone
+    ///Opaque struct to cast to/from Evolve::BrokenPowerlawPhasLagZone
     struct LIB_PUBLIC BrokenPowerlawPhaseLagZone;
+
+    ///Opaque struct to cast to/from Evolve::DissipatingBody
+    struct LIB_PUBLIC DissipatingBody;
+
+    ///Opaque struct to cast to/from Evolve::DissipatingZone
+    struct LIB_PUBLIC DissipatingZone;
 
     ///Read eccentricity expansion coefficients from a file.
     LIB_PUBLIC void read_eccentricity_expansion_coefficients(
@@ -87,6 +93,51 @@ extern "C" {
         ///Parameter controlling how sharp the transition between inertial mode
         ///non-enhanced and inertial mode enhanced dissipation is.
         double inertial_mode_sharpness
+    );
+
+    ///\brief Return the outermost zone of the given body. Useful for
+    ///investigating single zone/term contribution to tidal power/torque
+    LIB_PUBLIC DissipatingZone *get_envelope(
+        ///The body to return the envelope of.
+        DissipatingBody *body
+    );
+
+    ///\brief Define the current orbit for a single zone. Useful for getting a
+    ///single zone's tidal power and/or torue.
+    ///
+    ///See DissipatingZone::configure() for description of the arguments.
+    LIB_PUBLIC void configure_zone(
+        DissipatingZone *zone,
+        bool initialize,
+        double age,
+        double orbital_frequency,
+        double eccentricity,
+        double orbital_angmom,
+        double spin,
+        double inclination,
+        double periapsis,
+        bool spin_is_frequency,
+        int *single_term
+    );
+
+    ///Return the tidal power due to a single zone for current configuration.
+    LIB_PUBLIC double get_zone_tidal_power(
+        const DissipatingZone *zone
+    );
+
+    ///Return the x tidal torque due to a single zone for current configuration.
+    LIB_PUBLIC double get_zone_tidal_torque_x(
+        const DissipatingZone *zone
+    );
+
+    ///Return the y tidal torque due to a single zone for current configuration.
+    LIB_PUBLIC double get_zone_tidal_torque_y(
+        const DissipatingZone *zone
+    );
+
+    ///Return the z tidal torque due to a single zone for current configuration.
+    LIB_PUBLIC double get_zone_tidal_torque_z(
+        const DissipatingZone *zone
     );
 
     ///Create a binary system out of a star and a planet.

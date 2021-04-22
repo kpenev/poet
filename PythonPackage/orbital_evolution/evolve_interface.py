@@ -18,7 +18,6 @@ from ctypes import\
 from ctypes.util import find_library
 import numpy
 
-from orbital_evolution.dissipating_body import c_dissipating_body_p
 from orbital_evolution.c_interface_util import ndpointer_or_null
 #pylint: enable=wrong-import-position
 
@@ -29,6 +28,16 @@ class c_binary_p(c_void_p):
 
 class c_solver_p(c_void_p):
     """Place holder type for orbit evolution solver from the C-library."""
+
+class c_dissipating_body_p(c_void_p):
+    """Dummy class only used for type checking."""
+
+class c_dissipating_zone_p(c_void_p):
+    """Dummy class only used for type checking."""
+
+class c_broken_powerlaw_phase_lag_zone_p(c_void_p):
+    """Place holder type for BrokenPowerlawPhaseLagZone from C-library."""
+
 #pylint: enable=invalid-name
 #pylint: enable=too-few-public-methods
 
@@ -363,6 +372,98 @@ def initialize_library():
         POINTER(c_bool)
     ]
     result.get_star_star_final_state.restype = None
+
+    result.orbital_angular_velocity.argtypes = [
+        c_double, #m1 in Msun
+        c_double, #m2 in Msun
+        c_double, #semimajor in Rsun
+        c_bool    #deriv w.r.t. semimajor?
+    ]
+    result.orbital_angular_velocity.restype = c_double
+
+    result.orbital_energy.argtypes = [
+        c_double, #m1 in Msun
+        c_double, #m2 in Msun
+        c_double, #semimajor in Rsun
+        c_uint    #deriv order w.r.t. semimajor
+    ]
+    result.orbital_energy.restype = c_double
+
+    result.orbital_angular_momentum.argtypes = [
+        c_double, #m1 in Msun
+        c_double, #m2 in Msun
+        c_double, #semimajor in Rsun
+        c_double  #eccentricity
+    ]
+    result.orbital_angular_momentum.restype = c_double
+
+    result.semimajor_from_period.argtypes = [
+        c_double, #m1 in Msun
+        c_double, #m2 in Msun
+        c_double  #period in days
+    ]
+    result.semimajor_from_period.restype = c_double
+
+    result.set_zone_dissipation.argtypes = [
+        c_broken_powerlaw_phase_lag_zone_p,
+
+        c_uint, #num_tidal_frequency_breaks,
+
+        c_uint, #num_spin_frequency_breaks,
+
+        ndpointer_or_null(dtype=c_double, #tidal_frequency_breaks
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+
+        ndpointer_or_null(dtype=c_double, #spin_frequency_breaks
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+
+        numpy.ctypeslib.ndpointer(dtype=c_double, #tidal_frequency_powers
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+
+        numpy.ctypeslib.ndpointer(dtype=c_double, #spin_frequency_powers
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+
+        c_double, #reference phase lag
+        c_double, #inertial mode enhancement
+        c_double  #inertial mode sharpness
+    ]
+    result.set_zone_dissipation.restype = None
+
+    result.configure_zone.argtypes = [
+        c_dissipating_zone_p, #zone,
+        c_bool,     #initialize,
+        c_double,   #age,
+        c_double,   #orbital_frequency,
+        c_double,   #eccentricity,
+        c_double,   #orbital_angmom,
+        c_double,   #spin,
+        c_double,   #inclination,
+        c_double,   #periapsis,
+        c_bool,     #spin_is_frequency,
+        numpy.ctypeslib.ndpointer(dtype=c_int, #single_term
+                                  shape=(2,),
+                                  flags='C_CONTIGUOUS')
+    ]
+    result.configure_zone.restype = None
+
+    result.get_envelope.argtypes = [c_dissipating_body_p]
+    result.get_envelope.restype = result.set_zone_dissipation.argtypes[0]
+
+    result.get_zone_tidal_power.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_power.restype = c_double
+
+    result.get_zone_tidal_torque_x.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_torque_x.restype = c_double
+
+    result.get_zone_tidal_torque_y.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_torque_y.restype = c_double
+
+    result.get_zone_tidal_torque_z.argtypes[c_dissipating_zone_p]
+    result.get_zone_tidal_torque_z.restype = c_double
 
     return result
 

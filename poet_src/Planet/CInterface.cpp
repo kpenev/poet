@@ -21,16 +21,16 @@ void destroy_planet(CPlanet *planet)
     delete reinterpret_cast<Planet::Planet*>(planet);
 }
 
-LIB_PUBLIC void set_planet_dissipation(CPlanet *planet,
-                                       unsigned num_tidal_frequency_breaks,
-                                       unsigned num_spin_frequency_breaks,
-                                       double *tidal_frequency_breaks,
-                                       double *spin_frequency_breaks,
-                                       double *tidal_frequency_powers,
-                                       double *spin_frequency_powers,
-                                       double reference_phase_lag,
-                                       double inertial_mode_enhancement,
-                                       double inertial_mode_sharpness)
+void set_planet_dissipation(CPlanet *planet,
+                            unsigned num_tidal_frequency_breaks,
+                            unsigned num_spin_frequency_breaks,
+                            double *tidal_frequency_breaks,
+                            double *spin_frequency_breaks,
+                            double *tidal_frequency_powers,
+                            double *spin_frequency_powers,
+                            double reference_phase_lag,
+                            double inertial_mode_enhancement,
+                            double inertial_mode_sharpness)
 {
     Evolve::BrokenPowerlawPhaseLagZone *zone = &(
         reinterpret_cast<Planet::Planet*>(planet)->zone()

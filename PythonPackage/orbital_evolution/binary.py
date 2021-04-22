@@ -622,4 +622,78 @@ class Binary:
                                              self.secondary.mass,
                                              semimajor,
                                              eccentricity)
+
+    def envelope_tidal_torque_power(self,
+                                    body,
+                                    *,
+                                    semimajor,
+                                    eccentricity,
+                                    age,
+                                    spin,
+                                    inclination,
+                                    periapsis,
+                                    tidal_term=None):
+        """
+        Return tidal power in envelope of a component possbly for single term.
+
+        Args:
+            body(str):    Which object to return the tidal power for. Valid
+                values are `'primary'` or `'secondary`'
+
+            semimajor(float):    The semimajor axis of the orbit to assume in
+                solar radii.
+
+            eccentricity(float):    The eccentricity of the orbit to assume.
+
+            age(float):    The age (in Gyr) at which to evaluate the tidal power
+                (determines the radius of the object).
+
+            spin(float):   The spin rate to assume for the zone in rad/day.
+
+            inclination(float):    The angle between orbital and spin angular
+                momentum to assume for the zone (in rad).
+
+            periapsis(float):    The argument of periapsis to assume in the
+                reference frame of the zone (in rad).
+
+            tidal_term(array of 2 ints):    If not None, only the power due to
+                the term with the given orbital and spin frequency multipliers
+                is returned.
+
+        Returns:
+            float:
+                The tidal power for the selected zone and optionally tidal term
+                in units of [M_sun R_sun^2 day^-2 Gyr^-1].
+
+            float:
+                The x component of the tidal torque in units of
+                [M_sun R_sun^2 day^-1 Gyr^-1]
+
+            float:
+                The y component of the tidal torque
+
+            float:
+                The z component of the tidal torque
+        """
+
+        c_zone = library.get_envelope(getattr(self, body).c_body)
+        library.configure_zone(
+            c_zone,
+            age,
+            self.orbital_frequency(semimajor),
+            eccentricity,
+            self.orbital_angular_momentum(semimajor, eccentricity),
+            spin,
+            inclination,
+            periapsis,
+            True,
+            tidal_term
+        )
+
+        return (
+            library.get_zone_tidal_power(c_zone),
+            library.get_zone_tidal_torque_x(c_zone),
+            library.get_zone_tidal_torque_y(c_zone),
+            library.get_zone_tidal_torque_z(c_zone)
+        )
 #pylint: enable=too-many-instance-attributes

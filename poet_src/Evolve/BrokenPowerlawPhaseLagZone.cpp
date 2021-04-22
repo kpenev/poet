@@ -338,7 +338,8 @@ namespace Evolve {
         double spin,
         double inclination,
         double periapsis,
-        bool spin_is_frequency
+        bool spin_is_frequency,
+        std::pair<int, int> *single_term
     )
     {
 
@@ -411,7 +412,8 @@ namespace Evolve {
                                    spin,
                                    inclination,
                                    periapsis,
-                                   spin_is_frequency);
+                                   spin_is_frequency,
+                                   single_term);
         set_spin_index();
 
     }
