@@ -31,7 +31,7 @@ int main(int, char **)
 
     MESAInterpolator *interpolator = load_interpolator(
         "stellar_evolution_interpolators/"
-        "90af7144-f918-4a1c-95a2-0b086a80d0a2"
+        "4584388e-6d19-4864-a68c-8077cd12ef3b"
     );
     EvolvingStar *star = create_star(mstar,
                                      0.0,

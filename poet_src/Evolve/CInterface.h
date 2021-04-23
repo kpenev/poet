@@ -40,9 +40,6 @@ extern "C" {
     ///Opaque struct to cast to/from Evolve::BrokenPowerlawPhasLagZone
     struct LIB_PUBLIC BrokenPowerlawPhaseLagZone;
 
-    ///Opaque struct to cast to/from Evolve::DissipatingBody
-    struct LIB_PUBLIC DissipatingBody;
-
     ///Opaque struct to cast to/from Evolve::DissipatingZone
     struct LIB_PUBLIC DissipatingZone;
 
@@ -95,12 +92,19 @@ extern "C" {
         double inertial_mode_sharpness
     );
 
-    ///\brief Return the outermost zone of the given body. Useful for
-    ///investigating single zone/term contribution to tidal power/torque
-    LIB_PUBLIC DissipatingZone *get_envelope(
-        ///The body to return the envelope of.
-        DissipatingBody *body
+    ///\brief Return one of the zones of a star cast from
+    ///Evolve::BrokenPowerlawPhaseLagZone.
+    LIB_PUBLIC DissipatingZone *get_star_zone(
+        ///The star to get a zone from
+        EvolvingStar *star,
+
+        ///The zone to get (0 - envelope, 1 - core)
+        unsigned zone_index
     );
+
+    ///\brief Get the only zone of a planet cast from
+    ///Evolve::BrokenPowerlawPhaseLagZone.
+    LIB_PUBLIC DissipatingZone *get_planet_zone(CPlanet *planet);
 
     ///\brief Define the current orbit for a single zone. Useful for getting a
     ///single zone's tidal power and/or torue.

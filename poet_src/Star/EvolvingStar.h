@@ -86,12 +86,6 @@ namespace Star {
         {
             assert(zone_index<=1);
 
-            std::cerr
-                << "Return zone " << zone_index
-                << " of star. Envelope(addr): " << &__envelope
-                << ", core: " << &__core
-                << std::endl;
-
             if(zone_index == 0) return __envelope;
             else return __core;
         }

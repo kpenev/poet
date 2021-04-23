@@ -32,7 +32,6 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
 {
     Evolve::BrokenPowerlawPhaseLagZone *real_zone =
         reinterpret_cast<Evolve::BrokenPowerlawPhaseLagZone*>(zone);
-    std::cerr << "Defining zone dissipation" << std::endl;
     real_zone->setup(
         (
             num_tidal_frequency_breaks
@@ -65,15 +64,19 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
 
 }
 
-DissipatingZone *get_envelope(DissipatingBody *body)
+DissipatingZone *get_star_zone(EvolvingStar *star,
+                               unsigned zone_index)
 {
-    Evolve::DissipatingBody* real_body =
-        reinterpret_cast<Evolve::DissipatingBody*>(body);
-    std::cerr << "Body: " << real_body << std::endl;
-    std::cerr << "Direct envelope: " << &(real_body->zone(0)) << std::endl;
-    std::cerr << "----" << std::endl;
-    Evolve::DissipatingZone *zone=&(real_body->zone(0));
-    std::cerr << "Envelope: " << zone << std::endl;
+    Star::InterpolatedEvolutionStar* real_star =
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
+    Evolve::DissipatingZone *zone = &(real_star->zone(zone_index));
+    return reinterpret_cast<DissipatingZone*>(zone);
+}
+
+LIB_PUBLIC DissipatingZone *get_planet_zone(CPlanet *planet)
+{
+    Planet::Planet *real_planet = reinterpret_cast<Planet::Planet *>(planet);
+    Evolve::DissipatingZone *zone = &(real_planet->zone(0));
     return reinterpret_cast<DissipatingZone*>(zone);
 }
 
@@ -89,16 +92,11 @@ void configure_zone(DissipatingZone *zone,
                     bool spin_is_frequency,
                     int *single_term)
 {
-    std::cerr
-        << "Spin is frequency: " << spin_is_frequency
-        << ", single term: " << single_term << " " << bool(single_term)
-        << std::endl;
     std::pair<int, int> *real_single_term = (
         single_term
         ? new std::pair<int, int>(single_term[0], single_term[1])
         : NULL
     );
-    std::cerr << "Configuring zone: " << zone << std::endl;
     reinterpret_cast<Evolve::DissipatingZone*>(
         zone
     )->configure(
