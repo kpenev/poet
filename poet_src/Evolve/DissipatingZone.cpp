@@ -507,7 +507,10 @@ namespace Evolve {
         }
 #ifndef NDEBUG
         std::cerr << "At t = " << age << ", configuring zone with "
-                  << (spin_is_frequency ? "w" : "L") << " = " << spin
+                  << "Worb = " << orbital_frequency
+                  << ", e = " << eccentricity
+                  << ", Lorb = " << orbital_angmom
+                  << (spin_is_frequency ? ", w" : ", L") << " = " << spin
                   << ", inclination = " << inclination
                   << ", periapsis = " << periapsis
                   << std::endl;

@@ -1,4 +1,4 @@
-LIBRARIES = $(shell (find ../../build/libs/*/static/release -maxdepth 1 -type f -name "*lib*"))
+LIBRARIES = $(shell (find ../../build/libs/*/static/debug -maxdepth 1 -type f -name "*lib*"))
 LIB_PATHS = $(dir $(LIBRARIES))
 LIB_NAMES = $(patsubst lib%,%, $(basename $(notdir $(LIBRARIES))))
 

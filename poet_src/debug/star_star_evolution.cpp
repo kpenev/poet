@@ -83,7 +83,32 @@ int main(int, char **)
                                         WIND_SATURATION_FREQUENCY,
                                         DIFF_ROT_COUPLING_TIMESCALE,
                                         primary_interpolator);
+
+    EvolvingStar *secondary = create_star(SECONDARY_MASS,
+                                          FEH,
+                                          WIND_STRENGTH,
+                                          WIND_SATURATION_FREQUENCY,
+                                          DIFF_ROT_COUPLING_TIMESCALE,
+                                          primary_interpolator);
+
+
     select_interpolation_region(primary, core_formation_age(primary));
+    DissipatingZone *primary_envelope = get_envelope(
+        reinterpret_cast<DissipatingBody*>(primary)
+    );
+    configure_zone(primary_envelope,
+                   true,
+                   0.005,
+                   1.25664,
+                   0.0,
+                   0.181576,
+                   1.25664,
+                   0.0,
+                   0.0,
+                   true,
+                   NULL);
+
+
     set_star_dissipation(primary,
                          0,          //zone index
                          1,          //# tidal frequency breaks
@@ -96,12 +121,6 @@ int main(int, char **)
                          1.0,
                          0.0);
 
-    EvolvingStar *secondary = create_star(SECONDARY_MASS,
-                                          FEH,
-                                          WIND_STRENGTH,
-                                          WIND_SATURATION_FREQUENCY,
-                                          DIFF_ROT_COUPLING_TIMESCALE,
-                                          primary_interpolator);
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index

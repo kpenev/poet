@@ -67,11 +67,14 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
 
 DissipatingZone *get_envelope(DissipatingBody *body)
 {
-    return reinterpret_cast<DissipatingZone*>(
-        &reinterpret_cast<Evolve::DissipatingBody*>(
-            body
-        )->zone(0)
-    );
+    Evolve::DissipatingBody* real_body =
+        reinterpret_cast<Evolve::DissipatingBody*>(body);
+    std::cerr << "Body: " << real_body << std::endl;
+    std::cerr << "Direct envelope: " << &(real_body->zone(0)) << std::endl;
+    std::cerr << "----" << std::endl;
+    Evolve::DissipatingZone *zone=&(real_body->zone(0));
+    std::cerr << "Envelope: " << zone << std::endl;
+    return reinterpret_cast<DissipatingZone*>(zone);
 }
 
 void configure_zone(DissipatingZone *zone,
@@ -86,11 +89,16 @@ void configure_zone(DissipatingZone *zone,
                     bool spin_is_frequency,
                     int *single_term)
 {
+    std::cerr
+        << "Spin is frequency: " << spin_is_frequency
+        << ", single term: " << single_term << " " << bool(single_term)
+        << std::endl;
     std::pair<int, int> *real_single_term = (
         single_term
         ? new std::pair<int, int>(single_term[0], single_term[1])
         : NULL
     );
+    std::cerr << "Configuring zone: " << zone << std::endl;
     reinterpret_cast<Evolve::DissipatingZone*>(
         zone
     )->configure(

@@ -18,7 +18,7 @@
 
 namespace Star {
 
-    class LIB_PUBLIC InterpolatedEvolutionStar : 
+    class LIB_PUBLIC InterpolatedEvolutionStar :
         public SaturatingSkumanichWindBody,
         public ExponentialDecayDiffRotBody {
     private:
@@ -58,7 +58,7 @@ namespace Star {
 
             ///A StellarEvolution interpolator.
             const StellarEvolution::Interpolator &interpolator
-        ) : 
+        ) :
             SaturatingSkumanichWindBody(wind_strength,
                                         wind_saturation_frequency),
             ExponentialDecayDiffRotBody(diff_rot_coupling_timescale),
@@ -85,6 +85,12 @@ namespace Star {
         Evolve::DissipatingZone &zone(unsigned zone_index)
         {
             assert(zone_index<=1);
+
+            std::cerr
+                << "Return zone " << zone_index
+                << " of star. Envelope(addr): " << &__envelope
+                << ", core: " << &__core
+                << std::endl;
 
             if(zone_index == 0) return __envelope;
             else return __core;
@@ -122,7 +128,7 @@ namespace Star {
 
         ///\brief Change the star as necessary at the given age.
         ///
-        ///Handles things like interpolation discontinuities. 
+        ///Handles things like interpolation discontinuities.
         virtual void reached_critical_age(double age)
         {
             __core.reached_critical_age(age);

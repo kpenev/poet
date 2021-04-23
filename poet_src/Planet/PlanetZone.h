@@ -120,7 +120,12 @@ namespace Planet {
             double periapsis,
 
             ///Is spin_angmom angular momentum of freuqency? (ignored)
-            bool spin_is_frequency
+            bool spin_is_frequency,
+
+            ///If specified, only a single tidal term is included in the tidal
+            ///rates. The two values specify the spin and orbital frequency
+            ///multipliers of the term to add (in that order).
+            std::pair<int, int> *single_term=NULL
         )
         {
             BrokenPowerlawPhaseLagZone::configure(
@@ -132,7 +137,8 @@ namespace Planet {
                 (dissipative() ? spin : orbital_frequency),
                 (dissipative() ? inclination : 0),
                 (dissipative() ? periapsis : 0),
-                (dissipative() ? spin_is_frequency : true)
+                (dissipative() ? spin_is_frequency : true),
+                single_term
             );
         }
 
