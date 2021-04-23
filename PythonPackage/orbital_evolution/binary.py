@@ -630,8 +630,8 @@ class Binary:
                                     eccentricity,
                                     age,
                                     spin,
-                                    inclination,
-                                    periapsis,
+                                    obliquity=0.0,
+                                    periapsis=0.0,
                                     tidal_term=None):
         """
         Return tidal power in envelope of a component possbly for single term.
@@ -650,7 +650,7 @@ class Binary:
 
             spin(float):   The spin rate to assume for the zone in rad/day.
 
-            inclination(float):    The angle between orbital and spin angular
+            obliquity(float):    The angle between orbital and spin angular
                 momentum to assume for the zone (in rad).
 
             periapsis(float):    The argument of periapsis to assume in the
@@ -677,15 +677,21 @@ class Binary:
                 The z component of the tidal torque
         """
 
-        c_zone = library.get_envelope(getattr(self, body).c_body)
+        body = getattr(self, body)
+        if isinstance(body, EvolvingStar):
+            c_zone = library.get_star_zone(body.c_body, 0)
+        else:
+            c_zone = library.get_planet_zone(body.c_body)
+
         library.configure_zone(
             c_zone,
+            True,
             age,
             self.orbital_frequency(semimajor),
             eccentricity,
             self.orbital_angular_momentum(semimajor, eccentricity),
             spin,
-            inclination,
+            obliquity,
             periapsis,
             True,
             tidal_term

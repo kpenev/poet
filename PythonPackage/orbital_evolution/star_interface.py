@@ -18,7 +18,7 @@ from orbital_evolution.dissipating_body import\
     DissipatingBody
 from orbital_evolution.evolve_interface import\
     library as orbital_evolution_library,\
-    c_dissipating_body_p
+    c_evolving_star_p
 from orbital_evolution.c_interface_util import ndpointer_or_null
 #pylint: enable=wrong-import-position
 
@@ -38,7 +38,7 @@ def initialize_library():
         c_double,
         stellar_evolution_library.create_interpolator.restype
     ]
-    result.create_star.restype = c_dissipating_body_p
+    result.create_star.restype = c_evolving_star_p
 
     result.destroy_star.argtypes = [result.create_star.restype]
     result.destroy_star.restype = None

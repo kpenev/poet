@@ -23,14 +23,17 @@ from orbital_evolution.c_interface_util import ndpointer_or_null
 
 #pylint: disable=invalid-name
 #pylint: disable=too-few-public-methods
-class c_binary_p(c_void_p):
-    """Place holder type for binary systems from the C-library."""
+class c_disk_binary_system_p(c_void_p):
+    """Place holder type for DiskBinarySystem type from the C-library."""
 
 class c_solver_p(c_void_p):
     """Place holder type for orbit evolution solver from the C-library."""
 
-class c_dissipating_body_p(c_void_p):
-    """Dummy class only used for type checking."""
+class c_evolving_star_p(c_void_p):
+    """Place holder type for EvolvingStar type in the C-library."""
+
+class c_planet_p(c_void_p):
+    """Place holder type for CPlanet type in the C-library."""
 
 class c_dissipating_zone_p(c_void_p):
     """Dummy class only used for type checking."""
@@ -54,18 +57,23 @@ def initialize_library():
     result.read_eccentricity_expansion_coefficients.argtypes = [c_char_p]
     result.read_eccentricity_expansion_coefficients.restype = None
 
-    result.create_star_planet_system.argtypes = [c_dissipating_body_p,
-                                                 c_dissipating_body_p,
+    result.create_star_planet_system.argtypes = [c_evolving_star_p,
+                                                 c_planet_p,
                                                  c_double,
                                                  c_double,
                                                  c_double,
                                                  c_double,
                                                  c_double,
                                                  c_double]
-    result.create_star_planet_system.restype = c_binary_p
+    result.create_star_planet_system.restype = c_disk_binary_system_p
 
     result.create_star_star_system.argtypes = (
-        result.create_star_planet_system.argtypes
+        [
+            c_evolving_star_p,
+            c_evolving_star_p
+        ]
+        +
+        result.create_star_planet_system.argtypes[2:]
     )
     result.create_star_star_system.restype = (
         result.create_star_planet_system.restype
@@ -77,7 +85,7 @@ def initialize_library():
     result.destroy_binary.restype = None
 
     result.configure_planet.argtypes = [
-        c_dissipating_body_p,
+        c_planet_p,
         c_double,
         c_double,
         c_double,
@@ -101,7 +109,7 @@ def initialize_library():
     result.configure_star.restype = result.configure_planet.restype
 
     result.configure_system.argtypes = [
-        c_binary_p,
+        c_disk_binary_system_p,
         c_double,
         c_double,
         c_double,
@@ -119,7 +127,7 @@ def initialize_library():
     result.configure_system.restype = None
 
     result.evolve_system.argtypes = [
-        c_binary_p,
+        c_disk_binary_system_p,
         c_double,
         c_double,
         c_double,
@@ -141,8 +149,8 @@ def initialize_library():
     result.get_star_planet_evolution.argtypes = [
         result.evolve_system.restype, # solver
         result.create_star_planet_system.restype, #system
-        c_dissipating_body_p, #star
-        c_dissipating_body_p, #planet
+        c_evolving_star_p, #star
+        c_planet_p, #planet
         ndpointer_or_null(dtype=c_double, #age
                           ndim=1,
                           flags='C_CONTIGUOUS'),
@@ -225,8 +233,8 @@ def initialize_library():
     result.get_star_star_evolution.argtypes = [
         result.evolve_system.restype,
         result.create_star_planet_system.restype,
-        c_dissipating_body_p,
-        c_dissipating_body_p,
+        c_evolving_star_p,
+        c_evolving_star_p,
         ndpointer_or_null(dtype=c_double,
                           ndim=1,
                           flags='C_CONTIGUOUS'),
@@ -330,8 +338,8 @@ def initialize_library():
     result.get_star_planet_final_state.argtypes = [
         result.evolve_system.restype, #solver
         result.create_star_planet_system.restype, #system
-        c_dissipating_body_p, #star
-        c_dissipating_body_p, #planet
+        c_evolving_star_p, #star
+        c_planet_p, #planet
         POINTER(c_double), #age
         POINTER(c_double), #semimajor
         POINTER(c_double), #eccentricity
@@ -352,8 +360,8 @@ def initialize_library():
     result.get_star_star_final_state.argtypes = [
         result.evolve_system.restype,
         result.create_star_planet_system.restype,
-        c_dissipating_body_p,
-        c_dissipating_body_p,
+        c_evolving_star_p,
+        c_evolving_star_p,
         POINTER(c_double),
         POINTER(c_double),
         POINTER(c_double),
@@ -435,6 +443,18 @@ def initialize_library():
     ]
     result.set_zone_dissipation.restype = None
 
+    result.get_star_zone.argtypes = [
+        c_evolving_star_p,
+        c_uint
+    ]
+    result.get_star_zone.restype = c_dissipating_zone_p
+
+    result.get_planet_zone.argtypes = [
+        c_planet_p
+    ]
+    result.get_planet_zone.restype = c_dissipating_zone_p
+
+
     result.configure_zone.argtypes = [
         c_dissipating_zone_p, #zone,
         c_bool,     #initialize,
@@ -446,14 +466,11 @@ def initialize_library():
         c_double,   #inclination,
         c_double,   #periapsis,
         c_bool,     #spin_is_frequency,
-        numpy.ctypeslib.ndpointer(dtype=c_int, #single_term
-                                  shape=(2,),
-                                  flags='C_CONTIGUOUS')
+        ndpointer_or_null(dtype=c_int, #single_term
+                          shape=(2,),
+                          flags='C_CONTIGUOUS')
     ]
     result.configure_zone.restype = None
-
-    result.get_envelope.argtypes = [c_dissipating_body_p]
-    result.get_envelope.restype = result.set_zone_dissipation.argtypes[0]
 
     result.get_zone_tidal_power.argtypes = [c_dissipating_zone_p]
     result.get_zone_tidal_power.restype = c_double

@@ -13,7 +13,7 @@ from orbital_evolution.dissipating_body import\
     DissipatingBody
 from orbital_evolution.evolve_interface import\
     library as orbital_evolution_library,\
-    c_dissipating_body_p
+    c_planet_p
 
 def initialize_library():
     """Prepare the planet library for use and return it."""
@@ -24,7 +24,7 @@ def initialize_library():
     result = cdll.LoadLibrary(library_fname)
 
     result.create_planet.argtypes = [c_double, c_double]
-    result.create_planet.restype = c_dissipating_body_p
+    result.create_planet.restype = c_planet_p
 
     result.destroy_planet.argtypes = [result.create_planet.restype]
     result.destroy_planet.restype = None
