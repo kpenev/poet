@@ -562,8 +562,6 @@ namespace Evolve {
             U_error.m_plus_one *= esquared;
 
             for(int m = -2; m <= 2; ++m) {
-                if(single_term && single_term->first != m)
-                    continue;
 #if 0
                 std::cerr << "Term: m' = "
                           << mp
@@ -591,15 +589,16 @@ namespace Evolve {
                     U_e_deriv.m_plus_one = 0;
                 }
 
-                add_tidal_term(
-                    m,
-                    mp,
-                    forcing_frequency(mp, m, orbital_frequency),
-                    U_value,
-                    U_i_deriv,
-                    U_e_deriv,
-                    U_error
-                );
+                if(!single_term || single_term->first == m)
+                    add_tidal_term(
+                        m,
+                        mp,
+                        forcing_frequency(mp, m, orbital_frequency),
+                        U_value,
+                        U_i_deriv,
+                        U_e_deriv,
+                        U_error
+                    );
 
                 U_value.m_minus_one = U_value.m;
                 U_error.m_minus_one = U_error.m;

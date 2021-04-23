@@ -84,6 +84,10 @@ def initialize_library():
     ]
     result.destroy_binary.restype = None
 
+    result.change_e_order.argtypes = [c_disk_binary_system_p,
+                                      c_uint]
+    result.change_e_order.restype = None
+
     result.configure_planet.argtypes = [
         c_planet_p,
         c_double,

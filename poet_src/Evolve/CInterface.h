@@ -214,6 +214,9 @@ extern "C" {
         DiskBinarySystem *system
     );
 
+    ///Temporarily set the eccentricity expansion order for a binary.
+    LIB_PUBLIC void change_e_order(DiskBinarySystem *system, unsigned e_order);
+
     ///\brief Defines the orbit a planet is in.
     ///
     ///The inclinations and arguments of periapsis must be already set for

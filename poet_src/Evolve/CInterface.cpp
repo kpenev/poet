@@ -197,6 +197,15 @@ void destroy_binary(DiskBinarySystem *system)
     delete reinterpret_cast<Evolve::DiskBinarySystem*>(system);
 }
 
+void change_e_order(DiskBinarySystem *system, unsigned e_order)
+{
+    reinterpret_cast<Evolve::DiskBinarySystem*>(
+        system
+    )->change_e_order(
+        e_order
+    );
+}
+
 void configure_star(EvolvingStar *star,
                     double age,
                     double companion_mass,

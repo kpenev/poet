@@ -623,6 +623,11 @@ class Binary:
                                              semimajor,
                                              eccentricity)
 
+    def change_e_order(self, e_order):
+        """Temporarily set the expansion order of the tidal potential."""
+
+        library.change_e_order(self.c_binary, e_order)
+
     def envelope_tidal_torque_power(self,
                                     body,
                                     *,
@@ -694,7 +699,10 @@ class Binary:
             obliquity,
             periapsis,
             True,
-            tidal_term
+            (
+                None if tidal_term is None
+                else numpy.asarray(tidal_term, dtype=c_int)
+            )
         )
 
         return (
