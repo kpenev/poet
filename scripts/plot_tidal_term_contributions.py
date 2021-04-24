@@ -24,7 +24,7 @@ def parse_config():
     )
     parser.add_argument(
         '--eccentricity_expansion_fname',
-        default='eccentricity_expansion_coef.txt',
+        default='eccentricity_expansion_coef_O200.txt',
         help='The filename storing the eccentricity expansion coefficienst.'
     )
     parser.add_argument(
@@ -52,63 +52,139 @@ def parse_config():
     add_binary_config(parser,
                       skip={'secondary_formation_age'})
 
+    parser.add_argument(
+        '--y-quantity',
+        choices=['torque_power', 'e_rate'],
+        default='torque_power',
+        help='What quantity to plot vs the tidal term. For `torque_power`, '
+        'four plots are generated showing the tidal power and the 3 components '
+        'of the torque.'
+    )
+
     return parser.parse_args()
 
-def main(config):
-    """Avoid polluting global namespace."""
+def get_torque_power_rates(config):
+    """
+    Return an array of tidal torque and power for all tidal terms.
+
+    Args:
+    """
 
     config.final_age = config.disk_dissipation_age
     interpolator = set_up_library(config)
     binary = get_binary(config, interpolator)
     binary.change_e_order(config.eccentricity_expansion_order)
 
-    _, all_axes = pyplot.subplots(2, 2)
-    all_axes = all_axes.flatten()
-    all_axes[0].set_title('Power')
-    for axis, component in zip(all_axes[1:], 'XYZ'):
-        axis.set_title(component + ' Torque')
-    plot_x = numpy.arange(-config.eccentricity_expansion_order - 2,
-                          config.eccentricity_expansion_order + 3)
-    for spin_multiplier in range(-2, 3):
-        tidal_rates = numpy.empty(shape=(4, plot_x.size), dtype=float)
-        for rate_index, orbital_multiplier in enumerate(plot_x):
-            tidal_rates[:, rate_index] = binary.envelope_tidal_torque_power(
+    orbital_multipliers = numpy.arange(-config.eccentricity_expansion_order - 2,
+                                       config.eccentricity_expansion_order + 3)
+    spin_multipliers = numpy.arange(-2, 3)
+    tidal_rates = numpy.empty(
+        (spin_multipliers.size, orbital_multipliers.size),
+        dtype=[
+            (quantity, float)
+            for quantity in ['power', 'torque_x', 'torque_y', 'torque_z']
+        ]
+    )
+    for spin_index, spin_mul in enumerate(spin_multipliers):
+        for orbital_index, orbital_mul in enumerate(orbital_multipliers):
+            tidal_rates[
+                spin_index,
+                orbital_index
+            ] = binary.envelope_tidal_torque_power(
                 'primary',
                 semimajor=binary.semimajor(config.initial_orbital_period),
                 eccentricity=config.initial_eccentricity,
                 age=config.disk_dissipation_age,
                 spin=config.disk_lock_frequency,
                 obliquity=config.initial_obliquity,
-                tidal_term=(spin_multiplier, orbital_multiplier)
+                tidal_term=(spin_mul, orbital_mul)
             )
-        label='m=%d' % spin_multiplier
-        for axis, plot_y in zip(all_axes, tidal_rates):
-            selected = plot_y > 0
-            color = axis.semilogy(
-                plot_x[selected],
-                plot_y[selected],
-                'o',
-                markerfacecolor='none',
-                label=label
-            )[0].get_color()
-            label=None
-            selected = numpy.logical_not(selected)
-            axis.semilogy(plot_x[selected],
-                          -plot_y[selected],
-                          '*',
-                          color=color,
-                          markerfacecolor='none')
 
-    total_rates = binary.envelope_tidal_torque_power(
-        'primary',
-        semimajor=binary.semimajor(config.initial_orbital_period),
-        eccentricity=config.initial_eccentricity,
-        age=config.disk_dissipation_age,
-        spin=config.disk_lock_frequency,
-        obliquity=config.initial_obliquity,
+    return tidal_rates, spin_multipliers, orbital_multipliers
+
+def plot_spin_index(orbital_multipliers,
+                    plot_y,
+                    plot_func,
+                    spin_multiplier,
+                    add_label=True):
+    """Add the contributinos per orbital multiplier for a single spin mult."""
+
+    markers = ['o*', 's+', '^v']
+
+    selected = plot_y > 0
+    color = plot_func(
+        orbital_multipliers[selected],
+        plot_y[selected],
+        markers[abs(spin_multiplier)][0],
+        markerfacecolor='none',
+        label=('m=%+d' % spin_multiplier if add_label else None)
+    )[0].get_color()
+
+    selected = numpy.logical_not(selected)
+    plot_func(orbital_multipliers[selected],
+              -plot_y[selected],
+              markers[abs(spin_multiplier)][1],
+              color=color,
+              markerfacecolor='none')
+
+
+def plot_torque_power(config):
+    """Create plots showing the tidal torque and power vs tidal term."""
+
+    _, all_axes = pyplot.subplots(2, 2)
+    all_axes = all_axes.flatten()
+    all_axes[0].set_title('Power')
+    for axis, component in zip(all_axes[1:], 'XYZ'):
+        axis.set_title(component + ' Torque')
+
+    tidal_rates, spin_multipliers, orbital_multipliers = get_torque_power_rates(
+        config
     )
-    for axis, rate in zip(all_axes, total_rates):
-        axis.axhline(y=rate, color='black')
+
+    for spin_index, spin_mul in enumerate(spin_multipliers):
+        for axis, quantity in zip(all_axes, tidal_rates.dtype.names):
+            plot_y = tidal_rates[spin_index][quantity]
+            plot_spin_index(
+                orbital_multipliers,
+                plot_y,
+                axis.semilogy,
+                spin_mul,
+                quantity == 'power'
+            )
+
+def plot_e_rate(config):
+    """Create a plot of the circularization timescale vs tidal term."""
+
+    (
+        tidal_rates,
+        spin_multipliers,
+        orbital_multipliers
+    ) = get_torque_power_rates(
+        config
+    )
+
+    e_rates = (
+        tidal_rates['power']
+        -
+        (
+            2.0 * tidal_rates['torque_z']
+            /
+            numpy.sqrt(1.0 - config.initial_eccentricity**2)
+        )
+    )
+    for spin_index, spin_mul in enumerate(spin_multipliers):
+        plot_y = e_rates[spin_index]
+        plot_spin_index(
+            orbital_multipliers,
+            plot_y,
+            pyplot.semilogy,
+            spin_mul
+        )
+
+def main(config):
+    """Avoid polluting global namespace."""
+
+    globals()['plot_' + config.y_quantity](config)
 
     pyplot.figlegend()
     pyplot.show()
