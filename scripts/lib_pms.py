@@ -2,7 +2,8 @@ import sys, getopt
 import numpy as np
 import scipy.integrate as integrate
 import matplotlib.pyplot as plt
-from multiprocessing import Pool
+#from multiprocessing import Pool
+import multiprocessing as mp
 
 def p_0s(u,s,e):
     return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**2).real
@@ -36,7 +37,7 @@ def integrize(kind,func,s,e,lB=50):
         return integrate.fixed_quad(y,0,2*np.pi,args=(s,e),n=10000)[0]
     #return
 
-def p_MS(m,s,e,kind):
+def p_MS(q,m,s,e,kind,l=None,shouldPrint=0,objetFile=None,itera=0):
     m=int(m)
     s=int(s)
     #kind=whatKind
@@ -73,20 +74,54 @@ def p_MS(m,s,e,kind):
             term1 = term2 = term3 = term4 = 0
         
     result = (1/(2*np.pi))*(p0s+term1+term2+term3+term4)
+    q.put(result)
+    value = result
     if np.abs(result)<1e-9:
-        return result*0
-    return (1/(2*np.pi))*(p0s+term1+term2+term3+term4)
+        #result=result*0
+        value = 0
+        #return result*0
+        q.put(result*0)
+    
+    if l != None and shouldPrint != 0:
+        l.acquire()
+        try:
+            print(e,value,itera,sep='\t',file=objetFile)
+        finally:
+            l.release()
+    
+    #return result
+    #q.put(result)
 
 # Gets the specified coefficient in the specified range
-def getCoefficient(m,s,eList,GRID,kind):
-    #print(eList.size)
-    iter=np.zeros((GRID,4)).T
-    #print(iter[2].shape)
-    iter[0]=m
-    iter[1]=s
-    iter[2]=eList
-    iter[3]=kind
-    iter=iter.T
-    with Pool(8) as p:
-        yList = p.starmap(p_MS,iter)
+def getCoefficient(m,s,eList,GRID,kind,fileName,itera):
+    
+    lock=mp.Lock()
+    procesNum = 8
+    
+    doPrint=1
+    if fileName==None:
+        doPrint=0
+        fileName='delete.txt'
+    
+    newEList = np.array_split(eList,procesNum)
+    
+    vec_pms = np.vectorize(p_MS)
+    yList=np.array(())
+    
+    with open(fileName,mode='w') as file_object:
+        jobs=[]
+        cue=[]
+        for i in range(procesNum):
+            q=mp.Queue()
+            p=mp.Process(target=vec_pms,args=(q,m,s,newEList[i],kind,lock,doPrint,None,itera))
+            jobs.append(p)
+            cue.append(q)
+            p.start()
+        for proc in jobs:
+            proc.join()
+        for results in cue:
+            print(yList)
+            print(results.get())
+            yList=np.concatenate( (yList,np.array([results.get()])) )
+    
     return yList
