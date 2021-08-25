@@ -27,42 +27,41 @@ def db_session_scope():
     finally:
         session.close()
 
-def main(em = 0, es = 1, accGoal = 1e-6):
-	
-	# Check if the appropriate file already exists; if not, create it
-	for table in model.DataModelBase.metadata.sorted_tables:
-		if not db_engine.has_table(table.name):
-			table.create(db_engine)
+def main(em = 0, es = 1, accGoal = 2e-9):
+    
+    # Check if the appropriate file already exists; if not, create it
+    for table in model.DataModelBase.metadata.sorted_tables:
+        if not db_engine.has_table(table.name):
+            table.create(db_engine)
 
-	# Calculate some expansions for a specified coefficient
-	chebCoeffs, Accurs = pms.main(m=em,s=es,accuracyGoal=accGoal)
-	
-	# Prep our lists of values to be put in the database
-	PmsCoeffs = []
-	Expansions = []
-	
-	# Prepare to figure out where we're starting with ids
-	biggest = 0
+    # Calculate some expansions for a specified coefficient
+    minE,stepNum,maxE,chebVals = pms.main(m=em,s=es,tolerance=accGoal,kind=3)
+    
+    # Prep our lists of values to be put in the database
+    PmsCoeffs = []
+    Expansions = []
+    
+    # Prepare to figure out where we're starting with ids
+    biggest = 0
 
-	# Open a db session to gain access to relevant i/o utilities
-	with db_session_scope() as db_session:
-		
-		# Find the biggest id so far
-		for bob in db_session.query(model.MAndSToAccuracy):
-			if bob.id > biggest:
-				biggest = bob.id
-		
-		# Loop through the data we generated, prep it for the database
-		for i in range(len(Accurs)):
-			PmsCoeffs.append(model.MAndSToAccuracy(id=biggest + 1 + i,m=em,s=es,
-						accuracy = Accurs[i],timestamp = datetime.now(timezone.utc)))
-			for y in range(len(chebCoeffs[i])):
-				Expansions.append(model.ChebExpansionCoeffs(p_id = biggest + 1 + i,place_in_expansion=y,coefficient_value = chebCoeffs[i][y],
-				timestamp = datetime.now(timezone.utc)))
-		
-		# Add everything to the database
-		db_session.add_all(PmsCoeffs)
-		db_session.add_all(Expansions)
+    # Open a db session to gain access to relevant i/o utilities
+    with db_session_scope() as db_session:
+        
+        # Find the biggest id so far
+        for i in db_session.query(model.Interpolations):
+            if i.id > biggest:
+                biggest = i.id
+        
+        # Loop through the data we generated, prep it for the database
+        PmsCoeffs.append(model.Interpolations(id=biggest + 1,m=em,s=es,min_interp_e=minE,number_of_steps=stepNum,max_checked_e=maxE,
+                    interp_accuracy = accGoal,timestamp = datetime.now(timezone.utc)))
+        for y in range(len(chebVals)):
+            Expansions.append(model.InterpolationData(p_id = biggest + 1,step_number=y,y_value = chebVals[y],
+            timestamp = datetime.now(timezone.utc)))
+        
+        # Add everything to the database
+        db_session.add_all(PmsCoeffs)
+        db_session.add_all(Expansions)
 
 
 if __name__ == '__main__':

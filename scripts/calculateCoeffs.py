@@ -1,98 +1,21 @@
-""" calculateCoeffs.py
+""" determineHowMuchGridINeedPerUnitGrid.py
 
 Calculates multiple expansions of p_ms coefficients
 up to some level of accuracy.
 @author: Joshua Aaron Schussler
 """
 
-# A bit more detail on the expansion:
-# 1. A given p_ms is found numerically as a function of e, eccentricity
-# 2. A fit is found for some number of chebyshev polynomials
-# 3. The number of polynomials used in the fit is gradually increased until we hit a target accuracy
-
 ### Importing relevant libraries
 import sys, getopt
 import numpy as np
-import scipy.integrate as integrate
+#import scipy.integrate as integrate
 import matplotlib.pyplot as plt
+#from multiprocessing import Pool
+import multiprocessing as mp
+import lib_pms as pms
 ####
 
-### Constants
-GRID = 100001 # The number of grid points to divide 0<=e<=1 into; should be power of ten plus one
-
-#####
-# The following are all defining the coefficients
-# which we're trying to find expansions of
-# I will have removed the poles for all of them eventually some day (1-e**2)**(3/2)*
-# For more info, see https://kpenev.github.io/poet/inclination_eccentricity_pms1.html
-
-# Term inside integral for p0s
-def p_0s(u,s,e):
-    return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**2).real
-
-# The next four terms are the constituent parts of m=+/-2
-#  t3 and t4 are later multiplied by 1j; because quad can't handle
-#  complex numbers and we ultimately only want the real part, we
-#  handle the flipping and subsequent negative here
-def t1(u,s,e):
-    return ((1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**4)).real
-
-def t2(u,s,e):
-    return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))*np.cos(2*u)/(1-e*np.cos(u))**4).real
-
-def t3(u,s,e):
-    return -((1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))*np.sin(2*u)/(1-e*np.cos(u))**4)).imag
-
-def t4(u,s,e):
-    return -((1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))*np.sin(u)/(1-e*np.cos(u))**4)).imag
-    
-# The p_ms coefficient proper
-def p_MS(m,s,e):
-    
-    # We want to adjust the numerical integration limit as s
-    # increases, but we don't want to go below the default value
-    # for small s
-    limitBreak = 10*s
-    if limitBreak < 50:
-        limitBreak = 50
-    
-    if e == 1: # Special case of we-know-what-this-should-be
-    
-        if m == 0:
-            return 1
-        else:
-            return 0
-    
-    else:
-        p0s = integrate.quad(p_0s,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
-        
-        if abs(m) == 2:
-        
-            # Define a couple of constants that show up across terms
-            sC1 = 1-e**2
-            sC2 = np.sqrt(sC1)
-            
-            term1 = -sC1*integrate.quad(t1,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
-            term2 = sC1*integrate.quad(t2,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
-            term3 = sC2*integrate.quad(t3,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
-            term4 = 2*e*sC2*integrate.quad(t4,0,2*np.pi,args=(s,e),limit=limitBreak)[0]
-            
-            if m > 0:
-                term3 = -term3
-            elif m < 0:
-                term4 = -term4
-            
-        else:
-            term1 = term2 = term3 = term4 = 0
-        
-    return (1/(2*np.pi))*(p0s+term1+term2+term3+term4)
-
-# Gets the specified coefficient of the (Chebyshev?) expansion
-def getCoefficients(coeffDeg,eList,yList):
-    
-    return np.polynomial.chebyshev.chebfit(2*eList.T-1,yList.T,coeffDeg,None,True)
-
-def main(m=2, s=48, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
+def main(m=2, s=200, tolerance=2e-9, kind=3):
     
     print("Starting")
     # Sanity check input arguments
@@ -104,52 +27,98 @@ def main(m=2, s=48, accuracyGoal=1e-6, maxCoeffs=np.inf):#1e-6
         return [[-1]],[-1]
         
     # Initialize my variables
-    coeffDeg = 0#794#0 # Current degree(s) of Chebyshev polynomial for which we are finding coefficients
-    resid = [] # Residual
-    listOfCoeff=[]
+    maxLoops = 0#30#15#11#np.inf#100
+    loops = 0
+    goalAchieved = 0
+    GRID = 11#01#11
+    zeroEnd = 0
+    eZEND = 0
+    cutoff=.999
+    fNme="george.txt"
+    
+    zeeArray = ezList = np.zeros(0)
     
     # Calculate some number of data points for 0<=e<=1
     eList = np.linspace(0,1,GRID)
         
-    print("Calculating p_ms")
+    print("Calculating initial p_ms")
     # Calculate the value of p_ms for each point on that list
-    vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
-    yList = vec_pms(m,s,eList)
-    # or you know just delete everything below this and do a ~linear~ interpolation
-    # store it. constant step size, just store y values (we would know # from size of array)
-    # or maybe x and y. I should think about it. Figure out what s=200 looks like and how small the steps would be and stuff (2 gazillion y values w/ uniform step size?)
-    # for the 200 thing, calculate grid, interpolate, find the next one down and see how well it does, keep going if necessary
-    print("Fitting")
-    while coeffDeg <= maxCoeffs:
-        # i guess I'm changing grid and getting more yList points here?
-        # grid*2 for 200*2^something
-        #      so like *2 @ 200 then *2 at 200*2=400 then *2 at 800
-        newCoeff, diag = getCoefficients(coeffDeg,eList,yList)
-        rmsResid=np.sqrt(diag[0][0]/GRID)
-        print(str(rmsResid) + " also " + str(diag[1]))
-        if rmsResid < 1e-2:
-            listOfCoeff.append(newCoeff)
-            resid.append(rmsResid) # Diag is an array of four items, the one we want is itself an array of a single element
-        
-        if rmsResid < accuracyGoal: # Don't change this below 1e-7
-            
-            # We're accurate enough
-            maxCoeffs = coeffDeg
-        
-        coeffDeg += 1
+    #vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
+    yList = pms.getCoefficient(m,s,eList,eList.size,kind,fNme,loops-2,tolerance)#vec_pms(m,s,eList)
+    #print(yList)
+    # Identify how long the bit that's just zero is (if it exists)
+    print("Getting zero")
+    for i in yList:
+        if i != 0:
+            break
+        else:
+            zeroEnd = zeroEnd + 1
     
-    # The loop is going to increase coeffDeg too far, so fix that
-    coeffDeg = coeffDeg - 1
+    # Adjust our setup to account for our new reality (unless nothing changed, in which case that would be a waste of time)
+    print("Recalculating")
+    if zeroEnd > 1:
+        eZEND = eList[zeroEnd-1]
+        if eZEND != 1:
+            zeeArray = np.zeros(zeroEnd-1)
+            ezList = np.linspace(0,1,GRID)[0:zeroEnd-1]
+            #print("Zero is at " + str(eList[zeroEnd]))
+            eList = np.linspace(eZEND,1,GRID)
+            yList = pms.getCoefficient(m,s,eList,eList.size,kind,fNme,loops-1,tolerance)
+        else:
+            print("Coefficient is always zero")
+            return eZEND,0,cutoff,np.zeros(1)#0
+    #print(yList)
+    print("--- BEGIN EXPLORING ---")
+    while ((loops <= maxLoops) and (not goalAchieved)):
+        print("Increasing Resolution")
+        newGRID = GRID * 2 - 1
+        eListTemp = np.linspace(eZEND,1,newGRID)[1::2]
+        yListTemp = pms.getCoefficient(m,s,eListTemp,eListTemp.size,kind,fNme,loops,tolerance)
+        print("Interpolating")
+        interpolant = np.interp(eListTemp,eList,yList)
+        
+        print("Comparing")
+        #goalAchieved = isGoalAchieved(eList,yList,eListTemp,yListTemp)
+        print(str(np.max( np.abs(np.array(yListTemp)[eListTemp<=cutoff] - interpolant[eListTemp<=cutoff]) )))
+        print(str(eListTemp[np.argmax( np.abs(np.array(yListTemp)[eListTemp<=cutoff] - interpolant[eListTemp<=cutoff]) )]))
+        if np.max( np.abs(np.array(yListTemp)[eListTemp<=cutoff] - interpolant[eListTemp<=cutoff]) ) < tolerance:  # do these as vector[0:?]
+            goalAchieved = True
+        
+        if (not goalAchieved):
+            print("Combining")
+            GRID=newGRID
+            newArray = np.zeros(GRID)
+            newArray[0::2] = eList
+            newArray[1::2] = eListTemp
+            eList = newArray
+            newArray = np.zeros(GRID)
+            newArray[0::2] = yList
+            newArray[1::2] = yListTemp
+            yList = newArray
+        
+        loops += 1
     
+    print("--- --------------- ---")
+    print("Finishing")
+    # Finish
+    #feL = np.append(ezList,eList)
+    #fyL = np.append(zeeArray,yList)
     # Report results
-    print("We used this many coefficients: " + str(coeffDeg))
-    #theCheb = np.polynomial.chebyshev.Chebyshev(listOfCoeff[coeffDeg])
-    #plt.plot(eList,yList,'o')
-    #dirtY = np.polynomial.chebyshev.chebval(2*eList-1,listOfCoeff[coeffDeg])
-    #plt.plot(eList,dirtY)
+    #print(ezList)
+    #print(eList)
+    print("We used this many grid points: " + str(GRID))
+    #plt.plot(feL,fyL,'o')
     #plt.show()
+    #plt.plot(ezList,zeeArray,'o')
+    #plt.plot(feL,fyL,'+')
+    #plt.show()
+    #plt.semilogy(eList,yList,'o')
+    #plt.semilogy(eList,-1*yList,'+')
+    #plt.show()
+    print(goalAchieved)
     
-    return listOfCoeff, resid
+    return eZEND,GRID,cutoff,yList
 
 if __name__ == "__main__":
+    mp.set_start_method('spawn')
     main()

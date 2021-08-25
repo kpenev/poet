@@ -12,68 +12,83 @@ from sqlalchemy.ext.declarative import declarative_base
 
 DataModelBase = declarative_base()
 
-class MAndSToAccuracy(DataModelBase):
-	"""The available coefficient expansions."""
-	
-	__tablename__ = 'm_and_s_to_accuracy'
-	
-	id = Column(
-		Integer,
-		primary_key=True,
-		doc='A unique identifier for each combination of coefficient and accuracy.'
-	)
-	
-	m = Column(
-		Integer,
-		nullable=False,
-		doc='The mth coefficient; can be -2, 0, or 2.'
-	)
-	s = Column(
+class Interpolations(DataModelBase):
+    """The available coefficient expansions."""
+    
+    __tablename__ = 'interpolations'
+    
+    id = Column(
+        Integer,
+        primary_key=True,
+        doc='A unique identifier for each coefficient.'
+    )
+    
+    m = Column(
+        Integer,
+        nullable=False,
+        doc='The mth coefficient; can be -2, 0, or 2.'
+    )
+    s = Column(
         Integer,
         nullable=False,
         server_default='',
         doc='The sth coefficient; all integer values 0 and up.'
-	)
-	accuracy = Column(
+    )
+    min_interp_e = Column(
         Float,
         nullable=False,
-        doc='The accuracy the coefficient was expanded to.'
-	)
-	timestamp = Column(
-        TIMESTAMP,
+        doc='The smallest value of e which the process was extended to.'
+    )
+    number_of_steps = Column(
+        Integer,
         nullable=False,
-        doc='When was this record last changed.'
-	)
-
-	chebCoeffs = relationship('ChebExpansionCoeffs', back_populates='MAndSToAccuracys')
-
-class ChebExpansionCoeffs(DataModelBase):
-    """The Chebyeshev coefficients for each expansion."""
-
-    __tablename__ = 'cheb_expansion_coeffs'
-
-    p_id = Column(
-        Integer,
-        ForeignKey('m_and_s_to_accuracy.id',
-                   onupdate='CASCADE',
-                   ondelete='RESTRICT'),
-        primary_key=True,
-        doc='The expansion this coefficient corresponds to.'
+        doc='The number of steps between the last directly calculated zero and 1 (inclusive).'
     )
-    place_in_expansion = Column(
-        Integer,
-        primary_key=True,
-        doc='The position in the overall expansion the coefficient should be placed.'
-    )
-    coefficient_value = Column(
+    max_checked_e = Column(
         Float,
-        primary_key=False,
-        doc='The value of the coefficient.'
+        nullable=False,
+        doc='The highest value of e for which we compared directly calculated and interpolated values.'
+    )
+    interp_accuracy = Column(
+        Float,
+        nullable=False,
+        doc='The maximum difference between calculated and interpolated, as well as the point below which a calculated value was considered zero.'
     )
     timestamp = Column(
         TIMESTAMP,
         nullable=False,
         doc='When was this record last changed.'
     )
-	
-    MAndSToAccuracys = relationship('MAndSToAccuracy', back_populates='chebCoeffs')
+
+    interpData = relationship('InterpolationData', back_populates='interps')
+
+class InterpolationData(DataModelBase):
+    """The Chebyeshev coefficients for each expansion."""
+
+    __tablename__ = 'interpolation_data'
+
+    p_id = Column(
+        Integer,
+        ForeignKey('interpolations.id',
+                   onupdate='CASCADE',
+                   ondelete='RESTRICT'),
+        primary_key=True,
+        doc='The expansion this coefficient corresponds to.'
+    )
+    step_number = Column(
+        Integer,
+        primary_key=True,
+        doc='The position between the final zero and one for this value.'
+    )
+    y_value = Column(
+        Float,
+        primary_key=False,
+        doc='The value of p_ms at this position.'
+    )
+    timestamp = Column(
+        TIMESTAMP,
+        nullable=False,
+        doc='When was this record last changed.'
+    )
+    
+    interps = relationship('Interpolations', back_populates='interpData')
