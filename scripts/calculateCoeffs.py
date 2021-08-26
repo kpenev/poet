@@ -34,7 +34,7 @@ def main(m=2, s=200, tolerance=2e-9, kind=3):
     zeroEnd = 0
     eZEND = 0
     cutoff=.999
-    fNme="george.txt"
+    fNme="calcOutput.txt"
     
     zeeArray = ezList = np.zeros(0)
     
