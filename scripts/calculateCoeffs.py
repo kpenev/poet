@@ -27,10 +27,10 @@ def main(m=2, s=200, tolerance=2e-9, kind=3):
         return [[-1]],[-1]
         
     # Initialize my variables
-    maxLoops = 0#30#15#11#np.inf#100
+    maxLoops = 30#15#11#np.inf#100
     loops = 0
     goalAchieved = 0
-    GRID = 11#01#11
+    GRID = 101#11
     zeroEnd = 0
     eZEND = 0
     cutoff=.999
