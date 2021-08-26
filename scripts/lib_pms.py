@@ -112,7 +112,7 @@ def getCoefficient(m,s,eList,GRID,kind,fileName,itera,toler):
     
     numLock=mp.Lock()
     #arrLock=mp.Lock()
-    procesNum = 8
+    procesNum = 16
     
     doPrint=1
     if fileName==None:

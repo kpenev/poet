@@ -11,7 +11,7 @@ import calculateCoeffs as pms
 
 # Configure our SQL session
 Session = sessionmaker()
-db_engine = create_engine('sqlite:///cheb_expansions.db',echo=True)
+db_engine = create_engine('sqlite:///expansionsA.db',echo=True)
 Session.configure(bind=db_engine)
 
 @contextmanager
