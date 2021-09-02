@@ -15,7 +15,7 @@ import multiprocessing as mp
 import lib_pms as pms
 ####
 
-def main(m=2, s=200, tolerance=2e-9, kind=3):
+def main(m=0, s=1, tolerance=2e-9, kind=3):
     
     print("Starting")
     # Sanity check input arguments
@@ -27,14 +27,14 @@ def main(m=2, s=200, tolerance=2e-9, kind=3):
         return [[-1]],[-1]
         
     # Initialize my variables
-    maxLoops = 30#15#11#np.inf#100
+    maxLoops = 0#30#15#11#np.inf#100
     loops = 0
     goalAchieved = 0
     GRID = 101#11
     zeroEnd = 0
     eZEND = 0
     cutoff=.999
-    fNme="calcOutput.txt"
+    fNme="calcOutput_multi.txt"
     
     zeeArray = ezList = np.zeros(0)
     
@@ -45,7 +45,7 @@ def main(m=2, s=200, tolerance=2e-9, kind=3):
     # Calculate the value of p_ms for each point on that list
     #vec_pms = np.vectorize(p_MS) # Allow the bit I defined to take a vector for arguments, hassle-free
     yList = pms.getCoefficient(m,s,eList,eList.size,kind,fNme,loops-2,tolerance)#vec_pms(m,s,eList)
-    #print(yList)
+    print(yList)
     # Identify how long the bit that's just zero is (if it exists)
     print("Getting zero")
     for i in yList:
@@ -53,7 +53,7 @@ def main(m=2, s=200, tolerance=2e-9, kind=3):
             break
         else:
             zeroEnd = zeroEnd + 1
-    
+    print("DEBUG zeroEnd: " + str(zeroEnd))
     # Adjust our setup to account for our new reality (unless nothing changed, in which case that would be a waste of time)
     print("Recalculating")
     if zeroEnd > 1:
@@ -61,12 +61,14 @@ def main(m=2, s=200, tolerance=2e-9, kind=3):
         if eZEND != 1:
             zeeArray = np.zeros(zeroEnd-1)
             ezList = np.linspace(0,1,GRID)[0:zeroEnd-1]
-            #print("Zero is at " + str(eList[zeroEnd]))
+            print("DEBUG Zero is at " + str(eList[zeroEnd]))
             eList = np.linspace(eZEND,1,GRID)
             yList = pms.getCoefficient(m,s,eList,eList.size,kind,fNme,loops-1,tolerance)
         else:
             print("Coefficient is always zero")
             return eZEND,0,cutoff,np.zeros(1)#0
+    else:
+        print("DEBUG zeroEnd not greater than 1")
     #print(yList)
     print("--- BEGIN EXPLORING ---")
     while ((loops <= maxLoops) and (not goalAchieved)):
