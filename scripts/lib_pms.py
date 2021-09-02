@@ -1,9 +1,10 @@
 import sys, getopt
 import numpy as np
 import scipy.integrate as integrate
-import matplotlib.pyplot as plt
-#from multiprocessing import Pool
-import multiprocessing as mp
+#import matplotlib.pyplot as plt
+from multiprocessing import Pool
+#import multiprocessing as mp
+from functools import partial
 
 def p_0s(u,s,e):
     return (1-e**2)**(3/2)*(np.exp(1j*s*(u-e*np.sin(u)))/(1-e*np.cos(u))**2).real
@@ -37,7 +38,7 @@ def integrize(kind,func,s,e,lB=50):
         return integrate.fixed_quad(y,0,2*np.pi,args=(s,e),n=10000)[0]
     #return
 
-def p_MS(pos,arr,m,s,eList,kind,l=None,l2=None,shouldPrint=0,objetFile=None,itera=0,toler=1e-9):
+def p_MS(e,m,s,kind,shouldPrint=0,objetFile=None,itera=0,toler=1e-9):
     m=int(m)
     s=int(s)
     #kind=whatKind
@@ -45,108 +46,57 @@ def p_MS(pos,arr,m,s,eList,kind,l=None,l2=None,shouldPrint=0,objetFile=None,iter
     if limitBreak < 50:
         limitBreak = 50
     
-    i=0
+    #i=0
     #value = 0
     
-    for e in eList:
-        value = 0
-        if e == 1: # Special case of we-know-what-this-should-be
-            #print("hello", e)
-            if m == 0:
-                value=1
+    value = 0
+    if e == 1: # Special case of we-know-what-this-should-be
+        #print("hello", e)
+        if m == 0:
+            value=1
+    
+    else:
+        p0s = integrize(kind,0,s,e,limitBreak)
+        #print("also hello", e)
+        if abs(m) == 2:
         
+            # Define a couple of constants that show up across terms
+            sC1 = 1-e**2
+            sC2 = np.sqrt(sC1)
+            
+            term1 = -sC1*integrize(kind,1,s,e,limitBreak)
+            term2 = sC1*integrize(kind,2,s,e,limitBreak)
+            term3 = sC2*integrize(kind,3,s,e,limitBreak)
+            term4 = 2*e*sC2*integrize(kind,4,s,e,limitBreak)
+            
+            if m > 0:
+                term3 = -term3
+            elif m < 0:
+                term4 = -term4
+            
         else:
-            p0s = integrize(kind,0,s,e,limitBreak)
-            #print("also hello", e)
-            if abs(m) == 2:
-            
-                # Define a couple of constants that show up across terms
-                sC1 = 1-e**2
-                sC2 = np.sqrt(sC1)
-                
-                term1 = -sC1*integrize(kind,1,s,e,limitBreak)
-                term2 = sC1*integrize(kind,2,s,e,limitBreak)
-                term3 = sC2*integrize(kind,3,s,e,limitBreak)
-                term4 = 2*e*sC2*integrize(kind,4,s,e,limitBreak)
-                
-                if m > 0:
-                    term3 = -term3
-                elif m < 0:
-                    term4 = -term4
-                
-            else:
-                term1 = term2 = term3 = term4 = 0
-            
-            result = (1/(2*np.pi))*(p0s+term1+term2+term3+term4)
-            #q.put(result)
-            #value = result
-            if np.abs(result)>=toler:
-                #result=result*0
-                value = result
-                #return result*0
-                #q.put(result*0)
+            term1 = term2 = term3 = term4 = 0
         
-        if l != None and shouldPrint != 0:
-            l.acquire()
-            try:
-                #print(e,value,itera,sep='\t',file=objetFile)
-                with open(objetFile,mode='a') as file_object:
-                    print(e,value,itera,sep='\t',file=file_object)
-            finally:
-                l.release()
+        result = (1/(2*np.pi))*(p0s+term1+term2+term3+term4)
         
-        #if l2 != None:
-        #    l2.acquire()
-        #    try:
-        arr[pos+i]=value
-        i=i+1
-        #    finally:
-        #        l2.release()
+        if np.abs(result)>=toler:
+            value = result
         
     
-    #return result
-    #q.put(result)
+    return value
 
 # Gets the specified coefficient in the specified range
-def getCoefficient(m,s,eList,GRID,kind,fileName,itera,toler):
+def getCoefficient(em,es,eList,GRID,ekind,fileName,eitera,etoler):
     
-    numLock=mp.Lock()
-    #arrLock=mp.Lock()
     procesNum = 8
     
     doPrint=1
-    if fileName==None:
-        doPrint=0
-        fileName='delete.txt'
-        #print("no print")
-    #else:
-        #print("yes print")
     
-    newEList = np.array_split(eList,procesNum)
-    pos=0
-    arr = mp.Array('d',range(GRID))#,lock=arrLock)
-    #print(eList)
-    #print(newEList)
-    #print(arr[:])
-    #vec_pms = np.vectorize(p_MS)
+    part_pms = partial(p_MS,m=em,s=es,kind=ekind,shouldPrint=0,objetFile=fileName,itera=eitera,toler=etoler)
+    
     yList=np.array(())
     
-    #with open(fileName,mode='w') as file_object:
-    jobs=[]
-    #cue=[]
-    for i in range(procesNum):
-        #q=mp.Queue()
-        #print(newEList[i])
-        p=mp.Process(target=p_MS,args=(pos,arr,m,s,newEList[i],kind,numLock,None,doPrint,fileName,itera,toler))
-        jobs.append(p)
-        #cue.append(q)
-        pos=pos+newEList[i].size
-        p.start()
-    for proc in jobs:
-        proc.join()
-    #for results in cue:
-        #print(yList)
-        #print(results.get())
-        #yList=np.concatenate( (yList,np.array([results.get()])) )
-    #print(arr[:])
-    return arr[:]#np.array(arr)
+    with Pool(procesNum) as p:
+        yList=p.map(part_pms,eList)
+    
+    return yList
