@@ -35,7 +35,7 @@ def main(em = 0, es = 1, accGoal = 2e-9):
             table.create(db_engine)
 
     # Calculate some expansions for a specified coefficient
-    minE,stepNum,maxE,chebVals = pms.main(m=em,s=es,tolerance=accGoal,kind=3)
+    minE,stepNum,maxE,accAchiev,chebVals = pms.main(m=em,s=es,tolerance=accGoal,kind=3)
     
     # Prep our lists of values to be put in the database
     PmsCoeffs = []
@@ -54,7 +54,7 @@ def main(em = 0, es = 1, accGoal = 2e-9):
         
         # Loop through the data we generated, prep it for the database
         PmsCoeffs.append(model.Interpolations(id=biggest + 1,m=em,s=es,min_interp_e=minE,number_of_steps=stepNum,max_checked_e=maxE,
-                    interp_accuracy = accGoal,timestamp = datetime.now(timezone.utc)))
+                    interp_accuracy = accAchiev,timestamp = datetime.now(timezone.utc)))
         for y in range(len(chebVals)):
             Expansions.append(model.InterpolationData(p_id = biggest + 1,step_number=y,y_value = chebVals[y],
             timestamp = datetime.now(timezone.utc)))

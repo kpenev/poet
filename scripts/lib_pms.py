@@ -88,7 +88,7 @@ def p_MS(e,m,s,kind,shouldPrint=0,objetFile=None,itera=0,toler=1e-9):
 # Gets the specified coefficient in the specified range
 def getCoefficient(em,es,eList,GRID,ekind,fileName,eitera,etoler):
     
-    procesNum = 8
+    procesNum = 16
     
     doPrint=1
     
