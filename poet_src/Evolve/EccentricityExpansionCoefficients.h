@@ -52,6 +52,14 @@ namespace Evolve {
         /// It is possible for file to accommodate precision but only for s=0
         int get_max_s(sqlite3* db,double precision)
         int __max_s;
+        
+        bool __load_style; // Whether we load just part of the database or the whole thing
+        int __max_s_for_p2;
+        int __max_s_for_0;
+        int __max_s_for_m2;
+        void change_frequency_order(double new_e);
+        double __e;
+        int current_largest_s(int m);
 
     public:
         ///Create an uninitialized object.

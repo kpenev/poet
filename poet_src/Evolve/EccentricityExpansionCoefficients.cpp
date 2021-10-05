@@ -11,7 +11,7 @@ namespace Evolve {
         for(int i_a==0; i_a < id_list.size() && !error_flag; i_a++)
         {
             sqlite3_stmt **statement;
-            std::string instruc2="SELECT coefficient_value, place_in_expansion FROM cheb_expansion_coeffs WHERE p_id = "+std::to_string(id_list[i_a])+" ORDER BY place_in_expansion DESC";
+            std::string instruc2="SELECT y_value,step_number FROM interpolation_data WHERE p_id = "+std::to_string(id_list[i_a])+" ORDER BY step_number DESC";
             const char *sql = instruc2.c_str();
             if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
             {
@@ -40,7 +40,7 @@ namespace Evolve {
     std::vector<int> EccentricityExpansionCoefficients::identify_expansions(sqlite3* db,int max_s,double precision)
     { // but can keep but have more arguments?
         sqlite3_stmt **statement;
-        std::string instruc2="SELECT id,m,s,accuracy FROM m_and_s_to_accuracy WHERE accuracy <= "+std::to_string(precision)+" ORDER BY s,m,accuracy DESC";
+        std::string instruc2="SELECT id,m,s,interp_accuracy FROM interpolations WHERE interp_accuracy <= "+std::to_string(precision)+" ORDER BY s,m,accuracy DESC";
         const char *sql = instruc2.c_str();
         bool error_flag = false;
         
@@ -87,8 +87,9 @@ namespace Evolve {
     int EccentricityExpansionCoefficients::get_max_s(sqlite3* db,double precision)
     { // hey there maybe do a minimum accuracy in python plz notice me when you're deleting comments
         sqlite3_stmt **statement;
-        std::string instruc2="WITH meets_precision AS (SELECT m,s FROM m_and_s_to_accuracy WHERE accuracy <= "+std::to_string(precision)+" GROUP BY s,m) ";
-        instruc2 += "SELECT s FROM meets_precision GROUP BY s HAVING COUNT(m)=3";  //aaaa   save actual precision?
+        std::string instruc2="WITH meets_precision AS (SELECT m,s FROM m_and_s_to_accuracy WHERE accuracy <= "
+                                +std::to_string(precision)+" GROUP BY s,m) "
+                                +"SELECT s FROM meets_precision GROUP BY s HAVING COUNT(m)=3";  //aaaa   save actual precision?
         const char *sql = instruc2.c_str();
         bool keep_going=true;
         int compare_s = 0;
@@ -133,6 +134,17 @@ namespace Evolve {
         
         return compare_s-1;
     }
+    
+    int EccentricityExpansionCoefficients::current_largest_s(int m)
+    {
+        switch(m) {
+            case -2 : return __max_s_for_m2;
+            case 0  : return __max_s_for_0;
+            case 2  : return __max_s_for_p2;
+            default : throw Core::Error::BadFunctionArguments(
+                          "Asking EccentricityExpansionCoefficients::current_largest_s() for p_{m,s} with m other than +-2 and 0"
+                      );
+        };
 
     void EccentricityExpansionCoefficients::read(
         const std::string &tabulated_pms_fname,
@@ -177,7 +189,7 @@ namespace Evolve {
             case 0  : return __max_precision[(s*3)+1];
             case 2  : return __max_precision[(s*3)+2];
             default : throw Core::Error::BadFunctionArguments(
-                          "Asking for p_{m,s} with m other than +-2 and 0"
+                          "Asking EccentricityExpansionCoefficients::max_precision() for p_{m,s} with m other than +-2 and 0"
                       );
         };
     }
