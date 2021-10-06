@@ -33,10 +33,10 @@ namespace Evolve {
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
-            ///Stored in the order m=-2,0,+2 for increasing s.
+            ///Stored in the order m=0,+2,-2 for increasing s.
             __pms_expansions;
         
-        \\\
+        //\\\
         std::vector<double> __max_precision;
 
         ///Is the object ready to be used?
@@ -46,20 +46,31 @@ namespace Evolve {
         ///out new documentation stuff or moved new variables/functions
         ///into a better place
         // The callback SQL function that updates the above values
-        void get_expansions(sqlite3* db,int id);
+        void get_expansions(sqlite3* db);
         void identify_expansions(sqlite3* db,double precision);
         /// Highest s available for requested precision
         /// It is possible for file to accommodate precision but only for s=0
-        int get_max_s(sqlite3* db,double precision)
+        int get_max_s(sqlite3* db)
         int __max_s;
         
-        bool __load_style; // Whether we load just part of the database or the whole thing
+        bool __load_all; // Whether we load the whole database at the start or part of it as needed
         int __max_s_for_p2;
         int __max_s_for_0;
         int __max_s_for_m2;
         void change_frequency_order(double new_e);
         double __e;
         int current_largest_s(int m);
+        std::vector< std::vector<double> >
+            ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
+            ///
+            ///Stored in the order m=0,+2,-2 for increasing s.
+            __pms_metadata;
+        void load_metadata(sqlite3* db);
+        void load_pms_on_demand();
+        std::string __file_name;
+        std::vector<double> load_one_pms(sqlite3* db,int m, int s);
+        std::vector<double> grab_specific_pms(int m, int s);
+        std::vector<double> get_pms_boundary_values(int m,int s,double e);
 
     public:
         ///Create an uninitialized object.
@@ -73,7 +84,11 @@ namespace Evolve {
                 ///Only reads the coefficients of the expansion which
                 ///most closely achieves the indicated precision, erring on
                 ///the side of being more precise.
-                double precision=1);
+                double precision=1,
+                
+                ///Which loading style to use. Setting to true means we keep
+                ///a 9 GB database in memory.
+                bool load_style=false);
 
 
         ///Maximum eccentricity power with all necessary coefficients known.
