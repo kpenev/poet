@@ -68,7 +68,7 @@ namespace Evolve {
         void load_metadata(sqlite3* db);
         void load_pms_on_demand();
         std::string __file_name;
-        std::vector<double> load_one_pms(sqlite3* db,int m, int s);
+        std::vector<double> load_coefficient(sqlite3* db,int m,int s)(sqlite3* db,int m, int s);
         std::vector<double> grab_specific_pms(int m, int s);
         std::vector<double> get_pms_boundary_values(int m,int s,double e);
 
