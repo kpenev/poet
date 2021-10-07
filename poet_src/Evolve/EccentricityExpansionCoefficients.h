@@ -74,9 +74,13 @@ namespace Evolve {
         void load_pms_on_demand();
         std::string __file_name;
         std::vector<double> load_coefficient(sqlite3* db,int m,int s)(sqlite3* db,int m, int s);
-        std::vector<double> grab_specific_pms(int m, int s);
-        std::vector<double> get_pms_boundary_values(int m,int s,double e);
+        std::vector<double> load_pms_boundary_values(int m, int s,double e);
+        std::vector<double> find_pms_boundary_values(int m,int s,double e);
         inline int local_index(int m, int s);
+        bool check_known_e(int m,int s,double e);
+        double return_known_e(int m,int s,double e);
+        std::vector< std::vector<double> > __e_as_steps;
+        inline void compute_steps_to_e();
 
     public:
         ///Create an uninitialized object.
