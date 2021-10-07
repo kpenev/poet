@@ -6,23 +6,17 @@ namespace Evolve {
     std::vector<double> EccentricityExpansionCoefficients::load_coefficient(sqlite3* db,int m,int s)
     {
         bool error_flag = false;
-        int id;
-        switch(m) {
-            case -2 : id = (s*3)+3;
-            case 0  : id = (s*3)+1;
-            case 2  : id = (s*3)+2;
-        };
         
         std::vector<double> pms;
         
         sqlite3_stmt **statement;
-        std::string instruc2="SELECT y_value,step_number FROM interpolation_data WHERE p_id = "+std::to_string(id)+" ORDER BY step_number DESC";
+        std::string instruc2="SELECT y_value,step_number FROM interpolation_data WHERE p_id = "+std::to_string(__db_index[local_index(m,s)])+" ORDER BY step_number DESC";
         const char *sql = instruc2.c_str();
         if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
         {
             int rc = sqlite3_step(*statement);
             int i_b = sqlite3_column_int(*statement,1);
-            pms.resize(i_b+1);
+            pms.resize(i_b+1); //                                     assert is a c++ thing. check i_b is equal to what we loaded
             while(rc==SQLITE_ROW)
             {
                 pms[i_b]=( sqlite3_column_double(*statement,0) );
@@ -35,27 +29,26 @@ namespace Evolve {
         else error_flag=true;
         sqlite3_finalize(*statement);
         
-        if(error_flag) throw Core::Error::IO("Unable to retrieve expansion id " + std::to_string(id) + " in eccentricity expansion file!");
+        if(error_flag) throw Core::Error::IO("Unable to retrieve expansion id " + std::to_string(__db_index[local_index(m,s)]) + " in eccentricity expansion file!");
         
         return pms;
     }
     
-    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db)             // bring back pair, store error for a series?
-    { // sanity checking? get m and s and fill in proper thing. COUNT (new function, prefill __pms(etc))
-        // different statement count first for knowing wherefore many of your friends are there romeo
+    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db)
+    {
         __pms_expansions.resize(3*(__max_s+1));
         
         for(int s==0; s < __max_s; s++)
         {
-            __pms_expansions[s*3]=load_coefficient(db,0,s)
-            __pms_expansions[s*3+1]=load_coefficient(db,2,s)
-            __pms_expansions[s*3+2]=load_coefficient(db,-2,s)
+            __pms_expansions[local_index(-2,s)]=load_coefficient(db,-2,s);
+            __pms_expansions[local_index(0,s)]=load_coefficient(db,0,s);
+            __pms_expansions[local_index(2,s)]=load_coefficient(db,2,s);
         }
     }
     
     ////////////////// if derivative, NaN and fix the code crash later. No pairs.
     void EccentricityExpansionCoefficients::get_max_s(sqlite3* db)
-    { // hey there maybe do a minimum accuracy in python plz notice me when you're deleting comments
+    {
         sqlite3_stmt **statement;
         std::string instruc2="SELECT MAX(s) FROM interpolations";
         const char *sql = instruc2.c_str();
@@ -94,17 +87,24 @@ namespace Evolve {
         int error_flag = 0;
         
         __pms_metadata.resize(3*(__max_s+1));
+        __db_index.resize(3*(__max_s+1),-1);
+        __min_e.resize(3*(__max_s+1),NaN);
+        __step_num.resize(3*(__max_s+1),NaN);
+        __max_e.resize(3*(__max_s+1),NaN);
+        __accur.resize(3*(__max_s+1),NaN);
         
         if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
         {
             int rc = sqlite3_step(*statement);
             while(rc==SQLITE_ROW)
             {
-                std::vector<double> data_row (7,0);
-                for(int a=0;a<7;a++)
-                    data_row[a] = sqlite3_column_double(*statement,a);
-                __pms_metadata[i]=data_row;
-                i++;
+                int m=sqlite3_column_int(*statement,1);
+                int s=sqlite3_column_int(*statement,2);
+                __db_index[local_index(m,s)]=sqlite3_column_int(*statement,0);
+                __min_e[local_index(m,s)]=sqlite3_column_double(*statement,3);
+                __step_num[local_index(m,s)]=sqlite3_column_int(*statement,4);
+                __max_e[local_index(m,s)]=sqlite3_column_double(*statement,5);
+                __accur[local_index(m,s)]=sqlite3_column_double(*statement,6);
                 rc=sqlite3_step(*statement);
             }
             if (rc!=SQLITE_DONE) error_flag=-1;
@@ -134,14 +134,7 @@ namespace Evolve {
     
     std::vector<double> EccentricityExpansionCoefficients::grab_specific_pms(int m,int s)
     {
-        if(__load_all)
-        {
-            switch(m) {
-                case -2 : return __pms_expansions[(s*3)+2];
-                case 0  : return __pms_expansions[(s*3)+0];
-                case 2  : return __pms_expansions[(s*3)+1];
-            };
-        }
+        if(__load_all) return __pms_expansions[local_index(m,s)];
         else
         {
             std::vector<double> result;
@@ -153,7 +146,7 @@ namespace Evolve {
                     "Unable to open eccentricity expansion file: "
                     +
                     __file_name
-                    +
+                    + //                                                            remove this and put it above because just use sql to get two values, not the whole thing
                     "!"
                 );
             }
@@ -176,6 +169,15 @@ namespace Evolve {
         std::vector<double> pms = grab_specific_pms(m,s);
         
         return results;
+    }
+    
+    inline int EccentricityExpansionCoefficients::local_index(int m, int s)
+    {
+        switch(m) {
+            case -2 : return (s*3)+0;
+            case 0  : return (s*3)+1;
+            case 2  : return (s*3)+2;
+        };
     }
 
     void EccentricityExpansionCoefficients::read(
@@ -221,17 +223,13 @@ namespace Evolve {
 
     double EccentricityExpansionCoefficients::max_precision(int m, int s)
     {
-        switch(m) {
-            case -2 : return __pms_metadata[(s*3)+2][6];
-            case 0  : return __pms_metadata[(s*3)+0][6];
-            case 2  : return __pms_metadata[(s*3)+1][6];
-            default : throw Core::Error::BadFunctionArguments(
+        if(m!=0&&std::abs(m)!=2) throw Core::Error::BadFunctionArguments(
                           "Asking EccentricityExpansionCoefficients::max_precision() for p_{m,s} with m other than +-2 and 0"
                       );
-        };
+        return __accur[local_index(m,s)];
     }
 
-    double EccentricityExpansionCoefficients::operator()(
+    double EccentricityExpansionCoefficients::operator()(  //                                   TODO: if e is beyond m,s max e, complain about it
         int m,
         int s,
         double e,
@@ -249,19 +247,6 @@ namespace Evolve {
         if(m!=0&&std::abs(m)!=2) throw Core::Error::BadFunctionArguments("Asking for p_{m,s} with m other than +-2 and 0");
         
         if(deriv) return Core::NaN;
-        
-        /* std::vector<double> exp_coefs;
-
-        switch(m) {
-            case -2 : exp_coefs=__pms_expansions[(s*3)+0];
-            case 0  : exp_coefs=__pms_expansions[(s*3)+1];
-            case 2  : exp_coefs=__pms_expansions[(s*3)+2];
-            default : throw Core::Error::BadFunctionArguments(
-                          "Asking for p_{m,s} with m other than +-2 and 0"
-                      );
-        };
-        // double check if I need to do 2*e+1 etc. sort of thing
-        return chebyshev_clenshaw_recurrence(exp_coefs.data(),exp_coefs.size(),e); */ // using the right one? for t0 term? between psipy and boost
         
         if(s==0)
         {

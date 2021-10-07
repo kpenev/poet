@@ -33,7 +33,7 @@ namespace Evolve {
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
-            ///Stored in the order m=0,+2,-2 for increasing s.
+            ///Stored in the order m=-2,0,+2 for increasing s.
             __pms_expansions;
         
         //\\\
@@ -63,14 +63,20 @@ namespace Evolve {
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
-            ///Stored in the order m=0,+2,-2 for increasing s.
+            ///Stored in the order m=-2,0,+2 for increasing s.
             __pms_metadata;
+        std::vector<int> __db_index;
+        std::vector<double> __min_e;
+        std::vector<int> __step_num;
+        std::vector<double> __max_e;
+        std::vector<double> __accur;
         void load_metadata(sqlite3* db);
         void load_pms_on_demand();
         std::string __file_name;
         std::vector<double> load_coefficient(sqlite3* db,int m,int s)(sqlite3* db,int m, int s);
         std::vector<double> grab_specific_pms(int m, int s);
         std::vector<double> get_pms_boundary_values(int m,int s,double e);
+        inline int local_index(int m, int s);
 
     public:
         ///Create an uninitialized object.
