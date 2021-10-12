@@ -46,7 +46,6 @@ namespace Evolve {
         }
     }
     
-    ////////////////// if derivative, NaN and fix the code crash later. No pairs.
     void EccentricityExpansionCoefficients::get_max_s(sqlite3* db)
     {
         sqlite3_stmt **statement;
@@ -132,54 +131,6 @@ namespace Evolve {
         };
     }
     
-    /* std::vector<double> EccentricityExpansionCoefficients::load_pms_boundary_values(int m,int s,double e)
-    {
-        bool error_flag = false;
-        std::vector<double> result;
-        sqlite3 *db;
-        int rc = sqlite3_open(__file_name.c_str(),&db);
-        if(rc!=SQLITE_OK) {
-            sqlite3_close(db);
-            throw Core::Error::IO(
-                "Unable to open eccentricity expansion file: "
-                +
-                __file_name
-                + //                                                            remove this and put it above because just use sql to get two values, not the whole thing
-                "!"
-            );
-        }
-        // SELECT step_number,y_value FROM interpolation_data WHERE p_id=17 and step_number > 18 and step_number < 21
-        try {
-            sqlite3_stmt **statement;
-            std::string instruc2="SELECT y_value,step_number FROM interpolation_data WHERE p_id = "+std::to_string(__db_index[local_index(m,s)])+" ORDER BY step_number DESC";
-            const char *sql = instruc2.c_str();
-            if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
-            {
-                int rc = sqlite3_step(*statement);
-                int i_b = sqlite3_column_int(*statement,1);
-                pms.resize(i_b+1); //                                     assert is a c++ thing. check i_b is equal to what we loaded
-                while(rc==SQLITE_ROW)
-                {
-                    pms[i_b]=( sqlite3_column_double(*statement,0) );
-                    i_b--;
-                    rc=sqlite3_step(*statement);
-                }
-                
-                if (rc!=SQLITE_DONE) error_flag=true;
-            }
-            else error_flag=true;
-            sqlite3_finalize(*statement);
-            
-            if(error_flag) throw Core::Error::IO("Unable to retrieve expansion id " + std::to_string(__db_index[local_index(m,s)]) + " in eccentricity expansion file!");
-        } catch(...) {
-            sqlite3_close(db);
-        }
-        
-        sqlite3_close(db);
-        
-        return result;
-    } */
-    
     double EccentricityExpansionCoefficients::load_specific_e(int m,int s,int e_step)
     {
         bool error_flag = false;
@@ -229,7 +180,6 @@ namespace Evolve {
     std::vector<double> EccentricityExpansionCoefficients::find_pms_boundary_values(int m,int s,double e)
     {
         std::vector<double> results (4);
-        //std::vector<double> pms;
         
         int lo_i=e_to_nearest_step(m,s,e,true);
         int hi_i=e_to_nearest_step(m,s,e,false);
@@ -237,15 +187,14 @@ namespace Evolve {
         results[0]=step_to_e(m,s,lo_i);
         results[1]=step_to_e(m,s,hi_i);
         
-        if(!__load_all) //results = load_pms_boundary_values(m,s,e);
+        if(!__load_all)
         {
             results[3]=load_specific_e(m,s,lo_i);
             results[4]=load_specific_e(m,s,hi_i);
         }
         else
         {
-            /*pms*/results[3] = __pms_expansions[local_index(m,s)][lo_i];
-            // do a binary search thing
+            results[3] = __pms_expansions[local_index(m,s)][lo_i];
             results[4] = __pms_expansions[local_index(m,s)][hi_i];
         }
         
@@ -298,20 +247,6 @@ namespace Evolve {
         if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)) return load_specific_e(m,s,e_to_nearest_step(m,s,e,true));
     }
     
-    inline int EccentricityExpansionCoefficients::compute_steps_to_e(int m,int s,double e)
-    {
-        // for each pms
-            // get number of steps
-            // get starting e for interpolation
-            // (1-starting e) / number of steps is a step size but I don't want to use that because percent error?
-            // so instead, (step/total_steps)*(1-starting_e)+starting_e     this is a percentage! it's also the same as above! ???
-            // for each step
-                // array[step]=(step/total_steps)*(1-starting_e)+starting_e;
-        
-        
-        // yeet
-    }
-    
     inline double EccentricityExpansionCoefficients::step_to_e(int m,int s,int step)
     {
         return (step / __step_num[local_index(m,s)])*(1-__min_e[local_index(m,s)])+__min_e[local_index(m,s)];
@@ -356,8 +291,6 @@ namespace Evolve {
             sqlite3_close(db);
         }
         sqlite3_close(db);
-        
-        // Any calculation type stuff that doesn't need to load any more things (calculated e points I guess)
         
         __useable = true;
     }
