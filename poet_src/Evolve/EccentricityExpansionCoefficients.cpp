@@ -132,8 +132,9 @@ namespace Evolve {
         };
     }
     
-    std::vector<double> EccentricityExpansionCoefficients::load_pms_boundary_values(int m,int s,double e)
+    /* std::vector<double> EccentricityExpansionCoefficients::load_pms_boundary_values(int m,int s,double e)
     {
+        bool error_flag = false;
         std::vector<double> result;
         sqlite3 *db;
         int rc = sqlite3_open(__file_name.c_str(),&db);
@@ -149,7 +150,6 @@ namespace Evolve {
         }
         // SELECT step_number,y_value FROM interpolation_data WHERE p_id=17 and step_number > 18 and step_number < 21
         try {
-            bool error_flag = false;
             sqlite3_stmt **statement;
             std::string instruc2="SELECT y_value,step_number FROM interpolation_data WHERE p_id = "+std::to_string(__db_index[local_index(m,s)])+" ORDER BY step_number DESC";
             const char *sql = instruc2.c_str();
@@ -178,16 +178,75 @@ namespace Evolve {
         sqlite3_close(db);
         
         return result;
+    } */
+    
+    double EccentricityExpansionCoefficients::load_specific_e(int m,int s,int e_step)
+    {
+        bool error_flag = false;
+        double result;
+        
+        sqlite3 *db;
+        int rc = sqlite3_open(__file_name.c_str(),&db);
+        if(rc!=SQLITE_OK) {
+            sqlite3_close(db);
+            throw Core::Error::IO(
+                "Unable to open eccentricity expansion file: "
+                +
+                __file_name
+                +
+                "!"
+            );
+        }
+        
+        try {
+            sqlite3_stmt **statement;
+            std::string instruc2="SELECT y_value FROM interpolation_data WHERE p_id = "+std::to_string(__db_index[local_index(m,s)])+",step_number="+std::to_string(e_step);
+            const char *sql = instruc2.c_str();
+            if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+            {
+                int rc = sqlite3_step(*statement);
+                while(rc==SQLITE_ROW)
+                {
+                    result=( sqlite3_column_double(*statement,0) );
+                    rc=sqlite3_step(*statement);
+                }
+                
+                if (rc!=SQLITE_DONE) error_flag=true;
+            }
+            else error_flag=true;
+            sqlite3_finalize(*statement);
+            
+            if(error_flag) throw Core::Error::IO("Unable to retrieve expansion id " + std::to_string(__db_index[local_index(m,s)]) + " in eccentricity expansion file!");
+        } catch(...) {
+            sqlite3_close(db);
+        }
+        
+        sqlite3_close(db);
+        
+        return result;
     }
     
     std::vector<double> EccentricityExpansionCoefficients::find_pms_boundary_values(int m,int s,double e)
     {
         std::vector<double> results (4);
-        std::vector<double> pms;
-        if(!__load_all) results = load_pms_boundary_values(m,s,e);
+        //std::vector<double> pms;
+        
+        int lo_i=e_to_nearest_step(m,s,e,true);
+        int hi_i=e_to_nearest_step(m,s,e,false);
+        
+        results[0]=step_to_e(m,s,lo_i);
+        results[1]=step_to_e(m,s,hi_i);
+        
+        if(!__load_all) //results = load_pms_boundary_values(m,s,e);
+        {
+            results[3]=load_specific_e(m,s,lo_i);
+            results[4]=load_specific_e(m,s,hi_i);
+        }
         else
         {
-            pms = __pms_expansions[local_index(m,s)];
+            /*pms*/results[3] = __pms_expansions[local_index(m,s)][lo_i];
+            // do a binary search thing
+            results[4] = __pms_expansions[local_index(m,s)][hi_i];
         }
         
         return results;
@@ -204,11 +263,9 @@ namespace Evolve {
     
     bool EccentricityExpansionCoefficients::check_known_e(int m,int s,double e)
     {
-        if(s==0 || e==1.0) return true;                                            //               is e=0 also always known? that would be convenient. I think it is.
+        if(s==0 || e==1.0 || e==0.0 || e<__min_e[local_index(m,s)]) return true;                    //               is e=0 also always known? that would be convenient. I think it is.
         
-        // Do something to determine the exact calculated points. Actually, I should probably pre-determine this elsewhere.
-        
-        // If e is one of those points, return true
+        if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)) return true;
         
         return false;
     }
@@ -229,9 +286,19 @@ namespace Evolve {
             if(m==0) return 1.0;
             else return 0.0;
         }
+        
+        if(e==0.0)
+        {
+            //if(m==0) return 1.0;
+            //else return 0.0;
+        }
+        
+        if(e<__min_e[local_index(m,s)]) return 0.0;
+        
+        if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)) return load_specific_e(m,s,e_to_nearest_step(m,s,e,true));
     }
     
-    inline void EccentricityExpansionCoefficients::compute_steps_to_e()
+    inline int EccentricityExpansionCoefficients::compute_steps_to_e(int m,int s,double e)
     {
         // for each pms
             // get number of steps
@@ -243,6 +310,16 @@ namespace Evolve {
         
         
         // yeet
+    }
+    
+    inline double EccentricityExpansionCoefficients::step_to_e(int m,int s,int step)
+    {
+        return (step / __step_num[local_index(m,s)])*(1-__min_e[local_index(m,s)])+__min_e[local_index(m,s)];
+    }
+    inline int EccentricityExpansionCoefficients::e_to_nearest_step(int m,int s,double e,bool flr)
+    {
+        if(flr) return int( floor( (e-__min_e[local_index(m,s)])*__step_num[local_index(m,s)]/(1-__min_e[local_index(m,s)]) ) );
+        else return int( ceil( (e-__min_e[local_index(m,s)])*__step_num[local_index(m,s)]/(1-__min_e[local_index(m,s)]) ) );
     }
 
     void EccentricityExpansionCoefficients::read(
