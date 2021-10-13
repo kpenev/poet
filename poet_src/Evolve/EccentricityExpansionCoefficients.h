@@ -36,30 +36,18 @@ namespace Evolve {
             ///Stored in the order m=-2,0,+2 for increasing s.
             __pms_expansions;
         
-        //\\\
-        std::vector<double> __max_precision;
 
         ///Is the object ready to be used?
         bool __useable;
-        
         ///If you're seeing this, it means I haven't properly sorted
         ///out new documentation stuff or moved new variables/functions
         ///into a better place
-        // The callback SQL function that updates the above values
-        void get_expansions(sqlite3* db);
-        void identify_expansions(sqlite3* db,double precision);
-        /// Highest s available for requested precision
-        /// It is possible for file to accommodate precision but only for s=0
-        int get_max_s(sqlite3* db)
         int __max_s;
-        
         bool __load_all; // Whether we load the whole database at the start or part of it as needed
         int __max_s_for_p2;
         int __max_s_for_0;
         int __max_s_for_m2;
-        void change_frequency_order(double new_e);
         double __e;
-        int current_largest_s(int m);
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
@@ -70,19 +58,25 @@ namespace Evolve {
         std::vector<int> __step_num;
         std::vector<double> __max_e;
         std::vector<double> __accur;
-        void load_metadata(sqlite3* db);
-        void load_pms_on_demand();
         std::string __file_name;
-        std::vector<double> load_coefficient(sqlite3* db,int m,int s)(sqlite3* db,int m, int s);
-        std::vector<double> find_pms_boundary_values(int m,int s,double e);
-        inline int local_index(int m, int s);
-        bool check_known_e(int m,int s,double e);
-        double return_known_e(int m,int s,double e);
-        std::vector< std::vector<double> > __e_as_steps;
+        
+        std::vector<double> load_coefficient(sqlite3* db,int m,int s);
+        /// Highest s available for requested precision
+        /// It is possible for file to accommodate precision but only for s=0
+        void get_max_s(sqlite3* db)
+        void load_metadata(sqlite3* db);
         double load_specific_e(int m,int s,int e_step);
-        inline double step_to_e(int m,int s,int step);
-        inline int e_to_nearest_step(int m,int s,double e,bool flr);
+        // The callback SQL function that updates the above values (__pms_expansions)
+        void get_expansions(sqlite3* db);
         double get_specific_e(int m,int s,int e_step);
+        std::vector<double> find_pms_boundary_values(int m,int s,double e);
+        double return_known_e(int m,int s,double e);
+        bool check_known_e(int m,int s,double e);
+        inline int e_to_nearest_step(int m,int s,double e,bool flr);
+        inline double step_to_e(int m,int s,int step);
+        int current_largest_s(int m);
+        inline int local_index(int m, int s);
+        void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
 
     public:
         ///Create an uninitialized object.

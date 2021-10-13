@@ -52,18 +52,6 @@ namespace Evolve {
         return pms;
     }
     
-    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db)
-    {
-        __pms_expansions.resize(3*(__max_s+1));
-        
-        for(int s==0; s < __max_s; s++)
-        {
-            __pms_expansions[local_index(-2,s)]=load_coefficient(db,-2,s);
-            __pms_expansions[local_index(0,s)]=load_coefficient(db,0,s);
-            __pms_expansions[local_index(2,s)]=load_coefficient(db,2,s);
-        }
-    }
-    
     void EccentricityExpansionCoefficients::get_max_s(sqlite3* db)
     {
         sqlite3_stmt **statement;
@@ -143,28 +131,6 @@ namespace Evolve {
         }
     }
     
-    int EccentricityExpansionCoefficients::current_largest_s(int m)
-    {
-        switch(m) {
-            case -2 : return __max_s_for_m2;
-            case 0  : return __max_s_for_0;
-            case 2  : return __max_s_for_p2;
-            default : throw Core::Error::BadFunctionArguments(
-                        "Asking "
-                        +
-                        "EccentricityExpansionCoefficients::current_largest_s()"
-                        +
-                        " for p_{m,s} with m other than +-2 and 0"
-                    );
-        };
-    }
-    
-    double EccentricityExpansionCoefficients::get_specific_e(int m,int s,int e_step)
-    {
-        if(!__load_all) return load_specific_e(m,s,e_step);
-        else return __pms_expansions[local_index(m,s)][e_step];
-    }
-    
     double EccentricityExpansionCoefficients::load_specific_e(int m,int s,int e_step)
     {
         bool error_flag = false;
@@ -226,6 +192,24 @@ namespace Evolve {
         return result;
     }
     
+    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db)
+    {
+        __pms_expansions.resize(3*(__max_s+1));
+        
+        for(int s==0; s < __max_s; s++)
+        {
+            __pms_expansions[local_index(-2,s)]=load_coefficient(db,-2,s);
+            __pms_expansions[local_index(0,s)]=load_coefficient(db,0,s);
+            __pms_expansions[local_index(2,s)]=load_coefficient(db,2,s);
+        }
+    }
+    
+    double EccentricityExpansionCoefficients::get_specific_e(int m,int s,int e_step)
+    {
+        if(!__load_all) return load_specific_e(m,s,e_step);
+        else return __pms_expansions[local_index(m,s)][e_step];
+    }
+    
     std::vector<double> EccentricityExpansionCoefficients::find_pms_boundary_values(
         int m,
         int s,
@@ -243,34 +227,6 @@ namespace Evolve {
         results[4]=get_specific_e(m,s,hi_i);
         
         return results;
-    }
-    
-    inline int EccentricityExpansionCoefficients::local_index(int m, int s)
-    {
-        switch(m) {
-            case -2 : return (s*3)+0;
-            case 0  : return (s*3)+1;
-            case 2  : return (s*3)+2;
-        };
-    }
-    
-    bool EccentricityExpansionCoefficients::check_known_e(int m,int s,double e)
-    {
-        if(
-            s==0
-            ||
-            e==1.0
-            ||
-            e==0.0
-            ||
-            e<__min_e[local_index(m,s)]
-            ||
-            e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)
-            ||
-            (m==2&&s==2&&e==0.0)
-        ) return true;
-        
-        return false;
     }
     
     double EccentricityExpansionCoefficients::return_known_e(int m,int s,double e)
@@ -294,13 +250,23 @@ namespace Evolve {
             return get_specific_e(m,s,e_to_nearest_step(m,s,e,true));
     }
     
-    inline double EccentricityExpansionCoefficients::step_to_e(int m,int s,int step)
+    bool EccentricityExpansionCoefficients::check_known_e(int m,int s,double e)
     {
-        return (step / __step_num[local_index(m,s)])
-                    *
-                    (1-__min_e[local_index(m,s)])
-                    +
-                    __min_e[local_index(m,s)];
+        if(
+            s==0
+            ||
+            e==1.0
+            ||
+            e==0.0
+            ||
+            e<__min_e[local_index(m,s)]
+            ||
+            e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)
+            ||
+            (m==2&&s==2&&e==0.0)
+        ) return true;
+        
+        return false;
     }
     
     inline int EccentricityExpansionCoefficients::e_to_nearest_step(
@@ -320,6 +286,40 @@ namespace Evolve {
             return int(floor(square_step));
         else
             return int(ceil(square_step));
+    }
+    
+    inline double EccentricityExpansionCoefficients::step_to_e(int m,int s,int step)
+    {
+        return (step / __step_num[local_index(m,s)])
+                    *
+                    (1-__min_e[local_index(m,s)])
+                    +
+                    __min_e[local_index(m,s)];
+    }
+    
+    int EccentricityExpansionCoefficients::current_largest_s(int m)
+    {
+        switch(m) {
+            case -2 : return __max_s_for_m2;
+            case 0  : return __max_s_for_0;
+            case 2  : return __max_s_for_p2;
+            default : throw Core::Error::BadFunctionArguments(
+                        "Asking "
+                        +
+                        "EccentricityExpansionCoefficients::current_largest_s()"
+                        +
+                        " for p_{m,s} with m other than +-2 and 0"
+                    );
+        };
+    }
+    
+    inline int EccentricityExpansionCoefficients::local_index(int m, int s)
+    {
+        switch(m) {
+            case -2 : return (s*3)+0;
+            case 0  : return (s*3)+1;
+            case 2  : return (s*3)+2;
+        };
     }
 
     void EccentricityExpansionCoefficients::read(
