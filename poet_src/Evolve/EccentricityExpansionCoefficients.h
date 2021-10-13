@@ -82,6 +82,7 @@ namespace Evolve {
         double load_specific_e(int m,int s,int e_step);
         inline double step_to_e(int m,int s,int step);
         inline int e_to_nearest_step(int m,int s,double e,bool flr);
+        double get_specific_e(int m,int s,int e_step);
 
     public:
         ///Create an uninitialized object.

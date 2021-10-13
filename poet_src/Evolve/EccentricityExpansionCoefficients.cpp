@@ -16,7 +16,8 @@ namespace Evolve {
         {
             int rc = sqlite3_step(*statement);
             int i_b = sqlite3_column_int(*statement,1);
-            pms.resize(i_b+1); //                                     assert is a c++ thing. check i_b is equal to what we loaded
+            assert (i_b==__step_num[local_index(m,s)]);
+            pms.resize(i_b+1);
             while(rc==SQLITE_ROW)
             {
                 pms[i_b]=( sqlite3_column_double(*statement,0) );
@@ -131,6 +132,12 @@ namespace Evolve {
         };
     }
     
+    double EccentricityExpansionCoefficients::get_specific_e(int m,int s,int e_step)
+    {
+        if(!__load_all) return load_specific_e(m,s,e_step);
+        else return __pms_expansions[local_index(m,s)][e_step];
+    }
+    
     double EccentricityExpansionCoefficients::load_specific_e(int m,int s,int e_step)
     {
         bool error_flag = false;
@@ -186,17 +193,8 @@ namespace Evolve {
         
         results[0]=step_to_e(m,s,lo_i);
         results[1]=step_to_e(m,s,hi_i);
-        
-        if(!__load_all)
-        {
-            results[3]=load_specific_e(m,s,lo_i);
-            results[4]=load_specific_e(m,s,hi_i);
-        }
-        else
-        {
-            results[3] = __pms_expansions[local_index(m,s)][lo_i];
-            results[4] = __pms_expansions[local_index(m,s)][hi_i];
-        }
+        results[3]=get_specific_e(m,s,lo_i);
+        results[4]=get_specific_e(m,s,hi_i);
         
         return results;
     }
@@ -212,39 +210,18 @@ namespace Evolve {
     
     bool EccentricityExpansionCoefficients::check_known_e(int m,int s,double e)
     {
-        if(s==0 || e==1.0 || e==0.0 || e<__min_e[local_index(m,s)]) return true;                    //               is e=0 also always known? that would be convenient. I think it is.
-        
-        if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)) return true;
+        if(s==0 || e==1.0 || e==0.0 || e<__min_e[local_index(m,s)] || e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false) || (m==2&&s==2&&e==0.0)) return true;
         
         return false;
     }
     
     double EccentricityExpansionCoefficients::return_known_e(int m,int s,double e)
     {
-        if(s==0)
-        {
-            switch(m) {
-                case -2 : return 0.0;
-                case 0  : return 1.0;
-                case 2  : return 0.0;
-            };
-        }
-        
-        if(e==1.0)
-        {
-            if(m==0) return 1.0;
-            else return 0.0;
-        }
-        
-        if(e==0.0)
-        {
-            //if(m==0) return 1.0;
-            //else return 0.0;
-        }
-        
+        if(  ((s==0||e==1.0) && m==0) || (m==2&&s==2&&e==0.0)  ) return 1.0;
+        if(  (s==0&&std::abs(m)==2) || e==1.0 || e==0.0  ) return 0.0;
         if(e<__min_e[local_index(m,s)]) return 0.0;
         
-        if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)) return load_specific_e(m,s,e_to_nearest_step(m,s,e,true));
+        if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)) return get_specific_e(m,s,e_to_nearest_step(m,s,e,true));
     }
     
     inline double EccentricityExpansionCoefficients::step_to_e(int m,int s,int step)
@@ -303,12 +280,12 @@ namespace Evolve {
         return __accur[local_index(m,s)];
     }
 
-    double EccentricityExpansionCoefficients::operator()(  //                                   TODO: if e is beyond m,s max e, complain about it
+    double EccentricityExpansionCoefficients::operator()(
         int m,
         int s,
         double e,
         unsigned max_e_power,
-        bool deriv // is this easy to do?     maybe not, make next bit NaN if it wants derivative
+        bool deriv
     ) const
     {
         if(!__useable)
@@ -317,8 +294,9 @@ namespace Evolve {
                 "expansion coefficients!"
             );
         
-        if(s > __max_s) throw Core::Error::BadFunctionArguments("Attempting to evaluate larger s than is available!");
         if(m!=0&&std::abs(m)!=2) throw Core::Error::BadFunctionArguments("Asking for p_{m,s} with m other than +-2 and 0");
+        if(s > __max_s) throw Core::Error::BadFunctionArguments("Attempting to evaluate larger s than is available!");
+        if(e > __max_e[local_index(m,s)]) throw Core::Error::BadFunctionArguments("Attempting to evaluate larger e than is accounted for!");
         
         if(deriv) return Core::NaN;
         
