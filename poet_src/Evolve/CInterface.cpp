@@ -606,3 +606,55 @@ void get_star_star_final_state(const OrbitSolver *solver,
                          secondary_core_angmom,
                          secondary_wind_saturation);
 }
+
+EccentricityExpansionCoefficients *coeff_new()
+{
+    return reinterpret_cast<EccentricityExpansionCoefficients*>(
+        new Evolve::EccentricityExpansionCoefficients()
+    );
+}
+
+void coeff_read(const EccentricityExpansionCoefficients *expansion_arg,
+                const std::string &tabulated_pms_fname,
+                double *precision,
+                bool *load_style
+)
+{
+    const Evolve::EccentricityExpansionCoefficients *expansion =
+        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
+    
+    expansion->read(tabulated_pms_fname,precision,load_style);
+}
+
+unsigned coeff_max_e(const EccentricityExpansionCoefficients *expansion_arg)
+{
+    const Evolve::EccentricityExpansionCoefficients *expansion =
+        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
+    
+    return expansion->max_e_power();
+}
+
+double coeff_max_precision(const EccentricityExpansionCoefficients *expansion_arg,
+                         int *m,
+                         int *s
+)
+{
+    const Evolve::EccentricityExpansionCoefficients *expansion =
+        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
+    
+    return expansion->max_precision(m,s);
+}
+
+double coeff_operator(const EccentricityExpansionCoefficients *expansion_arg,
+                    int *m, 
+                    int *s,
+                    double *e,
+                    unsigned *max_e_power,
+                    bool *deriv
+)
+{
+    const Evolve::EccentricityExpansionCoefficients *expansion =
+        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
+    
+    return expansion(m,s,e,max_e_power,deriv);  //    uhhhhhhhhhhh is this how you do it? ->???????????????  also there's no deconstructor?
+}

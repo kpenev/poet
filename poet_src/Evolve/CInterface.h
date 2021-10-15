@@ -37,8 +37,11 @@ extern "C" {
     ///Opaque struct to cast to/from Evolve::OrbitSolver.
     struct LIB_PUBLIC OrbitSolver;
 
-    ///Opaque struct to cant to/from Evolve::BrokenPowerlawPhasLagZone
+    ///Opaque struct to cast to/from Evolve::BrokenPowerlawPhasLagZone
     struct LIB_PUBLIC BrokenPowerlawPhaseLagZone;
+    
+    ///Opaque struct to cast to/from Evolve::EccentricityExpansionCoefficients
+    struct LIB_PUBLIC EccentricityExpansionCoefficients;
 
     ///Read eccentricity expansion coefficients from a file.
     LIB_PUBLIC void read_eccentricity_expansion_coefficients(
@@ -650,6 +653,68 @@ extern "C" {
         ///momentum loss due to stellar wind is in the satured state (true)
         ///or not (false).
         bool *secondary_wind_saturation
+    );
+    
+    ///\brief doc
+    LIB_PUBLIC EccentricityExpansionCoefficients *coeff_new();
+    
+    ///\brief doc
+    LIB_PUBLIC void coeff_read(
+        ///doc
+        const EccentricityExpansionCoefficients *expansion_arg,
+        
+        ///The name of the file to read pre-tabulated coefficients from.
+        const std::string &tabulated_pms_fname,
+
+        ///Only reads the coefficients of the expansion which
+        ///most closely achieves the indicated precision, erring on
+        ///the side of being more precise.
+        double *precision,
+        
+        ///Which loading style to use. Setting to true means we keep
+        ///a 9 GB database in memory.
+        bool *load_style
+    );
+    
+    ///\brief doc
+    LIB_PUBLIC unsigned coeff_max_e(
+        ///doc
+        const EccentricityExpansionCoefficients *expansion_arg
+    );
+    
+    ///\brief doc
+    LIB_PUBLIC double coeff_max_precision(
+        ///doc
+        const EccentricityExpansionCoefficients *expansion_arg,
+        
+        ///doc
+        int *m,
+        
+        ///doc
+        int *s
+    );
+    
+    ///\brief doc
+    LIB_PUBLIC double coeff_operator(
+        ///doc
+        const EccentricityExpansionCoefficients *expansion_arg,
+        
+        ///The first index (0 or +-2).
+        int *m, 
+
+        ///The second index.
+        int *s,
+
+        ///The value of the eccentricity to use.
+        double *e,
+
+        ///Prevision, the maximum eccentricity order to include in the Taylor
+        ///series. Currently does nothing.
+        unsigned *max_e_power,
+        
+        ///Previously, if true the result was differentiated w.r.t. to the
+        ///eccentricity. Currently does nothing.
+        bool *deriv
     );
 
 }//End Extern "C"

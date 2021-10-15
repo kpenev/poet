@@ -97,10 +97,10 @@ namespace Evolve {
         
         __pms_metadata.resize(3*(__max_s+1));
         __db_index.resize(3*(__max_s+1),-1);
-        __min_e.resize(3*(__max_s+1),NaN);
-        __step_num.resize(3*(__max_s+1),NaN);
-        __max_e.resize(3*(__max_s+1),NaN);
-        __accur.resize(3*(__max_s+1),NaN);
+        __min_e.resize(3*(__max_s+1),Core::NaN);
+        __step_num.resize(3*(__max_s+1),Core::NaN);
+        __max_e.resize(3*(__max_s+1),Core::NaN);
+        __accur.resize(3*(__max_s+1),Core::NaN);
         
         if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
         {

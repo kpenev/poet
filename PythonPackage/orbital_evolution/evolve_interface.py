@@ -29,6 +29,9 @@ class c_binary_p(c_void_p):
 
 class c_solver_p(c_void_p):
     """Place holder type for orbit evolution solver from the C-library."""
+
+class c_expcoeff_p(c_void_p):
+    """Place holder type for expansion coefficients from the C-library."""
 #pylint: enable=invalid-name
 #pylint: enable=too-few-public-methods
 
@@ -285,6 +288,37 @@ def initialize_library():
         POINTER(c_bool)
     ]
     result.get_star_star_final_state.restype = None
+    
+    result.coeff_new.argtypes = None
+    result.coeff_new.restype = c_expcoeff_p
+    
+    result.coeff_read.argtypes = [
+        result.coeff_new.restype,
+        c_wchar_p,
+        c_double,
+        c_bool
+    ]
+    result.coeff_read.restype = None
+    
+    result.coeff_max_e.argtypes = result.coeff_new.restype
+    result.coeff_max_e.restype = c_uint
+    
+    result.coeff_max_precision.argtypes = [
+        result.coeff_new.restype,
+        c_int,
+        c_int
+    ]
+    result.coeff_max_precision.restype = c_double
+    
+    result.coeff_operator.argtypes = [
+        result.coeff_new.restype,
+        c_int,
+        c_int,
+        c_double,
+        result.coeff_max_e.restype,
+        c_bool
+    ]
+    result.coeff_operator.restype = c_double
 
     return result
 
