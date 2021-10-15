@@ -289,16 +289,13 @@ def initialize_library():
     ]
     result.get_star_star_final_state.restype = None
     
-    result.coeff_new.argtypes = None
-    result.coeff_new.restype = c_expcoeff_p
-    
-    result.coeff_read.argtypes = [
+    result.coeff_new.argtypes = [
         result.coeff_new.restype,
         c_wchar_p,
         c_double,
         c_bool
     ]
-    result.coeff_read.restype = None
+    result.coeff_new.restype = c_expcoeff_p
     
     result.coeff_max_e.argtypes = result.coeff_new.restype
     result.coeff_max_e.restype = c_uint

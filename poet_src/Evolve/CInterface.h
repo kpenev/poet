@@ -656,10 +656,7 @@ extern "C" {
     );
     
     ///\brief doc
-    LIB_PUBLIC EccentricityExpansionCoefficients *coeff_new();
-    
-    ///\brief doc
-    LIB_PUBLIC void coeff_read(
+    LIB_PUBLIC EccentricityExpansionCoefficients *coeff_new(
         ///doc
         const EccentricityExpansionCoefficients *expansion_arg,
         
@@ -669,11 +666,11 @@ extern "C" {
         ///Only reads the coefficients of the expansion which
         ///most closely achieves the indicated precision, erring on
         ///the side of being more precise.
-        double *precision,
+        double precision,
         
         ///Which loading style to use. Setting to true means we keep
         ///a 9 GB database in memory.
-        bool *load_style
+        bool load_style
     );
     
     ///\brief doc
@@ -688,10 +685,10 @@ extern "C" {
         const EccentricityExpansionCoefficients *expansion_arg,
         
         ///doc
-        int *m,
+        int m,
         
         ///doc
-        int *s
+        int s
     );
     
     ///\brief doc
@@ -700,21 +697,27 @@ extern "C" {
         const EccentricityExpansionCoefficients *expansion_arg,
         
         ///The first index (0 or +-2).
-        int *m, 
+        int m, 
 
         ///The second index.
-        int *s,
+        int s,
 
         ///The value of the eccentricity to use.
-        double *e,
+        double e,
 
         ///Prevision, the maximum eccentricity order to include in the Taylor
         ///series. Currently does nothing.
-        unsigned *max_e_power,
+        unsigned max_e_power,
         
         ///Previously, if true the result was differentiated w.r.t. to the
         ///eccentricity. Currently does nothing.
-        bool *deriv
+        bool deriv
+    );
+    
+    ///\brief doc
+    LIB_PUBLIC void coeff_delete(
+        ///doc
+        const EccentricityExpansionCoefficients *expansion_arg
     );
 
 }//End Extern "C"

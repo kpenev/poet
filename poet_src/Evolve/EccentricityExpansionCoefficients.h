@@ -80,10 +80,8 @@ namespace Evolve {
 
     public:
         ///Create an uninitialized object.
-        EccentricityExpansionCoefficients() : __useable(false) {}
-
         ///Reads in tabulated expansion coefficients, making this object useable.
-        void read(
+        EccentricityExpansionCoefficients(
                 ///The name of the file to read pre-tabulated coefficients from.
                 const std::string &tabulated_pms_fname="",
 
@@ -94,9 +92,9 @@ namespace Evolve {
                 
                 ///Which loading style to use. Setting to true means we keep
                 ///a 9 GB database in memory.
-                bool load_style=false);
-
-
+                bool load_style=false
+        );
+        
         ///Maximum eccentricity power with all necessary coefficients known.
         unsigned max_e_power() const {return __max_e_power;}
         
@@ -122,7 +120,7 @@ namespace Evolve {
                 ///Previously, if true the result was differentiated w.r.t. to the
                 ///eccentricity. Currently does nothing.
                 bool deriv) const;
-    }; //End EccentricityExpansionCoefficients class.
+        }; //End EccentricityExpansionCoefficients class.
 
 } //End Evolve namespace.
 

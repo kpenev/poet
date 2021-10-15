@@ -322,12 +322,14 @@ namespace Evolve {
         };
     }
 
-    void EccentricityExpansionCoefficients::read(
+    EccentricityExpansionCoefficients::EccentricityExpansionCoefficients(
         const std::string &tabulated_pms_fname,
         double precision,
         bool load_style
     )
     {
+        __useable = false;
+        
         sqlite3 *db;
         int rc;
         
