@@ -646,7 +646,7 @@ double coeff_operator(const EccentricityExpansionCoefficients *expansion_arg,
     const Evolve::EccentricityExpansionCoefficients *expansion =
         reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
     
-    return expansion->operator(m,s,e,max_e_power,deriv);  //    uhhhhhhhhhhh is this how you do it? ->???????????????  also there's no deconstructor?  can just make read part of constructor now
+    return expansion->operator(m,s,e,max_e_power,deriv);
 }
 
 unsigned coeff_delete(const EccentricityExpansionCoefficients *expansion_arg)

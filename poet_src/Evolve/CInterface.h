@@ -657,9 +657,6 @@ extern "C" {
     
     ///\brief doc
     LIB_PUBLIC EccentricityExpansionCoefficients *coeff_new(
-        ///doc
-        const EccentricityExpansionCoefficients *expansion_arg,
-        
         ///The name of the file to read pre-tabulated coefficients from.
         const std::string &tabulated_pms_fname,
 

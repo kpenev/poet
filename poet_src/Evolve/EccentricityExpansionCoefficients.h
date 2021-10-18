@@ -96,7 +96,7 @@ namespace Evolve {
         );
         
         ///Maximum eccentricity power with all necessary coefficients known.
-        unsigned max_e_power() const {return __max_e_power;}
+        unsigned max_e_power() const {return __max_e_power;} //TODO: this is no longer relevant
         
         ///Maximum precision for a given expansion.
         double max_precision(int m, int s) const;
