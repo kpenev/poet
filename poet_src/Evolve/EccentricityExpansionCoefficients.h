@@ -10,6 +10,7 @@
 
 #include "../Core/SharedLibraryExportMacros.h"
 #include "../Core/Error.h"
+#include "../Core/Common.h"
 #include <vector>
 #include <fstream>
 #include <iomanip>
@@ -18,8 +19,8 @@
 #include <sstream>
 #include <cassert>
 #include <algorithm>
-#include <sqlite3>
-#include <boost/math/special_functions/chebyshev.hpp>
+#include <sqlite3.h>
+//#include <boost/math/special_functions/chebyshev.hpp>
 
 namespace Evolve {
 
@@ -63,19 +64,19 @@ namespace Evolve {
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);
         /// Highest s available for requested precision
         /// It is possible for file to accommodate precision but only for s=0
-        void get_max_s(sqlite3* db)
+        void get_max_s(sqlite3* db);
         void load_metadata(sqlite3* db);
-        double load_specific_e(int m,int s,int e_step);
+        double load_specific_e(int m,int s,int e_step) const;
         // The callback SQL function that updates the above values (__pms_expansions)
         void get_expansions(sqlite3* db);
-        double get_specific_e(int m,int s,int e_step);
-        std::vector<double> find_pms_boundary_values(int m,int s,double e);
-        double return_known_e(int m,int s,double e);
-        bool check_known_e(int m,int s,double e);
-        inline int e_to_nearest_step(int m,int s,double e,bool flr);
-        inline double step_to_e(int m,int s,int step);
+        double get_specific_e(int m,int s,int e_step) const;
+        std::vector<double> find_pms_boundary_values(int m,int s,double e) const;
+        double return_known_e(int m,int s,double e) const;
+        bool check_known_e(int m,int s,double e) const;
+        inline int e_to_nearest_step(int m,int s,double e,bool flr) const;
+        inline double step_to_e(int m,int s,int step) const;
         int current_largest_s(int m);
-        inline int local_index(int m, int s);
+        inline int local_index(int m, int s) const;
         void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
 
     public:
@@ -94,6 +95,8 @@ namespace Evolve {
                 ///a 9 GB database in memory.
                 bool load_style=false
         );
+
+        void read(const std::string &gary="",int bob=-1);
         
         ///Maximum eccentricity power with all necessary coefficients known.
         unsigned max_e_power() const {return __max_e_power;} //TODO: this is no longer relevant

@@ -143,13 +143,13 @@ namespace Evolve {
                                   *
                                   periapsis_factor);
             eccentricity_deriv += (
-                __pms(s, mp, e, __e_order, true).first
+                __pms(s, mp, e, __e_order, true)
                 *
                 __Ummp[m+2][i]
                 *
                 periapsis_factor
             );
-            highest_e_order_term += (pms.max_precision(s,mp)
+            highest_e_order_term += (__pms.max_precision(s,mp)
                                      *
                                      __Ummp[m+2][i]
                                      *

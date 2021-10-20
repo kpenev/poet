@@ -41,6 +41,7 @@ model {
                     [min: "1.53", max: "2.0"]
                 )
                 linker.args "-l" + ensureLibraryVersion("pthread")
+                linker.args "-l" + ensureLibraryVersion("sqlite3")
 
                 if(buildType == buildTypes.release) {
                     cppCompiler.args "-O3"
