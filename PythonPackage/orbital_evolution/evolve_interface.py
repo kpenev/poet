@@ -315,6 +315,9 @@ def initialize_library():
         c_bool
     ]
     result.coeff_operator.restype = c_double
+    
+    result.coeff_delete.argtypes = result.coeff_new.restype
+    result.coeff_delete.restype = None
 
     return result
 
