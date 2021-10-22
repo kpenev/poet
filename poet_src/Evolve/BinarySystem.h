@@ -86,26 +86,13 @@ namespace Evolve {
             ///The rate at which the orbit gains energy due to tides.
             __orbit_power,
 
-            ///\brief Estimate of the error in __orbit_power due to
-            ///truncating the tidal potential eccentricity expansion
-            __orbit_power_expansion_error,
-
             ///\brief The rate at which the orbit gains angular momentum due
             ///to tides.
-            __orbit_angmom_gain,
+            __orbit_angmom_gain;
 
-            ///\brief Estimate of the error in __orbit_angmom_gain due to
-            ///truncating the tidal potential eccentricity expansion
-            __orbit_angmom_gain_expansion_error;
-
-        Eigen::Vector3d
-            ///\brief The torque on the orbit in the coordinate system of the
-            ///outermost zone of the first body.
-            __orbit_torque,
-
-            ///\brief An estiamte of the error in ::__orbit_torque due to
-            ///truncating the eccentricity series of the tidal potential.
-            __orbit_torque_expansion_error;
+        ///\brief The torque on the orbit in the coordinate system of the
+        ///outermost zone of the first body.
+        Eigen::Vector3d __orbit_torque;
 
         ///The evolution mode from the last call to configure();
         Core::EvolModeType __evolution_mode;
@@ -174,12 +161,7 @@ namespace Evolve {
         ///configure().
         int locked_surface_differential_equations(
             ///On output is set to the rates of change of \f$S^0_i\f$.
-            double *evolution_rates,
-
-            ///If true, instead of returning the evolution rates, returns
-            ///an estimete of the error in those due to truncating the
-            ///eccentricity expansion series of the tidal potential.
-            bool expansion_error
+            double *evolution_rates
         ) const;
 
         ///\brief Jacobian for the evolution of the rotation of the zones of
@@ -203,12 +185,7 @@ namespace Evolve {
         int single_body_differential_equations(
             ///On outputs is set to the rate of change of the orbital
             ///parameters.
-            double *evolution_rates,
-
-            ///If true, instead of returning the evolution rates, returns
-            ///an estimete of the error in those due to truncating the
-            ///eccentricity expansion series of the tidal potential.
-            bool expansion_error
+            double *evolution_rates
         ) const;
 
         ///Fills the jacobian for a system consisting of one isolated body.
@@ -273,12 +250,6 @@ namespace Evolve {
             double orbit_power_deriv=Core::NaN
         ) const;
 
-        ///\brief Estimate of the  error in the value returned by
-        ///semimajor_evolution() due to truncating the tidal potential
-        ///eccentricity expansion
-        double semimajor_evolution_expansion_error() const
-        {return semimajor_evolution(__orbit_power_expansion_error);}
-
         ///\brief Returns the rate of evolution of the eccentricity or one of its
         ///derivatives.
         ///
@@ -314,11 +285,6 @@ namespace Evolve {
             ///semimajor axis.
             bool semimajor_deriv=true
         ) const;
-
-        ///\brief Estimate of the  error in the value returned by
-        ///eccentricity_evolution() due to truncating the tidal potential
-        ///eccentricity expansion
-        double eccentricity_evolution_expansion_error() const;
 
         ///\brief Makes corrections to the matrix and RHS to accomodate the given
         ///derivative for the linear problem that defines the above fractions.
@@ -386,8 +352,8 @@ namespace Evolve {
         ///mode.
         void update_above_lock_fractions();
 
-        ///\brief Update the values of ::__orbit_power, ::__orbit_torque,
-        ///::__orbit_angmom_gain and their associated expansion errors.
+        ///\brief Update the values of ::__orbit_power, ::__orbit_torque, and
+        ///::__orbit_angmom_gain.
         ///
         ///Called as part of ::configure().
         void fill_orbit_torque_and_power();
@@ -397,12 +363,7 @@ namespace Evolve {
         int binary_differential_equations(
             ///On output is set to the rates of change of the evolution
             ///variables. See differintal_equations() for details.
-            double *differential_equations,
-
-            ///If true, instead of returning the evolution rates, returns
-            ///an estimete of the error in those due to truncating the
-            ///eccentricity expansion series of the tidal potential.
-            bool expansion_error
+            double *differential_equations
         ) const;
 
 
@@ -909,12 +870,7 @@ namespace Evolve {
             ///On outputs gets filled  with the rates at which the entries in
             ///parameters evolve. It is assumed that sufficient space has
             ///been allocated to hold the results.
-            double *differential_equations,
-
-            ///If true, instead of returning the evolution rates, returns
-            ///an estimete of the error in those due to truncating the
-            ///eccentricity expansion series of the tidal potential.
-            bool expansion_error=false
+            double *differential_equations
         );
 
         ///The jacobian of the evolution equations.
@@ -1027,19 +983,19 @@ namespace Evolve {
         const std::list<double> &eccentricity_evolution() const
         {return __eccentricity_evolution;}
 
-        ///Change the eccentricity expansion order for all dissipative zones.
-        virtual void change_e_order(
-            ///The new eccentricity expansion order.
-            unsigned new_e_order
+        ///Change the tidal potential expansion order for all dissipative zones.
+        virtual void change_expansion_order(
+            ///The new expansion order.
+            unsigned new_expansion_order
         )
         {
-            __body1.change_e_order(new_e_order, *this, true);
-            __body2.change_e_order(new_e_order, *this, false);
+            __body1.change_expansion_order(new_expansion_order, *this, true);
+            __body2.change_expansion_order(new_expansion_order, *this, false);
         }
 
         ///To what order should eccentricity expansion be performed for the given
         ///value of the eccentricity.
-        virtual unsigned eccentricity_order() const;
+        virtual unsigned expansion_order() const;
 
         virtual ~BinarySystem() {}
 

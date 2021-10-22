@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Definitions of some of the methods of ExponentialDecayDiffRotBody.
  *
  * \ingroup Star_group
@@ -26,7 +26,6 @@ namespace Star {
         bool with_respect_to_top
     ) const
     {
-        assert(entry != Evolve::Dissipation::EXPANSION_ERROR);
         assert(entry != Evolve::Dissipation::ORBITAL_FREQUENCY);
         assert(entry != Evolve::Dissipation::ECCENTRICITY);
         assert(entry != Evolve::Dissipation::SEMIMAJOR);
@@ -36,7 +35,7 @@ namespace Star {
         switch(entry) {
             case Evolve::Dissipation::NO_DERIV :
                 return zone_torque[0];
-            case Evolve::Dissipation::SPIN_FREQUENCY : 
+            case Evolve::Dissipation::SPIN_FREQUENCY :
                 return zone_torque[(with_respect_to_top ? 1 : 2)];
             case Evolve::Dissipation::INCLINATION :
                 return zone_torque[(with_respect_to_top ? 3 : 4)];
@@ -97,7 +96,6 @@ namespace Star {
             || entry == Evolve::Dissipation::SEMIMAJOR
             || entry == Evolve::Dissipation::AGE
             || entry == Evolve::Dissipation::RADIUS
-            || entry == Evolve::Dissipation::EXPANSION_ERROR
         )
             return Eigen::Vector3d(0, 0, 0);
         Eigen::Vector3d &result=torque_entry(top_zone_index,
@@ -127,7 +125,7 @@ namespace Star {
         else if(
             (
                 entry == Evolve::Dissipation::SPIN_FREQUENCY
-                || 
+                ||
                 entry == Evolve::Dissipation::SPIN_ANGMOM
             )
             &&
@@ -147,12 +145,12 @@ namespace Star {
                 result *= zone2.spin_frequency();
             if(
                 entry == Evolve::Dissipation::NO_DERIV
-                || 
+                ||
                 entry == Evolve::Dissipation::MOMENT_OF_INERTIA
             )
                 result[2] -= zone1.spin_frequency();
         }
-        if(entry != Evolve::Dissipation::MOMENT_OF_INERTIA) 
+        if(entry != Evolve::Dissipation::MOMENT_OF_INERTIA)
             result *= i1 * i2;
         else if(with_respect_to_top)
             result *= i2 * (1 - i1 / (i1 + i2));

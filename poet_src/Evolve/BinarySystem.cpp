@@ -29,8 +29,7 @@ namespace Evolve {
     }
 
     int BinarySystem::locked_surface_differential_equations(
-        double *evolution_rates,
-        bool expansion_error
+        double *evolution_rates
     ) const
     {
         for(
@@ -38,11 +37,9 @@ namespace Evolve {
             zone_index < __body1.number_zones();
             ++zone_index
         ) {
-            evolution_rates[zone_index - 1] = (
-                expansion_error
-                ? 0.0
-                : __body1.nontidal_torque(zone_index)[2]
-            );
+            evolution_rates[zone_index - 1] = __body1.nontidal_torque(
+                zone_index
+            )[2];
 
             assert(__body1.nontidal_torque(zone_index)[0] == 0);
             assert(__body1.nontidal_torque(zone_index)[1] == 0);
@@ -147,8 +144,7 @@ namespace Evolve {
     }
 
     int BinarySystem::single_body_differential_equations(
-        double *evolution_rates,
-        bool expansion_error
+        double *evolution_rates
     ) const
     {
         unsigned nzones = __body1.number_zones();
@@ -156,21 +152,6 @@ namespace Evolve {
                *inclination_evol = evolution_rates,
                *periapsis_evol = evolution_rates + (nzones - 1),
                *angmom_evol = periapsis_evol+(nzones - 1);
-
-        if(expansion_error) {
-            angmom_evol[0] = 0.0;
-            for(
-                unsigned zone_index = 0;
-                zone_index < nzones - 1;
-                ++zone_index
-            )
-                inclination_evol[zone_index] = (
-                    periapsis_evol[zone_index] = (
-                        angmom_evol[zone_index + 1] = 0.0
-                    )
-                );
-            return 0;
-        }
 
         Eigen::Vector3d reference_torque;
         for(unsigned zone_index = 0; zone_index < nzones; ++zone_index) {
@@ -457,22 +438,6 @@ namespace Evolve {
                 +
                 2.0 * orbit_angmom_gain / __orbital_angmom
             )
-        );
-    }
-
-    double BinarySystem::eccentricity_evolution_expansion_error() const
-    {
-        if(__eccentricity <= 1e-8) return 0;
-        double factor = ((1.0 - std::pow(__eccentricity, 2))
-                         /
-                         (2.0 * __eccentricity));
-
-        return factor * (
-            std::abs(__orbit_power_expansion_error / __orbital_energy)
-            +
-            std::abs(2.0 * __orbit_angmom_gain_expansion_error
-                     /
-                     __orbital_angmom)
         );
     }
 
@@ -834,21 +799,9 @@ namespace Evolve {
                                    __body2.tidal_orbit_torque())
         );
 
-        __orbit_torque_expansion_error.setConstant(
-            __body1.tidal_orbit_torque(Dissipation::EXPANSION_ERROR).norm()
-            +
-            __body2.tidal_orbit_torque(Dissipation::EXPANSION_ERROR).norm()
-        );
-
         __orbit_power = (__body1.tidal_orbit_power()
                          +
                          __body2.tidal_orbit_power());
-
-        __orbit_power_expansion_error = (
-            __body1.tidal_orbit_power(Dissipation::EXPANSION_ERROR)
-            +
-            __body2.tidal_orbit_power(Dissipation::EXPANSION_ERROR)
-        );
 
         __orbit_angmom_gain = (__orbit_torque[0]
                                *
@@ -857,22 +810,10 @@ namespace Evolve {
                                __orbit_torque[2]
                                *
                                std::cos(__body1.zone(0).inclination()));
-
-
-        __orbit_angmom_gain_expansion_error = (
-            std::abs(__orbit_torque_expansion_error[0]
-                     *
-                     std::sin(__body1.zone(0).inclination()))
-            +
-            std::abs(__orbit_torque_expansion_error[2]
-                     *
-                     std::cos(__body1.zone(0).inclination()))
-        );
     }
 
     int BinarySystem::binary_differential_equations(
-        double *differential_equations,
-        bool expansion_error
+        double *differential_equations
     ) const
     {
         DissipatingZone &reference_zone = __body1.zone(0);
@@ -893,25 +834,15 @@ namespace Evolve {
             DissipatingZone &zone = body.zone(body_zone_ind);
             Eigen::Vector3d zone_orbit_torque,
                             total_zone_torque;
-            if(expansion_error)
-                total_zone_torque.setZero();
-            else
-                total_zone_torque = body.nontidal_torque(body_zone_ind);
+            total_zone_torque = body.nontidal_torque(body_zone_ind);
 
-            if(expansion_error)
-                zone_orbit_torque = __orbit_torque_expansion_error;
-            else
-                zone_orbit_torque = (zone_ind
-                                     ? zone_to_zone_transform(reference_zone,
-                                                              zone,
-                                                              __orbit_torque)
-                                     : __orbit_torque);
+            zone_orbit_torque = (zone_ind
+                                 ? zone_to_zone_transform(reference_zone,
+                                                          zone,
+                                                          __orbit_torque)
+                                 : __orbit_torque);
 
-            Dissipation::QuantityEntry entry = (
-                expansion_error
-                ? Dissipation::EXPANSION_ERROR
-                : Dissipation::NO_DERIV
-            );
+            Dissipation::QuantityEntry entry = Dissipation::NO_DERIV;
             if(zone.locked()) {
                 double above_frac = (__above_lock_fractions
                                      [Dissipation::NO_DERIV]
@@ -948,10 +879,6 @@ namespace Evolve {
                     total_zone_torque,
                     entry
                 );
-                if(expansion_error)
-                    reference_periapsis_rate = -std::abs(
-                        reference_periapsis_rate
-                    );
                 assert(!std::isnan(reference_periapsis_rate));
             }
             if(!zone.locked()) {
@@ -962,8 +889,6 @@ namespace Evolve {
             std::cerr << "Zone " << zone_ind
                       << " torque: " << total_zone_torque
                       << " inclination rate";
-            if(expansion_error)
-                std::cerr << " error";
             std::cerr << ": " << inclination_rates[zone_ind];
             if(zone_ind)
                 std::cerr << " periapsis rate: "
@@ -974,24 +899,14 @@ namespace Evolve {
             assert(!std::isnan(total_zone_torque.sum()));
 
         }
-        differential_equations[0] = (
-            expansion_error
-            ? semimajor_evolution_expansion_error()
-            : semimajor_evolution(__orbit_power)
-        );
+        differential_equations[0] = semimajor_evolution(__orbit_power);
         if(!angmom_skipped)
             differential_equations[0] *= 6.5 * std::pow(__semimajor, 5.5);
 
-        differential_equations[1] = (
-            expansion_error
-            ? eccentricity_evolution_expansion_error()
-            : eccentricity_evolution(__orbit_power, __orbit_angmom_gain)
-        );
+        differential_equations[1] = eccentricity_evolution(__orbit_power,
+                                                           __orbit_angmom_gain);
 #ifdef VERBOSE_DEBUG
-        if(expansion_error)
-            std::cerr << "rate errors: ";
-        else
-            std::cerr << "rates: ";
+        std::cerr << "rates: ";
         for(
             unsigned i = 0;
             i < 3 * (__body1.number_zones() + __body2.number_zones()) + 1;
@@ -2069,32 +1984,27 @@ namespace Evolve {
     int BinarySystem::differential_equations(double age,
                                              const double *parameters,
                                              Core::EvolModeType evolution_mode,
-                                             double *differential_equations,
-                                             bool expansion_error)
+                                             double *differential_equations)
     {
 #ifndef NDEBUG
-        if(!expansion_error)
-            std::cerr << "Finding differential equations at t = " << age
-                      << " in " << evolution_mode
-                      << " mode, with orbit[0] = " << parameters[0]
-                      << std::endl;
+        std::cerr << "Finding differential equations at t = " << age
+                  << " in " << evolution_mode
+                  << " mode, with orbit[0] = " << parameters[0]
+                  << std::endl;
 #endif
         int status = configure(false, age, parameters, evolution_mode);
         if(status != GSL_SUCCESS) return status;
         switch(evolution_mode) {
             case Core::LOCKED_SURFACE_SPIN :
                 return locked_surface_differential_equations(
-                    differential_equations,
-                    expansion_error
+                    differential_equations
                 );
             case Core::SINGLE :
                 return single_body_differential_equations(
-                    differential_equations,
-                    expansion_error
+                    differential_equations
                 );
             case Core::BINARY :
-                return binary_differential_equations(differential_equations,
-                                                     expansion_error);
+                return binary_differential_equations(differential_equations);
             default :
                 throw Core::Error::BadFunctionArguments(
                     "Evolution mode other than LOCKED_SURFACE_SPIN, SINGLE or "
@@ -2360,7 +2270,7 @@ namespace Evolve {
                         __body2.next_stop_age());
     }
 
-    unsigned BinarySystem::eccentricity_order() const
+    unsigned BinarySystem::expansion_order() const
     {
 #ifndef NDEBUG
         int result = -1;
@@ -2376,13 +2286,13 @@ namespace Evolve {
                 if(zone.dissipative()) {
 #ifndef NDEBUG
                     if(result < 1)
-                        result = zone.eccentricity_order();
+                        result = zone.expansion_order();
                     else
                         assert(static_cast<unsigned>(result)
                                ==
-                               zone.eccentricity_order());
+                               zone.expansion_order());
 #else
-                    return zone.eccentricity_order();
+                    return zone.expansion_order();
 #endif
                 }
             }

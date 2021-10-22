@@ -24,19 +24,16 @@
 
 namespace Evolve {
 
-    ///\brief A class which reads-in and provides a convenient interface to the 
+    ///\brief A class which reads-in and provides a convenient interface to the
     /// \f$p_{m,s}\f$ coefficients
     class LIB_PUBLIC EccentricityExpansionCoefficients {
     private:
-        ///Maximum eccentricity power with all necessary coefficients known.
-        unsigned __max_e_power;
-
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
             ///Stored in the order m=-2,0,+2 for increasing s.
             __pms_expansions;
-        
+
 
         ///Is the object ready to be used?
         bool __useable;
@@ -60,7 +57,7 @@ namespace Evolve {
         std::vector<double> __max_e;
         std::vector<double> __accur;
         std::string __file_name;
-        
+
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);
         /// Highest s available for requested precision
         /// It is possible for file to accommodate precision but only for s=0
@@ -90,25 +87,24 @@ namespace Evolve {
                 ///most closely achieves the indicated precision, erring on
                 ///the side of being more precise.
                 double precision=1,
-                
+
                 ///Which loading style to use. Setting to true means we keep
                 ///a 9 GB database in memory.
                 bool load_style=false
         );
 
         void read(const std::string &gary="",int bob=-1);
-        
-        ///Maximum eccentricity power with all necessary coefficients known.
-        unsigned max_e_power() const {return __max_e_power;} //TODO: this is no longer relevant
-        
+
         ///Maximum precision for a given expansion.
         double max_precision(int m, int s) const;
 
-        ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
-        ///contribution of the highest power eccentricity terms.
+        unsigned max_orbital_frequency_multiplier() const
+        {return __max_s;}
+
+        ///Interpolate \f$p_{m,s}\f$ for the given eccentricity.
         double operator()(
                 ///The first index (0 or +-2).
-                int m, 
+                int m,
 
                 ///The second index.
                 int s,
@@ -116,10 +112,6 @@ namespace Evolve {
                 ///The value of the eccentricity to use.
                 double e,
 
-                ///Prevision, the maximum eccentricity order to include in the Taylor
-                ///series. Currently does nothing.
-                unsigned max_e_power,
-                
                 ///Previously, if true the result was differentiated w.r.t. to the
                 ///eccentricity. Currently does nothing.
                 bool deriv) const;

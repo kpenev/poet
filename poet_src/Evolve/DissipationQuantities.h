@@ -119,10 +119,6 @@ namespace Evolve {
             ///The total number of derivatives supported
             NUM_DERIVATIVES,
 
-            ///The error due to truncating the eccentricity series to finite
-            ///order.
-            EXPANSION_ERROR = NUM_DERIVATIVES,
-
             ///The total number of Entries
             NUM_ENTRIES
         }; //End QuantityEntries enumeration.

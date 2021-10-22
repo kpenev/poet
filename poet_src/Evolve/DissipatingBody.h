@@ -75,8 +75,7 @@ namespace Evolve {
             __tidal_torques_below;
 
         ///\brief The quantities w.r.t. which derivatives of the orbit energy
-        ///gain and torque are pre-calculated or error, if the value is
-        ///__expansion_error_id.
+        ///gain and torque are pre-calculated.
         std::vector<Dissipation::QuantityEntry> __orbit_entries;
 
         std::valarray<double>
@@ -586,9 +585,9 @@ namespace Evolve {
         virtual double next_stop_age() const {return Core::Inf;}
 
         ///Change the eccentricity expansion order for all dissipative zones.
-        virtual void change_e_order(
+        virtual void change_expansion_order(
             ///The new eccentricity expansion order.
-            unsigned new_e_order,
+            unsigned new_expansion_order,
 
             ///The system being evolved.
             BinarySystem &system,

@@ -11,7 +11,7 @@
 
 namespace Evolve {
 
-    std::ostream &operator<<(std::ostream &os, 
+    std::ostream &operator<<(std::ostream &os,
             const Dissipation::Quantity &quantity)
     {
         switch(quantity) {
@@ -54,8 +54,6 @@ namespace Evolve {
                                             break;
             case Dissipation::SEMIMAJOR : os << "SEMIMAJOR";
                                           break;
-            case Dissipation::EXPANSION_ERROR : os << "EXPANSION_ERROR";
-                                                break;
             default : assert(false);
         };
         return os;

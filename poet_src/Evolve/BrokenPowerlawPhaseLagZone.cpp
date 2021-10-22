@@ -83,26 +83,15 @@ namespace Evolve {
             &this_body = (primary ? system.primary() : system.secondary()),
             &other_body = (primary ? system.secondary() : system.primary());
 
-        for(
-            int e_order = 0;
-            e_order <= static_cast<int>(eccentricity_order());
-            ++e_order
-        )
-        {
-
-            int mp_step = (e_order == 0 ? 1 : 4 + 2 * e_order);
-
-            for(int mp = 0; mp <= e_order + 2;  mp += mp_step)
-                for(int m = -2; m <= 2; ++m)
-                    result |= new LagForcingFrequencyBreakCondition(
-                        *this,
-                        this_body,
-                        other_body,
-                        mp,
-                        m
-                    );
-        }
-
+        for(unsigned mp = 0; mp <= expansion_order() + 2; ++mp)
+            for(int m = -2; m <= 2; ++m)
+                result |= new LagForcingFrequencyBreakCondition(
+                    *this,
+                    this_body,
+                    other_body,
+                    mp,
+                    m
+                );
     }
 
     void BrokenPowerlawPhaseLagZone::print_configuration(std::ostream &out_stream)
@@ -282,7 +271,7 @@ namespace Evolve {
 
             set_spin_index();
 
-            __tidal_indices.resize(5 * (eccentricity_order() + 3));
+            __tidal_indices.resize(5 * (expansion_order() + 3));
 #ifndef NDEBUG
             std::cerr << "__tidal_indices size = "
                       << __tidal_indices.size()
@@ -294,7 +283,7 @@ namespace Evolve {
 
             for(
                 int mp = 0;
-                mp <= static_cast<int>(eccentricity_order()) + 2;
+                mp <= static_cast<int>(expansion_order()) + 2;
                 ++mp
             ) {
                 for(int m = -2; m <= 2; ++m) {
@@ -347,8 +336,6 @@ namespace Evolve {
             !__dissipative
             ||
             entry == Dissipation::AGE
-            ||
-            entry == Dissipation::EXPANSION_ERROR
         )
             return 0;
 
@@ -514,24 +501,24 @@ namespace Evolve {
         return result;
     }//End BrokenPowerlawPhaseLagZone::stopping_conditions definition.
 
-    void BrokenPowerlawPhaseLagZone::change_e_order(
-        unsigned new_e_order,
+    void BrokenPowerlawPhaseLagZone::change_expansion_order(
+        unsigned new_expansion_order,
         BinarySystem &system,
         bool primary,
         unsigned zone_index
     )
     {
-        __tidal_indices.resize(5 * (new_e_order + 3));
+        __tidal_indices.resize(5 * (new_expansion_order + 3));
 
         double orbital_frequency = get_orbital_frequency(system);
 
         std::vector< std::vector<double>::size_type >::iterator
             destination = (__tidal_indices.begin()
                            +
-                           5 * (eccentricity_order() + 3));
+                           5 * (expansion_order() + 3));
         for(
-            int mp = static_cast<int>(eccentricity_order()) + 3;
-            mp <= static_cast<int>(new_e_order) + 2;
+            int mp = static_cast<int>(expansion_order()) + 3;
+            mp <= static_cast<int>(new_expansion_order) + 2;
             ++mp
         ) {
             for(int m = -2; m <= 2; ++m) {
@@ -542,10 +529,10 @@ namespace Evolve {
             }
         }
 
-        DissipatingZone::change_e_order(new_e_order,
-                                        system,
-                                        primary,
-                                        zone_index);
+        DissipatingZone::change_expansion_order(new_expansion_order,
+                                                system,
+                                                primary,
+                                                zone_index);
     }
 
 } //End BinarySystem namespace.

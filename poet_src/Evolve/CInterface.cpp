@@ -622,7 +622,7 @@ unsigned coeff_max_e(const EccentricityExpansionCoefficients *expansion_arg)
 {
     const Evolve::EccentricityExpansionCoefficients *expansion =
         reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
-    
+
     return expansion->max_e_power();
 }
 
@@ -632,21 +632,20 @@ double coeff_max_precision(const EccentricityExpansionCoefficients *expansion_ar
 {
     const Evolve::EccentricityExpansionCoefficients *expansion =
         reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
-    
+
     return expansion->max_precision(m,s);
 }
 
 double coeff_operator(const EccentricityExpansionCoefficients *expansion_arg,
-                      int m, 
+                      int m,
                       int s,
                       double e,
-                      unsigned max_e_power, // uhhhhhhh unsigned, though? unsigned what? i can look this up myself. is this valid?
                       bool deriv)
 {
     const Evolve::EccentricityExpansionCoefficients *expansion =
         reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
-    
-    return expansion->operator()(m,s,e,max_e_power,deriv);
+
+    return expansion->operator()(m,s,e,deriv);
 }
 
 void coeff_delete(const EccentricityExpansionCoefficients *expansion_arg)
