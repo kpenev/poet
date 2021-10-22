@@ -92,8 +92,11 @@ namespace Evolve {
         ///from the databate.
         void load_metadata(sqlite3* db);
 
-        void load_e_switches(sqlite3* db,double precision);
+        ///Fill the __max_ignore_eccentricity member per the database.
+        void load_max_ignore_eccentricity(sqlite3* db, double precision);
+
         double load_specific_e(int m,int s,int e_step) const;
+
         // The callback SQL function that updates the above values (__pms_expansions)
         void get_expansions(sqlite3* db);
 
@@ -172,10 +175,6 @@ namespace Evolve {
 
                 ///The value of the eccentricity to use.
                 double e,
-
-                ///Prevision, the maximum eccentricity order to include in the Taylor
-                ///series. Currently does nothing.
-                unsigned max_e_power,
 
                 ///Previously, if true the result was differentiated w.r.t. to the
                 ///eccentricity. Currently does nothing.

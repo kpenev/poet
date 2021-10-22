@@ -107,7 +107,6 @@ namespace Evolve {
     }
 
     TidalPotentialTerms::TidalPotentialTerms() :
-        __e_order(0),
         __Ummp_inclination(Core::NaN),
         __Ummp(5),
         __Ummp_deriv(5)
@@ -121,17 +120,16 @@ namespace Evolve {
     void TidalPotentialTerms::operator()(
         double e,
         int m,
-        int mp, 
+        int mp,
         std::complex<double> &no_deriv,
         std::complex<double> &inclination_deriv,
-        std::complex<double> &eccentricity_deriv,
-        std::complex<double> &highest_e_order_term
+        std::complex<double> &eccentricity_deriv
     ) const
     {
         no_deriv = inclination_deriv = eccentricity_deriv = 0;
         for(int i = 0; i < 3; ++i) {
             int s = 2 * (i - 1);
-            double pms = __pms(s, mp, e, __e_order, false);
+            double pms = __pms(s, mp, e, false);
             std::complex<double> periapsis_factor(
                 std::cos(s * __arg_of_periapsis),
                 -std::sin(s * __arg_of_periapsis)
@@ -143,46 +141,38 @@ namespace Evolve {
                                   *
                                   periapsis_factor);
             eccentricity_deriv += (
-                __pms(s, mp, e, __e_order, true)
+                __pms(s, mp, e, true)
                 *
                 __Ummp[m+2][i]
                 *
                 periapsis_factor
             );
-            highest_e_order_term += (__pms.max_precision(s,mp)
-                                     *
-                                     __Ummp[m+2][i]
-                                     *
-                                     periapsis_factor);
             assert(!std::isnan(no_deriv.real()));
             assert(!std::isnan(inclination_deriv.real()));
             assert(!std::isnan(eccentricity_deriv.real()));
-            assert(!std::isnan(highest_e_order_term.real()));
         }
     }
 
-    void TidalPotentialTerms::operator()(double e,
-                                         int m,
-                                         int mp, 
-                                         double &no_deriv,
-                                         double &inclination_deriv,
-                                         double &eccentricity_deriv,
-                                         double &highest_e_order_term) const
+    void TidalPotentialTerms::operator()(
+        double e,
+        int m,
+        int mp,
+        double &no_deriv,
+        double &inclination_deriv,
+        double &eccentricity_deriv
+    ) const
     {
         std::complex<double> complex_no_deriv,
                              complex_inclination_deriv,
-                             complex_eccentricity_deriv,
-                             complex_highest_e_order_term;
+                             complex_eccentricity_deriv;
         operator()(e,
                    m,
                    mp,
                    complex_no_deriv,
                    complex_inclination_deriv,
-                   complex_eccentricity_deriv,
-                   complex_highest_e_order_term);
+                   complex_eccentricity_deriv);
         no_deriv = complex_no_deriv.real();
         inclination_deriv = complex_inclination_deriv.real();
         eccentricity_deriv = complex_eccentricity_deriv.real();
-        highest_e_order_term = complex_highest_e_order_term.real();
     }
 } //End Evolve namespace.

@@ -105,7 +105,7 @@ namespace Evolve {
     void DissipatingZone::check_locks_consistency() const
     {
         if(__initializing) return;
-        int max_abs_orb_mult = static_cast<int>(__e_order + 2);
+        int max_abs_orb_mult = static_cast<int>(__expansion_order + 2);
         if(
             !(
                 __lock
@@ -186,7 +186,9 @@ namespace Evolve {
     }
 #endif
 
-    void DissipatingZone::update_lock_to_lower_e_order(SpinOrbitLockInfo &lock)
+    void DissipatingZone::update_lock_to_lower_expansion_order(
+        SpinOrbitLockInfo &lock
+    )
     {
 #ifndef NDEBUG
         assert(lock.lock_direction());
@@ -195,7 +197,7 @@ namespace Evolve {
         if(
             static_cast<unsigned>(std::abs(lock.orbital_frequency_multiplier()))
             >
-            __e_order+2
+            __expansion_order+2
             &&
             lock.spin_frequency_multiplier()==2
         )
@@ -212,28 +214,30 @@ namespace Evolve {
         if(
             lock.orbital_frequency_multiplier()
             >
-            static_cast<int>(__e_order + 2)
+            static_cast<int>(__expansion_order + 2)
         ) {
             if(lock.lock_direction() > 0)
-                lock.set_lock(__e_order + 2, 1, 1);
+                lock.set_lock(__expansion_order + 2, 1, 1);
             else
                 lock.set_lock(1, 0, 1);
         } else if(
             lock.orbital_frequency_multiplier()
             <
-            -static_cast<int>(__e_order)-2
+            -static_cast<int>(__expansion_order)-2
         ) {
             if(lock.lock_direction() > 0)
                 lock.set_lock(1, 0, 1);
             else
-                lock.set_lock(-static_cast<int>(__e_order) - 2, 1, -1);
+                lock.set_lock(-static_cast<int>(__expansion_order) - 2, 1, -1);
         }
 #ifndef NDEBUG
         check_locks_consistency();
 #endif
     }
 
-    void DissipatingZone::update_locks_to_higher_e_order(unsigned new_e_order)
+    void DissipatingZone::update_locks_to_higher_expansion_order(
+        unsigned new_expansion_order
+    )
     {
         if(__other_lock.spin_frequency_multiplier() == 0) {
             int orb_mult = std::ceil(std::abs(2 * spin_frequency())
@@ -242,12 +246,12 @@ namespace Evolve {
             if(
                 orb_mult % 2 == 1
                 &&
-                static_cast<int>(new_e_order) + 2 >= orb_mult
+                static_cast<int>(new_expansion_order) + 2 >= orb_mult
             )
                 __other_lock.set_lock(__lock.lock_direction() * orb_mult,
                                       2,
                                       -__lock.lock_direction());
-            else if(static_cast<int>(new_e_order) + 2 >= orb_mult / 2)
+            else if(static_cast<int>(new_expansion_order) + 2 >= orb_mult / 2)
                 __other_lock.set_lock(
                     __lock.lock_direction() * orb_mult / 2,
                     1,
@@ -262,7 +266,7 @@ namespace Evolve {
             +
             __other_lock.orbital_frequency_multiplier()
             <=
-            static_cast<int>(new_e_order) + 2
+            static_cast<int>(new_expansion_order) + 2
         ) {
             int mid_mult = (__lock.orbital_frequency_multiplier()
                             +
@@ -292,19 +296,19 @@ namespace Evolve {
                                         __spin_frequency
                                         /
                                         __orbital_frequency),
-            max_abs_orb_mult=static_cast<int>(__e_order + 2);
+            max_abs_orb_mult=static_cast<int>(__expansion_order + 2);
         if(below_orb_mult % 2) {
             if(
                 static_cast<unsigned>(std::abs(below_orb_mult))
                 <=
-                __e_order + 2
+                __expansion_order + 2
             ) {
                 __lock.set_lock(below_orb_mult, 2, 1);
                 __other_lock.set_lock((below_orb_mult + 1) / 2, 1, -1);
             } else if(
                 static_cast<unsigned>(std::abs((below_orb_mult - 1) / 2))
                 <=
-                __e_order + 2
+                __expansion_order + 2
             ) {
                 __lock.set_lock((below_orb_mult - 1) / 2, 1, 1);
                 if((below_orb_mult + 1) / 2 > max_abs_orb_mult)
@@ -343,14 +347,11 @@ namespace Evolve {
                                          double tidal_frequency,
                                          const TidalTermTriplet &U_value,
                                          const TidalTermTriplet &U_i_deriv,
-                                         const TidalTermTriplet &U_e_deriv,
-                                         const TidalTermTriplet &U_error)
+                                         const TidalTermTriplet &U_e_deriv)
     {
         int m_ind = m + 2;
 
         bool locked_term = locked(mp, m);
-
-        bool has_error = true;
 
         for(
             int deriv = Dissipation::NO_DERIV;
@@ -393,37 +394,13 @@ namespace Evolve {
                 U = U_e_deriv;
 
             double U_mmp_squared = std::pow(U.m, 2),
-                   U_mmp_squared_error = (has_error
-                                          ? (2.0 * std::abs(U.m * U_error.m)
-                                             +
-                                             std::pow(U_error.m, 2))
-                                          : 0.0),
                    term_power = U_mmp_squared * mp,
-                   term_power_error = U_mmp_squared_error * mp,
                    term_torque_z = U_mmp_squared * m,
-                   term_torque_z_error = U_mmp_squared_error * m,
                    term_torque_x = U.m * (
                        __torque_x_minus_coef[m_ind] * U.m_minus_one
                        +
                        __torque_x_plus_coef[m_ind] * U.m_plus_one
-                   ),
-                   term_torque_x_error = 0.0;
-            if(has_error) {
-                double common_error_term = (
-                    __torque_x_minus_coef[m_ind] * U_error.m_minus_one
-                    +
-                    __torque_x_plus_coef[m_ind] * U_error.m_plus_one
-                );
-                term_torque_x_error = (
-                    (
-                        U_error.m
-                        ? U_error.m * (term_torque_x / U.m + common_error_term)
-                        : 0.0
-                    )
-                    +
-                    U.m * common_error_term
-                );
-            }
+                   );
             if(
                 !locked_term
                 &&
@@ -462,36 +439,6 @@ namespace Evolve {
             assert(!std::isnan(__torque_y[deriv_ind + 1]));
             assert(!std::isnan(__torque_z[deriv_ind]));
             assert(!std::isnan(__torque_z[deriv_ind + 1]));
-            if(has_error) {
-                has_error = false;
-                const int error_ind = 2 * Dissipation::END_DIMENSIONLESS_DERIV;
-                __power[error_ind] += term_power_error * mod_phase_lag_below;
-                __torque_z[error_ind] += (term_torque_z_error
-                                          *
-                                          mod_phase_lag_below);
-                __torque_x[error_ind] += (term_torque_x_error
-                                          *
-                                          mod_phase_lag_below);
-                __torque_y[error_ind + 1] = -(
-                    __torque_y[error_ind] -= term_torque_x_error * love_coef
-                );
-                __power[error_ind + 1] += (term_power_error
-                                           *
-                                           mod_phase_lag_above);
-                __torque_z[error_ind + 1] += (term_torque_z_error
-                                              *
-                                              mod_phase_lag_above);
-                __torque_x[error_ind + 1] += (term_torque_x_error
-                                              *
-                                              mod_phase_lag_above);
-
-                assert(!std::isnan(__torque_x[error_ind]));
-                assert(!std::isnan(__torque_x[error_ind + 1]));
-                assert(!std::isnan(__torque_y[error_ind]));
-                assert(!std::isnan(__torque_y[error_ind + 1]));
-                assert(!std::isnan(__torque_z[error_ind]));
-                assert(!std::isnan(__torque_z[error_ind + 1]));
-            }
 #if 0
             if(deriv == Dissipation::NO_DERIV)
                 std::cerr << ", Wzone = "
@@ -523,11 +470,11 @@ namespace Evolve {
     }
 
     DissipatingZone::DissipatingZone() :
-        __e_order(0),
-        __power(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV + 2),
-        __torque_x(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV + 2),
-        __torque_y(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV + 2),
-        __torque_z(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV + 2),
+        __expansion_order(0),
+        __power(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV),
+        __torque_x(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV),
+        __torque_y(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV),
+        __torque_z(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV),
         __evolution_real(NUM_REAL_EVOL_QUANTITIES),
         __evolution_integer(NUM_EVOL_QUANTITIES - NUM_REAL_EVOL_QUANTITIES),
         __initializing(false)
@@ -586,15 +533,12 @@ namespace Evolve {
 
         if(!dissipative()) return;
 
-        double esquared = std::pow(eccentricity, 2);
-
         for(
-            int mp = -static_cast<int>(__e_order) - 2;
-            mp <= static_cast<int>(__e_order) + 2;
+            int mp = -static_cast<int>(__expansion_order) - 2;
+            mp <= static_cast<int>(__expansion_order) + 2;
             ++mp
         ) {
             TidalTermTriplet U_value,
-                             U_error,
                              U_i_deriv,
                              U_e_deriv;
             __potential_term(eccentricity,
@@ -602,9 +546,7 @@ namespace Evolve {
                              mp,
                              U_value.m_plus_one,
                              U_i_deriv.m_plus_one,
-                             U_e_deriv.m_plus_one,
-                             U_error.m_plus_one);
-            U_error.m_plus_one *= esquared;
+                             U_e_deriv.m_plus_one);
 
             for(int m = -2; m <= 2; ++m) {
 #if 0
@@ -615,7 +557,6 @@ namespace Evolve {
 #endif
 
                 U_value.m = U_value.m_plus_one;
-                U_error.m = U_error.m_plus_one;
                 U_i_deriv.m = U_i_deriv.m_plus_one;
                 U_e_deriv.m = U_e_deriv.m_plus_one;
                 if(m < 2) {
@@ -624,12 +565,9 @@ namespace Evolve {
                                      mp,
                                      U_value.m_plus_one,
                                      U_i_deriv.m_plus_one,
-                                     U_e_deriv.m_plus_one,
-                                     U_error.m_plus_one);
-                    U_error.m_plus_one *= esquared;
+                                     U_e_deriv.m_plus_one);
                 } else {
                     U_value.m_plus_one = 0;
-                    U_error.m_plus_one = 0;
                     U_i_deriv.m_plus_one = 0;
                     U_e_deriv.m_plus_one = 0;
                 }
@@ -640,12 +578,10 @@ namespace Evolve {
                     forcing_frequency(mp, m, orbital_frequency),
                     U_value,
                     U_i_deriv,
-                    U_e_deriv,
-                    U_error
+                    U_e_deriv
                 );
 
                 U_value.m_minus_one = U_value.m;
-                U_error.m_minus_one = U_error.m;
                 U_i_deriv.m_minus_one = U_i_deriv.m;
                 U_e_deriv.m_minus_one = U_e_deriv.m;
 #ifdef VERBOSE_DEBUG
@@ -711,20 +647,6 @@ namespace Evolve {
         if(entry == Dissipation::NO_DERIV) {
             orbit_y_torque = orbit_torque[1];
             zone_y_torque = zone_torque[1];
-        } else if(entry == Dissipation::EXPANSION_ERROR) {
-            return (
-                sin_inc == 0
-                ? 0
-                : (
-                    std::abs(orbit_torque[1] * cos_inc
-                             /
-                             (__orbital_angmom * sin_inc))
-                    +
-                    std::abs(zone_torque[1]
-                             /
-                             (__angular_momentum * sin_inc))
-                )
-            );
         } else {
             orbit_y_torque = orbit_torque_deriv[1];
             zone_y_torque = zone_torque_deriv[1];
@@ -819,20 +741,6 @@ namespace Evolve {
             orbit_x_torque = orbit_torque[0];
             orbit_z_torque = orbit_torque[2];
             zone_x_torque = zone_torque[0];
-        } else if(entry == Dissipation::EXPANSION_ERROR) {
-            if(orbit_torque[0] == 0 && orbit_torque[2] == 0)
-                return 0;
-
-            assert(__orbital_angmom > 0);
-            return (
-                (
-                    std::abs(orbit_torque[0] * cos_inc)
-                    -
-                    std::abs(orbit_torque[2] * sin_inc)
-                )
-                /
-                __orbital_angmom
-            );
         } else {
             orbit_x_torque = orbit_torque_deriv[0];
             orbit_z_torque = orbit_torque_deriv[2];
@@ -908,8 +816,8 @@ namespace Evolve {
                 -1
             );
         }
-        update_lock_to_lower_e_order(__lock);
-        update_lock_to_lower_e_order(__other_lock);
+        update_lock_to_lower_expansion_order(__lock);
+        update_lock_to_lower_expansion_order(__other_lock);
         if(__lock.spin_frequency_multiplier() == 0) {
             __lock=__other_lock;
             __other_lock.set_lock(1, 0, 1);
@@ -935,27 +843,26 @@ namespace Evolve {
         );
         if(orbit_mult % 2) __other_lock.set_lock(orbit_mult, 2, -direction);
         else __other_lock.set_lock(orbit_mult/2, 1, -direction);
-        update_lock_to_lower_e_order(__other_lock);
+        update_lock_to_lower_expansion_order(__other_lock);
     }
 
-    void DissipatingZone::change_e_order(
-        unsigned new_e_order,
+    void DissipatingZone::change_expansion_order(
+        unsigned new_expansion_order,
         BinarySystem &,
         bool ,
         unsigned
     )
     {
-        __potential_term.change_e_order(new_e_order);
         if(__lock.spin_frequency_multiplier() == 0) {
-            __e_order = new_e_order;
+            __expansion_order = new_expansion_order;
             return;
         }
         if(__lock) {
-           __e_order = new_e_order;
+           __expansion_order = new_expansion_order;
            if(
                __lock.orbital_frequency_multiplier()
                >
-               static_cast<int>(__e_order) + 2
+               static_cast<int>(__expansion_order) + 2
            )
                release_lock();
            return;
@@ -963,13 +870,13 @@ namespace Evolve {
 #ifndef NDEBUG
         check_locks_consistency();
 #endif
-        if(new_e_order > __e_order) {
-            update_locks_to_higher_e_order(new_e_order);
-            __e_order = new_e_order;
+        if(new_expansion_order > __expansion_order) {
+            update_locks_to_higher_expansion_order(new_expansion_order);
+            __expansion_order = new_expansion_order;
         } else {
-            __e_order = new_e_order;
-            update_lock_to_lower_e_order(__lock);
-            update_lock_to_lower_e_order(__other_lock);
+            __expansion_order = new_expansion_order;
+            update_lock_to_lower_expansion_order(__lock);
+            update_lock_to_lower_expansion_order(__other_lock);
             if(__lock.spin_frequency_multiplier() == 0) {
                 __lock = __other_lock;
                 __other_lock.set_lock(1, 0, 1);
@@ -1009,7 +916,7 @@ namespace Evolve {
         __evolution_real[OUTER_MASS_DERIV].push_back(outer_mass(1));
 
         __evolution_integer[E_ORDER-NUM_REAL_EVOL_QUANTITIES].push_back(
-                __e_order
+                __expansion_order
         );
 
         if(__lock) {

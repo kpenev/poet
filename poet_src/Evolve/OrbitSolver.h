@@ -120,13 +120,8 @@ namespace Evolve {
             ///The precision required of the solution
             __precision,
 
-            ///\brief If the fractional error due to truncating the eccentricity
-            ///series falls below this value times the maximum acceptable error,
-            ///the eccentricity order is downgraded.
-            __e_order_downgrade_threshold,
-
             ///The last age at which the eccentricity order was increased
-            __last_e_order_upgrade_age;
+            __last_order_upgrade_age;
 
         ///The ages at which solution is tabulated
         std::list<double> __tabulated_ages;
@@ -286,18 +281,6 @@ namespace Evolve {
                              double previous_age,
                              const StopInformation &stop_info);
 
-        ///\brief Return -1 if the expansion error is too small (e-order can
-        ///safely be decreased, 0 if it is within range, 1 if it is too big
-        //(e-order should be increased).
-        int check_expansion_error(
-            ///The rates of change of the evolution variables per Gyr.
-            const std::valarray<double> &derivatives,
-
-            ///The errors in derivatives, due to the truncated eccentricity
-            ///series.
-            const std::valarray<double> &expansion_errors
-        );
-
         ///\brief Updates stop_cond_history and stop_deriv_history after a
         ///GSL step, returning if/where the evolution needs to stop.
         ///
@@ -314,22 +297,17 @@ namespace Evolve {
             ///The rates of change of the evolution variables per Gyr.
             const std::valarray<double> &derivatives,
 
-            ///The errors in derivatives, due to the truncated eccentricity
-            ///series.
-            const std::valarray<double> &expansion_errors,
-
             ///The current evolution mode.
             Core::EvolModeType evolution_mode,
+
+            ///Current eccentricity expansion order
+            unsigned current_expansion_order,
 
             ///For the first call of this function for an evolution
             ///stretch, this should indicate the reason why the previous
             ///stretch was stopped. For subsequent calls during the same
             ///evolution stretch it should be NO_STOP.
-            StoppingConditionType stop_reason=NO_STOP,
-
-            ///If true, ignore indication that eccentricity order should be
-            ///decreased.
-            bool ignore_e_order_decrease=false
+            StoppingConditionType stop_reason=NO_STOP
         );
 
         ///Handle the situation when the last step has to be rejected.
@@ -433,7 +411,7 @@ namespace Evolve {
 
         ///\brief Increase/decrease the eccentricity expansion order until error
         ///is acceptable and return the new order.
-        void adjust_eccentricity_order(
+        void adjust_expansion_order(
             ///The system being evolved.
             BinarySystem &system,
 

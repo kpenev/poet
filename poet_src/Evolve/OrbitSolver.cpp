@@ -678,68 +678,13 @@ namespace Evolve {
         );
     }
 
-    int OrbitSolver::check_expansion_error(
-        const std::valarray<double> &derivatives,
-        const std::valarray<double> &expansion_errors
-    )
-    {
-        double max_error_ratio = 0.0;
-#ifndef NDEBUG
-        unsigned max_ratio_index = 0;
-#endif
-        for(unsigned i = 0; i < derivatives.size(); ++i) {
-            double error_ratio = (
-                std::abs(expansion_errors[i])
-                /
-                (__precision * std::abs(derivatives[i]) + __precision)
-            );
-            assert(error_ratio >= 0);
-            if(error_ratio > 1.0) {
-#ifndef NDEBUG
-                std::cerr << "Expansion ratio for parameter " << i
-                          << " = " << error_ratio
-                          << " suggest increasing e order!"
-                          << std::endl;
-#endif
-                return 1;
-            }
-            if(error_ratio > max_error_ratio) {
-                max_error_ratio = error_ratio;
-#ifndef NDEBUG
-                max_ratio_index = i;
-#endif
-            }
-        }
-#ifndef NDEBUG
-        std::cerr << "O(e) downgrade threshold = "
-                  << __e_order_downgrade_threshold
-                  << ", max error ratio = "
-                  << max_error_ratio
-                  << " for parameter "
-                  << max_ratio_index
-                  << std::endl;
-#endif
-        if(max_error_ratio < __e_order_downgrade_threshold) {
-#ifndef NDEBUG
-            std::cerr << "Suggest decreasing e order." << std::endl;
-#endif
-            return -1;
-        } else {
-#ifndef NDEBUG
-            std::cerr << "Suggest e order is fine." << std::endl;
-#endif
-            return 0;
-        }
-    }
-
     StopInformation OrbitSolver::update_stop_condition_history(
         double age,
         const std::valarray<double> &orbit,
         const std::valarray<double> &derivatives,
-        const std::valarray<double> &expansion_errors,
         Core::EvolModeType evolution_mode,
-        StoppingConditionType stop_reason,
-        bool ignore_e_order_decrease
+        unsigned current_expansion_order,
+        StoppingConditionType stop_reason
     )
     {
         for(unsigned i = 0; i < orbit.size(); ++i)
@@ -757,11 +702,12 @@ namespace Evolve {
                 );
             }
 
-        int adjust_e_order = 0;
+        unsigned suggested_expansion_order = current_expansion_order;
         if(evolution_mode == Core::BINARY) {
-            adjust_e_order = check_expansion_error(derivatives,
-                                                   expansion_errors);
-            if(adjust_e_order > 0)
+            suggested_expansion_order =
+                TidalPotentialTerms::required_expansion_order(orbit[1],
+                                                              __precision);
+            if(suggested_expansion_order > current_expansion_order)
                 return StopInformation(
                     0.5 * (age + __stop_history_ages.back()),
                     Core::Inf,
@@ -785,8 +731,8 @@ namespace Evolve {
 #ifdef VERBOSE_DEBUG
     	std::cerr << std::string(77, '@') << std::endl;
     	output_history_and_discarded(std::cerr);
-        std::cerr << "Decreasing e_order is "
-                  << (ignore_e_order_decrease ? "not" : "")
+        std::cerr << "Decreasing expansion order is "
+                  << (current_expansion_order == 0 ? "not" : "")
                   << " allowed"
                   <<std::endl;
 #endif
@@ -869,9 +815,9 @@ namespace Evolve {
             if(
                 result.stop_reason() == NO_STOP
                 &&
-                adjust_e_order < 0
+                suggested_expansion_order < current_expansion_order
                 &&
-                !ignore_e_order_decrease
+                current_expansion_order > 0
             ) {
                 return StopInformation(Core::Inf,
                                        Core::Inf,
@@ -983,7 +929,6 @@ namespace Evolve {
                                       sys_mode};
         double t=system.age();
         std::valarray<double> derivatives(nargs),
-                              expansion_errors(nargs),
                               param_derivatives(nargs),
                               age_derivatives(nargs);
 
@@ -1063,20 +1008,13 @@ namespace Evolve {
                                            &(derivatives[0]),
                                            sys_mode);
 
-                    system.differential_equations(t,
-                                                  &(orbit[0]),
-                                                  evolution_mode,
-                                                  &(expansion_errors[0]),
-                                                  true);
-
                     stop = update_stop_condition_history(
                         t,
                         orbit,
                         derivatives,
-                        expansion_errors,
                         evolution_mode,
-                        stop_reason,
-                        system.eccentricity_order() == 0
+                        system.expansion_order(),
+                        stop_reason
                     );
                 }
                 if(status == GSL_EDOM || !acceptable_step(t, from_t, stop)) {
@@ -1130,8 +1068,8 @@ namespace Evolve {
             }
 #ifndef NDEBUG
             std::cerr << "Stop: " << stop
-                      << "e-order: " << system.eccentricity_order()
-                      << "last e upgrade at t=" << __last_e_order_upgrade_age
+                      << "expansion order: " << system.expansion_order()
+                      << "last order upgrade at t=" << __last_order_upgrade_age
                       << "max age: " << max_age
                       << std::endl;
 #endif
@@ -1143,9 +1081,9 @@ namespace Evolve {
                 (
                     stop.stop_reason() == SMALL_EXPANSION_ERROR
                     &&
-                    system.eccentricity_order() > 0
+                    system.expansion_order() > 0
                     &&
-                    t > (0.99 * __last_e_order_upgrade_age
+                    t > (0.99 * __last_order_upgrade_age
                          +
                          0.01 * max_age)
                 )
@@ -1267,7 +1205,8 @@ namespace Evolve {
         }
     }
 
-    void OrbitSolver::adjust_eccentricity_order(
+    ///TODO: can be dramatically simplified
+    void OrbitSolver::adjust_expansion_order(
         BinarySystem &system,
         const std::valarray<double> &orbit,
         Core::EvolModeType evolution_mode,
@@ -1275,94 +1214,53 @@ namespace Evolve {
     )
     {
 #ifndef NDEBUG
-        std::cerr << "Adjusting eccentricity order at t ="
+        std::cerr << "Adjusting expansion order at t ="
                   << system.age()
                   << std::endl;
 #endif
         assert(evolution_mode == Core::BINARY);
 
-        unsigned e_order = system.eccentricity_order(),
-                 starting_e_order = e_order;
-        std::valarray<double> expansion_errors(orbit.size()),
-                              derivatives(orbit.size());
+        unsigned
+            current_expansion_order = system.expansion_order(),
+            required_expansion_order =
+                TidalPotentialTerms::required_expansion_order(orbit[1],
+                                                              __precision);
 
+        if(must_increase)
+            required_expansion_order = std::max(required_expansion_order,
+                                                current_expansion_order + 1);
 
-        int adjust_e_order, last_adjustment = 0;
-        do {
-            system.differential_equations(system.age(),
-                                          &(orbit[0]),
-                                          evolution_mode,
-                                          &(derivatives[0]));
-
-            system.differential_equations(system.age(),
-                                          &(orbit[0]),
-                                          evolution_mode,
-                                          &(expansion_errors[0]),
-                                          true);
-
-            adjust_e_order = check_expansion_error(derivatives,
-                                                   expansion_errors);
-#ifndef NDEBUG
-        std::cerr << "Suggested adjustment: " << adjust_e_order << std::endl;
-#endif
-
-            if(
-                e_order == TidalPotentialTerms::max_e_order()
-                &&
-                adjust_e_order > 0
-            ) {
-                std::ostringstream msg;
-                msg << "Maximum available eccentricity expansion order of "
-                    << e_order
-                    << (" is insufficient to ensure evolution to the "
-                        "specified precisoin.");
-                throw Core::Error::Runtime(msg.str());
-            }
-
-            if(adjust_e_order || must_increase) {
-                if(must_increase) {
-                    e_order += 1;
-                    __last_e_order_upgrade_age = system.age();
-                } else if(e_order == 0 && adjust_e_order < 0)
-                    break;
-                else {
-                    e_order += adjust_e_order;
-                    if(adjust_e_order > 0)
-                        __last_e_order_upgrade_age = system.age();
-                }
-                system.change_e_order(e_order);
-                if(
-                    e_order == starting_e_order
-                    ||
-                    (
-                        last_adjustment < 0
-                        &&
-                        adjust_e_order > 0
-                    )
-                ) {
-                    __e_order_downgrade_threshold *= 0.1;
-#ifndef NDEBUG
-                    std::cerr << "Reverted to eccentricity expansion order of ";
-                } else {
-                    std::cerr << "Trying eccentricity expansion order of ";
-#endif
-                }
-#ifndef NDEBUG
-                std::cerr << e_order << std::endl;
-#endif
-                last_adjustment = adjust_e_order;
-                if(must_increase && adjust_e_order <= 0) break;
-            }
-        } while(adjust_e_order && e_order != starting_e_order);
-
-        if(e_order != starting_e_order) {
-            __e_order_downgrade_threshold = 0.1;
-#ifndef NDEBUG
-            std::cerr << "Adjusted eccentricity expansion order to "
-                      << e_order
-                      << std::endl;
-#endif
+        if(
+                required_expansion_order
+                >
+                TidalPotentialTerms::max_expansion_order()
+        ) {
+            std::ostringstream msg;
+            msg << "Maximum available expansion order of "
+                << TidalPotentialTerms::max_expansion_order()
+                << (" is insufficient to ensure evolution to the "
+                    "specified precisoin.");
+            throw Core::Error::Runtime(msg.str());
         }
+
+        if(
+                required_expansion_order == current_expansion_order
+                ||
+                (
+                    must_increase
+                    &&
+                    required_expansion_order < current_expansion_order
+                )
+        )
+            return;
+
+        system.change_expansion_order(required_expansion_order);
+
+#ifndef NDEBUG
+        std::cerr << "Adjusted expansion order to "
+                  << required_expansion_order
+                  << std::endl;
+#endif
     }
 
     void OrbitSolver::reset(BinarySystem &system)
@@ -1377,7 +1275,6 @@ namespace Evolve {
                              bool print_progress) :
         __end_age(max_age),
         __precision(required_precision),
-        __e_order_downgrade_threshold(0.1),
         __stopping_conditions(NULL),
         __print_progress(print_progress)
     {
@@ -1405,7 +1302,7 @@ namespace Evolve {
         Core::EvolModeType evolution_mode = system.fill_orbit(orbit);
 
         if(evolution_mode == Core::BINARY)
-            adjust_eccentricity_order(system,
+            adjust_expansion_order(system,
                                       orbit,
                                       evolution_mode);
 
@@ -1443,7 +1340,7 @@ namespace Evolve {
                     ||
                     stop_reason == SMALL_EXPANSION_ERROR
                 ) {
-                    adjust_eccentricity_order(
+                    adjust_expansion_order(
                         system,
                         orbit,
                         evolution_mode,
@@ -1479,9 +1376,9 @@ namespace Evolve {
                 &&
                 old_evolution_mode != Core::BINARY
             )
-                adjust_eccentricity_order(system,
-                                          orbit,
-                                          evolution_mode);
+                adjust_expansion_order(system,
+                                       orbit,
+                                       evolution_mode);
 
             delete __stopping_conditions;
             __stopping_conditions = NULL;

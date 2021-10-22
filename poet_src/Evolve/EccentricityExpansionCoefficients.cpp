@@ -178,7 +178,8 @@ namespace Evolve {
                 if(error_flag == -1)
                     throw Core::Error::IO(
                         "Eccentricity expansion file could not be read in "
-                        "EccentricityExpansionCoefficients::load_e_switches()!"
+                        "EccentricityExpansionCoefficients::"
+                        "load_max_ignore_eccentricity()!"
                     );
             }
         }
@@ -463,7 +464,6 @@ namespace Evolve {
         int m,
         int s,
         double e,
-        unsigned max_e_power,
         bool deriv
     ) const
     {

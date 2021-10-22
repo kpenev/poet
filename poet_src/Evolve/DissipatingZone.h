@@ -121,8 +121,8 @@ namespace Evolve {
     ///in phase with the tidal potential.
     class LIB_PUBLIC DissipatingZone : public ZoneOrientation {
     private:
-        ///The expansion order in eccentricity to use.
-        unsigned __e_order;
+        ///The tidal potential expansion order to use.
+        unsigned __expansion_order;
 
         ///The expansion of the tidal potential in series.
         TidalPotentialTerms __potential_term;
@@ -149,15 +149,14 @@ namespace Evolve {
             __orbital_angmom;
 
 
-        ///\brief The dimensionless tidal power and its error and derivatives.
+        ///\brief The dimensionless tidal power and its derivatives.
         ///
         ///Consists of pairs of numbers one for each derivative. The first number
         ///of each pair is always filled and if the zone is in a lock it is the
         ///tidal power calculated assuming the zone spin frequency approaches the
         ///lock from below. The second number is filled only if the zone is in a
         ///spin-orbit lock and is the tidal power assuming the zone spin
-        ///frequency approaches the lock from above. After all derivatives the
-        ///final pair of numbers give the error in the undifferentiated value.
+        ///frequency approaches the lock from above.
         std::valarray<double> __power,
 
             ///\brief The dimensionless tidal torque in the x direction and its
@@ -227,11 +226,14 @@ namespace Evolve {
         ///\brief Updates a SpinOrbitLockInfo variable as appropriate when
         ///decreasing the eccentricity expansion order.
         ///
-        ///__e_order must already be updated to the new value.
-        void update_lock_to_lower_e_order(SpinOrbitLockInfo &lock);
+        ///__expansion_order must already be updated to the new value.
+        void update_lock_to_lower_expansion_order(SpinOrbitLockInfo &lock);
 
-        ///Updates __lock and __other_lock to accomodate increasing __e_order.
-        void update_locks_to_higher_e_order(unsigned new_e_order);
+        ///\brief Updates __lock and __other_lock to accomodate increasing
+        ///__expansion_order.
+        void update_locks_to_higher_expansion_order(
+            unsigned new_expansion_order
+        );
 
         ///\brief Initializes the locks the first time the zone is
         ///configure() -ed.
@@ -259,11 +261,7 @@ namespace Evolve {
             const TidalTermTriplet &U_i_deriv,
 
             ///The derivative with respect to eccentricity of U_value.
-            const TidalTermTriplet &U_e_deriv,
-
-            ///Estimate of the error in U_value due to truncating the
-            ///eccentricity expansion.
-            const TidalTermTriplet &U_error
+            const TidalTermTriplet &U_e_deriv
         );
 
 #ifndef NDEBUG
@@ -399,9 +397,6 @@ namespace Evolve {
             ///If:
             ///  * Dissipation::NO_DERIV - the value of the inclination evolution
             ///    is returned,
-            ///  * Dissipation::EXPANSION_ERROR - the orbit_torque and
-            ///    zone_torque arguments must be error estemates and the error
-            ///    estimate of the inclination evolution rate is returned.
             ///  * all other values - the derivative of the rate with
             ///    respect to the given quantity is returned. For zone-specific
             ///    quantities, derivative with respect to this zone's quantity
@@ -548,10 +543,7 @@ namespace Evolve {
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
-            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2 * entry + 1 < static_cast<int>(__power.size()));
 
             return __power[2 * entry + (above? 1 : 0)];
@@ -569,11 +561,8 @@ namespace Evolve {
         ) const
         {
 
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
             assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
-            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2 * entry + 1 < static_cast<int>(__power.size()));
 
             return (
@@ -591,10 +580,7 @@ namespace Evolve {
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
-            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2 * entry + 1 < static_cast<int>(__torque_x.size()));
 
             return __torque_x[2 * entry + (above ? 1 : 0)];
@@ -612,13 +598,10 @@ namespace Evolve {
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
             assert(
                 !locked() || (above_fraction >= 0 && above_fraction <= 1)
             );
-            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(
                 2 * entry + 1
                 <
@@ -638,10 +621,7 @@ namespace Evolve {
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
-            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(
                 2 * entry + 1
                 <
@@ -663,11 +643,8 @@ namespace Evolve {
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
             assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
-            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2 * entry + 1 < static_cast<int>(__torque_y.size()));
 
             return (above_fraction * __torque_y[2 * entry + 1]
@@ -683,10 +660,7 @@ namespace Evolve {
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
-            assert(entry <= Dissipation::END_DIMENSIONLESS_DERIV);
+            assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2 * entry + 1 < static_cast<int>(__torque_z.size()));
 
             return __torque_z[2 * entry + (above? 1 : 0)];
@@ -704,9 +678,6 @@ namespace Evolve {
             Dissipation::QuantityEntry entry=Dissipation::NO_DERIV
         ) const
         {
-            if(entry == Dissipation::EXPANSION_ERROR)
-                entry = Dissipation::END_DIMENSIONLESS_DERIV;
-
             assert(!locked() || (above_fraction >= 0 && above_fraction <= 1));
             assert(entry < Dissipation::END_DIMENSIONLESS_DERIV);
             assert(2 * entry + 1 < static_cast<int>(__torque_z.size()));
@@ -752,12 +723,12 @@ namespace Evolve {
 
         ///To what order should eccentricity expansion be performed for the given
         ///value of the eccentricity.
-        virtual unsigned eccentricity_order() const {return __e_order;}
+        virtual unsigned expansion_order() const {return __expansion_order;}
 
         ///Changes the order of the eccentricity expansion performed.
-        virtual void change_e_order(
+        virtual void change_expansion_order(
             ///The new eccentricity expansion order.
-            unsigned new_e_order,
+            unsigned new_expansion_order,
 
             ///The system being evolved.
             BinarySystem &system,
