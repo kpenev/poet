@@ -84,12 +84,12 @@ namespace Evolve {
         ///Reads in tabulated expansion coefficients, making this object useable.
         EccentricityExpansionCoefficients(
                 ///The name of the file to read pre-tabulated coefficients from.
-                const std::string &tabulated_pms_fname="",
+                const std::string &tabulated_pms_fname="pms_db.db",
 
                 ///Only reads the coefficients of the expansion which
                 ///most closely achieves the indicated precision, erring on
                 ///the side of being more precise.
-                double precision=1,
+                double precision=17.0,
                 
                 ///Which loading style to use. Setting to true means we keep
                 ///a 9 GB database in memory.
@@ -103,6 +103,9 @@ namespace Evolve {
         
         ///Maximum precision for a given expansion.
         double max_precision(int m, int s) const;
+
+        ///TODO: describe this
+        int required_expansion_order(double e, double precision, int m) const;
 
         ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
         ///contribution of the highest power eccentricity terms.

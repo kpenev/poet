@@ -6,7 +6,13 @@ import cheb_expand_data_model as model
 import numpy as np
 #import matplotlib.pyplot as plt
 import lib_pms as pms
-import ../PythonPackage/orbital_evolution/evolve_interface.py as evolve
+
+import sys
+#sys.path.append('../PythonPackage/orbital_evolution')
+#sys.path.append('..')
+sys.path.append('/home/vortebo/ctime/poet')
+sys.path.append('/home/vortebo/ctime/poet/PythonPackage')
+import PythonPackage.orbital_evolution.evolve_interface as evolve
 
 eid=0
 mine=0
@@ -14,7 +20,7 @@ steps=0
 cutoff=0
 
 Session = sessionmaker()
-db_engine = create_engine('sqlite:///../../pms_db.db')
+db_engine = create_engine('sqlite:///pms_db.db')
 Session.configure(bind=db_engine)
 @contextmanager
 def db_session_scope():
@@ -31,7 +37,7 @@ def db_session_scope():
 
 def load_pms(em, es):
     global eid,mine,steps,cutoff
-    coeff = evolve.library.coeff_new("../../pms_db.db",0,False)
+    coeff = evolve.library.coeff_new(b"pms_db.db",0,False)
     with db_session_scope() as db_session:
         for row in db_session.query(model.Interpolations).filter_by(m=str(em)).filter_by(s=str(es)):
             eid=row.id
@@ -80,18 +86,19 @@ def main():
         x,y = load_pms(args.em,args.es)
         # Find the points we're checking
         newSteps = steps * 2 - 1
-        midPoints = np.linspace(mine,1,newSteps)[1::2]
+        midPoints = np.linspace(mine,1,steps) #[1::2] #newSteps)[1::2]
         # Interpolate
         interpolant = np.interp(midPoints,x,y)
         # Calculate
-        calculant = pms.getCoefficient(args.em,args.es,midPoints,midPoints.size,3,None,0,2e-9)
+        calculant = pms.getCoefficient(args.em,args.es,x,x.size,3,None,0,2e-9) # x as opposed to midPoints
         # Compare
         #print(interpolant[7])
         #print(calculant[7])
         #print(interpolant.size)
-        #print(np.array(calculant).size)
+        print(np.array(calculant).size)
+        print(y.size)
         #print( y.tolist())#np.abs(np.array(calculant)[midPoints<=cutoff] - interpolant[midPoints<=cutoff]) )
-        accur = np.max( np.abs(np.array(calculant)[midPoints<=cutoff] - interpolant[midPoints<=cutoff]) )
+        accur = np.max( np.abs(np.array(calculant)[midPoints<=cutoff] - y[x<=cutoff]) )
         # Report
         print("Resulting accuracy is: ",accur)
         return accur

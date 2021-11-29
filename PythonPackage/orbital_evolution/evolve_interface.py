@@ -14,6 +14,8 @@ from ctypes import\
     c_uint,\
     c_bool,\
     c_char_p,\
+    c_wchar_p,\
+    c_longdouble,\
     POINTER
 from ctypes.util import find_library
 import numpy
@@ -38,7 +40,7 @@ class c_expcoeff_p(c_void_p):
 def initialize_library():
     """Prepare the orbital evolution library for use."""
 
-    library_fname = find_library('evolve')
+    library_fname = '/home/vortebo/ctime/poet/build/libs/evolve/shared/debug/libevolve.so' #find_library('evolve')
     if library_fname is None:
         raise OSError('Unable to find POET\'s evolve library.')
     result = cdll.LoadLibrary(library_fname)
@@ -290,13 +292,13 @@ def initialize_library():
     result.get_star_star_final_state.restype = None
     
     result.coeff_new.argtypes = [
-        c_wchar_p,
+        c_char_p,
         c_double,
         c_bool
     ]
     result.coeff_new.restype = c_expcoeff_p
     
-    result.coeff_max_e.argtypes = result.coeff_new.restype
+    result.coeff_max_e.argtypes = [result.coeff_new.restype]
     result.coeff_max_e.restype = c_uint #TODO: never use this
     
     result.coeff_max_precision.argtypes = [
@@ -316,9 +318,9 @@ def initialize_library():
     ]
     result.coeff_operator.restype = c_double
     
-    result.coeff_delete.argtypes = result.coeff_new.restype
+    result.coeff_delete.argtypes = [result.coeff_new.restype]
     result.coeff_delete.restype = None
-
+    
     return result
 
 library = initialize_library()

@@ -607,12 +607,13 @@ void get_star_star_final_state(const OrbitSolver *solver,
                          secondary_wind_saturation);
 }
 
-EccentricityExpansionCoefficients *coeff_new(const std::string &tabulated_pms_fname,
+EccentricityExpansionCoefficients *coeff_new(const char* tabulated_pms_fname,
                                              double precision,
                                              bool load_style)
 {
+    std::string name(tabulated_pms_fname);
     return reinterpret_cast<EccentricityExpansionCoefficients*>(
-        new Evolve::EccentricityExpansionCoefficients(tabulated_pms_fname,
+        new Evolve::EccentricityExpansionCoefficients(name,
                                                       precision,
                                                       load_style)
     );
@@ -645,7 +646,6 @@ double coeff_operator(const EccentricityExpansionCoefficients *expansion_arg,
 {
     const Evolve::EccentricityExpansionCoefficients *expansion =
         reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
-    
     return expansion->operator()(m,s,e,max_e_power,deriv);
 }
 

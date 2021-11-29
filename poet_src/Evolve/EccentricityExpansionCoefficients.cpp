@@ -13,29 +13,29 @@ namespace Evolve {
         
         std::vector<double> pms;
         
-        sqlite3_stmt **statement;
+        sqlite3_stmt *statement;
         std::string instruc2="SELECT y_value,step_number";
         instruc2.append(" FROM interpolation_data WHERE p_id = ");
         instruc2.append(std::to_string(__db_index[local_index(m,s)]));
         instruc2.append(" ORDER BY step_number DESC");
         const char *sql = instruc2.c_str();
-        if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+        if(sqlite3_prepare_v2(db,sql,-1,&statement,NULL)==SQLITE_OK)
         {
-            int rc = sqlite3_step(*statement);
-            int i_b = sqlite3_column_int(*statement,1);
+            int rc = sqlite3_step(statement);
+            int i_b = sqlite3_column_int(statement,1);
             assert (i_b==__step_num[local_index(m,s)]);
             pms.resize(i_b+1);
             while(rc==SQLITE_ROW)
             {
-                pms[i_b]=( sqlite3_column_double(*statement,0) );
+                pms[i_b]=( sqlite3_column_double(statement,0) );
                 i_b--;
-                rc=sqlite3_step(*statement);
+                rc=sqlite3_step(statement);
             }
             
             if (rc!=SQLITE_DONE) error_flag=true;
         }
         else error_flag=true;
-        sqlite3_finalize(*statement);
+        sqlite3_finalize(statement);
         
         if(error_flag)
             throw Core::Error::IO(
@@ -43,7 +43,7 @@ namespace Evolve {
                 +
                 std::to_string(__db_index[local_index(m,s)])
                 +
-                " in eccentricity expansion file!"
+                " in eccentricity expansion file during load_coefficient!"
             );
         
         return pms;
@@ -51,24 +51,25 @@ namespace Evolve {
     
     void EccentricityExpansionCoefficients::get_max_s(sqlite3* db)
     {
-        sqlite3_stmt **statement;
+        sqlite3_stmt *statement;
         std::string instruc2="SELECT MAX(s) FROM interpolations";
         const char *sql = instruc2.c_str();
         int result_s = 0;
         bool error_flag = false;
         
-        if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+        int codeOne=sqlite3_prepare_v2(db,sql,-1,&statement,NULL);
+        if(codeOne==SQLITE_OK)
         {
-            int rc = sqlite3_step(*statement);
+            int rc = sqlite3_step(statement);
             while(rc==SQLITE_ROW)
             {
-                result_s = sqlite3_column_double(*statement,0);
-                rc=sqlite3_step(*statement);
+                result_s = sqlite3_column_double(statement,0);
+                rc=sqlite3_step(statement);
             }
             if (rc!=SQLITE_DONE) error_flag=true;
         }
         else error_flag=true;
-        sqlite3_finalize(*statement);
+        sqlite3_finalize(statement);
         
         if(error_flag==true)
         {
@@ -82,7 +83,7 @@ namespace Evolve {
     
     void EccentricityExpansionCoefficients::load_metadata(sqlite3* db)
     {
-        sqlite3_stmt **statement;
+        sqlite3_stmt *statement;
         std::string instruc2="SELECT id,m,s,min_interp_e,number_of_steps,";
         instruc2.append("max_checked_e,interp_accuracy FROM interpolations");
         const char *sql = instruc2.c_str();
@@ -96,24 +97,24 @@ namespace Evolve {
         __max_e.resize(3*(__max_s+1),Core::NaN);
         __accur.resize(3*(__max_s+1),Core::NaN);
         
-        if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+        if(sqlite3_prepare_v2(db,sql,-1,&statement,NULL)==SQLITE_OK)
         {
-            int rc = sqlite3_step(*statement);
+            int rc = sqlite3_step(statement);
             while(rc==SQLITE_ROW)
             {
-                int m=sqlite3_column_int(*statement,1);
-                int s=sqlite3_column_int(*statement,2);
-                __db_index[local_index(m,s)]=sqlite3_column_int(*statement,0);
-                __min_e[local_index(m,s)]=sqlite3_column_double(*statement,3);
-                __step_num[local_index(m,s)]=sqlite3_column_int(*statement,4);
-                __max_e[local_index(m,s)]=sqlite3_column_double(*statement,5);
-                __accur[local_index(m,s)]=sqlite3_column_double(*statement,6);
-                rc=sqlite3_step(*statement);
+                int m=sqlite3_column_int(statement,1);
+                int s=sqlite3_column_int(statement,2);
+                __db_index[local_index(m,s)]=sqlite3_column_int(statement,0);
+                __min_e[local_index(m,s)]=sqlite3_column_double(statement,3);
+                __step_num[local_index(m,s)]=sqlite3_column_int(statement,4);
+                __max_e[local_index(m,s)]=sqlite3_column_double(statement,5);
+                __accur[local_index(m,s)]=sqlite3_column_double(statement,6);
+                rc=sqlite3_step(statement);
             }
             if (rc!=SQLITE_DONE) error_flag=-1;
         }
         else error_flag=-1;
-        sqlite3_finalize(*statement);
+        sqlite3_finalize(statement);
         
         if(error_flag==-1)
         {
@@ -142,26 +143,36 @@ namespace Evolve {
         }
         
         try {
-            sqlite3_stmt **statement;
+            sqlite3_stmt *statement;
             std::string instruc2="SELECT y_value FROM interpolation_data";
-            instruc2.append("WHERE p_id = ");
+            instruc2.append(" WHERE p_id = ");
             instruc2.append(std::to_string(__db_index[local_index(m,s)]));
-            instruc2.append(",step_number=");
+            instruc2.append(" AND step_number=");
             instruc2.append(std::to_string(e_step));
             const char *sql = instruc2.c_str();
-            if(sqlite3_prepare_v2(db,sql,-1,statement,NULL)==SQLITE_OK)
+            int theCode=sqlite3_prepare_v2(db,sql,-1,&statement,NULL);
+            if(theCode==SQLITE_OK)
             {
-                int rc = sqlite3_step(*statement);
+                int rc = sqlite3_step(statement);
                 while(rc==SQLITE_ROW)
                 {
-                    result=( sqlite3_column_double(*statement,0) );
-                    rc=sqlite3_step(*statement);
+                    result=( sqlite3_column_double(statement,0) );
+                    rc=sqlite3_step(statement);
                 }
                 
-                if (rc!=SQLITE_DONE) error_flag=true;
+                if (rc!=SQLITE_DONE)
+                {
+                    error_flag=true;
+                    std::cout<<"Loop finished without being done.\n";
+                }
             }
-            else error_flag=true;
-            sqlite3_finalize(*statement);
+            else
+            {
+                 error_flag=true;
+                 std::cout<<"prepare was not ok. error code " << std::to_string(theCode) <<  "\n";
+                 std::cout<<sqlite3_errmsg(db);
+            }
+            sqlite3_finalize(statement);
             
             if(error_flag)
                 throw Core::Error::IO(
@@ -169,10 +180,11 @@ namespace Evolve {
                     +
                     std::to_string(__db_index[local_index(m,s)])
                     +
-                    " in eccentricity expansion file!"
+                    " in eccentricity expansion file during load_specific_e!"
                 );
         } catch(...) {
             sqlite3_close(db);
+            throw;
         }
         
         sqlite3_close(db);
@@ -207,12 +219,12 @@ namespace Evolve {
         std::vector<double> results (4);
         
         int lo_i=e_to_nearest_step(m,s,e,true);
-        int hi_i=e_to_nearest_step(m,s,e,false);
+        int hi_i=lo_i+1;//e_to_nearest_step(m,s,e,false);
         
         results[0]=step_to_e(m,s,lo_i);
         results[1]=step_to_e(m,s,hi_i);
-        results[3]=get_specific_e(m,s,lo_i);
-        results[4]=get_specific_e(m,s,hi_i);
+        results[2]=get_specific_e(m,s,lo_i);
+        results[3]=get_specific_e(m,s,hi_i);
         
         return results;
     }
@@ -232,10 +244,11 @@ namespace Evolve {
             ||
             e==0.0
         ) return 0.0;
+        
         if(e<__min_e[local_index(m,s)]) return 0.0;
         
-        if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false))
-            return get_specific_e(m,s,e_to_nearest_step(m,s,e,true));
+        //if(e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false))
+        //    return get_specific_e(m,s,e_to_nearest_step(m,s,e,true));
     }
     
     bool EccentricityExpansionCoefficients::check_known_e(int m,int s,double e) const
@@ -249,11 +262,10 @@ namespace Evolve {
             ||
             e<__min_e[local_index(m,s)]
             ||
-            e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)
-            ||
+           // e_to_nearest_step(m,s,e,true)==e_to_nearest_step(m,s,e,false)
+           // ||
             (m==2&&s==2&&e==0.0)
         ) return true;
-        
         return false;
     }
     
@@ -265,24 +277,20 @@ namespace Evolve {
     ) const
     {
         double square_step;
-        square_step = (e-__min_e[local_index(m,s)])
+        square_step = (e-double(__min_e[local_index(m,s)]))
                         *
-                        __step_num[local_index(m,s)]
+                        (double(__step_num[local_index(m,s)]) - 1)
                         /
-                        (1-__min_e[local_index(m,s)]);
-        if(flr)
-            return int(floor(square_step));
-        else
-            return int(ceil(square_step));
+                        (1-double(__min_e[local_index(m,s)]));
+        if(flr) return int(floor(square_step));
+        else return int(ceil(square_step));
     }
     
     inline double EccentricityExpansionCoefficients::step_to_e(int m,int s,int step) const
     {
-        return (step / __step_num[local_index(m,s)])
-                    *
-                    (1-__min_e[local_index(m,s)])
-                    +
-                    __min_e[local_index(m,s)];
+        int li = local_index(m,s);
+        double result = (double(step) / (double(__step_num[li]) - 1) )*(1-double(__min_e[li]))+double(__min_e[li]);
+        return result;
     }
     
     int EccentricityExpansionCoefficients::current_largest_s(int m)
@@ -335,11 +343,15 @@ namespace Evolve {
             load_metadata(db);
             if(__load_all)
             {
-                __file_name=tabulated_pms_fname;
                 get_expansions(db);
+            }
+            else
+            {
+                __file_name=tabulated_pms_fname;
             }
         } catch(...) {
             sqlite3_close(db);
+            throw;
         }
         sqlite3_close(db);
         
@@ -361,6 +373,11 @@ namespace Evolve {
         return __accur[local_index(m,s)];
     }
 
+    int EccentricityExpansionCoefficients::required_expansion_order(double e, double precision, int m) const
+    {
+        words
+    }
+
     double EccentricityExpansionCoefficients::operator()(
         int m,
         int s,
@@ -369,6 +386,7 @@ namespace Evolve {
         bool deriv
     ) const
     {
+        
         if(!__useable)
             throw Core::Error::Runtime(
                 "Attempting to evaluate Pms before reading in eccentricity expansion coefficients!"
@@ -382,18 +400,19 @@ namespace Evolve {
             throw Core::Error::BadFunctionArguments(
                 "Attempting to evaluate larger s than is available!"
             );
-        if(e>__max_e[local_index(m,s)])
-            throw Core::Error::BadFunctionArguments(
-                "Attempting to evaluate larger e than is accounted for!"
-            );
+        //if(e>__max_e[local_index(m,s)])
+        //    throw Core::Error::BadFunctionArguments(
+        //        "Attempting to evaluate larger e than is accounted for!"
+        //    ); TODO: uncomment this out, I needed to remove it for comparison to python stuff
         
         if(deriv) return Core::NaN;
-        
+
         if(check_known_e(m,s,e))
             return return_known_e(m,s,e);
         
         std::vector<double> e_and_y_values (4);
         e_and_y_values = find_pms_boundary_values(m,s,e);
+        
         double slope = (e_and_y_values[3]-e_and_y_values[2])
                             / (e_and_y_values[1]-e_and_y_values[0]);
         return slope*(e-e_and_y_values[0])+e_and_y_values[2];
