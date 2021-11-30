@@ -59,7 +59,7 @@ namespace Evolve {
         std::vector<int> __step_num;
         std::vector<double> __max_e;
         std::vector<double> __accur;
-        std::vector<int> __order_switches;
+        std::vector<double> __order_switches;
         std::string __file_name;
         
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);

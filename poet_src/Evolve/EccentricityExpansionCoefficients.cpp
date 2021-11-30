@@ -132,6 +132,7 @@ namespace Evolve {
         std::vector<int> mp2;
         std::vector<int> m0;
         std::vector<int> mm2;
+        std::vector<int> preFinal;
         
         mp2.resize(__max_s+1,Core::NaN);
         m0.resize(__max_s+1,Core::NaN);
@@ -189,15 +190,31 @@ namespace Evolve {
         
         for(int i = 0; i <= __max_s; i++)
         {
-            if ( (mp2[i] <= m0[i]) && (mp2[i] <= mm2[i]) )
-                __order_switches[i]=mp2[i]-1;
-            else if ( (m0[i] <= mp2[i]) && (m0[i] <= mm2[i]) )
-                __order_switches[i]=m0[i]-1;
-            else if ( (mm2[i] <= mp2[i]) && (mm2[i] <= m0[i]) )
-                __order_switches[i]=mm2[i]-1;
-            else __order_switches[i]=0;
+            em = -4;
+            double mp2i=step_to_e(2,i,mp2[i]);
+            double m0i=step_to_e(0,i,m0[i]);
+            double mm2i=step_to_e(-2,i,mm2[i]);
             
-            if(__order_switches[i] < 0) __order_switches[i] = 0;
+            if ( (mp2i <= m0i) && (mp2i <= mm2i) ) {
+                preFinal[i]=mp2[i]-1;
+                em = 2;
+            }
+            else if ( (m0i <= mp2i) && (m0i <= mm2i) ) {
+                preFinal[i]=m0[i]-1;
+                em = 0;
+            }
+            else if ( (mm2i <= mp2i) && (mm2i <= m0i) ) {
+                preFinal[i]=mm2[i]-1;
+                em = -2;
+            }
+            else preFinal[i]=0; // This should probably be an error?
+            
+            if(preFinal[i] < 0) preFinal[i] = 0;
+            
+            if(em==-4)
+                __order_switches[i] = 0;
+            else
+                __order_switches[i] = step_to_e(em,i,preFinal[i]);
         }
     }
     
