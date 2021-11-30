@@ -129,17 +129,16 @@ namespace Evolve {
     )
     {
         int em = 2;
-        
         std::vector<int> mp2;
         std::vector<int> m0;
         std::vector<int> mm2;
         
-        mp2.resize(__max_s+1),Core::NaN);
-        m0.resize(__max_s+1),Core::NaN);
-        mm2.resize(__max_s+1),Core::NaN);
-        __order_switches.resize(__max_s+1),Core::NaN);
+        mp2.resize(__max_s+1,Core::NaN);
+        m0.resize(__max_s+1,Core::NaN);
+        mm2.resize(__max_s+1,Core::NaN);
+        __order_switches.resize(__max_s+1,Core::NaN);
         
-        while (em >= -2)
+        while(em >= -2)
         {
             for(int es=0; es <= __max_s; es++)
             {
@@ -168,7 +167,7 @@ namespace Evolve {
                             case 0: m0[li]=sqlite3_column_int(statement,0);
                                     break;
                             case -2: mm2[li]=sqlite3_column_int(statement,0);
-                                    break;
+                                     break;
                         }
                         rc=sqlite3_step(statement);
                     }
@@ -185,11 +184,10 @@ namespace Evolve {
                     throw Core::Error::IO(msg);
                 }
             }
-            
             em = em - 2;
         }
         
-        for(int i = 0; i <= __max_s; i++(
+        for(int i = 0; i <= __max_s; i++)
         {
             if ( (mp2[i] <= m0[i]) && (mp2[i] <= mm2[i]) )
                 __order_switches[i]=mp2[i]-1;
@@ -197,11 +195,9 @@ namespace Evolve {
                 __order_switches[i]=m0[i]-1;
             else if ( (mm2[i] <= mp2[i]) && (mm2[i] <= m0[i]) )
                 __order_switches[i]=mm2[i]-1;
-            else
-                __order_switches[i]=0;
+            else __order_switches[i]=0;
             
-            if(__order_switches[i] < 0)
-                __order_switches[i] = 0;
+            if(__order_switches[i] < 0) __order_switches[i] = 0;
         }
     }
     
@@ -213,8 +209,8 @@ namespace Evolve {
     {
         bool error_flag = false;
         double result;
-        
         sqlite3 *db;
+        
         int rc = sqlite3_open(__file_name.c_str(),&db);
         if(rc!=SQLITE_OK) {
             sqlite3_close(db);
@@ -226,7 +222,6 @@ namespace Evolve {
                 "!"
             );
         }
-        
         try {
             sqlite3_stmt *statement;
             std::string stmnt="SELECT y_value FROM interpolation_data";
@@ -271,16 +266,13 @@ namespace Evolve {
             sqlite3_close(db);
             throw;
         }
-        
         sqlite3_close(db);
-        
         return result;
     }
     
     void EccentricityExpansionCoefficients::get_expansions(sqlite3* db)
     {
         __pms_expansions.resize(3*(__max_s+1));
-        
         for(int s=0; s <= __max_s; s++)
         {
             __pms_expansions[local_index(-2,s)]=load_coefficient(db,-2,s);
@@ -306,7 +298,6 @@ namespace Evolve {
     ) const
     {
         std::vector<double> results (4);
-        
         int lo_i=e_to_nearest_step(m,s,e,true);
         int hi_i=lo_i+1;
         
@@ -314,7 +305,6 @@ namespace Evolve {
         results[1]=step_to_e(m,s,hi_i);
         results[2]=get_specific_e(m,s,lo_i);
         results[3]=get_specific_e(m,s,hi_i);
-        
         return results;
     }
     
@@ -325,13 +315,13 @@ namespace Evolve {
     ) const
     {
         if(
-            ((s==0||e==1.0) && m==0)
+            ( (s==0||e==1.0) && m==0 )
             ||
-            (m==2&&s==2&&e==0.0)
+            ( m==2 && s==2 && e==0.0 )
         ) return 1.0;
         
         if(
-            (s==0&&std::abs(m)==2)
+            ( s==0 && std::abs(m)==2 )
             ||
             e==1.0
             ||
@@ -355,8 +345,6 @@ namespace Evolve {
             e==0.0
             ||
             e<__min_e[local_index(m,s)]
-            ||
-            (m==2&&s==2&&e==0.0)
         ) return true;
         return false;
     }
@@ -375,8 +363,8 @@ namespace Evolve {
                         (double(__step_num[li]) - 1)
                         /
                         ( 1-double(__min_e[li]) );
-        if(flr) return int(floor(square_step));
-        else return int(ceil(square_step));
+        if(flr) return int( floor(square_step) );
+        else return int( ceil(square_step) );
     }
     
     inline double EccentricityExpansionCoefficients::step_to_e(
@@ -480,7 +468,7 @@ namespace Evolve {
         int m
     ) const
     {
-        int largest_s=__max_s;
+        int largest_s=0;
         for(int s = 0; s <= __max_s; s++)
         {
             // We search the entire thing because it is possible that s
@@ -522,8 +510,7 @@ namespace Evolve {
         
         if(deriv) return Core::NaN;
 
-        if(check_known_e(m,s,e))
-            return return_known_e(m,s,e);
+        if(check_known_e(m,s,e)) return return_known_e(m,s,e);
         
         std::vector<double> e_and_y_values (4);
         e_and_y_values = find_pms_boundary_values(m,s,e);
