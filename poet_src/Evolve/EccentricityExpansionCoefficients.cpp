@@ -14,11 +14,11 @@ namespace Evolve {
         std::vector<double> pms;
         
         sqlite3_stmt *statement;
-        std::string instruc2="SELECT y_value,step_number";
-        instruc2.append(" FROM interpolation_data WHERE p_id = ");
-        instruc2.append(std::to_string(__db_index[local_index(m,s)]));
-        instruc2.append(" ORDER BY step_number DESC");
-        const char *sql = instruc2.c_str();
+        std::string stmnt="SELECT y_value,step_number";
+        stmnt.append(" FROM interpolation_data WHERE p_id = ");
+        stmnt.append(std::to_string(__db_index[local_index(m,s)]));
+        stmnt.append(" ORDER BY step_number DESC");
+        const char *sql = stmnt.c_str();
         if(sqlite3_prepare_v2(db,sql,-1,&statement,NULL)==SQLITE_OK)
         {
             int rc = sqlite3_step(statement);
@@ -52,8 +52,8 @@ namespace Evolve {
     void EccentricityExpansionCoefficients::get_max_s(sqlite3* db)
     {
         sqlite3_stmt *statement;
-        std::string instruc2="SELECT MAX(s) FROM interpolations";
-        const char *sql = instruc2.c_str();
+        std::string stmnt="SELECT MAX(s) FROM interpolations";
+        const char *sql = stmnt.c_str();
         int result_s = 0;
         bool error_flag = false;
         
@@ -84,9 +84,9 @@ namespace Evolve {
     void EccentricityExpansionCoefficients::load_metadata(sqlite3* db)
     {
         sqlite3_stmt *statement;
-        std::string instruc2="SELECT id,m,s,min_interp_e,number_of_steps,";
-        instruc2.append("max_checked_e,interp_accuracy FROM interpolations");
-        const char *sql = instruc2.c_str();
+        std::string stmnt="SELECT id,m,s,min_interp_e,number_of_steps,";
+        stmnt.append("max_checked_e,interp_accuracy FROM interpolations");
+        const char *sql = stmnt.c_str();
         int error_flag = 0;
         
         __pms_metadata.resize(3*(__max_s+1));
@@ -144,15 +144,15 @@ namespace Evolve {
             for(int es=0; es <= __max_s; es++)
             {
                 sqlite3_stmt *statement;
-                std::string instruc2="SELECT MIN(b.step_number) FROM interpolations a ";
-                instruc2.append("LEFT JOIN interpolation_data b ON a.id = b.p_id");
-                instruc2.append(" WHERE a.m = ");
-                instruc2.append(std::to_string(em));
-                instruc2.append(" AND a.s = ");
-                instruc2.append(std::to_string(es));
-                instruc2.append(" AND ABS(b.y_value) >= ");
-                instruc2.append(std::to_string(precision/double(es)));
-                const char *sql = instruc2.c_str();
+                std::string stmnt="SELECT MIN(b.step_number) FROM";
+                stmnt.append(" interpolations a LEFT JOIN interpolation_data ");
+                stmnt.append("b ON a.id = b.p_id WHERE a.m = ");
+                stmnt.append(std::to_string(em));
+                stmnt.append(" AND a.s = ");
+                stmnt.append(std::to_string(es));
+                stmnt.append(" AND ABS(b.y_value) >= ");
+                stmnt.append(std::to_string(precision/double(es)));
+                const char *sql = stmnt.c_str();
                 int error_flag = 0;
                 
                 if(sqlite3_prepare_v2(db,sql,-1,&statement,NULL)==SQLITE_OK)
@@ -160,13 +160,14 @@ namespace Evolve {
                     int rc = sqlite3_step(statement);
                     while(rc==SQLITE_ROW)
                     {
+                        int li = local_index(em,es);
                         switch(em)
                         {
-                            case 2: mp2[local_index(em,es)]=sqlite3_column_int(statement,0);
+                            case 2: mp2[li]=sqlite3_column_int(statement,0);
                                     break;
-                            case 0: m0[local_index(em,es)]=sqlite3_column_int(statement,0);
+                            case 0: m0[li]=sqlite3_column_int(statement,0);
                                     break;
-                            case -2: mm2[local_index(em,es)]=sqlite3_column_int(statement,0);
+                            case -2: mm2[li]=sqlite3_column_int(statement,0);
                                     break;
                         }
                         rc=sqlite3_step(statement);
@@ -178,8 +179,9 @@ namespace Evolve {
                 
                 if(error_flag==-1)
                 {
-                    std::string msg= "Eccentricity expansion file could not be read in ";
-                    msg.append("EccentricityExpansionCoefficients::load_e_switches()!");
+                    std::string msg="Eccentricity expansion file could not be ";
+                    msg.append("read in EccentricityExpansionCoefficients::");
+                    msg.append("load_e_switches()!");
                     throw Core::Error::IO(msg);
                 }
             }
@@ -227,12 +229,12 @@ namespace Evolve {
         
         try {
             sqlite3_stmt *statement;
-            std::string instruc2="SELECT y_value FROM interpolation_data";
-            instruc2.append(" WHERE p_id = ");
-            instruc2.append(std::to_string(__db_index[local_index(m,s)]));
-            instruc2.append(" AND step_number=");
-            instruc2.append(std::to_string(e_step));
-            const char *sql = instruc2.c_str();
+            std::string stmnt="SELECT y_value FROM interpolation_data";
+            stmnt.append(" WHERE p_id = ");
+            stmnt.append(std::to_string(__db_index[local_index(m,s)]));
+            stmnt.append(" AND step_number=");
+            stmnt.append(std::to_string(e_step));
+            const char *sql = stmnt.c_str();
             int theCode=sqlite3_prepare_v2(db,sql,-1,&statement,NULL);
             if(theCode==SQLITE_OK)
             {
