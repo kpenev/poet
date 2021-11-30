@@ -59,6 +59,7 @@ namespace Evolve {
         std::vector<int> __step_num;
         std::vector<double> __max_e;
         std::vector<double> __accur;
+        std::vector<int> __order_switches;
         std::string __file_name;
         
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);
@@ -66,6 +67,7 @@ namespace Evolve {
         /// It is possible for file to accommodate precision but only for s=0
         void get_max_s(sqlite3* db);
         void load_metadata(sqlite3* db);
+        void load_e_switches(sqlite3* db,double precision);
         double load_specific_e(int m,int s,int e_step) const;
         // The callback SQL function that updates the above values (__pms_expansions)
         void get_expansions(sqlite3* db);
@@ -77,7 +79,7 @@ namespace Evolve {
         inline double step_to_e(int m,int s,int step) const;
         int current_largest_s(int m);
         inline int local_index(int m, int s) const;
-        void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
+        //void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
 
     public:
         ///Create an uninitialized object.
@@ -105,7 +107,7 @@ namespace Evolve {
         double max_precision(int m, int s) const;
 
         ///TODO: describe this
-        int required_expansion_order(double e, double precision, int m) const;
+        int required_expansion_order(double e, int m) const;
 
         ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
         ///contribution of the highest power eccentricity terms.
