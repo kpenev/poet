@@ -123,7 +123,10 @@ namespace Evolve {
         }
     }
     
-    void EccentricityExpansionCoefficients::load_e_switches(sqlite3* db,double precision)
+    void EccentricityExpansionCoefficients::load_e_switches(
+        sqlite3* db,
+        double precision
+    )
     {
         int em = 2;
         
@@ -200,7 +203,11 @@ namespace Evolve {
         }
     }
     
-    double EccentricityExpansionCoefficients::load_specific_e(int m,int s,int e_step) const
+    double EccentricityExpansionCoefficients::load_specific_e(
+        int m,
+        int s,
+        int e_step
+    ) const
     {
         bool error_flag = false;
         double result;
@@ -280,7 +287,11 @@ namespace Evolve {
         }
     }
     
-    double EccentricityExpansionCoefficients::get_specific_e(int m,int s,int e_step) const
+    double EccentricityExpansionCoefficients::get_specific_e(
+        int m,
+        int s,
+        int e_step
+    ) const
     {
         if(!__load_all) return load_specific_e(m,s,e_step);
         else return __pms_expansions[local_index(m,s)][e_step];
@@ -305,7 +316,11 @@ namespace Evolve {
         return results;
     }
     
-    double EccentricityExpansionCoefficients::return_known_e(int m,int s,double e) const
+    double EccentricityExpansionCoefficients::return_known_e(
+        int m,
+        int s,
+        double e
+    ) const
     {
         if(
             ((s==0||e==1.0) && m==0)
@@ -321,10 +336,14 @@ namespace Evolve {
             e==0.0
         ) return 0.0;
         
-        if(e<__min_e[local_index(m,s)]) return 0.0;
+        if( e<__min_e[local_index(m,s)] ) return 0.0;
     }
     
-    bool EccentricityExpansionCoefficients::check_known_e(int m,int s,double e) const
+    bool EccentricityExpansionCoefficients::check_known_e(
+        int m,
+        int s,
+        double e
+    ) const
     {
         if(
             s==0
@@ -347,20 +366,29 @@ namespace Evolve {
         bool flr
     ) const
     {
+        int li = local_index(m,s);
         double square_step;
-        square_step = (e-double(__min_e[local_index(m,s)]))
+        square_step = ( e-double(__min_e[li]) )
                         *
-                        (double(__step_num[local_index(m,s)]) - 1)
+                        (double(__step_num[li]) - 1)
                         /
-                        (1-double(__min_e[local_index(m,s)]));
+                        ( 1-double(__min_e[li]) );
         if(flr) return int(floor(square_step));
         else return int(ceil(square_step));
     }
     
-    inline double EccentricityExpansionCoefficients::step_to_e(int m,int s,int step) const
+    inline double EccentricityExpansionCoefficients::step_to_e(
+        int m,
+        int s,
+        int step
+    ) const
     {
         int li = local_index(m,s);
-        double result = (double(step) / (double(__step_num[li]) - 1) )*(1-double(__min_e[li]))+double(__min_e[li]);
+        double result = ( double(step) / (double(__step_num[li]) - 1) )
+                            *
+                            ( 1-double(__min_e[li]) )
+                            +
+                            double(__min_e[li]);
         return result;
     }
     
@@ -445,7 +473,10 @@ namespace Evolve {
         return __accur[local_index(m,s)];
     }
 
-    int EccentricityExpansionCoefficients::required_expansion_order(double e, int m) const
+    int EccentricityExpansionCoefficients::required_expansion_order(
+        double e,
+        int m
+    ) const
     {
         int largest_s=__max_s;
         for(int s = 0; s <= __max_s; s++)
@@ -482,10 +513,10 @@ namespace Evolve {
             throw Core::Error::BadFunctionArguments(
                 "Attempting to evaluate larger s than is available!"
             );
-        //if(e>__max_e[local_index(m,s)])
-        //    throw Core::Error::BadFunctionArguments(
-        //        "Attempting to evaluate larger e than is accounted for!"
-        //    ); TODO: uncomment this out, I needed to remove it for comparison to python stuff
+        if(e>__max_e[local_index(m,s)])
+            throw Core::Error::BadFunctionArguments(
+                "Attempting to evaluate larger e than is accounted for!"
+            );
         
         if(deriv) return Core::NaN;
 
