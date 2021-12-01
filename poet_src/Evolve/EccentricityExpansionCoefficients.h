@@ -89,7 +89,7 @@ namespace Evolve {
         //void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
         
         std::vector<double>* which_list(int m) const;
-        int* which_cur_order(int m) const;
+        int* which_order(int m) const;
 
     public:
         ///Create an uninitialized object.

@@ -478,7 +478,7 @@ namespace Evolve {
         else return &__mm2_switches;
     }
     
-    int* EccentricityExpansionCoefficients::which_cur_order(int m) const
+    int* EccentricityExpansionCoefficients::which_order(int m) const
     {
         if(m==2) return &__current_mp2_order;
         else if(m==0) return &__current_m0_order;
@@ -490,8 +490,6 @@ namespace Evolve {
         int m
     ) const
     {
-        std::vector<double> *switch_list = which_list(m);
-        int *which_order = which_cur_order(m);
         int largest_s=0;
         
         for(int s = 0; s <= __max_s; s++)
@@ -499,11 +497,11 @@ namespace Evolve {
             // We search the entire thing because it is possible that s
             // activates at >e but s+1 activates at <=e, in which case we would
             // want to include up to s+1
-            if( step_to_e(m,s,*switch_list[s])<=e ) largest_s = s;
+            if( step_to_e(m,s,*which_list(m)[s])<=e ) largest_s = s;
         }
         largest_s++;
         if(largest_s>__max_s) largest_s--;
-        *which_order=largest_s;
+        *which_order(m)=largest_s;
         return largest_s;
     }
     
@@ -511,11 +509,27 @@ namespace Evolve {
         int m
     ) const
     {
-        double low_e,high_e;
+        double lo_e,high_e;
         std::vector<double> *switch_list = which_list(m);
-        int *which_order = which_cur_order(m);
+        int *order = which_order(m);
         
-        return std::make_pair(low_e,high_e);
+        if(*order==0)
+        {
+            lo_e = step_to_e(m,s,*switch_list[*order]);
+            hi_e = step_to_e(m,s,*switch_list[*order+1]);
+        }
+        else if(*order==__max_s)
+        {
+            lo_e = step_to_e(m,s,*switch_list[*order-1]);
+            hi_e = step_to_e(m,s,*switch_list[*order]);
+        }
+        else
+        {
+            lo_e = step_to_e(m,s,*switch_list[*order-1]);
+            hi_e = step_to_e(m,s,*switch_list[*order+1]);
+        }
+        
+        return std::make_pair(lo_e,hi_e);
     }
 
     double EccentricityExpansionCoefficients::operator()(
