@@ -132,12 +132,13 @@ namespace Evolve {
         std::vector<int> mp2;
         std::vector<int> m0;
         std::vector<int> mm2;
-        std::vector<int> preFinal;
         
         mp2.resize(__max_s+1,Core::NaN);
         m0.resize(__max_s+1,Core::NaN);
         mm2.resize(__max_s+1,Core::NaN);
-        __order_switches.resize(__max_s+1,Core::NaN);
+        __mp2_switches.resize(__max_s+1,Core::NaN);
+        __m0_switches.resize(__max_s+1,Core::NaN);
+        __mm2_switches.resize(__max_s+1,Core::NaN);
         
         while(em >= -2)
         {
@@ -190,31 +191,17 @@ namespace Evolve {
         
         for(int i = 0; i <= __max_s; i++)
         {
-            em = -4;
-            double mp2i=step_to_e(2,i,mp2[i]);
-            double m0i=step_to_e(0,i,m0[i]);
-            double mm2i=step_to_e(-2,i,mm2[i]);
+            int mp2_step = mp2[i]-1;
+            int m0_step = m0[i]-1;
+            int mm2_step = mm2[i]-1;
             
-            if ( (mp2i <= m0i) && (mp2i <= mm2i) ) {
-                preFinal[i]=mp2[i]-1;
-                em = 2;
-            }
-            else if ( (m0i <= mp2i) && (m0i <= mm2i) ) {
-                preFinal[i]=m0[i]-1;
-                em = 0;
-            }
-            else if ( (mm2i <= mp2i) && (mm2i <= m0i) ) {
-                preFinal[i]=mm2[i]-1;
-                em = -2;
-            }
-            else preFinal[i]=0; // This should probably be an error?
+            if(mp2_step<0) mp2_step=0;
+            if(m0_step<0) m0_step=0;
+            if(mm2_step<0) mm2_step=0;
             
-            if(preFinal[i] < 0) preFinal[i] = 0;
-            
-            if(em==-4)
-                __order_switches[i] = 0;
-            else
-                __order_switches[i] = step_to_e(em,i,preFinal[i]);
+            __mp2_switches[i]=step_to_e(2,i,mp2_step);
+            __m0_switches[i]=step_to_e(0,i,m0_step);
+            __mm2_switches[i]=step_to_e(-2,i,mm2_step);
         }
     }
     
@@ -462,6 +449,10 @@ namespace Evolve {
         }
         sqlite3_close(db);
         
+        __current_mp2_order=0;
+        __current_m0_order=0;
+        __current_mm2_order=0;
+        
         __useable = true;
     }
 
@@ -485,16 +476,33 @@ namespace Evolve {
         int m
     ) const
     {
+        std::vector<double> *switch_list;
+        int *which_order;
         int largest_s=0;
+        
+        if(m==2) {
+            switch_list=&__mp2_switches;
+            which_order=&__current_mp2_order;
+        }
+        else if(m==0) {
+            switch_list=&__m0_switches;
+            which_order=&__current_m0_order;
+        }
+        else {
+            switch_list=&__mm2_switches;
+            which_order=&__current_mm2_order;
+        }
+        
         for(int s = 0; s <= __max_s; s++)
         {
             // We search the entire thing because it is possible that s
             // activates at >e but s+1 activates at <=e, in which case we would
             // want to include up to s+1
-            if( step_to_e(m,s,__order_switches[s])<=e ) largest_s = s;
+            if( step_to_e(m,s,*switch_list[s])<=e ) largest_s = s;
         }
         largest_s++;
         if(largest_s>__max_s) largest_s--;
+        *which_order=largest_s;
         return largest_s;
     }
 

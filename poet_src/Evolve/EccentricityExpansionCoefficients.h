@@ -59,8 +59,15 @@ namespace Evolve {
         std::vector<int> __step_num;
         std::vector<double> __max_e;
         std::vector<double> __accur;
-        std::vector<double> __order_switches;
         std::string __file_name;
+        
+        std::vector<double> __mp2_switches;
+        std::vector<double> __m0_switches;
+        std::vector<double> __mm2_switches;
+        int __current_mp2_order;
+        int __current_m0_order;
+        int __current_mm2_order;
+        std::pair<double> __order_boundaries;
         
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);
         /// Highest s available for requested precision
@@ -108,6 +115,9 @@ namespace Evolve {
 
         ///TODO: describe this
         int required_expansion_order(double e, int m) const;
+        
+        ///TODO: describe this, as well
+        std::pair<double> current_expansion_range(int m) const;
 
         ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
         ///contribution of the highest power eccentricity terms.
