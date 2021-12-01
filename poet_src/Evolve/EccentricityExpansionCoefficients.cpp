@@ -470,28 +470,29 @@ namespace Evolve {
             );
         return __accur[local_index(m,s)];
     }
+    
+    std::vector<double>* EccentricityExpansionCoefficients::which_list(int m) const
+    {
+        if(m==2) return &__mp2_switches;
+        else if(m==0) return &__m0_switches;
+        else return &__mm2_switches;
+    }
+    
+    int* EccentricityExpansionCoefficients::which_cur_order(int m) const
+    {
+        if(m==2) return &__current_mp2_order;
+        else if(m==0) return &__current_m0_order;
+        else return &__current_mm2_order;
+    }
 
     int EccentricityExpansionCoefficients::required_expansion_order(
         double e,
         int m
     ) const
     {
-        std::vector<double> *switch_list;
-        int *which_order;
+        std::vector<double> *switch_list = which_list(m);
+        int *which_order = which_cur_order(m);
         int largest_s=0;
-        
-        if(m==2) {
-            switch_list=&__mp2_switches;
-            which_order=&__current_mp2_order;
-        }
-        else if(m==0) {
-            switch_list=&__m0_switches;
-            which_order=&__current_m0_order;
-        }
-        else {
-            switch_list=&__mm2_switches;
-            which_order=&__current_mm2_order;
-        }
         
         for(int s = 0; s <= __max_s; s++)
         {
@@ -504,6 +505,17 @@ namespace Evolve {
         if(largest_s>__max_s) largest_s--;
         *which_order=largest_s;
         return largest_s;
+    }
+    
+    std::pair<double,double> EccentricityExpansionCoefficients::current_expansion_range(
+        int m
+    ) const
+    {
+        double low_e,high_e;
+        std::vector<double> *switch_list = which_list(m);
+        int *which_order = which_cur_order(m);
+        
+        return std::make_pair(low_e,high_e);
     }
 
     double EccentricityExpansionCoefficients::operator()(
