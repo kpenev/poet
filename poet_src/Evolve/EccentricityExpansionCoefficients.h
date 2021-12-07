@@ -67,7 +67,7 @@ namespace Evolve {
         int __current_mp2_order;
         int __current_m0_order;
         int __current_mm2_order;
-        std::pair<double> __order_boundaries;
+        std::pair<double,double> __order_boundaries;
         
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);
         /// Highest s available for requested precision
@@ -88,8 +88,8 @@ namespace Evolve {
         inline int local_index(int m, int s) const;
         //void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
         
-        std::vector<double>* which_list(int m) const;
-        int* which_order(int m) const;
+        std::vector<double>* which_list(int m);
+        int* which_order(int m);
 
     public:
         ///Create an uninitialized object.
@@ -117,10 +117,10 @@ namespace Evolve {
         double max_precision(int m, int s) const;
 
         ///TODO: describe this
-        int required_expansion_order(double e, int m) const;
+        int required_expansion_order(double e, int m);//const;
         
         ///TODO: describe this, as well
-        std::pair<double,double> current_expansion_range(int m) const;
+        std::pair<double,double> current_expansion_range(int m);// const;
 
         ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
         ///contribution of the highest power eccentricity terms.

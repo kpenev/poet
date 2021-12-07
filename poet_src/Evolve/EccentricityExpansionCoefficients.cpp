@@ -471,62 +471,65 @@ namespace Evolve {
         return __accur[local_index(m,s)];
     }
     
-    std::vector<double>* EccentricityExpansionCoefficients::which_list(int m) const
+    std::vector<double>* EccentricityExpansionCoefficients::which_list(int m)
     {
         if(m==2) return &__mp2_switches;
         else if(m==0) return &__m0_switches;
         else return &__mm2_switches;
     }
-    
-    int* EccentricityExpansionCoefficients::which_order(int m) const
+
+    int* EccentricityExpansionCoefficients::which_order(int m)
     {
         if(m==2) return &__current_mp2_order;
         else if(m==0) return &__current_m0_order;
         else return &__current_mm2_order;
     }
 
+
     int EccentricityExpansionCoefficients::required_expansion_order(
         double e,
         int m
-    ) const
+    )
     {
         int largest_s=0;
+        std::vector<double> *switch_list=which_list(m);
+        int *order=which_order(m);
         
         for(int s = 0; s <= __max_s; s++)
         {
             // We search the entire thing because it is possible that s
             // activates at >e but s+1 activates at <=e, in which case we would
             // want to include up to s+1
-            if( step_to_e(m,s,*which_list(m)[s])<=e ) largest_s = s;
+            if( step_to_e(m,s,switch_list->at(s))<=e ) largest_s = s;
         }
         largest_s++;
         if(largest_s>__max_s) largest_s--;
-        *which_order(m)=largest_s;
+        *order=largest_s;
         return largest_s;
     }
     
     std::pair<double,double> EccentricityExpansionCoefficients::current_expansion_range(
         int m
-    ) const
+    )
     {
-        double lo_e,high_e;
-        std::vector<double> *switch_list = which_list(m);
-        int *order = which_order(m);
+        double lo_e,hi_e;
+        std::vector<double> *switch_list=which_list(m);
+        int *order=which_order(m);
         
         if(*order==0)
         {
-            lo_e = step_to_e(m,s,*switch_list[*order]);
-            hi_e = step_to_e(m,s,*switch_list[*order+1]);
+            lo_e = step_to_e(m,*order,switch_list->at(*order));
+            hi_e = step_to_e(m,*order+1,switch_list->at(*order+1));
         }
         else if(*order==__max_s)
         {
-            lo_e = step_to_e(m,s,*switch_list[*order-1]);
-            hi_e = step_to_e(m,s,*switch_list[*order]);
+            lo_e = step_to_e(m,*order-1,switch_list->at(*order-1));
+            hi_e = step_to_e(m,*order,switch_list->at(*order));
         }
         else
         {
-            lo_e = step_to_e(m,s,*switch_list[*order-1]);
-            hi_e = step_to_e(m,s,*switch_list[*order+1]);
+            lo_e = step_to_e(m,*order-1,switch_list->at(*order-1));
+            hi_e = step_to_e(m,*order+1,switch_list->at(*order+1));
         }
         
         return std::make_pair(lo_e,hi_e);
