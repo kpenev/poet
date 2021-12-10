@@ -10,45 +10,47 @@ namespace Evolve {
     )
     {
         bool error_flag = false;
-        
+        int ms_index = local_index(m, s);
+
         std::vector<double> pms;
-        
+
         sqlite3_stmt *statement;
-        std::string stmnt="SELECT y_value,step_number";
+        std::string stmnt = "SELECT y_value,step_number";
         stmnt.append(" FROM interpolation_data WHERE p_id = ");
-        stmnt.append(std::to_string(__db_index[local_index(m,s)]));
+        stmnt.append(std::to_string(__db_pms_id[ms_index]));
         stmnt.append(" ORDER BY step_number DESC");
         const char *sql = stmnt.c_str();
-        if(sqlite3_prepare_v2(db,sql,-1,&statement,NULL)==SQLITE_OK)
-        {
+        if(sqlite3_prepare_v2(db, sql, -1, &statement, NULL) == SQLITE_OK) {
             int rc = sqlite3_step(statement);
-            int i_b = sqlite3_column_int(statement,1);
-            assert (i_b==__step_num[local_index(m,s)]);
-            pms.resize(i_b+1);
-            while(rc==SQLITE_ROW)
-            {
-                pms[i_b]=( sqlite3_column_double(statement,0) );
-                i_b--;
-                rc=sqlite3_step(statement);
+            int i_b = sqlite3_column_int(statement, 1);
+            assert (i_b == __num_steps[ms_index]);
+            pms.resize(i_b + 1);
+            while(rc == SQLITE_ROW) {
+                pms[i_b] = sqlite3_column_double(statement, 0);
+                --i_b;
+                rc = sqlite3_step(statement);
             }
-            
-            if (rc!=SQLITE_DONE) error_flag=true;
+
+            if (rc != SQLITE_DONE)
+                error_flag=true;
         }
-        else error_flag=true;
+        else
+            error_flag = true;
         sqlite3_finalize(statement);
-        
+
         if(error_flag)
             throw Core::Error::IO(
                 "Unable to retrieve expansion id "
                 +
-                std::to_string(__db_index[local_index(m,s)])
+                std::to_string(__db_pms_id[ms_index])
                 +
                 " in eccentricity expansion file during load_coefficient!"
             );
-        
+
         return pms;
     }
-    
+
+    ///TODO: use smallest max s over m=+-2 and m=0
     void EccentricityExpansionCoefficients::get_max_s(sqlite3* db)
     {
         sqlite3_stmt *statement;
@@ -56,13 +58,11 @@ namespace Evolve {
         const char *sql = stmnt.c_str();
         int result_s = 0;
         bool error_flag = false;
-        
+
         int codeOne=sqlite3_prepare_v2(db,sql,-1,&statement,NULL);
-        if(codeOne==SQLITE_OK)
-        {
+        if(codeOne==SQLITE_OK) {
             int rc = sqlite3_step(statement);
-            while(rc==SQLITE_ROW)
-            {
+            while(rc==SQLITE_ROW) {
                 result_s = sqlite3_column_double(statement,0);
                 rc=sqlite3_step(statement);
             }
@@ -70,141 +70,120 @@ namespace Evolve {
         }
         else error_flag=true;
         sqlite3_finalize(statement);
-        
+
         if(error_flag==true)
         {
             std::string msg ="Eccentricity expansion file could not be read in";
             msg.append(" EccentricityExpansionCoefficients::get_max_s()!");
             throw Core::Error::IO(msg);
         }
-        
+
         __max_s = result_s;
     }
-    
+
     void EccentricityExpansionCoefficients::load_metadata(sqlite3* db)
     {
         sqlite3_stmt *statement;
-        std::string stmnt="SELECT id,m,s,min_interp_e,number_of_steps,";
+        std::string stmnt = "SELECT id,m,s,min_interp_e,number_of_steps,";
         stmnt.append("max_checked_e,interp_accuracy FROM interpolations");
         const char *sql = stmnt.c_str();
         int error_flag = 0;
-        
-        __pms_metadata.resize(3*(__max_s+1));
-        __db_index.resize(3*(__max_s+1),-1);
-        __min_e.resize(3*(__max_s+1),Core::NaN);
-        __step_num.resize(3*(__max_s+1),Core::NaN);
-        __max_e.resize(3*(__max_s+1),Core::NaN);
-        __accur.resize(3*(__max_s+1),Core::NaN);
-        
-        if(sqlite3_prepare_v2(db,sql,-1,&statement,NULL)==SQLITE_OK)
+
+        __db_pms_id.resize(3 * (__max_s + 1), -1);
+        __min_e.resize(3 * (__max_s + 1), Core::NaN);
+        __num_steps.resize(3 * (__max_s + 1), Core::NaN);
+        __max_e.resize(3 * (__max_s + 1), Core::NaN);
+        __interp_precision.resize(3 * (__max_s + 1), Core::NaN);
+
+        if(sqlite3_prepare_v2(db, sql, -1, &statement, NULL) == SQLITE_OK)
         {
             int rc = sqlite3_step(statement);
-            while(rc==SQLITE_ROW)
+            while(rc == SQLITE_ROW)
             {
-                int m=sqlite3_column_int(statement,1);
-                int s=sqlite3_column_int(statement,2);
-                __db_index[local_index(m,s)]=sqlite3_column_int(statement,0);
-                __min_e[local_index(m,s)]=sqlite3_column_double(statement,3);
-                __step_num[local_index(m,s)]=sqlite3_column_int(statement,4);
-                __max_e[local_index(m,s)]=sqlite3_column_double(statement,5);
-                __accur[local_index(m,s)]=sqlite3_column_double(statement,6);
-                rc=sqlite3_step(statement);
+                int m = sqlite3_column_int(statement, 1);
+                int s = sqlite3_column_int(statement, 2);
+                int ms_index = local_index(m, s);
+                __db_pms_id[ms_index] = sqlite3_column_int(statement, 0);
+                __min_e[ms_index] = sqlite3_column_double(statement, 3);
+                __num_steps[ms_index] = sqlite3_column_int(statement, 4);
+                __max_e[ms_index] = sqlite3_column_double(statement, 5);
+                __interp_precision[ms_index] = sqlite3_column_double(
+                    statement,
+                    6
+                );
+                rc = sqlite3_step(statement);
             }
-            if (rc!=SQLITE_DONE) error_flag=-1;
-        }
-        else error_flag=-1;
+            if (rc != SQLITE_DONE)
+                error_flag = -1;
+        } else
+            error_flag = -1;
         sqlite3_finalize(statement);
-        
-        if(error_flag==-1)
-        {
-            std::string msg="Eccentricity expansion file could not be read in ";
-            msg.append("EccentricityExpansionCoefficients::load_metadata()!");
-            throw Core::Error::IO(msg);
-        }
+
+        if(error_flag == -1)
+            throw Core::Error::IO(
+                "Eccentricity expansion file could not be read in "
+                "EccentricityExpansionCoefficients::load_metadata()!"
+            );
     }
-    
-    void EccentricityExpansionCoefficients::load_e_switches(
+
+    void EccentricityExpansionCoefficients::load_max_ignore_eccentricity(
         sqlite3* db,
         double precision
     )
     {
-        int em = 2;
-        std::vector<int> mp2;
-        std::vector<int> m0;
-        std::vector<int> mm2;
-        
-        mp2.resize(__max_s+1,Core::NaN);
-        m0.resize(__max_s+1,Core::NaN);
-        mm2.resize(__max_s+1,Core::NaN);
-        __mp2_switches.resize(__max_s+1,Core::NaN);
-        __m0_switches.resize(__max_s+1,Core::NaN);
-        __mm2_switches.resize(__max_s+1,Core::NaN);
-        
-        while(em >= -2)
+        __max_ignore_eccentricity.resize(3 * (__max_s + 1), Core::NaN);
+
+        for(m=2; m >= -2; m -= 2)
         {
-            for(int es=0; es <= __max_s; es++)
+            for(int s=0; s <= __max_s; ++s)
             {
                 sqlite3_stmt *statement;
-                std::string stmnt="SELECT MIN(b.step_number) FROM";
+                std::string stmnt = "SELECT MIN(b.step_number) FROM";
                 stmnt.append(" interpolations a LEFT JOIN interpolation_data ");
                 stmnt.append("b ON a.id = b.p_id WHERE a.m = ");
-                stmnt.append(std::to_string(em));
+                stmnt.append(std::to_string(m));
                 stmnt.append(" AND a.s = ");
-                stmnt.append(std::to_string(es));
+                stmnt.append(std::to_string(s));
                 stmnt.append(" AND ABS(b.y_value) >= ");
-                stmnt.append(std::to_string(precision/double(es)));
+                stmnt.append(std::to_string(precision/double(s)));
                 const char *sql = stmnt.c_str();
                 int error_flag = 0;
-                
-                if(sqlite3_prepare_v2(db,sql,-1,&statement,NULL)==SQLITE_OK)
-                {
-                    int rc = sqlite3_step(statement);
-                    while(rc==SQLITE_ROW)
-                    {
-                        int li = local_index(em,es);
-                        switch(em)
-                        {
-                            case 2: mp2[li]=sqlite3_column_int(statement,0);
-                                    break;
-                            case 0: m0[li]=sqlite3_column_int(statement,0);
-                                    break;
-                            case -2: mm2[li]=sqlite3_column_int(statement,0);
-                                     break;
-                        }
-                        rc=sqlite3_step(statement);
+
+                if(
+                    sqlite3_prepare_v2(db, sql, -1, &statement, NULL)
+                    ==
+                    SQLITE_OK
+                ) {
+                    for(
+                        int rc = sqlite3_step(statement);
+                        rc == SQLITE_ROW;
+                        rc = sqlite3_step(statement)
+                    ) {
+                        int destination_i = local_index(m, s);
+                        int max_ignore_step = (sqlite3_column_int(statement, 0)
+                                               -
+                                               1);
+                        __max_ignore_eccentricity[destination_i] = (
+                            max_ignore_step >= 0
+                            ? step_to_e(m, s, max_ignore_step)
+                            : -Core::Inf
+                        );
                     }
-                    if (rc!=SQLITE_DONE) error_flag=-1;
-                }
-                else error_flag=-1;
+                    if(rc != SQLITE_DONE)
+                        error_flag=-1;
+                } else
+                    error_flag = -1;
                 sqlite3_finalize(statement);
-                
-                if(error_flag==-1)
-                {
-                    std::string msg="Eccentricity expansion file could not be ";
-                    msg.append("read in EccentricityExpansionCoefficients::");
-                    msg.append("load_e_switches()!");
-                    throw Core::Error::IO(msg);
-                }
+
+                if(error_flag == -1)
+                    throw Core::Error::IO(
+                        "Eccentricity expansion file could not be read in "
+                        "EccentricityExpansionCoefficients::load_e_switches()!"
+                    );
             }
-            em = em - 2;
-        }
-        
-        for(int i = 0; i <= __max_s; i++)
-        {
-            int mp2_step = mp2[i]-1;
-            int m0_step = m0[i]-1;
-            int mm2_step = mm2[i]-1;
-            
-            if(mp2_step<0) mp2_step=0;
-            if(m0_step<0) m0_step=0;
-            if(mm2_step<0) mm2_step=0;
-            
-            __mp2_switches[i]=step_to_e(2,i,mp2_step);
-            __m0_switches[i]=step_to_e(0,i,m0_step);
-            __mm2_switches[i]=step_to_e(-2,i,mm2_step);
         }
     }
-    
+
     double EccentricityExpansionCoefficients::load_specific_e(
         int m,
         int s,
@@ -213,8 +192,9 @@ namespace Evolve {
     {
         bool error_flag = false;
         double result;
+        int ms_index = local_index(m, s);
         sqlite3 *db;
-        
+
         int rc = sqlite3_open(__file_name.c_str(),&db);
         if(rc!=SQLITE_OK) {
             sqlite3_close(db);
@@ -230,7 +210,7 @@ namespace Evolve {
             sqlite3_stmt *statement;
             std::string stmnt="SELECT y_value FROM interpolation_data";
             stmnt.append(" WHERE p_id = ");
-            stmnt.append(std::to_string(__db_index[local_index(m,s)]));
+            stmnt.append(std::to_string(__db_pms_id[ms_index]));
             stmnt.append(" AND step_number=");
             stmnt.append(std::to_string(e_step));
             const char *sql = stmnt.c_str();
@@ -243,7 +223,7 @@ namespace Evolve {
                     result=( sqlite3_column_double(statement,0) );
                     rc=sqlite3_step(statement);
                 }
-                
+
                 if (rc!=SQLITE_DONE)
                 {
                     error_flag=true;
@@ -257,12 +237,12 @@ namespace Evolve {
                  std::cout<<sqlite3_errmsg(db);
             }
             sqlite3_finalize(statement);
-            
+
             if(error_flag)
                 throw Core::Error::IO(
                     "Unable to retrieve expansion id "
                     +
-                    std::to_string(__db_index[local_index(m,s)])
+                    std::to_string(__db_pms_id[ms_index])
                     +
                     " in eccentricity expansion file during load_specific_e!"
                 );
@@ -273,28 +253,32 @@ namespace Evolve {
         sqlite3_close(db);
         return result;
     }
-    
+
     void EccentricityExpansionCoefficients::get_expansions(sqlite3* db)
     {
         __pms_expansions.resize(3*(__max_s+1));
         for(int s=0; s <= __max_s; s++)
-        {
-            __pms_expansions[local_index(-2,s)]=load_coefficient(db,-2,s);
-            __pms_expansions[local_index(0,s)]=load_coefficient(db,0,s);
-            __pms_expansions[local_index(2,s)]=load_coefficient(db,2,s);
-        }
+            for(int m=-2; m<=2; m+=2)
+                __pms_expansions[local_index(m, s)] = load_coefficient(db,
+                                                                       m,
+                                                                       s);
     }
-    
+
     double EccentricityExpansionCoefficients::get_specific_e(
         int m,
         int s,
-        int e_step
+        int e_stepint __max_s;
+
+
     ) const
     {
-        if(!__load_all) return load_specific_e(m,s,e_step);
-        else return __pms_expansions[local_index(m,s)][e_step];
+        return (
+            load_all
+            ? __pms_expansions[local_index(m, s)][e_step]
+            : load_specific_e(m, s, e_step);
+        );
     }
-    
+
     std::vector<double> EccentricityExpansionCoefficients::find_pms_boundary_values(
         int m,
         int s,
@@ -302,16 +286,16 @@ namespace Evolve {
     ) const
     {
         std::vector<double> results (4);
-        int lo_i=e_to_nearest_step(m,s,e,true);
-        int hi_i=lo_i+1;
-        
-        results[0]=step_to_e(m,s,lo_i);
-        results[1]=step_to_e(m,s,hi_i);
-        results[2]=get_specific_e(m,s,lo_i);
-        results[3]=get_specific_e(m,s,hi_i);
+        int lo_i = e_to_nearest_step(m,s,e,true);
+        int hi_i = lo_i+1;
+
+        results[0] = step_to_e(m, s, lo_i);
+        results[1] = step_to_e(m, s, hi_i);
+        results[2] = get_specific_e(m, s, lo_i);
+        results[3] = get_specific_e(m, s, hi_i);
         return results;
     }
-    
+
     double EccentricityExpansionCoefficients::return_known_e(
         int m,
         int s,
@@ -319,11 +303,11 @@ namespace Evolve {
     ) const
     {
         if(
-            ( (s==0||e==1.0) && m==0 )
+            ( (s==0 || e==1.0) && m==0 )
             ||
             ( m==2 && s==2 && e==0.0 )
         ) return 1.0;
-        
+
         if(
             ( s==0 && std::abs(m)==2 )
             ||
@@ -331,10 +315,10 @@ namespace Evolve {
             ||
             e==0.0
         ) return 0.0;
-        
+
         if( e<__min_e[local_index(m,s)] ) return 0.0;
     }
-    
+
     bool EccentricityExpansionCoefficients::check_known_e(
         int m,
         int s,
@@ -349,10 +333,11 @@ namespace Evolve {
             e==0.0
             ||
             e<__min_e[local_index(m,s)]
-        ) return true;
+        )
+            return true;
         return false;
     }
-    
+
     inline int EccentricityExpansionCoefficients::e_to_nearest_step(
         int m,
         int s,
@@ -364,13 +349,13 @@ namespace Evolve {
         double square_step;
         square_step = ( e-double(__min_e[li]) )
                         *
-                        (double(__step_num[li]) - 1)
+                        (double(__num_steps[li]) - 1)
                         /
                         ( 1-double(__min_e[li]) );
         if(flr) return int( floor(square_step) );
         else return int( ceil(square_step) );
     }
-    
+
     inline double EccentricityExpansionCoefficients::step_to_e(
         int m,
         int s,
@@ -378,48 +363,31 @@ namespace Evolve {
     ) const
     {
         int li = local_index(m,s);
-        double result = ( double(step) / (double(__step_num[li]) - 1) )
+        double result = ( double(step) / (double(__num_steps[li]) - 1) )
                             *
                             ( 1-double(__min_e[li]) )
                             +
                             double(__min_e[li]);
         return result;
     }
-    
-    int EccentricityExpansionCoefficients::current_largest_s(int m)
+
+    inline int EccentricityExpansionCoefficients::local_index(int m,
+                                                              int s) const
     {
-        switch(m) {
-            case -2 : return __max_s_for_m2;
-            case 0  : return __max_s_for_0;
-            case 2  : return __max_s_for_p2;
-            default : throw Core::Error::BadFunctionArguments(
-                        "Asking EccentricityExpansionCoefficients::current_largest_s() for p_{m,s} with m other than +-2 and 0"
-                    );
-        };
-    }
-    
-    inline int EccentricityExpansionCoefficients::local_index(int m,int s) const
-    {
-        switch(m) {
-            case -2 : return (s*3)+0;
-            case 0  : return (s*3)+1;
-            case 2  : return (s*3)+2;
-        };
+        return s * 3 + (m + 2) / 2;
     }
 
     EccentricityExpansionCoefficients::EccentricityExpansionCoefficients(
         const std::string &tabulated_pms_fname,
         double precision,
-        bool load_style
+        bool pre_load
     )
     {
-        __useable = false;
-        
         sqlite3 *db;
         int rc;
-        
-        __load_all = load_style;
-        
+
+        __load_all = pre_load;
+
         rc = sqlite3_open(tabulated_pms_fname.c_str(),&db);
         if(rc!=SQLITE_OK) {
             sqlite3_close(db);
@@ -434,7 +402,7 @@ namespace Evolve {
         try {
             get_max_s(db);
             load_metadata(db);
-            load_e_switches(db,precision);
+            load_max_ignore_eccentricity(db, precision);
             if(__load_all)
             {
                 get_expansions(db);
@@ -448,91 +416,47 @@ namespace Evolve {
             throw;
         }
         sqlite3_close(db);
-        
-        __current_mp2_order=0;
-        __current_m0_order=0;
-        __current_mm2_order=0;
-        
-        __useable = true;
     }
 
-    void EccentricityExpansionCoefficients::read(const std::string &gary,int bob)
+    double EccentricityExpansionCoefficients::interp_precision(int m, int s) const
     {
-        gary.c_str();
-        bob++;
-    }
-
-    double EccentricityExpansionCoefficients::max_precision(int m, int s) const
-    {
-        if(m!=0&&std::abs(m)!=2)
+        if(m != 0l && std::abs(m) != 2)
             throw Core::Error::BadFunctionArguments(
-                "Asking EccentricityExpansionCoefficients::max_precision() for p_{m,s} with m other than +-2 and 0"
+                "Asking EccentricityExpansionCoefficients::interp_precision() "
+                "for p_{m,s} with m other than +-2 and 0"
             );
-        return __accur[local_index(m,s)];
+        return __interp_precision[local_index(m, s)];
     }
-    
-    std::vector<double>* EccentricityExpansionCoefficients::which_list(int m)
-    {
-        if(m==2) return &__mp2_switches;
-        else if(m==0) return &__m0_switches;
-        else return &__mm2_switches;
-    }
-
-    int* EccentricityExpansionCoefficients::which_order(int m)
-    {
-        if(m==2) return &__current_mp2_order;
-        else if(m==0) return &__current_m0_order;
-        else return &__current_mm2_order;
-    }
-
 
     int EccentricityExpansionCoefficients::required_expansion_order(
         double e,
         int m
     )
     {
-        int largest_s=0;
-        std::vector<double> *switch_list=which_list(m);
-        int *order=which_order(m);
-        
-        for(int s = 0; s <= __max_s; s++)
-        {
-            // We search the entire thing because it is possible that s
-            // activates at >e but s+1 activates at <=e, in which case we would
-            // want to include up to s+1
-            if( step_to_e(m,s,switch_list->at(s))<=e ) largest_s = s;
+        int s = __max_s;
+        while(__max_ignore_eccentricity[local_index(m, s)] >= e)
+            --s;
+        if(s == __max_s) {
+            std::ostringstream message;
+            message << "Tabulated eccentricity interpolation is unsufficient "
+                    << "to achieve the specified precision in tidal potential "
+                    << "expansion for e = "
+                    << e
+                    << ", m = "
+                    << m;
+            throw Core::Error::Runtime(msg.str());
         }
-        largest_s++;
-        if(largest_s>__max_s) largest_s--;
-        *order=largest_s;
-        return largest_s;
+        return s
     }
-    
-    std::pair<double,double> EccentricityExpansionCoefficients::current_expansion_range(
-        int m
-    )
+
+    std::pair<double,double>
+        EccentricityExpansionCoefficients::get_expansion_range(int m,
+                                                               int max_s)
     {
-        double lo_e,hi_e;
-        std::vector<double> *switch_list=which_list(m);
-        int *order=which_order(m);
-        
-        if(*order==0)
-        {
-            lo_e = step_to_e(m,*order,switch_list->at(*order));
-            hi_e = step_to_e(m,*order+1,switch_list->at(*order+1));
-        }
-        else if(*order==__max_s)
-        {
-            lo_e = step_to_e(m,*order-1,switch_list->at(*order-1));
-            hi_e = step_to_e(m,*order,switch_list->at(*order));
-        }
-        else
-        {
-            lo_e = step_to_e(m,*order-1,switch_list->at(*order-1));
-            hi_e = step_to_e(m,*order+1,switch_list->at(*order+1));
-        }
-        
-        return std::make_pair(lo_e,hi_e);
+        return std::make_pair(
+            __max_ignore_eccentricity[local_index(m, max_s)],
+            __max_ignore_eccentricity[local_index(m, max_s + 1)]
+        );
     }
 
     double EccentricityExpansionCoefficients::operator()(
@@ -543,36 +467,36 @@ namespace Evolve {
         bool deriv
     ) const
     {
-        
-        if(!__useable)
-            throw Core::Error::Runtime(
-                "Attempting to evaluate Pms before reading in eccentricity expansion coefficients!"
-            );
-        
-        if(m!=0&&std::abs(m)!=2)
+
+        if(m != 0 && std::abs(m) != 2)
             throw Core::Error::BadFunctionArguments(
                 "Asking for p_{m,s} with m other than +-2 and 0"
             );
-        if(s>__max_s)
+        if(s > __max_s)
             throw Core::Error::BadFunctionArguments(
                 "Attempting to evaluate larger s than is available!"
             );
-        if(e>__max_e[local_index(m,s)])
+        if(e > __max_e[local_index(m, s)])
             throw Core::Error::BadFunctionArguments(
                 "Attempting to evaluate larger e than is accounted for!"
             );
-        
-        if(deriv) return Core::NaN;
 
-        if(check_known_e(m,s,e)) return return_known_e(m,s,e);
-        
-        std::vector<double> e_and_y_values (4);
-        e_and_y_values = find_pms_boundary_values(m,s,e);
-        
-        double slope = (e_and_y_values[3]-e_and_y_values[2])
-                            / (e_and_y_values[1]-e_and_y_values[0]);
-        return slope*(e-e_and_y_values[0])+e_and_y_values[2];
-        
+        if(deriv)
+            return Core::NaN;
+
+        if(check_known_e(m, s, e))
+            return return_known_e(m,s,e);
+
+        std::vector<double> e_and_y_values(4);
+        e_and_y_values = find_pms_boundary_values(m, s, e);
+
+        double slope = (
+            (e_and_y_values[3] - e_and_y_values[2])
+            /
+            (e_and_y_values[1] - e_and_y_values[0])
+        );
+        return slope * (e - e_and_y_values[0]) + e_and_y_values[2];
+
     }
 
 } //End Evolve namespace.

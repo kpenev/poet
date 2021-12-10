@@ -24,7 +24,7 @@
 
 namespace Evolve {
 
-    ///\brief A class which reads-in and provides a convenient interface to the 
+    ///\brief A class which reads-in and provides a convenient interface to the
     /// \f$p_{m,s}\f$ coefficients
     class LIB_PUBLIC EccentricityExpansionCoefficients {
     private:
@@ -34,51 +34,81 @@ namespace Evolve {
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
-            ///Stored in the order m=-2,0,+2 for increasing s.
+            ///Stored in the order m=-2,0,+2 for increasing s (m changes
+            ///faster).
             __pms_expansions;
-        
 
-        ///Is the object ready to be used?
-        bool __useable;
+
         ///If you're seeing this, it means I haven't properly sorted
         ///out new documentation stuff or moved new variables/functions
         ///into a better place
+
+        ///\brief The largest s (second) index at which all three \f$p_{m,s}\f$
+        ///coefficients are tabulated.
         int __max_s;
-        bool __load_all; // Whether we load the whole database at the start or part of it as needed
-        int __max_s_for_p2;
-        int __max_s_for_0;
-        int __max_s_for_m2;
-        double __e;
-        std::vector< std::vector<double> >
-            ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
-            ///
-            ///Stored in the order m=-2,0,+2 for increasing s.
-            __pms_metadata;
-        std::vector<int> __db_index;
+
+        ///\brief Whether we load the whole database at the start (true) or part
+        ///of it as needed (false)
+        bool __load_all;
+
+        ///\brief The identifiers of particular \f$p_{m,s}\f$ coefficients
+        ///in the database.
+        std::vector<int> __db_pms_id;
+
+        ///The smallest value of e for which each \f$p_{m,s}\f$ coefficient has
+        ///tabulated values.
         std::vector<double> __min_e;
-        std::vector<int> __step_num;
+
+        ///\brief The number of e values at which each \f$p_{m,s}\f$ coefficient
+        ///is tabulated
+        std::vector<int> __num_steps;
+
+        ///\brief The maximum eccentricity at which each \f$p_{m,s}\f$
+        ///coefficient can be reliably interpolated.
         std::vector<double> __max_e;
-        std::vector<double> __accur;
+
+
+        ///\brief The guaranteed interpolation precision for each \f$p_{m,s}\f$ u
+        ///coefficient.
+        std::vector<double> __interp_precision;
+
+        ///The name of the file contanining the interpolatiod sqlite database.
         std::string __file_name;
-        
-        std::vector<double> __mp2_switches;
-        std::vector<double> __m0_switches;
-        std::vector<double> __mm2_switches;
-        int __current_mp2_order;
-        int __current_m0_order;
-        int __current_mm2_order;
-        std::pair<double,double> __order_boundaries;
-        
+
+        ///\brief The maximum eccentricity at which a given \f$p_{m,s}\f$ can be
+        ///ignored.
+        ///
+        ///The order is the same as __pms_expansions.
+        ///TODO: chechek if switch_list is property filled to mach documentation
+        std::vector<double> __max_ignore_eccentricity;
+
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);
-        /// Highest s available for requested precision
-        /// It is possible for file to accommodate precision but only for s=0
+
+        ///Return the highest s available for requested precision.
+        /// TODO: what is this? It is possible for file to accommodate precision but only for s=0
         void get_max_s(sqlite3* db);
+
+        ///\brief Read the metadata for the available \f$p_{m,s}\f$ coefficients
+        ///from the databate.
         void load_metadata(sqlite3* db);
+
         void load_e_switches(sqlite3* db,double precision);
         double load_specific_e(int m,int s,int e_step) const;
         // The callback SQL function that updates the above values (__pms_expansions)
         void get_expansions(sqlite3* db);
-        double get_specific_e(int m,int s,int e_step) const;
+
+        ///Return a single tabulated value of \f$p_{m,s}\f$.
+        double get_specific_e(
+            ///The m (first) index of the expansion coefficient to get.
+            int m,
+
+            ///The s (second) index of the expansion coefficient to get.
+            int s,
+
+            ///The index within the tabulated values to get
+            int e_step
+        ) const;
+
         std::vector<double> find_pms_boundary_values(int m,int s,double e) const;
         double return_known_e(int m,int s,double e) const;
         bool check_known_e(int m,int s,double e) const;
@@ -87,7 +117,7 @@ namespace Evolve {
         int current_largest_s(int m);
         inline int local_index(int m, int s) const;
         //void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
-        
+
         std::vector<double>* which_list(int m);
         int* which_order(int m);
 
@@ -96,37 +126,46 @@ namespace Evolve {
         ///Reads in tabulated expansion coefficients, making this object useable.
         EccentricityExpansionCoefficients(
                 ///The name of the file to read pre-tabulated coefficients from.
-                const std::string &tabulated_pms_fname="pms_db.db",
+                const std::string &tabulated_pms_fname,
 
                 ///Only reads the coefficients of the expansion which
                 ///most closely achieves the indicated precision, erring on
                 ///the side of being more precise.
-                double precision=17.0,
-                
-                ///Which loading style to use. Setting to true means we keep
-                ///a 9 GB database in memory.
-                bool load_style=false
+                double precision,
+
+                ///Should all data from the database be pre-loaded to avoid
+                ///query each time a coefficient is evaluated. Setting to true
+                ///means we keep a 9 GB database in memory.
+                bool pre_load
         );
 
-        void read(const std::string &gary="",int bob=-1);
-        
         ///Maximum eccentricity power with all necessary coefficients known.
         unsigned max_e_power() const {return __max_e_power;} //TODO: this is no longer relevant
-        
-        ///Maximum precision for a given expansion.
-        double max_precision(int m, int s) const;
 
-        ///TODO: describe this
+        ///The guaranteed interpolation precision for a given \f$p_{m,s}\f$.
+        double interp_precision(int m, int s) const;
+
+        ///\brief Return the smallest s value such that all \f$p_{m,s'}\f$ for
+        //\f$s'>s\f$ can be ignored from the expansion without violating the
+        ///precision requirements.
         int required_expansion_order(double e, int m);//const;
-        
-        ///TODO: describe this, as well
-        std::pair<double,double> current_expansion_range(int m);// const;
+
+        ///\brief Return the range of eccentricities (min, max) over which an
+        ///expansion going up to given max s is valid and required.
+        ///
+        ///For eccentricities below the minimum (first value of returned pair)
+        ///at least \f$p_{m,max_s}\f$ can be excluded from the expansion without
+        ///violating the precision requirement. For eccentricities at or above
+        ///maximum (second value of returned pair) at least \f$p_{m,max_s+1}\f$
+        ///must be included in the series in order to satisfy the precision
+        ///requirement.
+        std::pair<double,double> get_expansion_range(int m, int max_s) const;
 
         ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
         ///contribution of the highest power eccentricity terms.
         double operator()(
                 ///The first index (0 or +-2).
-                int m, 
+                int m,
 
                 ///The second index.
                 int s,
@@ -137,7 +176,7 @@ namespace Evolve {
                 ///Prevision, the maximum eccentricity order to include in the Taylor
                 ///series. Currently does nothing.
                 unsigned max_e_power,
-                
+
                 ///Previously, if true the result was differentiated w.r.t. to the
                 ///eccentricity. Currently does nothing.
                 bool deriv) const;

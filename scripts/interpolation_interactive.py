@@ -14,7 +14,7 @@ from stellar_evolution.library_interface import\
     library as stellar_evolution_library
 from matplotlib.backends.backend_tkagg import\
     FigureCanvasTkAgg,\
-    NavigationToolbar2TkAgg
+    NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 from glob import glob
@@ -137,12 +137,12 @@ class InterpolationInteractive :
             if deriv_order > 1 :
                 d2_y = numpy.copy(derivatives[2])
 
-            if self.logy : 
+            if self.logy :
                 d1_y /= plot_y
                 if deriv_order > 1 :
                     d2_y = (d2_y / plot_y - d1_y**2)
 
-            if self.logx : 
+            if self.logx :
                 deriv_plot_funcname = 'semilogx'
                 d1_y *= plot_x
                 if deriv_order > 1 :
@@ -399,7 +399,7 @@ class InterpolationInteractive :
             - input_new_value: The new value to set. Should be convertible
                                to float.
 
-        Returns: 
+        Returns:
             - None: if the quantity was not changed due to it still being
                     within the last change timeout.
             - True: if the quantity was actually changed.
@@ -472,7 +472,7 @@ class InterpolationInteractive :
 
         selected = (
             self.track_metallicity_button[metallicity].cget('relief')
-            == 
+            ==
             Tk.RAISED
         )
         self.track_metallicity_button[metallicity].config(
@@ -765,7 +765,7 @@ class InterpolationInteractive :
                                   I = 2,
                                   R = 1,
                                   Lum = 0,
-                                  Rrad = 1, 
+                                  Rrad = 1,
                                   Mrad = 2)
             self.logx = True
             self.logy = True
@@ -854,7 +854,7 @@ class InterpolationInteractive :
 def read_YREC(dirname) :
     """
     Read all YREC tracks from the given directory.
-    
+
     Args:
         - dirname: The directory containing the tracks to read. The tracks
                    are assumed to be all files with a name ending in
@@ -913,7 +913,7 @@ def read_YREC(dirname) :
                         else 'r_envp/R')
             result[mass_key][metallicity_key]['Rrad'] = (
                 model_data[Rrad_key]
-                * 
+                *
                 result[mass_key]['R']
             )
     return result
@@ -921,7 +921,7 @@ def read_YREC(dirname) :
 def read_MESA(dirname) :
     """
     Read all MESA tracks from the given directory.
-    
+
     Args:
         - dirname: The directory containing the tracks to read. The tracks
                    are assumed to be all files with filenames like
@@ -949,7 +949,7 @@ def read_MESA(dirname) :
     track_fnames = glob(os.path.join(dirname, '*.csv'))
     for fname in track_fnames :
         parsed_fname = fname_rex.match(os.path.basename(fname))
-        if not parsed_fname : 
+        if not parsed_fname :
             print('Skipping ' + repr(fname))
             continue
         mass_key = round(float(parsed_fname.group('MASS')), 3)
