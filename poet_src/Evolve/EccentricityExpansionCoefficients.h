@@ -167,8 +167,7 @@ namespace Evolve {
         ///requirement.
         std::pair<double,double> get_expansion_range(int m, int max_s) const;
 
-        ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
-        ///contribution of the highest power eccentricity terms.
+        ///\brief Approximate the value of \f$p_{m,s}(e)\f$
         double operator()(
                 ///The first index (0 or +-2).
                 int m,
@@ -179,9 +178,9 @@ namespace Evolve {
                 ///The value of the eccentricity to use.
                 double e,
 
-                ///Previously, if true the result was differentiated w.r.t. to the
-                ///eccentricity. Currently does nothing.
-                bool deriv) const;
+                ///If true the result is differentiated w.r.t. to eccentricity.
+                bool deriv
+        ) const;
     }; //End EccentricityExpansionCoefficients class.
 
 } //End Evolve namespace.

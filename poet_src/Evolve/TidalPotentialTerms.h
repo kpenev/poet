@@ -67,6 +67,18 @@ namespace Evolve {
             );
         }
 
+        ///\brief Return the range of eccentricities (min, max) over which an
+        ///expansion going up to given max m' is valid and required.
+        ///
+        ///For eccentricities below the minimum (first value of returned pair)
+        ///terms with frequency \f$m\Omega_\star-m'\Omega_{orb}\f$ can be
+        ///excluded from the expansion for all m, without violating the
+        ///precision requirement. For eccentricities at or above maximum (second
+        ///value of returned pair) at least
+        ///one \f$m\Omega_\star-m'\Omega_{orb}\f$ term must be included in the
+        ///series in order to satisfy the precision requirement.
+        static std::pair<double,double> get_expansion_range(int max_mp);
+
         ///Set the inclination relative to the orbit.
         void configure(double inclination, double arg_of_periapsis = 0);
 

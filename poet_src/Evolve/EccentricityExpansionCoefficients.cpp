@@ -490,7 +490,6 @@ namespace Evolve {
         bool deriv
     ) const
     {
-
         if(!__useable)
             throw Core::Error::Runtime(
                 "Attempting to evaluate p_ms before reading interpolation data"
@@ -509,11 +508,10 @@ namespace Evolve {
                 "Attempting to evaluate larger e than is accounted for!"
             );
 
-        if(deriv)
-            return Core::NaN;
-
-        if(check_known_e(m, s, e))
-            return return_known_e(m,s,e);
+        if(check_known_e(m, s, e)) {
+            //TODO: handle deriv properly
+            return (deriv ? Core::NaN : return_known_e(m, s, e));
+        }
 
         std::vector<double> e_and_y_values(4);
         e_and_y_values = find_pms_boundary_values(m, s, e);
@@ -523,8 +521,10 @@ namespace Evolve {
             /
             (e_and_y_values[1] - e_and_y_values[0])
         );
-        return slope * (e - e_and_y_values[0]) + e_and_y_values[2];
 
+        if(deriv)
+            return slope;
+        return slope * (e - e_and_y_values[0]) + e_and_y_values[2];
     }
 
 } //End Evolve namespace.
