@@ -14,9 +14,13 @@ const int SINGLE_EVOL_MODE = Core::SINGLE;
 const int TABULATION_EVOL_MODE = Core::TABULATION;
 const double NaN = Core::NaN;
 
-void read_eccentricity_expansion_coefficients(const char *filename)
+void prepare_eccentricity_expansion(const char *filename,
+                                    double precision,
+                                    bool pre_load)
 {
-    Evolve::TidalPotentialTerms::read_eccentricity_expansion(filename);
+    Evolve::TidalPotentialTerms::prepare_eccentricity_expansion(filename,
+                                                                precision,
+                                                                pre_load);
 }
 
 void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
@@ -607,49 +611,56 @@ void get_star_star_final_state(const OrbitSolver *solver,
                          secondary_wind_saturation);
 }
 
-EccentricityExpansionCoefficients *coeff_new(const char* tabulated_pms_fname,
-                                             double precision,
-                                             bool load_style)
+EccentricityExpansionCoefficients *create_expanion_coeff(
+    const char* tabulated_pms_fname,
+    double precision,
+    bool pre_load
+)
 {
-    std::string name(tabulated_pms_fname);
-    return reinterpret_cast<EccentricityExpansionCoefficients*>(
-        new Evolve::EccentricityExpansionCoefficients(name,
-                                                      precision,
-                                                      load_style)
+    Evolve::EccentricityExpansionCoefficients *result = (
+        new Evolve::EccentricityExpansionCoefficients
     );
+    result->prepare(tabulated_pms_fname,
+                    precision,
+                    pre_load);
+    return reinterpret_cast<EccentricityExpansionCoefficients*>(result);
 }
 
-unsigned coeff_max_e(const EccentricityExpansionCoefficients *expansion_arg)
+double get_expansion_coeff_precision(
+    const EccentricityExpansionCoefficients *expansion_arg,
+    int m,
+    int s
+)
 {
     const Evolve::EccentricityExpansionCoefficients *expansion =
-        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
+        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(
+            expansion_arg
+        );
 
-    return expansion->max_e_power();
+    return expansion->interp_precision(m,s);
 }
 
-double coeff_max_precision(const EccentricityExpansionCoefficients *expansion_arg,
-                           int m,
-                           int s)
+double evaluate_expansion_coeff(
+    const EccentricityExpansionCoefficients *expansion_arg,
+    int m,
+    int s,
+    double e,
+    bool deriv
+)
 {
     const Evolve::EccentricityExpansionCoefficients *expansion =
-        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
+        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(
+            expansion_arg
+        );
 
-    return expansion->max_precision(m,s);
+    return (*expansion)(m, s, e, deriv);
 }
 
-double coeff_operator(const EccentricityExpansionCoefficients *expansion_arg,
-                      int m,
-                      int s,
-                      double e,
-                      bool deriv)
+void destroy_expansion_coef(
+    const EccentricityExpansionCoefficients *expansion_arg
+)
 {
-    const Evolve::EccentricityExpansionCoefficients *expansion =
-        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
-
-    return expansion->operator()(m, s, e, deriv);
-}
-
-void coeff_delete(const EccentricityExpansionCoefficients *expansion_arg)
-{
-    delete reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(expansion_arg);
+    delete reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(
+        expansion_arg
+    );
 }

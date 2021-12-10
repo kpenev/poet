@@ -10,8 +10,10 @@
 
 int main(int, char **)
 {
-    read_eccentricity_expansion_coefficients(
-        "eccentricity_expansion_coef.txt"
+    prepare_eccentricity_expansion(
+        "",
+        1e-6,
+        true
     );
 
     double mstar = 1.0, mplanet = 1.0, a0 = 10.0, zero = 0.0;

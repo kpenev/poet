@@ -62,8 +62,10 @@ int main(int, char **)
     const double INCLINATION = 0.0;
     const double INITIAL_ECCENTRICITY = 0.0241;
 
-    read_eccentricity_expansion_coefficients(
-        "eccentricity_expansion_coef_O200.txt"
+    prepare_eccentricity_expansion(
+        "",
+        1e-6,
+        true
     );
     MESAInterpolator *primary_interpolator = get_interpolator(
         "stellar_evolution_interpolators/"

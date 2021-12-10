@@ -51,7 +51,7 @@ namespace Evolve {
     }
 
     ///TODO: use smallest max s over m=+-2 and m=0
-    void EccentricityExpansionCoefficients::get_max_s(sqlite3* db)
+    void EccentricityExpansionCoefficients::set_max_s(sqlite3* db)
     {
         sqlite3_stmt *statement;
         std::string stmnt="SELECT MAX(s) FROM interpolations";
@@ -74,7 +74,7 @@ namespace Evolve {
         if(error_flag==true)
         {
             std::string msg ="Eccentricity expansion file could not be read in";
-            msg.append(" EccentricityExpansionCoefficients::get_max_s()!");
+            msg.append(" EccentricityExpansionCoefficients::set_max_s()!");
             throw Core::Error::IO(msg);
         }
 
@@ -91,7 +91,7 @@ namespace Evolve {
 
         __db_pms_id.resize(3 * (__max_s + 1), -1);
         __min_e.resize(3 * (__max_s + 1), Core::NaN);
-        __num_steps.resize(3 * (__max_s + 1), Core::NaN);
+        __num_steps.resize(3 * (__max_s + 1));
         __max_e.resize(3 * (__max_s + 1), Core::NaN);
         __interp_precision.resize(3 * (__max_s + 1), Core::NaN);
 
@@ -133,7 +133,7 @@ namespace Evolve {
     {
         __max_ignore_eccentricity.resize(3 * (__max_s + 1), Core::NaN);
 
-        for(m=2; m >= -2; m -= 2)
+        for(int m=2; m >= -2; m -= 2)
         {
             for(int s=0; s <= __max_s; ++s)
             {
@@ -154,8 +154,9 @@ namespace Evolve {
                     ==
                     SQLITE_OK
                 ) {
+                    int rc;
                     for(
-                        int rc = sqlite3_step(statement);
+                        rc = sqlite3_step(statement);
                         rc == SQLITE_ROW;
                         rc = sqlite3_step(statement)
                     ) {
@@ -190,6 +191,8 @@ namespace Evolve {
         int e_step
     ) const
     {
+        assert(__useable);
+
         bool error_flag = false;
         double result;
         int ms_index = local_index(m, s);
@@ -254,28 +257,26 @@ namespace Evolve {
         return result;
     }
 
-    void EccentricityExpansionCoefficients::get_expansions(sqlite3* db)
+    void EccentricityExpansionCoefficients::get_interp_data(sqlite3* db)
     {
-        __pms_expansions.resize(3*(__max_s+1));
+        __pms_interp_data.resize(3*(__max_s+1));
         for(int s=0; s <= __max_s; s++)
             for(int m=-2; m<=2; m+=2)
-                __pms_expansions[local_index(m, s)] = load_coefficient(db,
-                                                                       m,
-                                                                       s);
+                __pms_interp_data[local_index(m, s)] = load_coefficient(db,
+                                                                        m,
+                                                                        s);
     }
 
     double EccentricityExpansionCoefficients::get_specific_e(
         int m,
         int s,
-        int e_stepint __max_s;
-
-
+        int e_step
     ) const
     {
         return (
-            load_all
-            ? __pms_expansions[local_index(m, s)][e_step]
-            : load_specific_e(m, s, e_step);
+            __load_all
+            ? __pms_interp_data[local_index(m, s)][e_step]
+            : load_specific_e(m, s, e_step)
         );
     }
 
@@ -306,7 +307,8 @@ namespace Evolve {
             ( (s==0 || e==1.0) && m==0 )
             ||
             ( m==2 && s==2 && e==0.0 )
-        ) return 1.0;
+        )
+            return 1.0;
 
         if(
             ( s==0 && std::abs(m)==2 )
@@ -314,9 +316,13 @@ namespace Evolve {
             e==1.0
             ||
             e==0.0
-        ) return 0.0;
+        )
+            return 0.0;
 
-        if( e<__min_e[local_index(m,s)] ) return 0.0;
+        if( e < __min_e[local_index(m,s)] )
+            return 0.0;
+
+        assert(false);
     }
 
     bool EccentricityExpansionCoefficients::check_known_e(
@@ -377,7 +383,7 @@ namespace Evolve {
         return s * 3 + (m + 2) / 2;
     }
 
-    EccentricityExpansionCoefficients::EccentricityExpansionCoefficients(
+    void EccentricityExpansionCoefficients::prepare(
         const std::string &tabulated_pms_fname,
         double precision,
         bool pre_load
@@ -388,7 +394,7 @@ namespace Evolve {
 
         __load_all = pre_load;
 
-        rc = sqlite3_open(tabulated_pms_fname.c_str(),&db);
+        rc = sqlite3_open(tabulated_pms_fname.c_str(), &db);
         if(rc!=SQLITE_OK) {
             sqlite3_close(db);
             throw Core::Error::IO(
@@ -400,12 +406,12 @@ namespace Evolve {
             );
         }
         try {
-            get_max_s(db);
+            set_max_s(db);
             load_metadata(db);
             load_max_ignore_eccentricity(db, precision);
             if(__load_all)
             {
-                get_expansions(db);
+                get_interp_data(db);
             }
             else
             {
@@ -420,6 +426,11 @@ namespace Evolve {
 
     double EccentricityExpansionCoefficients::interp_precision(int m, int s) const
     {
+        if(!__useable)
+            throw Core::Error::Runtime(
+                "Asking for EccentricityExpansionCoefficients::"
+                "interp_precision() before reading interpolation data"
+            );
         if(m != 0l && std::abs(m) != 2)
             throw Core::Error::BadFunctionArguments(
                 "Asking EccentricityExpansionCoefficients::interp_precision() "
@@ -431,8 +442,13 @@ namespace Evolve {
     int EccentricityExpansionCoefficients::required_expansion_order(
         double e,
         int m
-    )
+    ) const
     {
+        if(!__useable)
+            throw Core::Error::Runtime(
+                "Asking EccentricityExpansionCoefficients::"
+                "required_expansion_order() before reading interpolation data"
+            );
         int s = __max_s;
         while(__max_ignore_eccentricity[local_index(m, s)] >= e)
             --s;
@@ -444,15 +460,23 @@ namespace Evolve {
                     << e
                     << ", m = "
                     << m;
-            throw Core::Error::Runtime(msg.str());
+            throw Core::Error::Runtime(message.str());
         }
-        return s
+        return s;
     }
 
     std::pair<double,double>
-        EccentricityExpansionCoefficients::get_expansion_range(int m,
-                                                               int max_s)
+        EccentricityExpansionCoefficients::get_expansion_range(
+            int m,
+            int max_s
+        ) const
     {
+        if(!__useable)
+            throw Core::Error::Runtime(
+                "Asking EccentricityExpansionCoefficients::"
+                "get_expansion_range() before reading interpolation data"
+            );
+
         return std::make_pair(
             __max_ignore_eccentricity[local_index(m, max_s)],
             __max_ignore_eccentricity[local_index(m, max_s + 1)]
@@ -463,10 +487,14 @@ namespace Evolve {
         int m,
         int s,
         double e,
-        unsigned max_e_power,
         bool deriv
     ) const
     {
+
+        if(!__useable)
+            throw Core::Error::Runtime(
+                "Attempting to evaluate p_ms before reading interpolation data"
+            );
 
         if(m != 0 && std::abs(m) != 2)
             throw Core::Error::BadFunctionArguments(

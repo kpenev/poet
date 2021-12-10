@@ -28,15 +28,16 @@ namespace Evolve {
     /// \f$p_{m,s}\f$ coefficients
     class LIB_PUBLIC EccentricityExpansionCoefficients {
     private:
-        ///Maximum eccentricity power with all necessary coefficients known.
-        unsigned __max_e_power;
+        ///Has this class been properly linked to a database with interpolation
+        ///data?
+        bool __useable;
 
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
             ///Stored in the order m=-2,0,+2 for increasing s (m changes
             ///faster).
-            __pms_expansions;
+            __pms_interp_data;
 
 
         ///If you're seeing this, it means I haven't properly sorted
@@ -78,24 +79,26 @@ namespace Evolve {
         ///\brief The maximum eccentricity at which a given \f$p_{m,s}\f$ can be
         ///ignored.
         ///
-        ///The order is the same as __pms_expansions.
-        ///TODO: chechek if switch_list is property filled to mach documentation
+        ///The order is the same as __pms_interp_data.
         std::vector<double> __max_ignore_eccentricity;
 
         std::vector<double> load_coefficient(sqlite3* db,int m,int s);
 
         ///Return the highest s available for requested precision.
         /// TODO: what is this? It is possible for file to accommodate precision but only for s=0
-        void get_max_s(sqlite3* db);
+        void set_max_s(sqlite3* db);
 
         ///\brief Read the metadata for the available \f$p_{m,s}\f$ coefficients
         ///from the databate.
         void load_metadata(sqlite3* db);
 
-        void load_e_switches(sqlite3* db,double precision);
+        ///Fill the __max_ignore_eccentricity member per the database.
+        void load_max_ignore_eccentricity(sqlite3* db, double precision);
+
         double load_specific_e(int m,int s,int e_step) const;
-        // The callback SQL function that updates the above values (__pms_expansions)
-        void get_expansions(sqlite3* db);
+        ///\brief The callback SQL function that updates the above values
+        ///(__pms_interp_data)
+        void get_interp_data(sqlite3* db);
 
         ///Return a single tabulated value of \f$p_{m,s}\f$.
         double get_specific_e(
@@ -123,8 +126,10 @@ namespace Evolve {
 
     public:
         ///Create an uninitialized object.
+        EccentricityExpansionCoefficients() : __useable(false) {}
+
         ///Reads in tabulated expansion coefficients, making this object useable.
-        EccentricityExpansionCoefficients(
+        void prepare(
                 ///The name of the file to read pre-tabulated coefficients from.
                 const std::string &tabulated_pms_fname,
 
@@ -139,16 +144,17 @@ namespace Evolve {
                 bool pre_load
         );
 
-        ///Maximum eccentricity power with all necessary coefficients known.
-        unsigned max_e_power() const {return __max_e_power;} //TODO: this is no longer relevant
-
         ///The guaranteed interpolation precision for a given \f$p_{m,s}\f$.
         double interp_precision(int m, int s) const;
 
         ///\brief Return the smallest s value such that all \f$p_{m,s'}\f$ for
         //\f$s'>s\f$ can be ignored from the expansion without violating the
         ///precision requirements.
-        int required_expansion_order(double e, int m);//const;
+        int required_expansion_order(double e, int m) const;
+
+        ///The largest s for which \f$p_{m,s'}\f$ is known.
+        int max_expansion_order() const
+        {return __max_s;}
 
         ///\brief Return the range of eccentricities (min, max) over which an
         ///expansion going up to given max s is valid and required.
@@ -173,14 +179,10 @@ namespace Evolve {
                 ///The value of the eccentricity to use.
                 double e,
 
-                ///Prevision, the maximum eccentricity order to include in the Taylor
-                ///series. Currently does nothing.
-                unsigned max_e_power,
-
                 ///Previously, if true the result was differentiated w.r.t. to the
                 ///eccentricity. Currently does nothing.
                 bool deriv) const;
-        }; //End EccentricityExpansionCoefficients class.
+    }; //End EccentricityExpansionCoefficients class.
 
 } //End Evolve namespace.
 

@@ -705,8 +705,7 @@ namespace Evolve {
         unsigned suggested_expansion_order = current_expansion_order;
         if(evolution_mode == Core::BINARY) {
             suggested_expansion_order =
-                TidalPotentialTerms::required_expansion_order(orbit[1],
-                                                              __precision);
+                TidalPotentialTerms::required_expansion_order(orbit[1]);
             if(suggested_expansion_order > current_expansion_order)
                 return StopInformation(
                     0.5 * (age + __stop_history_ages.back()),
@@ -1223,8 +1222,7 @@ namespace Evolve {
         unsigned
             current_expansion_order = system.expansion_order(),
             required_expansion_order =
-                TidalPotentialTerms::required_expansion_order(orbit[1],
-                                                              __precision);
+                TidalPotentialTerms::required_expansion_order(orbit[1]);
 
         if(must_increase)
             required_expansion_order = std::max(required_expansion_order,

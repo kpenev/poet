@@ -44,8 +44,10 @@ extern "C" {
     struct LIB_PUBLIC EccentricityExpansionCoefficients;
 
     ///Read eccentricity expansion coefficients from a file.
-    LIB_PUBLIC void read_eccentricity_expansion_coefficients(
-        const char *filename
+    LIB_PUBLIC void prepare_eccentricity_expansion(
+        const char *filename,
+        double precision,
+        bool pre_load
     );
 
     LIB_PUBLIC void set_zone_dissipation(
@@ -656,7 +658,7 @@ extern "C" {
     );
 
     ///\brief doc
-    LIB_PUBLIC EccentricityExpansionCoefficients *coeff_new(
+    LIB_PUBLIC EccentricityExpansionCoefficients *create_expansion_coeff(
         ///The name of the file to read pre-tabulated coefficients from.
         const char* tabulated_pms_fname,
 
@@ -667,17 +669,11 @@ extern "C" {
 
         ///Which loading style to use. Setting to true means we keep
         ///a 9 GB database in memory.
-        bool load_style
+        bool pre_load
     );
 
     ///\brief doc
-    LIB_PUBLIC unsigned coeff_max_e(
-        ///doc
-        const EccentricityExpansionCoefficients *expansion_arg
-    );
-
-    ///\brief doc
-    LIB_PUBLIC double coeff_max_precision(
+    LIB_PUBLIC double get_expansion_coeff_precision(
         ///doc
         const EccentricityExpansionCoefficients *expansion_arg,
 
@@ -689,7 +685,7 @@ extern "C" {
     );
 
     ///\brief doc
-    LIB_PUBLIC double coeff_operator(
+    LIB_PUBLIC double evaluate_expansion_coeff(
         ///doc
         const EccentricityExpansionCoefficients *expansion_arg,
 
@@ -708,7 +704,7 @@ extern "C" {
     );
 
     ///\brief doc
-    LIB_PUBLIC void coeff_delete(
+    LIB_PUBLIC void destroy_expansion_coef(
         ///doc
         const EccentricityExpansionCoefficients *expansion_arg
     );
