@@ -702,17 +702,15 @@ namespace Evolve {
                 );
             }
 
-        unsigned suggested_expansion_order = current_expansion_order;
-        if(evolution_mode == Core::BINARY) {
-            suggested_expansion_order =
-                TidalPotentialTerms::required_expansion_order(orbit[1]);
-            if(suggested_expansion_order > current_expansion_order)
-                return StopInformation(
-                    0.5 * (age + __stop_history_ages.back()),
-                    Core::Inf,
-                    LARGE_EXPANSION_ERROR
-                );
-        }
+        std::pair<double, double> expansion_range =
+            TidalPotentialTerms::get_expansion_range(current_expansion_order);
+
+        if(evolution_mode == Core::BINARY && orbit[1] > expansion_range.second)
+            return StopInformation(
+                0.5 * (age + __stop_history_ages.back()),
+                Core::Inf,
+                LARGE_EXPANSION_ERROR
+            );
 
         std::valarray<double> current_stop_cond(
             __stopping_conditions->num_subconditions()
@@ -814,7 +812,7 @@ namespace Evolve {
             if(
                 result.stop_reason() == NO_STOP
                 &&
-                suggested_expansion_order < current_expansion_order
+                orbit[1] < expansion_range.first
                 &&
                 current_expansion_order > 0
             ) {
@@ -1228,31 +1226,8 @@ namespace Evolve {
             required_expansion_order = std::max(required_expansion_order,
                                                 current_expansion_order + 1);
 
-        if(
-                required_expansion_order
-                >
-                TidalPotentialTerms::max_expansion_order()
-        ) {
-            std::ostringstream msg;
-            msg << "Maximum available expansion order of "
-                << TidalPotentialTerms::max_expansion_order()
-                << (" is insufficient to ensure evolution to the "
-                    "specified precisoin.");
-            throw Core::Error::Runtime(msg.str());
-        }
-
-        if(
-                required_expansion_order == current_expansion_order
-                ||
-                (
-                    must_increase
-                    &&
-                    required_expansion_order < current_expansion_order
-                )
-        )
-            return;
-
-        system.change_expansion_order(required_expansion_order);
+        if(required_expansion_order != current_expansion_order)
+            system.change_expansion_order(required_expansion_order);
 
 #ifndef NDEBUG
         std::cerr << "Adjusted expansion order to "
@@ -1301,8 +1276,8 @@ namespace Evolve {
 
         if(evolution_mode == Core::BINARY)
             adjust_expansion_order(system,
-                                      orbit,
-                                      evolution_mode);
+                                   orbit,
+                                   evolution_mode);
 
 
         while(last_age < stop_evol_age) {
