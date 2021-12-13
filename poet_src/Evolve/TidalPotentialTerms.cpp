@@ -166,7 +166,7 @@ namespace Evolve {
             );
             assert(!std::isnan(no_deriv.real()));
             assert(!std::isnan(inclination_deriv.real()));
-            assert(!std::isnan(eccentricity_deriv.real()));
+//            assert(!std::isnan(eccentricity_deriv.real()));
         }
     }
 

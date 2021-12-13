@@ -15,7 +15,7 @@ namespace Evolve {
         std::vector<double> pms;
 
         sqlite3_stmt *statement;
-        std::string stmnt = "SELECT y_value,step_number";
+        std::string stmnt = "SELECT y_value, step_number";
         stmnt.append(" FROM interpolation_data WHERE p_id = ");
         stmnt.append(std::to_string(__db_pms_id[ms_index]));
         stmnt.append(" ORDER BY step_number DESC");
@@ -23,7 +23,7 @@ namespace Evolve {
         if(sqlite3_prepare_v2(db, sql, -1, &statement, NULL) == SQLITE_OK) {
             int rc = sqlite3_step(statement);
             int i_b = sqlite3_column_int(statement, 1);
-            assert (i_b == __num_steps[ms_index]);
+            assert (i_b == __num_steps[ms_index] - 1);
             pms.resize(i_b + 1);
             while(rc == SQLITE_ROW) {
                 pms[i_b] = sqlite3_column_double(statement, 0);
@@ -84,8 +84,8 @@ namespace Evolve {
     void EccentricityExpansionCoefficients::load_metadata(sqlite3* db)
     {
         sqlite3_stmt *statement;
-        std::string stmnt = "SELECT id,m,s,min_interp_e,number_of_steps,";
-        stmnt.append("max_checked_e,interp_accuracy FROM interpolations");
+        std::string stmnt = "SELECT id, m, s, min_interp_e, number_of_steps,";
+        stmnt.append("max_checked_e, interp_accuracy FROM interpolations");
         const char *sql = stmnt.c_str();
         int error_flag = 0;
 
@@ -137,50 +137,60 @@ namespace Evolve {
         {
             for(int s=0; s <= __max_s; ++s)
             {
-                sqlite3_stmt *statement;
-                std::string stmnt = "SELECT MIN(b.step_number) FROM";
-                stmnt.append(" interpolations a LEFT JOIN interpolation_data ");
-                stmnt.append("b ON a.id = b.p_id WHERE a.m = ");
-                stmnt.append(std::to_string(m));
-                stmnt.append(" AND a.s = ");
-                stmnt.append(std::to_string(s));
-                stmnt.append(" AND ABS(b.y_value) >= ");
-                stmnt.append(std::to_string(precision/double(s)));
-                const char *sql = stmnt.c_str();
-                int error_flag = 0;
+                int destination_i = local_index(m, s);
+                if(s<=2) {
+                    __max_ignore_eccentricity[destination_i] = -Core::Inf;
+                } else {
+                    sqlite3_stmt *statement;
+                    std::ostringstream stmnt;
+                    stmnt.setf(std::ios_base::scientific);
+                    stmnt.precision(16);
+                    stmnt << (
+                        "SELECT MIN(b.step_number) FROM interpolations a "
+                        "LEFT JOIN interpolation_data b ON a.id = b.p_id "
+                        "WHERE "
+                    )
+                        << "a.m = " << m
+                        << " AND a.s = " << s
+                        << " AND ABS(b.y_value) >= " << precision/double(s);
+                    int error_flag = 0;
 
-                if(
-                    sqlite3_prepare_v2(db, sql, -1, &statement, NULL)
-                    ==
-                    SQLITE_OK
-                ) {
-                    int rc;
-                    for(
-                        rc = sqlite3_step(statement);
-                        rc == SQLITE_ROW;
-                        rc = sqlite3_step(statement)
+                    if(
+                        sqlite3_prepare_v2(db,
+                                           stmnt.str().c_str(),
+                                           -1,
+                                           &statement,
+                                           NULL)
+                        ==
+                        SQLITE_OK
                     ) {
-                        int destination_i = local_index(m, s);
-                        int max_ignore_step = (sqlite3_column_int(statement, 0)
-                                               -
-                                               1);
-                        __max_ignore_eccentricity[destination_i] = (
-                            max_ignore_step >= 0
-                            ? step_to_e(m, s, max_ignore_step)
-                            : -Core::Inf
-                        );
-                    }
-                    if(rc != SQLITE_DONE)
-                        error_flag=-1;
-                } else
-                    error_flag = -1;
-                sqlite3_finalize(statement);
+                        if(sqlite3_step(statement) != SQLITE_ROW)
+                            error_flag=-1;
+                        else {
+                            int max_ignore_step = (
+                                sqlite3_column_int(statement, 0)
+                                -
+                                1
+                            );
+                            __max_ignore_eccentricity[destination_i] = (
+                                max_ignore_step >= 0
+                                ? step_to_e(m, s, max_ignore_step)
+                                : -Core::Inf
+                            );
+                            if(sqlite3_step(statement) != SQLITE_DONE)
+                                error_flag=-1;
+                        }
+                    } else
+                        error_flag = -1;
+                    sqlite3_finalize(statement);
 
-                if(error_flag == -1)
-                    throw Core::Error::IO(
-                        "Eccentricity expansion file could not be read in "
-                        "EccentricityExpansionCoefficients::load_e_switches()!"
-                    );
+                    if(error_flag == -1)
+                        throw Core::Error::IO(
+                            "Eccentricity expansion file could not be read in "
+                            "EccentricityExpansionCoefficients::"
+                            "load_max_ignore_eccentricity()!"
+                        );
+                }
             }
         }
     }
@@ -389,6 +399,7 @@ namespace Evolve {
         bool pre_load
     )
     {
+        __expansion_precision = precision;
         sqlite3 *db;
         int rc;
 
@@ -422,6 +433,7 @@ namespace Evolve {
             throw;
         }
         sqlite3_close(db);
+        __useable = true;
     }
 
     double EccentricityExpansionCoefficients::interp_precision(int m, int s) const
@@ -490,6 +502,8 @@ namespace Evolve {
         bool deriv
     ) const
     {
+        if(s<0)
+            return operator()(-m, -s, e, deriv);
         if(!__useable)
             throw Core::Error::Runtime(
                 "Attempting to evaluate p_ms before reading interpolation data"

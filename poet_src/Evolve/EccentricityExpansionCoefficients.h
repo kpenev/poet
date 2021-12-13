@@ -48,6 +48,9 @@ namespace Evolve {
         ///coefficients are tabulated.
         int __max_s;
 
+        ///The currently defined expansion precision (see prepare())
+        double __expansion_precision;
+
         ///\brief Whether we load the whole database at the start (true) or part
         ///of it as needed (false)
         bool __load_all;
@@ -113,7 +116,7 @@ namespace Evolve {
         ) const;
 
         std::vector<double> find_pms_boundary_values(int m,int s,double e) const;
-        double return_known_e(int m,int s,double e) const;
+        double return_known_e(int m, int s, double e) const;
         bool check_known_e(int m,int s,double e) const;
         inline int e_to_nearest_step(int m,int s,double e,bool flr) const;
         inline double step_to_e(int m,int s,int step) const;
@@ -143,6 +146,10 @@ namespace Evolve {
                 ///means we keep a 9 GB database in memory.
                 bool pre_load
         );
+
+        ///Return the expansion precision set by the last call to prepare()
+        inline double get_expansion_precision() const
+        {return __expansion_precision;}
 
         ///The guaranteed interpolation precision for a given \f$p_{m,s}\f$.
         double interp_precision(int m, int s) const;

@@ -1,5 +1,5 @@
 /**\file
- * 
+ *
  * \brief Implement the non-inline methods of test_GravitationalPotential.
  *
  * \ingroup UnitTests_group
@@ -20,7 +20,7 @@ namespace Evolve {
                   << std::endl;
         for(double phase = 0.0; phase < 4.0 * M_PI; phase += 0.001 * M_PI) {
             Eigen::Vector3d secondary_position = orbit.secondary_position(phase);
-            std::cout << std::setw(25) << phase 
+            std::cout << std::setw(25) << phase
                       << std::setw(25) << secondary_position[0]
                       << std::setw(25) << secondary_position[1]
                       << std::setw(25) << secondary_position[2]
@@ -36,7 +36,7 @@ namespace Evolve {
         double inclination,
         double arg_of_periapsis,
         const Eigen::Vector3d &position,
-        unsigned e_order
+        unsigned expansion_order
     ) const
     {
         TidalPotential exact_potential(primary_mass,
@@ -51,8 +51,6 @@ namespace Evolve {
                                                  eccentricity,
                                                  inclination,
                                                  arg_of_periapsis);
-        approx_potential.set_eccentricity_order(e_order);
-
 
         double orbital_period = exact_potential.orbit().orbital_period();
         std::ostringstream Uexact_label, Uapprox_label;
@@ -77,13 +75,15 @@ namespace Evolve {
         ) {
             std::cout << std::setw(35) << time/orbital_period
                       << std::setw(35) << exact_potential(position, time)
-                      << std::setw(35) << approx_potential(position, time)
+                      << std::setw(35) << approx_potential(position,
+                                                           time,
+                                                           expansion_order)
                       << std::endl;
         }
     }
 
 
-    double test_GravitationalPotential::abs_expected_precision(
+    double test_GravitationalPotential::abs_precision_scale(
         const Eigen::Vector3d &position,
         const EccentricOrbit &orbit
     ) const
@@ -120,14 +120,21 @@ namespace Evolve {
     )
     {
         double orbital_period = exact_potential.orbit().orbital_period(),
-               abs_tolerance = abs_expected_precision(position,
-                                                      exact_potential.orbit());
+               abs_tolerance = (
+                   approx_potential.get_expansion_precision()
+                   *
+                   abs_precision_scale(position, exact_potential.orbit())
+               ),
+               eccentricity = exact_potential.orbit().eccentricity();
+
+        unsigned expansion_order =
+            TidalPotentialTerms::required_expansion_order(eccentricity);
 
         std::ostringstream message_start;
         message_start << "M = " << exact_potential.orbit().primary_mass()
                       << "; M' = " << exact_potential.orbit().secondary_mass()
                       << "; a = " << exact_potential.orbit().semimajor()
-                      << "; e = " << exact_potential.orbit().eccentricity()
+                      << "; e = " << eccentricity
                       << "; inclination = " << exact_potential.inclination()
                       << "; periapsis = " << exact_potential.arg_of_periapsis()
                       << "; U(x = " << position[0]
@@ -140,7 +147,7 @@ namespace Evolve {
             time += 0.03 * M_PI * orbital_period
         ) {
             double expected = exact_potential(position, time);
-            double got = approx_potential(position, time);
+            double got = approx_potential(position, time, expansion_order);
 
             std::ostringstream message;
             message << message_start.str()
@@ -167,8 +174,7 @@ namespace Evolve {
         double semimajor,
         double eccentricity,
         double inclination,
-        double arg_of_periapsis,
-        unsigned e_order
+        double arg_of_periapsis
     )
     {
         TidalPotential exact_potential(primary_mass,
@@ -183,7 +189,6 @@ namespace Evolve {
                                                  eccentricity,
                                                  inclination,
                                                  arg_of_periapsis);
-        approx_potential.set_eccentricity_order(e_order);
 
         double test_offsets[]= {-0.01, -0.001, 0.0, 0.001, 0.01};
         unsigned num_offsets = sizeof(test_offsets) / sizeof(double);
@@ -207,29 +212,24 @@ namespace Evolve {
             e <= 0.55;
             e += 0.1
         ) {
-            unsigned e_order = 0;
-            if(e > 0.05) e_order = 10;
-            if(e > 0.25) e_order = 20;
-            if(e > 0.45) e_order = 35;
             std::cout << "Eccentricity : " << e << std::endl;
 
             for(
                 unsigned inclination_i = 0;
                 inclination_i < num_angles;
-                ++inclination_i 
+                ++inclination_i
             ) {
                 for(
                     unsigned periapsis_i = 0;
                     periapsis_i < num_angles;
-                    ++periapsis_i 
+                    ++periapsis_i
                 ) {
                     test_system(1.0,
                                 0.1,
                                 M_PI,
                                 e,
                                 test_angles[inclination_i],
-                                2.0 * test_angles[periapsis_i],
-                                e_order);
+                                2.0 * test_angles[periapsis_i]);
                 }
             }
         }

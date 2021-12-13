@@ -47,6 +47,13 @@ namespace Evolve {
 
         TidalPotentialTerms();
 
+        ///See EccentricityExpansionCoefficients::prepare()
+        static void prepare(const std::string &tabulated_pms_fname,
+                            double precision,
+                            bool pre_load)
+        {__pms.prepare(tabulated_pms_fname, precision, pre_load);}
+
+
         ///\brief The maximum orbital frequency multiplier to include in the
         ///potential Fourier expansion in order to achive a specified precision.
         ///
@@ -66,6 +73,10 @@ namespace Evolve {
                 __pms.required_expansion_order(e, 2)
             );
         }
+
+        ///Return the expansion precision target for the expansion terms.
+        inline double get_expansion_precision() const
+        {return __pms.get_expansion_precision();}
 
         ///\brief Return the range of eccentricities (min, max) over which an
         ///expansion going up to given max m' is valid and required.

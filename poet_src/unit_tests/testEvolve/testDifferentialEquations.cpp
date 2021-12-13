@@ -224,7 +224,7 @@ namespace Evolve {
 
                 BinarySystem binary(primary, secondary);
 
-                binary.change_e_order(2);
+                binary.change_expansion_order(2);
 
                 std::valarray<double> parameters(0.0, 7);
                 std::valarray<double> evolution_rates(parameters.size());
@@ -377,8 +377,7 @@ namespace Evolve {
 
         std::valarray<double> parameters(0.0, 10),
                               rough_rates(parameters.size()),
-                              fine_rates(parameters.size()),
-                              rate_errors(parameters.size());
+                              fine_rates(parameters.size());
 
         parameters[0] = a;
 
@@ -392,17 +391,12 @@ namespace Evolve {
                   << std::setw(25) << "e"
                   << std::setw(25) << "rough_a_rate"
                   << std::setw(25) << "fine_a_rate"
-                  << std::setw(25) << "a_rate_error"
                   << std::setw(25) << "rough_e_rate"
                   << std::setw(25) << "fine_e_rate"
-                  << std::setw(25) << "e_rate_error"
                   << std::setw(25) << "rough_inc_rate"
                   << std::setw(25) << "fine_inc_rate"
-                  << std::setw(25) << "inc_rate_error"
                   << std::setw(25) << "rough_spin_rate"
                   << std::setw(25) << "fine_spin_rate"
-                  << std::setw(25) << "spin_rate_error"
-
                   << std::endl;
 
 
@@ -410,18 +404,15 @@ namespace Evolve {
             for(double e = 0.0; e <= MAX_ECCENTRICITY; e += ECCENTRICITY_STEP) {
                 parameters[1] = e;
 
-                star->zone(0).change_e_order(e_order, binary, true, 0);
+                star->zone(0).change_expansion_order(e_order, binary, true, 0);
                 binary.differential_equations(age,
                                               &(parameters[0]),
                                               Core::BINARY,
                                               &(rough_rates[0]));
-                binary.differential_equations(age,
-                                              &(parameters[0]),
-                                              Core::BINARY,
-                                              &(rate_errors[0]),
-                                              true);
-
-                star->zone(0).change_e_order(2 * e_order, binary, true, 0);
+                star->zone(0).change_expansion_order(2 * e_order,
+                                                     binary,
+                                                     true,
+                                                     0);
                 binary.differential_equations(age,
                                               &(parameters[0]),
                                               Core::BINARY,
@@ -431,16 +422,12 @@ namespace Evolve {
                           << std::setw(25) << e
                           << std::setw(25) << rough_rates[0]
                           << std::setw(25) << fine_rates[0]
-                          << std::setw(25) << rate_errors[0]
                           << std::setw(25) << rough_rates[1]
                           << std::setw(25) << fine_rates[1]
-                          << std::setw(25) << rate_errors[1]
                           << std::setw(25) << rough_rates[2]
                           << std::setw(25) << fine_rates[2]
-                          << std::setw(25) << rate_errors[2]
                           << std::setw(25) << rough_rates[7]
                           << std::setw(25) << fine_rates[7]
-                          << std::setw(25) << rate_errors[7]
                           << std::endl;
             }
         }

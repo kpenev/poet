@@ -48,7 +48,7 @@ namespace Evolve {
 
             ///See same name argument to TidalPotential constructor.
             double inclination,
-            
+
             ///See same name argument to TidalPotential constructor.
             double arg_of_periapsis,
 
@@ -57,12 +57,12 @@ namespace Evolve {
             const Eigen::Vector3d &position,
 
             ///The eccentricity expansion order to use.
-            unsigned e_order
+            unsigned expansion_order
         ) const;
 
         ///The expected absolute precision in the potential expansion for the
         ///given orbit.
-        double abs_expected_precision(
+        double abs_precision_scale(
             ///The position where the potential expansion will be evaluated.
             const Eigen::Vector3d &position,
 
@@ -100,12 +100,9 @@ namespace Evolve {
 
             ///See same name argument to TidalPotential constructor.
             double inclination,
-            
-            ///See same name argument to TidalPotential constructor.
-            double arg_of_periapsis,
 
-            ///The eccentricity expansion order to use.
-            unsigned e_order=0
+            ///See same name argument to TidalPotential constructor.
+            double arg_of_periapsis
         );
 
     protected:

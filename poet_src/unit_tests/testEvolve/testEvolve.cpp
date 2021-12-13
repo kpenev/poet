@@ -88,8 +88,10 @@ int main()
     return 0;
     */
 
-    Evolve::TidalPotentialTerms::read_eccentricity_expansion(
-        "eccentricity_expansion_coef_O200.txt"
+    Evolve::TidalPotentialTerms::prepare(
+        "eccentricity_expansion_coef_O400.sqlite",
+        1e-6,
+        true
     );
 
 	std::cout.setf(std::ios_base::scientific);

@@ -33,7 +33,7 @@ namespace Evolve {
 
             ///The semimajor axis of the orbit in solar radii.
             __semimajor,
-            
+
             ///The eccentricity of the orbit
             __eccentricity,
 
@@ -51,7 +51,7 @@ namespace Evolve {
         double tidal_term(
             ///The value of m' in the expression evaluated by this function.
             int mprime,
-            
+
             ///See same name argument to evaluate_spherical_coords()
             double radial_distance,
 
@@ -110,7 +110,10 @@ namespace Evolve {
 
             ///The time in second since periastron passage. It is perfectly
             ///valid to pass values bigger than the orbital period.
-            double time
+            double time,
+
+            ///The maximum Fourier term to include in the expansion
+            int expansion_order
         );
 
         ///Return the tidal potential at a specific position and time in SI.
@@ -127,17 +130,24 @@ namespace Evolve {
 
                 ///The time in days when to evalutae the tidal potential. The
                 ///system is in periapsis at time = 0.
-                double time
+                double time,
+
+                ///The maximum Fourier term to include in the expansion
+                int expansion_order
             );
 
-        void set_eccentricity_order(unsigned e_order)
-        {__expansion_coef.change_e_order(e_order);}
+        ///Return the expansion precision target for the expansion terms.
+        inline double get_expansion_precision() const
+        {return __expansion_coef.get_expansion_precision();}
+
+
     }; //End TidalPotentialExpansion class.
 
     template<class POSITION_TYPE>
         double TidalPotentialExpansion::operator()(
             const POSITION_TYPE &position,
-            double time
+            double time,
+            int expansion_order
         )
         {
             double radial_distance = position.norm(),
@@ -155,7 +165,8 @@ namespace Evolve {
                 radial_distance,
                 azimuthal_angle,
                 polar_angle,
-                time
+                time,
+                expansion_order
             );
         }
 } //End Evolve namespace.
