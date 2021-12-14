@@ -56,6 +56,10 @@ namespace Evolve {
         int expansion_order
     )
     {
+        std::cerr << "Approximating tidal potential to "
+                  << expansion_order
+                  << "order"
+                  << std::endl;
         assert(radial_distance >= 0);
         assert(azimuthal_angle >= 0);
         assert(azimuthal_angle < 2 * M_PI);

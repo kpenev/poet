@@ -54,7 +54,7 @@ namespace Evolve {
 
             ///The position where to test for agreement between the two
             ///potentials, in the coordinate system expected by the potentials..
-            const Eigen::Vector3d &position,
+            const Eigen::Matrix<long double, 3, 1> &position,
 
             ///The eccentricity expansion order to use.
             unsigned expansion_order
@@ -62,12 +62,15 @@ namespace Evolve {
 
         ///The expected absolute precision in the potential expansion for the
         ///given orbit.
-        double abs_precision_scale(
+        double abs_precision(
             ///The position where the potential expansion will be evaluated.
-            const Eigen::Vector3d &position,
+            const Eigen::Matrix<long double, 3, 1> &position,
 
             ///The orbit for which the potential expansion is being tested.
-            const EccentricOrbit &orbit
+            const EccentricOrbit &orbit,
+
+            ///The precision expected of the expansion
+            double expansion_precision
         ) const;
 
         ///\brief Test the expansion for a given system at a given position,
@@ -81,7 +84,7 @@ namespace Evolve {
 
             ///The position where to test for agreement between the two
             ///potentials, in the coordinate system expected by the potentials..
-            const Eigen::Vector3d &position
+            const Eigen::Matrix<long double, 3, 1> &position
         );
 
         ///Test the expansion for a given system, sampling positions and times.

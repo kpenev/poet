@@ -28,7 +28,7 @@ namespace Evolve {
             /// \f$ \hat{y} = \hat{S} \times \hat{L} \f$
             ///to the direction of periapsis in radians.
             __arg_of_periapsis;
-            
+
     public:
         ///\brief Define the boundary for which to calculate the tidal
         ///potential.
@@ -47,7 +47,7 @@ namespace Evolve {
 
             ///See __inclination attribute.
             double inclination=Core::NaN,
-            
+
             ///See __arg_of_periapsis attribute.
             double arg_of_periapsis=Core::NaN
         ) :
@@ -96,46 +96,49 @@ namespace Evolve {
         double TidalPotential::operator()(const POSITION_TYPE &position,
                                           double time) const
         {
-            Eigen::Vector3d secondary_position = __orbit.secondary_position(
-                2.0 * M_PI * time / __orbit.orbital_period()
-            );
+            Eigen::Matrix<long double, 3, 1> secondary_position =
+                __orbit.secondary_position(
+                    2.0 * M_PI * time / __orbit.orbital_period()
+                );
 
 
             //Rotate around L_hat to a coordinate system with z along L and y
             //along SxL
-            double z_rotated_secondary_x = (
+            long double z_rotated_secondary_x = (
                 secondary_position[0] * std::cos(__arg_of_periapsis)
                 -
                 secondary_position[1] * std::sin(__arg_of_periapsis)
             );
-            double z_rotated_secondary_y = (
+            long double z_rotated_secondary_y = (
                 secondary_position[0] * std::sin(__arg_of_periapsis)
                 +
                 secondary_position[1] * std::cos(__arg_of_periapsis)
             );
 
             //Rotated around SxL to the final coordinate system.
-            Eigen::Vector3d transformed_secondary_position(
-                (
-                    z_rotated_secondary_x * std::cos(__inclination)
-                    +
-                    secondary_position[2] * std::sin(__inclination)
-                ),
-                z_rotated_secondary_y,
-                (
-                    -z_rotated_secondary_x * std::sin(__inclination)
-                    +
-                    secondary_position[2] * std::cos(__inclination)
-                )
-            );
+            Eigen::Matrix<long double, 3, 1>
+                transformed_secondary_position(
+                    (
+                        z_rotated_secondary_x * std::cos(__inclination)
+                        +
+                        secondary_position[2] * std::sin(__inclination)
+                    ),
+                    z_rotated_secondary_y,
+                    (
+                        -z_rotated_secondary_x * std::sin(__inclination)
+                        +
+                        secondary_position[2] * std::cos(__inclination)
+                    )
+                );
 
-            double center_to_secondary = transformed_secondary_position.norm();
-            double position_to_secondary = (
+            long double center_to_secondary =
+                transformed_secondary_position.norm();
+            long double position_to_secondary = (
                 position
                 -
                 transformed_secondary_position
             ).norm();
-            return (
+            long double result = (
                 Core::AstroConst::G
                 *
                 __orbit.secondary_mass() * Core::AstroConst::solar_mass
@@ -150,6 +153,7 @@ namespace Evolve {
                     1.0 / center_to_secondary
                 ) / Core::AstroConst::solar_radius
             );
+            return result;
         }
 } //End Evolve namespace
 

@@ -19,7 +19,8 @@ namespace Evolve {
                   << std::setw(25) << "z"
                   << std::endl;
         for(double phase = 0.0; phase < 4.0 * M_PI; phase += 0.001 * M_PI) {
-            Eigen::Vector3d secondary_position = orbit.secondary_position(phase);
+            Eigen::Matrix<long double, 3, 1> secondary_position =
+                orbit.secondary_position(phase);
             std::cout << std::setw(25) << phase
                       << std::setw(25) << secondary_position[0]
                       << std::setw(25) << secondary_position[1]
@@ -35,7 +36,7 @@ namespace Evolve {
         double eccentricity,
         double inclination,
         double arg_of_periapsis,
-        const Eigen::Vector3d &position,
+        const Eigen::Matrix<long double, 3, 1> &position,
         unsigned expansion_order
     ) const
     {
@@ -83,12 +84,20 @@ namespace Evolve {
     }
 
 
-    double test_GravitationalPotential::abs_precision_scale(
-        const Eigen::Vector3d &position,
-        const EccentricOrbit &orbit
+    double test_GravitationalPotential::abs_precision(
+        const Eigen::Matrix<long double, 3, 1> &position,
+        const EccentricOrbit &orbit,
+        double expansion_precision
     ) const
     {
         const double safety = 1.1;
+
+        double scaled_distance = (
+            position.norm()
+            /
+            (orbit.semimajor() * (1.0 - orbit.eccentricity()))
+        );
+
         return safety * (
             (
                 Core::AstroConst::G
@@ -102,28 +111,23 @@ namespace Evolve {
                 )
             )
             *
-            std::pow(
-                (
-                    position.norm()
-                    /
-                    (orbit.semimajor() * (1.0 - orbit.eccentricity()))
-                ),
-                3
-            )
+            std::pow(scaled_distance, 2)
+            *
+            (scaled_distance + expansion_precision)
         );
     }
 
     void test_GravitationalPotential::test_single_point(
         TidalPotentialExpansion &approx_potential,
         const TidalPotential &exact_potential,
-        const Eigen::Vector3d &position
+        const Eigen::Matrix<long double, 3, 1> &position
     )
     {
         double orbital_period = exact_potential.orbit().orbital_period(),
-               abs_tolerance = (
+               abs_tolerance = abs_precision(
+                   position,
+                   exact_potential.orbit(),
                    approx_potential.get_expansion_precision()
-                   *
-                   abs_precision_scale(position, exact_potential.orbit())
                ),
                eccentricity = exact_potential.orbit().eccentricity();
 
@@ -131,6 +135,8 @@ namespace Evolve {
             TidalPotentialTerms::required_expansion_order(eccentricity);
 
         std::ostringstream message_start;
+        message_start.setf(std::ios_base::scientific);
+        message_start.precision(16);
         message_start << "M = " << exact_potential.orbit().primary_mass()
                       << "; M' = " << exact_potential.orbit().secondary_mass()
                       << "; a = " << exact_potential.orbit().semimajor()
@@ -150,6 +156,8 @@ namespace Evolve {
             double got = approx_potential(position, time, expansion_order);
 
             std::ostringstream message;
+            message.precision(16);
+            message.setf(std::ios_base::scientific);
             message << message_start.str()
                     << ", t = " << time
                     << " = " << time / orbital_period
@@ -157,6 +165,10 @@ namespace Evolve {
                     << "; got " << got
                     << "; difference " << got - expected
                     << " > " << abs_tolerance;
+
+#ifdef VERBOSE_DEBUG
+            std::cerr << message.str() << std::endl;
+#endif
 
             TEST_ASSERT_MSG(
                 check_diff(got,
@@ -190,16 +202,25 @@ namespace Evolve {
                                                  inclination,
                                                  arg_of_periapsis);
 
-        double test_offsets[]= {-0.01, -0.001, 0.0, 0.001, 0.01};
-        unsigned num_offsets = sizeof(test_offsets) / sizeof(double);
+        long double test_offsets[]= {-0.01,
+                                     -0.001,
+                                     -1e-5,
+                                     0.0,
+                                     1e-5,
+                                     0.001,
+                                     0.01};
+        unsigned num_offsets = sizeof(test_offsets) / sizeof(long double);
+        typedef long double ldbl;
         for(unsigned z_index = 0; z_index < num_offsets; ++z_index)
             for(unsigned y_index = 0; y_index < num_offsets; ++y_index)
                 for(unsigned x_index = 0; x_index < num_offsets; ++x_index) {
-                    test_single_point(approx_potential,
-                                      exact_potential,
-                                      Eigen::Vector3d(test_offsets[x_index],
-                                                      test_offsets[y_index],
-                                                      test_offsets[z_index]));
+                    test_single_point(
+                        approx_potential,
+                        exact_potential,
+                        Eigen::Matrix<ldbl, 3, 1> (test_offsets[x_index],
+                                                   test_offsets[y_index],
+                                                   test_offsets[z_index])
+                    );
                 }
     }
 
@@ -209,7 +230,7 @@ namespace Evolve {
         unsigned num_angles = sizeof(test_angles) / sizeof(double);
         for(
             double e = 0.0;
-            e <= 0.55;
+            e <= 0.05;
             e += 0.1
         ) {
             std::cout << "Eccentricity : " << e << std::endl;
