@@ -658,25 +658,7 @@ extern "C" {
     );
 
     ///\brief doc
-    LIB_PUBLIC EccentricityExpansionCoefficients *create_expansion_coeff(
-        ///The name of the file to read pre-tabulated coefficients from.
-        const char* tabulated_pms_fname,
-
-        ///Only reads the coefficients of the expansion which
-        ///most closely achieves the indicated precision, erring on
-        ///the side of being more precise.
-        double precision,
-
-        ///Which loading style to use. Setting to true means we keep
-        ///a 9 GB database in memory.
-        bool pre_load
-    );
-
-    ///\brief doc
     LIB_PUBLIC double get_expansion_coeff_precision(
-        ///doc
-        const EccentricityExpansionCoefficients *expansion_arg,
-
         ///doc
         int m,
 
@@ -686,9 +668,6 @@ extern "C" {
 
     ///\brief doc
     LIB_PUBLIC double evaluate_expansion_coeff(
-        ///doc
-        const EccentricityExpansionCoefficients *expansion_arg,
-
         ///The first index (0 or +-2).
         int m,
 
@@ -701,12 +680,6 @@ extern "C" {
         ///Previously, if true the result was differentiated w.r.t. to the
         ///eccentricity. Currently does nothing.
         bool deriv
-    );
-
-    ///\brief doc
-    LIB_PUBLIC void destroy_expansion_coef(
-        ///doc
-        const EccentricityExpansionCoefficients *expansion_arg
     );
 
 }//End Extern "C"

@@ -611,49 +611,26 @@ void get_star_star_final_state(const OrbitSolver *solver,
                          secondary_wind_saturation);
 }
 
-EccentricityExpansionCoefficients *create_expanion_coeff(
-    const char* tabulated_pms_fname,
-    double precision,
-    bool pre_load
-)
+double get_expansion_coeff_precision(int m, int s)
 {
-    Evolve::EccentricityExpansionCoefficients *result = (
-        new Evolve::EccentricityExpansionCoefficients
+    return Evolve::TidalPotentialTerms::expansion_coefficient_evaluator(
+    ).interp_precision(
+        m,
+        s
     );
-    result->prepare(tabulated_pms_fname,
-                    precision,
-                    pre_load);
-    return reinterpret_cast<EccentricityExpansionCoefficients*>(result);
 }
 
-double get_expansion_coeff_precision(
-    const EccentricityExpansionCoefficients *expansion_arg,
-    int m,
-    int s
-)
+double evaluate_expansion_coeff(int m,
+                                int s,
+                                double e,
+                                bool deriv)
 {
-    const Evolve::EccentricityExpansionCoefficients *expansion =
-        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(
-            expansion_arg
-        );
-
-    return expansion->interp_precision(m,s);
-}
-
-double evaluate_expansion_coeff(
-    const EccentricityExpansionCoefficients *expansion_arg,
-    int m,
-    int s,
-    double e,
-    bool deriv
-)
-{
-    const Evolve::EccentricityExpansionCoefficients *expansion =
-        reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(
-            expansion_arg
-        );
-
-    return (*expansion)(m, s, e, deriv);
+    return Evolve::TidalPotentialTerms::expansion_coefficient_evaluator()(
+        m,
+        s,
+        e,
+        deriv
+    );
 }
 
 void destroy_expansion_coef(

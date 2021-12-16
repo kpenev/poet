@@ -144,9 +144,10 @@ namespace Evolve {
     ) const
     {
         no_deriv = inclination_deriv = eccentricity_deriv = 0;
+        double singularity_factor = std::pow(1.0 - e*e, -1.5);
         for(int i = 0; i < 3; ++i) {
             int s = 2 * (i - 1);
-            double pms = __pms(s, mp, e, false);
+            double pms = __pms(s, mp, e, false) * singularity_factor;
             std::complex<double> periapsis_factor(
                 std::cos(s * __arg_of_periapsis),
                 -std::sin(s * __arg_of_periapsis)

@@ -153,6 +153,11 @@ namespace Evolve {
         ///multiplier for which the expansion is known.
         static unsigned max_expansion_order()
         {return __pms.max_expansion_order();}
+
+        ///Provide direct access to the eccentircity expansion coefficients
+        static const EccentricityExpansionCoefficients &
+            expansion_coefficient_evaluator()
+            {return __pms;}
     }; //End TidalPotentialTerms class.
 } //End Evolve namespace
 
