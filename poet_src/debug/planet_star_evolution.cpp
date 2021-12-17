@@ -13,7 +13,8 @@ int main(int, char **)
     prepare_eccentricity_expansion(
         "",
         1e-6,
-        true
+        true,
+        false
     );
 
     double mstar = 1.0, mplanet = 1.0, a0 = 10.0, zero = 0.0;

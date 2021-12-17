@@ -32,6 +32,9 @@ namespace Evolve {
         ///data?
         bool __useable;
 
+        ///See do_not_fail argument to prepare().
+        bool __allow_precision_fail;
+
         std::vector< std::vector<double> >
             ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
             ///
@@ -144,7 +147,12 @@ namespace Evolve {
                 ///Should all data from the database be pre-loaded to avoid
                 ///query each time a coefficient is evaluated. Setting to true
                 ///means we keep a 9 GB database in memory.
-                bool pre_load
+                bool pre_load,
+
+                ///Do not throw exception if specified precision is unattainable
+                ///with given tabulated coefficients, just use highest availabre
+                ///order.
+                bool disable_precision_fail=false
         );
 
         ///Return the expansion precision set by the last call to prepare()

@@ -65,7 +65,8 @@ int main(int, char **)
     prepare_eccentricity_expansion(
         "",
         1e-6,
-        true
+        true,
+        false
     );
     MESAInterpolator *primary_interpolator = get_interpolator(
         "stellar_evolution_interpolators/"

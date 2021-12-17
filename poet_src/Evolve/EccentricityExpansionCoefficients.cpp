@@ -396,7 +396,8 @@ namespace Evolve {
     void EccentricityExpansionCoefficients::prepare(
         const std::string &tabulated_pms_fname,
         double precision,
-        bool pre_load
+        bool pre_load,
+        bool disable_precision_fail
     )
     {
         __expansion_precision = precision;
@@ -404,6 +405,7 @@ namespace Evolve {
         int rc;
 
         __load_all = pre_load;
+        __allow_precision_fail = !disable_precision_fail;
 
         rc = sqlite3_open(tabulated_pms_fname.c_str(), &db);
         if(rc!=SQLITE_OK) {
@@ -464,7 +466,7 @@ namespace Evolve {
         int s = __max_s;
         while(__max_ignore_eccentricity[local_index(m, s)] >= e)
             --s;
-        if(s == __max_s) {
+        if(s == __max_s && __allow_precision_fail) {
             std::ostringstream message;
             message << "Tabulated eccentricity interpolation is unsufficient "
                     << "to achieve the specified precision in tidal potential "

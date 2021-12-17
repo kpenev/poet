@@ -47,7 +47,8 @@ extern "C" {
     LIB_PUBLIC void prepare_eccentricity_expansion(
         const char *filename,
         double precision,
-        bool pre_load
+        bool pre_load,
+        bool disable_precision_fail
     );
 
     LIB_PUBLIC void set_zone_dissipation(

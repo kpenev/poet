@@ -50,8 +50,14 @@ namespace Evolve {
         ///See EccentricityExpansionCoefficients::prepare()
         static void prepare(const std::string &tabulated_pms_fname,
                             double precision,
-                            bool pre_load)
-        {__pms.prepare(tabulated_pms_fname, precision, pre_load);}
+                            bool pre_load,
+                            bool disable_precision_fail)
+        {
+            __pms.prepare(tabulated_pms_fname,
+                          precision,
+                          pre_load,
+                          disable_precision_fail);
+        }
 
 
         ///\brief The maximum orbital frequency multiplier to include in the
@@ -139,15 +145,6 @@ namespace Evolve {
             ///Set to the eccentricity_derivative.
             double &eccentricity_deriv
         ) const;
-
-        ///\brief Reads the interpolation data for \f$p_{m,s}\f$.
-        ///
-        ///See EccentricityExpansionCoefficients::prepare for description of the
-        ///arguments.
-        static void prepare_eccentricity_expansion(const std::string &fname,
-                                                   double precision,
-                                                   bool pre_load)
-        {__pms.prepare(fname, precision, pre_load);}
 
         ///\brief The maximum eccentricity expansion order (orbital frequency
         ///multiplier for which the expansion is known.

@@ -16,11 +16,15 @@ const double NaN = Core::NaN;
 
 void prepare_eccentricity_expansion(const char *filename,
                                     double precision,
-                                    bool pre_load)
+                                    bool pre_load,
+                                    bool disable_precision_fail)
 {
-    Evolve::TidalPotentialTerms::prepare_eccentricity_expansion(filename,
-                                                                precision,
-                                                                pre_load);
+    Evolve::TidalPotentialTerms::prepare(
+        filename,
+        precision,
+        pre_load,
+        disable_precision_fail
+    );
 }
 
 void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
