@@ -433,12 +433,15 @@ namespace Evolve {
             __torque_x[deriv_ind + 1] += (term_torque_x
                                           *
                                           mod_phase_lag_above);
-            assert(!std::isnan(__torque_x[deriv_ind]));
-            assert(!std::isnan(__torque_x[deriv_ind + 1]));
-            assert(!std::isnan(__torque_y[deriv_ind]));
-            assert(!std::isnan(__torque_y[deriv_ind + 1]));
-            assert(!std::isnan(__torque_z[deriv_ind]));
-            assert(!std::isnan(__torque_z[deriv_ind + 1]));
+            //TODO: revive eccentricity derivative check
+            if(deriv != Dissipation::ECCENTRICITY) {
+                assert(!std::isnan(__torque_x[deriv_ind]));
+                assert(!std::isnan(__torque_x[deriv_ind + 1]));
+                assert(!std::isnan(__torque_y[deriv_ind]));
+                assert(!std::isnan(__torque_y[deriv_ind + 1]));
+                assert(!std::isnan(__torque_z[deriv_ind]));
+                assert(!std::isnan(__torque_z[deriv_ind + 1]));
+            }
 #if 0
             if(deriv == Dissipation::NO_DERIV)
                 std::cerr << ", Wzone = "

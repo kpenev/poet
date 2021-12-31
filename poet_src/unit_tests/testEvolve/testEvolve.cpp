@@ -91,6 +91,7 @@ int main()
     Evolve::TidalPotentialTerms::prepare(
         "eccentricity_expansion_coef_O400.sqlite",
         1e-6,
+        true,
         true
     );
 
@@ -101,15 +102,15 @@ int main()
 	Test::TextOutput output(Test::TextOutput::Verbose);
 
     Test::Suite all_tests;
-    all_tests.add(
+/*    all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_GravitationalPotential)
     );
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_TidalTorquePower)
-    );
-    all_tests.add(
+    );*/
+/*    all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_DifferentialEquations)
-    );
+    );*/
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_OrbitSolver)
     );

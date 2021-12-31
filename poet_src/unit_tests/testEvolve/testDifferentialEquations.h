@@ -15,6 +15,7 @@
 #include "../shared/MakeStar.h"
 #include "../../Planet/Planet.h"
 #include "../../third_party_libs/alglib/alglib/src/interpolation.h"
+#include <iomanip>
 
 namespace Evolve {
     /**\brief The test suite that compares the differential equations for

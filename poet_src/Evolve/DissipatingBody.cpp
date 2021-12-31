@@ -690,10 +690,9 @@ namespace Evolve {
                 tidal_torque.resize(Dissipation::NUM_ENTRIES);
                 for(
                     int torque_ind = Dissipation::NO_DERIV;
-                    torque_ind <= Dissipation::END_DIMENSIONLESS_DERIV;
+                    torque_ind < Dissipation::END_DIMENSIONLESS_DERIV;
                     ++torque_ind
                 ) {
-                    assert(torque_ind < Dissipation::END_DIMENSIONLESS_DERIV);
                     Dissipation::QuantityEntry entry = (
                         static_cast<Dissipation::QuantityEntry>(torque_ind)
                     );
@@ -709,7 +708,12 @@ namespace Evolve {
                         above,
                         entry
                     );
-                    assert(!std::isnan(tidal_torque[entry].sum()));
+                    //TODO: revive eccentricity derivative check
+                    assert(
+                        entry == Dissipation::ECCENTRICITY
+                        ||
+                        !std::isnan(tidal_torque[entry].sum())
+                    );
                 }
                 above = !above;
             } while(above);

@@ -54,6 +54,11 @@ namespace Evolve {
 #ifndef NDEBUG
     void OrbitSolver::output_history_and_discarded(std::ostream &os)
     {
+        assert(
+            !__stop_history_ages.empty()
+            ||
+            !__discarded_stop_ages.empty()
+        );
     //	return;
         std::streamsize orig_precision=os.precision();
         os.precision(16);
@@ -62,11 +67,17 @@ namespace Evolve {
 
         os << "Stored stop condition information:" << std::endl
             << std::setw(20) << "Age:";
-        for(std::list<double>::const_iterator age_i=__stop_history_ages.begin();
-                age_i!=__discarded_stop_ages.end(); age_i++) {
-            if(age_i==__stop_history_ages.end()) {
+        bool skip_check = true;
+        for(
+                std::list<double>::const_iterator
+                    age_i = __stop_history_ages.begin();
+                skip_check || age_i != __discarded_stop_ages.end();
+                ++age_i
+        ) {
+            if(age_i == __stop_history_ages.end()) {
                 os << "|";
-                age_i=__discarded_stop_ages.begin();
+                age_i = __discarded_stop_ages.begin();
+                skip_check=false;
             }
             os << std::setw(28) << *age_i;
         }
@@ -77,7 +88,7 @@ namespace Evolve {
                 '_');
         os << std::endl << hline << std::endl;
 
-        for(size_t i=0; i<__stop_cond_discarded.front().size(); i++) {
+        for(size_t i = 0; i < __stop_cond_discarded.front().size(); i++) {
             assert(
                 __stopping_conditions->expected_crossing_deriv_sign(i) > 0
                 ||
@@ -92,12 +103,18 @@ namespace Evolve {
             size_t point_num=0;
             std::list<double>::const_iterator age_i=__stop_history_ages.begin();
             bool marked_skip_extremum=false;
-            for(std::list< std::valarray<double> >::const_iterator
-                    cond_i=__stop_cond_history.begin();
-                    cond_i!=__stop_cond_discarded.end(); cond_i++) {
+            skip_check = true;
+            for(
+                    std::list< std::valarray<double> >::const_iterator
+                        cond_i = __stop_cond_history.begin();
+                    skip_check || cond_i != __stop_cond_discarded.end();
+                    cond_i++
+            ) {
                 if(cond_i==__stop_cond_history.end()) {
                     os << "|";
                     cond_i=__stop_cond_discarded.begin();
+                    age_i = __discarded_stop_ages.begin();
+                    skip_check=false;
                 }
                 bool marked=false;
                 if(point_num==__skip_history_zerocrossing[i]) {
@@ -115,12 +132,17 @@ namespace Evolve {
             os << std::endl;
             os << std::setw(13) << "Derivative[" << std::setw(5) << i
                 << "]:";
-            for(std::list< std::valarray<double> >::const_iterator
-                    deriv_i=__stop_deriv_history.begin();
-                    deriv_i!=__stop_deriv_discarded.end(); deriv_i++) {
+            skip_check=true;
+            for(
+                    std::list< std::valarray<double> >::const_iterator
+                        deriv_i = __stop_deriv_history.begin();
+                    skip_check || deriv_i != __stop_deriv_discarded.end();
+                    deriv_i++
+            ) {
                 if(deriv_i==__stop_deriv_history.end()) {
                     os << "|";
                     deriv_i=__stop_deriv_discarded.begin();
+                    skip_check=false;
                 }
                 os << std::setw(28) << (*deriv_i)[i];
             }
@@ -721,7 +743,7 @@ namespace Evolve {
                                                      derivatives,
                                                      current_stop_deriv);
 
-        if(__stop_history_ages.size() == 0)
+        if(__stop_history_ages.empty())
             initialize_skip_history(*__stopping_conditions, stop_reason);
         StopInformation result;
         insert_discarded(age, current_stop_cond, current_stop_deriv);
@@ -785,9 +807,13 @@ namespace Evolve {
                       << std::endl;
 #endif
             if(
-                (!acceptable_step(age,
-                                  __stop_history_ages.back(),
-                                  stop_info) || is_crossing)
+                !__stop_history_ages.empty()
+                &&
+                (
+                    !acceptable_step(age, __stop_history_ages.back(), stop_info)
+                    ||
+                    is_crossing
+                )
                 &&
                 stop_info.stop_age() < result.stop_age()
             ) {
@@ -799,9 +825,11 @@ namespace Evolve {
 #endif
             }
         }
-        if(acceptable_step(age,
-                           __stop_history_ages.back(),
-                           result)) {
+        if(
+            __stop_history_ages.empty()
+            ||
+            acceptable_step(age, __stop_history_ages.back(), result)
+        ) {
     //		update_skip_history(current_stop_cond, result);
             __stop_history_ages.push_back(age);
             __stop_cond_history.push_back(current_stop_cond);
@@ -811,6 +839,8 @@ namespace Evolve {
 
             if(
                 result.stop_reason() == NO_STOP
+                &&
+                evolution_mode == Core::BINARY
                 &&
                 orbit[1] < expansion_range.first
                 &&

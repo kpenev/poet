@@ -90,7 +90,7 @@ namespace Evolve {
         double expansion_precision
     ) const
     {
-        const double safety = 1.1;
+        const double safety = 3.0;
 
         double scaled_distance = (
             position.norm()
@@ -98,7 +98,7 @@ namespace Evolve {
             (orbit.semimajor() * (1.0 - orbit.eccentricity()))
         );
 
-        return safety * (
+        return (
             (
                 Core::AstroConst::G
                 *
@@ -113,7 +113,7 @@ namespace Evolve {
             *
             std::pow(scaled_distance, 2)
             *
-            (scaled_distance + expansion_precision)
+            (safety * scaled_distance + expansion_precision)
         );
     }
 
@@ -204,9 +204,9 @@ namespace Evolve {
 
         long double test_offsets[]= {-0.01,
                                      -0.001,
-                                     -1e-5,
+                                     -1e-6,
                                      0.0,
-                                     1e-5,
+                                     1e-6,
                                      0.001,
                                      0.01};
         unsigned num_offsets = sizeof(test_offsets) / sizeof(long double);
@@ -229,8 +229,8 @@ namespace Evolve {
         double test_angles[] = {-M_PI/2, -1.0, -0.1, 0.0, 0.1, 1.0, M_PI/2};
         unsigned num_angles = sizeof(test_angles) / sizeof(double);
         for(
-            double e = 0.0;
-            e <= 0.05;
+            double e = 0.9;
+            e <= 0.95;
             e += 0.1
         ) {
             std::cout << "Eccentricity : " << e << std::endl;
