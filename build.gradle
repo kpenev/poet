@@ -23,7 +23,7 @@ model {
                 cppCompiler.define "NDEBUG"
             } else if(buildType == buildTypes.debug) {
                 cppCompiler.define "VERBOSE_DEBUG"
-                cppCompiler.define "_GLIBCXX_DEBUG"
+//                cppCompiler.define "_GLIBCXX_DEBUG"
             }
 
             if (toolChain in Gcc || toolChain in Clang) {
@@ -34,7 +34,8 @@ model {
 
                 cppCompiler.args "-W", "-Wall",
                                  "-std=c++11",
-                                 "-fvisibility=hidden"
+                                 "-fvisibility=hidden",
+                                 "-pedantic"
 
                 getGSLLinkerArgs().each{linker.args it}
                 linker.args "-l" + ensureLibraryVersion(
@@ -221,9 +222,9 @@ model {
 
         debugStellarEvolution(NativeExecutableSpec) {
             sources.cpp {
-                lib library: "eigen"
-                lib library: "stellarEvolution"
-                lib library: "dirent"
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "dirent", linkage: "static"
                 source {
                     srcDir "poet_src/debug"
                     include "**/stellar_evolution.c"
@@ -239,12 +240,12 @@ model {
                 }
             }
             binaries.all {
-                lib library: "eigen"
-                lib library: "stellarEvolution"
-                lib library: "star"
-                lib library: "planet"
-                lib library: "evolve"
-                lib library: "dirent"
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "star", linkage: "static"
+                lib library: "planet", linkage: "static"
+                lib library: "evolve", linkage: "static"
+                lib library: "dirent", linkage: "static"
             }
         }
 
@@ -256,12 +257,12 @@ model {
                 }
             }
             binaries.all {
-                lib library: "eigen"
-                lib library: "stellarEvolution"
-                lib library: "star"
-                lib library: "planet"
-                lib library: "evolve"
-                lib library: "dirent"
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "star", linkage: "static"
+                lib library: "planet", linkage: "static"
+                lib library: "evolve", linkage: "static"
+                lib library: "dirent", linkage: "static"
             }
         }
 //        poet(NativeExecutableSpec) {

@@ -490,6 +490,21 @@ namespace Evolve {
                 "Asking EccentricityExpansionCoefficients::"
                 "get_expansion_range() before reading interpolation data"
             );
+#ifdef VERBOSE_DEBUG
+        std::cerr << "Max ignore e(m="
+                  << m
+                  << ", m'="
+                  << max_s
+                  << ") = "
+                  << __max_ignore_eccentricity[local_index(m, max_s)]
+                  << "Max ignore e(m="
+                  << m
+                  << ", m'="
+                  << max_s + 1
+                  << ") = "
+                  << __max_ignore_eccentricity[local_index(m, max_s + 1)]
+                  << std::endl;
+#endif
 
         return std::make_pair(
             __max_ignore_eccentricity[local_index(m, max_s)],

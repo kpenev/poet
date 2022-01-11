@@ -74,7 +74,7 @@ namespace Evolve {
                 skip_check || age_i != __discarded_stop_ages.end();
                 ++age_i
         ) {
-            if(age_i == __stop_history_ages.end()) {
+            if(skip_check && age_i == __stop_history_ages.end()) {
                 os << "|";
                 age_i = __discarded_stop_ages.begin();
                 skip_check=false;
@@ -110,11 +110,11 @@ namespace Evolve {
                     skip_check || cond_i != __stop_cond_discarded.end();
                     cond_i++
             ) {
-                if(cond_i==__stop_cond_history.end()) {
+                if(skip_check && cond_i == __stop_cond_history.end()) {
                     os << "|";
                     cond_i=__stop_cond_discarded.begin();
                     age_i = __discarded_stop_ages.begin();
-                    skip_check=false;
+                    skip_check = false;
                 }
                 bool marked=false;
                 if(point_num==__skip_history_zerocrossing[i]) {
@@ -139,7 +139,7 @@ namespace Evolve {
                     skip_check || deriv_i != __stop_deriv_discarded.end();
                     deriv_i++
             ) {
-                if(deriv_i==__stop_deriv_history.end()) {
+                if(skip_check && deriv_i == __stop_deriv_history.end()) {
                     os << "|";
                     deriv_i=__stop_deriv_discarded.begin();
                     skip_check=false;
@@ -727,12 +727,41 @@ namespace Evolve {
         std::pair<double, double> expansion_range =
             TidalPotentialTerms::get_expansion_range(current_expansion_order);
 
-        if(evolution_mode == Core::BINARY && orbit[1] > expansion_range.second)
+#ifdef VERBOSE_DEBUG
+        std::cerr << "Updating stop condition history. Current e = "
+                  << orbit[1]
+                  << " current expansion range: "
+                  << expansion_range.first
+                  << " < e < "
+                  << expansion_range.second
+                  << std::endl;
+#endif
+
+
+        if(
+                evolution_mode == Core::BINARY
+                &&
+                orbit[1] > expansion_range.second
+        ) {
+#ifndef VERBOSE_DEBUG
+            std::cerr << "Eccentricity ("
+                      << orbit[1]
+                      << ") exceeds current expansion error limit of "
+                      << expansion_range.second
+                      << ". Choosing to stop half way between t = "
+                      << age
+                      << " and t = "
+                      << __stop_history_ages.back()
+                      << std::endl;
+#endif
             return StopInformation(
                 0.5 * (age + __stop_history_ages.back()),
                 Core::Inf,
-                LARGE_EXPANSION_ERROR
+                LARGE_EXPANSION_ERROR,
+                true,
+                true
             );
+        }
 
         std::valarray<double> current_stop_cond(
             __stopping_conditions->num_subconditions()
@@ -846,9 +875,19 @@ namespace Evolve {
                 &&
                 current_expansion_order > 0
             ) {
+#ifdef VERBOSE_DEBUG
+                std::cerr << "Eccentricity ("
+                          << orbit[1]
+                          << " is sufficiently small (< "
+                          << expansion_range.first
+                          << ") to decrease expansion order."
+                          << std::endl;
+#endif
                 return StopInformation(Core::Inf,
                                        Core::Inf,
-                                       SMALL_EXPANSION_ERROR);
+                                       SMALL_EXPANSION_ERROR,
+                                       true,
+                                       true);
             }
 
         } else {
@@ -1044,21 +1083,24 @@ namespace Evolve {
                         stop_reason
                     );
                 }
-                if(status == GSL_EDOM || !acceptable_step(t, from_t, stop)) {
-                    if(!first_step)
-                        reject_step(
-                            t,
-                            stop,
-                            system,
-                            orbit,
-                            max_next_t,
-                            step_size
+                if(
+                    (status == GSL_EDOM || !acceptable_step(t, from_t, stop))
+                    &&
+                    !first_step
+                ) {
+                    reject_step(
+                        t,
+                        stop,
+                        system,
+                        orbit,
+                        max_next_t,
+                        step_size
 #ifndef NDEBUG
-                            , (status == GSL_EDOM ? "EDOM error" : "bad step")
+                        , (status == GSL_EDOM ? "EDOM error" : "bad step")
 #endif
-                        );
-                    gsl_odeiv2_evolve_reset(evolve);
+                    );
                     step_rejected = true;
+                    gsl_odeiv2_evolve_reset(evolve);
                 } else {
                     if(!first_step && t < from_t * MIN_RELATIVE_STEP) {
 #ifndef NDEBUG
@@ -1242,8 +1284,10 @@ namespace Evolve {
     {
 #ifndef NDEBUG
         std::cerr << "Adjusting expansion order at t ="
-                  << system.age()
-                  << std::endl;
+                  << system.age();
+        if(must_increase)
+            std::cerr << " upward!";
+        std::cerr << std::endl;
 #endif
         assert(evolution_mode == Core::BINARY);
 
@@ -1260,7 +1304,9 @@ namespace Evolve {
             system.change_expansion_order(required_expansion_order);
 
 #ifndef NDEBUG
-        std::cerr << "Adjusted expansion order to "
+        std::cerr << "Adjusted expansion order from "
+                  << current_expansion_order
+                  << " to "
                   << required_expansion_order
                   << std::endl;
 #endif

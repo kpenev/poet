@@ -53,4 +53,4 @@ extern "C" {
         double reference_phase_lag
     );
 
-}; //End extern "C"
+} //End extern "C"

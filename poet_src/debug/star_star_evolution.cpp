@@ -11,9 +11,8 @@
 
 MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 {
-    MESAInterpolator *interpolator;
+    MESAInterpolator *interpolator=NULL;
     DIR *dirstream = opendir(interpolator_dir.c_str());
-    bool found = false;
     for(struct dirent *entry; (entry = readdir(dirstream));) {
         std::string fname(entry->d_name);
         std::cout << "Fname: " << fname << std::endl;
@@ -26,14 +25,24 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
                       << std::string(fname.substr(fname.size() - 7))
                       << std::endl;
 
-            assert(!found);
-            found=true;
+            if(interpolator)
+                throw Core::Error::IO(
+                    "Multiple candidate interpolators fund in "
+                    +
+                    interpolator_dir
+                );
             interpolator = load_interpolator(
                 (interpolator_dir + fname).c_str()
             );
 
         }
     }
+    if(!interpolator)
+        throw Core::Error::IO(
+            "No interpolators found in "
+            +
+            interpolator_dir
+        );
     return interpolator;
 }
 
@@ -63,13 +72,13 @@ int main(int, char **)
     const double INITIAL_ECCENTRICITY = 0.0241;
 
     prepare_eccentricity_expansion(
-        "",
+        "eccentricity_expansion_coef_O400.sqlite",
         1e-6,
         true,
         false
     );
     MESAInterpolator *primary_interpolator = get_interpolator(
-        "stellar_evolution_interpolators/"
+        "stellar_evolution_interpolators_bkp/"
     );
 
 

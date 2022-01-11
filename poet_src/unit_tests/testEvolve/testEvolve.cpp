@@ -88,12 +88,16 @@ int main()
     return 0;
     */
 
+    std::cerr << "Preparing" << std::endl;
+
     Evolve::TidalPotentialTerms::prepare(
         "eccentricity_expansion_coef_O400.sqlite",
         1e-6,
         true,
         true
     );
+
+    std::cerr << "Prepared" << std::endl;
 
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);

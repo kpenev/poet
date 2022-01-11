@@ -121,14 +121,14 @@ namespace Evolve {
         int max_mp
     )
     {
-        std::pair<double, double> result(-Core::Inf, Core::Inf);
+        std::pair<double, double> result(Core::Inf, Core::Inf);
         for(int m=-2; m<=2; m+=2) {
 
             std::pair<double, double> m_range = __pms.get_expansion_range(
                 m,
                 max_mp
             );
-            result.first = std::max(result.first, m_range.first);
+            result.first = std::min(result.first, m_range.first);
             result.second = std::min(result.second, m_range.second);
         }
         return result;
