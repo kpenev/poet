@@ -151,7 +151,9 @@ namespace Evolve {
                     << __orbital_freq_mult
                     << "(orbital frequency) = "
                     << __spin_freq_mult
-                    << "(spin frequency)";
+                    << "(spin frequency)"
+                    << ", expected crossing sign: "
+                    << expected_crossing_deriv_sign();
         return description.str();
     }
 

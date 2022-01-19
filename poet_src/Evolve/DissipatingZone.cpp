@@ -105,7 +105,7 @@ namespace Evolve {
     void DissipatingZone::check_locks_consistency() const
     {
         if(__initializing) return;
-        int max_abs_orb_mult = static_cast<int>(__expansion_order + 2);
+        int max_abs_orb_mult = static_cast<int>(__expansion_order);
         if(
             !(
                 __lock
@@ -197,7 +197,7 @@ namespace Evolve {
         if(
             static_cast<unsigned>(std::abs(lock.orbital_frequency_multiplier()))
             >
-            __expansion_order+2
+            __expansion_order
             &&
             lock.spin_frequency_multiplier()==2
         )
@@ -214,21 +214,21 @@ namespace Evolve {
         if(
             lock.orbital_frequency_multiplier()
             >
-            static_cast<int>(__expansion_order + 2)
+            static_cast<int>(__expansion_order)
         ) {
             if(lock.lock_direction() > 0)
-                lock.set_lock(__expansion_order + 2, 1, 1);
+                lock.set_lock(__expansion_order, 1, 1);
             else
                 lock.set_lock(1, 0, 1);
         } else if(
             lock.orbital_frequency_multiplier()
             <
-            -static_cast<int>(__expansion_order)-2
+            -static_cast<int>(__expansion_order)
         ) {
             if(lock.lock_direction() > 0)
                 lock.set_lock(1, 0, 1);
             else
-                lock.set_lock(-static_cast<int>(__expansion_order) - 2, 1, -1);
+                lock.set_lock(-static_cast<int>(__expansion_order), 1, -1);
         }
 #ifndef NDEBUG
         check_locks_consistency();
@@ -296,19 +296,19 @@ namespace Evolve {
                                         __spin_frequency
                                         /
                                         __orbital_frequency),
-            max_abs_orb_mult=static_cast<int>(__expansion_order + 2);
+            max_abs_orb_mult=static_cast<int>(__expansion_order);
         if(below_orb_mult % 2) {
             if(
                 static_cast<unsigned>(std::abs(below_orb_mult))
                 <=
-                __expansion_order + 2
+                __expansion_order
             ) {
                 __lock.set_lock(below_orb_mult, 2, 1);
                 __other_lock.set_lock((below_orb_mult + 1) / 2, 1, -1);
             } else if(
                 static_cast<unsigned>(std::abs((below_orb_mult - 1) / 2))
                 <=
-                __expansion_order + 2
+                __expansion_order
             ) {
                 __lock.set_lock((below_orb_mult - 1) / 2, 1, 1);
                 if((below_orb_mult + 1) / 2 > max_abs_orb_mult)
@@ -473,7 +473,7 @@ namespace Evolve {
     }
 
     DissipatingZone::DissipatingZone() :
-        __expansion_order(0),
+        __expansion_order(2),
         __power(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV),
         __torque_x(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV),
         __torque_y(0.0, 2 * Dissipation::END_DIMENSIONLESS_DERIV),
@@ -537,8 +537,8 @@ namespace Evolve {
         if(!dissipative()) return;
 
         for(
-            int mp = -static_cast<int>(__expansion_order) - 2;
-            mp <= static_cast<int>(__expansion_order) + 2;
+            int mp = -static_cast<int>(__expansion_order);
+            mp <= static_cast<int>(__expansion_order);
             ++mp
         ) {
             TidalTermTriplet U_value,
@@ -865,7 +865,7 @@ namespace Evolve {
            if(
                __lock.orbital_frequency_multiplier()
                >
-               static_cast<int>(__expansion_order) + 2
+               static_cast<int>(__expansion_order)
            )
                release_lock();
            return;

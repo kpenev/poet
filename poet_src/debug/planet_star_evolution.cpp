@@ -17,7 +17,7 @@ int main(int, char **)
 
     prepare_eccentricity_expansion(
         "eccentricity_expansion_coef_O400.sqlite",
-        1e-6,
+        1e-4,
         true,
         false
     );
@@ -30,10 +30,10 @@ int main(int, char **)
                                  Core::AstroConst::solar_radius);
 
     double mstar = 1.0,
-           mplanet = 30.0 * Mjup_to_Msun,
+           mplanet = 1.0,//100.0 * Mjup_to_Msun,
            rplanet = 1.0 * Rjup_to_Msun,
-           a0 = 15.0,
-           e0 = 0.4,
+           a0 = 25.0,
+           e0 = 0.8,
            zero = 0.0,
            phase_lag = 3e-8;
 
@@ -58,8 +58,8 @@ int main(int, char **)
                                      interpolator);
     select_interpolation_region(star, core_formation_age(star));
 
-    double break_frequency = 2.0 * M_PI / 4.33;
-    double powerlaws[] = {0.0, 0.0};//-3.1};
+    double break_frequency = 2.0 * M_PI / 20;
+    double powerlaws[] = {1.0, 0.0};//-3.1};
     set_star_dissipation(star, 0, 1, 0, &break_frequency, NULL, powerlaws, &zero, phase_lag);
     set_star_dissipation(star, 1, 0, 0, NULL, NULL, &zero, &zero, 0.0);
 
@@ -85,9 +85,9 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        10.0,
+        2.0,
         1e-3,
-        1e-6,
+        1e-4,
         NULL,
         0,
         true

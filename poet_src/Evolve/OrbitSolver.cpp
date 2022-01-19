@@ -68,9 +68,14 @@ namespace Evolve {
         os << "Stored stop condition information:" << std::endl
             << std::setw(20) << "Age:";
         bool skip_check = true;
+        std::list<double>::const_iterator age_i;
+        if(__stop_history_ages.size() > 5) {
+            age_i = __stop_history_ages.end();
+            std::advance(age_i, -5);
+        } else
+            age_i = __stop_history_ages.begin();
         for(
-                std::list<double>::const_iterator
-                    age_i = __stop_history_ages.begin();
+                ;
                 skip_check || age_i != __discarded_stop_ages.end();
                 ++age_i
         ) {
@@ -104,9 +109,14 @@ namespace Evolve {
             std::list<double>::const_iterator age_i=__stop_history_ages.begin();
             bool marked_skip_extremum=false;
             skip_check = true;
+            std::list< std::valarray<double> >::const_iterator cond_i;
+            if(__stop_cond_history.size() > 5) {
+                cond_i = __stop_cond_history.end();
+                std::advance(cond_i, -5);
+            } else
+                cond_i = __stop_cond_history.begin();
             for(
-                    std::list< std::valarray<double> >::const_iterator
-                        cond_i = __stop_cond_history.begin();
+                    ;
                     skip_check || cond_i != __stop_cond_discarded.end();
                     cond_i++
             ) {
@@ -133,9 +143,14 @@ namespace Evolve {
             os << std::setw(13) << "Derivative[" << std::setw(5) << i
                 << "]:";
             skip_check=true;
+            std::list< std::valarray<double> >::const_iterator deriv_i;
+            if(__stop_deriv_history.size() > 5) {
+                deriv_i = __stop_deriv_history.end();
+                std::advance(deriv_i, -5);
+            } else
+                deriv_i = __stop_deriv_history.begin();
             for(
-                    std::list< std::valarray<double> >::const_iterator
-                        deriv_i = __stop_deriv_history.begin();
+                    ;
                     skip_check || deriv_i != __stop_deriv_discarded.end();
                     deriv_i++
             ) {
@@ -1303,13 +1318,16 @@ namespace Evolve {
         if(required_expansion_order != current_expansion_order)
             system.change_expansion_order(required_expansion_order);
 
-#ifndef NDEBUG
-        std::cerr << "Adjusted expansion order from "
-                  << current_expansion_order
-                  << " to "
-                  << required_expansion_order
-                  << std::endl;
+#ifdef NDEBUG
+        if(__print_progress)
 #endif
+            std::cerr << "At e = "
+                      << orbit[1]
+                      << " adjusted expansion order from "
+                      << current_expansion_order
+                      << " to "
+                      << required_expansion_order
+                      << std::endl;
     }
 
     void OrbitSolver::reset(BinarySystem &system)
