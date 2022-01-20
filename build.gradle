@@ -34,7 +34,6 @@ model {
 
                 cppCompiler.args "-W", "-Wall",
                                  "-std=c++11",
-
                                  "-fvisibility=hidden",
                                  "-pedantic"
                 "gsl-config --cflags".execute().text.tokenize().each{cppCompiler.args it}
@@ -212,7 +211,6 @@ model {
             binaries.all {
                 cppCompiler.define "STANDALONE"
                 linker.args "-l" + ensureLibraryVersion("cpptest")
-
 
                 lib library: "eigen", linkage: 'static'
                 lib library: "stellarEvolution", linkage: 'static'
