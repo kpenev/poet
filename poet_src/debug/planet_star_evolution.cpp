@@ -60,8 +60,17 @@ int main(int, char **)
 
     double break_frequency = 2.0 * M_PI / 20;
     double powerlaws[] = {1.0, 0.0};//-3.1};
-    set_star_dissipation(star, 0, 1, 0, &break_frequency, NULL, powerlaws, &zero, phase_lag);
-    set_star_dissipation(star, 1, 0, 0, NULL, NULL, &zero, &zero, 0.0);
+    set_star_dissipation(star,
+                         0,
+                         1,
+                         0,
+                         &break_frequency,
+                         NULL,
+                         powerlaws,
+                         &zero,
+                         phase_lag,
+                         1.0,
+                         10.0);
 
     DiskBinarySystem *system = create_star_planet_system(
         star,

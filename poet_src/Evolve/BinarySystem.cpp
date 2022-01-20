@@ -32,14 +32,12 @@ namespace Evolve {
         double *evolution_rates
     ) const
     {
-        if(!expansion_error) {
-            DissipatingZone &locked_zone = __body1.zone(0);
-            locked_zone.set_evolution_rates(
-                locked_zone.moment_of_inertia(1) * locked_zone.spin_frequency(),
-                0.0,
-                0.0
-            );
-        }
+        DissipatingZone &locked_zone = __body1.zone(0);
+        locked_zone.set_evolution_rates(
+            locked_zone.moment_of_inertia(1) * locked_zone.spin_frequency(),
+            0.0,
+            0.0
+        );
         for(
             unsigned zone_index = 1;
             zone_index < __body1.number_zones();
@@ -48,6 +46,12 @@ namespace Evolve {
             evolution_rates[zone_index - 1] = __body1.nontidal_torque(
                 zone_index
             )[2];
+
+            __body1.zone(zone_index).set_evolution_rates(
+                evolution_rates[zone_index - 1],
+                0.0,
+                0.0
+            );
 
             assert(__body1.nontidal_torque(zone_index)[0] == 0);
             assert(__body1.nontidal_torque(zone_index)[1] == 0);
@@ -183,12 +187,11 @@ namespace Evolve {
                 );
             } else reference_torque = torque;
 
-            if(!expansion_error)
-                zone.set_evolution_rates(
-                    angmom_evol[zone_index],
-                    (zone_index ? inclination_evol[zone_index - 1] : 0.0),
-                    (zone_index ? periapsis_evol[zone_index -1] : 0.0)
-                );
+            zone.set_evolution_rates(
+                angmom_evol[zone_index],
+                (zone_index ? inclination_evol[zone_index - 1] : 0.0),
+                (zone_index ? periapsis_evol[zone_index -1] : 0.0)
+            );
         }
 #ifdef VERBOSE_DEBUG
         std::cerr << "rates: ";
@@ -903,12 +906,11 @@ namespace Evolve {
                 assert(!std::isnan(angmom_rates[zone_ind - angmom_skipped]));
             }
 
-            if(!expansion_error)
-                zone.set_evolution_rates(
-                    total_zone_torque[2],
-                    inclination_rates[zone_ind],
-                    (zone_ind ? periapsis_rates[zone_ind - 1] : 0.0)
-                );
+            zone.set_evolution_rates(
+                total_zone_torque[2],
+                inclination_rates[zone_ind],
+                (zone_ind ? periapsis_rates[zone_ind - 1] : 0.0)
+            );
 
 #ifdef VERBOSE_DEBUG
             std::cerr << "Zone " << zone_ind
@@ -927,10 +929,10 @@ namespace Evolve {
 
         differential_equations[0] = semimajor_evolution(__orbit_power);
         differential_equations[1] = eccentricity_evolution(__orbit_power,
-                                                           __orbit_angmom_gain);      
+                                                           __orbit_angmom_gain);
         __semimajor_rate = differential_equations[0];
-        __eccentricity_rate = differential_equations[1];  
-      
+        __eccentricity_rate = differential_equations[1];
+
         if(!angmom_skipped)
             differential_equations[0] *= 6.5 * std::pow(__semimajor, 5.5);
 
@@ -2023,8 +2025,7 @@ namespace Evolve {
 #endif
         int status = configure(false, age, parameters, evolution_mode);
         if(status != GSL_SUCCESS) return status;
-        if(!expansion_error)
-            __semimajor_rate = __eccentricity_rate = Core::NaN;
+        __semimajor_rate = __eccentricity_rate = Core::NaN;
         switch(evolution_mode) {
             case Core::LOCKED_SURFACE_SPIN :
                 return locked_surface_differential_equations(
