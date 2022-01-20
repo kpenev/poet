@@ -818,14 +818,14 @@ namespace Evolve {
 
 #ifndef NDEBUG
         std::cerr << "Changing eccentricity order to "
-                  << new_e_order
+                  << new_expansion_order
                   << std::endl;
 #endif
         if(__lock.spin_frequency_multiplier() == 0) {
             __expansion_order = new_expansion_order;
 #ifdef VERBOSE_DEBUG
             std::cerr << "No lock defined, simple e-order change." << std::endl;
-#endif            
+#endif
             return;
         }
 #ifdef VERBOSE_DEBUG
@@ -843,18 +843,7 @@ namespace Evolve {
         }
         check_locks_consistency();
 
-        if(__lock) {
-            __expansion_order = new_expansion_order;
-            if(
-                __lock.orbital_frequency_multiplier()
-                >
-                static_cast<int>(__e_order) + 2
-            )
-                release_lock();
-            return;
-        }
-
-        __e_order = new_e_order;
+        __expansion_order = new_expansion_order;
         initialize_locks();
 
         check_locks_consistency();
