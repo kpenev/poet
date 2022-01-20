@@ -31,6 +31,7 @@
 #include <sstream>
 #include <iostream>
 #include <limits>
+#include <ctime>
 
 namespace Evolve {
 
@@ -170,6 +171,12 @@ namespace Evolve {
 
         ///See print_progress argument of constructor.
         bool __print_progress;
+
+        ///When did the currently running evolution start.
+        time_t __evolution_start_time;
+
+        ///Max number of seconds current evolution is allowed to run.
+        double __runtime_limit;
 
 #ifndef NDEBUG
         ///\brief Generates a nicely formatted table of the contents of the
@@ -453,7 +460,12 @@ namespace Evolve {
             double max_step=Core::Inf,
 
             ///A sorted list of ages to include in the tabulated evolution.
-            const std::list<double> &required_ages=std::list<double>()
+            const std::list<double> &required_ages=std::list<double>(),
+
+            ///The maximum amount of wall-clock time in seconds to allow for
+            ///calculating the evolution. If it runs out, whatever portion is
+            ///calculated is preserved.
+            double max_runtime=0
         );
 
         ///The ages at which evolution has been tabulated so far.

@@ -123,7 +123,8 @@ def initialize_library(library_fname=None):
                           ndim=1,
                           flags='C_CONTIGUOUS'),
         c_uint,
-        c_bool
+        c_bool,
+        c_double
     ]
     result.evolve_system.restype = c_solver_p
 
@@ -179,7 +180,41 @@ def initialize_library(library_fname=None):
                           flags='C_CONTIGUOUS'),
         ndpointer_or_null(dtype=c_bool, #wind_saturation
                           ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #semimajor rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #eccentricity rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #envelope inclination rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #core_inclination rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #envelope_periapsis rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #core_periapsis rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #envelope_angmom rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #core_angmom rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #planet_inclination rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #planet_periapsis rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double, #planet_angmom rate
+                          ndim=1,
                           flags='C_CONTIGUOUS')
+
     ]
     result.get_star_planet_evolution.restype = None
 
@@ -241,7 +276,50 @@ def initialize_library(library_fname=None):
                           flags='C_CONTIGUOUS'),
         ndpointer_or_null(dtype=c_bool,
                           ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,
+                          ndim=1,
                           flags='C_CONTIGUOUS')
+
     ]
     result.get_star_star_evolution.restype = None
 

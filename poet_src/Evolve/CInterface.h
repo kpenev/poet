@@ -83,7 +83,16 @@ extern "C" {
 
         ///The phase lag at the first tidal and first spin frequency break.
         ///The rest are calculated by imposing continuity.
-        double reference_phase_lag
+        double reference_phase_lag,
+
+        ///Factor by which the dissipation in the inertial mode range is
+        ///enhanced relative to what is defined by all other parameters. Must be
+        ///greater than 1.
+        double inertial_mode_enhancement,
+
+        ///Parameter controlling how sharp the transition between inertial mode
+        ///non-enhanced and inertial mode enhanced dissipation is.
+        double inertial_mode_sharpness
     );
 
     ///Create a binary system out of a star and a planet.
@@ -307,7 +316,12 @@ extern "C" {
         unsigned num_required_ages,
 
         ///See print_progress argument to Evolve::OrbitSolver::OrbitSolver()
-        bool print_progress
+        bool print_progress,
+
+        ///The maximum time in seconds the evolutions is allowed to run.
+        ///Partially calculated evolution can be queried. Any non-positive
+        //values results in infinite timeout.
+        double max_runtime
     );
 
     ///Destroy a solver created by evolve_system.
@@ -395,7 +409,53 @@ extern "C" {
         ///An array to fill with a flag indicating whether the angular
         ///momentum loss due to stellar wind is in the satured state (true)
         ///or not (false).
-        bool *wind_saturation
+        bool *wind_saturation,
+
+        ///An array to fill with the rate at which the semimajor axis changes at
+        ///the saved evolution steps.
+        double *semimajor_rate,
+
+        ///An array to fill with the rate the orbital eccentricity changes at
+        ///the saved evolution steps.
+        double *eccentricity_rate,
+
+        ///An array to fill with the rate at which the angle between the stellar
+        ///convective envelope and the orbital angular momenta changes.
+        double *envelope_inclination_rate,
+
+        ///An array to fill with the rate of change of the angle between the
+        ///stellar radiative core and the orbital angular momenta.
+        double *core_inclination_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the
+        ///orbit in the equatorial plane of the stellar convective envelope.
+        double *envelope_periapsis_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the
+        ///orbit in the equatorial plane of the stellar radiative core.
+        double *core_periapsis_rate,
+
+        ///An array to fill with the rate of change of the angular momentum of
+        ///the stellar convective envelope.
+        double *envelope_angmom_rate,
+
+        ///An array to fill with the rate of change of the angular momentum of
+        ///the stellar radiative core.
+        double *core_angmom_rate,
+
+        ///An array to fill wit the rate of change of the angle between the
+        ///planet's and the orbital angular momentum (pass NULL if the planet is
+        ///not dissipative).
+        double *planet_inclination_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the orbit
+        ///in the equatorial plane of the planet (pass NULL if the planet is
+        ///not dissipative).
+        double *planet_periapsis_rate,
+
+        ///An array to fill with the range of change of the angular momentum of
+        ///the planet (pass NULL if the planet is not dissipative).
+        double *planet_angmom_rate
     );
 
     ///\brief Fill C-style arrays with the calculated evolution of a
@@ -487,7 +547,63 @@ extern "C" {
         ///An array to fill with a flag indicating whether the angular
         ///momentum loss due to stellar wind is in the satured state (true)
         ///or not (false).
-        bool *secondary_wind_saturation
+        bool *secondary_wind_saturation,
+
+        ///An array to fill with the rate of change of the semimajor axis at the
+        ///saved evolution steps.
+        double *semimajor_rate,
+
+        ///An array to fill with the rate of change of the orbital eccentricity
+        ///at the saved evolution steps.
+        double *eccentricity_rate,
+
+        ///An array to fill with the rate of change of the angle between the
+        ///stellar convective envelope and the orbital angular momenta.
+        double *primary_envelope_inclination_rate,
+
+        ///An array to fill with the rate of change of the angle between the
+        ///stellar radiative core and the orbital angular momenta.
+        double *primary_core_inclination_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the
+        ///orbit in the equatorial plane of the stellar convective envelope.
+        double *primary_envelope_periapsis_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the
+        ///orbit in the equatorial plane of the stellar radiative core.
+        double *primary_core_periapsis_rate,
+
+        ///An array to fill with the rate of change of the angular momentum of
+        ///the stellar convective envelope.
+        double *primary_envelope_angmom_rate,
+
+        ///An array to fill with the rate of change of the angular momentum of
+        ///the stellar radiative core.
+        double *primary_core_angmom_rate,
+
+        ///An array to fill with the rate of change of the angle between the
+        ///stellar convective envelope and the orbital angular momenta.
+        double *secondary_envelope_inclination_rate,
+
+        ///An array to fill with the rate of change of the angle between the
+        ///stellar radiative core and the orbital angular momenta.
+        double *secondary_core_inclination_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the
+        ///orbit in the equatorial plane of the stellar convective envelope.
+        double *secondary_envelope_periapsis_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the
+        ///orbit in the equatorial plane of the stellar radiative core.
+        double *secondary_core_periapsis_rate,
+
+        ///An array to fill with the rate of change of the angular momentum of
+        ///the stellar convective envelope.
+        double *secondary_envelope_angmom_rate,
+
+        ///An array to fill with the rate of change of the angular momentum of
+        ///the stellar radiative core.
+        double *secondary_core_angmom_rate
     );
 
     ///\brief Fill destiantions with the calculated final state of a

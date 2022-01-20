@@ -24,11 +24,18 @@ namespace Evolve {
     class LIB_PUBLIC ZoneOrientation {
     private:
 
-        ///The inclination of the zone relative to the orbit.
-        double __inclination,
+        double
+            ///The inclination of the zone relative to the orbit.
+            __inclination,
 
-               ///The periapsis of the orbit in the equatorial frame of the zone.
-               __periapsis;
+            ///The rate at which the inclination of the zone is evolving.
+            __inclination_rate,
+
+            ///The periapsis of the orbit in the equatorial frame of the zone.
+            __periapsis,
+
+            ///The rate at which the periapsis of the zone is evolving.
+            __periapsis_rate;
     public:
         ZoneOrientation(double inclination = Core::NaN,
                         double periapsis = Core::NaN) :
@@ -38,13 +45,21 @@ namespace Evolve {
 
         ///Changes the zone orientation.
         void configure(double inclination, double periapsis)
-        {__inclination=inclination; __periapsis=periapsis;}
+        {__inclination = inclination; __periapsis = periapsis;}
+
+        void set_evolution_rates(double inclination, double periapsis)
+        {__inclination_rate = inclination; __periapsis_rate = periapsis;}
 
         ///The angle between the angular momenta of the zone and the orbit.
-        double inclination() const {return __inclination;}
+        double inclination(bool evolution_rate=false) const {
+            return (evolution_rate ? __inclination_rate: __inclination);
+        }
 
         ///The argument of periapsis of this zone minus the reference zone's
-        double periapsis() const {return __periapsis;}
+        double periapsis(bool evolution_rate=false) const {
+            return (evolution_rate ? __periapsis_rate : __periapsis);
+        }
+
     }; //End ZoneOrientation class.
 
     ///Transforms a vector betwen the coordinates systems of two zones.

@@ -8,9 +8,12 @@ namespace Evolve {
                              const ZoneEvolutionQuantities &evol_var)
     {
         switch(evol_var) {
-            case ANGULAR_MOMENTUM : os << "AGE"; break;
+            case ANGULAR_MOMENTUM : os << "ANGULAR_MOMENTUM"; break;
+            case ANGULAR_MOMENTUM_DERIV : os << "ANGULAR_MOMENTUM_DERIV"; break;
             case INCLINATION : os << "INCLINATION"; break;
+            case INCLINATION_DERIV : os << "INCLINATION_DERIV"; break;
             case PERIAPSIS : os << "PERIAPSIS"; break;
+            case PERIAPSIS_DERIV : os << "PERIAPSIS_DERIV"; break;
             case MOMENT_OF_INERTIA : os << "MOMENT_OF_INERTIA"; break;
             case MOMENT_OF_INERTIA_FIRST_DERIV :
                                      os << "DMOMENT_OF_INERTIA_DT"; break;
@@ -49,7 +52,7 @@ namespace Evolve {
         double &forcing_frequency
     ) const
     {
-        if(__initializing) return;
+        if(__initializing || !can_lock()) return;
         assert(limit.spin_frequency_multiplier() == 1
                ||
                limit.spin_frequency_multiplier() == 2);
@@ -78,7 +81,7 @@ namespace Evolve {
                 );
             return;
         }
-        int expected_sign = (
+        int expected_sign = boost::math::sign(
             limit.spin_frequency_multiplier()
             *
             (
@@ -91,45 +94,33 @@ namespace Evolve {
                 spin_frequency_multiplier
             )
         );
-        if(expected_sign * limit.lock_direction() > 0) return;
+        if(
+            expected_sign * limit.lock_direction() * spin_frequency_multiplier
+            >
+            0
+        ) return;
         if(forcing_frequency * expected_sign > 0) return;
 
         assert(limit.lock_direction());
 
-        forcing_frequency = (std::numeric_limits<double>::epsilon()
-                             *
-                             limit.lock_direction());
+        forcing_frequency = (
+            std::numeric_limits<double>::epsilon()
+            *
+            expected_sign
+        );
     }
 
-#ifndef NDEBUG
     void DissipatingZone::check_locks_consistency() const
     {
         if(__initializing) return;
         int max_abs_orb_mult = static_cast<int>(__expansion_order);
         if(
-            !(
-                __lock
-                ||
-                (__lock.lock_direction() * __other_lock.lock_direction( )== -1)
-                ||
-                (
-                    __lock.spin_frequency_multiplier() == 1
-                    &&
-                    (
-                        __lock.orbital_frequency_multiplier()
-                        ==
-                        __lock.lock_direction() * max_abs_orb_mult
-                    )
-                    &&
-                    __other_lock.orbital_frequency_multiplier() == 1
-                    &&
-                    __other_lock.spin_frequency_multiplier() == 0
-                    &&
-                    __other_lock.lock_direction() == 1)
-            )
+            (!__lock)
+            &&
+            (__lock.lock_direction() * __other_lock.lock_direction() != -1)
         ) {
             throw Core::Error::Runtime(
-                "Incosistent lock state encountered for a zone. Likely related "
+                "Inconsistent lock state encountered for a zone. Likely related "
                 "to initial conditions with a tidal term too close to zero."
             );
         }
@@ -184,16 +175,13 @@ namespace Evolve {
             0
         );
     }
-#endif
 
     void DissipatingZone::update_lock_to_lower_expansion_order(
         SpinOrbitLockInfo &lock
     )
     {
-#ifndef NDEBUG
         assert(lock.lock_direction());
         check_locks_consistency();
-#endif
         if(
             static_cast<unsigned>(std::abs(lock.orbital_frequency_multiplier()))
             >
@@ -219,77 +207,33 @@ namespace Evolve {
             if(lock.lock_direction() > 0)
                 lock.set_lock(__expansion_order, 1, 1);
             else
-                lock.set_lock(1, 0, 1);
+                lock.set_lock(1, 0, -1);
         } else if(
             lock.orbital_frequency_multiplier()
             <
             -static_cast<int>(__expansion_order)
         ) {
             if(lock.lock_direction() > 0)
-                lock.set_lock(1, 0, 1);
+                lock.set_lock(-1, 0, 1);
             else
                 lock.set_lock(-static_cast<int>(__expansion_order), 1, -1);
         }
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
-    }
-
-    void DissipatingZone::update_locks_to_higher_expansion_order(
-        unsigned new_expansion_order
-    )
-    {
-        if(__other_lock.spin_frequency_multiplier() == 0) {
-            int orb_mult = std::ceil(std::abs(2 * spin_frequency())
-                                     /
-                                     __orbital_frequency);
-            if(
-                orb_mult % 2 == 1
-                &&
-                static_cast<int>(new_expansion_order) + 2 >= orb_mult
-            )
-                __other_lock.set_lock(__lock.lock_direction() * orb_mult,
-                                      2,
-                                      -__lock.lock_direction());
-            else if(static_cast<int>(new_expansion_order) + 2 >= orb_mult / 2)
-                __other_lock.set_lock(
-                    __lock.lock_direction() * orb_mult / 2,
-                    1,
-                    -__lock.lock_direction()
-                );
-        } else if(
-            __lock.spin_frequency_multiplier() == 1
-            &&
-            __other_lock.spin_frequency_multiplier() == 1
-            &&
-            __lock.orbital_frequency_multiplier()
-            +
-            __other_lock.orbital_frequency_multiplier()
-            <=
-            static_cast<int>(new_expansion_order) + 2
-        ) {
-            int mid_mult = (__lock.orbital_frequency_multiplier()
-                            +
-                            __other_lock.orbital_frequency_multiplier());
-            if(2 * spin_frequency() < mid_mult * __orbital_frequency)
-                (
-                    __lock.lock_direction() > 0
-                    ? __other_lock
-                    : __lock
-                ).set_lock(mid_mult, 2, -1);
-            else
-                (
-                    __lock.lock_direction()>0
-                    ? __lock
-                    : __other_lock
-                ).set_lock(mid_mult, 2, 1);
-        }
     }
 
     void DissipatingZone::initialize_locks()
     {
+        if(!can_lock()) {
+            __lock.set_lock(-1, 0, 1);
+            __other_lock.set_lock(1, 0, -1);
+            return;
+        }
 #ifndef NDEBUG
-        std::cerr << "Initializing locks" << std::endl;
+        std::cerr << "Initializing locks for Worb = "
+                  << __orbital_frequency
+                  << ", W* = "
+                  << __spin_frequency
+                  << "." << std::endl;
 #endif
         int below_orb_mult = std::floor(2.0
                                         *
@@ -299,28 +243,30 @@ namespace Evolve {
             max_abs_orb_mult=static_cast<int>(__expansion_order);
         if(below_orb_mult % 2) {
             if(
-                static_cast<unsigned>(std::abs(below_orb_mult))
+                std::abs(below_orb_mult)
                 <=
-                __expansion_order
+                max_abs_orb_mult
             ) {
                 __lock.set_lock(below_orb_mult, 2, 1);
                 __other_lock.set_lock((below_orb_mult + 1) / 2, 1, -1);
             } else if(
-                static_cast<unsigned>(std::abs((below_orb_mult - 1) / 2))
+                std::abs((below_orb_mult - 1) / 2)
                 <=
-                __expansion_order
+                max_abs_orb_mult
             ) {
                 __lock.set_lock((below_orb_mult - 1) / 2, 1, 1);
                 if((below_orb_mult + 1) / 2 > max_abs_orb_mult)
-                    __other_lock.set_lock(1, 0, 1);
+                    __other_lock.set_lock(1, 0, -1);
                 else
                     __other_lock.set_lock((below_orb_mult + 1) / 2, 1, -1);
             } else {
-                if(__spin_frequency > 0)
+                if(__spin_frequency > 0) {
                     __lock.set_lock(max_abs_orb_mult, 1, 1);
-                else
+                    __other_lock.set_lock(1, 0, -1);
+                } else {
                     __lock.set_lock(-max_abs_orb_mult, 1, -1);
-                __other_lock.set_lock(1, 0, 1);
+                    __other_lock.set_lock(-1, 0, 1);
+                }
             }
         } else if(std::abs(below_orb_mult / 2) <= max_abs_orb_mult) {
             __lock.set_lock(below_orb_mult / 2, 1, 1);
@@ -329,17 +275,18 @@ namespace Evolve {
             else if(std::abs(below_orb_mult / 2 + 1) <= max_abs_orb_mult)
                 __other_lock.set_lock(below_orb_mult / 2 + 1, 1, -1);
             else
-                __other_lock.set_lock(1, 0, 1);
+                __other_lock.set_lock(1, 0, -1);
         } else {
-            if(__spin_frequency > 0)
+            if(__spin_frequency > 0) {
                 __lock.set_lock(max_abs_orb_mult, 1, 1);
-            else
+                __other_lock.set_lock(1, 0, -1);
+            } else {
                 __lock.set_lock(-max_abs_orb_mult, 1, -1);
-            __other_lock.set_lock(1, 0, 1);
+                __other_lock.set_lock(-1, 0, 1);
+            }
+
         }
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
     }
 
     void DissipatingZone::add_tidal_term(int m,
@@ -600,9 +547,13 @@ namespace Evolve {
         double orbital_frequency
     ) const
     {
-#ifndef NDEBUG
-        check_locks_consistency();
-#endif
+        if(
+            __lock.spin_frequency_multiplier() != 0
+            ||
+            __lock.orbital_frequency_multiplier() != 0
+
+        )
+            check_locks_consistency();
         if(__lock(orbital_frequency_multiplier, spin_frequency_multiplier))
             return 0;
         double forcing_freq = (
@@ -618,10 +569,16 @@ namespace Evolve {
                   << "Wtide = " << forcing_freq << " -> ";
 #endif
 
-        fix_forcing_frequency(__lock,
-                              orbital_frequency_multiplier,
-                              spin_frequency_multiplier,
-                              forcing_freq);
+        if(
+            __lock.spin_frequency_multiplier() != 0
+            ||
+            __lock.orbital_frequency_multiplier() != 0
+
+        )
+            fix_forcing_frequency(__lock,
+                                  orbital_frequency_multiplier,
+                                  spin_frequency_multiplier,
+                                  forcing_freq);
         if(!__lock && __other_lock.spin_frequency_multiplier() != 0)
             fix_forcing_frequency(__other_lock,
                                   orbital_frequency_multiplier,
@@ -806,6 +763,7 @@ namespace Evolve {
 
     void DissipatingZone::release_lock()
     {
+        assert(can_lock());
         if(__lock.spin_frequency_multiplier() == 2) {
             assert(__lock.orbital_frequency_multiplier() % 2 == 1);
             __other_lock.set_lock(
@@ -829,6 +787,7 @@ namespace Evolve {
 
     void DissipatingZone::release_lock(short direction)
     {
+        assert(can_lock());
         assert(__lock);
         assert(direction == 1 || direction == -1);
         assert(
@@ -856,10 +815,22 @@ namespace Evolve {
         unsigned
     )
     {
+
+#ifndef NDEBUG
+        std::cerr << "Changing eccentricity order to "
+                  << new_e_order
+                  << std::endl;
+#endif
         if(__lock.spin_frequency_multiplier() == 0) {
             __expansion_order = new_expansion_order;
+#ifdef VERBOSE_DEBUG
+            std::cerr << "No lock defined, simple e-order change." << std::endl;
+#endif            
             return;
         }
+#ifdef VERBOSE_DEBUG
+        std::cerr << "Lock(s) defined, updating." << std::endl;
+#endif
         if(__lock) {
            __expansion_order = new_expansion_order;
            if(
@@ -870,33 +841,37 @@ namespace Evolve {
                release_lock();
            return;
         }
-#ifndef NDEBUG
         check_locks_consistency();
-#endif
-        if(new_expansion_order > __expansion_order) {
-            update_locks_to_higher_expansion_order(new_expansion_order);
+
+        if(__lock) {
             __expansion_order = new_expansion_order;
-        } else {
-            __expansion_order = new_expansion_order;
-            update_lock_to_lower_expansion_order(__lock);
-            update_lock_to_lower_expansion_order(__other_lock);
-            if(__lock.spin_frequency_multiplier() == 0) {
-                __lock = __other_lock;
-                __other_lock.set_lock(1, 0, 1);
-            }
+            if(
+                __lock.orbital_frequency_multiplier()
+                >
+                static_cast<int>(__e_order) + 2
+            )
+                release_lock();
+            return;
         }
-#ifndef NDEBUG
+
+        __e_order = new_e_order;
+        initialize_locks();
+
         check_locks_consistency();
-#endif
     }
 
     void DissipatingZone::add_to_evolution()
     {
         __evolution_real[ANGULAR_MOMENTUM].push_back(__angular_momentum);
+        __evolution_real[ANGULAR_MOMENTUM_DERIV].push_back(
+            __angular_momentum_evolution_rate
+        );
 
         __evolution_real[INCLINATION].push_back(inclination());
+        __evolution_real[INCLINATION_DERIV].push_back(inclination(true));
 
         __evolution_real[PERIAPSIS].push_back(periapsis());
+        __evolution_real[PERIAPSIS_DERIV].push_back(periapsis(true));
 
         __evolution_real[MOMENT_OF_INERTIA].push_back(moment_of_inertia());
 
@@ -960,7 +935,7 @@ namespace Evolve {
     )
     {
         CombinedStoppingCondition *result = new CombinedStoppingCondition();
-        if(!dissipative()) return result;
+        if(!can_lock()) return result;
         if(__lock)
             (*result) |= new BreakLockCondition(system, __locked_zone_index);
         else if(system.evolution_mode() == Core::BINARY) {

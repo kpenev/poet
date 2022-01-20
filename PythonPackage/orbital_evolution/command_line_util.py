@@ -147,6 +147,22 @@ def add_star_config(parser, primary=True, require_secondary=False):
         'index at each break is defined to apply for the frequency range '
         'away from the reference.'
     )
+    parser.add_argument(
+        prefix + '-inertial-mode-enhancement',
+        type=float,
+        default=1.0,
+        help='A factor by which the dissipation is larger in the inertial mode '
+        'range relative to outside of it. This is applied on top of the spin '
+        'and forcing frequency dependencies defined by the other arguments.'
+    )
+    parser.add_argument(
+        prefix + '-inertial-mode-sharpness',
+        type=float,
+        default=10.0,
+        help='A parameter controlling how suddenly the enhancement due to '
+        'inertial modes gets turned on near the inertial mode range boundaries.'
+    )
+
 
 def add_binary_config(parser, skip=(), require_secondary=False):
     """
@@ -303,6 +319,14 @@ def add_evolution_config(parser):
         help='The directory containing serialized stellar evolutions and the '
         'name of the interpolator to use.'
     )
+    parser.add_argument(
+        '--max-evolution-runtime', '--timeout',
+        type=float,
+        default=0,
+        help='The maximum number of seconds calculating the orbital evolution '
+        'is allowed to take. Non-positive value results in no timeout. '
+        'Partially cumputed evolutions that time out can still be querried.'
+    )
 
 def set_up_library(cmdline_args):
     """Define eccentricity expansion and return stellar evol interpolator."""
@@ -443,8 +467,11 @@ def get_phase_lag_config(cmdline_args, primary=True):
         spin_frequency_breaks=None,
         spin_frequency_powers=numpy.array([0.0]),
     )
-    dissipation_breaks = getattr(cmdline_args,
-                                 component_name + '_dissipation_break')
+    dissipation_breaks = (
+        getattr(cmdline_args, component_name + '_dissipation_break')
+        or
+        []
+    )
 
     if (
             reference_dissipation[2] == reference_dissipation[3] == 0
@@ -454,7 +481,23 @@ def get_phase_lag_config(cmdline_args, primary=True):
         result['tidal_frequency_powers'] = numpy.array([0.0])
         result['tidal_frequency_breaks'] = None
     else:
-        raise NotImplementedError('Not implemented yet')
+        result['tidal_frequency_breaks'] = numpy.empty(
+            1 + len(dissipation_breaks),
+            dtype=float
+        )
+        result['tidal_frequency_powers'] = numpy.empty(
+            2 + len(dissipation_breaks),
+            dtype=float
+        )
+        result['tidal_frequency_breaks'][0] = reference_dissipation[1]
+        result['tidal_frequency_powers'][0] = reference_dissipation[2]
+        result['tidal_frequency_powers'][1] = reference_dissipation[3]
+        for index, (frequency, power) in enumerate(dissipation_breaks):
+            result['tidal_frequency_breaks'][index + 1] = frequency
+            result['tidal_frequency_powers'][index + 2] = power
+
+    for param in ['inertial_mode_enhancement', 'inertial_mode_sharpness']:
+        result[param] = getattr(cmdline_args, component_name + '_' + param)
 
     return result
 
@@ -534,6 +577,7 @@ def run_evolution(cmdline_args,
         eccentricity_expansion_fname=(
             cmdline_args.eccentricity_expansion_fname.encode('ascii')
         ),
+        timeout=cmdline_args.max_evolution_runtime,
         **extra_evolve_args
     )
     evolution = binary.get_evolution(required_ages_only=required_ages_only)
@@ -541,11 +585,17 @@ def run_evolution(cmdline_args,
         component = getattr(binary, component_name)
         if isinstance(component, EvolvingStar):
             for zone in ['core', 'envelope']:
-                setattr(
-                    evolution,
-                    '_'.join([component_name, zone, 'inertia']),
-                    getattr(component, zone + '_inertia')(evolution.age)
-                )
+                for deriv_order in range(3):
+                    setattr(
+                        evolution,
+                        '_'.join(
+                            [component_name, zone, 'inertia']
+                            +
+                            (['d%d' % deriv_order] if deriv_order else [])
+                        ),
+                        getattr(component, zone + '_inertia')(evolution.age,
+                                                              deriv_order)
+                    )
     evolution.orbital_period = binary.orbital_period(evolution.semimajor)
     binary.delete()
     return evolution

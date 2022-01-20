@@ -41,7 +41,9 @@ class Binary:
                 the current system.
         """
 
-        evolution_quantities = ['age', 'semimajor', 'eccentricity']
+        evolution_quantities = ['age',
+                                'semimajor',
+                                'eccentricity']
 
         star_float_quantities = ['envelope_inclination',
                                  'core_inclination',
@@ -68,6 +70,10 @@ class Binary:
                                             'planet_angmom'
                                         ])
 
+        rate_quantities = (
+            [q + '_rate' for q in evolution_quantities[1:]]
+        )
+
         evolution_quantities.append('evolution_mode')
 
         if secondary_is_star:
@@ -75,6 +81,8 @@ class Binary:
                                          'secondary_wind_saturation'])
         else:
             evolution_quantities.append('wind_saturation')
+
+        evolution_quantities.extend(rate_quantities)
 
         return evolution_quantities
 
@@ -136,7 +144,6 @@ class Binary:
             if component.dissipation:
                 assert set(component.dissipation.keys()) == set([0])
                 for param, value in component.dissipation[0].items():
-                    print('param: ' + param)
                     if param != 'reference_phase_lag':
                         value = (
                             '{}' if value is None
@@ -194,13 +201,6 @@ class Binary:
                 ''
             )
 
-        print(
-            'Substitutions:\n\t'
-            +
-            '\n\t'.join(['%s = %s' % item
-                         for item in c_code_substitutions.items()])
-        )
-
         with open(c_code_fname, 'w') as c_code:
             c_code.write(
                 open(
@@ -215,21 +215,27 @@ class Binary:
     def _get_required_age_indices(self, evolution_ages):
         """Return the indices within evolution_ages of `self._required_ages`."""
 
-        indices = {
-            side:  numpy.searchsorted(evolution_ages,
-                                      self._required_ages,
-                                      side=side)
-            for side in ['left', 'right']
-        }
-        indices['right'][indices['right'] == evolution_ages.size] = (
-            evolution_ages.size - 1
-        )
-        return numpy.where(
-            numpy.abs(evolution_ages[indices['right']] - self._required_ages)
-            <
-            numpy.abs(evolution_ages[indices['left']] - self._required_ages),
-            indices['right'],
-            indices['left']
+
+        indices = dict()
+        for side in ['left', 'right']:
+            indices[side] = numpy.searchsorted(evolution_ages,
+                                               self._required_ages,
+                                               side=side)
+            indices[side][indices[side] == evolution_ages.size] = (
+                evolution_ages.size - 1
+            )
+        return numpy.unique(
+            numpy.where(
+                numpy.abs(evolution_ages[indices['right']]
+                          -
+                          self._required_ages)
+                <
+                numpy.abs(evolution_ages[indices['left']]
+                          -
+                          self._required_ages),
+                indices['right'],
+                indices['left']
+            )
         )
 
     def __init__(self,
@@ -402,7 +408,8 @@ class Binary:
                *,
                print_progress=False,
                create_c_code='',
-               eccentricity_expansion_fname=None):
+               eccentricity_expansion_fname=None,
+               timeout=0):
         """
         Evolve the system forward from its current state.
 
@@ -431,6 +438,11 @@ class Binary:
                 eccentricity expansion coefficients were read. Only used if
                 create_c_code is not empty.
 
+            - timeout:
+                The maximum number of seconds the evolution is allowed to run.
+                Non-positive value results in no timeout. Partially cumputed
+                evolutions that time out can still be querried.
+
         Returnns: None
         """
 
@@ -457,7 +469,8 @@ class Binary:
             precision,
             required_ages,
             (0 if required_ages is None else required_ages.size),
-            print_progress
+            print_progress,
+            timeout
         )
         self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
 

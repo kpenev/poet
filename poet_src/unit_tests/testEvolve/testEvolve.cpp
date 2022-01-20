@@ -2,6 +2,7 @@
 #include "testOrbitSolver.h"
 #include "testTidalTorquePower.h"
 #include "testDifferentialEquations.h"
+#include "testLockMonitoring.h"
 
 #ifdef STANDALONE
 
@@ -117,6 +118,9 @@ int main()
     );*/
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_OrbitSolver)
+    );*/
+    all_tests.add(
+        std::auto_ptr<Test::Suite>(new Evolve::test_LockMonitoring)
     );
     return (all_tests.run(output)
             ? EXIT_SUCCESS

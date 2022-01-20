@@ -20,105 +20,9 @@ from basic_utils import Structure
 import numpy
 from astropy import units, constants
 
+from evolution_utils import creaty_star, create_planet, create_system
+
 wnorm = 2.0 * numpy.pi / 25.34
-
-def create_planet(mass=(constants.M_jup / constants.M_sun).to(''),
-                  phase_lag=0.0):
-    """Return a configured planet to use in the evolution."""
-
-    planet = LockedPlanet(
-        mass=mass,
-        radius=(constants.R_jup / constants.R_sun).to('')
-    )
-    if phase_lag:
-        print('Setting planet dissipation')
-        planet.set_dissipation(tidal_frequency_breaks=None,
-                               spin_frequency_breaks=None,
-                               tidal_frequency_powers=numpy.array([0.0]),
-                               spin_frequency_powers=numpy.array([0.0]),
-                               reference_phase_lag=phase_lag)
-    return planet
-
-def create_star(interpolator,
-                convective_phase_lag,
-                *,
-                mass=1.0,
-                metallicity=0.0,
-                wind_strength=0.17,
-                wind_saturation_frequency=2.45,
-                diff_rot_coupling_timescale=5.0e-3,
-                interp_age=None):
-    """Create the star to use in the evolution."""
-
-    star = EvolvingStar(mass=mass,
-                        metallicity=metallicity,
-                        wind_strength=wind_strength,
-                        wind_saturation_frequency=wind_saturation_frequency,
-                        diff_rot_coupling_timescale=diff_rot_coupling_timescale,
-                        interpolator=interpolator)
-    if convective_phase_lag:
-        print('Setting star dissipation')
-        star.set_dissipation(zone_index=0,
-                             tidal_frequency_breaks=None,
-                             spin_frequency_breaks=None,
-                             tidal_frequency_powers=numpy.array([0.0]),
-                             spin_frequency_powers=numpy.array([0.0]),
-                             reference_phase_lag=convective_phase_lag)
-    star.select_interpolation_region(star.core_formation_age()
-                                     if interp_age is None else
-                                     interp_age)
-    return star
-
-def create_system(primary,
-                  secondary,
-                  disk_lock_frequency,
-                  initial_eccentricity=0.0,
-                  porb_initial=3.5,
-                  disk_dissipation_age=4e-3):
-    """Create the system which to evolve from the given primary and secondary."""
-
-    binary = Binary(primary=primary,
-                    secondary=secondary,
-                    initial_orbital_period=porb_initial,
-                    initial_eccentricity=initial_eccentricity,
-                    initial_inclination=0.0,
-                    disk_lock_frequency=disk_lock_frequency,
-                    disk_dissipation_age=disk_dissipation_age,
-                    secondary_formation_age=disk_dissipation_age)
-    binary.configure(age=primary.core_formation_age(),
-                     semimajor=float('nan'),
-                     eccentricity=float('nan'),
-                     spin_angmom=numpy.array([0.0]),
-                     inclination=None,
-                     periapsis=None,
-                     evolution_mode='LOCKED_SURFACE_SPIN')
-
-    if isinstance(secondary, EvolvingStar):
-        initial_obliquity = numpy.array([0.0])
-        initial_periapsis = numpy.array([0.0])
-    else:
-        initial_obliquity = None
-        initial_periapsis = None
-    secondary.configure(age=disk_dissipation_age,
-                        companion_mass=primary.mass,
-                        semimajor=binary.semimajor(porb_initial),
-                        eccentricity=initial_eccentricity,
-                        spin_angmom=(
-                            numpy.array([0.01, 0.01])
-                            if isinstance(secondary, EvolvingStar) else
-                            numpy.array([0.0])
-                        ),
-                        inclination=initial_obliquity,
-                        periapsis=initial_periapsis,
-                        locked_surface=False,
-                        zero_outer_inclination=True,
-                        zero_outer_periapsis=True)
-
-    primary.detect_stellar_wind_saturation()
-    if isinstance(secondary, EvolvingStar):
-        secondary.detect_stellar_wind_saturation()
-
-    return binary
 
 def plot_evolution(binary, color):
     """Create and display plots of the calculated evolution."""
@@ -148,7 +52,9 @@ def plot_evolution(binary, color):
     worb = (2.0 * numpy.pi / binary.orbital_period(evolution.semimajor)
             /
             wnorm)
-    Eorb = -(
+    #False positive for astropy units & constants
+    #pylint: disable=no-member
+    orbital_energy = -(
         (
             (
                 constants.G
@@ -165,6 +71,7 @@ def plot_evolution(binary, color):
             units.M_sun * units.R_sun**2 / units.day**2
         )
     ).to('')
+    #pylint: enable=no-member
     wenv = (
         getattr(
             evolution,
@@ -184,7 +91,7 @@ def plot_evolution(binary, color):
         binary.primary.core_inertia(evolution.age)
     ) / wnorm
 
-    primary_Espin = (
+    primary_spin_energy = (
         binary.primary.envelope_inertia(evolution.age)
         *
         (wenv * wnorm)**2
@@ -200,7 +107,7 @@ def plot_evolution(binary, color):
             /
             binary.secondary.envelope_inertia(evolution.age)
         ) / wnorm
-        secondary_Espin = (
+        secondary_spin_energy = (
             evolution.secondary_envelope_angmom**2
             /
             binary.secondary.envelope_inertia(evolution.age)
@@ -210,7 +117,7 @@ def plot_evolution(binary, color):
             binary.secondary.core_inertia(evolution.age)
         ) / 2.0
     else:
-        secondary_Espin = numpy.zeros(evolution.age.shape)
+        secondary_spin_energy = numpy.zeros(evolution.age.shape)
         wsecondary = (
             evolution.planet_angmom
             /
@@ -269,15 +176,18 @@ def plot_evolution(binary, color):
     pyplot.show()
     pyplot.cla()
 
-    pyplot.semilogx(evolution.age, Eorb, 'o' + color)
-    pyplot.semilogx(evolution.age, primary_Espin, '--' + color)
-    pyplot.semilogx(evolution.age, secondary_Espin, ':' + color)
-    pyplot.semilogx(evolution.age,
-                    Eorb + primary_Espin + secondary_Espin,
-                    '-' + color)
+    pyplot.semilogx(evolution.age, orbital_energy, 'o' + color)
+    pyplot.semilogx(evolution.age, primary_spin_energy, '--' + color)
+    pyplot.semilogx(evolution.age, secondary_spin_energy, ':' + color)
+    pyplot.semilogx(
+        evolution.age,
+        orbital_energy + primary_spin_energy + secondary_spin_energy,
+        '-' + color
+    )
     pyplot.show()
 #    pyplot.axhline(2.45 / wnorm)
 #    pyplot.ylim((0.1, 100))
+
 
 
 def test_evolution(interpolator,

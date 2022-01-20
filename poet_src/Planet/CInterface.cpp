@@ -28,7 +28,9 @@ LIB_PUBLIC void set_planet_dissipation(CPlanet *planet,
                                        double *spin_frequency_breaks,
                                        double *tidal_frequency_powers,
                                        double *spin_frequency_powers,
-                                       double reference_phase_lag)
+                                       double reference_phase_lag,
+                                       double inertial_mode_enhancement,
+                                       double inertial_mode_sharpness)
 {
     Evolve::BrokenPowerlawPhaseLagZone *zone = &(
         reinterpret_cast<Planet::Planet*>(planet)->zone()
@@ -42,6 +44,8 @@ LIB_PUBLIC void set_planet_dissipation(CPlanet *planet,
         spin_frequency_breaks,
         tidal_frequency_powers,
         spin_frequency_powers,
-        reference_phase_lag
+        reference_phase_lag,
+        inertial_mode_enhancement,
+        inertial_mode_sharpness
     );
 }

@@ -53,6 +53,7 @@ int main(int, char **)
     const double SECONDARY_MASS = 0.5855694677552672;
     const double FEH = 0.0;//-0.3307293375206785;
     const double INITIAL_PERIOD = 9.29674528596;
+
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -83,7 +84,11 @@ int main(int, char **)
 
 
     double zero = 0.0;
-    double initial_secondary_angmom[] = {0.0, 0.0};
+    double initial_secondary_angmom[] = {0.2, 0.001};
+
+    double tidal_frequency_breaks[] = {2.0 * M_PI / 100.0};
+    double tidal_frequency_powers[] = {1.0, 0.0};
+
 
     EvolvingStar *primary = create_star(PRIMARY_MASS,
                                         FEH,
@@ -94,13 +99,15 @@ int main(int, char **)
     select_interpolation_region(primary, core_formation_age(primary));
     set_star_dissipation(primary,
                          0,          //zone index
-                         0,          //# tidal frequency breaks
+                         1,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         NULL,       //tidal frequency breaks
+                         tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         &zero,      //tidal frequency powers
+                         tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         PRIMARY_PHASE_LAG);
+                         PRIMARY_PHASE_LAG,
+                         1.0,
+                         0.0);
 
     EvolvingStar *secondary = create_star(SECONDARY_MASS,
                                           FEH,
@@ -111,13 +118,15 @@ int main(int, char **)
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index
-                         0,          //# tidal frequency breaks
+                         1,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         NULL,       //tidal frequency breaks
+                         tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         &zero,      //tidal frequency powers
+                         tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         SECONDARY_PHASE_LAG);
+                         SECONDARY_PHASE_LAG,
+                         1.0,
+                         0.0);
 
     configure_star(secondary,
                    DISK_DISSIPATION_AGE,        //formation age
@@ -154,12 +163,13 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        8.705870938160976,    //final age
+        7.0,    //final age
         1e-3,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
         0,      //num required ages
-        true    //Print stepping progress?
+        true,   //Print stepping progress?
+        0
     );
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],
@@ -192,7 +202,21 @@ int main(int, char **)
         secondary_lrad, //secondary core angmom
         NULL,           //evolution mode
         NULL,           //primary wind saturation
-        NULL            //secondary wind saturation
+        NULL,           //secondary wind saturation
+        NULL,           //semimajor rate
+        NULL,           //eeccentricity rate
+        NULL,           //primary envelope inclination rate
+        NULL,           //primary core inclination rate
+        NULL,           //primary envelope periapsis rate
+        NULL,           //primary core periapsis rate
+        NULL,           //primary envelope angmom rate
+        NULL,           //primary core angmom rate
+        NULL,           //secondary envelope inclination rate
+        NULL,           //secondary core inclination rate
+        NULL,           //secondary envelope periapsis rate
+        NULL,           //secondary core periapsis rate
+        NULL,           //secondary envelope angmom rate
+        NULL            //secondary core angmom rate
     );
     std::cout.precision(16);
     std::cout.setf(std::ios::scientific, std::ios::floatfield);

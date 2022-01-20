@@ -20,6 +20,7 @@
 #include "SynchronizedCondition.h"
 #include "../Core/Common.h"
 #include <valarray>
+#include <boost/math/special_functions/sign.hpp>
 
 namespace Evolve {
 
@@ -28,11 +29,20 @@ namespace Evolve {
         ///Angular momentum of the zone.
         ANGULAR_MOMENTUM,
 
+        ///The rate at which angular momentum changes.
+        ANGULAR_MOMENTUM_DERIV,
+
         ///Inclination of the zone.
         INCLINATION,
 
+        ///The rate at  which the the inclination changes
+        INCLINATION_DERIV,
+
         ///Periapsis of the zone.
         PERIAPSIS,
+
+        ///The rate at which periapsis changes
+        PERIAPSIS_DERIV,
 
         ///Moment of inertia of the zone.
         MOMENT_OF_INERTIA,
@@ -139,6 +149,9 @@ namespace Evolve {
             ///The current angular momentum of the zone.
             __angular_momentum,
 
+            ///The current rate of angular momentum evolution of the zone.
+            __angular_momentum_evolution_rate,
+
             ///The current spin frequency of the zone.
             __spin_frequency,
 
@@ -229,10 +242,29 @@ namespace Evolve {
         ///__expansion_order must already be updated to the new value.
         void update_lock_to_lower_expansion_order(SpinOrbitLockInfo &lock);
 
-        ///\brief Updates __lock and __other_lock to accomodate increasing
-        ///__expansion_order.
-        void update_locks_to_higher_expansion_order(
-            unsigned new_expansion_order
+        ///\brief Set up __other_lock to the closest term above, given the term
+        ///that would be used without limit to the orbital multiplier.
+        void limit_above_lock_per_expansion_order(
+            int proposed_orbital_multiplier,
+            int proposed_spin_multiplier
+        );
+
+        ///\brief Set up the lock that would be triggered if the spin increased
+        ///by absolute value, given the closest term from an infinite expansion.
+        void set_faster_spin_lock(
+            ///The proposed coefficient for the orbital frequency for the closest
+            ///term to the current combination of orbital and spin frequencies
+            ///that would lock if the spin got larger by absolute value, if the
+            ///tidal potential expansion was calculated up to infinitely large
+            ///s. Should be negative if the spin of the zone is negative.
+            int proposed_orbital_multiplier,
+
+            ///The proposed coefficient of the zone spin frequency for the closest
+            ///term to the current combination of orbital and spin frequencies
+            ///that would lock if the spin got larger by absolute value, if the
+            ///tidal potential expansion was calculated up to infinitely large
+            ///s.
+            int proposed_spin_multiplier
         );
 
         ///\brief Initializes the locks the first time the zone is
@@ -264,11 +296,9 @@ namespace Evolve {
             const TidalTermTriplet &U_e_deriv
         );
 
-#ifndef NDEBUG
         ///\brief Runs a bunch of asserts to check the consistency of __lock and
         ///__other_lock.
         virtual void check_locks_consistency() const;
-#endif
 
     protected:
         ///Notify the zone that it is in the process of initializing or not.
@@ -319,6 +349,23 @@ namespace Evolve {
             ///or a spin frequency?
             bool spin_is_frequency
         );
+
+        ///\brief Set evolution rates for this zone's properties for storing in
+        ///the eveloution.
+        void set_evolution_rates(
+            ///The rate at which the magnitude of the angular momentum changes
+            double angular_momentum,
+
+            ///The rate at which the obliquity changes
+            double inclination,
+
+            ///The rate at which the periapsis changes
+            double periapsis
+        )
+        {
+            __angular_momentum_evolution_rate = angular_momentum;
+            ZoneOrientation::set_evolution_rates(inclination, periapsis);
+        }
 
         ///\brief The tidal forcing frequency for the given term and orbital
         ///frequency.
@@ -793,6 +840,10 @@ namespace Evolve {
         ///\brief Should return true iff the zone has some non-zero dissipation.
         virtual bool dissipative() const =0;
 
+        ///\brief Should return true iff the zone's dissipation is discontinuous
+        ///at zero frequency.
+        virtual bool can_lock() const =0;
+
         ///\brief Conditions detecting the next possible discontinuities in the
         ///evolution due to this zone.
         ///
@@ -822,6 +873,15 @@ namespace Evolve {
         ///change in one of the bodies.
         virtual double next_stop_age() const
         {return Core::Inf;}
+
+        ///Useful for debugging.
+        const SpinOrbitLockInfo &lock_monitored(bool other=false) const
+        {
+            if(other)
+                return __other_lock;
+            else
+                return __lock;
+        }
     }; //End DissipatingZone class.
 
 } //End Evolve namespace.

@@ -47,14 +47,16 @@ void destroy_star(EvolvingStar *star)
 }
 
 void set_star_dissipation(EvolvingStar *star,
-                     unsigned zone_index,
-                     unsigned num_tidal_frequency_breaks,
-                     unsigned num_spin_frequency_breaks,
-                     double *tidal_frequency_breaks,
-                     double *spin_frequency_breaks,
-                     double *tidal_frequency_powers,
-                     double *spin_frequency_powers,
-                     double reference_phase_lag)
+                          unsigned zone_index,
+                          unsigned num_tidal_frequency_breaks,
+                          unsigned num_spin_frequency_breaks,
+                          double *tidal_frequency_breaks,
+                          double *spin_frequency_breaks,
+                          double *tidal_frequency_powers,
+                          double *spin_frequency_powers,
+                          double reference_phase_lag,
+                          double inertial_mode_enhancement,
+                          double inertial_mode_sharpness)
 {
     Star::InterpolatedEvolutionStar* real_star =
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
@@ -81,7 +83,9 @@ void set_star_dissipation(EvolvingStar *star,
         spin_frequency_breaks,
         tidal_frequency_powers,
         spin_frequency_powers,
-        reference_phase_lag
+        reference_phase_lag,
+        inertial_mode_enhancement,
+        inertial_mode_sharpness
     );
 }
 
@@ -175,8 +179,19 @@ double core_inertia(EvolvingStar *star, double age)
     return core.moment_of_inertia(age);
 }
 
+double core_inertia_deriv(EvolvingStar *star, double age, int deriv_order)
+{
+    const Star::EvolvingStellarCore &core =
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+            star
+        )->core();
+    core.select_interpolation_region(age);
+    return core.moment_of_inertia(age, deriv_order);
+}
+
 void zone_inertia_array(Star::EvolvingStellarZone &zone,
                         const double *age,
+                        int deriv_order,
                         unsigned nvalues,
                         double *result)
 {
@@ -189,7 +204,7 @@ void zone_inertia_array(Star::EvolvingStellarZone &zone,
             zone.select_interpolation_region(age[i]);
         else
             zone.reached_critical_age(age[i]);
-        result[i] = zone.moment_of_inertia(age[i]);
+        result[i] = zone.moment_of_inertia(age[i], deriv_order);
     }
 }
 
@@ -203,6 +218,24 @@ void core_inertia_array(EvolvingStar *star,
             star
         )->core(),
         age,
+        0,
+        nvalues,
+        result
+    );
+}
+
+void core_inertia_deriv_array(EvolvingStar *star,
+                              const double *age,
+                              int deriv_order,
+                              unsigned nvalues,
+                              double *result)
+{
+    zone_inertia_array(
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+            star
+        )->core(),
+        age,
+        deriv_order,
         nvalues,
         result
     );
@@ -218,6 +251,16 @@ double envelope_inertia(EvolvingStar *star, double age)
     return envelope.moment_of_inertia(age);
 }
 
+double envelope_inertia_deriv(EvolvingStar *star, double age, int deriv_order)
+{
+    const Star::EvolvingStellarEnvelope &envelope =
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+            star
+        )->envelope();
+    envelope.select_interpolation_region(age);
+    return envelope.moment_of_inertia(age, deriv_order);
+}
+
 void envelope_inertia_array(EvolvingStar *star,
                             const double *age,
                             unsigned nvalues,
@@ -228,6 +271,24 @@ void envelope_inertia_array(EvolvingStar *star,
             star
         )->envelope(),
         age,
+        0,
+        nvalues,
+        result
+    );
+}
+
+void envelope_inertia_deriv_array(EvolvingStar *star,
+                                  const double *age,
+                                  int deriv_order,
+                                  unsigned nvalues,
+                                  double *result)
+{
+    zone_inertia_array(
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+            star
+        )->envelope(),
+        age,
+        deriv_order,
         nvalues,
         result
     );

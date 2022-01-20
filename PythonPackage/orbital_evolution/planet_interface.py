@@ -45,6 +45,8 @@ def initialize_library():
         numpy.ctypeslib.ndpointer(dtype=c_double,
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
+        c_double,
+        c_double,
         c_double
     ]
 
@@ -91,7 +93,9 @@ class LockedPlanet(DissipatingBody):
                         spin_frequency_breaks,
                         tidal_frequency_powers,
                         spin_frequency_powers,
-                        reference_phase_lag):
+                        reference_phase_lag,
+                        inertial_mode_enhancement=1.0,
+                        inertial_mode_sharpness=10.0):
         """
         Set the dissipaation of the only zone of the planet.
 
@@ -108,14 +112,18 @@ class LockedPlanet(DissipatingBody):
                                        spin_frequency_breaks,
                                        tidal_frequency_powers,
                                        spin_frequency_powers,
-                                       reference_phase_lag)
+                                       reference_phase_lag,
+                                       inertial_mode_enhancement,
+                                       inertial_mode_sharpness)
         super().set_dissipation(
             zone_index=0,
             tidal_frequency_breaks=tidal_frequency_breaks,
             spin_frequency_breaks=spin_frequency_breaks,
             tidal_frequency_powers=tidal_frequency_powers,
             spin_frequency_powers=spin_frequency_powers,
-            reference_phase_lag=reference_phase_lag
+            reference_phase_lag=reference_phase_lag,
+            inertial_mode_enhancement=inertial_mode_enhancement,
+            inertial_mode_sharpness=inertial_mode_sharpness
         )
     #pylint: enable=arguments-differ
 

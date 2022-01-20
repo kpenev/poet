@@ -60,6 +60,8 @@ def initialize_library():
         numpy.ctypeslib.ndpointer(dtype=c_double,
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
+        c_double,
+        c_double,
         c_double
     ]
     result.set_star_dissipation.restype = None
@@ -101,6 +103,11 @@ def initialize_library():
     result.core_inertia.argtypes = [result.create_star.restype, c_double]
     result.core_inertia.restype = c_double
 
+    result.core_inertia_deriv.argtypes = [result.create_star.restype,
+                                          c_double,
+                                          c_int]
+    result.core_inertia_deriv.restype = c_double
+
     result.core_inertia_array.argtypes = [
         result.create_star.restype,
         numpy.ctypeslib.ndpointer(dtype=c_double,
@@ -113,9 +120,27 @@ def initialize_library():
     ]
     result.core_inertia_array.restype = None
 
+    result.core_inertia_deriv_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        c_int,
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
+    ]
+    result.core_inertia_array.restype = None
+
     result.envelope_inertia.argtypes = [result.create_star.restype,
                                         c_double]
     result.envelope_inertia.restype = c_double
+
+    result.envelope_inertia_deriv.argtypes = [result.create_star.restype,
+                                              c_double,
+                                              c_int]
+    result.envelope_inertia_deriv.restype = c_double
 
     result.envelope_inertia_array.argtypes = [
         result.create_star.restype,
@@ -128,6 +153,19 @@ def initialize_library():
                                   flags='C_CONTIGUOUS')
     ]
     result.envelope_inertia_array.restype = None
+
+    result.envelope_inertia_deriv_array.argtypes = [
+        result.create_star.restype,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        c_int,
+        c_uint,
+        numpy.ctypeslib.ndpointer(dtype=c_double,
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
+    ]
+    result.envelope_inertia_deriv_array.restype = None
 
     result.star_radius.argtypes = [result.create_star.restype, c_double]
     result.star_radius.restype = c_double
@@ -157,20 +195,26 @@ class EvolvingStar(DissipatingBody):
 
     lib_configure_body = orbital_evolution_library.configure_star
 
-    def _evaluate_stellar_property(self, property_name, age):
+    def _evaluate_stellar_property(self, property_name, age, deriv_order=None):
         """Evaluate a library function at a single age or array of ages."""
 
         if isinstance(age, numpy.ndarray):
             result = numpy.empty(dtype=c_double,
                                  shape=(age.size,),
                                  order='C')
-            getattr(library, property_name + '_array')(self.c_body,
-                                                       age,
-                                                       age.size,
-                                                       result)
+            c_function = getattr(library, property_name + '_array')
+            if deriv_order is None:
+                c_function(self.c_body, age, age.size, result)
+            else:
+                c_function(self.c_body, age, deriv_order, age.size, result)
             return result
 
-        return getattr(library, property_name)(self.c_body, age)
+        if deriv_order is None:
+            return getattr(library, property_name)(self.c_body, age)
+
+        return getattr(library, property_name)(self.c_body,
+                                               age,
+                                               deriv_order)
 
     def __init__(self,
                  *,
@@ -207,6 +251,41 @@ class EvolvingStar(DissipatingBody):
         """
 
         super().__init__()
+        if (
+                mass < interpolator.mass_range()[0]
+                or
+                mass > interpolator.mass_range()[1]
+        ):
+            raise ValueError(
+                (
+                    'Stellar mass: %s is outside the range supported by the '
+                    'stelalr evolution interpolator: %s - %s'
+                )
+                %
+                (
+                    repr(mass),
+                    repr(interpolator.mass_range()[0]),
+                    repr(interpolator.mass_range()[1])
+                )
+            )
+        if (
+                metallicity < interpolator.feh_range()[0]
+                or
+                metallicity > interpolator.feh_range()[1]
+        ):
+            raise ValueError(
+                (
+                    'Stellar metallicity: %s is outside the range supported by '
+                    'the stelalr evolution interpolator: %s - %s'
+                )
+                %
+                (
+                    repr(metallicity),
+                    repr(interpolator.feh_range()[0]),
+                    repr(interpolator.feh_range()[1])
+                )
+            )
+
         self.mass = mass
         self.metallicity = metallicity
         self.wind_strength = wind_strength
@@ -234,7 +313,9 @@ class EvolvingStar(DissipatingBody):
                         spin_frequency_breaks,
                         tidal_frequency_powers,
                         spin_frequency_powers,
-                        reference_phase_lag):
+                        reference_phase_lag,
+                        inertial_mode_enhancement=1.0,
+                        inertial_mode_sharpness=10.0):
         """
         Set the dissipative properties of one of the zones of a star.
 
@@ -262,6 +343,14 @@ class EvolvingStar(DissipatingBody):
                 The phase lag at the first tidal and first spin frequency
                 break. The rest are calculated by imposing continuity.
 
+            - inertial_mode_enhancement:
+                A factor by which the dissipation is enhanced in the inertial
+                mode range. Must be >= 1 (1 for no enhancement).
+
+            - inertial_mode_sharpness:
+                Parameter controlling how sharp the transition between enhanced
+                and non-enhanced dissipation is.
+
         Returns: None
         """
 
@@ -273,14 +362,18 @@ class EvolvingStar(DissipatingBody):
                                      spin_frequency_breaks,
                                      tidal_frequency_powers,
                                      spin_frequency_powers,
-                                     reference_phase_lag)
+                                     reference_phase_lag,
+                                     inertial_mode_enhancement,
+                                     inertial_mode_sharpness)
         super().set_dissipation(
             zone_index=zone_index,
             tidal_frequency_breaks=tidal_frequency_breaks,
             tidal_frequency_powers=tidal_frequency_powers,
             spin_frequency_breaks=spin_frequency_breaks,
             spin_frequency_powers=spin_frequency_powers,
-            reference_phase_lag=reference_phase_lag
+            reference_phase_lag=reference_phase_lag,
+            inertial_mode_enhancement=inertial_mode_enhancement,
+            inertial_mode_sharpness=inertial_mode_sharpness
         )
     #pylint: enable=arguments-differ
 
@@ -364,19 +457,23 @@ class EvolvingStar(DissipatingBody):
 
         return self._evaluate_stellar_property('luminosity', age)
 
-    def core_inertia(self, age):
+    def core_inertia(self, age, deriv_order=0):
         """
         Return the moment of inertia of the stellar core at the given age.
         """
 
-        return self._evaluate_stellar_property('core_inertia', age)
+        return self._evaluate_stellar_property('core_inertia_deriv',
+                                               age,
+                                               deriv_order)
 
-    def envelope_inertia(self, age):
+    def envelope_inertia(self, age, deriv_order=0):
         """
         Return the moment of inertia of the stellar env. at the given age.
         """
 
-        return self._evaluate_stellar_property('envelope_inertia', age)
+        return self._evaluate_stellar_property('envelope_inertia_deriv',
+                                               age,
+                                               deriv_order)
 
     def radius(self, age):
         """Return the luminosity of the star at the given age."""

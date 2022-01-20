@@ -196,6 +196,7 @@ namespace Evolve {
                 ///If true the result is differentiated w.r.t. to eccentricity.
                 bool deriv
         ) const;
+
     }; //End EccentricityExpansionCoefficients class.
 
 } //End Evolve namespace.

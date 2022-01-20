@@ -587,6 +587,8 @@ class StellarEvolutionManager:
         """Return the interpolator with the given name."""
 
         with db_session_scope() as db_session:
+            #False positive
+            #pylint: disable=no-member
             return ManagedInterpolator(
                 db_interpolator=db_session.query(
                     SerializedInterpolator
@@ -596,32 +598,47 @@ class StellarEvolutionManager:
                 serialization_path=self._serialization_path,
                 db_session=db_session
             )
+            #pylint: enable=no-member
 
     @staticmethod
     def list_interpolator_names():
         """Return a list of all intorpolator names."""
 
         with db_session_scope() as db_session:
-            return [record[0] for record in
-                    db_session.query(SerializedInterpolator.name).all()]
+            return [
+                record[0] for record in
+                #False positive
+                #pylint: disable=no-member
+                db_session.query(SerializedInterpolator.name).all()
+                #pylint: enable=no-member
+            ]
 
     @staticmethod
     def list_suites():
         """Return a list of all software suites with available tracks."""
 
         with db_session_scope() as db_session:
-            return [record[0] for record in
-                    db_session.query(ModelSuite.name).all()]
+            return [
+                record[0] for record in
+                #False positive
+                #pylint: disable=no-member
+                db_session.query(ModelSuite.name).all()
+                #pylint: enable=no-member
+
+            ]
 
     @staticmethod
     def get_suite_tracks(model_suite='MESA'):
         """Return all tracks from a given suite."""
 
         with db_session_scope() as db_session:
+            #False positive
+            #pylint: disable=no-member
             return db_session.query(Track).filter(
                 and_(Track.model_suite_id == ModelSuite.id,
                      ModelSuite.name == model_suite)
             )
+            #pylint: enable=no-member
 
     def register_track(self,
                        track_fname,

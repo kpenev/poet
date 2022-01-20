@@ -11,11 +11,11 @@ import sys
 sys.path.append('../PythonPackage')
 sys.path.append('../scripts')
 
-from math import pi
 
 from matplotlib import pyplot
 from configargparse import ArgumentParser, DefaultsFormatter
 import asteval
+import numpy
 
 from orbital_evolution.command_line_util import\
     add_binary_config,\
@@ -25,7 +25,7 @@ from orbital_evolution.command_line_util import\
 #pylint: enable=wrong-import-position
 #pylint: enable=wrong-import-order
 
-wnorm = 2.0 * pi / 25.34
+wnorm = 2.0 * numpy.pi / 25.34
 
 def parse_configuration():
     """Return the configuration for what evolution to run and how."""
@@ -55,18 +55,97 @@ def parse_configuration():
         'expression involving evolution quantities.'
     )
 
+    parser.add_argument(
+        '--plot-with-tangents',
+        nargs=4,
+        action='append',
+        metavar=('X_EXPR', 'Y_EXPR', 'DYDX_EXPR', 'NUM_TANGENTS'),
+        default=[],
+        help='Add another plot that will also show tangent lines calculated '
+        'assuming `DYDX_EXPR` evaluates to the slope at a given point. Tangent '
+        'lines are drawn at the tabulated evolution points closest to '
+        '`NUM_TANGENTS` evenly spaced values of `X_EXPR` covering the full '
+        'range.'
+    )
+
     return parser.parse_args()
+
+def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
+    """Add tangent lines to the current plot."""
+
+    def get_plot_data():
+        """Return a list of the indices at which to plot tangent lines."""
+
+        tangent_x_grid = numpy.linspace(numpy.min(plot_x),
+                                        numpy.max(plot_x),
+                                        num_tangents)
+        plot_indices = numpy.array([0, plot_x.size - 1])
+        for tangent_x in tangent_x_grid:
+            abs_x_difference = numpy.abs(plot_x - tangent_x)
+            plot_indices = numpy.concatenate(
+                (
+                    plot_indices,
+                    numpy.argwhere(
+                        numpy.logical_and(
+                            abs_x_difference[:-2] > abs_x_difference[1:-1],
+                            abs_x_difference[2:] > abs_x_difference[1:-1]
+                        )
+                    ).flatten() + 1
+                )
+            )
+        plot_indices = numpy.unique(plot_indices)
+        tangent_x = plot_x[plot_indices]
+        plot_order = numpy.argsort(tangent_x)
+        tangent_x = tangent_x[plot_order]
+        plot_indices = plot_indices[plot_order]
+        tangent_y = plot_y[plot_indices]
+        tangent_slope = plot_dydx[plot_indices]
+
+        return tangent_x, tangent_y, tangent_slope
+
+    def add_tangent(previous_x, this_x, next_x, this_y, this_slope):
+        """Add a single tangent line to the plot."""
+
+        x_0 = 0.5 * (this_x + previous_x)
+        x_1 = 0.5 * (this_x + next_x)
+        y_0 = this_y - this_slope * (this_x - x_0)
+        y_1 = this_y + this_slope * (x_1 - this_x)
+
+        pyplot.plot([x_0, x_1], [y_0, y_1], '-')
+
+
+    plot_limits = pyplot.xlim(), pyplot.ylim()
+    tangent_x, tangent_y, tangent_slope = get_plot_data()
+
+    previous_x = 2.0 * tangent_x[0] - tangent_x[1]
+    this_x = tangent_x[0]
+    for next_x, this_y, this_slope in zip(tangent_x[1:],
+                                          tangent_y,
+                                          tangent_slope):
+        add_tangent(previous_x, this_x, next_x, this_y, this_slope)
+        previous_x = this_x
+        this_x = next_x
+
+    add_tangent(tangent_x[-2],
+                tangent_x[-1],
+                2 * tangent_x[-1] - tangent_x[-2],
+                tangent_y[-1],
+                tangent_slope[-1])
+    pyplot.xlim(plot_limits[0])
+    pyplot.ylim(plot_limits[1])
 
 def main(cmdline_args):
     """Avoid polluting the global namespace."""
 
     evolution = run_evolution(cmdline_args)
-    print(evolution.format())
+    print(repr(evolution))
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
-    for plot in cmdline_args.plot:
-        plot_x, plot_y = (evaluator(expression) for expression in plot)
-        pyplot.plot(plot_x, plot_y)
+    for plot in cmdline_args.plot + cmdline_args.plot_with_tangents:
+        plot_data = [evaluator(expression) for expression in plot]
+        pyplot.plot(plot_data[0], plot_data[1])
+        if len(plot) == 4:
+            plot_tangents(*plot_data)
         pyplot.show()
         pyplot.cla()
 

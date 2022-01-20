@@ -10,6 +10,8 @@ def db_session_scope():
     """Provide a transactional scope around a series of operations."""
 
     session = Session()
+    #False positive
+    #pylint: disable=no-member
     try:
         yield session
         session.commit()
@@ -18,7 +20,7 @@ def db_session_scope():
         raise
     finally:
         session.close()
-
+    #pylint: enable=no-member
 
 @contextmanager
 def tempdir_scope():

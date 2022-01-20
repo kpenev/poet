@@ -32,6 +32,14 @@ namespace Evolve {
         double *evolution_rates
     ) const
     {
+        if(!expansion_error) {
+            DissipatingZone &locked_zone = __body1.zone(0);
+            locked_zone.set_evolution_rates(
+                locked_zone.moment_of_inertia(1) * locked_zone.spin_frequency(),
+                0.0,
+                0.0
+            );
+        }
         for(
             unsigned zone_index = 1;
             zone_index < __body1.number_zones();
@@ -157,22 +165,30 @@ namespace Evolve {
         for(unsigned zone_index = 0; zone_index < nzones; ++zone_index) {
             Eigen::Vector3d torque = __body1.nontidal_torque(zone_index);
             angmom_evol[zone_index] = torque[2];
+
+            DissipatingZone &zone = __body1.zone(zone_index);
             if(zone_index) {
-                DissipatingZone &zone = __body1.zone(zone_index);
                 zone.set_reference_zone_angmom(ref_angmom);
-                inclination_evol[zone_index - 1]=zone.inclination_evolution(
+                inclination_evol[zone_index - 1] = zone.inclination_evolution(
                     zone_to_zone_transform(__body1.zone(0),
                                            zone,
                                            reference_torque),
                     torque
                 );
-                periapsis_evol[zone_index - 1]=zone.periapsis_evolution(
+                periapsis_evol[zone_index - 1] = zone.periapsis_evolution(
                     zone_to_zone_transform(__body1.zone(0),
                                            zone,
                                            reference_torque),
                     torque
                 );
             } else reference_torque = torque;
+
+            if(!expansion_error)
+                zone.set_evolution_rates(
+                    angmom_evol[zone_index],
+                    (zone_index ? inclination_evol[zone_index - 1] : 0.0),
+                    (zone_index ? periapsis_evol[zone_index -1] : 0.0)
+                );
         }
 #ifdef VERBOSE_DEBUG
         std::cerr << "rates: ";
@@ -880,11 +896,20 @@ namespace Evolve {
                     entry
                 );
                 assert(!std::isnan(reference_periapsis_rate));
+
             }
             if(!zone.locked()) {
                 angmom_rates[zone_ind - angmom_skipped] = total_zone_torque[2];
                 assert(!std::isnan(angmom_rates[zone_ind - angmom_skipped]));
             }
+
+            if(!expansion_error)
+                zone.set_evolution_rates(
+                    total_zone_torque[2],
+                    inclination_rates[zone_ind],
+                    (zone_ind ? periapsis_rates[zone_ind - 1] : 0.0)
+                );
+
 #ifdef VERBOSE_DEBUG
             std::cerr << "Zone " << zone_ind
                       << " torque: " << total_zone_torque
@@ -899,12 +924,16 @@ namespace Evolve {
             assert(!std::isnan(total_zone_torque.sum()));
 
         }
+
         differential_equations[0] = semimajor_evolution(__orbit_power);
+        differential_equations[1] = eccentricity_evolution(__orbit_power,
+                                                           __orbit_angmom_gain);      
+        __semimajor_rate = differential_equations[0];
+        __eccentricity_rate = differential_equations[1];  
+      
         if(!angmom_skipped)
             differential_equations[0] *= 6.5 * std::pow(__semimajor, 5.5);
 
-        differential_equations[1] = eccentricity_evolution(__orbit_power,
-                                                           __orbit_angmom_gain);
 #ifdef VERBOSE_DEBUG
         std::cerr << "rates: ";
         for(
@@ -1994,6 +2023,8 @@ namespace Evolve {
 #endif
         int status = configure(false, age, parameters, evolution_mode);
         if(status != GSL_SUCCESS) return status;
+        if(!expansion_error)
+            __semimajor_rate = __eccentricity_rate = Core::NaN;
         switch(evolution_mode) {
             case Core::LOCKED_SURFACE_SPIN :
                 return locked_surface_differential_equations(
@@ -2225,6 +2256,8 @@ namespace Evolve {
     {
         __semimajor_evolution.push_back(__semimajor);
         __eccentricity_evolution.push_back(__eccentricity);
+        __semimajor_rate_evolution.push_back(__semimajor_rate);
+        __eccentricity_rate_evolution.push_back(__eccentricity_rate);
         __body1.add_to_evolution();
         __body2.add_to_evolution();
     }
@@ -2233,6 +2266,8 @@ namespace Evolve {
     {
         __semimajor_evolution.clear();
         __eccentricity_evolution.clear();
+        __semimajor_rate_evolution.clear();
+        __eccentricity_rate_evolution.clear();
         __body1.reset_evolution();
         __body2.reset_evolution();
     }
@@ -2242,6 +2277,8 @@ namespace Evolve {
         for(unsigned i = 0; i < nsteps; ++i) {
             __semimajor_evolution.pop_back();
             __eccentricity_evolution.pop_back();
+            __semimajor_rate_evolution.pop_back();
+            __eccentricity_rate_evolution.pop_back();
         }
         __body1.rewind_evolution(nsteps);
         __body2.rewind_evolution(nsteps);

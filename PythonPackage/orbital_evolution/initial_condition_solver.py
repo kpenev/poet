@@ -1,5 +1,7 @@
 """Define class for finding initial conditions to match current properties."""
 
+import logging
+
 from scipy.optimize import brentq
 import scipy
 
@@ -7,10 +9,15 @@ from orbital_evolution.binary import Binary
 from orbital_evolution.star_interface import EvolvingStar
 from basic_utils import Structure
 
+#No good way found to simplify
+#pylint: disable=too-many-instance-attributes
 class InitialConditionSolver:
     """Find initial conditions which reproduce a given system now."""
 
-    def _try_initial_conditions(self, initial_orbital_period, disk_period):
+    def _try_initial_conditions(self,
+                                initial_orbital_period,
+                                disk_period,
+                                save=False):
         """
         Get present orbital and stellar spin periods for initial conditions.
 
@@ -30,9 +37,17 @@ class InitialConditionSolver:
                 evolution is started with the input periods.
         """
 
-        print('Trying P0 = %s, Pdisk = %s'
-              %
-              (repr(initial_orbital_period), repr(disk_period)))
+        if(
+                (initial_orbital_period, disk_period)
+                in
+                self._saved_initial_condition_trials
+        ):
+            return self._saved_initial_condition_trials[
+                (initial_orbital_period, disk_period)
+            ]
+        self._logger.debug('Trying P0 = %s, Pdisk = %s',
+                           repr(initial_orbital_period),
+                           repr(disk_period))
         if self.binary is not None:
             self.binary.delete()
         self.binary = Binary(
@@ -45,7 +60,6 @@ class InitialConditionSolver:
             disk_dissipation_age=self.target.disk_dissipation_age,
             secondary_formation_age=self.target.planet_formation_age
         )
-        print('Constructed binary')
 
         self.primary.select_interpolation_region(
             self.primary.core_formation_age()
@@ -58,7 +72,6 @@ class InitialConditionSolver:
                               inclination=None,
                               periapsis=None,
                               evolution_mode='LOCKED_SURFACE_SPIN')
-        print('Configured binary')
 
         self.primary.detect_stellar_wind_saturation()
         if isinstance(self.secondary, EvolvingStar):
@@ -76,24 +89,23 @@ class InitialConditionSolver:
             companion_mass=self.binary.primary.mass,
             semimajor=self.binary.semimajor(initial_orbital_period),
             eccentricity=self.parameters['initial eccentricity'],
-            spin_angmom=scipy.array([0.0, 0.0]),
+            spin_angmom=self.parameters['initial_secondary_angmom'],
             locked_surface=False,
             zero_outer_inclination=True,
             zero_outer_periapsis=True,
             **secondary_inclination_periapsis
         )
-        print('Configured secondary')
         if isinstance(self.secondary, EvolvingStar):
             self.secondary.detect_stellar_wind_saturation()
         self.binary.evolve(
             final_age=self.target.age,
             max_time_step=self.configuration['max time step'],
             precision=self.configuration['precision'],
+            timeout=self.configuration['timeout'],
             required_ages=None,
             print_progress=False
         )
         final_state = self.binary.final_state()
-        print('Final state:\n' + final_state.format('\t'))
         #False positives
         #pylint: disable=no-member
         assert final_state.age == self.target.age
@@ -110,15 +122,21 @@ class InitialConditionSolver:
             )
         )
         #pylint: enable=no-member
-        print('Got Porb = %s, P* = %s'
-              %
-              (repr(orbital_period), repr(stellar_spin_period)))
+        self._logger.debug('Got Porb = %s, P* = %s',
+                           repr(orbital_period),
+                           repr(stellar_spin_period))
 
         if scipy.isnan(orbital_period):
             orbital_period = 0.0
+        if save:
+            self._saved_initial_condition_trials[
+                (initial_orbital_period, disk_period)
+            ] = (orbital_period, stellar_spin_period)
         return orbital_period, stellar_spin_period
 
-    def _find_porb_range(self, guess_porb_initial, disk_period):
+    def _find_porb_range(self,
+                         guess_porb_initial,
+                         disk_period):
         """
         Find initial orbital period range where final porb error flips sign.
 
@@ -136,10 +154,11 @@ class InitialConditionSolver:
 
         porb_min, porb_max = scipy.nan, scipy.nan
         porb_initial = guess_porb_initial
-        porb = self._try_initial_conditions(porb_initial, disk_period)[0]
+        porb = self._try_initial_conditions(porb_initial, disk_period, True)[0]
         porb_error = porb - self.target.Porb
         guess_porb_error = porb_error
-        step = 2.0 if guess_porb_error < 0 else 0.5
+        step = (self.period_search_factor if guess_porb_error < 0
+                else 1.0 / self.period_search_factor)
 
         while (
                 porb_error * guess_porb_error > 0
@@ -151,21 +170,27 @@ class InitialConditionSolver:
             else:
                 porb_max = porb_initial
             porb_initial *= step
-            print('Before evolution:'
-                  +
-                  '\n\tporb_error = %s' % repr(porb_error)
-                  +
-                  '\n\tguess_porb_error = %s' % repr(guess_porb_error)
-                  +
-                  '\n\tporb_initial = %s' % repr(porb_initial)
-                  +
-                  '\n\tporb_min = %s' % porb_min
-                  +
-                  '\n\tporb_max = %s' % porb_max
-                  +
-                  '\n\tstep = %s' % step)
-            porb = self._try_initial_conditions(porb_initial, disk_period)[0]
-            print('After evolution: porb = %s' % repr(porb))
+            self._logger.debug(
+                (
+                    'Before evolution:'
+                    '\n\tporb_error = %s'
+                    '\n\tguess_porb_error = %s'
+                    '\n\tporb_initial = %s'
+                    '\n\tporb_min = %s'
+                    '\n\tporb_max = %s'
+                    '\n\tstep = %s'
+                ),
+                repr(porb_error),
+                repr(guess_porb_error),
+                repr(porb_initial),
+                porb_min,
+                porb_max,
+                step
+            )
+            porb = self._try_initial_conditions(porb_initial,
+                                                disk_period,
+                                                True)[0]
+            self._logger.debug('After evolution: porb = %s', repr(porb))
             if not scipy.isnan(porb):
                 porb_error = porb - self.target.Porb
 
@@ -179,9 +204,12 @@ class InitialConditionSolver:
             if porb_error == 0:
                 porb_min = porb_initial
 
-        print('For Pdisk = %s, orbital period range: %s < Porb < %s'
-              %
-              (repr(disk_period), repr(porb_min), repr(porb_max)))
+        self._logger.info(
+            'For Pdisk = %s, orbital period range: %s < Porb < %s',
+            repr(disk_period),
+            repr(porb_min),
+            repr(porb_max)
+        )
         return porb_min, porb_max
 
     def __init__(self,
@@ -190,11 +218,15 @@ class InitialConditionSolver:
                  disk_dissipation_age=None,
                  evolution_max_time_step=1.0,
                  evolution_precision=1e-6,
+                 evolution_timeout=0,
                  orbital_period_tolerance=1e-6,
                  spin_tolerance=1e-6,
                  initial_eccentricity=0.0,
                  initial_inclination=0.0,
-                 max_porb_initial=100.0):
+                 period_search_factor=2.0,
+                 scaled_period_guess=1.0,
+                 max_porb_initial=100.0,
+                 initial_secondary_angmom=(0.0, 0.0)):
         """
         Initialize the object.
 
@@ -220,6 +252,14 @@ class InitialConditionSolver:
             initial_eccentricity:    The initial eccentricity with which to
                 start the evolution.
 
+            period_search_factor:    The factor by which to change the initial
+                period guess while searching for a range surrounding the known
+                present day orbital period.
+
+            scaled_period_guess:    The search for initial period to bracked the
+                observed final period will start from this value multiplied by
+                the final orbital period.
+
             max_porb_initial:    The largest initial orbital period in days to
                 try before declaring a set of initial conditions unsolvable.
 
@@ -227,12 +267,14 @@ class InitialConditionSolver:
             None
         """
 
+        self._logger = logging.getLogger(__name__)
         self.binary = None
         self._best_initial_conditions = None
 
         self.parameters = {
             'initial eccentricity': initial_eccentricity,
-            'initial inclination': initial_inclination
+            'initial inclination': initial_inclination,
+            'initial_secondary_angmom': scipy.array(initial_secondary_angmom)
         }
         if planet_formation_age:
             self.parameters['planet formation age'] = planet_formation_age
@@ -243,13 +285,17 @@ class InitialConditionSolver:
             'max time step': evolution_max_time_step,
             'precision': evolution_precision,
             'orbital period tolerance': orbital_period_tolerance,
-            'spin tolerance': spin_tolerance
+            'spin tolerance': spin_tolerance,
+            'timeout': evolution_timeout
         }
 
         self.target = None
         self.primary = None
         self.secondary = None
+        self.period_search_factor = period_search_factor
+        self.scaled_period_guess = scaled_period_guess
         self.max_porb_initial = max_porb_initial
+        self._saved_initial_condition_trials = dict()
 
     def stellar_wsurf(self,
                       wdisk,
@@ -291,6 +337,7 @@ class InitialConditionSolver:
                                                    disk_period)
 
         if scipy.isnan(porb_min):
+            self._saved_initial_condition_trials = dict()
             assert scipy.isnan(porb_max)
             return (scipy.nan if return_difference else (scipy.nan,
                                                          scipy.nan,
@@ -310,6 +357,7 @@ class InitialConditionSolver:
             porb_initial,
             disk_period,
         )
+        self._saved_initial_condition_trials = dict()
 
         spin_frequency = 2.0 * scipy.pi / spin_period
 
@@ -400,7 +448,7 @@ class InitialConditionSolver:
                 disk_period=scipy.nan
             )
 
-        def get_initial_grid():
+        def get_initial_grid(orbital_period_guess):
             """Tabulate stellar spin errors for a grid of disk periods."""
 
             reset_best_initial_conditions()
@@ -419,29 +467,31 @@ class InitialConditionSolver:
                           200.0 * scipy.pi]
 
             stellar_wsurf_residual_grid = [
-                self.stellar_wsurf(wdisk, target.Porb, True)
+                self.stellar_wsurf(wdisk, orbital_period_guess, True)
                 for wdisk in wdisk_grid
             ]
 
-            print('##    %25s %25s\n' % ('disk_period',
-                                         'current_stellar_spin'))
+            self._logger.debug('##    %25s %25s\n',
+                               'disk_period',
+                               'current_stellar_spin')
             for wdisk, wsurf_residual in zip(wdisk_grid,
                                              stellar_wsurf_residual_grid):
-                print('##    %25.16e %25.16e\n'
-                      %
-                      (2.0 * scipy.pi / wdisk,
-                       wsurf_residual + 2.0 * scipy.pi / self.target.Psurf))
-            print('## Target current stellar spin: '
-                  +
-                  repr(2.0 * scipy.pi / self.target.Psurf)
-                  +
-                  '\n')
+                self._logger.debug(
+                    '##    %25.16e %25.16e\n',
+                    2.0 * scipy.pi / wdisk,
+                    wsurf_residual + 2.0 * scipy.pi / self.target.Psurf
+                )
+            self._logger.debug(
+                '## Target current stellar spin: %s',
+                repr(2.0 * scipy.pi / self.target.Psurf)
+            )
 
             return wdisk_grid, stellar_wsurf_residual_grid
 
         self.target = target
         self.primary = star
         self.secondary = planet
+        orbital_period_guess = target.Porb * self.scaled_period_guess
 
         if not hasattr(self.target, 'disk_dissipation_age'):
             self.target.disk_dissipation_age = (
@@ -460,10 +510,13 @@ class InitialConditionSolver:
         if not hasattr(target, 'Psurf'):
             wdisk = (target.Wdisk if hasattr(target, 'Wdisk')
                      else 2.0 * scipy.pi / target.Pdisk)
-            wstar, porb_initial = self.stellar_wsurf(wdisk, target.Porb)[:2]
+            wstar, porb_initial = self.stellar_wsurf(wdisk,
+                                                     orbital_period_guess)[:2]
             return porb_initial, 2.0 * scipy.pi / wstar
 
-        wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid()
+        wdisk_grid, stellar_wsurf_residual_grid = get_initial_grid(
+            orbital_period_guess
+        )
 
         nsolutions = 0
         for i in range(len(wdisk_grid)-1):
@@ -478,7 +531,7 @@ class InitialConditionSolver:
                     f=self.stellar_wsurf,
                     a=wdisk_grid[i],
                     b=wdisk_grid[i+1],
-                    args=(target.Porb, True),
+                    args=(orbital_period_guess, True),
                     xtol=self.configuration['spin tolerance'],
                     rtol=self.configuration['spin tolerance']
                 )
@@ -490,3 +543,4 @@ class InitialConditionSolver:
             return (self._best_initial_conditions.initial_orbital_period,
                     self._best_initial_conditions.disk_period)
             #pylint: enable=no-member
+#pylint: enable=too-many-instance-attributes

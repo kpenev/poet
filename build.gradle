@@ -34,8 +34,10 @@ model {
 
                 cppCompiler.args "-W", "-Wall",
                                  "-std=c++11",
+
                                  "-fvisibility=hidden",
                                  "-pedantic"
+                "gsl-config --cflags".execute().text.tokenize().each{cppCompiler.args it}
 
                 getGSLLinkerArgs().each{linker.args it}
                 linker.args "-l" + ensureLibraryVersion(
@@ -211,12 +213,13 @@ model {
                 cppCompiler.define "STANDALONE"
                 linker.args "-l" + ensureLibraryVersion("cpptest")
 
-                lib library: "eigen", linkage: "static"
-                lib library: "stellarEvolution", linkage: "static"
-                lib library: "star", linkage: "static"
-                lib library: "planet", linkage: "static"
-                lib library: "evolve", linkage: "static"
-                lib library: "dirent", linkage: "static"
+
+                lib library: "eigen", linkage: 'static'
+                lib library: "stellarEvolution", linkage: 'static'
+                lib library: "star", linkage: 'static'
+                lib library: "planet", linkage: 'static'
+                lib library: "evolve", linkage: 'static'
+                lib library: "dirent", linkage: 'static'
             }
         }
 
@@ -296,7 +299,7 @@ model {
 
 doxygen {
     generate_html true
-    template "documentation/DoxygenConfig"
+    template "documentation/doxygen/DoxygenConfig"
     source "poet_src/Core"
     source "poet_src/StellarEvolution"
     source "poet_src/Evolve"
