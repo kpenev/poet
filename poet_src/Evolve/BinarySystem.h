@@ -1008,10 +1008,10 @@ namespace Evolve {
         ///The tabulated evolution of the eccentricity so far.
         const std::list<double> &eccentricity_evolution() const
         {return __eccentricity_evolution;}
-      
+
         ///The tabulated evolution of the eccentricity so far.
         const std::list<double> &eccentricity_evolution_rate() const
-        {return __eccentricity_rate_evolution;}      
+        {return __eccentricity_rate_evolution;}
 
         ///Change the tidal potential expansion order for all dissipative zones.
         virtual void change_expansion_order(
