@@ -112,7 +112,17 @@ namespace Evolve {
 
     void DissipatingZone::check_locks_consistency() const
     {
-        if(__initializing) return;
+#ifndef NDEBUG
+        std::cerr << "Checking lock consistency for __lock: "
+                  << __lock
+                  << ", __other_lock: "
+                  << __other_lock
+                  << ", zone "
+                  << (can_lock() ? "can": "cannot")
+                  << " lock"
+                  << std::endl;
+#endif
+        if(__initializing || !can_lock()) return;
         int max_abs_orb_mult = static_cast<int>(__expansion_order);
         if(
             (!__lock)

@@ -15,7 +15,7 @@ namespace Evolve {
     {
         Planet::Planet body1(1.0, 1.0), body2(1.0, 1.0);
         BinarySystem system(body1, body2);
-        __zone.change_e_order(max_orbital_multiplier - 2, system, true, 0);
+        __zone.change_expansion_order(max_orbital_multiplier, system, true, 0);
     }
 
     void test_LockMonitoring::set_orbital_spin_frequeqncy(

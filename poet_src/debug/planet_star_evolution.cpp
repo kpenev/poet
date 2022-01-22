@@ -62,11 +62,11 @@ int main(int, char **)
     double powerlaws[] = {1.0, 0.0};//-3.1};
     set_star_dissipation(star,
                          0,
-                         1,
                          0,
-                         &break_frequency,
+                         0,
                          NULL,
-                         powerlaws,
+                         NULL,
+                         &zero,
                          &zero,
                          phase_lag,
                          1.0,
@@ -94,7 +94,7 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        2.0,
+        10.0,
         1e-3,
         1e-4,
         NULL,
