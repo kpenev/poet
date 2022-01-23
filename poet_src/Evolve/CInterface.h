@@ -37,12 +37,18 @@ extern "C" {
     ///Opaque struct to cast to/from Evolve::OrbitSolver.
     struct LIB_PUBLIC OrbitSolver;
 
-    ///Opaque struct to cant to/from Evolve::BrokenPowerlawPhasLagZone
+    ///Opaque struct to cast to/from Evolve::BrokenPowerlawPhasLagZone
     struct LIB_PUBLIC BrokenPowerlawPhaseLagZone;
 
+    ///Opaque struct to cast to/from Evolve::EccentricityExpansionCoefficients
+    struct LIB_PUBLIC EccentricityExpansionCoefficients;
+
     ///Read eccentricity expansion coefficients from a file.
-    LIB_PUBLIC void read_eccentricity_expansion_coefficients(
-        const char *filename
+    LIB_PUBLIC void prepare_eccentricity_expansion(
+        const char *filename,
+        double precision,
+        bool pre_load,
+        bool disable_precision_fail
     );
 
     LIB_PUBLIC void set_zone_dissipation(
@@ -766,6 +772,31 @@ extern "C" {
         ///momentum loss due to stellar wind is in the satured state (true)
         ///or not (false).
         bool *secondary_wind_saturation
+    );
+
+    ///\brief doc
+    LIB_PUBLIC double get_expansion_coeff_precision(
+        ///doc
+        int m,
+
+        ///doc
+        int s
+    );
+
+    ///\brief doc
+    LIB_PUBLIC double evaluate_expansion_coeff(
+        ///The first index (0 or +-2).
+        int m,
+
+        ///The second index.
+        int s,
+
+        ///The value of the eccentricity to use.
+        double e,
+
+        ///Previously, if true the result was differentiated w.r.t. to the
+        ///eccentricity. Currently does nothing.
+        bool deriv
     );
 
 }//End Extern "C"

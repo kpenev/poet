@@ -14,9 +14,17 @@ const int SINGLE_EVOL_MODE = Core::SINGLE;
 const int TABULATION_EVOL_MODE = Core::TABULATION;
 const double NaN = Core::NaN;
 
-void read_eccentricity_expansion_coefficients(const char *filename)
+void prepare_eccentricity_expansion(const char *filename,
+                                    double precision,
+                                    bool pre_load,
+                                    bool disable_precision_fail)
 {
-    Evolve::TidalPotentialTerms::read_eccentricity_expansion(filename);
+    Evolve::TidalPotentialTerms::prepare(
+        filename,
+        precision,
+        pre_load,
+        disable_precision_fail
+    );
 }
 
 void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
@@ -718,4 +726,35 @@ void get_star_star_final_state(const OrbitSolver *solver,
                          secondary_envelope_angmom,
                          secondary_core_angmom,
                          secondary_wind_saturation);
+}
+
+double get_expansion_coeff_precision(int m, int s)
+{
+    return Evolve::TidalPotentialTerms::expansion_coefficient_evaluator(
+    ).interp_precision(
+        m,
+        s
+    );
+}
+
+double evaluate_expansion_coeff(int m,
+                                int s,
+                                double e,
+                                bool deriv)
+{
+    return Evolve::TidalPotentialTerms::expansion_coefficient_evaluator()(
+        m,
+        s,
+        e,
+        deriv
+    );
+}
+
+void destroy_expansion_coef(
+    const EccentricityExpansionCoefficients *expansion_arg
+)
+{
+    delete reinterpret_cast<const Evolve::EccentricityExpansionCoefficients*>(
+        expansion_arg
+    );
 }

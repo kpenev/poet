@@ -14,6 +14,8 @@ from ctypes import\
     c_uint,\
     c_bool,\
     c_char_p,\
+    c_wchar_p,\
+    c_longdouble,\
     POINTER
 from ctypes.util import find_library
 import numpy
@@ -29,19 +31,24 @@ class c_binary_p(c_void_p):
 
 class c_solver_p(c_void_p):
     """Place holder type for orbit evolution solver from the C-library."""
+
 #pylint: enable=invalid-name
 #pylint: enable=too-few-public-methods
 
-def initialize_library():
+def initialize_library(library_fname=None):
     """Prepare the orbital evolution library for use."""
 
-    library_fname = find_library('evolve')
+    if library_fname is None:
+        library_fname = find_library('evolve')
     if library_fname is None:
         raise OSError('Unable to find POET\'s evolve library.')
+
     result = cdll.LoadLibrary(library_fname)
 
-    result.read_eccentricity_expansion_coefficients.argtypes = [c_char_p]
-    result.read_eccentricity_expansion_coefficients.restype = None
+    result.prepare_eccentricity_expansion.argtypes = [c_char_p,
+                                                      c_double,
+                                                      c_bool]
+    result.prepare_eccentricity_expansion.restype = None
 
     result.create_star_planet_system.argtypes = [c_dissipating_body_p,
                                                  c_dissipating_body_p,
@@ -364,6 +371,22 @@ def initialize_library():
     ]
     result.get_star_star_final_state.restype = None
 
+    result.get_expansion_coeff_precision.argtypes = [
+        c_int,
+        c_int
+    ]
+    result.get_expansion_coeff_precision.restype = c_double
+
+    result.evaluate_expansion_coeff.argtypes = [
+        c_int,
+        c_int,
+        c_double,
+        c_bool
+    ]
+    result.evaluate_expansion_coeff.restype = c_double
+
     return result
 
-library = initialize_library()
+library = initialize_library(
+    '/home/kpenev/projects/git/poet/build/libs/evolve/shared/debug/libevolve.so'
+)

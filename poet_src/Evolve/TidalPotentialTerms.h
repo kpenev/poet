@@ -14,12 +14,11 @@
 #include "EccentricityExpansionCoefficients.h"
 #include "../Core/Common.h"
 
+//TODO: No longer need to worry about e-order
+
 namespace Evolve {
     class LIB_PUBLIC TidalPotentialTerms {
     private:
-        ///The expansion order in eccentricity to use.
-        unsigned __e_order;
-
         ///The eccentricity expansion of \f$p_{m,s}\f$.
         static EccentricityExpansionCoefficients __pms;
 
@@ -48,12 +47,54 @@ namespace Evolve {
 
         TidalPotentialTerms();
 
-        ///Change the eccentricity expansion order.
-        void change_e_order(unsigned new_e_order)
-        {__e_order = new_e_order;}
+        ///See EccentricityExpansionCoefficients::prepare()
+        static void prepare(const std::string &tabulated_pms_fname,
+                            double precision,
+                            bool pre_load,
+                            bool disable_precision_fail)
+        {
+            __pms.prepare(tabulated_pms_fname,
+                          precision,
+                          pre_load,
+                          disable_precision_fail);
+        }
 
-        unsigned current_e_order() const
-        {return __e_order;}
+
+        ///\brief The maximum orbital frequency multiplier to include in the
+        ///potential Fourier expansion in order to achive a specified precision.
+        ///
+        ///The return value (call it \f$O\f$) is such that \f$O p_{m, O+1} <
+        //\mathrm{precision}\f$. The reasoning is that if \f$p_{m,s}\f$ will
+        ///decay substantially as s doubles.
+        static unsigned required_expansion_order(
+            ///The eccentricity at which tidal potential needs to be evaluated.
+            double e
+        )
+        {
+            return std::max(
+                std::max(
+                    __pms.required_expansion_order(e, -2),
+                    __pms.required_expansion_order(e, 0)
+                ),
+                __pms.required_expansion_order(e, 2)
+            );
+        }
+
+        ///Return the expansion precision target for the expansion terms.
+        inline double get_expansion_precision() const
+        {return __pms.get_expansion_precision();}
+
+        ///\brief Return the range of eccentricities (min, max) over which an
+        ///expansion going up to given max m' is valid and required.
+        ///
+        ///For eccentricities below the minimum (first value of returned pair)
+        ///terms with frequency \f$m\Omega_\star-m'\Omega_{orb}\f$ can be
+        ///excluded from the expansion for all m, without violating the
+        ///precision requirement. For eccentricities at or above maximum (second
+        ///value of returned pair) at least
+        ///one \f$m\Omega_\star-m'\Omega_{orb}\f$ term must be included in the
+        ///series in order to satisfy the precision requirement.
+        static std::pair<double,double> get_expansion_range(int max_mp);
 
         ///Set the inclination relative to the orbit.
         void configure(double inclination, double arg_of_periapsis = 0);
@@ -61,16 +102,16 @@ namespace Evolve {
         ///\brief Calculates \f$\sum_s W_{2,s}D_{m,s}(\Theta)p_{s,m'}\f$ (see
         ///documentation) and its derivatives w.r.t. e and \f$\Theta\f$.
         ///
-        ///fill_Umm should already have been called with the appropriate
+        ///configure() should already have been called with the appropriate
         ///inclination and argument of periapsis.
         void operator()(
             ///The eccentricity.
             double e,
 
-            ///The m index.
+            ///The m index (spin freuqency multiplier).
             int m,
 
-            ///The m' index.
+            ///The m' index (orbital frequency multiplier).
             int mp,
 
             ///Set to the undifferentiated value.
@@ -80,12 +121,7 @@ namespace Evolve {
             std::complex<double> &inclination_deriv,
 
             ///Set to the eccentricity_derivative.
-            std::complex<double> &eccentricity_deriv,
-
-            ///The contribution of only the term with the highest eccentricity
-            ///power. Useful for detemining when the expansion order should be
-            ///increased.
-            std::complex<double> &highest_e_order_term
+            std::complex<double> &eccentricity_deriv
         ) const;
 
         ///\brief Return only the real parts of the complex version of the
@@ -107,25 +143,18 @@ namespace Evolve {
             double &inclination_deriv,
 
             ///Set to the eccentricity_derivative.
-            double &eccentricity_deriv,
-
-            ///The contribution of only the term with the highest eccentricity
-            ///power. Useful for detemining when the expansion order should be
-            ///increased.
-            double &highest_e_order_term
+            double &eccentricity_deriv
         ) const;
 
-        ///\brief Reads the eccentricity expansion coefficients of \f$p_{m,s}\f$.
-        ///
-        ///The given file should have been generated by
-        ///tabulate_eccentricity_expansion_coefficients.py.
-        static void read_eccentricity_expansion(const std::string &fname)
-        {__pms.read(fname);}
+        ///\brief The maximum eccentricity expansion order (orbital frequency
+        ///multiplier for which the expansion is known.
+        static unsigned max_expansion_order()
+        {return __pms.max_expansion_order();}
 
-        ///\brief The maximum eccentricity expansion order for which the
-        ///expansion is known.
-        static unsigned max_e_order()
-        {return __pms.max_e_power();}
+        ///Provide direct access to the eccentircity expansion coefficients
+        static const EccentricityExpansionCoefficients &
+            expansion_coefficient_evaluator()
+            {return __pms;}
     }; //End TidalPotentialTerms class.
 } //End Evolve namespace
 

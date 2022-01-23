@@ -26,8 +26,7 @@ namespace Evolve {
                              mprime,
                              no_deriv,
                              inclination_deriv,
-                             eccentricity_deriv,
-                             error);
+                             eccentricity_deriv);
             assert(std::isfinite(no_deriv.real()));
             result += (
                 no_deriv
@@ -53,9 +52,14 @@ namespace Evolve {
         double radial_distance,
         double azimuthal_angle,
         double polar_angle,
-        double time
+        double time,
+        int expansion_order
     )
     {
+        std::cerr << "Approximating tidal potential to "
+                  << expansion_order
+                  << "order"
+                  << std::endl;
         assert(radial_distance >= 0);
         assert(azimuthal_angle >= 0);
         assert(azimuthal_angle < 2 * M_PI);
@@ -82,12 +86,9 @@ namespace Evolve {
         ) /  Core::AstroConst::solar_radius;
 
         double result = 0.0;
-        int mprime_range = (static_cast<int>(__expansion_coef.current_e_order())
-                            +
-                            2);
         for(
-            int mprime = -mprime_range;
-            mprime <= mprime_range;
+            int mprime = -expansion_order;
+            mprime <= expansion_order;
             ++mprime
         ) {
             result += tidal_term(mprime,

@@ -10,6 +10,7 @@
 
 #include "../Core/SharedLibraryExportMacros.h"
 #include "../Core/Error.h"
+#include "../Core/Common.h"
 #include <vector>
 #include <fstream>
 #include <iomanip>
@@ -18,6 +19,8 @@
 #include <sstream>
 #include <cassert>
 #include <algorithm>
+#include <sqlite3.h>
+//#include <boost/math/special_functions/chebyshev.hpp>
 
 namespace Evolve {
 
@@ -25,123 +28,162 @@ namespace Evolve {
     /// \f$p_{m,s}\f$ coefficients
     class LIB_PUBLIC EccentricityExpansionCoefficients {
     private:
-        ///Maximum eccentricity power with all necessary coefficients known.
-        unsigned __max_e_power;
-
-        std::vector< std::vector<double> >
-            ///\brief The expansion coefficients of \f$p_{0,s}\f$
-            ///(\f$\alpha\f$ along with the s factior in the
-            /// [documentation]{@ref InclinationEccentricity_pms1}).
-            ///
-            ///The outer index is s+__max_e_power and the inner one is
-            ///min(n, n+s).
-            __alpha,
-
-            ///\brief The expansion coefficients of \f$p_{2,s}\f$
-            ///(\f$\gamma_{s,n}^+(s/2)^{s+2n}\f$ in the
-            /// [documentation]{@ref InclinationEccentricity_pms1}).
-            ///
-            ///The outer index is s+__max_e_power-2 and the inner one is
-            ///min(n+1, n+s-1).
-            __gamma_plus,
-
-            ///\brief The expansion coefficients of \f$p_{-2,s}\f$
-            ///(\f$\gamma_{s,n}^-(s/2)^{s+2n}\f$ in the
-            /// [documentation]{@ref InclinationEccentricity_pms1}).
-            ///
-            ///The outer index is s+__max_e_power+2 and the inner one is
-            ///min(n-1, n+s+1).
-            __gamma_minus;
-
-        ///Is the object ready to be used?
+        ///Has this class been properly linked to a database with interpolation
+        ///data?
         bool __useable;
 
-        ///\brief The inner index in the __alpha/gamma_plus/gamma_minus arrays
-        //corresponding to the given term.
-        int inner_index(
-                ///If -1 returns the index within __gamma_minus, if 0 returns the
-                ///index within __alpha and if 1 returns the index within
-                ///__gamma_plus.
-                int msign,
+        ///See do_not_fail argument to prepare().
+        bool __allow_precision_fail;
 
-                ///The multiplier of the orbital frequency of the desired term.
-                int s,
+        std::vector< std::vector<double> >
+            ///\brief The expansion coefficients for all \f$p_{m,s}\f$.
+            ///
+            ///Stored in the order m=-2,0,+2 for increasing s (m changes
+            ///faster).
+            __pms_interp_data;
 
-                ///The power of the eccentricity in the desired term.
-                int epower) const;
 
-        ///Taylor series approximation of \f$p_{-2,s}(e)\f$, and the
-        ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> p_m2s(
-                ///The eccentricity
-                double e,
+        ///If you're seeing this, it means I haven't properly sorted
+        ///out new documentation stuff or moved new variables/functions
+        ///into a better place
 
-                ///The s index.
-                int s,
+        ///\brief The largest s (second) index at which all three \f$p_{m,s}\f$
+        ///coefficients are tabulated.
+        int __max_s;
 
-                ///Where to truncate the taylor series.
-                unsigned max_e_power,
+        ///The currently defined expansion precision (see prepare())
+        double __expansion_precision;
 
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
-                bool deriv
+        ///\brief Whether we load the whole database at the start (true) or part
+        ///of it as needed (false)
+        bool __load_all;
+
+        ///\brief The identifiers of particular \f$p_{m,s}\f$ coefficients
+        ///in the database.
+        std::vector<int> __db_pms_id;
+
+        ///The smallest value of e for which each \f$p_{m,s}\f$ coefficient has
+        ///tabulated values.
+        std::vector<double> __min_e;
+
+        ///\brief The number of e values at which each \f$p_{m,s}\f$ coefficient
+        ///is tabulated
+        std::vector<int> __num_steps;
+
+        ///\brief The maximum eccentricity at which each \f$p_{m,s}\f$
+        ///coefficient can be reliably interpolated.
+        std::vector<double> __max_e;
+
+
+        ///\brief The guaranteed interpolation precision for each \f$p_{m,s}\f$ u
+        ///coefficient.
+        std::vector<double> __interp_precision;
+
+        ///The name of the file contanining the interpolatiod sqlite database.
+        std::string __file_name;
+
+        ///\brief The maximum eccentricity at which a given \f$p_{m,s}\f$ can be
+        ///ignored.
+        ///
+        ///The order is the same as __pms_interp_data.
+        std::vector<double> __max_ignore_eccentricity;
+
+        std::vector<double> load_coefficient(sqlite3* db,int m,int s);
+
+        ///Return the highest s available for requested precision.
+        /// TODO: what is this? It is possible for file to accommodate precision but only for s=0
+        void set_max_s(sqlite3* db);
+
+        ///\brief Read the metadata for the available \f$p_{m,s}\f$ coefficients
+        ///from the databate.
+        void load_metadata(sqlite3* db);
+
+        ///Fill the __max_ignore_eccentricity member per the database.
+        void load_max_ignore_eccentricity(sqlite3* db, double precision);
+
+        double load_specific_e(int m,int s,int e_step) const;
+        ///\brief The callback SQL function that updates the above values
+        ///(__pms_interp_data)
+        void get_interp_data(sqlite3* db);
+
+        ///Return a single tabulated value of \f$p_{m,s}\f$.
+        double get_specific_e(
+            ///The m (first) index of the expansion coefficient to get.
+            int m,
+
+            ///The s (second) index of the expansion coefficient to get.
+            int s,
+
+            ///The index within the tabulated values to get
+            int e_step
         ) const;
 
-        ///Taylor series approximation of \f$p_{0,s}(e)\f$, and the
-        ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> p_0s(
-                ///The eccentricity
-                double e,
+        std::vector<double> find_pms_boundary_values(int m,int s,double e) const;
+        double return_known_e(int m, int s, double e) const;
+        bool check_known_e(int m,int s,double e) const;
+        inline int e_to_nearest_step(int m,int s,double e,bool flr) const;
+        inline double step_to_e(int m,int s,int step) const;
+        int current_largest_s(int m);
+        inline int local_index(int m, int s) const;
+        //void change_frequency_order(double new_e); // Has not been implemented yet but is new and is intended to be
 
-                ///The s index.
-                int s,
-
-                ///Where to truncate the taylor series.
-                unsigned max_e_power,
-
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
-                bool deriv
-        ) const;
-
-        ///Taylor series approximation of \f$p_{2,s}(e)\f$, and the
-        ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> p_p2s(
-                ///The eccentricity
-                double e,
-
-                ///The s index.
-                int s,
-
-                ///Where to truncate the taylor series.
-                unsigned max_e_power,
-
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
-                bool deriv
-        ) const;
+        std::vector<double>* which_list(int m);
+        int* which_order(int m);
 
     public:
         ///Create an uninitialized object.
         EccentricityExpansionCoefficients() : __useable(false) {}
 
         ///Reads in tabulated expansion coefficients, making this object useable.
-        void read(
+        void prepare(
                 ///The name of the file to read pre-tabulated coefficients from.
-                const std::string &tabulated_pms_fname="",
+                const std::string &tabulated_pms_fname,
 
-                ///Only reads the file until all coefficients necessary for
-                ///expansions of up to this power are read-in. If this is
-                ///negative, the full file is read.
-                int max_e_power=-1);
+                ///Only reads the coefficients of the expansion which
+                ///most closely achieves the indicated precision, erring on
+                ///the side of being more precise.
+                double precision,
 
+                ///Should all data from the database be pre-loaded to avoid
+                ///query each time a coefficient is evaluated. Setting to true
+                ///means we keep a 9 GB database in memory.
+                bool pre_load,
 
-        ///Maximum eccentricity power with all necessary coefficients known.
-        unsigned max_e_power() const {return __max_e_power;}
+                ///Do not throw exception if specified precision is unattainable
+                ///with given tabulated coefficients, just use highest availabre
+                ///order.
+                bool disable_precision_fail=false
+        );
 
-        ///\brief Taylor series approximation of \f$p_{m,s}\f$ and the
-        ///contribution of the highest power eccentricity terms.
-        std::pair<double, double> operator()(
+        ///Return the expansion precision set by the last call to prepare()
+        inline double get_expansion_precision() const
+        {return __expansion_precision;}
+
+        ///The guaranteed interpolation precision for a given \f$p_{m,s}\f$.
+        double interp_precision(int m, int s) const;
+
+        ///\brief Return the smallest s value such that all \f$p_{m,s'}\f$ for
+        //\f$s'>s\f$ can be ignored from the expansion without violating the
+        ///precision requirements.
+        int required_expansion_order(double e, int m) const;
+
+        ///The largest s for which \f$p_{m,s'}\f$ is known.
+        int max_expansion_order() const
+        {return __max_s;}
+
+        ///\brief Return the range of eccentricities (min, max) over which an
+        ///expansion going up to given max s is valid and required.
+        ///
+        ///For eccentricities below the minimum (first value of returned pair)
+        ///at least \f$p_{m,max_s}\f$ can be excluded from the expansion without
+        ///violating the precision requirement. For eccentricities at or above
+        ///maximum (second value of returned pair) at least \f$p_{m,max_s+1}\f$
+        ///must be included in the series in order to satisfy the precision
+        ///requirement.
+        std::pair<double,double> get_expansion_range(int m, int max_s) const;
+
+        ///\brief Approximate the value of \f$p_{m,s}(e)\f$
+        double operator()(
                 ///The first index (0 or +-2).
                 int m,
 
@@ -151,13 +193,10 @@ namespace Evolve {
                 ///The value of the eccentricity to use.
                 double e,
 
-                ///The maximum eccentricity order to include in the Taylor
-                ///series.
-                unsigned max_e_power,
+                ///If true the result is differentiated w.r.t. to eccentricity.
+                bool deriv
+        ) const;
 
-                ///If true the result is differentiated w.r.t. to the
-                ///eccentricity.
-                bool deriv) const;
     }; //End EccentricityExpansionCoefficients class.
 
 } //End Evolve namespace.

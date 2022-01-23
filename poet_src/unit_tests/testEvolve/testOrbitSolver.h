@@ -110,8 +110,9 @@ namespace Evolve {
             double tsecondary = Core::NaN,
             double max_age = MAX_AGE,
             double secondary_radius = 1.0,
-            double precision = 1e-6,
-            double max_step_factor = 1e-3
+            double precision = 1e-8,
+            double max_step_factor = 1e-3,
+            const std::list<double> required_ages = std::list<double>()
         );
 
         ///Return the last calculated evolution.

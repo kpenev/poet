@@ -11,9 +11,8 @@
 
 MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 {
-    MESAInterpolator *interpolator;
+    MESAInterpolator *interpolator=NULL;
     DIR *dirstream = opendir(interpolator_dir.c_str());
-    bool found = false;
     for(struct dirent *entry; (entry = readdir(dirstream));) {
         std::string fname(entry->d_name);
         std::cout << "Fname: " << fname << std::endl;
@@ -26,24 +25,35 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
                       << std::string(fname.substr(fname.size() - 7))
                       << std::endl;
 
-            assert(!found);
-            found=true;
+            if(interpolator)
+                throw Core::Error::IO(
+                    "Multiple candidate interpolators fund in "
+                    +
+                    interpolator_dir
+                );
             interpolator = load_interpolator(
                 (interpolator_dir + fname).c_str()
             );
 
         }
     }
+    if(!interpolator)
+        throw Core::Error::IO(
+            "No interpolators found in "
+            +
+            interpolator_dir
+        );
     return interpolator;
 }
 
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 1.0;
-    const double SECONDARY_MASS = 0.8;
-    const double FEH = 0.0;
-    const double INITIAL_PERIOD = 12.0;
+    const double PRIMARY_MASS = 1.124740842555043;
+    const double SECONDARY_MASS = 0.5855694677552672;
+    const double FEH = 0.0;//-0.3307293375206785;
+    const double INITIAL_PERIOD = 9.29674528596;
+
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
@@ -52,21 +62,24 @@ int main(int, char **)
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
-    const double DISK_PERIOD =10.0;
-    const double PRIMARY_PHASE_LAG =1e-7;
-    const double SECONDARY_PHASE_LAG =1e-7;
-    const double DISK_DISSIPATION_AGE = 2e-2;
+    const double DISK_FREQUENCY = 2.281003443190243;
+    const double PRIMARY_PHASE_LAG = 0.0 * 4.045010337196463e-13;
+    const double SECONDARY_PHASE_LAG = 0.0 * 4.045010337196463e-13;
+    const double DISK_DISSIPATION_AGE = 5e-3;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
     const double WIND_STRENGTH = 0.17;
     const double INCLINATION = 0.0;
-    const double INITIAL_ECCENTRICITY = 0.5;
+    const double INITIAL_ECCENTRICITY = 0.0;
 
-    read_eccentricity_expansion_coefficients(
-        "eccentricity_expansion_coef_O200.txt"
+    prepare_eccentricity_expansion(
+        "eccentricity_expansion_coef_O400.sqlite",
+        1e-4,
+        true,
+        false
     );
     MESAInterpolator *primary_interpolator = get_interpolator(
-        "stellar_evolution_interpolators/"
+        "stellar_evolution_interpolators_bkp/"
     );
 
 
@@ -134,7 +147,7 @@ int main(int, char **)
         INITIAL_SEMIMAJOR,          //initial semimajor
         INITIAL_ECCENTRICITY,       //initial eccentricity
         INCLINATION,                //initial inclination
-        2.0 * M_PI / DISK_PERIOD,   //disk lock frequency
+        DISK_FREQUENCY,             //disk lock frequency
         DISK_DISSIPATION_AGE,       //disk dissipation age
         DISK_DISSIPATION_AGE        //secondary formation age
     );
@@ -166,6 +179,7 @@ int main(int, char **)
            *primary_lrad = new double[num_steps],
            *secondary_lconv = new double[num_steps],
            *secondary_lrad = new double[num_steps];
+
     get_star_star_evolution(
         solver,
         system,
@@ -206,19 +220,30 @@ int main(int, char **)
     );
     std::cout.precision(16);
     std::cout.setf(std::ios::scientific, std::ios::floatfield);
-    std::cout << std::setw(25) << "Age[Gyr]"
-              << std::setw(25) << "worb[rad/day]"
-              << std::setw(25) << "eccentricity"
-              << std::setw(25) << "prim_wconv[rad/day]"
-              << std::setw(25) << "prim_wrad[rad/day]"
-              << std::setw(25) << "sec_wconv[rad/day]"
-              << std::setw(25) << "sec_wrad[rad/day]"
-              << std::setw(25) << "prim_Lconv"
-              << std::setw(25) << "prim_Lrad"
-              << std::setw(25) << "sec_Lconv"
-              << std::setw(25) << "sec_Lrad"
+    std::cout << std::setw(25) << "Age[Gyr]"            //1
+              << std::setw(25) << "worb[rad/day]"       //2
+              << std::setw(25) << "eccentricity"        //3
+              << std::setw(25) << "prim_wconv[rad/day]" //4
+              << std::setw(25) << "prim_wrad[rad/day]"  //5
+              << std::setw(25) << "sec_wconv[rad/day]"  //6
+              << std::setw(25) << "sec_wrad[rad/day]"   //7
+              << std::setw(25) << "prim_Lconv"          //8
+              << std::setw(25) << "prim_Lrad"           //9
+              << std::setw(25) << "sec_Lconv"           //10
+              << std::setw(25) << "sec_Lrad"            //11
+              << std::setw(25) << "prim_Rconv"          //12
+              << std::setw(25) << "prim_Rrad"           //13
+              << std::setw(25) << "sec_Rconv"           //14
+              << std::setw(25) << "sec_Rrad"            //15
               << std::endl;
-    double primary_Iconv, primary_Irad, secondary_Iconv, secondary_Irad;
+    double primary_Iconv,
+           primary_Irad,
+           secondary_Iconv,
+           secondary_Irad,
+           primary_rconv,
+           primary_rrad,
+           secondary_rconv,
+           secondary_rrad;
     for(int i = 0; i < num_steps; ++i) {
         if(
             age[i] < core_formation_age(primary)
@@ -229,6 +254,10 @@ int main(int, char **)
         else {
             primary_Iconv = envelope_inertia(primary, age[i]);
             primary_Irad = core_inertia(primary, age[i]);
+            primary_rconv = star_radius(primary, age[i]);
+            secondary_rconv = star_radius(secondary, age[i]);
+            primary_rrad = core_radius(primary, age[i]);
+            secondary_rrad = core_radius(secondary, age[i]);
         }
 
 
@@ -260,6 +289,10 @@ int main(int, char **)
                   << std::setw(25) << primary_lrad[i]
                   << std::setw(25) << secondary_lconv[i]
                   << std::setw(25) << secondary_lrad[i]
+                  << std::setw(25) << primary_rconv
+                  << std::setw(25) << primary_rrad
+                  << std::setw(25) << secondary_rconv
+                  << std::setw(25) << secondary_rrad
                   << std::endl;
     }
 

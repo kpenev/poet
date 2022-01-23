@@ -10,18 +10,39 @@
 
 int main(int, char **)
 {
-    read_eccentricity_expansion_coefficients(
-        "eccentricity_expansion_coef.txt"
+    MESAInterpolator *interpolator = load_interpolator(
+        "stellar_evolution_interpolators/"
+        "660499e5-8692-4fd9-a5bd-9397bbe481e3"
     );
 
-    double mstar = 1.0, mplanet = 1.0, a0 = 10.0, zero = 0.0;
+    prepare_eccentricity_expansion(
+        "eccentricity_expansion_coef_O400.sqlite",
+        1e-4,
+        true,
+        false
+    );
 
-    CPlanet *planet = create_planet(1.0, 1.0);
+    const double Mjup_to_Msun = (Core::AstroConst::jupiter_mass
+                                 /
+                                 Core::AstroConst::solar_mass),
+                 Rjup_to_Msun = (Core::AstroConst::jupiter_radius
+                                 /
+                                 Core::AstroConst::solar_radius);
+
+    double mstar = 1.0,
+           mplanet = 1.0,//100.0 * Mjup_to_Msun,
+           rplanet = 1.0 * Rjup_to_Msun,
+           a0 = 25.0,
+           e0 = 0.8,
+           zero = 0.0,
+           phase_lag = 3e-8;
+
+    CPlanet *planet = create_planet(mplanet, rplanet);
     configure_planet(planet,
                      5e-3,
                      mstar,
                      a0,
-                     0.0,
+                     e0,
                      &zero,
                      NULL,
                      NULL,
@@ -29,10 +50,6 @@ int main(int, char **)
                      true,
                      true);
 
-    MESAInterpolator *interpolator = load_interpolator(
-        "stellar_evolution_interpolators/"
-        "90af7144-f918-4a1c-95a2-0b086a80d0a2"
-    );
     EvolvingStar *star = create_star(mstar,
                                      0.0,
                                      0.13,
@@ -41,16 +58,25 @@ int main(int, char **)
                                      interpolator);
     select_interpolation_region(star, core_formation_age(star));
 
-    double break_frequency = 2.0 * M_PI / 4.33;
-    double powerlaws[] = {0.0, -3.1};
-    set_star_dissipation(star, 0, 1, 0, &break_frequency, NULL, powerlaws, &zero, 3e-7, 1.0, 0.0);
-    set_star_dissipation(star, 1, 0, 0, NULL, NULL, &zero, &zero, 0.0, 1.0, 0.0);
+    double break_frequency = 2.0 * M_PI / 20;
+    double powerlaws[] = {1.0, 0.0};//-3.1};
+    set_star_dissipation(star,
+                         0,
+                         0,
+                         0,
+                         NULL,
+                         NULL,
+                         &zero,
+                         &zero,
+                         phase_lag,
+                         1.0,
+                         10.0);
 
     DiskBinarySystem *system = create_star_planet_system(
         star,
         planet,
         a0,
-        0.0,
+        e0,
         0.0,
         1.0,
         5e-3,
@@ -70,7 +96,7 @@ int main(int, char **)
         system,
         10.0,
         1e-3,
-        1e-6,
+        1e-4,
         NULL,
         0,
         true,
@@ -79,6 +105,7 @@ int main(int, char **)
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],
            *semimajor = new double[num_steps],
+           *eccentricity = new double[num_steps],
            *lconv = new double[num_steps],
            *lrad = new double[num_steps];
     get_star_planet_evolution(
@@ -88,7 +115,7 @@ int main(int, char **)
         planet,
         age,
         semimajor,
-        NULL, //eeccentricity
+        eccentricity,
         NULL, //envelope inclination
         NULL, //core inclination
         NULL, //envelope periapsis
@@ -118,24 +145,20 @@ int main(int, char **)
               << std::setw(25) << "worb[rad/day]"
               << std::setw(25) << "wconv[rad/day]"
               << std::setw(25) << "wrad[rad/day]"
+              << std::setw(25) << "e"
               << std::endl;
     for(int i = 0; i < num_steps; ++i)
         std::cout << std::setw(25) << age[i]
                   << std::setw(25) << Core::orbital_angular_velocity(
                       mstar,
-                      (
-                          mplanet
-                          *
-                          Core::AstroConst::jupiter_mass
-                          /
-                          Core::AstroConst::solar_mass
-                      ),
+                      mplanet,
                       semimajor[i]
                   )
                   << std::setw(25) << (lconv[i]
                                        /
                                        envelope_inertia(star, age[i]))
                   << std::setw(25) << lrad[i] / core_inertia(star, age[i])
+                  << std::setw(25) << eccentricity[i]
                   << std::endl;
 
     destroy_binary(system);
@@ -145,4 +168,5 @@ int main(int, char **)
     destroy_solver(solver);
     delete[] age;
     delete[] semimajor;
+    delete[] eccentricity;
 }

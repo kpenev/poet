@@ -32,7 +32,7 @@ namespace Evolve {
 
             ///The semimajor axis of the orbit in solar radii.
             __semimajor,
-            
+
             ///The eccentricity of the orbit
             __eccentricity;
 
@@ -65,19 +65,19 @@ namespace Evolve {
 
         ///A mutable reference to the  semimajor axis of the system.
         double &primary_mass() {return __primary_mass;}
- 
+
         ///The semimajor axis of the system.
         double secondary_mass() const {return __secondary_mass;}
 
         ///A mutable reference to the  semimajor axis of the system.
         double &secondary_mass() {return __secondary_mass;}
- 
+
         ///The semimajor axis of the system.
         double semimajor() const {return __semimajor;}
 
         ///A mutable reference to the  semimajor axis of the system.
         double &semimajor() {return __semimajor;}
- 
+
         ///The semimajor axis of the system.
         double eccentricity() const {return __eccentricity;}
 
@@ -91,11 +91,11 @@ namespace Evolve {
             ///periapsis
             double orbital_phase
         ) const;
- 
+
         ///\brief Secondary position vector in a coordinate system centered on
         ///the primary, with \f$ \hat{z} = \hat{L} \f$ and
         /// \f$ \hat{y} = \hat{S} \times \hat{L} \f$
-        Eigen::Vector3d secondary_position(
+        Eigen::Matrix<long double, 3, 1> secondary_position(
             ///See same name argument to eccentric_anomaly().
             double orbital_phase
         ) const;

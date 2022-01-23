@@ -29,7 +29,7 @@ namespace Evolve {
         Planet::Planet planet(1.0, 1.0);
         BinarySystem dummy_system(planet, planet, "");
 
-        zone.change_e_order(20, dummy_system, true, 0);
+        zone.change_expansion_order(20, dummy_system, true, 0);
 
         for(double e = 0.0; e <= 0.0075; e += 0.0001) {
             zone.configure(false,//initialize
@@ -128,7 +128,7 @@ namespace Evolve {
         for(double e = 0.0; e <= 0.99; e += 0.01) {
             std::cout << std::setw(25) << e;
             for(unsigned e_order = 0; e_order <= MAX_E_ORDER; e_order += 10) {
-                zone.change_e_order(e_order, dummy_system, true, 0);
+                zone.change_expansion_order(e_order, dummy_system, true, 0);
                 zone.configure(false,//initialize
                                1.0,//age
                                1.0,//orbital frequency

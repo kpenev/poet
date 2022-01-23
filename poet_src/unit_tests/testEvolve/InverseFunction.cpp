@@ -11,6 +11,7 @@ double gsl_f(double x, void *params)
 {
     InverseFunction *func_object = reinterpret_cast<InverseFunction*>(params);
     double func_value = func_object->__to_invert(x);
+    std::cerr << "Inverrting f(x = " << x << ") = " << func_value << std::endl;
     if(std::isnan(func_value))
         throw Core::Error::Runtime("NaN function value encountered.");
     return (func_value - func_object->__target);
@@ -18,7 +19,7 @@ double gsl_f(double x, void *params)
 
 double gsl_df(double x, void *params)
 {
-    const Core::FunctionDerivatives *deriv = 
+    const Core::FunctionDerivatives *deriv =
         reinterpret_cast<InverseFunction*>(params)->__to_invert.deriv(x);
     double result = deriv->order(1);
     delete deriv;

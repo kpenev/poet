@@ -82,7 +82,7 @@ namespace Evolve {
         __power_norm = torque_norm * orbital_frequency;
         DissipatingZone &surface_zone = zone(0);
         unsigned invalid_ind = __orbit_entries.size(),
-                 no_deriv_ind = invalid_ind, 
+                 no_deriv_ind = invalid_ind,
                  orbital_freq_deriv_ind = invalid_ind,
                  radius_deriv_ind = invalid_ind,
                  semimajor_deriv_ind = invalid_ind;
@@ -111,14 +111,7 @@ namespace Evolve {
                 ++deriv_ind
             ) {
                 Dissipation::QuantityEntry entry = __orbit_entries[deriv_ind];
-                if(entry == Dissipation::EXPANSION_ERROR) {
-                    __orbit_power[deriv_ind] += std::abs(
-                        current_zone.tidal_power(false,
-                                                 Dissipation::EXPANSION_ERROR)
-                    );
-                    __orbit_torque[entry].setConstant(tidal_torque[entry].norm());
-                }
-                else if(entry < Dissipation::END_DIMENSIONLESS_DERIV)
+                if(entry < Dissipation::END_DIMENSIONLESS_DERIV)
                     __orbit_power[deriv_ind] -= (
                         current_zone.tidal_power(false, entry)
                     );
@@ -231,7 +224,7 @@ namespace Evolve {
                 inner_zone,
                 outer_zone,
                 Eigen::Vector3d(0, 0, angmom_transfer),
-                deriv, 
+                deriv,
                 !with_respect_to_outer
             );
         }
@@ -239,7 +232,7 @@ namespace Evolve {
 
     Eigen::Vector3d DissipatingBody::angular_momentum_transfer_from_top(
         unsigned zone_index,
-        Dissipation::QuantityEntry deriv, 
+        Dissipation::QuantityEntry deriv,
         bool with_respect_to_outer
     ) const
     {
@@ -268,7 +261,7 @@ namespace Evolve {
                 (with_respect_to_outer && dm_dt <= 0)
                 ||
                 (!with_respect_to_outer && dm_dt>=0)
-            ) 
+            )
                 return Eigen::Vector3d(0, 0, 0);
             else if(deriv == Dissipation::SPIN_FREQUENCY)
                 scaling = 1.0 / (with_respect_to_outer
@@ -325,7 +318,7 @@ namespace Evolve {
             );
         } else if(
             deriv == Dissipation::SPIN_FREQUENCY
-            || 
+            ||
             deriv == Dissipation::MOMENT_OF_INERTIA
             ||
             deriv == Dissipation::SPIN_ANGMOM
@@ -393,34 +386,34 @@ namespace Evolve {
             &&
             (
                 deriv == Dissipation::NO_DERIV
-                || 
+                ||
                 deriv == Dissipation::AGE
                 ||
                 deriv_zone <= 0
             )
-        ) 
+        )
             result = angular_momentum_transfer_from_top(zone_index,
-                                                        deriv, 
+                                                        deriv,
                                                         deriv_zone < 0);
         if(
             zone_index < number_zones() - 1
             &&
             (
                 deriv == Dissipation::NO_DERIV
-                || 
+                ||
                 deriv == Dissipation::AGE
                 ||
                 deriv_zone >= 0
             )
         )
             result += angular_momentum_transfer_from_bottom(zone_index,
-                                                            deriv, 
+                                                            deriv,
                                                             deriv_zone > 0);
         return result;
     }
 
-    DissipatingBody::DissipatingBody() : 
-        __orbit_entries(7),
+    DissipatingBody::DissipatingBody() :
+        __orbit_entries(6),
         __orbit_power(__orbit_entries.size()),
         __orbit_torque(Dissipation::NUM_ENTRIES),
         __orbit_torque_correction(0),
@@ -432,7 +425,6 @@ namespace Evolve {
         __orbit_entries[3] = Dissipation::ECCENTRICITY;
         __orbit_entries[4] = Dissipation::RADIUS;
         __orbit_entries[5] = Dissipation::SEMIMAJOR;
-        __orbit_entries[6] = Dissipation::EXPANSION_ERROR;
     }
 
     void DissipatingBody::correct_orbit_power(
@@ -476,11 +468,7 @@ namespace Evolve {
                             tidal_power(zone_index, true, entry)
                         )
                     );
-                    if(
-                        entry != Dissipation::NO_DERIV
-                        &&
-                        entry != Dissipation::EXPANSION_ERROR
-                    ) {
+                    if(entry != Dissipation::NO_DERIV) {
                         double frac_deriv = Core::NaN;
                         if(entry == Dissipation::AGE)
                             frac_deriv = (above_lock_fractions_age_deriv
@@ -492,7 +480,7 @@ namespace Evolve {
                                 /
                                 __dorbital_frequency_da
                             );
-                        else if(entry == Dissipation::ECCENTRICITY) 
+                        else if(entry == Dissipation::ECCENTRICITY)
                             frac_deriv = (
                                 above_lock_fractions_eccentricity_deriv
                                 [locked_zone_index]
@@ -502,7 +490,7 @@ namespace Evolve {
                         else if(entry == Dissipation::RADIUS)
                             frac_deriv = (above_lock_fractions_radius_deriv
                                           [locked_zone_index]);
-                        else if(entry == Dissipation::SEMIMAJOR) 
+                        else if(entry == Dissipation::SEMIMAJOR)
                             frac_deriv = (above_lock_fractions_semimajor_deriv
                                           [locked_zone_index]);
                         else
@@ -555,45 +543,41 @@ namespace Evolve {
                             tidal_torque(zone_index, true, entry)
                         )
                     );
-                    if(entry == Dissipation::EXPANSION_ERROR) {
-                        __orbit_torque[entry].array() += correction.norm();
-                    } else {
-                        if(zone_index) {
+                    if(zone_index) {
+                        __orbit_torque[entry] += zone_to_zone_transform(
+                            this_zone,
+                            surface_zone,
+                            correction
+                        );
+                        if(
+                            entry == Dissipation::INCLINATION
+                            ||
+                            entry == Dissipation::PERIAPSIS
+                        )
                             __orbit_torque[entry] += zone_to_zone_transform(
                                 this_zone,
                                 surface_zone,
-                                correction
+                                (
+                                    above_lock_fractions
+                                    [Dissipation::NO_DERIV]
+                                    [locked_zone_index]
+                                    *
+                                    __orbit_torque_correction
+                                    [correction_index]
+                                ),
+                                static_cast<Dissipation::QuantityEntry>(
+                                    entry
+                                )
                             );
-                            if(
-                                entry == Dissipation::INCLINATION
-                                || 
-                                entry == Dissipation::PERIAPSIS
-                            )
-                                __orbit_torque[entry] += zone_to_zone_transform(
-                                    this_zone,
-                                    surface_zone,
-                                    (
-                                        above_lock_fractions
-                                        [Dissipation::NO_DERIV]
-                                        [locked_zone_index]
-                                        *
-                                        __orbit_torque_correction
-                                        [correction_index]
-                                    ),
-                                    static_cast<Dissipation::QuantityEntry>(
-                                        entry
-                                    )
-                                );
-                        } else 
-                            __orbit_torque[entry] += correction;
+                    } else
+                        __orbit_torque[entry] += correction;
 
-                        if(entry != Dissipation::NO_DERIV)
-                            __orbit_torque[entry] += (
-                                above_lock_fractions[entry][locked_zone_index]
-                                *
-                                __orbit_torque_correction[correction_index]
-                            );
-                    }
+                    if(entry != Dissipation::NO_DERIV)
+                        __orbit_torque[entry] += (
+                            above_lock_fractions[entry][locked_zone_index]
+                            *
+                            __orbit_torque_correction[correction_index]
+                        );
                 }
                 ++correction_index;
             }
@@ -651,7 +635,7 @@ namespace Evolve {
             double zone_inclination, zone_periapsis, zone_spin;
             if(!inclination)
                 zone_inclination = 0;
-            else if(zero_outer_inclination) 
+            else if(zero_outer_inclination)
                 zone_inclination = (zone_index
                                     ? inclination[zone_index - 1]
                                     : 0);
@@ -706,13 +690,11 @@ namespace Evolve {
                 tidal_torque.resize(Dissipation::NUM_ENTRIES);
                 for(
                     int torque_ind = Dissipation::NO_DERIV;
-                    torque_ind <= Dissipation::END_DIMENSIONLESS_DERIV;
+                    torque_ind < Dissipation::END_DIMENSIONLESS_DERIV;
                     ++torque_ind
                 ) {
                     Dissipation::QuantityEntry entry = (
-                        torque_ind < Dissipation::END_DIMENSIONLESS_DERIV
-                        ? static_cast<Dissipation::QuantityEntry>(torque_ind)
-                        : Dissipation::EXPANSION_ERROR
+                        static_cast<Dissipation::QuantityEntry>(torque_ind)
                     );
                     tidal_torque[entry][0] = current_zone.tidal_torque_x(
                         above,
@@ -726,12 +708,17 @@ namespace Evolve {
                         above,
                         entry
                     );
-                    assert(!std::isnan(tidal_torque[entry].sum()));
+                    //TODO: revive eccentricity derivative check
+                    assert(
+                        entry == Dissipation::ECCENTRICITY
+                        ||
+                        !std::isnan(tidal_torque[entry].sum())
+                    );
                 }
                 above = !above;
             } while(above);
         }
-        collect_orbit_rates(__orbital_frequency, 
+        collect_orbit_rates(__orbital_frequency,
                             normalize_torques(companion_mass,
                                               semimajor,
                                               __orbital_frequency));
@@ -760,7 +747,7 @@ namespace Evolve {
                                                     deriv_zone);
         if(
             zone_index < number_zones() - 1
-            && 
+            &&
             (!zone_specific(deriv) || deriv_zone >= 0)
         )
             result += angular_momentum_coupling(zone_index,
@@ -787,7 +774,7 @@ namespace Evolve {
                     zone(zone_index - 1),
                     this_zone,
                     angular_momentum_coupling(zone_index - 1),
-                    deriv, 
+                    deriv,
                     deriv_zone<0
                 );
         }
@@ -984,43 +971,38 @@ namespace Evolve {
 
     Eigen::Vector3d DissipatingBody::tidal_orbit_torque(
         const DissipatingZone &reference_zone,
-        Dissipation::QuantityEntry entry, 
+        Dissipation::QuantityEntry entry,
         unsigned deriv_zone_index,
         const Eigen::VectorXd &above_lock_fraction_deriv
     ) const
     {
         Eigen::Vector3d result;
-        if(entry == Dissipation::EXPANSION_ERROR) {
-            result = tidal_orbit_torque(Dissipation::EXPANSION_ERROR,
-                                        0,
-                                        Eigen::VectorXd());
-        } else {
-            result = zone_to_zone_transform(
-                zone(0),
-                reference_zone,
-                tidal_orbit_torque(entry,
-                                   deriv_zone_index,
-                                   above_lock_fraction_deriv)
-            );
-            if(
-                (
-                    entry == Dissipation::INCLINATION
-                    ||
-                    entry == Dissipation::PERIAPSIS
-                )
-                &&
-                (
-                    deriv_zone_index == 0
-                    ||
-                    &zone(deriv_zone_index) == &reference_zone
-                )
-            ) {
-                result += zone_to_zone_transform(zone(0),
-                                                 reference_zone,
-                                                 tidal_orbit_torque(),
-                                                 entry,
-                                                 deriv_zone_index==0);
-            }
+        result = zone_to_zone_transform(
+            zone(0),
+            reference_zone,
+            tidal_orbit_torque(entry,
+                               deriv_zone_index,
+                               above_lock_fraction_deriv)
+        );
+
+        if(
+            (
+                entry == Dissipation::INCLINATION
+                ||
+                entry == Dissipation::PERIAPSIS
+            )
+            &&
+            (
+                deriv_zone_index == 0
+                ||
+                &zone(deriv_zone_index) == &reference_zone
+            )
+        ) {
+            result += zone_to_zone_transform(zone(0),
+                                             reference_zone,
+                                             tidal_orbit_torque(),
+                                             entry,
+                                             deriv_zone_index==0);
         }
         return result;
     }
@@ -1056,16 +1038,16 @@ namespace Evolve {
         return result;
     }
 
-    void DissipatingBody::change_e_order(unsigned new_e_order,
-                                         BinarySystem &system,
-                                         bool primary)
+    void DissipatingBody::change_expansion_order(unsigned new_expansion_order,
+                                                 BinarySystem &system,
+                                                 bool primary)
     {
         for(unsigned zone_ind = 0; zone_ind < number_zones(); ++zone_ind)
             if(zone(zone_ind).dissipative())
-                zone(zone_ind).change_e_order(new_e_order,
-                                              system,
-                                              primary,
-                                              zone_ind);
+                zone(zone_ind).change_expansion_order(new_expansion_order,
+                                                      system,
+                                                      primary,
+                                                      zone_ind);
     }
 
 } //End Envolve namespace.

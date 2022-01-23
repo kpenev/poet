@@ -326,3 +326,36 @@ void star_radius_array(EvolvingStar *star,
         result[i] = zone.outer_radius(age[i]);
     }
 }
+
+double core_radius(EvolvingStar *star, double age)
+{
+    const Star::EvolvingStellarCore &core =
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(
+            star
+        )->core();
+    core.select_interpolation_region(age);
+    return core.outer_radius(age);
+}
+
+///The radius of the star at an array of ages.
+void core_radius_array(EvolvingStar *star,
+                       const double *age,
+                       unsigned nvalues,
+                       double *result)
+{
+    Star::EvolvingStellarZone &zone =
+        reinterpret_cast<Star::InterpolatedEvolutionStar*>(
+            star
+        )->core();
+    for(unsigned i = 0; i < nvalues; ++i) {
+        if(
+            i == 0
+            ||
+            age[i] < age[i - 1]
+        )
+            zone.select_interpolation_region(age[i]);
+        else
+            zone.reached_critical_age(age[i]);
+        result[i] = zone.outer_radius(age[i]);
+    }
+}

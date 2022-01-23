@@ -84,18 +84,22 @@ namespace Evolve {
         return root;
     }
 
-    Eigen::Vector3d EccentricOrbit::secondary_position(
+    Eigen::Matrix<long double, 3, 1> EccentricOrbit::secondary_position(
         double orbital_phase
     ) const
     {
-        double current_eccentric_anomaly = eccentric_anomaly(orbital_phase);
-        return Eigen::Vector3d(
-            __semimajor * (std::cos(current_eccentric_anomaly)
-                           -
-                           __eccentricity),
-            __semimajor * (sqrt(1.0 - std::pow(__eccentricity, 2))
-                           *
-                           std::sin(current_eccentric_anomaly)),
+        long double current_eccentric_anomaly = eccentric_anomaly(orbital_phase);
+        long double semimajor = __semimajor,
+                    eccentricity = __eccentricity,
+                    one = 1.0;
+        typedef long double ldbl;
+        return Eigen::Matrix<ldbl, 3, 1>(
+            semimajor * (std::cos(current_eccentric_anomaly)
+                         -
+                         eccentricity),
+            semimajor * (sqrt(one - std::pow(eccentricity, 2))
+                         *
+                         std::sin(current_eccentric_anomaly)),
             0.0
         );
     }

@@ -317,6 +317,32 @@ extern "C" {
         double *result
     );
 
+    ///The radius of the star at a given age.
+    LIB_PUBLIC double core_radius(
+        ///The star whose radius to return.
+        EvolvingStar *star,
+
+        ///The age at which to return the stellar radius.
+        double age
+    );
+
+    ///The radius of the star at an array of ages.
+    LIB_PUBLIC void core_radius_array(
+        ///The star whose radius to return.
+        EvolvingStar *star,
+
+        ///The ages at which to return the stellar radius.
+        const double *age,
+
+        ///The number of ages at which evaluation is required.
+        unsigned nvalues,
+
+        ///A pre-allocated memory (size: nvalues) where to place the result.
+        double *result
+    );
+
+
+
     ///Converts lg(Q) to a tidal phase lag.
     LIB_PUBLIC double lag_from_lgQ(double lgQ);
 

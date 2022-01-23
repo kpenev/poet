@@ -293,9 +293,9 @@ namespace Evolve {
         );
 
         ///Changes the order of the eccentricity expansion performed.
-        virtual void change_e_order(
+        virtual void change_expansion_order(
             ///The new eccentricity expansion order.
-            unsigned new_e_order,
+            unsigned new_expansion_order,
 
             ///The system being evolved.
             BinarySystem &system,

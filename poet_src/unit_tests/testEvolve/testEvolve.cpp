@@ -89,9 +89,16 @@ int main()
     return 0;
     */
 
-    Evolve::TidalPotentialTerms::read_eccentricity_expansion(
-        "eccentricity_expansion_coef_O200.txt"
+    std::cerr << "Preparing" << std::endl;
+
+    Evolve::TidalPotentialTerms::prepare(
+        "eccentricity_expansion_coef_O400.sqlite",
+        1e-6,
+        true,
+        true
     );
+
+    std::cerr << "Prepared" << std::endl;
 
 	std::cout.setf(std::ios_base::scientific);
 	std::cout.precision(16);
@@ -100,9 +107,11 @@ int main()
 	Test::TextOutput output(Test::TextOutput::Verbose);
 
     Test::Suite all_tests;
-/*    all_tests.add(
+    /*
+    all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_GravitationalPotential)
     );
+    */
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_TidalTorquePower)
     );
@@ -111,7 +120,7 @@ int main()
     );
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_OrbitSolver)
-    );*/
+    );
     all_tests.add(
         std::auto_ptr<Test::Suite>(new Evolve::test_LockMonitoring)
     );

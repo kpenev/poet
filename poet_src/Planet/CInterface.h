@@ -59,4 +59,4 @@ extern "C" {
         double inertial_mode_sharpness
     );
 
-}; //End extern "C"
+} //End extern "C"
