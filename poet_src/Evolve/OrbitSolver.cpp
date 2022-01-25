@@ -480,7 +480,9 @@ namespace Evolve {
     }
 
     ExtremumInformation OrbitSolver::extremum_from_history(
-            size_t condition_index) const
+        size_t condition_index,
+        double min_extremum_x
+    ) const
     {
         ExtremumInformation result;
         if(
@@ -497,23 +499,36 @@ namespace Evolve {
                next_stop_cond = __stop_cond_discarded.front()[condition_index];
         if(next_stop_cond * prev_stop_cond <= 0)
             return result;
-        if(std::isnan(__stop_deriv_history.back()[condition_index]))
-            return extremum_from_history_no_deriv(condition_index);
-        double prev_stop_deriv = __stop_deriv_history.back()[condition_index],
-               next_stop_deriv = __stop_deriv_discarded.front()[condition_index];
-        if(
-            next_stop_cond * next_stop_deriv < 0
-            ||
-            next_stop_deriv * prev_stop_deriv >= 0
-        )
-            return result;
-        result.x()=Core::estimate_extremum(__stop_history_ages.back(),
-                                           prev_stop_cond,
-                                           __discarded_stop_ages.front(),
-                                           next_stop_cond,
-                                           prev_stop_deriv,
-                                           next_stop_deriv,
-                                           &(result.y()));
+        if(std::isnan(__stop_deriv_history.back()[condition_index])) {
+            result = extremum_from_history_no_deriv(condition_index);
+        } else {
+            double
+                prev_stop_deriv = __stop_deriv_history.back()[
+                    condition_index
+                ],
+                next_stop_deriv = __stop_deriv_discarded.front()[
+                    condition_index
+                ];
+            if(
+                next_stop_cond * next_stop_deriv < 0
+                ||
+                next_stop_deriv * prev_stop_deriv >= 0
+            )
+                return result;
+            result.x() = Core::estimate_extremum(__stop_history_ages.back(),
+                                                 prev_stop_cond,
+                                                 __discarded_stop_ages.front(),
+                                                 next_stop_cond,
+                                                 prev_stop_deriv,
+                                                 next_stop_deriv,
+                                                 &(result.y()));
+        }
+
+        if(result.x() < min_extremum_x) {
+            result.x() = min_extremum_x;
+            result.y() = Core::NaN;
+        }
+
         return result;
     }
 
@@ -626,19 +641,30 @@ namespace Evolve {
         StoppingConditionType stop_reason
     )
     {
+#ifndef NDEBUG
+        std::cerr << "Initializing skip history with stop reason: "
+                  << stop_reason
+                  << std::endl;
+#endif
         __skip_history_zerocrossing.resize(stop_cond.num_subconditions(), 0);
         __skip_history_extremum.resize(stop_cond.num_subconditions(), 0);
         for(
-            size_t cond_ind=0;
-            cond_ind<stop_cond.num_subconditions();
+            size_t cond_ind = 0;
+            cond_ind < stop_cond.num_subconditions();
             cond_ind++
         ) {
             StoppingConditionType stop_cond_type=stop_cond.type(cond_ind);
             if(
-                (stop_reason==BREAK_LOCK && stop_cond_type==SYNCHRONIZED)
+                (stop_reason == BREAK_LOCK && stop_cond_type == SYNCHRONIZED)
                 ||
-                (stop_reason!=NO_STOP && stop_cond_type==stop_reason)
+                (stop_reason != NO_STOP && stop_cond_type == stop_reason)
             ) {
+#ifndef NDEBUG
+                std::cerr << "Skipping first step of condition "
+                          << cond_ind
+                          << "(" << stop_cond_type << ")"
+                          << std::endl;
+#endif
                 __skip_history_zerocrossing[cond_ind]=1;
                 __skip_history_extremum[cond_ind]=(
                     __stop_history_ages.front()
@@ -646,25 +672,42 @@ namespace Evolve {
                     (1.0+std::numeric_limits<double>::epsilon())
                 );
             }
+#ifdef VERBOSE_DEBUG
+            else
+                std::cerr << "Not skipping condition "
+                          << cond_ind
+                          << "(" << stop_cond_type << ")"
+                          << std::endl;
+#endif
         }
     }
 
-    /*
     void OrbitSolver::update_skip_history(
             const std::valarray<double> &current_stop_cond,
             const StopInformation &stop_info)
     {
-        size_t history_size=__stop_history_ages.size();
-        for(size_t i=0; i<current_stop_cond.size(); i++) {
-            if(__skip_history_zerocrossing[i]==history_size &&
-                    std::abs(current_stop_cond[i])<__precision)
+        size_t history_size = __stop_history_ages.size();
+        for(size_t i = 0; i < current_stop_cond.size(); i++) {
+            if(
+                    __skip_history_zerocrossing[i] == history_size
+                    &&
+                    std::abs(current_stop_cond[i]) < __precision
+            )
                 ++__skip_history_zerocrossing[i];
-            if(stop_info.stop_reason()==__stopping_conditions.type(i) &&
-                    !stop_info.is_crossing() &&
-                    std::abs(stop_info.stop_condition_precision())<=__precision)
+            if(
+                    stop_info.stop_reason() == __stopping_conditions->type(i)
+                    &&
+                    !stop_info.is_crossing()
+                    &&
+                    (
+                        std::abs(stop_info.stop_condition_precision())
+                        <=
+                        __precision
+                    )
+            )
                 __skip_history_extremum[i]=stop_info.stop_age();
         }
-    }*/
+    }
 
     bool OrbitSolver::at_exact_condition(double previous_age,
                                          const StopInformation &stop_info)
@@ -817,7 +860,10 @@ namespace Evolve {
                 crossing_precision = stop_cond_value;
                 crossed_zero = true;
             }
-            ExtremumInformation extremum = extremum_from_history(cond_ind);
+            ExtremumInformation extremum = extremum_from_history(
+                cond_ind,
+                __stop_history_ages.back() + __min_extremum_search_step
+            );
             double extremum_precision;
             if(std::isnan(extremum.y())) extremum_precision = Core::NaN;
             else
@@ -874,7 +920,8 @@ namespace Evolve {
             ||
             acceptable_step(age, __stop_history_ages.back(), result)
         ) {
-    //		update_skip_history(current_stop_cond, result);
+            if(!__stop_history_ages.empty())
+                update_skip_history(current_stop_cond, result);
             __stop_history_ages.push_back(age);
             __stop_cond_history.push_back(current_stop_cond);
             __stop_deriv_history.push_back(current_stop_deriv);
@@ -1028,7 +1075,6 @@ namespace Evolve {
         double step_size = std::min(0.1 * (max_age - t),
                                     max_step);
 
-        stop_reason = NO_STOP;
         StopInformation stop;
         bool first_step = true;
         double from_t;
@@ -1109,6 +1155,7 @@ namespace Evolve {
                         system.expansion_order(),
                         stop_reason
                     );
+                    stop_reason = NO_STOP;
                 }
                 if(
                     (status == GSL_EDOM || !acceptable_step(t, from_t, stop))
@@ -1365,7 +1412,8 @@ namespace Evolve {
     void OrbitSolver::operator()(BinarySystem &system,
                                  double max_step,
                                  const std::list<double> &required_ages,
-                                 double max_runtime)
+                                 double max_runtime,
+                                 double min_extremum_search_step)
     {
 #ifndef NDEBUG
         std::cerr << "Calculating evolution from t = " << system.age()
@@ -1373,6 +1421,7 @@ namespace Evolve {
 #endif
         time(&__evolution_start_time);
         __runtime_limit = max_runtime;
+        __min_extremum_search_step = min_extremum_search_step;
 
         double stop_evol_age = __end_age;
 

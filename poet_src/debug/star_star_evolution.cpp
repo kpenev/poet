@@ -63,14 +63,14 @@ int main(int, char **)
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
     const double DISK_FREQUENCY = 2.281003443190243;
-    const double PRIMARY_PHASE_LAG = 0.0 * 4.045010337196463e-13;
-    const double SECONDARY_PHASE_LAG = 0.0 * 4.045010337196463e-13;
-    const double DISK_DISSIPATION_AGE = 5e-3;
+    const double PRIMARY_PHASE_LAG = 4.045010337196463e-9;
+    const double SECONDARY_PHASE_LAG = 4.045010337196463e-9;
+    const double DISK_DISSIPATION_AGE = 1e-2;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
     const double WIND_STRENGTH = 0.17;
     const double INCLINATION = 0.0;
-    const double INITIAL_ECCENTRICITY = 0.0;
+    const double INITIAL_ECCENTRICITY = 0.8;
 
     prepare_eccentricity_expansion(
         "eccentricity_expansion_coef_O400.sqlite",
@@ -99,11 +99,11 @@ int main(int, char **)
     select_interpolation_region(primary, core_formation_age(primary));
     set_star_dissipation(primary,
                          0,          //zone index
-                         1,          //# tidal frequency breaks
+                         0,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         tidal_frequency_breaks,       //tidal frequency breaks
+                         NULL,//tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         tidal_frequency_powers,      //tidal frequency powers
+                         &zero,//tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
                          PRIMARY_PHASE_LAG,
                          1.0,
@@ -118,11 +118,11 @@ int main(int, char **)
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index
-                         1,          //# tidal frequency breaks
+                         0,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         tidal_frequency_breaks,       //tidal frequency breaks
+                         NULL,//tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         tidal_frequency_powers,      //tidal frequency powers
+                         &zero,//tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
                          SECONDARY_PHASE_LAG,
                          1.0,

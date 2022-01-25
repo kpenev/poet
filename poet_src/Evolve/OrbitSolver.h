@@ -122,7 +122,10 @@ namespace Evolve {
             __precision,
 
             ///The last age at which the eccentricity order was increased
-            __last_order_upgrade_age;
+            __last_order_upgrade_age,
+
+            ///Extremum searching cannot limit the step size below this
+            __min_extremum_search_step;
 
         ///The ages at which solution is tabulated
         std::list<double> __tabulated_ages;
@@ -240,7 +243,8 @@ namespace Evolve {
         ///direction to cause a zero-crossing, returns the result of the default
         ///constructor of ExtremumInformation.
         ExtremumInformation extremum_from_history_no_deriv(
-                size_t condition_index) const;
+                size_t condition_index
+        ) const;
 
         ///\brief Estimates the value and age of an extremum of a stopping
         ///condition for which derivative information is available.
@@ -248,7 +252,10 @@ namespace Evolve {
         ///If no extremum is indicated by the points, or if it is in the wrong
         ///direction to cause a zero-crossing, returns the result of the default
         ///constructor of ExtremumInformation.
-        ExtremumInformation extremum_from_history(size_t condition_index) const;
+        ExtremumInformation extremum_from_history(
+            size_t condition_index,
+            double min_extremum_x
+        ) const;
 
         ///\brief Estimates the age at which a stopping condition with no
         ///derivative information crossed zero.
@@ -278,9 +285,9 @@ namespace Evolve {
 
         ///\brief Updates the skip_history_zerocrossing and
         ///skip_history_extremum arrays appropriately after an acceptable step.
-    /*	void update_skip_history(
+    	void update_skip_history(
                 const std::valarray<double> &current_stop_cond,
-                const StopInformation &stop_info);*/
+                const StopInformation &stop_info);
 
         ///\brief Return true iff the step with the given stop information is
         ///acceptable.
@@ -465,7 +472,13 @@ namespace Evolve {
             ///The maximum amount of wall-clock time in seconds to allow for
             ///calculating the evolution. If it runs out, whatever portion is
             ///calculated is preserved.
-            double max_runtime=0
+            double max_runtime=0,
+
+            ///The minimum time step to impose when searching for extrema of
+            ///stopping conditions. Note that the GSL ODE solver and searching
+            ///for zero crossing of stopping conditions can still impose smaller
+            ///steps.
+            double min_extremum_search_step=1e-5
         );
 
         ///The ages at which evolution has been tabulated so far.
