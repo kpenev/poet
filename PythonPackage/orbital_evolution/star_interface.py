@@ -31,12 +31,12 @@ def initialize_library():
     result = cdll.LoadLibrary(library_fname)
 
     result.create_star.argtypes = [
-        c_double,
-        c_double,
-        c_double,
-        c_double,
-        c_double,
-        stellar_evolution_library.create_interpolator.restype
+        c_double,                                               #mass
+        c_double,                                               #feh
+        c_double,                                               #wind_strength
+        c_double,                                               #wind_sat_freq
+        c_double,                                               #c-e_coupling_ts
+        stellar_evolution_library.create_interpolator.restype   #interpolator
     ]
     result.create_star.restype = c_dissipating_body_p
 
@@ -44,39 +44,48 @@ def initialize_library():
     result.destroy_star.restype = None
 
     result.set_star_dissipation.argtypes = [
-        result.create_star.restype,
-        c_uint,
-        c_uint,
-        c_uint,
-        ndpointer_or_null(dtype=c_double,
+        result.create_star.restype,                         #star
+        c_uint,                                             #zone_index
+        c_uint,                                             #num_tidal_freq_brks
+        c_uint,                                             #num_spin_freq_brks
+        ndpointer_or_null(dtype=c_double,                   #tidal_freq_breaks
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double,                   #spin_freq_breaks
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        numpy.ctypeslib.ndpointer(dtype=c_double,           #tidal_freq_powers
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        numpy.ctypeslib.ndpointer(dtype=c_double,           #spin_freq_powers
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_double,
-        c_double,
-        c_double
+        c_double,                                           #ref_phase_lag
+        c_double,                                           #inertial_mode_enhan
+        c_double                                            #inertial_mode_sharp
     ]
     result.set_star_dissipation.restype = None
 
     result.detect_stellar_wind_saturation.argtypes = [
-        result.create_star.restype
+        result.create_star.restype                          #star
     ]
     result.detect_stellar_wind_saturation.restype = None
 
     result.select_interpolation_region.argtypes = [
-        result.create_star.restype,
-        c_double
+        result.create_star.restype,                         #star
+        c_double                                            #age
     ]
     result.select_interpolation_region.restype = None
 
+    result.modified_phase_lag.argtypes = [
+        result.create_star.restype, #star
+        c_uint,                     #zone_index,
+        c_int,                      #orbital_frequency_multiplier,
+        c_int,                      #spin_frequency_multiplier,
+        c_double,                   #forcing_frequency,
+        c_int,                      #deriv,
+        POINTER(c_double)           #above_lock_value
+    ]
     result.modified_phase_lag.restype = c_double
 
     result.core_formation_age.argtypes = [result.create_star.restype]
@@ -89,12 +98,12 @@ def initialize_library():
     result.luminosity.restype = c_double
 
     result.luminosity_array.argtypes = [
-        result.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        result.create_star.restype,                     #star
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #age
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_uint,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        c_uint,                                         #nvalues
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #result
                                   ndim=1,
                                   flags='C_CONTIGUOUS')
     ]
@@ -103,65 +112,69 @@ def initialize_library():
     result.core_inertia.argtypes = [result.create_star.restype, c_double]
     result.core_inertia.restype = c_double
 
-    result.core_inertia_deriv.argtypes = [result.create_star.restype,
-                                          c_double,
-                                          c_int]
+    result.core_inertia_deriv.argtypes = [result.create_star.restype,#star
+                                          c_double,                  #age
+                                          c_int]                     #deriv_ordr
     result.core_inertia_deriv.restype = c_double
 
     result.core_inertia_array.argtypes = [
-        result.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        result.create_star.restype,                     #star
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #age
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_uint,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        c_uint,                                         #nvalues
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #result
                                   ndim=1,
                                   flags='C_CONTIGUOUS')
     ]
     result.core_inertia_array.restype = None
 
     result.core_inertia_deriv_array.argtypes = [
-        result.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        result.create_star.restype,                     #star
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #age
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_int,
-        c_uint,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        c_int,                                          #deriv_order
+        c_uint,                                         #nvalues
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #result
                                   ndim=1,
                                   flags='C_CONTIGUOUS')
     ]
     result.core_inertia_array.restype = None
 
-    result.envelope_inertia.argtypes = [result.create_star.restype,
-                                        c_double]
+    result.envelope_inertia.argtypes = [
+        result.create_star.restype,     #star
+        c_double                        #age
+    ]
     result.envelope_inertia.restype = c_double
 
-    result.envelope_inertia_deriv.argtypes = [result.create_star.restype,
-                                              c_double,
-                                              c_int]
+    result.envelope_inertia_deriv.argtypes = [
+        result.create_star.restype, #star
+        c_double,                   #age
+        c_int                       #deriv_order
+    ]
     result.envelope_inertia_deriv.restype = c_double
 
     result.envelope_inertia_array.argtypes = [
-        result.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        result.create_star.restype,                     #star
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #age
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_uint,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        c_uint,                                         #nvalues
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #result
                                   ndim=1,
                                   flags='C_CONTIGUOUS')
     ]
     result.envelope_inertia_array.restype = None
 
     result.envelope_inertia_deriv_array.argtypes = [
-        result.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        result.create_star.restype,                     #star
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #age
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_int,
-        c_uint,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        c_int,                                          #deriv_order
+        c_uint,                                         #nvalues
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #result
                                   ndim=1,
                                   flags='C_CONTIGUOUS')
     ]
@@ -171,16 +184,33 @@ def initialize_library():
     result.star_radius.restype = c_double
 
     result.star_radius_array.argtypes = [
-        result.create_star.restype,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        result.create_star.restype,                     #star
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #age
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_uint,
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        c_uint,                                         #nvalues
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #result
                                   ndim=1,
                                   flags='C_CONTIGUOUS')
     ]
     result.star_radius_array.restype = None
+
+    result.core_radius.argtypes = [
+        result.create_star.restype, #star
+        c_double                    #age
+    ]
+    result.core_radius.restype = c_double
+
+    result.core_radius_array.argtypes = [
+        result.create_star.restype,                     #star
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #age
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        c_uint,                                         #nvalues,
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #result
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
+    ]
 
     return result
 

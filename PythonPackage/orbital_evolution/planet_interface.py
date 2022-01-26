@@ -30,24 +30,24 @@ def initialize_library():
     result.destroy_planet.restype = None
 
     result.set_planet_dissipation.argtypes = [
-        result.create_planet.restype,
-        c_uint,
-        c_uint,
-        ndpointer_or_null(dtype=c_double,
+        result.create_planet.restype,                   #planet
+        c_uint,                                         #num_tidal_freq_breaks
+        c_uint,                                         #num_spin_freq_breaks
+        ndpointer_or_null(dtype=c_double,               #tidal_freq_breaks
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,
+        ndpointer_or_null(dtype=c_double,               #spin_freq_breaks
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #tidal_freq_powers
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype=c_double,
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #spin_freq_powers
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_double,
-        c_double,
-        c_double
+        c_double,                                       #reference_phase_lag
+        c_double,                                       #inertial_mode_enhancmnt
+        c_double                                        #inertial_mode_sharpness
     ]
 
     return result
