@@ -3,7 +3,7 @@
 """An interface to the POET star library."""
 
 import sys
-from ctypes import cdll, c_int, c_double, c_uint, byref
+from ctypes import cdll, c_int, c_double, c_uint, byref, POINTER
 from ctypes.util import find_library
 
 import numpy
@@ -22,10 +22,11 @@ from orbital_evolution.evolve_interface import\
 from orbital_evolution.c_interface_util import ndpointer_or_null
 #pylint: enable=wrong-import-position
 
-def initialize_library():
+def initialize_library(library_fname=None):
     """Prepare the planet library for use."""
 
-    library_fname = find_library('star')
+    if library_fname is None:
+        library_fname = find_library('star')
     if library_fname is None:
         raise OSError('Unable to find POET\'s star library.')
     result = cdll.LoadLibrary(library_fname)
@@ -214,7 +215,9 @@ def initialize_library():
 
     return result
 
-library = initialize_library()
+library = initialize_library(
+    '/home/kpenev/projects/git/poet/build/libs/star/shared/release/libstar.so'
+)
 
 class EvolvingStar(DissipatingBody):
     """A class for stars following interpolated stellar evolution tracks."""

@@ -15,10 +15,11 @@ from orbital_evolution.dissipating_body import\
 from orbital_evolution.evolve_interface import\
     library as orbital_evolution_library
 
-def initialize_library():
+def initialize_library(library_fname=None):
     """Prepare the planet library for use and return it."""
 
-    library_fname = find_library('planet')
+    if library_fname is None:
+        library_fname = find_library('planet')
     if library_fname is None:
         raise OSError('Unable to find POET\'s planet library.')
     result = cdll.LoadLibrary(library_fname)
@@ -52,7 +53,9 @@ def initialize_library():
 
     return result
 
-library = initialize_library()
+library = initialize_library(
+    '/home/kpenev/projects/git/poet/build/libs/planet/shared/release/libplanet.so'
+)
 
 class LockedPlanet(DissipatingBody):
     """A class for tidally locked and thus non-dissipative planets."""

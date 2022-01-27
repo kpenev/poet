@@ -393,5 +393,5 @@ def initialize_library(library_fname=None):
     return result
 
 library = initialize_library(
-    '/home/kpenev/projects/git/poet/build/libs/evolve/shared/debug/libevolve.so'
+    '/home/kpenev/projects/git/poet/build/libs/evolve/shared/release/libevolve.so'
 )
