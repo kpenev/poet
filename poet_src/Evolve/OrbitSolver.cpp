@@ -657,7 +657,13 @@ namespace Evolve {
             if(
                 (stop_reason == BREAK_LOCK && stop_cond_type == SYNCHRONIZED)
                 ||
-                (stop_reason != NO_STOP && stop_cond_type == stop_reason)
+                (
+                    stop_reason != NO_STOP
+                    &&
+                    stop_reason != BREAK_LOCK
+                    &&
+                    stop_cond_type == stop_reason
+                )
             ) {
 #ifndef NDEBUG
                 std::cerr << "Skipping first step of condition "
