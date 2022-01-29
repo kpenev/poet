@@ -28,6 +28,192 @@ namespace Evolve {
         }
     }
 
+    std::list< std::pair<unsigned, bool> >
+        BinarySystem::find_synchronized_zones(double precision)
+    {
+        std::list< std::pair<unsigned, bool> > result;
+        double worb = orbital_frequency();
+        for(short body_ind = 0; body_ind < 2; ++body_ind) {
+            DissipatingBody &body = (body_ind == 0 ? __body1 : __body2);
+            for(
+                unsigned zone_ind = 0;
+                zone_ind < body.number_zones();
+                ++zone_ind
+            ) {
+                DissipatingZone &zone = body.zone(zone_ind);
+                if(!zone.can_lock())
+                    continue;
+                double wspin = zone.spin_frequency();
+                bool other_lock=false;
+                do {
+                    SpinOrbitLockInfo &lock = zone.lock_monitored(other_lock);
+                    if(
+                        std::abs(
+                            (
+                                lock.orbital_frequency_multiplier() * worb
+                                -
+                                lock.spin_frequency_multiplier() * wspin
+                            )
+                            /
+                            worb
+                        ) < precision
+                    )
+                        result.push_back(
+                            std::pair<unsigned, bool>(
+                                zone_ind + body_ind * __body1.number_zones(),
+                                other_lock
+                            )
+                        );
+                    else
+                        assert(!zone.locked());
+                    other_lock = !other_lock;
+                } while(other_lock)
+            }
+        }
+        return result;
+    }
+
+    bool BinarySystem::lock_zones(
+        const std::list< std::pair<unsigned, bool> > &zones_to_lock,
+        std::vector<double> &original_angmom,
+        std::vector<short> &unlock_directions
+    )
+    {
+        assert(__body1.num_locked_zones() == 0);
+        assert(__body2.num_locked_zones() == 0);
+        assert(original_angmom.size() == zones_to_lock.size());
+        assert(unlock_directions.size() == zones_to_lock.size());
+
+        std::vector<double>
+            config_angmom(number_zones() - zones_to_lock.size()),
+            config_inclinations(number_zones()),
+            config_periapses(number_zones() - 1);
+
+        std::vector<double>::iterator
+            orig_angmom_dest = original_angmom.begin(),
+            config_angmom_dest = config_angmom.begin(),
+            config_inclination_dest = config_inclinations.begin(),
+            config_periapsis_dest = config_periapses.begin();
+        std::vector<short>::iterator
+            unlock_direction_dest = unlock_directions.begin();
+        std::list<unsigned>::const_iterator
+            lock_zone_iter = zones_to_lock.begin()
+
+        for(short body_i = 0; body_i < 2; ++body_i) {
+            DissipatingBody &body = (body_i == 0 ? __body1 : __body2);
+            for(unsigned zone_i = 0; zone_i < body.number_zones(); ++zone_i) {
+                DissipatingZone &zone = body.zone(zone_i);
+                if(
+                        zone_i + body_i * __body1.number_zones()
+                        ==
+                        lock_zone_iter.first
+                ) {
+                    *orig_angmom_dest++ = zone.angular_momentum();
+                    SpinOrbitLockInfo &lock = zone.lock_monitored(
+                        lock_zone_iter->second
+                    );
+                    *unlock_direction_dest++ = lock.lock_direction();
+                    body.lock_zone_spin(
+                        zone_i,
+                        lock.orbital_frequency_multiplier(),
+                        lock.spin_frequency_multiplier()
+                    );
+                    ++lock_zone_iter;
+                } else
+                    *config_angmom_dest++ = zone.angular_momentum();
+                *config_inclination_dest++ = zone.inclination();
+                if(body_i || zone_i)
+                    *config_periapsis_dest++ = zone.periapsis();
+            }
+        }
+        assert(number_locked_zones() == zones_to_lock.size());
+        configure(false,
+                  __age,
+                  __semimajor,
+                  __eccentricity,
+                  config_angmom.data(),
+                  config_inclinations.data(),
+                  config_periapses.data(),
+                  Core::BINARY);
+    }
+
+    void BinarySystem::unlock_all_zones(
+        const std::vector<short> &unlock_directions,
+        const std::vector<double> &original_angmom
+    )
+    {
+        std::vector<double>
+            config_angmom(number_zones()),
+            config_inclinations(number_zones()),
+            config_periapses(number_zones() - 1);
+        unsigned locked_i = 0;
+        for(unsigned config_i = 0; config_i < number_zones(); ++config_i) {
+            DissipatingBody &body = (config_i < __body1.number_zones()
+                                     ? __body1
+                                     : __body2);
+            unsigned body_zone_i = (
+                config_i < __body1.number_zones()
+                ? config_i
+                : config_i - __body1.number_zones()
+            );
+            DissipatingZone &zone = body.zone(body_zone_i);
+
+            config_inclinations[config_i] = zone.inclination();
+            if(config_i)
+                config_periapses[config_i - 1] = zone.periapsis();
+
+            if(zone.locked()) {
+                config_angmom[config_i] = (original_angmom.size()
+                                           ? original_angmom[locked_i]
+                                           : zone.angular_momentum());
+                body.unlock_zone_spin(body_zone_i,
+                                      unlock_directions[locked_i]);
+                ++locked_i;
+            } else
+                config_angmom[config_i] = zone.angular_momentum();
+        }
+        configure(false,
+                  __age,
+                  __semimajor,
+                  __eccentricity,
+                  config_angmom.data(),
+                  config_inclinations.data(),
+                  config_periapses.data(),
+                  Core::BINARY);
+    }
+
+    bool BinarySystem::check_if_locks_hold()
+    {
+        for(unsigned lock_i = 0; lock_i < zones_to_lock.size(); ++lock_i) {
+            double
+                above_lock_fraction = __above_lock_fractions[
+                    Dissipation::NO_DERIV
+                ][
+                    lock_i
+                ];
+            if(above_lock_fraction <= 0 || above_lock_fraction >= 1)
+                return false;
+        }
+        return true;
+    }
+
+    bool BinarySystem::test_lock_scenario(
+        std::list< std::pair<unsigned, bool> > zones_to_lock
+    )
+    {
+        std::vector<double> original_angmom(zones_to_lock.size());
+        std::vector<short> unlock_directions(zones_to_lock.size());
+
+        lock_zones(zones_to_lock, original_angmom, unlock_directions);
+        assert(number_locked_zones() == zones_to_lock.size());
+        if(check_if_locks_hold())
+            return true;
+        else {
+            unlock_all_zones(unlock_directions, original_angmom);
+            return false;
+        }
+    }
+
     int BinarySystem::locked_surface_differential_equations(
         double *evolution_rates
     ) const
@@ -2066,6 +2252,27 @@ namespace Evolve {
                           "SINGLE or BINARY encountered in "
                           "BinarySystem::jacobian!"
                       );
+        }
+    }
+
+    void initialize_locks(double sync_precision)
+    {
+        std::list< std::pair<unsigned, bool> >
+            lock_candidates = find_synchronized_zones(sync_precision);
+        if(
+                number_locked_zones() == lock_candidates.size()
+                &&
+                check_if_locks_hold()
+        )
+            return;
+        //TODO: Figure out in what direction currently locked zones must be
+        //released or at least a method to check if assuming a given set of
+        //directions is correct.
+        for(
+                unsigned num_fail_lock = 0;
+                num_fail_lock < lock_candidates.size();
+                ++num_fail_lock
+        ) {
         }
     }
 

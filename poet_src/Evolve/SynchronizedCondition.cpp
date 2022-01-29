@@ -46,15 +46,12 @@ namespace Evolve {
                                 __system.number_locked_zones()));
         assert(orbit.size() == derivatives.size());
 #endif
-        double m1 = __system.primary().mass(),
+        double
                m2 = __system.secondary().mass(),
                semimajor = __system.semimajor(),
-               worb = Core::orbital_angular_velocity(m1, m2, semimajor),
+               worb = __system.orbital_frequency(),
                wspin = __zone.spin_frequency(),
-               dworb_dt = (Core::orbital_angular_velocity(m1,
-                                                          m2,
-                                                          semimajor,
-                                                          true)
+               dworb_dt = (__system.orbital_frequency(true)
                            *
                            derivatives[0]
                            *

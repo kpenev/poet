@@ -49,28 +49,31 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 1.124740842555043;
-    const double SECONDARY_MASS = 0.5855694677552672;
-    const double FEH = 0.0;//-0.3307293375206785;
-    const double INITIAL_PERIOD = 9.29674528596;
+    const double PRIMARY_MASS = 0.9920654905378268;
+    const double SECONDARY_MASS = 0.7230138299345078;
+    const double FEH = 0.23115300565169195;
+    const double INITIAL_PERIOD = 16.145221014708316;
+    const double LGQ_MIN = 5.186227042681173;
+    const double LGQ_BREAK_PERIOD = 8.978669081328178;
+    const double LGQ_POWERLAW = -3.1395911900486437;
+
+    const double DISK_PERIOD = 10.0;
+    const double DISK_DISSIPATION_AGE = 0.02;
+    const double WIND_SATURATION_FREQUENCY = 2.54;
+    const double WIND_STRENGTH = 0.17;
+    const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
+    const double INITIAL_ECCENTRICITY = 0.8;
+    const double INCLINATION = 0.0;
 
     const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
         PRIMARY_MASS,
         SECONDARY_MASS,
         INITIAL_PERIOD
     );
+    const double DISK_FREQUENCY = 2.0 * M_PI / DISK_PERIOD;
+    const double REF_PHASE_LAG = 15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
-
-    const double DISK_FREQUENCY = 2.281003443190243;
-    const double PRIMARY_PHASE_LAG = 4.045010337196463e-9;
-    const double SECONDARY_PHASE_LAG = 4.045010337196463e-9;
-    const double DISK_DISSIPATION_AGE = 1e-2;
-    const double WIND_SATURATION_FREQUENCY = 2.54;
-    const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
-    const double WIND_STRENGTH = 0.17;
-    const double INCLINATION = 0.0;
-    const double INITIAL_ECCENTRICITY = 0.8;
 
     prepare_eccentricity_expansion(
         "eccentricity_expansion_coef_O400.sqlite",
@@ -86,8 +89,11 @@ int main(int, char **)
     double zero = 0.0;
     double initial_secondary_angmom[] = {0.2, 0.001};
 
-    double tidal_frequency_breaks[] = {2.0 * M_PI / 100.0};
-    double tidal_frequency_powers[] = {1.0, 0.0};
+    double tidal_frequency_breaks[] = {2.0 * M_PI / LGQ_BREAK_PERIOD};
+    double tidal_frequency_powers[] = {
+        std::max(0.0, LGQ_POWERLAW),
+        std::min(0.0, LGQ_POWERLAW)
+    };
 
 
     EvolvingStar *primary = create_star(PRIMARY_MASS,
@@ -101,11 +107,11 @@ int main(int, char **)
                          0,          //zone index
                          0,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         NULL,//tidal_frequency_breaks,       //tidal frequency breaks
+                         tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         &zero,//tidal_frequency_powers,      //tidal frequency powers
+                         tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         PRIMARY_PHASE_LAG,
+                         REF_PHASE_LAG,
                          1.0,
                          0.0);
 
@@ -120,11 +126,11 @@ int main(int, char **)
                          0,          //zone index
                          0,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         NULL,//tidal_frequency_breaks,       //tidal frequency breaks
+                         tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
-                         &zero,//tidal_frequency_powers,      //tidal frequency powers
+                         tidal_frequency_powers,      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         SECONDARY_PHASE_LAG,
+                         REF_PHASE_LAG,
                          1.0,
                          0.0);
 

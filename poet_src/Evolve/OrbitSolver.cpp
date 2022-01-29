@@ -1421,6 +1421,42 @@ namespace Evolve {
                                  double max_runtime,
                                  double min_extremum_search_step)
     {
+        //TODO: It can happen that one zone entering/leaving/crossing lock can
+        //cause another zone to lose it's lock. In that case, both break lock
+        //conditions end up with the same sign, and future evolution will never
+        //detect that the lock is broken (until the term is removed from the
+        //expansion). This bugfix needs two things:
+        //  1. Detect that a lock is broken by triggering some other condition
+        //     - Option 1: create new BreakLockCondition, initialize orbit,
+        //       calculate derivatives and check
+        //     - Option 2: Avoid the unnecessary calculations by incorporating
+        //       this in evolve_until after these calculations happen anyway
+        //  2. Handle the simultaneous triggering of two stopping conditions.
+        //     This is tricky because skip_history tracking is currently set up
+        //     to ignore zero crossing of only one condition. Handling this
+        //     correctly requires:
+        //     - Move skip_history_* reset out of initialize_skip_history
+        //     - Use option 2 above and call initialize_skip_history a
+        //       second/third/... time if lock breaking is detected. Luckily
+        //       update_skip_history should then work correctly.
+        // Solution?: Add if(first_step) to evolve_until (line 1155) to call a
+        // new function that will:
+        //   - check if locks hold. This must handle all locks simultaneously
+        //     becouse:
+        //     - breaking a lock could potentially cause more locks to break
+        //     - breaking a later lock could revive one that would be broken by
+        //       earlier breakage
+        //     This would use system.above_lock_fraction to determine which
+        //     locks hold, but not clear how to do is simultaneously for all
+        //     locks.
+        //   - trigger break lock conditions to release broken locks
+        //   - Reset __stopping_conditions
+        //   - Reset __skip_history_*
+        //   - call initialize_skip_history for any broken lock. Perhaps it's
+        //     possible to simplify by treaning BREAK_LOCK as if it is
+        //     SYNCHRONIZED. This will still assume that two zones will not
+        //     reach spin-orbit resonance simultaneously!
+
 #ifndef NDEBUG
         std::cerr << "Calculating evolution from t = " << system.age()
                   << " to t = " << __end_age << std::endl;

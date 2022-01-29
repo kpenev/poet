@@ -231,7 +231,7 @@ namespace Evolve {
         check_locks_consistency();
     }
 
-    void DissipatingZone::initialize_locks()
+    void DissipatingZone::select_locks_to_monitor()
     {
         if(!can_lock()) {
             __lock.set_lock(-1, 0, 1);
@@ -480,7 +480,7 @@ namespace Evolve {
             configure_spin(spin, spin_is_frequency);
 
         if(initialize) {
-            initialize_locks();
+            select_locks_to_monitor();
             __initializing = false;
         }
         if(std::isnan(orbital_frequency)) return;
@@ -854,7 +854,7 @@ namespace Evolve {
         check_locks_consistency();
 
         __expansion_order = new_expansion_order;
-        initialize_locks();
+        select_locks_to_monitor();
 
         check_locks_consistency();
     }

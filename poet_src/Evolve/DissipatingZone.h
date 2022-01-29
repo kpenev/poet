@@ -271,7 +271,7 @@ namespace Evolve {
         ///configure() -ed.
         ///
         ///The spin frequency and orbital frequency must already be set.
-        void initialize_locks();
+        void select_locks_to_monitor();
 
         ///Add a term to the tidal torque and power arrays.
         void add_tidal_term(
@@ -861,7 +861,7 @@ namespace Evolve {
 
         ///Notifies the zone that its spin just jumped discontinously.
         virtual void spin_jumped()
-        {initialize_locks();}
+        {select_locks_to_monitor();}
 
         ///\brief Change the body as necessary at the given age.
         ///
@@ -874,7 +874,7 @@ namespace Evolve {
         virtual double next_stop_age() const
         {return Core::Inf;}
 
-        ///Useful for debugging.
+        ///Return either of the locks being monitored.
         const SpinOrbitLockInfo &lock_monitored(bool other=false) const
         {
             if(other)
