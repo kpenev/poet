@@ -302,7 +302,7 @@ def add_evolution_config(parser):
     )
     parser.add_argument(
         '--eccentricity_expansion_fname',
-        default='eccentricity_expansion_coef.txt',
+        default='eccentricity_expansion_coef_O400.sqlite',
         help='The filename storing the eccentricity expansion coefficienst.'
     )
     parser.add_argument(
@@ -331,8 +331,11 @@ def add_evolution_config(parser):
 def set_up_library(cmdline_args):
     """Define eccentricity expansion and return stellar evol interpolator."""
 
-    orbital_evolution_library.read_eccentricity_expansion_coefficients(
-        cmdline_args.eccentricity_expansion_fname.encode('ascii')
+    orbital_evolution_library.prepare_eccentricity_expansion(
+        cmdline_args.eccentricity_expansion_fname.encode('ascii'),
+        cmdline_args.precision,
+        True,
+        True
     )
     manager = StellarEvolutionManager(cmdline_args.stellar_evolution[0])
     return manager.get_interpolator_by_name(
