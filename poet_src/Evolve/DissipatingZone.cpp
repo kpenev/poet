@@ -239,11 +239,11 @@ namespace Evolve {
             return;
         }
 #ifndef NDEBUG
-        std::cerr << "Initializing locks for Worb = "
-                  << __orbital_frequency
-                  << ", W* = "
-                  << __spin_frequency
-                  << "." << std::endl;
+//        std::cerr << "Initializing locks for Worb = "
+//                  << __orbital_frequency
+//                  << ", W* = "
+//                  << __spin_frequency
+//                  << "." << std::endl;
 #endif
         int below_orb_mult = std::floor(2.0
                                         *
@@ -463,8 +463,12 @@ namespace Evolve {
 #endif
         }
 #ifndef NDEBUG
-        std::cerr << "At t = " << age << ", configuring zone with "
-                  << (spin_is_frequency ? "w" : "L") << " = " << spin
+        std::cerr << "At t = " << age << ", configuring "
+                  << (!dissipative() ? "non-" : "")
+                  << "dissipative zone with w = "
+                  << spin / (spin_is_frequency ? 1.0 : moment_of_inertia())
+                  << ", L = "
+                  << spin * (spin_is_frequency ? moment_of_inertia() : 1.0)
                   << ", inclination = " << inclination
                   << ", periapsis = " << periapsis
                   << std::endl;
@@ -574,9 +578,9 @@ namespace Evolve {
         assert(!std::isnan(forcing_freq));
 
 #ifdef VERBOSE_DEBUG
-        std::cerr << "Worb = " << orbital_frequency << ", "
-                  << "Wspin = " << spin_frequency() << " -> "
-                  << "Wtide = " << forcing_freq << " -> ";
+//        std::cerr << "Worb = " << orbital_frequency << ", "
+//                  << "Wspin = " << spin_frequency() << " -> "
+//                  << "Wtide = " << forcing_freq << " -> ";
 #endif
 
         if(
@@ -938,22 +942,14 @@ namespace Evolve {
         if(__lock)
             (*result) |= new BreakLockCondition(system, __locked_zone_index);
         else if(system.evolution_mode() == Core::BINARY) {
-            (*result) |= new SynchronizedCondition(
-                __lock.orbital_frequency_multiplier(),
-                __lock.spin_frequency_multiplier(),
-                __lock.lock_direction(),
-                primary,
-                zone_index,
-                system
-            );
-            (*result) |= new SynchronizedCondition(
-                __other_lock.orbital_frequency_multiplier(),
-                __other_lock.spin_frequency_multiplier(),
-                __other_lock.lock_direction(),
-                primary,
-                zone_index,
-                system
-            );
+            (*result) |= new SynchronizedCondition(__lock,
+                                                   primary,
+                                                   zone_index,
+                                                   system);
+            (*result) |= new SynchronizedCondition(__other_lock,
+                                                   primary,
+                                                   zone_index,
+                                                   system);
         }
         return result;
     }

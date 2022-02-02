@@ -882,6 +882,15 @@ namespace Evolve {
             else
                 return __lock;
         }
+
+        ///Switch the two locks being monitored (does not change zone behavior).
+        ///
+        ///This is just for convenience to simplify lock tracking by users of
+        ///this class.
+        void swap_monitored_locks()
+        {
+            std::swap(__lock, __other_lock);
+        }
     }; //End DissipatingZone class.
 
 } //End Evolve namespace.

@@ -87,10 +87,14 @@ namespace Evolve {
             os << std::setw(28) << *age_i;
         }
         std::string hline;
-        hline.assign(20+25*(__stop_history_ages.size()
-                            +
-                            __discarded_stop_ages.size()),
-                '_');
+        hline.assign(
+            20
+            +
+            25 * (std::min(static_cast<int>(__stop_history_ages.size()), 5)
+                  +
+                  __discarded_stop_ages.size()),
+            '_'
+        );
         os << std::endl << hline << std::endl;
 
         for(size_t i = 0; i < __stop_cond_discarded.front().size(); i++) {
@@ -1522,37 +1526,41 @@ namespace Evolve {
                 } else
                     reached_stopping_condition(last_age, stop_reason);
             }
+            evolution_mode = system.evolution_mode();
+#ifndef NDEBUG
+            std::valarray<double> old_orbit(orbit);
+#endif
+            system.fill_orbit(orbit);
+
+            if(evolution_mode == Core::BINARY) {
+                if(old_evolution_mode != Core::BINARY)
+                    adjust_expansion_order(system,
+                                           orbit,
+                                           evolution_mode);
+                if(
+                        stop_reason != SMALL_EXPANSION_ERROR
+                        &&
+                        stop_reason != BREAK_LOCK
+                        &&
+                        stop_reason != WIND_SATURATION
+                ) {
+                    system.initialize_locks(__precision);
+                    system.fill_orbit(orbit);
+                }
+            }
+
 #ifndef NDEBUG
             std::cerr
                 << "At t=" << last_age
                 << ", changing evolution mode from " << old_evolution_mode
                 << " with " << old_locked_zones
-                << " zones locked ";
-#endif
-            evolution_mode = system.evolution_mode();
-#ifndef NDEBUG
-            std::cerr
-                << "to " << evolution_mode
+                << " zones locked to " << evolution_mode
                 << " with " << system.number_locked_zones()
                 << " zones locked."
                 << std::endl
-                << "Transforming orbit from: ";
-            std::clog << orbit;
+                << "Transforming orbit from: " << old_orbit
+                << " to " << orbit << std::endl;
 #endif
-            system.fill_orbit(orbit);
-#ifndef NDEBUG
-            std::cerr << " to " << orbit << std::endl;
-#endif
-
-            if(
-                evolution_mode == Core::BINARY
-                &&
-                old_evolution_mode != Core::BINARY
-            )
-                adjust_expansion_order(system,
-                                       orbit,
-                                       evolution_mode);
-
             delete __stopping_conditions;
             __stopping_conditions = NULL;
         }

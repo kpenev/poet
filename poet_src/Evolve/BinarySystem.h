@@ -22,6 +22,7 @@
 #include <string>
 #include <limits>
 #include <iostream>
+#include <iomanip>
 
 namespace Evolve {
 
@@ -167,19 +168,36 @@ namespace Evolve {
             ///its surface rotation locked.
             &__body2;
 
+        typedef
+            std::list< std::tuple<unsigned, short, double> >
+            lock_scenario_type;
+
+#ifndef NDEBUG
+        ///\brief The lock/unlock configuration selected by the last call to
+        //initialize_locks()
+        lock_scenario_type __selected_lock_scenario;
+#endif
+
         ///Fills the __locked_zones list.
         void find_locked_zones();
 
         ///\brief Return a list of the zone indices that are spin-orbit
         ///synchronized with some tidal term (locked or unlocked).
         ///
-        ///The pair of entries in each return value give:
+        ///The monitored locks of synchronized zones are swapped as necessary to
+        ///ensure the first lock being monitored by the zone is the one that is
+        ///(close to) synchronized.
         ///
-        ///  first: the index of the zone (__body1 followed by __body2)
+        ///The entries in each return value give:
         ///
-        //   second: Is this or other lock for the given zone the one that is
-        //           synchronized
-        std::list< std::pair<unsigned, bool> > find_synchronized_zones(
+        ///  0: the index of the zone (__body1 followed by __body2)
+        ///
+        ///  1: The current direction of the synchronized lock for that zone.
+        ///
+        ///  2: The current angular momentum of the zone
+        lock_scenario_type find_synchronized_zones(
+            ///A spin-orbit term is considered synchronized if its tidal
+            ///frequnecy is within this fraction of the orbital frequency.
             double precision
         );
 
@@ -187,22 +205,14 @@ namespace Evolve {
         ///
         ///Also preserves the unlocked angular momenta to allow recovering the
         ///unlocked system exactly.
-        void lock_zones(
-            ///The zones to lock in the same format as the return value of
-            ///find_synchronizedzones().
-            const std::list< std::pair<unsigned, bool> > &zones_to_lock,
-
-            ///On return, gets filled with the angular momenta of the newly
-            ///locked zones. Must already have the correct size.
-            std::vector<double> &original_angmom,
-
-            ///On return, gets filled with the directions in which to release
-            ///the locks in order to restore the zones to their original state.
-            ///Must already have the correct size.
-            std::vector<short> &unlock_directions
+        void set_lock_scenario(
+            ///The zones to lock/unlock in the same format as the return value
+            ///of find_synchronizedzones(). Angular momentum for locked zones is
+            ///ignored.
+            const lock_scenario_type &lock_scenario
         );
 
-        ///\brief Unlock all zones, restoring their original spins.
+        ///\brief Unlock all zones, restoring their original spins if known.
         void unlock_all_zones(
             ///The directions in which to unlock all the zones.
             const std::vector<short> &unlock_directions,
@@ -214,21 +224,63 @@ namespace Evolve {
             const std::vector<double> &original_angmom = std::vector<double>()
         );
 
-        ///\brief Return true iff the currently defined locks can be maintained.
-        bool check_if_locks_hold();
+        ///Check if a zone with a synchronized tidal term will evolve away from
+        ///potential lock
+        bool test_synchronized_unlocked_zone(
+            ///The index of the zone to test in the total list of zones in the
+            ///system (i.e. all zones of __body1 followed by __body2).
+            unsigned test_zone_ind
+        );
 
-        ///\brief Return true iff locking exactly the specified zones results in
-        ///locks that will be maintained.
-        ///
-        ///If all locks hold, the system is configured with the zones locked,
-        ///otherwise all zones are unlocked at the end.
-        ///
-        ///All zones of all bodies must be unlocked when this function is
-        ///called.
+#ifndef NDEBUG
+        void describe_lock_scenario(
+            ///Thes straem to send the zone description to.
+            std::ostream &os,
+
+            ///The scenario to decsribe in the same format as returned by
+            ///find_synchronized_zones().
+            const lock_scenario_type &lock_scenario,
+
+            ///Flags indicating whether each of the tested zones passed the
+            ///test.
+            const std::vector<bool> passed,
+
+            ///Should a header be added?
+            bool add_header=false
+        );
+#endif
+
+        ///\brief Return true iff all locks in the given scenario will be
+        ///maintained and synchronized unlocked zones will evolve away from lock.
         bool test_lock_scenario(
-            ///The zones to lock in the same format as the return value of
-            ///find_synchronizedzones().
-            std::list< std::pair<unsigned, bool> > zones_to_lock
+            ///The scenario to test in the same format as returned by
+            ///find_synchronized_zones().
+            const lock_scenario_type &lock_scenario
+#ifndef NDEBUG
+            ///Is this the first scenario being tested?
+            , bool first_scenario
+#endif
+        );
+
+        ///\brief Iterate over all possible lock scenarios until a valid one is
+        ///found.
+        ///
+        ///Return true iff
+        bool explore_lock_scenarios(
+            ///Iterator within the return value of find_synchronized_zones()
+            ///pointing to the first zone not included in lock_scenario.
+            lock_scenario_type::const_iterator next_synchronized_zone,
+
+            ///The total number of zones for which a scenario must be defined.
+            unsigned num_synchronized_zones,
+
+            ///Partially filled lock scenario to test.
+            lock_scenario_type &lock_scenario
+
+#ifndef NDEBUG
+            ///Is this the first scenario being explored
+            , bool first_scenario = true
+#endif
         );
 
         ///\brief Differential equations for the rotation of the zones of body 0

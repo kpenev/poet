@@ -77,16 +77,6 @@ namespace Evolve {
         if(__system.number_locked_zones() == 0)
             dworb_dt /= 6.5 * orbit[0] / semimajor;
 
-#ifdef VERBOSE_DEBUG
-        std::cerr << describe() << " angmom index: " << angmom_ind
-            << " worb = " << worb
-            << " dworb_dt = " << dworb_dt
-            << " wspin = " << wspin
-            << " dwspin_dt = " << dwspin_dt
-            << " adot = " << derivatives[0] / (6.5 * orbit[0] / semimajor)
-            << std::endl;
-#endif
-
         stop_deriv.resize(
             1,
             (
@@ -97,6 +87,19 @@ namespace Evolve {
                 __spin_freq_mult
             )
         );
+
+#ifdef VERBOSE_DEBUG
+        std::cerr << describe() << " angmom index: " << angmom_ind
+            << " worb = " << worb
+            << " dworb_dt = " << dworb_dt
+            << " wspin = " << wspin
+            << " dwspin_dt = " << dwspin_dt
+            << " adot = " << derivatives[0] / (6.5 * orbit[0] / semimajor)
+            << " has deriv = " << stop_deriv[0]
+            << std::endl;
+#endif
+
+
 #ifndef NDEBUG
         if(
             std::isnan((__orbital_freq_mult * worb - wspin * __spin_freq_mult)
@@ -131,11 +134,6 @@ namespace Evolve {
         std::cerr << "Now expected sign: " << expected_crossing_deriv_sign()
                   << std::endl;
 #endif
-        __system.check_for_lock(__orbital_freq_mult,
-                                __spin_freq_mult,
-                                (__primary ? 0 : 1),
-                                __zone_index,
-                                (__spin_freq_mult>0 ? -deriv_sign : deriv_sign));
     }
 
     std::string SynchronizedCondition::describe(int ) const

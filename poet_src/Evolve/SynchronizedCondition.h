@@ -11,6 +11,7 @@
 
 #include "../Core/SharedLibraryExportMacros.h"
 #include "StoppingCondition.h"
+#include "SpinOrbitLockInfo.h"
 
 namespace Evolve {
 
@@ -40,7 +41,7 @@ namespace Evolve {
         BinarySystem &__system;
 
     public:
-        ///Create the synchronization condition for the given planet.
+        ///Create the synchronization condition for the given object.
         SynchronizedCondition(
             ///The mutiplier in front of the orbital frequency in the lock.
             int orbital_freq_mult,
@@ -62,15 +63,37 @@ namespace Evolve {
             BinarySystem &system
         );
 
+        ///Create the synchronization condition for the given object from a lock
+        SynchronizedCondition(
+            ///The lock to base the condition on.
+            const SpinOrbitLockInfo &monitored_lock,
+
+            ///Which body's spin is checked for locking.
+            bool primary,
+
+            ///Which zone's spin is checked for locking.
+            unsigned zone_index,
+
+            ///The binary system this locking condition is attached to
+            BinarySystem &system
+        ) :
+            SynchronizedCondition(
+                monitored_lock.orbital_frequency_multiplier(),
+                monitored_lock.spin_frequency_multiplier(),
+                monitored_lock.lock_direction(),
+                primary,
+                zone_index,
+                system
+            )
+        {}
+
+
         ///\brief Return the difference between the orbital and multiplier
         ///scaled stellar spin angular velocities divided by the orbital angular
         ///velocity.
         ///
         ///See StoppingCondition::operator()() for a description of the
         ///arguments.
-        ///
-        ///The evolution mode must be FAST_PLANET, SLOW_PLANET, LOCKED_TO_DISK
-        ///or NO_PLANET.
         std::valarray<double> operator()(
             Core::EvolModeType evol_mode,
             const std::valarray<double> &orbit,

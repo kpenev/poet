@@ -28,12 +28,13 @@ namespace Evolve {
         }
     }
 
-    std::list< std::pair<unsigned, bool> >
-        BinarySystem::find_synchronized_zones(double precision)
+    BinarySystem::lock_scenario_type BinarySystem::find_synchronized_zones(
+        double precision
+    )
     {
-        std::list< std::pair<unsigned, bool> > result;
+        lock_scenario_type result;
         double worb = orbital_frequency();
-        for(short body_ind = 0; body_ind < 2; ++body_ind) {
+        for(unsigned short body_ind = 0; body_ind < 2; ++body_ind) {
             DissipatingBody &body = (body_ind == 0 ? __body1 : __body2);
             for(
                 unsigned zone_ind = 0;
@@ -45,8 +46,13 @@ namespace Evolve {
                     continue;
                 double wspin = zone.spin_frequency();
                 bool other_lock=false;
+                unsigned scenario_zone_i = (zone_ind
+                                            +
+                                            body_ind * __body1.number_zones());
                 do {
-                    SpinOrbitLockInfo &lock = zone.lock_monitored(other_lock);
+                    const SpinOrbitLockInfo &lock = zone.lock_monitored(
+                        other_lock
+                    );
                     if(
                         std::abs(
                             (
@@ -57,83 +63,99 @@ namespace Evolve {
                             /
                             worb
                         ) < precision
-                    )
+                    ) {
+                        if(other_lock)
+                            zone.swap_monitored_locks();
                         result.push_back(
-                            std::pair<unsigned, bool>(
-                                zone_ind + body_ind * __body1.number_zones(),
-                                other_lock
+                            std::make_tuple(
+                                scenario_zone_i,
+                                lock.lock_direction(),
+                                zone.angular_momentum()
                             )
                         );
-                    else
-                        assert(!zone.locked());
+                    } else
+                        assert(!zone.locked()
+                               ||
+                               std::get<0>(result.back()) == scenario_zone_i);
                     other_lock = !other_lock;
-                } while(other_lock)
+                } while(other_lock);
             }
         }
         return result;
     }
 
-    bool BinarySystem::lock_zones(
-        const std::list< std::pair<unsigned, bool> > &zones_to_lock,
-        std::vector<double> &original_angmom,
-        std::vector<short> &unlock_directions
+    void BinarySystem::set_lock_scenario(
+        const lock_scenario_type &lock_scenario
     )
     {
-        assert(__body1.num_locked_zones() == 0);
-        assert(__body2.num_locked_zones() == 0);
-        assert(original_angmom.size() == zones_to_lock.size());
-        assert(unlock_directions.size() == zones_to_lock.size());
+        assert(__evolution_mode == Core::BINARY);
 
         std::vector<double>
-            config_angmom(number_zones() - zones_to_lock.size()),
-            config_inclinations(number_zones()),
-            config_periapses(number_zones() - 1);
+            angmom(number_zones()),
+            inclinations(number_zones()),
+            periapses(number_zones() - 1);
 
         std::vector<double>::iterator
-            orig_angmom_dest = original_angmom.begin(),
-            config_angmom_dest = config_angmom.begin(),
-            config_inclination_dest = config_inclinations.begin(),
-            config_periapsis_dest = config_periapses.begin();
-        std::vector<short>::iterator
-            unlock_direction_dest = unlock_directions.begin();
-        std::list<unsigned>::const_iterator
-            lock_zone_iter = zones_to_lock.begin()
+            angmom_dest = angmom.begin(),
+            inclination_dest = inclinations.begin(),
+            periapsis_dest = periapses.begin();
+        lock_scenario_type::const_iterator
+            scenario_zone_iter = lock_scenario.begin();
+
+        unsigned scenario_zone;
+        short scenario_lock_dir;
+        double scenario_angmom, zone_angmom;
+        std::tie(scenario_zone,
+                 scenario_lock_dir,
+                 scenario_angmom) = *scenario_zone_iter;
 
         for(short body_i = 0; body_i < 2; ++body_i) {
             DissipatingBody &body = (body_i == 0 ? __body1 : __body2);
             for(unsigned zone_i = 0; zone_i < body.number_zones(); ++zone_i) {
                 DissipatingZone &zone = body.zone(zone_i);
+                const SpinOrbitLockInfo &current_lock = zone.lock_monitored();
                 if(
                         zone_i + body_i * __body1.number_zones()
                         ==
-                        lock_zone_iter.first
+                        scenario_zone
                 ) {
-                    *orig_angmom_dest++ = zone.angular_momentum();
-                    SpinOrbitLockInfo &lock = zone.lock_monitored(
-                        lock_zone_iter->second
-                    );
-                    *unlock_direction_dest++ = lock.lock_direction();
-                    body.lock_zone_spin(
-                        zone_i,
-                        lock.orbital_frequency_multiplier(),
-                        lock.spin_frequency_multiplier()
-                    );
-                    ++lock_zone_iter;
-                } else
-                    *config_angmom_dest++ = zone.angular_momentum();
-                *config_inclination_dest++ = zone.inclination();
+                    zone_angmom = scenario_angmom;
+                    if(
+                            current_lock.lock_direction()
+                            !=
+                            scenario_lock_dir
+                    ) {
+                        if(zone.locked())
+                            body.unlock_zone_spin(zone_i, scenario_lock_dir);
+                        body.lock_zone_spin(
+                            zone_i,
+                            current_lock.orbital_frequency_multiplier(),
+                            current_lock.spin_frequency_multiplier()
+                        );
+                        if(scenario_lock_dir != 0)
+                            body.unlock_zone_spin(zone_i, scenario_lock_dir);
+                        std::tie(scenario_zone,
+                                 scenario_lock_dir,
+                                 scenario_angmom) = *++scenario_zone_iter;
+                    }
+                } else {
+                    zone_angmom = zone.angular_momentum();
+                }
+
+                if(!zone.locked())
+                    *angmom_dest++ = zone_angmom;
+                *inclination_dest++ = zone.inclination();
                 if(body_i || zone_i)
-                    *config_periapsis_dest++ = zone.periapsis();
+                    *periapsis_dest++ = zone.periapsis();
             }
         }
-        assert(number_locked_zones() == zones_to_lock.size());
         configure(false,
                   __age,
                   __semimajor,
                   __eccentricity,
-                  config_angmom.data(),
-                  config_inclinations.data(),
-                  config_periapses.data(),
+                  angmom.data(),
+                  inclinations.data(),
+                  periapses.data(),
                   Core::BINARY);
     }
 
@@ -182,37 +204,266 @@ namespace Evolve {
                   Core::BINARY);
     }
 
-    bool BinarySystem::check_if_locks_hold()
+    bool BinarySystem::test_synchronized_unlocked_zone(unsigned test_zone_ind)
     {
-        for(unsigned lock_i = 0; lock_i < zones_to_lock.size(); ++lock_i) {
-            double
-                above_lock_fraction = __above_lock_fractions[
-                    Dissipation::NO_DERIV
-                ][
-                    lock_i
-                ];
-            if(above_lock_fraction <= 0 || above_lock_fraction >= 1)
-                return false;
-        }
-        return true;
+        bool primary_zone = test_zone_ind < __body1.number_zones();
+        unsigned body_zone_ind = (primary_zone
+                                  ? test_zone_ind
+                                  : test_zone_ind - __body1.number_zones());
+        const SpinOrbitLockInfo &lock = (
+            primary_zone
+            ? __body1
+            : __body2
+        ).zone(
+            body_zone_ind
+        ).lock_monitored();
+        std::valarray<double> orbit;
+        fill_orbit(orbit);
+        std::valarray<double> derivatives(orbit.size());
+        differential_equations(__age,
+                               &(orbit[0]),
+                               Core::BINARY,
+                               &(derivatives[0]));
+
+        std::valarray<double> check_cond_deriv;
+        SynchronizedCondition(
+            lock,
+            primary_zone,
+            body_zone_ind,
+            *this
+        )(
+            Core::BINARY,
+            orbit,
+            derivatives,
+            check_cond_deriv
+        );
+        assert(check_cond_deriv.size() == 1);
+#ifndef NDEBUG
+        std::cerr << "Lock dir " << lock.lock_direction()
+                  << "for zone " << test_zone_ind
+                  << " (condition deriv: " << check_cond_deriv[0]
+                  << (lock.lock_direction() * check_cond_deriv[0] > 0
+                      ? ") is good"
+                      : ") is bad")
+                  << std::endl;
+#endif
+        return lock.lock_direction() * check_cond_deriv[0] < 0;
     }
 
-    bool BinarySystem::test_lock_scenario(
-        std::list< std::pair<unsigned, bool> > zones_to_lock
+#ifndef NDEBUG
+    void BinarySystem::describe_lock_scenario(
+        std::ostream &os,
+        const lock_scenario_type &lock_scenario,
+        const std::vector<bool> passed,
+        bool add_header
     )
     {
-        std::vector<double> original_angmom(zones_to_lock.size());
-        std::vector<short> unlock_directions(zones_to_lock.size());
+        lock_scenario_type::const_iterator
+            scenario_zone_i = lock_scenario.begin();
+        std::vector<bool>::const_iterator passed_i = passed.begin();
+        unsigned test_zone_ind;
+        short lock_direction;
+        std::tie(test_zone_ind, lock_direction, std::ignore) = *scenario_zone_i;
 
-        lock_zones(zones_to_lock, original_angmom, unlock_directions);
-        assert(number_locked_zones() == zones_to_lock.size());
-        if(check_if_locks_hold())
-            return true;
-        else {
-            unlock_all_zones(unlock_directions, original_angmom);
-            return false;
+        if(add_header)
+            os  << "||" << std::setw(9 * __body1.number_zones() - 1) << "Body1"
+                << "||" << std::setw(9 * __body2.number_zones() - 1) << "Body2"
+                << "||" << std::endl
+                << std::string(
+                    9 * (__body1.number_zones() + __body2.number_zones()) + 4,
+                    '_'
+                )
+                << std::endl
+                << "||";
+
+        for(short body_i = 0; body_i < 2; ++body_i) {
+            DissipatingBody &body = (body_i == 0 ? __body1 : __body2);
+            for(unsigned zone_i = 0; zone_i < body.number_zones(); ++zone_i) {
+                if(zone_i != 0)
+                    os << "|";
+                DissipatingZone &zone = body.zone(zone_i);
+                os  << " ";
+                if(
+                        zone_i + body_i * __body1.number_zones()
+                        ==
+                        test_zone_ind
+                ) {
+                    if(lock_direction == 0)
+                        os << "0";
+                    else if(lock_direction > 0)
+                        os << "+";
+                    os  << lock_direction
+                        << " (" << (*passed_i ? "V" : "X") << ")";
+                    std::tie(test_zone_ind,
+                             lock_direction,
+                             std::ignore) = *(++scenario_zone_i);
+                } else {
+                    if(zone.can_lock()) os << " NSZ  ";
+                    else os << " NLZ  ";
+                }
+                os << " ";
+            }
+            os << "||";
         }
+        os << std::endl;
     }
+#endif
+
+    bool BinarySystem::test_lock_scenario(
+        const lock_scenario_type &lock_scenario
+#ifndef NDEBUG
+        , bool first_scenario
+#endif
+    )
+    {
+        set_lock_scenario(lock_scenario);
+        double *above_lock_fraction_p = __above_lock_fractions[
+            Dissipation::NO_DERIV
+        ].data();
+#ifndef DEBUG
+        std::vector<bool> passed(lock_scenario.size());
+        std::vector<bool>::iterator passed_i = passed.begin();
+        bool result = true;
+#endif
+        for(
+                lock_scenario_type::const_iterator
+                    scenario_zone_iter = lock_scenario.begin();
+                scenario_zone_iter != lock_scenario.end();
+                ++scenario_zone_iter
+        ) {
+            unsigned test_zone_ind;
+            short lock_direction;
+            std::tie(test_zone_ind,
+                     lock_direction,
+                     std::ignore) = *scenario_zone_iter;
+            if(lock_direction == 0) {
+#ifdef VERBOSE_DEBUG
+                std::cerr << "Lock for zone " << test_zone_ind << " will ";
+#endif
+                if(
+                        !(
+                            *above_lock_fraction_p > 0
+                            &&
+                            *above_lock_fraction_p < 1
+                        )
+                ) {
+#ifndef NDEBUG
+                    *passed_i++ = false;
+                    result = false;
+#else
+                   return false;
+#endif
+#ifdef VERBOSE_DEBUG
+                    std::cerr << "not ";
+#endif
+                }
+#ifndef NDEBUG
+                else *passed_i++ = true;
+#endif
+#ifdef VERBOSE_DEBUG
+                std::cerr << "hold (above lock frac: "
+                          << *above_lock_fraction_p
+                          << ")" << std::endl;
+#endif
+                ++above_lock_fraction_p;
+            } else if(!test_synchronized_unlocked_zone(test_zone_ind)) {
+#ifndef NDEBUG
+                *passed_i++ = false;
+                result = false;
+#else
+                return false;
+#endif
+            }
+#ifndef NDEBUG
+            else *passed_i++ = true;
+#endif
+        }
+#ifndef NDEBUG
+        describe_lock_scenario(std::cerr,
+                               lock_scenario,
+                               passed,
+                               first_scenario || true);
+        return result;
+#else
+        return true;
+#endif
+    }
+
+    bool BinarySystem::explore_lock_scenarios(
+        lock_scenario_type::const_iterator next_synchronized_zone,
+        unsigned num_synchronized_zones,
+        lock_scenario_type &lock_scenario
+#ifndef NDEBUG
+        , bool first_scenario
+#endif
+
+    )
+    {
+        if(lock_scenario.size() == num_synchronized_zones) {
+#ifndef NDEBUG
+            if(test_lock_scenario(lock_scenario, first_scenario)) {
+                __selected_lock_scenario = lock_scenario;
+                std::cerr << "Selected lock scenario: " << std::endl;
+                describe_lock_scenario(
+                    std::cerr,
+                    lock_scenario,
+                    std::vector<bool>(lock_scenario.size(), true),
+                    true
+                );
+                describe_lock_scenario(
+                    std::cerr,
+                    __selected_lock_scenario,
+                    std::vector<bool>(lock_scenario.size(), true),
+                    true
+                );
+
+                return true;
+            } else
+                return false;
+#else
+            return test_lock_scenario(lock_scenario);
+#endif
+        }
+
+        assert(lock_scenario.size() < num_synchronized_zones);
+
+        lock_scenario.push_back(*next_synchronized_zone);
+        short &scenario_dir = std::get<1>(lock_scenario.back());
+        short orig_lock_direction = std::get<1>(*next_synchronized_zone);
+#ifndef NDEBUG
+        bool result = false;
+#endif
+        ++next_synchronized_zone;
+        for(scenario_dir = -1; scenario_dir <= 1; ++scenario_dir) {
+            if(
+                    explore_lock_scenarios(
+                        next_synchronized_zone,
+                        num_synchronized_zones,
+                        lock_scenario
+#ifndef NDEBUG
+                        , first_scenario
+#endif
+                    )
+            ) {
+#ifndef NDEBUG
+                assert(!result);
+                result = true;
+#else
+                return true;
+#endif
+            }
+#ifndef NDEBUG
+            first_scenario = false;
+#endif
+        }
+        lock_scenario.pop_back();
+#ifndef NDEBUG
+        return result;
+#else
+        return false;
+#endif
+    }
+
 
     int BinarySystem::locked_surface_differential_equations(
         double *evolution_rates
@@ -753,6 +1004,13 @@ namespace Evolve {
         assert(num_locked_zones == (__body1.number_locked_zones()
                                     +
                                     __body2.number_locked_zones()));
+#ifndef NDEBUG
+        std::cerr << "Setting "
+                  << num_locked_zones
+                  << " above lock fractions "
+                  << entry
+                  << std::endl;
+#endif
 
         if(num_locked_zones == 0) {
             fractions.resize(0);
@@ -2255,25 +2513,29 @@ namespace Evolve {
         }
     }
 
-    void initialize_locks(double sync_precision)
+    void BinarySystem::initialize_locks(double sync_precision)
     {
-        std::list< std::pair<unsigned, bool> >
-            lock_candidates = find_synchronized_zones(sync_precision);
-        if(
-                number_locked_zones() == lock_candidates.size()
-                &&
-                check_if_locks_hold()
-        )
+        lock_scenario_type lock_candidates = find_synchronized_zones(
+            sync_precision
+        );
+        if(lock_candidates.empty())
             return;
-        //TODO: Figure out in what direction currently locked zones must be
-        //released or at least a method to check if assuming a given set of
-        //directions is correct.
-        for(
-                unsigned num_fail_lock = 0;
-                num_fail_lock < lock_candidates.size();
-                ++num_fail_lock
-        ) {
-        }
+
+        lock_scenario_type lock_scenario;
+        if(!explore_lock_scenarios(lock_candidates.begin(),
+                                   lock_candidates.size(),
+                                   lock_scenario))
+            throw Core::Error::Runtime("Failed to find viable lock scenario!");
+#ifndef NDEBUG
+        std::cerr << "Setting lock scenario: " << std::endl;
+        describe_lock_scenario(
+            std::cerr,
+            __selected_lock_scenario,
+            std::vector<bool>(__selected_lock_scenario.size(), true),
+            true
+        );
+        set_lock_scenario(__selected_lock_scenario);
+#endif
     }
 
     void BinarySystem::check_for_lock(int orbital_freq_mult,
