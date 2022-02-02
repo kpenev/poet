@@ -275,8 +275,11 @@ namespace Evolve {
 
         ///\brief Initializes the skip_history_zerocrossing and
         ///skip_history_extremum arrays appropriately after a mode change.
-        void initialize_skip_history(const StoppingCondition &stop_cond,
-                StoppingConditionType stop_reason);
+        void initialize_skip_history(
+            const StoppingCondition &stop_cond,
+            const std::valarray<double> &stop_cond_values,
+            StoppingConditionType stop_reason
+        );
 
         ///\brief Is the condition causing a stop match to within the required
         ///precision?

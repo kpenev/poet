@@ -89,6 +89,13 @@ namespace Evolve {
     )
     {
         assert(__evolution_mode == Core::BINARY);
+#ifdef VERBOSE_DEBUG
+        std::cerr << "Setting lock scenario: " << std::endl;
+        describe_lock_scenario(std::cerr,
+                               lock_scenario,
+                               std::vector<bool>(lock_scenario.size(), false),
+                               true);
+#endif
 
         std::vector<double>
             angmom(number_zones()),
@@ -125,19 +132,58 @@ namespace Evolve {
                             !=
                             scenario_lock_dir
                     ) {
-                        if(zone.locked())
+                        if(zone.locked()) {
                             body.unlock_zone_spin(zone_i, scenario_lock_dir);
-                        body.lock_zone_spin(
-                            zone_i,
-                            current_lock.orbital_frequency_multiplier(),
-                            current_lock.spin_frequency_multiplier()
-                        );
-                        if(scenario_lock_dir != 0)
-                            body.unlock_zone_spin(zone_i, scenario_lock_dir);
-                        std::tie(scenario_zone,
-                                 scenario_lock_dir,
-                                 scenario_angmom) = *++scenario_zone_iter;
+#ifdef VERBOSE_DEBUG
+                            std::cerr << "Unlocking "
+                                      << (body_i == 0 ? "primary" : "secondary")
+                                      << " zone " << zone_i
+                                      << "(overall zone " << scenario_zone
+                                      << ")"
+                                      << std::endl;
+#endif
+                        } else {
+                            body.lock_zone_spin(
+                                zone_i,
+                                current_lock.orbital_frequency_multiplier(),
+                                current_lock.spin_frequency_multiplier()
+                            );
+#ifdef VERBOSE_DEBUG
+                            std::cerr << "Locking "
+                                      << (body_i == 0 ? "primary" : "secondary")
+                                      << " zone " << zone_i
+                                      << "(overall zone " << scenario_zone
+                                      << ")"
+                                      << std::endl;
+#endif
+
+                            if(scenario_lock_dir != 0) {
+#ifdef VERBOSE_DEBUG
+                                std::cerr << "Unlocking "
+                                          << (body_i == 0 ? "primary" : "secondary")
+                                          << " zone " << zone_i
+                                          << "(overall zone " << scenario_zone
+                                          << ")"
+                                          << std::endl;
+#endif
+                                body.unlock_zone_spin(zone_i,
+                                                      scenario_lock_dir);
+                            }
+                        }
                     }
+#ifdef VERBOSE_DEBUG
+                    else {
+                        std::cerr << (body_i == 0 ? "Primary" : "Secondary")
+                                  << " zone " << zone_i
+                                  << "(overall zone " << scenario_zone
+                                  << ") already matches scenario."
+                                  << std::endl;
+                    }
+#endif
+                    std::tie(scenario_zone,
+                             scenario_lock_dir,
+                             scenario_angmom) = *++scenario_zone_iter;
+
                 } else {
                     zone_angmom = zone.angular_momentum();
                 }

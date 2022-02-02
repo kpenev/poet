@@ -642,6 +642,7 @@ namespace Evolve {
 
     void OrbitSolver::initialize_skip_history(
         const StoppingCondition &stop_cond,
+        const std::valarray<double> &stop_cond_values,
         StoppingConditionType stop_reason
     )
     {
@@ -659,15 +660,23 @@ namespace Evolve {
         ) {
             StoppingConditionType stop_cond_type=stop_cond.type(cond_ind);
             if(
-                (stop_reason == BREAK_LOCK && stop_cond_type == SYNCHRONIZED)
-                ||
                 (
-                    stop_reason != NO_STOP
-                    &&
-                    stop_reason != BREAK_LOCK
-                    &&
-                    stop_cond_type == stop_reason
+                    (
+                        stop_reason == BREAK_LOCK
+                        &&
+                        stop_cond_type == SYNCHRONIZED
+                    )
+                    ||
+                    (
+                        stop_reason != NO_STOP
+                        &&
+                        stop_reason != BREAK_LOCK
+                        &&
+                        stop_cond_type == stop_reason
+                    )
                 )
+                &&
+                std::abs(stop_cond_values[cond_ind]) <= __precision
             ) {
 #ifndef NDEBUG
                 std::cerr << "Skipping first step of condition "
@@ -701,7 +710,7 @@ namespace Evolve {
             if(
                     __skip_history_zerocrossing[i] == history_size
                     &&
-                    std::abs(current_stop_cond[i]) < __precision
+                    std::abs(current_stop_cond[i]) <= __precision
             )
                 ++__skip_history_zerocrossing[i];
             if(
@@ -841,7 +850,9 @@ namespace Evolve {
                                                      current_stop_deriv);
 
         if(__stop_history_ages.empty())
-            initialize_skip_history(*__stopping_conditions, stop_reason);
+            initialize_skip_history(*__stopping_conditions,
+                                    current_stop_cond,
+                                    stop_reason);
         StopInformation result;
         insert_discarded(age, current_stop_cond, current_stop_deriv);
 #ifdef VERBOSE_DEBUG
@@ -1048,7 +1059,6 @@ namespace Evolve {
                   << __stopping_conditions->describe() << std::endl;
 #endif
 
-    //	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
         const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
 
         gsl_odeiv2_step *step = gsl_odeiv2_step_alloc(step_type, nargs);
@@ -1071,15 +1081,6 @@ namespace Evolve {
                               age_derivatives(nargs);
 
         add_to_evolution(t, evolution_mode, system);
-
-    /*	std::cerr << "Initial state for t=" << t << ": " << std::endl
-            << "\torbit:";
-        for(unsigned i=0; i<orbit.size(); ++i)
-            std::cerr << orbit[i] << " ";
-        std::cerr << std::endl << "\tderiv  :";
-        for(unsigned i=0; i<derivatives.size(); ++i)
-            std::cerr << derivatives[i] << " ";
-        std::cerr << std::endl;*/
 
         clear_discarded();
         double step_size = std::min(0.1 * (max_age - t),
@@ -1425,42 +1426,6 @@ namespace Evolve {
                                  double max_runtime,
                                  double min_extremum_search_step)
     {
-        //TODO: It can happen that one zone entering/leaving/crossing lock can
-        //cause another zone to lose it's lock. In that case, both break lock
-        //conditions end up with the same sign, and future evolution will never
-        //detect that the lock is broken (until the term is removed from the
-        //expansion). This bugfix needs two things:
-        //  1. Detect that a lock is broken by triggering some other condition
-        //     - Option 1: create new BreakLockCondition, initialize orbit,
-        //       calculate derivatives and check
-        //     - Option 2: Avoid the unnecessary calculations by incorporating
-        //       this in evolve_until after these calculations happen anyway
-        //  2. Handle the simultaneous triggering of two stopping conditions.
-        //     This is tricky because skip_history tracking is currently set up
-        //     to ignore zero crossing of only one condition. Handling this
-        //     correctly requires:
-        //     - Move skip_history_* reset out of initialize_skip_history
-        //     - Use option 2 above and call initialize_skip_history a
-        //       second/third/... time if lock breaking is detected. Luckily
-        //       update_skip_history should then work correctly.
-        // Solution?: Add if(first_step) to evolve_until (line 1155) to call a
-        // new function that will:
-        //   - check if locks hold. This must handle all locks simultaneously
-        //     becouse:
-        //     - breaking a lock could potentially cause more locks to break
-        //     - breaking a later lock could revive one that would be broken by
-        //       earlier breakage
-        //     This would use system.above_lock_fraction to determine which
-        //     locks hold, but not clear how to do is simultaneously for all
-        //     locks.
-        //   - trigger break lock conditions to release broken locks
-        //   - Reset __stopping_conditions
-        //   - Reset __skip_history_*
-        //   - call initialize_skip_history for any broken lock. Perhaps it's
-        //     possible to simplify by treaning BREAK_LOCK as if it is
-        //     SYNCHRONIZED. This will still assume that two zones will not
-        //     reach spin-orbit resonance simultaneously!
-
 #ifndef NDEBUG
         std::cerr << "Calculating evolution from t = " << system.age()
                   << " to t = " << __end_age << std::endl;

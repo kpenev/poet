@@ -599,7 +599,7 @@ namespace Evolve {
                                   spin_frequency_multiplier,
                                   forcing_freq);
 #ifdef VERBOSE_DEBUG
-        std::cerr << forcing_freq << std::endl;
+//        std::cerr << forcing_freq << std::endl;
 #endif
         return forcing_freq;
     }
