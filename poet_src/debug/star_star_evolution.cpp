@@ -49,13 +49,17 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.9920654905378268;
-    const double SECONDARY_MASS = 0.7230138299345078;
-    const double FEH = 0.23115300565169195;
-    const double INITIAL_PERIOD = 16.145221014708316;
-    const double LGQ_MIN = 5.186227042681173;
-    const double LGQ_BREAK_PERIOD = 8.978669081328178;
-    const double LGQ_POWERLAW = -3.1395911900486437;
+    const double PRIMARY_MASS = 0.9902266536770453;
+    const double SECONDARY_MASS = 0.721553459002824;
+    const double FEH = 0.19071144696113032;
+    const double INITIAL_PERIOD = 19.373371393094825;
+    const double LGQ_MIN = 5.558331195721922;
+    const double LGQ_BREAK_PERIOD = 11.586178953087886;
+    const double LGQ_POWERLAW = -4.731946221280918;
+    const double FINAL_AGE = 7.0546789931362905;
+
+    double initial_secondary_angmom[] = {0.057762170258244656,
+                                         0.011236763448353176};
 
     const double DISK_PERIOD = 10.0;
     const double DISK_DISSIPATION_AGE = 0.02;
@@ -87,7 +91,6 @@ int main(int, char **)
 
 
     double zero = 0.0;
-    double initial_secondary_angmom[] = {0.2, 0.001};
 
     double tidal_frequency_breaks[] = {2.0 * M_PI / LGQ_BREAK_PERIOD};
     double tidal_frequency_powers[] = {
@@ -105,7 +108,7 @@ int main(int, char **)
     select_interpolation_region(primary, core_formation_age(primary));
     set_star_dissipation(primary,
                          0,          //zone index
-                         0,          //# tidal frequency breaks
+                         1,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
                          tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
@@ -124,7 +127,7 @@ int main(int, char **)
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index
-                         0,          //# tidal frequency breaks
+                         1,          //# tidal frequency breaks
                          0,          //# spin frequency breaks
                          tidal_frequency_breaks,       //tidal frequency breaks
                          NULL,       //spin frequency breaks
@@ -169,13 +172,14 @@ int main(int, char **)
 
     OrbitSolver *solver = evolve_system(
         system,
-        7.0,    //final age
+        FINAL_AGE,    //final age
         1e-3,   //max timestep
         1e-6,   //precision
         NULL,   //required ages
         0,      //num required ages
-        true,   //Print stepping progress?
-        0
+        true,  //Print stepping progress?
+        0,      //Max runtime [s]
+        1000000 //Max time steps
     );
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],

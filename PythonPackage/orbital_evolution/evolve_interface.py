@@ -135,7 +135,8 @@ def initialize_library(library_fname=None):
                           flags='C_CONTIGUOUS'),
         c_uint,                                 #num_required_ages
         c_bool,                                 #print_progress
-        c_double                                #max_runtime
+        c_double,                               #max_runtime
+        c_uint                                  #max_time_steps
     ]
     result.evolve_system.restype = c_solver_p
 

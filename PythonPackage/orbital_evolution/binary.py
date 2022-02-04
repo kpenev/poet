@@ -3,6 +3,7 @@
 import os.path
 from ctypes import c_int, c_bool, c_double
 from types import SimpleNamespace
+import logging
 
 import numpy
 
@@ -60,16 +61,20 @@ class Binary:
             primary=isinstance(self.primary, EvolvingStar),
             secondary=isinstance(self.secondary, EvolvingStar)
         )
+#        logging.getLogger(__name__).debug(
+#            'Determining evolution quantities for star flags: %s',
+#            repr(is_star)
+#        )
 
         for component in ['primary', 'secondary']:
-            prefix = component
+            prefix = component + '_'
             if is_star['primary'] and not is_star['secondary']:
-                prefix = ('' if component == 'primary' else 'planet')
+                prefix = ('' if component == 'primary' else 'planet_')
             elif is_star['secondary'] and not is_star['primary']:
-                prefix = ('' if component == 'secondary' else 'planet')
+                prefix = ('' if component == 'secondary' else 'planet_')
             for quantity in (star_float_quantities if is_star[component]
                              else planet_float_quantities):
-                evolution_quantities.append(prefix + '_' + quantity)
+                evolution_quantities.append(prefix + quantity)
 
         rate_quantities = (
             [q + '_rate' for q in evolution_quantities[1:]]
@@ -77,12 +82,17 @@ class Binary:
 
         evolution_quantities.append('evolution_mode')
 
-        if is_star['primary']:
-            evolution_quantities.append('primary_wind_saturation')
-        if is_star['secondary']:
-            evolution_quantities.append('secondary_wind_saturation')
+        for component in ['primary', 'secondary']:
+            if is_star[component]:
+                evolution_quantities.append(component + '_wind_saturation')
 
         evolution_quantities.extend(rate_quantities)
+
+#        logging.getLogger(__name__).debug(
+#            'Evolution quantities for star flags: %s:\n%s',
+#            repr(is_star),
+#            '\n\t'.join(evolution_quantities)
+#        )
 
         return evolution_quantities
 
@@ -414,7 +424,8 @@ class Binary:
                print_progress=False,
                create_c_code='',
                eccentricity_expansion_fname=None,
-               timeout=0):
+               timeout=0,
+               max_time_steps=0):
         """
         Evolve the system forward from its current state.
 
@@ -448,6 +459,10 @@ class Binary:
                 Non-positive value results in no timeout. Partially cumputed
                 evolutions that time out can still be querried.
 
+            - max_time_steps:
+                The maximum number of time steps the evolution is allowed to
+                take (also includes the current set of discarded steps).
+
         Returnns: None
         """
 
@@ -475,7 +490,8 @@ class Binary:
             required_ages,
             (0 if required_ages is None else required_ages.size),
             print_progress,
-            timeout
+            timeout,
+            max_time_steps
         )
         self.num_evolution_steps = library.num_evolution_steps(self.c_solver)
 

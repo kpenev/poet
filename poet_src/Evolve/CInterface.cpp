@@ -231,7 +231,8 @@ OrbitSolver *evolve_system(DiskBinarySystem *system,
                            double *required_ages,
                            unsigned num_required_ages,
                            bool print_progress,
-                           double max_runtime)
+                           double max_runtime,
+                           unsigned max_time_steps)
 {
 	std::cerr.setf(std::ios_base::scientific);
 	std::cerr.precision(16);
@@ -246,7 +247,8 @@ OrbitSolver *evolve_system(DiskBinarySystem *system,
             max_time_step,
             std::list<double>(required_ages,
                               required_ages + num_required_ages),
-            max_runtime
+            max_runtime,
+            max_time_steps
         );
 #ifdef NDEBUG
     } catch(std::exception)

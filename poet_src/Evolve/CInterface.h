@@ -350,7 +350,11 @@ extern "C" {
         ///The maximum time in seconds the evolutions is allowed to run.
         ///Partially calculated evolution can be queried. Any non-positive
         //values results in infinite timeout.
-        double max_runtime
+        double max_runtime,
+
+        ///The maximum number of steps (including the latest set of discarded
+        ///steps) the evolution is allowed to take
+        unsigned max_time_steps
     );
 
     ///Destroy a solver created by evolve_system.

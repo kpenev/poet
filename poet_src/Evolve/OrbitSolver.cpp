@@ -1132,16 +1132,36 @@ namespace Evolve {
                         status << ")";
                     throw Core::Error::Runtime(msg.str());
                 } else if (
-                    __runtime_limit > 0
-                    &&
-                    difftime(time(NULL), __evolution_start_time)
-                    >
-                    __runtime_limit
+                    (
+                        __runtime_limit > 0
+                        &&
+                        difftime(time(NULL), __evolution_start_time)
+                        >
+                        __runtime_limit
+                    )
+                    ||
+                    (
+                        __num_step_limit > 0
+                        &&
+                        (
+                            __tabulated_ages.size()
+                            +
+                            __discarded_stop_ages.size()
+                            >
+                            __num_step_limit
+                        )
+                    )
                 ) {
                     std::ostringstream msg;
-                    msg << "Exceeded evolution time limit of "
+                    msg << "After "
+                        << __tabulated_ages.size()
+                        << "steps (+"
+                        << __discarded_stop_ages.size()
+                        << " discarded), exceeded evolution time limit of "
                         << __runtime_limit
-                        << " seconds!";
+                        << " seconds or step limit of "
+                        << __num_step_limit
+                        << " steps!";
                     throw Core::Error::Runtime(msg.str());
                 }
                 if(status == GSL_SUCCESS) {
@@ -1426,6 +1446,7 @@ namespace Evolve {
                                  double max_step,
                                  const std::list<double> &required_ages,
                                  double max_runtime,
+                                 unsigned max_time_steps,
                                  double min_extremum_search_step)
     {
 #ifndef NDEBUG
@@ -1434,6 +1455,8 @@ namespace Evolve {
 #endif
         time(&__evolution_start_time);
         __runtime_limit = max_runtime;
+        __num_step_limit = max_time_steps;
+
         __min_extremum_search_step = min_extremum_search_step;
 
         double stop_evol_age = __end_age;
