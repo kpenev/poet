@@ -159,6 +159,35 @@ extern "C" {
         double secondary_formation_age
     );
 
+    ///Create a binary system out of two planets.
+    LIB_PUBLIC DiskBinarySystem *create_planet_planet_system(
+        ///The second body in the system, initially may not be there and
+        ///later may be engulfed by the first body.
+        CPlanet *primary,
+
+        ///The second body in the system, initially may not be there and
+        ///later may be engulfed by the first body.
+        CPlanet *secondary,
+
+        ///The semimajor axis of the orbit at which the secondary forms in
+        /// \f$R_\odot\f$.
+        double initial_semimajor,
+
+        ///The eccentricity of the orbit at which the secondary forms.
+        double initial_eccentricity,
+
+        ///Inclination between surface zone of primary and initial orbit in
+        ///radians.
+        double initial_inclination,
+
+        ///Frequency of the surface spin of the primary when disk is present
+        ///in rad/day.
+        double disk_lock_frequency,
+
+        ///Age when disk dissipates in Gyrs.
+        double disk_dissipation_age
+    );
+
     ///Destroy a previously created binary system.
     LIB_PUBLIC void destroy_binary(
         ///The system to destroy.
@@ -604,6 +633,99 @@ extern "C" {
         ///An array to fill with the rate of change of the angular momentum of
         ///the stellar radiative core.
         double *secondary_core_angmom_rate
+    );
+
+    ///\brief Fill C-style arrays with the calculated evolution of a
+    ///planet-planet system.
+    ///
+    ///All return arrays must either be allocated to the correct size or be
+    ///NULL. In the latter case, the corresponding quantity is not returned.
+    LIB_PUBLIC void get_planet_planet_evolution(
+        ///The solver which was used to calculate the orbital evolution.
+        const OrbitSolver *solver,
+
+        ///The system which was evolved.
+        const DiskBinarySystem *system,
+
+        ///The star which was evolved.
+        const CPlanet *primary,
+
+        ///The planet which was evolved,
+        const CPlanet *secondary,
+
+        ///An array to fill with the ages at which the evolution was
+        ///calculated.
+        double *age,
+
+        ///An array to fill with the semimajor axis at the saved evolution
+        ///steps.
+        double *semimajor,
+
+        ///An array to fill with the orbital eccentricity at the saved
+        ///evolution steps.
+        double *eccentricity,
+
+        ///An array to fill with the angle between the primary
+        ///spin and the orbital angular momenta.
+        double *primary_inclination,
+
+        ///An array to fill with the periapsis of the orbit in the equatorial
+        ///plane of the primary.
+        double *primary_periapsis,
+
+        ///An array to fill with the angular momentum of the primary.
+        double *primary_angmom,
+
+        ///An array to fill wit the angle between the secondary's and the
+        ///orbital angular momentum (pass NULL if the secondary is not
+        ///dissipative).
+        double *secondary_inclination,
+
+        ///An array to fill wit the  periapsis of the orbit in the equatorial
+        ///plane of the secondary (pass NULL if the secondary is not
+        ///dissipative).
+        double *secondary_periapsis,
+
+        ///An array to fill wit the angular momentum of the secondary (pass NULL
+        ///if the secondary is not dissipative).
+        double *secondary_angmom,
+
+        ///An array to fill with the evolution mode of the system.
+        int *evolution_mode,
+
+        ///An array to fill with the rate at which the semimajor axis changes at
+        ///the saved evolution steps.
+        double *semimajor_rate,
+
+        ///An array to fill with the rate the orbital eccentricity changes at
+        ///the saved evolution steps.
+        double *eccentricity_rate,
+
+        ///An array to fill with the rate at which the angle between the primary
+        ///spin and the orbital angular momenta changes.
+        double *primary_inclination_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the
+        ///orbit in the equatorial plane of the primary.
+        double *primary_periapsis_rate,
+
+        ///An array to fill with the rate of change of the angular momentum of
+        ///the primary.
+        double *primary_angmom_rate,
+
+        ///An array to fill wit the rate of change of the angle between the
+        ///secondary's and the orbital angular momentum (pass NULL if the
+        ///secondary is not dissipative).
+        double *secondary_inclination_rate,
+
+        ///An array to fill with the rate of change of the periapsis of the orbit
+        ///in the equatorial plane of the secondary (pass NULL if the secondary
+        ///is not dissipative).
+        double *secondary_periapsis_rate,
+
+        ///An array to fill with the range of change of the angular momentum of
+        ///the secondary (pass NULL if the secondary is not dissipative).
+        double *secondary_angmom_rate
     );
 
     ///\brief Fill destiantions with the calculated final state of a

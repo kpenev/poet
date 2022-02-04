@@ -52,23 +52,24 @@ class Binary:
                                  'envelope_angmom',
                                  'core_angmom']
 
-        secondary_is_star = isinstance(self.secondary, EvolvingStar)
+        planet_float_quantities = ['inclination',
+                                   'periapsis',
+                                   'angmom']
 
-        if secondary_is_star:
-            for quantity in star_float_quantities:
-                evolution_quantities.append('primary_' + quantity)
+        is_star = dict(
+            primary=isinstance(self.primary, EvolvingStar),
+            secondary=isinstance(self.secondary, EvolvingStar)
+        )
 
-            for quantity in star_float_quantities:
-                evolution_quantities.append('secondary_' + quantity)
-
-        else:
-            evolution_quantities.extend(star_float_quantities
-                                        +
-                                        [
-                                            'planet_inclination',
-                                            'planet_periapsis',
-                                            'planet_angmom'
-                                        ])
+        for component in ['primary', 'secondary']:
+            prefix = component
+            if is_star['primary'] and not is_star['secondary']:
+                prefix = ('' if component == 'primary' else 'planet')
+            elif is_star['secondary'] and not is_star['primary']:
+                prefix = ('' if component == 'secondary' else 'planet')
+            for quantity in (star_float_quantities if is_star[component]
+                             else planet_float_quantities):
+                evolution_quantities.append(prefix + '_' + quantity)
 
         rate_quantities = (
             [q + '_rate' for q in evolution_quantities[1:]]
@@ -76,11 +77,10 @@ class Binary:
 
         evolution_quantities.append('evolution_mode')
 
-        if secondary_is_star:
-            evolution_quantities.extend(['primary_wind_saturation',
-                                         'secondary_wind_saturation'])
-        else:
-            evolution_quantities.append('wind_saturation')
+        if is_star['primary']:
+            evolution_quantities.append('primary_wind_saturation')
+        if is_star['secondary']:
+            evolution_quantities.append('secondary_wind_saturation')
 
         evolution_quantities.extend(rate_quantities)
 
@@ -289,7 +289,6 @@ class Binary:
         Returns: None
         """
 
-        assert isinstance(primary, EvolvingStar)
         self.primary = primary
         self.secondary = secondary
         if initial_semimajor is None:
@@ -310,17 +309,7 @@ class Binary:
 
 
         self.evolution_quantities = self._get_evolution_quantities()
-        if isinstance(secondary, LockedPlanet):
-            c_create_func = library.create_star_planet_system
-            self._c_get_evolution_func = library.get_star_planet_evolution
-            self._c_get_final_state = library.get_star_planet_final_state
-        else:
-            assert isinstance(secondary, EvolvingStar)
-            c_create_func = library.create_star_star_system
-            self._c_get_evolution_func = library.get_star_star_evolution
-            self._c_get_final_state = library.get_star_star_final_state
-
-        self.c_binary = c_create_func(
+        create_args = (
             primary.c_body,
             secondary.c_body,
             initial_semimajor,
@@ -330,6 +319,22 @@ class Binary:
             disk_dissipation_age,
             secondary_formation_age
         )
+        if isinstance(primary, LockedPlanet):
+            assert(isinstance(secondary, LockedPlanet))
+            c_create_func = library.create_planet_planet_system
+            self._c_get_evolution_func = library.get_planet_planet_evolution
+            create_args = create_args[:-1]
+        elif isinstance(secondary, LockedPlanet):
+            c_create_func = library.create_star_planet_system
+            self._c_get_evolution_func = library.get_star_planet_evolution
+            self._c_get_final_state = library.get_star_planet_final_state
+        else:
+            assert isinstance(secondary, EvolvingStar)
+            c_create_func = library.create_star_star_system
+            self._c_get_evolution_func = library.get_star_star_evolution
+            self._c_get_final_state = library.get_star_star_final_state
+
+        self.c_binary = c_create_func(*create_args)
 
         self.num_evolution_steps = 0
         self.c_solver = None

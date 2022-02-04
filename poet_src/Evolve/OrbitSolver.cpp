@@ -807,6 +807,8 @@ namespace Evolve {
 #ifdef VERBOSE_DEBUG
         std::cerr << "Updating stop condition history. Current e = "
                   << orbit[1]
+                  << " current expansion order: "
+                  << current_expansion_order
                   << " current expansion range: "
                   << expansion_range.first
                   << " < e < "
@@ -820,7 +822,7 @@ namespace Evolve {
                 &&
                 orbit[1] > expansion_range.second
         ) {
-#ifndef VERBOSE_DEBUG
+#ifdef VERBOSE_DEBUG
             std::cerr << "Eccentricity ("
                       << orbit[1]
                       << ") exceeds current expansion error limit of "

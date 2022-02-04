@@ -2853,9 +2853,13 @@ namespace Evolve {
             body = &__body2;
         }
 #ifndef NDEBUG
-        return result;
+        if(result >= 1)
+            return result;
 #endif
-        return 0;
+        throw Core::Error::BadFunctionArguments(
+            "System contains no dissipative zones! "
+            "Run as single objects instead!"
+        );
     }
 
 } //End Evolve namespace.

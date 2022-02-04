@@ -301,9 +301,9 @@ def add_evolution_config(parser):
         'given name that will calculate the specified evolution.'
     )
     parser.add_argument(
-        '--eccentricity_expansion_fname',
-        default='eccentricity_expansion_coef.txt',
-        help='The filename storing the eccentricity expansion coefficienst.'
+        '--eccentricity-expansion-fname',
+        default='eccentricity_expansion_coef_O400.sqlite',
+        help='The filename storing the eccentricity expansion coefficients.'
     )
     parser.add_argument(
         '--stellar-evolution',
@@ -331,8 +331,11 @@ def add_evolution_config(parser):
 def set_up_library(cmdline_args):
     """Define eccentricity expansion and return stellar evol interpolator."""
 
-    orbital_evolution_library.read_eccentricity_expansion_coefficients(
-        cmdline_args.eccentricity_expansion_fname.encode('ascii')
+    orbital_evolution_library.prepare_eccentricity_expansion(
+        cmdline_args.eccentricity_expansion_fname.encode('ascii'),
+        1e-4,
+        True,
+        True
     )
     manager = StellarEvolutionManager(cmdline_args.stellar_evolution[0])
     return manager.get_interpolator_by_name(
@@ -373,12 +376,21 @@ def create_star(interpolator,
                 interp_age=None):
     """Create the star to use in the evolution."""
 
+    print('Creating %s Msun at t = %s star with dissipation %s',
+          repr(mass),
+          repr(interp_age),
+          repr(convective_phase_lag))
     star = EvolvingStar(mass=mass,
                         metallicity=metallicity,
                         wind_strength=wind_strength,
                         wind_saturation_frequency=wind_saturation_frequency,
                         diff_rot_coupling_timescale=diff_rot_coupling_timescale,
                         interpolator=interpolator)
+
+    star.select_interpolation_region(star.core_formation_age()
+                                     if interp_age is None else
+                                     interp_age)
+
     if convective_phase_lag:
         try:
             star.set_dissipation(
@@ -392,9 +404,6 @@ def create_star(interpolator,
         except TypeError:
             star.set_dissipation(zone_index=0,
                                  **convective_phase_lag)
-    star.select_interpolation_region(star.core_formation_age()
-                                     if interp_age is None else
-                                     interp_age)
     return star
 
 def create_system(primary,
@@ -418,13 +427,16 @@ def create_system(primary,
                     secondary_formation_age=(secondary_formation_age
                                              or
                                              disk_dissipation_age))
-    binary.configure(age=primary.core_formation_age(),
-                     semimajor=float('nan'),
-                     eccentricity=float('nan'),
-                     spin_angmom=numpy.array([0.0]),
-                     inclination=None,
-                     periapsis=None,
-                     evolution_mode='LOCKED_SURFACE_SPIN')
+    binary.configure(
+        age=(primary.core_formation_age() if isinstance(primary, EvolvingStar)
+             else 0.5 * disk_dissipation_age),
+        semimajor=float('nan'),
+        eccentricity=float('nan'),
+        spin_angmom=numpy.array([0.0]),
+        inclination=None,
+        periapsis=None,
+        evolution_mode='LOCKED_SURFACE_SPIN'
+    )
 
     if isinstance(secondary, EvolvingStar):
         initial_obliquity = numpy.array([0.0])
@@ -447,7 +459,8 @@ def create_system(primary,
                         zero_outer_inclination=True,
                         zero_outer_periapsis=True)
 
-    primary.detect_stellar_wind_saturation()
+    if isinstance(primary, EvolvingStar):
+        primary.detect_stellar_wind_saturation()
     if isinstance(secondary, EvolvingStar):
         secondary.detect_stellar_wind_saturation()
 
@@ -536,6 +549,8 @@ def get_component(cmdline_args, interpolator, primary=True):
                 cmdline_args,
                 'primary_' + arg_name
             )
+    if not primary:
+        create_args['interp_age'] = cmdline_args.disk_dissipation_age
     return create_star(**create_args)
 
 def get_binary(cmdline_args, interpolator):
