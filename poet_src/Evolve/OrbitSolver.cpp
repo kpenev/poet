@@ -36,6 +36,7 @@ namespace Evolve {
                                              derivatives);
     }
 
+#ifdef ENABLE_DERIVATIVES
     int stellar_system_jacobian(double age, const double *orbital_parameters,
             double *param_derivs, double *age_derivs,void *system_mode)
     {
@@ -50,6 +51,7 @@ namespace Evolve {
                                param_derivs,
                                age_derivs);
     }
+#endif
 
 #ifndef NDEBUG
     void OrbitSolver::output_history_and_discarded(std::ostream &os)
@@ -958,6 +960,10 @@ namespace Evolve {
                 &&
                 orbit[1] < expansion_range.first
                 &&
+                age > (0.99 * __last_order_upgrade_age
+                       +
+                       0.01 * __end_age)
+                &&
                 current_expansion_order > 0
             ) {
 #ifdef VERBOSE_DEBUG
@@ -1074,7 +1080,11 @@ namespace Evolve {
 
         void *sys_mode[2]={&system, &evolution_mode};
         gsl_odeiv2_system ode_system={stellar_system_diff_eq,
+#ifdef ENABLE_DERIVATIVES
                                       stellar_system_jacobian,
+#else
+                                      NULL,
+#endif
                                       nargs,
                                       sys_mode};
         double t=system.age();
@@ -1235,7 +1245,6 @@ namespace Evolve {
                 stop.stop_reason() != LARGE_EXPANSION_ERROR
             );
 
-            first_step = false;
             if(!step_rejected) {
 #ifndef NDEBUG
                 std::cerr << "Stepped to t = " << t << std::endl;
@@ -1259,9 +1268,7 @@ namespace Evolve {
                     &&
                     system.expansion_order() > 0
                     &&
-                    t > (0.99 * __last_order_upgrade_age
-                         +
-                         0.01 * max_age)
+                    !first_step
                 )
             ) {
                 stop_reason = stop.stop_reason();
@@ -1270,6 +1277,8 @@ namespace Evolve {
 #endif
                 break;
             }
+
+            first_step = false;
         }
         max_age=t;
         clear_history();
@@ -1407,13 +1416,18 @@ namespace Evolve {
             required_expansion_order = std::max(required_expansion_order,
                                                 current_expansion_order + 1);
 
-        if(required_expansion_order != current_expansion_order)
+        if(required_expansion_order != current_expansion_order) {
+            if(required_expansion_order > current_expansion_order)
+                __last_order_upgrade_age = system.age();
             system.change_expansion_order(required_expansion_order);
+        }
 
 #ifdef NDEBUG
         if(__print_progress)
 #endif
-            std::cerr << "At e = "
+            std::cerr << "At e(t = "
+                      << system.age()
+                      << ") = "
                       << orbit[1]
                       << " adjusted expansion order from "
                       << current_expansion_order
@@ -1434,6 +1448,7 @@ namespace Evolve {
                              bool print_progress) :
         __end_age(max_age),
         __precision(required_precision),
+        __last_order_upgrade_age(-Core::Inf),
         __stopping_conditions(NULL),
         __print_progress(print_progress)
     {

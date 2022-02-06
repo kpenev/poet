@@ -293,6 +293,7 @@ namespace Evolve {
             double *evolution_rates
         ) const;
 
+#ifdef ENABLE_DERIVATIVES
         ///\brief Jacobian for the evolution of the rotation of the zones of
         ///body 0 with the topmost zone rotating with a fixed frequency.
         ///
@@ -306,6 +307,7 @@ namespace Evolve {
             ///evolution equations.
             double *age_derivs
         ) const;
+#endif
 
         ///\brief Differential equations for the rotation of the zones of body 0
         ///if no other body is present.
@@ -317,6 +319,7 @@ namespace Evolve {
             double *evolution_rates
         ) const;
 
+#ifdef ENABLE_DERIVATIVES
         ///Fills the jacobian for a system consisting of one isolated body.
         void fill_single_body_jacobian(
             ///The rows of the jacobian corresponding to the zone
@@ -356,6 +359,7 @@ namespace Evolve {
             ///evolution equations.
             double *age_derivs
         ) const;
+#endif
 
         ///\brief Returns the rate of evolution of the semimajor axis or one of
         ///its derivatives.
@@ -539,6 +543,7 @@ namespace Evolve {
             std::valarray<double> &orbit_angmom_gain_deriv
         ) const;
 
+#ifdef ENABLE_DERIVATIVES
         ///Computes the row of the jacobian corresponding to the semimajor axis.
         void semimajor_jacobian(
             ///The derivatives of the orbit energy gain w.r.t. the evolution
@@ -823,6 +828,7 @@ namespace Evolve {
             ///evolution equations.
             double *age_derivs
         ) const;
+#endif
 
         ///Implements fill_orbit() for LOCKED_SURFACE_SPIN evolution mode.
         void fill_locked_surface_orbit(std::valarray<double> &orbit) const;
@@ -1018,6 +1024,7 @@ namespace Evolve {
             double *differential_equations
         );
 
+#ifdef ENABLE_DERIVATIVES
         ///The jacobian of the evolution equations.
         ///
         ///Calls configure()!
@@ -1039,6 +1046,7 @@ namespace Evolve {
             ///parameters w.r.t. age.
             double *age_derivs
         );
+#endif
 
         ///\brief Identify and lock all zones within precision of a lock that
         ///can hold the lock at the current configuration.

@@ -49,24 +49,24 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.9912424213411712;
-    const double SECONDARY_MASS = 0.7211387790822851;
-    const double FEH = 0.20609253283088325;
-    const double INITIAL_PERIOD = 16.14573260197987;
-    const double LGQ_MIN = 5.374773124505535;
-    const double LGQ_BREAK_PERIOD = 11.884598857248804;
-    const double LGQ_POWERLAW = 2.7948237708938786;
-    const double FINAL_AGE = 7.023280784580951;
+    const double PRIMARY_MASS = 0.9903878340510854;
+    const double SECONDARY_MASS = 0.7210222034913119;
+    const double FEH = 0.2086031170711678;
+    const double INITIAL_PERIOD = 16.14684288542114;
+    const double LGQ_MIN = 5.611495311781401;
+    const double LGQ_BREAK_PERIOD = 11.80774196833656;
+    const double LGQ_POWERLAW = -4.859662255335485;
+    const double FINAL_AGE = 7.936062724733186;
 
-    double initial_secondary_angmom[] = {0.058272395630316415,
-                                         0.010868676015481247};
+    double initial_secondary_angmom[] = {0.05835004839025351,
+                                         0.010804787550864068};
 
     const double DISK_PERIOD = 10.0;
     const double DISK_DISSIPATION_AGE = 0.02;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double WIND_STRENGTH = 0.17;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
-    const double INITIAL_ECCENTRICITY = 0.7;
+    const double INITIAL_ECCENTRICITY = 0.79;
     const double INCLINATION = 0.0;
     const double LOCK_PERIOD = 50.0;
 
@@ -188,7 +188,7 @@ int main(int, char **)
             NULL,   //required ages
             0,      //num required ages
             true,  //Print stepping progress?
-            0,      //Max runtime [s]
+            900,      //Max runtime [s]
             1000000 //Max time steps
         );
     } catch(const Core::Error::General &exception) {

@@ -1,6 +1,6 @@
 /**\addtogroup Utilities_group
  * @{
- * 
+ *
  * \file
  *
  * \brief Defines the exception hierarchy used by this code.
@@ -29,7 +29,7 @@ namespace Core {
             std::string message;
         public:
             ///Create an exception.
-            General(const std::string &error_message="") : 
+            General(const std::string &error_message="") :
                 message(error_message)
                 {
                     std::cerr << what() << ": " << error_message << std::endl;
@@ -39,7 +39,7 @@ namespace Core {
             virtual const char *what() const throw() {return "general error";}
 
             ///Details about what caused the error.
-            const std::string &get_message() {return message;}
+            const std::string &get_message() const {return message;}
 
             ///Cleanup if necessary.
             virtual ~General() throw() {}
@@ -49,7 +49,7 @@ namespace Core {
         class LIB_PUBLIC ALGLIB : public General {
         public:
             ///Create an exception for an error detected inside ALGLIB.
-            ALGLIB(const std::string &error_message="") : 
+            ALGLIB(const std::string &error_message="") :
                 General(error_message) {}
 
             ///Reports "ALGLIB error" as the error type.
@@ -101,15 +101,15 @@ namespace Core {
             bool directory;
         public:
             ///Create a missing file or directory exception.
-            PathNotFound(const std::string &message, 
-                         const std::string &filename="", 
+            PathNotFound(const std::string &message,
+                         const std::string &filename="",
                          bool isdir=false) :
                 Runtime(filename+", "+message), directory(isdir) {}
 
             ///Reports "File/Directory not found" as the error type.
             virtual const char *what() const throw() {
                 return (directory ?
-                        "Directory not found." : 
+                        "Directory not found." :
                         "File not found.");
             }
         };
@@ -118,7 +118,7 @@ namespace Core {
         class LIB_PUBLIC IO : public Runtime {
         public:
             ///Create an Input/Ouput exception.
-            IO(const std::string &filename="", 
+            IO(const std::string &filename="",
                const std::string &error_message="") :
                 Runtime("Error reading "+filename+", "
                         +error_message) {}

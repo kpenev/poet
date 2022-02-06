@@ -180,9 +180,11 @@ namespace Evolve {
                                   << std::endl;
                     }
 #endif
-                    std::tie(scenario_zone,
-                             scenario_lock_dir,
-                             scenario_angmom) = *++scenario_zone_iter;
+                    ++scenario_zone_iter;
+                    if(scenario_zone_iter != lock_scenario.end())
+                        std::tie(scenario_zone,
+                                 scenario_lock_dir,
+                                 scenario_angmom) = *scenario_zone_iter;
 
                 } else {
                     zone_angmom = zone.angular_momentum();
@@ -340,9 +342,11 @@ namespace Evolve {
                         os << "+";
                     os  << lock_direction
                         << " (" << (*passed_i ? "V" : "X") << ")";
-                    std::tie(test_zone_ind,
-                             lock_direction,
-                             std::ignore) = *(++scenario_zone_i);
+                    ++scenario_zone_i;
+                    if(scenario_zone_i != lock_scenario.end())
+                        std::tie(test_zone_ind,
+                                 lock_direction,
+                                 std::ignore) = *scenario_zone_i;
                 } else {
                     if(zone.can_lock()) os << " NSZ  ";
                     else os << " NLZ  ";
@@ -543,6 +547,7 @@ namespace Evolve {
         return 0;
     }
 
+#ifdef ENABLE_DERIVATIVES
     void BinarySystem::locked_surface_jacobian(double *param_derivs,
                                                double *age_derivs) const
     {
@@ -637,6 +642,7 @@ namespace Evolve {
             }
         }
     }
+#endif
 
     int BinarySystem::single_body_differential_equations(
         double *evolution_rates
@@ -687,6 +693,7 @@ namespace Evolve {
         return 0;
     }
 
+#ifdef ENABLE_DERIVATIVES
     void BinarySystem::fill_single_body_jacobian(
         double *inclination_param_derivs,
         double *periapsis_param_derivs,
@@ -864,6 +871,7 @@ namespace Evolve {
                                   age_derivs + (nzones - 1),
                                   age_derivs + 2 * (nzones - 1));
     }
+#endif
 
     double BinarySystem::semimajor_evolution(
         double orbit_power,
@@ -1561,6 +1569,7 @@ namespace Evolve {
                                       body2_sin_inc * body2_orbit_torque[2]);
     }
 
+#ifdef ENABLE_DERIVATIVES
     void BinarySystem::semimajor_jacobian(
             const std::valarray<double> &orbit_power_deriv,
             bool a6p5,
@@ -2234,6 +2243,7 @@ namespace Evolve {
         }
 
     }
+#endif
 
     void BinarySystem::fill_locked_surface_orbit(
         std::valarray<double> &orbit
@@ -2536,6 +2546,7 @@ namespace Evolve {
         }
     }
 
+#ifdef ENABLE_DERIVATIVES
     int BinarySystem::jacobian(double age,
                                const double *parameters,
                                Core::EvolModeType evolution_mode,
@@ -2558,6 +2569,7 @@ namespace Evolve {
                       );
         }
     }
+#endif
 
     void BinarySystem::initialize_locks(double sync_precision)
     {
