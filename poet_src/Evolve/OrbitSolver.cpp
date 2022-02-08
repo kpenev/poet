@@ -807,15 +807,16 @@ namespace Evolve {
             TidalPotentialTerms::get_expansion_range(current_expansion_order);
 
 #ifdef VERBOSE_DEBUG
-        std::cerr << "Updating stop condition history. Current e = "
-                  << orbit[1]
-                  << " current expansion order: "
-                  << current_expansion_order
-                  << " current expansion range: "
-                  << expansion_range.first
-                  << " < e < "
-                  << expansion_range.second
-                  << std::endl;
+        if(evolution_mode == Core::BINARY)
+            std::cerr << "Updating stop condition history. Current e = "
+                      << orbit[1]
+                      << " current expansion order: "
+                      << current_expansion_order
+                      << " current expansion range: "
+                      << expansion_range.first
+                      << " < e < "
+                      << expansion_range.second
+                      << std::endl;
 #endif
 
 
@@ -1483,11 +1484,12 @@ namespace Evolve {
 
         Core::EvolModeType evolution_mode = system.fill_orbit(orbit);
 
-        if(evolution_mode == Core::BINARY)
+        if(evolution_mode == Core::BINARY) {
             adjust_expansion_order(system,
                                    orbit,
                                    evolution_mode);
-
+            __last_order_upgrade_age = -Core::Inf;
+        }
 
         while(last_age < stop_evol_age) {
             double next_stop_age = std::min(stopping_age(last_age,
@@ -1538,10 +1540,12 @@ namespace Evolve {
             system.fill_orbit(orbit);
 
             if(evolution_mode == Core::BINARY) {
-                if(old_evolution_mode != Core::BINARY)
+                if(old_evolution_mode != Core::BINARY) {
                     adjust_expansion_order(system,
                                            orbit,
                                            evolution_mode);
+                    __last_order_upgrade_age = -Core::Inf;
+                }
                 if(
                         stop_reason != SMALL_EXPANSION_ERROR
                         &&

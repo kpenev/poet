@@ -49,17 +49,17 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.9912424213411712;
-    const double SECONDARY_MASS = 0.7211387790822851;
-    const double FEH = 0.20609253283088325;
-    const double INITIAL_PERIOD = 16.14573260197987;
-    const double LGQ_MIN = 5.374773124505535;
-    const double LGQ_BREAK_PERIOD = 11.884598857248804;
-    const double LGQ_POWERLAW = 2.7948237708938786;
-    const double FINAL_AGE = 7.023280784580951;
+    const double PRIMARY_MASS = 0.9912963247241322;
+    const double SECONDARY_MASS = 0.7220721569374875;
+    const double FEH = 0.2023177456186246;
+    const double INITIAL_PERIOD = 35.21904755907842;
+    const double LGQ_MIN = 5.215368854866863;
+    const double LGQ_BREAK_PERIOD = 8.14088066024527;
+    const double LGQ_POWERLAW = -3.85446224480809;
+    const double FINAL_AGE = 6.983037219529715;
 
-    double initial_secondary_angmom[] = {0.058272395630316415,
-                                         0.010868676015481247};
+    double initial_secondary_angmom[] = {0.05821809408894827,
+                                         0.011042320306054159};
 
     const double DISK_PERIOD = 10.0;
     const double DISK_DISSIPATION_AGE = 0.02;

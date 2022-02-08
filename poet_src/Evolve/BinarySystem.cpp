@@ -1438,7 +1438,7 @@ namespace Evolve {
         std::cerr << "rates: ";
         for(
             unsigned i = 0;
-            i < 3 * (__body1.number_zones() + __body2.number_zones()) + 1;
+            i < 3 * (__body1.number_zones() + __body2.number_zones()) - 1;
             ++i
         ) {
             if(i) std::cerr << ", ";

@@ -56,7 +56,7 @@ int main(int, char **)
     const double LGQ_MIN = 5.611495311781401;
     const double LGQ_BREAK_PERIOD = 11.80774196833656;
     const double LGQ_POWERLAW = -4.859662255335485;
-    const double FINAL_AGE = 7.936062724733186;
+    const double FINAL_AGE = 1.0;
 
     double initial_secondary_angmom[] = {0.05835004839025351,
                                          0.010804787550864068};
@@ -188,7 +188,7 @@ int main(int, char **)
             NULL,   //required ages
             0,      //num required ages
             true,  //Print stepping progress?
-            900,      //Max runtime [s]
+            0,      //Max runtime [s]
             1000000 //Max time steps
         );
     } catch(const Core::Error::General &exception) {

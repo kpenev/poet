@@ -498,8 +498,8 @@ namespace Evolve {
                             spin_frequency_multiplier);
         }
 
-        ///\brief Should return the tidal phase lag time the love number for the
-        ///given tidal term (or one of its derivatives).
+        ///\brief Should return the tidal phase lag times the love number for
+        ///the given tidal term (or one of its derivatives).
         ///
         ///In case the forcing frequency is exactly zero, it should return the
         ///phase lag for the case of the spin frequency approaching the term from
@@ -527,7 +527,8 @@ namespace Evolve {
                 ///If the lag of a locked term is calculated this should be set
                 ///to the lag assuming the spin frequency is just above the lock.
                 ///Otherwise, leave untouched.
-                double &above_lock_value) const =0;
+                double &above_lock_value
+        ) const =0;
 
         ///\brief Should return the corresponding component of the love
         ///coefficient (Lai 2012 Equation 24).
