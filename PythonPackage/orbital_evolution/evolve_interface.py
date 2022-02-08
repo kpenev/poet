@@ -71,6 +71,12 @@ def initialize_library(library_fname=None):
     result.create_star_star_system.restype = (
         result.create_star_planet_system.restype
     )
+    result.create_planet_planet_system.argtypes = (
+        result.create_star_planet_system.argtypes[:-1]
+    )
+    result.create_planet_planet_system.restype = (
+        result.create_star_planet_system.restype
+    )
 
     result.destroy_binary.argtypes = [
         result.create_star_planet_system.restype
@@ -129,7 +135,8 @@ def initialize_library(library_fname=None):
                           flags='C_CONTIGUOUS'),
         c_uint,                                 #num_required_ages
         c_bool,                                 #print_progress
-        c_double                                #max_runtime
+        c_double,                               #max_runtime
+        c_uint                                  #max_time_steps
     ]
     result.evolve_system.restype = c_solver_p
 
@@ -327,6 +334,69 @@ def initialize_library(library_fname=None):
 
     ]
     result.get_star_star_evolution.restype = None
+
+    result.get_planet_planet_evolution.argtypes = [
+        result.evolve_system.restype,               #solver
+        result.create_star_planet_system.restype,   #system
+        c_dissipating_body_p,                       #primary
+        c_dissipating_body_p,                       #secondary
+        ndpointer_or_null(dtype=c_double,           #age
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #semimajor
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #eccentricity
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #primary_inclination
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #primary_perapsis
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #primary_angmom
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #secondary_inclination
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #secondary_periaps
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #secondary_angmom
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_int,              #evolution_mode
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #semimajor_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #eccentricity_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #primary_incl_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #primary_periapsis_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #primary_angmom_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #secondary_incl_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #secondary_peri_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,           #secondary_angmom_rate
+                          ndim=1,
+                          flags='C_CONTIGUOUS')
+    ]
+    result.get_star_star_evolution.restype = None
+
 
     result.get_star_planet_final_state.argtypes = [
         result.evolve_system.restype,               #solver

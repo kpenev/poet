@@ -100,6 +100,7 @@ int main(int, char **)
         NULL,
         0,
         true,
+        0,
         0
     );
     int num_steps = num_evolution_steps(solver);

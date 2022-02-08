@@ -121,6 +121,28 @@ DiskBinarySystem *create_star_star_system(EvolvingStar *primary,
     );
 }
 
+DiskBinarySystem *create_planet_planet_system(CPlanet *primary,
+                                              CPlanet *secondary,
+                                              double initial_semimajor,
+                                              double initial_eccentricity,
+                                              double initial_inclination,
+                                              double disk_lock_frequency,
+                                              double disk_dissipation_age)
+{
+    return reinterpret_cast<DiskBinarySystem*>(
+        new Evolve::DiskBinarySystem(
+            *reinterpret_cast<Planet::Planet*>(primary),
+            *reinterpret_cast<Planet::Planet*>(secondary),
+            initial_semimajor,
+            initial_eccentricity,
+            initial_inclination,
+            disk_lock_frequency,
+            disk_dissipation_age,
+            disk_dissipation_age
+        )
+    );
+}
+
 void destroy_binary(DiskBinarySystem *system)
 {
     delete reinterpret_cast<Evolve::DiskBinarySystem*>(system);
@@ -209,7 +231,8 @@ OrbitSolver *evolve_system(DiskBinarySystem *system,
                            double *required_ages,
                            unsigned num_required_ages,
                            bool print_progress,
-                           double max_runtime)
+                           double max_runtime,
+                           unsigned max_time_steps)
 {
 	std::cerr.setf(std::ios_base::scientific);
 	std::cerr.precision(16);
@@ -224,7 +247,8 @@ OrbitSolver *evolve_system(DiskBinarySystem *system,
             max_time_step,
             std::list<double>(required_ages,
                               required_ages + num_required_ages),
-            max_runtime
+            max_runtime,
+            max_time_steps
         );
 #ifdef NDEBUG
     } catch(std::exception)
@@ -533,6 +557,55 @@ void get_star_star_evolution(const OrbitSolver *solver,
                        secondary_core_periapsis_rate,
                        secondary_envelope_angmom_rate,
                        secondary_core_angmom_rate);
+}
+
+void get_planet_planet_evolution(const OrbitSolver *solver,
+                                 const DiskBinarySystem *system,
+                                 const CPlanet *primary,
+                                 const CPlanet *secondary,
+                                 double *age,
+                                 double *semimajor,
+                                 double *eccentricity,
+                                 double *primary_inclination,
+                                 double *primary_periapsis,
+                                 double *primary_angmom,
+                                 double *secondary_inclination,
+                                 double *secondary_periapsis,
+                                 double *secondary_angmom,
+                                 int *evolution_mode,
+                                 double *semimajor_rate,
+                                 double *eccentricity_rate,
+                                 double *primary_inclination_rate,
+                                 double *primary_periapsis_rate,
+                                 double *primary_angmom_rate,
+                                 double *secondary_inclination_rate,
+                                 double *secondary_periapsis_rate,
+                                 double *secondary_angmom_rate)
+{
+
+    get_solver_evolution(solver, age, evolution_mode);
+
+    get_binary_evolution(system,
+                         semimajor,
+                         eccentricity,
+                         semimajor_rate,
+                         eccentricity_rate);
+
+    get_planet_evolution(primary,
+                         primary_inclination,
+                         primary_periapsis,
+                         primary_angmom,
+                         primary_inclination_rate,
+                         primary_periapsis_rate,
+                         primary_angmom_rate);
+
+    get_planet_evolution(secondary,
+                         secondary_inclination,
+                         secondary_periapsis,
+                         secondary_angmom,
+                         secondary_inclination_rate,
+                         secondary_periapsis_rate,
+                         secondary_angmom_rate);
 }
 
 ///\brief Fill the given pointers with the state of the given star at the end

@@ -266,6 +266,23 @@ model {
                 lib library: "dirent", linkage: "static"
             }
         }
+        debugStarStarSlowEvolution(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "poet_src/debug"
+                    include "**/star_star_slow_evolution.cpp"
+                }
+            }
+            binaries.all {
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "star", linkage: "static"
+                lib library: "planet", linkage: "static"
+                lib library: "evolve", linkage: "static"
+                lib library: "dirent", linkage: "static"
+            }
+        }
+
 //        poet(NativeExecutableSpec) {
 //            sources.cpp {
 //                lib library: "alglib"

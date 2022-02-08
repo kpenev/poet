@@ -7,7 +7,7 @@ namespace Evolve {
     {
         os << "Lock: " << lock.orbital_frequency_multiplier() << "*OrbFreq = "
             << lock.spin_frequency_multiplier() << "*SpinFreq ";
-        if(!lock) os << "DISABLED";
+        if(lock) os << "LOCKED";
         else os << (lock.lock_direction()>0 ? "from above" : "from below");
         return os;
     }

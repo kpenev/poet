@@ -61,18 +61,6 @@ namespace Evolve {
                 short lock_direction=-1)
         {set_lock(orbital_freq_mult, spin_freq_mult, lock_direction);}
 
-        ///\brief Copy the original to this.
-        SpinOrbitLockInfo(const SpinOrbitLockInfo &orig)
-        {set_lock(orig.orbital_frequency_multiplier(),
-                orig.spin_frequency_multiplier(),
-                orig.lock_direction());}
-
-        ///\brief Make this the same lock as RHS.
-        SpinOrbitLockInfo &operator=(const SpinOrbitLockInfo &rhs)
-        {set_lock(rhs.orbital_frequency_multiplier(),
-                rhs.spin_frequency_multiplier(),
-                rhs.lock_direction()); return *this;}
-
         ///\brief Define which tidal dissipation term is in a lock.
         void set_lock(
                 ///The multiple of the orbital frequency at the lock.

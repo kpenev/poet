@@ -36,6 +36,7 @@ namespace Evolve {
                                              derivatives);
     }
 
+#ifdef ENABLE_DERIVATIVES
     int stellar_system_jacobian(double age, const double *orbital_parameters,
             double *param_derivs, double *age_derivs,void *system_mode)
     {
@@ -50,6 +51,7 @@ namespace Evolve {
                                param_derivs,
                                age_derivs);
     }
+#endif
 
 #ifndef NDEBUG
     void OrbitSolver::output_history_and_discarded(std::ostream &os)
@@ -87,10 +89,14 @@ namespace Evolve {
             os << std::setw(28) << *age_i;
         }
         std::string hline;
-        hline.assign(20+25*(__stop_history_ages.size()
-                            +
-                            __discarded_stop_ages.size()),
-                '_');
+        hline.assign(
+            20
+            +
+            25 * (std::min(static_cast<int>(__stop_history_ages.size()), 5)
+                  +
+                  __discarded_stop_ages.size()),
+            '_'
+        );
         os << std::endl << hline << std::endl;
 
         for(size_t i = 0; i < __stop_cond_discarded.front().size(); i++) {
@@ -638,6 +644,7 @@ namespace Evolve {
 
     void OrbitSolver::initialize_skip_history(
         const StoppingCondition &stop_cond,
+        const std::valarray<double> &stop_cond_values,
         StoppingConditionType stop_reason
     )
     {
@@ -655,15 +662,23 @@ namespace Evolve {
         ) {
             StoppingConditionType stop_cond_type=stop_cond.type(cond_ind);
             if(
-                (stop_reason == BREAK_LOCK && stop_cond_type == SYNCHRONIZED)
-                ||
                 (
-                    stop_reason != NO_STOP
-                    &&
-                    stop_reason != BREAK_LOCK
-                    &&
-                    stop_cond_type == stop_reason
+                    (
+                        stop_reason == BREAK_LOCK
+                        &&
+                        stop_cond_type == SYNCHRONIZED
+                    )
+                    ||
+                    (
+                        stop_reason != NO_STOP
+                        &&
+                        stop_reason != BREAK_LOCK
+                        &&
+                        stop_cond_type == stop_reason
+                    )
                 )
+                &&
+                std::abs(stop_cond_values[cond_ind]) <= __precision
             ) {
 #ifndef NDEBUG
                 std::cerr << "Skipping first step of condition "
@@ -697,7 +712,7 @@ namespace Evolve {
             if(
                     __skip_history_zerocrossing[i] == history_size
                     &&
-                    std::abs(current_stop_cond[i]) < __precision
+                    std::abs(current_stop_cond[i]) <= __precision
             )
                 ++__skip_history_zerocrossing[i];
             if(
@@ -792,13 +807,16 @@ namespace Evolve {
             TidalPotentialTerms::get_expansion_range(current_expansion_order);
 
 #ifdef VERBOSE_DEBUG
-        std::cerr << "Updating stop condition history. Current e = "
-                  << orbit[1]
-                  << " current expansion range: "
-                  << expansion_range.first
-                  << " < e < "
-                  << expansion_range.second
-                  << std::endl;
+        if(evolution_mode == Core::BINARY)
+            std::cerr << "Updating stop condition history. Current e = "
+                      << orbit[1]
+                      << " current expansion order: "
+                      << current_expansion_order
+                      << " current expansion range: "
+                      << expansion_range.first
+                      << " < e < "
+                      << expansion_range.second
+                      << std::endl;
 #endif
 
 
@@ -807,7 +825,7 @@ namespace Evolve {
                 &&
                 orbit[1] > expansion_range.second
         ) {
-#ifndef VERBOSE_DEBUG
+#ifdef VERBOSE_DEBUG
             std::cerr << "Eccentricity ("
                       << orbit[1]
                       << ") exceeds current expansion error limit of "
@@ -837,7 +855,9 @@ namespace Evolve {
                                                      current_stop_deriv);
 
         if(__stop_history_ages.empty())
-            initialize_skip_history(*__stopping_conditions, stop_reason);
+            initialize_skip_history(*__stopping_conditions,
+                                    current_stop_cond,
+                                    stop_reason);
         StopInformation result;
         insert_discarded(age, current_stop_cond, current_stop_deriv);
 #ifdef VERBOSE_DEBUG
@@ -940,6 +960,10 @@ namespace Evolve {
                 evolution_mode == Core::BINARY
                 &&
                 orbit[1] < expansion_range.first
+                &&
+                age > (0.99 * __last_order_upgrade_age
+                       +
+                       0.01 * __end_age)
                 &&
                 current_expansion_order > 0
             ) {
@@ -1044,7 +1068,6 @@ namespace Evolve {
                   << __stopping_conditions->describe() << std::endl;
 #endif
 
-    //	const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_bsimp;
         const gsl_odeiv2_step_type *step_type = gsl_odeiv2_step_rkf45;
 
         gsl_odeiv2_step *step = gsl_odeiv2_step_alloc(step_type, nargs);
@@ -1058,7 +1081,11 @@ namespace Evolve {
 
         void *sys_mode[2]={&system, &evolution_mode};
         gsl_odeiv2_system ode_system={stellar_system_diff_eq,
+#ifdef ENABLE_DERIVATIVES
                                       stellar_system_jacobian,
+#else
+                                      NULL,
+#endif
                                       nargs,
                                       sys_mode};
         double t=system.age();
@@ -1067,15 +1094,6 @@ namespace Evolve {
                               age_derivatives(nargs);
 
         add_to_evolution(t, evolution_mode, system);
-
-    /*	std::cerr << "Initial state for t=" << t << ": " << std::endl
-            << "\torbit:";
-        for(unsigned i=0; i<orbit.size(); ++i)
-            std::cerr << orbit[i] << " ";
-        std::cerr << std::endl << "\tderiv  :";
-        for(unsigned i=0; i<derivatives.size(); ++i)
-            std::cerr << derivatives[i] << " ";
-        std::cerr << std::endl;*/
 
         clear_discarded();
         double step_size = std::min(0.1 * (max_age - t),
@@ -1125,16 +1143,36 @@ namespace Evolve {
                         status << ")";
                     throw Core::Error::Runtime(msg.str());
                 } else if (
-                    __runtime_limit > 0
-                    &&
-                    difftime(time(NULL), __evolution_start_time)
-                    >
-                    __runtime_limit
+                    (
+                        __runtime_limit > 0
+                        &&
+                        difftime(time(NULL), __evolution_start_time)
+                        >
+                        __runtime_limit
+                    )
+                    ||
+                    (
+                        __num_step_limit > 0
+                        &&
+                        (
+                            __tabulated_ages.size()
+                            +
+                            __discarded_stop_ages.size()
+                            >
+                            __num_step_limit
+                        )
+                    )
                 ) {
                     std::ostringstream msg;
-                    msg << "Exceeded evolution time limit of "
+                    msg << "After "
+                        << __tabulated_ages.size()
+                        << "steps (+"
+                        << __discarded_stop_ages.size()
+                        << " discarded), exceeded evolution time limit of "
                         << __runtime_limit
-                        << " seconds!";
+                        << " seconds or step limit of "
+                        << __num_step_limit
+                        << " steps!";
                     throw Core::Error::Runtime(msg.str());
                 }
                 if(status == GSL_SUCCESS) {
@@ -1208,7 +1246,6 @@ namespace Evolve {
                 stop.stop_reason() != LARGE_EXPANSION_ERROR
             );
 
-            first_step = false;
             if(!step_rejected) {
 #ifndef NDEBUG
                 std::cerr << "Stepped to t = " << t << std::endl;
@@ -1232,9 +1269,7 @@ namespace Evolve {
                     &&
                     system.expansion_order() > 0
                     &&
-                    t > (0.99 * __last_order_upgrade_age
-                         +
-                         0.01 * max_age)
+                    !first_step
                 )
             ) {
                 stop_reason = stop.stop_reason();
@@ -1243,6 +1278,8 @@ namespace Evolve {
 #endif
                 break;
             }
+
+            first_step = false;
         }
         max_age=t;
         clear_history();
@@ -1380,13 +1417,18 @@ namespace Evolve {
             required_expansion_order = std::max(required_expansion_order,
                                                 current_expansion_order + 1);
 
-        if(required_expansion_order != current_expansion_order)
+        if(required_expansion_order != current_expansion_order) {
+            if(required_expansion_order > current_expansion_order)
+                __last_order_upgrade_age = system.age();
             system.change_expansion_order(required_expansion_order);
+        }
 
 #ifdef NDEBUG
         if(__print_progress)
 #endif
-            std::cerr << "At e = "
+            std::cerr << "At e(t = "
+                      << system.age()
+                      << ") = "
                       << orbit[1]
                       << " adjusted expansion order from "
                       << current_expansion_order
@@ -1407,6 +1449,7 @@ namespace Evolve {
                              bool print_progress) :
         __end_age(max_age),
         __precision(required_precision),
+        __last_order_upgrade_age(-Core::Inf),
         __stopping_conditions(NULL),
         __print_progress(print_progress)
     {
@@ -1419,6 +1462,7 @@ namespace Evolve {
                                  double max_step,
                                  const std::list<double> &required_ages,
                                  double max_runtime,
+                                 unsigned max_time_steps,
                                  double min_extremum_search_step)
     {
 #ifndef NDEBUG
@@ -1427,6 +1471,8 @@ namespace Evolve {
 #endif
         time(&__evolution_start_time);
         __runtime_limit = max_runtime;
+        __num_step_limit = max_time_steps;
+
         __min_extremum_search_step = min_extremum_search_step;
 
         double stop_evol_age = __end_age;
@@ -1438,11 +1484,12 @@ namespace Evolve {
 
         Core::EvolModeType evolution_mode = system.fill_orbit(orbit);
 
-        if(evolution_mode == Core::BINARY)
+        if(evolution_mode == Core::BINARY) {
             adjust_expansion_order(system,
                                    orbit,
                                    evolution_mode);
-
+            __last_order_upgrade_age = -Core::Inf;
+        }
 
         while(last_age < stop_evol_age) {
             double next_stop_age = std::min(stopping_age(last_age,
@@ -1486,37 +1533,43 @@ namespace Evolve {
                 } else
                     reached_stopping_condition(last_age, stop_reason);
             }
+            evolution_mode = system.evolution_mode();
+#ifndef NDEBUG
+            std::valarray<double> old_orbit(orbit);
+#endif
+            system.fill_orbit(orbit);
+
+            if(evolution_mode == Core::BINARY) {
+                if(old_evolution_mode != Core::BINARY) {
+                    adjust_expansion_order(system,
+                                           orbit,
+                                           evolution_mode);
+                    __last_order_upgrade_age = -Core::Inf;
+                }
+                if(
+                        stop_reason != SMALL_EXPANSION_ERROR
+                        &&
+                        stop_reason != BREAK_LOCK
+                        &&
+                        stop_reason != WIND_SATURATION
+                ) {
+                    system.initialize_locks(__precision);
+                    system.fill_orbit(orbit);
+                }
+            }
+
 #ifndef NDEBUG
             std::cerr
                 << "At t=" << last_age
                 << ", changing evolution mode from " << old_evolution_mode
                 << " with " << old_locked_zones
-                << " zones locked ";
-#endif
-            evolution_mode = system.evolution_mode();
-#ifndef NDEBUG
-            std::cerr
-                << "to " << evolution_mode
+                << " zones locked to " << evolution_mode
                 << " with " << system.number_locked_zones()
                 << " zones locked."
                 << std::endl
-                << "Transforming orbit from: ";
-            std::clog << orbit;
+                << "Transforming orbit from: " << old_orbit
+                << " to " << orbit << std::endl;
 #endif
-            system.fill_orbit(orbit);
-#ifndef NDEBUG
-            std::cerr << " to " << orbit << std::endl;
-#endif
-
-            if(
-                evolution_mode == Core::BINARY
-                &&
-                old_evolution_mode != Core::BINARY
-            )
-                adjust_expansion_order(system,
-                                       orbit,
-                                       evolution_mode);
-
             delete __stopping_conditions;
             __stopping_conditions = NULL;
         }

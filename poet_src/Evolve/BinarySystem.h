@@ -22,6 +22,7 @@
 #include <string>
 #include <limits>
 #include <iostream>
+#include <iomanip>
 
 namespace Evolve {
 
@@ -167,8 +168,120 @@ namespace Evolve {
             ///its surface rotation locked.
             &__body2;
 
+        typedef
+            std::list< std::tuple<unsigned, short, double> >
+            lock_scenario_type;
+
+#ifndef NDEBUG
+        ///\brief The lock/unlock configuration selected by the last call to
+        //initialize_locks()
+        lock_scenario_type __selected_lock_scenario;
+#endif
+
         ///Fills the __locked_zones list.
         void find_locked_zones();
+
+        ///\brief Return a list of the zone indices that are spin-orbit
+        ///synchronized with some tidal term (locked or unlocked).
+        ///
+        ///The monitored locks of synchronized zones are swapped as necessary to
+        ///ensure the first lock being monitored by the zone is the one that is
+        ///(close to) synchronized.
+        ///
+        ///The entries in each return value give:
+        ///
+        ///  0: the index of the zone (__body1 followed by __body2)
+        ///
+        ///  1: The current direction of the synchronized lock for that zone.
+        ///
+        ///  2: The current angular momentum of the zone
+        lock_scenario_type find_synchronized_zones(
+            ///A spin-orbit term is considered synchronized if its tidal
+            ///frequnecy is within this fraction of the orbital frequency.
+            double precision
+        );
+
+        ///\brief Lock exactly the specified zones and configure the system
+        ///
+        ///Also preserves the unlocked angular momenta to allow recovering the
+        ///unlocked system exactly.
+        void set_lock_scenario(
+            ///The zones to lock/unlock in the same format as the return value
+            ///of find_synchronizedzones(). Angular momentum for locked zones is
+            ///ignored.
+            const lock_scenario_type &lock_scenario
+        );
+
+        ///\brief Unlock all zones, restoring their original spins if known.
+        void unlock_all_zones(
+            ///The directions in which to unlock all the zones.
+            const std::vector<short> &unlock_directions,
+
+            ///The original angular momenta to restore to the currently locked
+            ///zones. Usually filled by prepare_lock_check(). If not specified,
+            ///zones are unlocked with angular momenta placing them exactly at
+            ///their current lock frequency.
+            const std::vector<double> &original_angmom = std::vector<double>()
+        );
+
+        ///Check if a zone with a synchronized tidal term will evolve away from
+        ///potential lock
+        bool test_synchronized_unlocked_zone(
+            ///The index of the zone to test in the total list of zones in the
+            ///system (i.e. all zones of __body1 followed by __body2).
+            unsigned test_zone_ind
+        );
+
+#ifndef NDEBUG
+        void describe_lock_scenario(
+            ///Thes straem to send the zone description to.
+            std::ostream &os,
+
+            ///The scenario to decsribe in the same format as returned by
+            ///find_synchronized_zones().
+            const lock_scenario_type &lock_scenario,
+
+            ///Flags indicating whether each of the tested zones passed the
+            ///test.
+            const std::vector<bool> passed,
+
+            ///Should a header be added?
+            bool add_header=false
+        );
+#endif
+
+        ///\brief Return true iff all locks in the given scenario will be
+        ///maintained and synchronized unlocked zones will evolve away from lock.
+        bool test_lock_scenario(
+            ///The scenario to test in the same format as returned by
+            ///find_synchronized_zones().
+            const lock_scenario_type &lock_scenario
+#ifndef NDEBUG
+            ///Is this the first scenario being tested?
+            , bool first_scenario
+#endif
+        );
+
+        ///\brief Iterate over all possible lock scenarios until a valid one is
+        ///found.
+        ///
+        ///Return true iff
+        bool explore_lock_scenarios(
+            ///Iterator within the return value of find_synchronized_zones()
+            ///pointing to the first zone not included in lock_scenario.
+            lock_scenario_type::const_iterator next_synchronized_zone,
+
+            ///The total number of zones for which a scenario must be defined.
+            unsigned num_synchronized_zones,
+
+            ///Partially filled lock scenario to test.
+            lock_scenario_type &lock_scenario
+
+#ifndef NDEBUG
+            ///Is this the first scenario being explored
+            , bool first_scenario = true
+#endif
+        );
 
         ///\brief Differential equations for the rotation of the zones of body 0
         ///with the topmost zone rotating with a fixed frequency.
@@ -180,6 +293,7 @@ namespace Evolve {
             double *evolution_rates
         ) const;
 
+#ifdef ENABLE_DERIVATIVES
         ///\brief Jacobian for the evolution of the rotation of the zones of
         ///body 0 with the topmost zone rotating with a fixed frequency.
         ///
@@ -193,6 +307,7 @@ namespace Evolve {
             ///evolution equations.
             double *age_derivs
         ) const;
+#endif
 
         ///\brief Differential equations for the rotation of the zones of body 0
         ///if no other body is present.
@@ -204,6 +319,7 @@ namespace Evolve {
             double *evolution_rates
         ) const;
 
+#ifdef ENABLE_DERIVATIVES
         ///Fills the jacobian for a system consisting of one isolated body.
         void fill_single_body_jacobian(
             ///The rows of the jacobian corresponding to the zone
@@ -243,6 +359,7 @@ namespace Evolve {
             ///evolution equations.
             double *age_derivs
         ) const;
+#endif
 
         ///\brief Returns the rate of evolution of the semimajor axis or one of
         ///its derivatives.
@@ -426,6 +543,7 @@ namespace Evolve {
             std::valarray<double> &orbit_angmom_gain_deriv
         ) const;
 
+#ifdef ENABLE_DERIVATIVES
         ///Computes the row of the jacobian corresponding to the semimajor axis.
         void semimajor_jacobian(
             ///The derivatives of the orbit energy gain w.r.t. the evolution
@@ -710,6 +828,7 @@ namespace Evolve {
             ///evolution equations.
             double *age_derivs
         ) const;
+#endif
 
         ///Implements fill_orbit() for LOCKED_SURFACE_SPIN evolution mode.
         void fill_locked_surface_orbit(std::valarray<double> &orbit) const;
@@ -775,7 +894,7 @@ namespace Evolve {
             Core::EvolModeType evolution_mode
         );
 
-        ///Sets the current state of the system directly from the evolutino
+        ///Sets the current state of the system directly from the evolution
         ///variables.
         int configure(
             ///Is this the first time configure() is invoked?
@@ -815,6 +934,16 @@ namespace Evolve {
 
         ///The current eccentricity of the system.
         double eccentricity() const {return __eccentricity;}
+
+        ///\brief The current orbital frequency [Rad/day] (calculated from the
+        ///semimajor axis).
+        double orbital_frequency(bool semimajor_deriv=false) const
+        {
+            return Core::orbital_angular_velocity(__body1.mass(),
+                                                  __body2.mass(),
+                                                  __semimajor,
+                                                  semimajor_deriv);
+        }
 
         ///\brief Fills an array with the parameters expected by
         ///differential_equations() and jacobian(), returning the evolution mode.
@@ -895,6 +1024,7 @@ namespace Evolve {
             double *differential_equations
         );
 
+#ifdef ENABLE_DERIVATIVES
         ///The jacobian of the evolution equations.
         ///
         ///Calls configure()!
@@ -915,6 +1045,16 @@ namespace Evolve {
             ///The partialderivatives of the evolution rates for the
             ///parameters w.r.t. age.
             double *age_derivs
+        );
+#endif
+
+        ///\brief Identify and lock all zones within precision of a lock that
+        ///can hold the lock at the current configuration.
+        void initialize_locks(
+            ///A tidal term is considered to have zero frequency (candidate to
+            ///lock) if its absolute frequency is less than sync_precision times
+            ///the orbital frequency.
+            double sync_precision
         );
 
         ///\brief Check if a spin-orbit lock can be held and updates the system

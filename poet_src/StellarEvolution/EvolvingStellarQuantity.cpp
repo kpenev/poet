@@ -394,12 +394,14 @@ namespace StellarEvolution {
             if(derivatives) *derivatives=new Core::ZeroDerivatives;
             return 0.0;
         }
+        if(age < __min_age || age > __max_age) {
 #ifndef NDEBUG
-        if(age < __min_age || age > __max_age)
             std::cerr << "Age: " << age
                       << " not in [" << __min_age << ", " << __max_age << "]"
                       << std::endl;
 #endif
+            return Core::NaN;
+        }
         assert(__min_age <= age && age <= __max_age);
         assert(__next_grid_change_age != __interp_grid_change_ages.begin());
 #ifndef NDEBUG

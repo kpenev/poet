@@ -181,6 +181,9 @@ namespace Evolve {
         ///Max number of seconds current evolution is allowed to run.
         double __runtime_limit;
 
+        ///Max number of steps allowed to be stored in history and/or discarded.
+        unsigned __num_step_limit;
+
 #ifndef NDEBUG
         ///\brief Generates a nicely formatted table of the contents of the
         ///discarded and history stopping condition information.
@@ -275,8 +278,11 @@ namespace Evolve {
 
         ///\brief Initializes the skip_history_zerocrossing and
         ///skip_history_extremum arrays appropriately after a mode change.
-        void initialize_skip_history(const StoppingCondition &stop_cond,
-                StoppingConditionType stop_reason);
+        void initialize_skip_history(
+            const StoppingCondition &stop_cond,
+            const std::valarray<double> &stop_cond_values,
+            StoppingConditionType stop_reason
+        );
 
         ///\brief Is the condition causing a stop match to within the required
         ///precision?
@@ -473,6 +479,9 @@ namespace Evolve {
             ///calculating the evolution. If it runs out, whatever portion is
             ///calculated is preserved.
             double max_runtime=0,
+
+            ///The maximum number of time steps to store in history (+discarded)
+            unsigned max_time_steps=0,
 
             ///The minimum time step to impose when searching for extrema of
             ///stopping conditions. Note that the GSL ODE solver and searching
