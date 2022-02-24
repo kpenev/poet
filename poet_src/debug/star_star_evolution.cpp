@@ -49,24 +49,24 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.9912963247241322;
-    const double SECONDARY_MASS = 0.7220721569374875;
-    const double FEH = 0.2023177456186246;
-    const double INITIAL_PERIOD = 35.21904755907842;
-    const double LGQ_MIN = 5.215368854866863;
-    const double LGQ_BREAK_PERIOD = 8.14088066024527;
-    const double LGQ_POWERLAW = -3.85446224480809;
-    const double FINAL_AGE = 6.983037219529715;
+    const double PRIMARY_MASS = 1.000759144393417;
+    const double SECONDARY_MASS = 0.45733389293510174;
+    const double FEH = -0.1370590893856221;
+    const double INITIAL_PERIOD = 16.026007472710152;
+    const double LGQ_MIN = 5.304149197016376;
+    const double LGQ_BREAK_PERIOD = 1.349572446046645;
+    const double LGQ_POWERLAW = -4.815017303503146;
+    const double FINAL_AGE = 0.12147711253580529;
 
-    double initial_secondary_angmom[] = {0.05821809408894827,
-                                         0.011042320306054159};
+    double initial_secondary_angmom[] = {0.11939496582754605,
+                                         0.0};
 
-    const double DISK_PERIOD = 10.0;
-    const double DISK_DISSIPATION_AGE = 0.02;
+    const double DISK_PERIOD = 10.001;
+    const double DISK_DISSIPATION_AGE = 0.002;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double WIND_STRENGTH = 0.17;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
-    const double INITIAL_ECCENTRICITY = 0.7;
+    const double INITIAL_ECCENTRICITY = 0.8;
     const double INCLINATION = 0.0;
     const double LOCK_PERIOD = 50.0;
 
@@ -106,6 +106,13 @@ int main(int, char **)
     }
     tidal_frequency_powers[1] = LGQ_POWERLAW;
 
+    /*
+    std::valarray<double>
+        tidal_frequency_breaks(2.0 * M_PI / LGQ_BREAK_PERIOD, 1),
+        tidal_frequency_powers(2);
+    tidal_frequency_powers[0] = std::max(0.0, LGQ_POWERLAW);
+    tidal_frequency_powers[1] = std::min(0.0, LGQ_POWERLAW);
+    */
 
     EvolvingStar *primary = create_star(PRIMARY_MASS,
                                         FEH,
@@ -116,7 +123,7 @@ int main(int, char **)
     select_interpolation_region(primary, core_formation_age(primary));
     set_star_dissipation(primary,
                          0,          //zone index
-                         (LGQ_POWERLAW > 0 ? 2 : 1),          //# tidal frequency breaks
+                         tidal_frequency_breaks.size(),//# tidal frequency breaks
                          0,          //# spin frequency breaks
                          &(tidal_frequency_breaks[0]),       //tidal frequency breaks
                          NULL,       //spin frequency breaks
@@ -135,7 +142,7 @@ int main(int, char **)
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
     set_star_dissipation(secondary,
                          0,          //zone index
-                         (LGQ_POWERLAW > 0 ? 2 : 1),          //# tidal frequency breaks
+                         tidal_frequency_breaks.size(),//# tidal frequency breaks
                          0,          //# spin frequency breaks
                          &(tidal_frequency_breaks[0]),       //tidal frequency breaks
                          NULL,       //spin frequency breaks
@@ -330,6 +337,7 @@ int main(int, char **)
     destroy_solver(solver);
     delete[] age;
     delete[] semimajor;
+    delete[] eccentricity;
     delete[] primary_lconv;
     delete[] primary_lrad;
     delete[] secondary_lconv;
