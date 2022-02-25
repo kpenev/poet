@@ -19,6 +19,10 @@ namespace Star {
     ///\brief Radiative core for low mass evolving stars.
     class LIB_PUBLIC EvolvingStellarCore : public EvolvingStellarZone {
     private:
+        const double __NEGLIGIBLE_INERTIA = 1e-10;
+        const double __NEGLIGIBLE_MASS = 1e-8;
+        const double __NEGLIGIBLE_RADIUS = 1e-8;
+
         ///The age at which the core first forms.
         double __formation_age;
 
@@ -31,6 +35,17 @@ namespace Star {
             RADIUS, ///< The outer radius boundary of the zone.
             INERTIA,///< The moment of inertia
         };
+
+        ///Ensure the returned quantity is never less than a specified value.
+        double positive_definite_quantity(size_t quantity,
+                                          double age,
+                                          unsigned deriv_order,
+                                          double min_value) const;
+
+        ///Same as positive_definite_quantity() but at currently configured age.
+        double current_positive_definite_quantity(size_t quantity,
+                                                  unsigned deriv_order,
+                                                  double min_value) const;
 
     public:
         ///Create a stellar core with the specified properties.
@@ -54,27 +69,54 @@ namespace Star {
 
         ///See DissipatingZone::moment_of_inertia(int).
         double moment_of_inertia(int deriv_order = 0) const
-        {return current_age_quantity(INERTIA, deriv_order);}
+        {
+            return current_positive_definite_quantity(INERTIA,
+                                                      deriv_order,
+                                                      __NEGLIGIBLE_INERTIA);
+        }
 
         ///See DissipatingZone::moment_of_inertia(double, int).
         double moment_of_inertia(double age, int deriv_order = 0) const
-        {return any_age_quantity(INERTIA, age, deriv_order);}
+        {
+            return positive_definite_quantity(INERTIA,
+                                              age,
+                                              deriv_order,
+                                              __NEGLIGIBLE_INERTIA);
+        }
 
         ///See DissipatingZone::outer_radius(int).
         double outer_radius(int deriv_order = 0) const
-        {return current_age_quantity(RADIUS, deriv_order);}
+        {
+            return current_positive_definite_quantity(RADIUS,
+                                                      deriv_order,
+                                                      __NEGLIGIBLE_RADIUS);
+        }
 
         ///See DissipatingZone::outer_radius(double, int).
         double outer_radius(double age, int deriv_order = 0) const
-        {return any_age_quantity(RADIUS, age, deriv_order);}
+        {
+            return positive_definite_quantity(RADIUS,
+                                              age,
+                                              deriv_order,
+                                              __NEGLIGIBLE_RADIUS);
+        }
 
         ///See DissipatingZone::outer_mass(int).
         double outer_mass(int deriv_order = 0) const
-        {return current_age_quantity(MASS, deriv_order);}
+        {
+            return current_positive_definite_quantity(MASS,
+                                                      deriv_order,
+                                                      __NEGLIGIBLE_MASS);
+        }
 
         ///See DissipatingZone::outer_mass(double, int).
         double outer_mass(double age, int deriv_order = 0) const
-        {return any_age_quantity(MASS, age, deriv_order);}
+        {
+            return positive_definite_quantity(MASS,
+                                              age,
+                                              deriv_order,
+                                              __NEGLIGIBLE_MASS);
+        }
 
         ///The age at which the core forms in Gyr.
         double formation_age() const {return __formation_age;}
