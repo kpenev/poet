@@ -19,9 +19,9 @@ namespace Star {
     ///\brief Radiative core for low mass evolving stars.
     class LIB_PUBLIC EvolvingStellarCore : public EvolvingStellarZone {
     private:
-        const double __NEGLIGIBLE_INERTIA = 1e-10;
-        const double __NEGLIGIBLE_MASS = 1e-8;
-        const double __NEGLIGIBLE_RADIUS = 1e-8;
+        const double __NEGLIGIBLE_INERTIA = 0.0;
+        const double __NEGLIGIBLE_MASS = 0.0;
+        const double __NEGLIGIBLE_RADIUS = 0.0;
 
         ///The age at which the core first forms.
         double __formation_age;

@@ -1497,12 +1497,13 @@ namespace Evolve {
                                                          required_ages),
                                             stop_evol_age);
             __stopping_conditions = get_stopping_condition(system);
+            last_age = next_stop_age;
 #ifndef NDEBUG
             std::cerr << "Next stop age: " << next_stop_age << std::endl;
             StopInformation stop_information =
 #endif
                 evolve_until(system,
-                             next_stop_age,
+                             last_age,
                              orbit,
                              stop_reason,
                              max_step,
@@ -1515,9 +1516,8 @@ namespace Evolve {
                       << std::endl;
             unsigned old_locked_zones = system.number_locked_zones();
 #endif
-            last_age = next_stop_age;
             if(last_age < stop_evol_age) {
-                if(stop_reason == NO_STOP) {
+                if(stop_reason == NO_STOP || last_age == next_stop_age) {
                     system.reached_critical_age(last_age);
                 } else if(
                     stop_reason == LARGE_EXPANSION_ERROR

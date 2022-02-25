@@ -25,20 +25,20 @@ namespace Star {
         assert(quantity < __evolving_quantities.size());
 
         if(__current_age_quantities[quantity]==NULL) {
-            __current_age_quantities[quantity] = 
+            __current_age_quantities[quantity] =
                 __evolving_quantities[quantity]->deriv(__current_age);
         }
         return __current_age_quantities[quantity]->order(deriv_order);
     }
 
     double EvolvingStellarZone::any_age_quantity(size_t quantity,
-                                                 double age, 
+                                                 double age,
                                                  unsigned deriv_order) const
     {
         if(deriv_order == 0)
             return (*(__evolving_quantities[quantity]))(age);
         else {
-            const Core::FunctionDerivatives 
+            const Core::FunctionDerivatives
                 *deriv = __evolving_quantities[quantity]->deriv(age);
             double result = deriv->order(deriv_order);
             delete deriv;
@@ -71,7 +71,7 @@ namespace Star {
                                               spin_is_frequency);
     }
 
-    EvolvingStellarZone::~EvolvingStellarZone() 
+    EvolvingStellarZone::~EvolvingStellarZone()
     {
         reset_current_quantities();
 
@@ -81,9 +81,28 @@ namespace Star {
 
     void EvolvingStellarZone::reached_critical_age(double age)
     {
-        for(size_t i = 0; i < __evolving_quantities.size(); ++i)
-            while(__evolving_quantities[i]->next_discontinuity() <= age)
+#ifndef NDEBUG
+        std::cerr << "Adjusting zone quantity interpolation per age = "
+                  << age
+                  << std::endl;
+#endif
+        for(size_t i = 0; i < __evolving_quantities.size(); ++i) {
+#ifndef NDEBUG
+            std::cerr << "Quantity " << i << " next discontinuity at: "
+                      << __evolving_quantities[i]->next_discontinuity();
+#endif
+
+            while(__evolving_quantities[i]->next_discontinuity() <= age) {
                 __evolving_quantities[i]->enable_next_interpolation_region();
+#ifndef NDEBUG
+                std::cerr << ", switching to next region up to t = "
+                          << __evolving_quantities[i]->next_discontinuity();
+#endif
+            }
+#ifndef NDEBUG
+            std::cerr << std::endl;
+#endif
+        }
     }
 
     double EvolvingStellarZone::next_stop_age() const
@@ -101,7 +120,7 @@ namespace Star {
     {
         double result = -Core::Inf;
         for(
-            std::vector< 
+            std::vector<
                 const StellarEvolution::EvolvingStellarQuantity*
             >::const_iterator quantity_iter = __evolving_quantities.begin();
             quantity_iter != __evolving_quantities.end();
@@ -114,7 +133,7 @@ namespace Star {
     void EvolvingStellarZone::select_interpolation_region(double age) const
     {
         for(
-            std::vector< 
+            std::vector<
                 const StellarEvolution::EvolvingStellarQuantity*
             >::const_iterator quantity_iter = __evolving_quantities.begin();
             quantity_iter != __evolving_quantities.end();
