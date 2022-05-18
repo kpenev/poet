@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Planetary Orbital Evolution due to Tides: /Users/kpenev/projects/git/poet/poet_src/Planet/CInterface.h File Reference</title>
+<title>Planetary Orbital Evolution due to Tides: /home/kpenev/projects/git/poet/poet_src/Planet/CInterface.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -119,7 +119,7 @@ $(document).ready(function(){initNavTree('Planet_2CInterface_8h.html','');});
 <div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="Planet_2CInterface_8h__dep__incl.svg" width="634" height="287"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="Planet_2CInterface_8h__dep__incl.svg" width="631" height="299"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -133,9 +133,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae277fe110a46b7fe727f7eecc5420d3d"><td class="memItemLeft" align="right" valign="top">LIB_PUBLIC void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Planet_2CInterface_8h.html#ae277fe110a46b7fe727f7eecc5420d3d">destroy_planet</a> (CPlanet *planet)</td></tr>
 <tr class="memdesc:ae277fe110a46b7fe727f7eecc5420d3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy a planet previously allocated using create_planet.  <a href="#ae277fe110a46b7fe727f7eecc5420d3d">More...</a><br /></td></tr>
 <tr class="separator:ae277fe110a46b7fe727f7eecc5420d3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7406ff38b6ee4caae702c18bc6981b1a"><td class="memItemLeft" align="right" valign="top">LIB_PUBLIC void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Planet_2CInterface_8h.html#a7406ff38b6ee4caae702c18bc6981b1a">set_planet_dissipation</a> (CPlanet *planet, unsigned num_tidal_frequency_breaks, unsigned num_spin_frequency_breaks, double *tidal_frequency_breaks, double *spin_frequency_breaks, double *tidal_frequency_powers, double *spin_frequency_powers, double reference_phase_lag)</td></tr>
-<tr class="memdesc:a7406ff38b6ee4caae702c18bc6981b1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the dissipative properties of the planet.  <a href="#a7406ff38b6ee4caae702c18bc6981b1a">More...</a><br /></td></tr>
-<tr class="separator:a7406ff38b6ee4caae702c18bc6981b1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a488068aa06389560ffce78976255bbc0"><td class="memItemLeft" align="right" valign="top">LIB_PUBLIC void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Planet_2CInterface_8h.html#a488068aa06389560ffce78976255bbc0">set_planet_dissipation</a> (CPlanet *planet, unsigned num_tidal_frequency_breaks, unsigned num_spin_frequency_breaks, double *tidal_frequency_breaks, double *spin_frequency_breaks, double *tidal_frequency_powers, double *spin_frequency_powers, double reference_phase_lag, double inertial_mode_enhancement, double inertial_mode_sharpness)</td></tr>
+<tr class="memdesc:a488068aa06389560ffce78976255bbc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the dissipative properties of the planet.  <a href="#a488068aa06389560ffce78976255bbc0">More...</a><br /></td></tr>
+<tr class="separator:a488068aa06389560ffce78976255bbc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Declare C-style functions for working with LockedPlanet instances. </p>
@@ -204,8 +204,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7406ff38b6ee4caae702c18bc6981b1a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7406ff38b6ee4caae702c18bc6981b1a">&#9670;&nbsp;</a></span>set_planet_dissipation()</h2>
+<a id="a488068aa06389560ffce78976255bbc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a488068aa06389560ffce78976255bbc0">&#9670;&nbsp;</a></span>set_planet_dissipation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -256,7 +256,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>reference_phase_lag</em>&#160;</td>
+          <td class="paramname"><em>reference_phase_lag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inertial_mode_enhancement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inertial_mode_sharpness</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -270,13 +282,15 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">planet</td><td>The star to set the dissipation for. </td></tr>
-    <tr><td class="paramname">num_tidal_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation()</a> </td></tr>
-    <tr><td class="paramname">num_spin_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation()</a> </td></tr>
-    <tr><td class="paramname">tidal_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation()</a> </td></tr>
-    <tr><td class="paramname">spin_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation()</a> </td></tr>
-    <tr><td class="paramname">tidal_frequency_powers</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation()</a> </td></tr>
-    <tr><td class="paramname">spin_frequency_powers</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation()</a> </td></tr>
-    <tr><td class="paramname">reference_phase_lag</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">num_tidal_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">num_spin_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">tidal_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">spin_frequency_breaks</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">tidal_frequency_powers</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">spin_frequency_powers</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">reference_phase_lag</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">inertial_mode_enhancement</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
+    <tr><td class="paramname">inertial_mode_sharpness</td><td>See same name argument to <a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation()</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -291,7 +305,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_e247b8950c2da2f51dd8497aec65ce0d.html">poet_src</a></li><li class="navelem"><a class="el" href="dir_4676ceff05f71a508bb4cf796d7af063.html">Planet</a></li><li class="navelem"><a class="el" href="Planet_2CInterface_8h.html">CInterface.h</a></li>
-    <li class="footer">Generated on Sat Nov 30 2019 22:01:03 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Fri Apr 23 2021 13:57:11 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

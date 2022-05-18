@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File YRECIO.cpp &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File YRECIO.cpp</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file__home_kpenev_projects_git_poet_poet_src_StellarEvolution_YRECIO.cpp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="program-listing-for-file-yrecio-cpp">
+<span id="program-listing-file-home-kpenev-projects-git-poet-poet-src-stellarevolution-yrecio-cpp"></span><h1>Program Listing for File YRECIO.cpp<a class="headerlink" href="#program-listing-for-file-yrecio-cpp" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_StellarEvolution_YRECIO.cpp.html#file-home-kpenev-projects-git-poet-poet-src-stellarevolution-yrecio-cpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">/home/kpenev/projects/git/poet/poet_src/StellarEvolution/YRECIO.cpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#define BUILDING_LIBRARY</span>
+<span class="cp">#include</span> <span class="cpf">&quot;YRECIO.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;sstream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
+
+<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">streamsize</span> <span class="n">max_line_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">;</span>
+
+<span class="n">EvolutionIterator</span><span class="o">::</span><span class="n">EvolutionIterator</span><span class="p">(</span><span class="k">const</span> <span class="n">EvolutionIterator</span> <span class="o">&amp;</span><span class="n">orig</span><span class="p">)</span> <span class="o">:</span>
+    <span class="n">mass_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">),</span> <span class="n">age_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">age_iter</span><span class="p">),</span>
+    <span class="n">radius_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">radius_iter</span><span class="p">),</span> <span class="n">luminosity_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">luminosity_iter</span><span class="p">),</span>
+    <span class="n">rad_mass_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">rad_mass_iter</span><span class="p">),</span>
+    <span class="n">core_boundary_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">core_boundary_iter</span><span class="p">),</span>
+    <span class="n">conv_inertia_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">conv_inertia_iter</span><span class="p">),</span>
+    <span class="n">rad_inertia_iter</span><span class="p">(</span><span class="n">orig</span><span class="p">.</span><span class="n">rad_inertia_iter</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="n">EvolutionIterator</span> <span class="o">&amp;</span><span class="n">EvolutionIterator</span><span class="o">::</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">EvolutionIterator</span> <span class="o">&amp;</span><span class="n">rhs</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">mass_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">;</span>
+    <span class="n">age_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">age_iter</span><span class="p">;</span>
+    <span class="n">radius_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">radius_iter</span><span class="p">;</span>
+    <span class="n">luminosity_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">luminosity_iter</span><span class="p">;</span>
+    <span class="n">rad_mass_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">rad_mass_iter</span><span class="p">;</span>
+    <span class="n">core_boundary_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">core_boundary_iter</span><span class="p">;</span>
+    <span class="n">conv_inertia_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">conv_inertia_iter</span><span class="p">;</span>
+    <span class="n">rad_inertia_iter</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">rad_inertia_iter</span><span class="p">;</span>
+    <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">EvolutionIterator</span> <span class="o">&amp;</span><span class="n">EvolutionIterator</span><span class="o">::</span><span class="k">operator</span><span class="o">++</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="o">++</span><span class="n">mass_iter</span><span class="p">;</span> <span class="o">++</span><span class="n">age_iter</span><span class="p">;</span> <span class="o">++</span><span class="n">radius_iter</span><span class="p">;</span> <span class="o">++</span><span class="n">luminosity_iter</span><span class="p">;</span>
+    <span class="o">++</span><span class="n">rad_mass_iter</span><span class="p">;</span> <span class="o">++</span><span class="n">core_boundary_iter</span><span class="p">;</span> <span class="o">++</span><span class="n">conv_inertia_iter</span><span class="p">;</span>
+    <span class="o">++</span><span class="n">rad_inertia_iter</span><span class="p">;</span>
+    <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">EvolutionIterator</span> <span class="n">EvolutionIterator</span><span class="o">::</span><span class="k">operator</span><span class="o">++</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">EvolutionIterator</span> <span class="n">result</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span> <span class="o">++</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span> <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">EvolutionIterator</span><span class="o">::</span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span> <span class="n">EvolutionIterator</span> <span class="o">&amp;</span><span class="n">rhs</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">mass_iter</span><span class="o">==</span><span class="n">rhs</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">YRECHeader</span><span class="o">::</span><span class="n">YRECHeader</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="o">&amp;</span><span class="n">track</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">filename</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">mass_word</span><span class="o">=</span><span class="s">&quot;Mtot/Msun&quot;</span><span class="p">,</span> <span class="n">age_word</span><span class="o">=</span><span class="s">&quot;Age(Gyr)&quot;</span><span class="p">,</span>
+          <span class="n">radius_word</span><span class="o">=</span><span class="s">&quot;log(R/Rsun)&quot;</span><span class="p">,</span> <span class="n">log_luminosity_word</span><span class="o">=</span><span class="s">&quot;log(L/Lsun)&quot;</span><span class="p">,</span>
+          <span class="n">env_mass_word</span><span class="o">=</span><span class="s">&quot;m_envp/M&quot;</span><span class="p">,</span> <span class="n">env_radius_word1</span><span class="o">=</span><span class="s">&quot;r_envp/M&quot;</span><span class="p">,</span>
+          <span class="n">env_radius_word2</span><span class="o">=</span><span class="s">&quot;r_envp/R&quot;</span><span class="p">,</span> <span class="n">Irad_word</span><span class="o">=</span><span class="s">&quot;I_rad&quot;</span><span class="p">,</span> <span class="n">Iconv_word</span><span class="o">=</span><span class="s">&quot;I_env&quot;</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">word</span><span class="p">[</span><span class="n">max_line_length</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+    <span class="kt">char</span> <span class="n">line_characters</span><span class="p">[</span><span class="n">max_line_length</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">track</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="o">==</span><span class="sc">&#39;#&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">track</span><span class="p">.</span><span class="n">getline</span><span class="p">(</span><span class="n">line_characters</span><span class="p">,</span> <span class="n">max_line_length</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">track</span><span class="p">.</span><span class="n">good</span><span class="p">())</span>
+            <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">IO</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;while reading header.&quot;</span><span class="p">);</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">istringstream</span> <span class="n">line</span><span class="p">(</span><span class="n">line_characters</span><span class="p">);</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">good</span><span class="p">());</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">word_index</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="o">!</span><span class="n">line</span><span class="p">.</span><span class="n">eof</span><span class="p">();</span> <span class="n">word_index</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">assert</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">good</span><span class="p">());</span>
+            <span class="n">line</span> <span class="o">&gt;&gt;</span> <span class="n">word</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">mass_word</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">error_msg</span><span class="o">=</span><span class="s">&quot;failed to read track mass: &quot;</span><span class="p">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">line</span><span class="p">.</span><span class="n">good</span><span class="p">())</span>
+                    <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">IO</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">error_msg</span> <span class="o">+</span>
+                            <span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">eof</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;end of line before =&quot;</span> <span class="o">:</span>
+                             <span class="s">&quot;read error before =&quot;</span><span class="p">));</span>
+                <span class="n">line</span> <span class="o">&gt;&gt;</span> <span class="n">word</span><span class="p">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">line</span><span class="p">.</span><span class="n">good</span><span class="p">())</span> <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">IO</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">error_msg</span> <span class="o">+</span>
+                        <span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">eof</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;end of line after =&quot;</span> <span class="o">:</span>
+                         <span class="s">&quot;read error at =&quot;</span><span class="p">));</span>
+                <span class="n">line</span> <span class="o">&gt;&gt;</span> <span class="n">track_mass</span><span class="p">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">line</span><span class="p">.</span><span class="n">good</span><span class="p">())</span> <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">IO</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">error_msg</span> <span class="o">+</span>
+                        <span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">eof</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;end of line before value&quot;</span> <span class="o">:</span>
+                        <span class="s">&quot;error parsing value&quot;</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">age_word</span><span class="p">)</span> <span class="n">age_col</span><span class="o">=</span><span class="n">word_index</span><span class="p">;</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">radius_word</span><span class="p">)</span> <span class="n">radius_col</span><span class="o">=</span><span class="n">word_index</span><span class="p">;</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">log_luminosity_word</span><span class="p">)</span> <span class="n">log_luminosity_col</span><span class="o">=</span><span class="n">word_index</span><span class="p">;</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">env_mass_word</span><span class="p">)</span>
+                <span class="n">envelope_mass_col</span><span class="o">=</span><span class="n">word_index</span><span class="p">;</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">env_radius_word1</span> <span class="o">||</span> <span class="n">word</span><span class="o">==</span><span class="n">env_radius_word2</span><span class="p">)</span>
+                <span class="n">rad_conv_boundary_col</span><span class="o">=</span><span class="n">word_index</span><span class="p">;</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">Irad_word</span><span class="p">)</span> <span class="n">rad_inertia_col</span><span class="o">=</span><span class="n">word_index</span><span class="p">;</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">word</span><span class="o">==</span><span class="n">Iconv_word</span><span class="p">)</span> <span class="n">conv_inertia_col</span><span class="o">=</span><span class="n">word_index</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">track</span><span class="p">.</span><span class="n">unget</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">YRECEvolution</span><span class="o">::</span><span class="n">read_model_file</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">filename</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Reading: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">filename</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">file</span><span class="p">(</span><span class="n">filename</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+    <span class="n">YRECHeader</span> <span class="nf">header</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">filename</span><span class="p">);</span>
+    <span class="n">mass_list</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">get_mass</span><span class="p">());</span>
+    <span class="kt">int</span> <span class="n">required_columns</span><span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">get_age_col</span><span class="p">(),</span>
+            <span class="n">header</span><span class="p">.</span><span class="n">get_radius_col</span><span class="p">());</span>
+    <span class="n">required_columns</span><span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">required_columns</span><span class="p">,</span>
+            <span class="n">header</span><span class="p">.</span><span class="n">get_log_luminosity_col</span><span class="p">());</span>
+    <span class="n">required_columns</span><span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">required_columns</span><span class="p">,</span>
+            <span class="n">header</span><span class="p">.</span><span class="n">get_envelope_mass_col</span><span class="p">());</span>
+    <span class="n">required_columns</span><span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">required_columns</span><span class="p">,</span>
+            <span class="n">header</span><span class="p">.</span><span class="n">get_core_boundary_col</span><span class="p">());</span>
+    <span class="n">required_columns</span><span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">required_columns</span><span class="p">,</span>
+            <span class="n">header</span><span class="p">.</span><span class="n">get_rad_inertia_col</span><span class="p">());</span>
+    <span class="n">required_columns</span><span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">required_columns</span><span class="p">,</span>
+            <span class="n">header</span><span class="p">.</span><span class="n">get_conv_inertia_col</span><span class="p">());</span>
+    <span class="kt">char</span> <span class="n">line_characters</span><span class="p">[</span><span class="n">max_line_length</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">track_ages</span><span class="p">,</span> <span class="n">track_radii</span><span class="p">,</span> <span class="n">track_luminosities</span><span class="p">,</span>
+        <span class="n">track_rad_masses</span><span class="p">,</span> <span class="n">track_core_boundaries</span><span class="p">,</span> <span class="n">track_conv_inertias</span><span class="p">,</span>
+        <span class="n">track_rad_inertias</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">inertia_norm</span><span class="o">=</span><span class="n">AstroConst</span><span class="o">::</span><span class="n">solar_mass</span><span class="o">*</span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span>
+            <span class="n">AstroConst</span><span class="o">::</span><span class="n">solar_radius</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mf">1e7</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">line_number</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="o">!</span><span class="n">file</span><span class="p">.</span><span class="n">eof</span><span class="p">();</span> <span class="n">line_number</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Reading line &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">line_number</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\r</span><span class="s">&quot;</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">.</span><span class="n">flush</span><span class="p">();</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span> <span class="n">error_message</span><span class="p">;</span>
+        <span class="n">error_message</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;while reading data line &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">line_number</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">file</span><span class="p">.</span><span class="n">good</span><span class="p">())</span> <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">IO</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">error_message</span><span class="p">.</span><span class="n">str</span><span class="p">());</span>
+        <span class="n">file</span><span class="p">.</span><span class="n">getline</span><span class="p">(</span><span class="n">line_characters</span><span class="p">,</span> <span class="n">max_line_length</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">gcount</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">istringstream</span> <span class="n">line</span><span class="p">(</span><span class="n">line_characters</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span><span class="p">(;</span> <span class="o">!</span><span class="n">line</span><span class="p">.</span><span class="n">eof</span><span class="p">();</span> <span class="n">column</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">double</span> <span class="n">value</span><span class="p">;</span>
+            <span class="n">line</span> <span class="o">&gt;&gt;</span> <span class="n">value</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">column</span><span class="o">==</span><span class="n">header</span><span class="p">.</span><span class="n">get_age_col</span><span class="p">())</span> <span class="n">track_ages</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">column</span><span class="o">==</span><span class="n">header</span><span class="p">.</span><span class="n">get_radius_col</span><span class="p">())</span>
+                <span class="n">track_radii</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">value</span><span class="p">));</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">column</span><span class="o">==</span><span class="n">header</span><span class="p">.</span><span class="n">get_log_luminosity_col</span><span class="p">())</span>
+                <span class="n">track_luminosities</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">value</span><span class="p">));</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">column</span><span class="o">==</span><span class="n">header</span><span class="p">.</span><span class="n">get_envelope_mass_col</span><span class="p">())</span>
+                <span class="n">track_rad_masses</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="o">*</span><span class="n">header</span><span class="p">.</span><span class="n">get_mass</span><span class="p">());</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">column</span><span class="o">==</span><span class="n">header</span><span class="p">.</span><span class="n">get_core_boundary_col</span><span class="p">())</span>
+                <span class="n">track_core_boundaries</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="o">*</span><span class="n">track_radii</span><span class="p">.</span><span class="n">back</span><span class="p">());</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">column</span><span class="o">==</span><span class="n">header</span><span class="p">.</span><span class="n">get_rad_inertia_col</span><span class="p">())</span>
+                <span class="n">track_rad_inertias</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="o">/</span><span class="n">inertia_norm</span><span class="p">);</span>
+            <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">column</span><span class="o">==</span><span class="n">header</span><span class="p">.</span><span class="n">get_conv_inertia_col</span><span class="p">())</span>
+                <span class="n">track_conv_inertias</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="o">/</span><span class="n">inertia_norm</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">column</span><span class="o">&lt;=</span><span class="n">required_columns</span><span class="p">)</span>
+            <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">IO</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">error_message</span><span class="p">.</span><span class="n">str</span><span class="p">());</span>
+    <span class="p">}</span>
+    <span class="n">ages</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">list_to_valarray</span><span class="p">(</span><span class="n">track_ages</span><span class="p">));</span>
+    <span class="n">radii</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">list_to_valarray</span><span class="p">(</span><span class="n">track_radii</span><span class="p">));</span>
+    <span class="n">luminosities</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">list_to_valarray</span><span class="p">(</span><span class="n">track_luminosities</span><span class="p">));</span>
+    <span class="n">rad_masses</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">list_to_valarray</span><span class="p">(</span><span class="n">track_rad_masses</span><span class="p">));</span>
+    <span class="n">core_boundaries</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">list_to_valarray</span><span class="p">(</span><span class="n">track_core_boundaries</span><span class="p">));</span>
+    <span class="n">rad_inertias</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">list_to_valarray</span><span class="p">(</span><span class="n">track_rad_inertias</span><span class="p">));</span>
+    <span class="n">conv_inertias</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">list_to_valarray</span><span class="p">(</span><span class="n">track_conv_inertias</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="n">EvolutionIterator</span> <span class="n">YRECEvolution</span><span class="o">::</span><span class="n">begin</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">EvolutionIterator</span> <span class="n">result</span><span class="p">;</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">mass_iter</span><span class="o">=</span><span class="n">mass_list</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">age_iter</span><span class="o">=</span><span class="n">ages</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">radius_iter</span><span class="o">=</span><span class="n">radii</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">luminosity_iter</span><span class="o">=</span><span class="n">luminosities</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">rad_mass_iter</span><span class="o">=</span><span class="n">rad_masses</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">core_boundary_iter</span><span class="o">=</span><span class="n">core_boundaries</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">conv_inertia_iter</span><span class="o">=</span><span class="n">conv_inertias</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">rad_inertia_iter</span><span class="o">=</span><span class="n">rad_inertias</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">EvolutionIterator</span> <span class="n">YRECEvolution</span><span class="o">::</span><span class="n">end</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">EvolutionIterator</span> <span class="n">result</span><span class="p">;</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">mass_iter</span><span class="o">=</span><span class="n">mass_list</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">age_iter</span><span class="o">=</span><span class="n">ages</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">radius_iter</span><span class="o">=</span><span class="n">radii</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">luminosity_iter</span><span class="o">=</span><span class="n">luminosities</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">rad_mass_iter</span><span class="o">=</span><span class="n">rad_masses</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">core_boundary_iter</span><span class="o">=</span><span class="n">core_boundaries</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">conv_inertia_iter</span><span class="o">=</span><span class="n">conv_inertias</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">result</span><span class="p">.</span><span class="n">rad_inertia_iter</span><span class="o">=</span><span class="n">rad_inertias</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">YRECEvolution</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">EvolutionIterator</span> <span class="o">&amp;</span><span class="n">dest</span><span class="p">,</span> <span class="n">EvolutionIterator</span> <span class="o">&amp;</span><span class="n">source</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">mass_list</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">source</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">);</span>
+    <span class="n">ages</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">age_iter</span><span class="p">,</span> <span class="n">ages</span><span class="p">,</span> <span class="n">source</span><span class="p">.</span><span class="n">age_iter</span><span class="p">);</span>
+    <span class="n">radii</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">radius_iter</span><span class="p">,</span> <span class="n">radii</span><span class="p">,</span> <span class="n">source</span><span class="p">.</span><span class="n">radius_iter</span><span class="p">);</span>
+    <span class="n">luminosities</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">luminosity_iter</span><span class="p">,</span> <span class="n">luminosities</span><span class="p">,</span>
+            <span class="n">source</span><span class="p">.</span><span class="n">luminosity_iter</span><span class="p">);</span>
+    <span class="n">rad_masses</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">rad_mass_iter</span><span class="p">,</span> <span class="n">rad_masses</span><span class="p">,</span> <span class="n">source</span><span class="p">.</span><span class="n">rad_mass_iter</span><span class="p">);</span>
+    <span class="n">core_boundaries</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">core_boundary_iter</span><span class="p">,</span> <span class="n">core_boundaries</span><span class="p">,</span>
+            <span class="n">source</span><span class="p">.</span><span class="n">core_boundary_iter</span><span class="p">);</span>
+    <span class="n">conv_inertias</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">conv_inertia_iter</span><span class="p">,</span> <span class="n">conv_inertias</span><span class="p">,</span>
+            <span class="n">source</span><span class="p">.</span><span class="n">conv_inertia_iter</span><span class="p">);</span>
+    <span class="n">rad_inertias</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">rad_inertia_iter</span><span class="p">,</span> <span class="n">rad_inertias</span><span class="p">,</span>
+            <span class="n">source</span><span class="p">.</span><span class="n">rad_inertia_iter</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">YRECEvolution</span><span class="o">::</span><span class="n">sort_masses</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">EvolutionIterator</span> <span class="n">iter</span><span class="o">=</span><span class="n">begin</span><span class="p">(),</span> <span class="n">stop_iter</span><span class="o">=</span><span class="n">end</span><span class="p">();</span>
+    <span class="kt">double</span> <span class="n">largest_sorted</span><span class="o">=*</span><span class="n">iter</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">iter</span><span class="o">!=</span><span class="n">stop_iter</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">while</span><span class="p">(</span><span class="o">*</span><span class="n">iter</span><span class="p">.</span><span class="n">mass_iter</span><span class="o">&gt;=</span><span class="n">largest_sorted</span> <span class="o">&amp;&amp;</span> <span class="n">iter</span><span class="o">!=</span><span class="n">stop_iter</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">largest_sorted</span><span class="o">=*</span><span class="n">iter</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">;</span>
+            <span class="o">++</span><span class="n">iter</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">iter</span><span class="o">==</span><span class="n">stop_iter</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+        <span class="n">EvolutionIterator</span> <span class="n">dest</span><span class="o">=</span><span class="n">begin</span><span class="p">();</span>
+        <span class="k">while</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">dest</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">)</span><span class="o">&lt;=*</span><span class="n">iter</span><span class="p">.</span><span class="n">mass_iter</span><span class="p">)</span> <span class="p">{</span><span class="o">++</span><span class="n">dest</span><span class="p">;}</span>
+        <span class="n">EvolutionIterator</span> <span class="n">source</span><span class="o">=</span><span class="n">iter</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">move</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">source</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">YRECEvolution</span><span class="o">::</span><span class="n">YRECEvolution</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">model_directory</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="n">smooth_radius</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="n">smooth_conv_inertia</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="n">smooth_rad_inertia</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="n">smooth_rad_mass</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="n">smooth_core_env_boundary</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="n">radius_nodes</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="n">conv_inertia_nodes</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="n">rad_inertia_nodes</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="n">rad_mass_nodes</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="n">core_env_boundary_nodes</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">DIR</span> <span class="o">*</span><span class="n">dirstream</span><span class="o">=</span><span class="n">opendir</span><span class="p">(</span><span class="n">model_directory</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">join</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">model_directory</span><span class="p">[</span><span class="n">model_directory</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="n">join</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">;</span>
+    <span class="k">else</span> <span class="n">join</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">dirstream</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span> <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">PathNotFound</span><span class="p">(</span>
+        <span class="s">&quot;in YRECEvolution constructor.&quot;</span><span class="p">,</span> <span class="n">model_directory</span><span class="p">);</span>
+    <span class="k">struct</span> <span class="n">dirent</span> <span class="o">*</span><span class="n">entry</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">((</span><span class="n">entry</span><span class="o">=</span><span class="n">readdir</span><span class="p">(</span><span class="n">dirstream</span><span class="p">)))</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">fname</span><span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">d_name</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">fname</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="sc">&#39;.&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">fname</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="n">fname</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span><span class="o">==</span><span class="s">&quot;.track&quot;</span><span class="p">)</span>
+            <span class="n">read_model_file</span><span class="p">(</span><span class="n">model_directory</span><span class="o">+</span><span class="n">join</span><span class="o">+</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">d_name</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">closedir</span><span class="p">(</span><span class="n">dirstream</span><span class="p">))</span> <span class="k">throw</span> <span class="n">Error</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span>
+        <span class="s">&quot;Failed to close directory stream tied to &quot;</span><span class="o">+</span><span class="n">model_directory</span><span class="o">+</span>
+        <span class="s">&quot; in YRECEvolution constructor.&quot;</span><span class="p">);</span>
+    <span class="n">sort_masses</span><span class="p">();</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">masses</span> <span class="o">=</span> <span class="n">list_to_valarray</span><span class="p">(</span><span class="n">mass_list</span><span class="p">);</span>
+    <span class="n">interpolate_from</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span>
+                     <span class="n">ages</span><span class="p">,</span>
+                     <span class="n">radii</span><span class="p">,</span>
+                     <span class="n">conv_inertias</span><span class="p">,</span>
+                     <span class="n">rad_inertias</span><span class="p">,</span>
+                     <span class="n">rad_masses</span><span class="p">,</span>
+                     <span class="n">core_boundaries</span><span class="p">,</span>
+                     <span class="n">smooth_radius</span><span class="p">,</span>
+                     <span class="n">smooth_conv_inertia</span><span class="p">,</span>
+                     <span class="n">smooth_rad_inertia</span><span class="p">,</span>
+                     <span class="n">smooth_rad_mass</span><span class="p">,</span>
+                     <span class="n">smooth_core_env_boundary</span><span class="p">,</span>
+                     <span class="n">radius_nodes</span><span class="p">,</span>
+                     <span class="n">conv_inertia_nodes</span><span class="p">,</span>
+                     <span class="n">rad_inertia_nodes</span><span class="p">,</span>
+                     <span class="n">rad_mass_nodes</span><span class="p">,</span>
+                     <span class="n">core_env_boundary_nodes</span><span class="p">,</span>
+                     <span class="n">luminosities</span><span class="p">,</span>
+                     <span class="n">NaN</span><span class="p">,</span>
+                     <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

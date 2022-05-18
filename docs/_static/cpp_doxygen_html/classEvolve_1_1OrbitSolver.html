@@ -123,9 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a05cf68cafbe93b11062d990189aea5a0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1OrbitSolver.html#a05cf68cafbe93b11062d990189aea5a0">OrbitSolver</a> (double max_age, double required_precision, bool print_progress=false)</td></tr>
 <tr class="memdesc:a05cf68cafbe93b11062d990189aea5a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare to solve for the orbital evolution.  <a href="#a05cf68cafbe93b11062d990189aea5a0">More...</a><br /></td></tr>
 <tr class="separator:a05cf68cafbe93b11062d990189aea5a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3df70ce36047bf818869e12e71ecba02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1OrbitSolver.html#a3df70ce36047bf818869e12e71ecba02">operator()</a> (<a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system, double max_step=Core::Inf, const std::list&lt; double &gt; &amp;required_ages=std::list&lt; double &gt;())</td></tr>
-<tr class="memdesc:a3df70ce36047bf818869e12e71ecba02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actually solves the given differential equation with the given boundary conditions.  <a href="#a3df70ce36047bf818869e12e71ecba02">More...</a><br /></td></tr>
-<tr class="separator:a3df70ce36047bf818869e12e71ecba02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c0763cc8dbff6d73b0af1d03050643"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1OrbitSolver.html#a84c0763cc8dbff6d73b0af1d03050643">operator()</a> (<a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system, double max_step=Core::Inf, const std::list&lt; double &gt; &amp;required_ages=std::list&lt; double &gt;(), double max_runtime=0)</td></tr>
+<tr class="memdesc:a84c0763cc8dbff6d73b0af1d03050643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actually solves the given differential equation with the given boundary conditions.  <a href="#a84c0763cc8dbff6d73b0af1d03050643">More...</a><br /></td></tr>
+<tr class="separator:a84c0763cc8dbff6d73b0af1d03050643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07c7f01edf90256714dc1b98a29fe8c6"><td class="memItemLeft" align="right" valign="top">const std::list&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1OrbitSolver.html#a07c7f01edf90256714dc1b98a29fe8c6">evolution_ages</a> () const</td></tr>
 <tr class="memdesc:a07c7f01edf90256714dc1b98a29fe8c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The ages at which evolution has been tabulated so far.  <a href="#a07c7f01edf90256714dc1b98a29fe8c6">More...</a><br /></td></tr>
 <tr class="separator:a07c7f01edf90256714dc1b98a29fe8c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -266,11 +266,17 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a70a1ac135d4a7f4d8bcf486f82b6fa9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1OrbitSolver.html#a70a1ac135d4a7f4d8bcf486f82b6fa9d">__print_progress</a></td></tr>
 <tr class="memdesc:a70a1ac135d4a7f4d8bcf486f82b6fa9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">See print_progress argument of constructor.  <a href="#a70a1ac135d4a7f4d8bcf486f82b6fa9d">More...</a><br /></td></tr>
 <tr class="separator:a70a1ac135d4a7f4d8bcf486f82b6fa9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5be9865eb6aed481f1ae195fa85a7763"><td class="memItemLeft" align="right" valign="top">time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1OrbitSolver.html#a5be9865eb6aed481f1ae195fa85a7763">__evolution_start_time</a></td></tr>
+<tr class="memdesc:a5be9865eb6aed481f1ae195fa85a7763"><td class="mdescLeft">&#160;</td><td class="mdescRight">When did the currently running evolution start.  <a href="#a5be9865eb6aed481f1ae195fa85a7763">More...</a><br /></td></tr>
+<tr class="separator:a5be9865eb6aed481f1ae195fa85a7763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a669dad40bb7d422d5c369a5482af134d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1OrbitSolver.html#a669dad40bb7d422d5c369a5482af134d">__runtime_limit</a></td></tr>
+<tr class="memdesc:a669dad40bb7d422d5c369a5482af134d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max number of seconds current evolution is allowed to run.  <a href="#a669dad40bb7d422d5c369a5482af134d">More...</a><br /></td></tr>
+<tr class="separator:a669dad40bb7d422d5c369a5482af134d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Solves the system of ODEs describing the evolution of a single planet around a single star. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00114">114</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00115">115</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a05cf68cafbe93b11062d990189aea5a0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a05cf68cafbe93b11062d990189aea5a0">&#9670;&nbsp;</a></span>OrbitSolver()</h2>
@@ -314,7 +320,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01375">1375</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01387">1387</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -343,7 +349,7 @@ Private Attributes</h2></td></tr>
 
 <p>Clean up. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00490">490</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00502">502</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -506,7 +512,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01270">1270</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01282">1282</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -754,7 +760,7 @@ Private Attributes</h2></td></tr>
 
 <p>The ages at which evolution has been tabulated so far. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00482">482</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00494">494</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -934,7 +940,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01173">1173</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01185">1185</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -1097,12 +1103,12 @@ Private Attributes</h2></td></tr>
 
 <p>The tabulated evolution modes so far. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00486">486</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00498">498</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
-<a id="a3df70ce36047bf818869e12e71ecba02"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3df70ce36047bf818869e12e71ecba02">&#9670;&nbsp;</a></span>operator()()</h2>
+<a id="a84c0763cc8dbff6d73b0af1d03050643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84c0763cc8dbff6d73b0af1d03050643">&#9670;&nbsp;</a></span>operator()()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1123,7 +1129,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::list&lt; double &gt; &amp;&#160;</td>
-          <td class="paramname"><em>required_ages</em> = <code>std::list&lt;double&gt;()</code>&#160;</td>
+          <td class="paramname"><em>required_ages</em> = <code>std::list&lt;double&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>max_runtime</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1139,11 +1151,12 @@ Private Attributes</h2></td></tr>
     <tr><td class="paramname">system</td><td>The stellar system to calculate the evolution for </td></tr>
     <tr><td class="paramname">max_step</td><td>The maximum size of the time steps allowed (useful if finer sampling of the output than default is necessary). </td></tr>
     <tr><td class="paramname">required_ages</td><td>A sorted list of ages to include in the tabulated evolution. </td></tr>
+    <tr><td class="paramname">max_runtime</td><td>The maximum amount of wall-clock time in seconds to allow for calculating the evolution. If it runs out, whatever portion is calculated is preserved. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01389">1389</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01401">1401</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -1222,7 +1235,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01226">1226</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01238">1238</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -1333,7 +1346,7 @@ Private Attributes</h2></td></tr>
 
 <p>Clears any previously calculated evolution. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01368">1368</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01380">1380</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -1434,7 +1447,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01191">1191</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8cpp_source.html#l01203">1203</a> of file <a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -1544,7 +1557,7 @@ Private Attributes</h2></td></tr>
 
 <p>The ages of steps which were discarded becauset they are past a zero or an extremum of a stopping condition . </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00145">145</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00146">146</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1570,7 +1583,7 @@ Private Attributes</h2></td></tr>
 
 <p>If the fractional error due to truncating the eccentricity series falls below this value times the maximum acceptable error, the eccentricity order is downgraded. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00118">118</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00119">119</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1596,7 +1609,33 @@ Private Attributes</h2></td></tr>
 
 <p>The last age for which evolution is required. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00118">118</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00119">119</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a5be9865eb6aed481f1ae195fa85a7763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5be9865eb6aed481f1ae195fa85a7763">&#9670;&nbsp;</a></span>__evolution_start_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">time_t Evolve::OrbitSolver::__evolution_start_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>When did the currently running evolution start. </p>
+
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00181">181</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1622,7 +1661,7 @@ Private Attributes</h2></td></tr>
 
 <p>The last age at which the eccentricity order was increased. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00118">118</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00119">119</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1648,7 +1687,7 @@ Private Attributes</h2></td></tr>
 
 <p>Past orbital derivatives. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00152">152</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00153">153</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1674,7 +1713,7 @@ Private Attributes</h2></td></tr>
 
 <p>Past orbits. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00152">152</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00153">153</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1700,7 +1739,7 @@ Private Attributes</h2></td></tr>
 
 <p>The precision required of the solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00118">118</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00119">119</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1726,7 +1765,33 @@ Private Attributes</h2></td></tr>
 
 <p>See print_progress argument of constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00177">177</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00178">178</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a669dad40bb7d422d5c369a5482af134d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a669dad40bb7d422d5c369a5482af134d">&#9670;&nbsp;</a></span>__runtime_limit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Evolve::OrbitSolver::__runtime_limit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Max number of seconds current evolution is allowed to run. </p>
+
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00184">184</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1752,7 +1817,7 @@ Private Attributes</h2></td></tr>
 
 <p>The age after which to look for extrema for each condition. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00142">142</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00143">143</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1778,7 +1843,7 @@ Private Attributes</h2></td></tr>
 
 <p>The number of points at the start of the history to skip when lookng for a zero crossing for each condition. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00139">139</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00140">140</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1805,7 +1870,7 @@ Private Attributes</h2></td></tr>
 <p>Discarded values of the stop conditions. </p>
 <p>Useful for interpolating to zeroes and extrema. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00152">152</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00153">153</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1831,7 +1896,7 @@ Private Attributes</h2></td></tr>
 
 <p>Past values of the stop conditions. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00152">152</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00153">153</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1858,7 +1923,7 @@ Private Attributes</h2></td></tr>
 <p>Discarded derivatives of the stop conditions. </p>
 <p>Useful for interpolating to zeroes and extrema. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00152">152</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00153">153</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1884,7 +1949,7 @@ Private Attributes</h2></td></tr>
 
 <p>Past values of the stop condition derivatives. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00152">152</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00153">153</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1910,7 +1975,7 @@ Private Attributes</h2></td></tr>
 
 <p>The ages at which the stop condition history is kept. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00145">145</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00146">146</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1935,7 +2000,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The full information about the next age where each stopping condition indicates evolution should be stopped and why. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00174">174</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00175">175</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1961,7 +2026,7 @@ Private Attributes</h2></td></tr>
 
 <p>The current set of stopping conditions. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00170">170</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00171">171</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1987,7 +2052,7 @@ Private Attributes</h2></td></tr>
 
 <p>The ages at which solution is tabulated. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00132">132</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00133">133</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
@@ -2013,13 +2078,13 @@ Private Attributes</h2></td></tr>
 
 <p>The evolution mode corresponding to the matching tabulated age. </p>
 
-<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00135">135</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="OrbitSolver_8h_source.html#l00136">136</a> of file <a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a></li>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="OrbitSolver_8h_source.html">OrbitSolver.h</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="OrbitSolver_8cpp_source.html">OrbitSolver.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -2027,7 +2092,7 @@ Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceEvolve.html">Evolve</a></li><li class="navelem"><a class="el" href="classEvolve_1_1OrbitSolver.html">OrbitSolver</a></li>
-    <li class="footer">Generated on Sat Nov 30 2019 22:01:05 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Fri Apr 23 2021 13:57:11 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

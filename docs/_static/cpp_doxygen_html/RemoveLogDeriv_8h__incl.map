@@ -1,9 +1,9 @@
-<map id="/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/RemoveLogDeriv.h" name="/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/RemoveLogDeriv.h">
-<area shape="rect" id="node2" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="5,433,226,477"/>
-<area shape="rect" id="node3" href="$LogDerivatives_8h.html" title="Declares a class for differentiating functions of log(arg) w.r.t. arg. " alt="" coords="867,113,1060,141"/>
-<area shape="rect" id="node4" href="$Functions_8h.html" title="A hierarchy of classes representing functions. " alt="" coords="912,189,1016,217"/>
-<area shape="rect" id="node18" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="1765,357,1834,385"/>
-<area shape="rect" id="node5" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="776,273,876,301"/>
-<area shape="rect" id="node21" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="1447,357,1646,385"/>
-<area shape="rect" id="node22" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="1859,357,1986,385"/>
+<map id="/home/kpenev/projects/git/poet/poet_src/StellarEvolution/RemoveLogDeriv.h" name="/home/kpenev/projects/git/poet/poet_src/StellarEvolution/RemoveLogDeriv.h">
+<area shape="rect" id="node2" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="5,444,225,491"/>
+<area shape="rect" id="node3" href="$LogDerivatives_8h.html" title="Declares a class for differentiating functions of log(arg) w.r.t. arg. " alt="" coords="877,117,1071,147"/>
+<area shape="rect" id="node4" href="$Functions_8h.html" title="A hierarchy of classes representing functions. " alt="" coords="921,195,1027,224"/>
+<area shape="rect" id="node18" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="1784,367,1855,396"/>
+<area shape="rect" id="node5" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="785,281,885,310"/>
+<area shape="rect" id="node21" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="1466,367,1666,396"/>
+<area shape="rect" id="node22" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="1879,367,2008,396"/>
 </map>

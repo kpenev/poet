@@ -1,7 +1,0 @@
-digraph "Evolve::StopHistoryInterval"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{Evolve::StopHistoryInterval\n|- __num_points\l- __point_i\l- __first_age\l- __last_age\l- __history_age_end\l- __discarded_age_begin\l- __age_i\l- __first_stop_cond\l- __last_stop_cond\l- __stop_cond_history_end\land 7 more...\l|+ StopHistoryInterval()\l+ StopHistoryInterval()\l+ reset()\l+ operator++()\l+ operator++()\l+ operator--()\l+ operator--()\l+ operator\<\<()\l+ operator\>\>()\l+ operator=()\land 16 more...\l- advance_iterator_set()\l- retreat_iterator_set()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

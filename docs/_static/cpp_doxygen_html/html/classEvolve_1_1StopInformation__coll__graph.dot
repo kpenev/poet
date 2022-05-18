@@ -1,7 +1,0 @@
-digraph "Evolve::StopInformation"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{Evolve::StopInformation\n|- __stop_age\l- __stop_condition_precision\l- __stop_reason\l- __is_crossing\l- __crossed_zero\l- __stop_condition_index\l- __deriv_sign_at_crossing\l|+ StopInformation()\l+ StopInformation()\l+ stop_age()\l+ stop_age()\l+ stop_condition_precision()\l+ stop_condition_precision()\l+ stop_reason()\l+ stop_reason()\l+ is_crossing()\l+ is_crossing()\land 7 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

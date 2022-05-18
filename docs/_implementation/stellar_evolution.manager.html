@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="stellar_evolution.manager_data_model module" href="stellar_evolution.manager_data_model.html" />
     <link rel="prev" title="stellar_evolution.managed_interpolator module" href="stellar_evolution.managed_interpolator.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -181,23 +176,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="module-stellar_evolution.manager">
@@ -206,188 +196,207 @@
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
 <div class="graphviz"><img src="../_images/inheritance-294467e5cbcd7755b6d51098c03b20d73914fedd.png" alt="Inheritance diagram of DataModelBase, Decimal, InterpolationParameters, ManagedInterpolator, ModelSuite, Quantity, SerializedInterpolator, StellarEvolutionManager, Structure, Track, VarChangingInterpolator" usemap="#inheritance3025d5b943" class="inheritance graphviz" /></div>
 <map id="inheritance3025d5b943" name="inheritance3025d5b943">
-<area shape="rect" id="node1" href="basic_utils.html#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="499,5,640,29"/>
-<area shape="rect" id="node8" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.InterpolationParameters" target="_top" title="The nodes and smoothing arguments for a given interpolator/quantity." alt="" coords="5,77,402,101"/>
-<area shape="rect" id="node9" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.ModelSuite" target="_top" title="The various stellar evolution suites (e.g. MESA, YREC, ...)." alt="" coords="426,77,747,101"/>
-<area shape="rect" id="node10" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.Quantity" target="_top" title="The set of quantities tracked by stellar evolution." alt="" coords="772,77,1076,101"/>
-<area shape="rect" id="node11" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.SerializedInterpolator" target="_top" title="The current set of serialized stellar evolution interpolators." alt="" coords="1100,77,1481,101"/>
-<area shape="rect" id="node12" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.Track" target="_top" title="The available stellar evolution tracks." alt="" coords="1505,77,1793,101"/>
-<area shape="rect" id="node4" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="1817,77,2191,101"/>
-<area shape="rect" id="node6" href="stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator" target="_top" title="Add properties describing the configuration of an interpolator." alt="" coords="1815,149,2192,173"/>
-<area shape="rect" id="node5" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="1841,5,2166,29"/>
-<area shape="rect" id="node7" href="#stellar_evolution.manager.StellarEvolutionManager" target="_top" title="Class for managing a collection of stellar evolution inteprolations." alt="" coords="2191,5,2513,29"/>
+<area shape="rect" id="node1" href="basic_utils.html#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="550,5,705,31"/>
+<area shape="rect" id="node8" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.InterpolationParameters" target="_top" title="The nodes and smoothing arguments for a given interpolator/quantity." alt="" coords="5,79,444,104"/>
+<area shape="rect" id="node9" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.ModelSuite" target="_top" title="The various stellar evolution suites (e.g. MESA, YREC, ...)." alt="" coords="468,79,821,104"/>
+<area shape="rect" id="node10" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.Quantity" target="_top" title="The set of quantities tracked by stellar evolution." alt="" coords="845,79,1183,104"/>
+<area shape="rect" id="node11" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.SerializedInterpolator" target="_top" title="The current set of serialized stellar evolution interpolators." alt="" coords="1207,79,1629,104"/>
+<area shape="rect" id="node12" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.Track" target="_top" title="The available stellar evolution tracks." alt="" coords="1653,79,1967,104"/>
+<area shape="rect" id="node4" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="1991,79,2402,104"/>
+<area shape="rect" id="node6" href="stellar_evolution.managed_interpolator.html#stellar_evolution.managed_interpolator.ManagedInterpolator" target="_top" title="Add properties describing the configuration of an interpolator." alt="" coords="1988,152,2405,177"/>
+<area shape="rect" id="node5" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="2017,5,2376,31"/>
+<area shape="rect" id="node7" href="#stellar_evolution.manager.StellarEvolutionManager" target="_top" title="Class for managing a collection of stellar evolution inteprolations." alt="" coords="2401,5,2755,31"/>
 </map><p>Define class for managing many stellar evolution interpolations.</p>
 <dl class="class">
 <dt id="stellar_evolution.manager.StellarEvolutionManager">
-<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.manager.</code><code class="sig-name descname">StellarEvolutionManager</code><span class="sig-paren">(</span><em class="sig-param">serialization_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="descclassname">stellar_evolution.manager.</code><code class="descname">StellarEvolutionManager</code><span class="sig-paren">(</span><em>serialization_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <div class="graphviz"><img src="../_images/inheritance-b4a435120c5233bccb0ec461e1ec25601fe6154e.png" alt="Inheritance diagram of stellar_evolution.manager.StellarEvolutionManager" usemap="#inheritance3b1c0316eb" class="inheritance graphviz" /></div>
 <map id="inheritance3b1c0316eb" name="inheritance3b1c0316eb">
-<area shape="rect" id="node1" href="#stellar_evolution.manager.StellarEvolutionManager" target="_top" title="Class for managing a collection of stellar evolution inteprolations." alt="" coords="5,5,328,29"/>
+<area shape="rect" id="node1" href="#stellar_evolution.manager.StellarEvolutionManager" target="_top" title="Class for managing a collection of stellar evolution inteprolations." alt="" coords="5,5,360,31"/>
 </map><p>Class for managing a collection of stellar evolution inteprolations.</p>
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">serialization_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>serialization_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a manager storing serialized interpolators in the given path.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>serialization_path</strong> – The path where to store
-serialized interpolators.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>serialization_path</strong> – The path where to store
+serialized interpolators.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._add_track">
-<code class="sig-name descname">_add_track</code><span class="sig-paren">(</span><em class="sig-param">track_fname</em>, <em class="sig-param">mass</em>, <em class="sig-param">feh</em>, <em class="sig-param">model_suite</em>, <em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._add_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._add_track" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_add_track</code><span class="sig-paren">(</span><em>track_fname</em>, <em>mass</em>, <em>feh</em>, <em>model_suite</em>, <em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._add_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._add_track" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a track to the database.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._create_new_interpolator">
-<code class="sig-name descname">_create_new_interpolator</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">track_grid</em>, <em class="sig-param">nodes</em>, <em class="sig-param">smoothing</em>, <em class="sig-param">db_session</em>, <em class="sig-param">vs_log_age</em>, <em class="sig-param">log_quantity</em>, <em class="sig-param">num_threads</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._create_new_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._create_new_interpolator" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_create_new_interpolator</code><span class="sig-paren">(</span><em>*</em>, <em>track_grid</em>, <em>nodes</em>, <em>smoothing</em>, <em>db_session</em>, <em>vs_log_age</em>, <em>log_quantity</em>, <em>num_threads</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._create_new_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._create_new_interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate the specified interpolation and add it to the archive.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>track_grid</strong> – See result of _track_grid_from_files()</p></li>
-<li><p><strong>nodes</strong> – see get_interpolator().</p></li>
-<li><p><strong>smoothing</strong> – see get_interpolator().</p></li>
-<li><p><strong>vs_log_age</strong> – see get_interpolator().</p></li>
-<li><p><strong>log_quantity</strong> – see get_interpolator().</p></li>
-<li><p><strong>num_threads</strong> – The number of simultaneous threads to use when
-constructing the interpolation.</p></li>
-<li><p><strong>db_session</strong> – The database query session to use.</p></li>
-<li><p><strong>name</strong> – The name to assign to the new interpolator. If None, the
-UUID used to form the filename is used.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>track_grid</strong> – See result of _track_grid_from_files()</li>
+<li><strong>nodes</strong> – see get_interpolator().</li>
+<li><strong>smoothing</strong> – see get_interpolator().</li>
+<li><strong>vs_log_age</strong> – see get_interpolator().</li>
+<li><strong>log_quantity</strong> – see get_interpolator().</li>
+<li><strong>num_threads</strong> – The number of simultaneous threads to use when
+constructing the interpolation.</li>
+<li><strong>db_session</strong> – The database query session to use.</li>
+<li><strong>name</strong> – The name to assign to the new interpolator. If None, the
+UUID used to form the filename is used.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Created from scratch based on the given arguments.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" title="stellar_evolution.change_variables.VarChangingInterpolator">VarChangingInterpolator</a></p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Created from scratch based on the given arguments.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" title="stellar_evolution.change_variables.VarChangingInterpolator">VarChangingInterpolator</a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._define_evolution_quantities">
-<em class="property">static </em><code class="sig-name descname">_define_evolution_quantities</code><span class="sig-paren">(</span><em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._define_evolution_quantities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._define_evolution_quantities" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">_define_evolution_quantities</code><span class="sig-paren">(</span><em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._define_evolution_quantities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._define_evolution_quantities" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the quantities tracked by VarChangingInterpolator instances.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>db_session</strong> – The currently active database session.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>db_session</strong> – The currently active database session.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._find_existing_interpolator">
-<code class="sig-name descname">_find_existing_interpolator</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">track_grid</em>, <em class="sig-param">nodes</em>, <em class="sig-param">smoothing</em>, <em class="sig-param">db_session</em>, <em class="sig-param">vs_log_age</em>, <em class="sig-param">log_quantity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._find_existing_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._find_existing_interpolator" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_find_existing_interpolator</code><span class="sig-paren">(</span><em>*</em>, <em>track_grid</em>, <em>nodes</em>, <em>smoothing</em>, <em>db_session</em>, <em>vs_log_age</em>, <em>log_quantity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._find_existing_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._find_existing_interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the specified interpolation if already exists, otherwise None.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>track_grid</strong> – See result of _track_grid_from_files()</p></li>
-<li><p><strong>nodes</strong> – see get_interpolator.</p></li>
-<li><p><strong>smoothing</strong> – see get_interpolator.</p></li>
-<li><p><strong>db_session</strong> – The currently active database session.</p></li>
-<li><p><strong>vs_log_age</strong> – see get_interpolator.</p></li>
-<li><p><strong>log_quantity</strong> – see get_interpolator.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>track_grid</strong> – See result of _track_grid_from_files()</li>
+<li><strong>nodes</strong> – see get_interpolator.</li>
+<li><strong>smoothing</strong> – see get_interpolator.</li>
+<li><strong>db_session</strong> – The currently active database session.</li>
+<li><strong>vs_log_age</strong> – see get_interpolator.</li>
+<li><strong>log_quantity</strong> – see get_interpolator.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Pre-serialized interpolation matching the given arguments if
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Pre-serialized interpolation matching the given arguments if
 one is found in the interpolation archive. If no
 pre-serialized interpolation exists, returns None.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" title="stellar_evolution.change_variables.VarChangingInterpolator">VarChangingInterpolator</a></p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" title="stellar_evolution.change_variables.VarChangingInterpolator">VarChangingInterpolator</a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._get_db_config">
-<code class="sig-name descname">_get_db_config</code><span class="sig-paren">(</span><em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._get_db_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._get_db_config" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_get_db_config</code><span class="sig-paren">(</span><em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._get_db_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._get_db_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read some configuration from the database.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._get_decimal">
-<em class="property">static </em><code class="sig-name descname">_get_decimal</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._get_decimal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._get_decimal" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">_get_decimal</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._get_decimal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._get_decimal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare a value for db storage as a limited precision decimal.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._initialize_database">
-<code class="sig-name descname">_initialize_database</code><span class="sig-paren">(</span><em class="sig-param">db_engine</em>, <em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._initialize_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._initialize_database" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_initialize_database</code><span class="sig-paren">(</span><em>db_engine</em>, <em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._initialize_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._initialize_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ensure all database tables exist and contain at least required data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>db_session</strong> – An sqlalchemy session, used to update the database.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>db_session</strong> – An sqlalchemy session, used to update the database.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._track_grid_from_files">
-<em class="property">static </em><code class="sig-name descname">_track_grid_from_files</code><span class="sig-paren">(</span><em class="sig-param">track_fnames</em>, <em class="sig-param">db_session</em>, <em class="sig-param">model_suite=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._track_grid_from_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._track_grid_from_files" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">_track_grid_from_files</code><span class="sig-paren">(</span><em>track_fnames</em>, <em>db_session</em>, <em>model_suite=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._track_grid_from_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._track_grid_from_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Organize track files in a mass - [Fe/H] grid and verify checksums.</p>
 <p>In addition, if model_suite is not None, all tracks are verified to
 belong to this suite.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>track_fnames</strong> – See get_interpolator track_fnames argument.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>keys - the masses of tracks; and values - further dictionaries
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>track_fnames</strong> – See get_interpolator track_fnames argument.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">keys - the masses of tracks; and values - further dictionaries
 with keys the [Fe/H] of tracks and values the filename of each
-track.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
-</dd>
-</dl>
+track.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager._track_grid_from_grid">
-<code class="sig-name descname">_track_grid_from_grid</code><span class="sig-paren">(</span><em class="sig-param">mass_list</em>, <em class="sig-param">feh_list</em>, <em class="sig-param">model_suite</em>, <em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._track_grid_from_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._track_grid_from_grid" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_track_grid_from_grid</code><span class="sig-paren">(</span><em>mass_list</em>, <em>feh_list</em>, <em>model_suite</em>, <em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager._track_grid_from_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager._track_grid_from_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a mass - [Fe/H] grid with filenames and checksums.</p>
 <p>Fails if multiple tracks are registered for some (mass, [Fe/H],
 model suite) combination.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mass_list</strong> – The masses for which to include tracks.</p></li>
-<li><p><strong>feh_list</strong> – The [Fe/H values for which to include tracks.</p></li>
-<li><p><strong>model_suite</strong> – The software suite from whose tracks to choose.</p></li>
-<li><p><strong>db_session</strong> – A database session to submit queries to.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mass_list</strong> – The masses for which to include tracks.</li>
+<li><strong>feh_list</strong> – The [Fe/H values for which to include tracks.</li>
+<li><strong>model_suite</strong> – The software suite from whose tracks to choose.</li>
+<li><strong>db_session</strong> – A database session to submit queries to.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>See _track_grid_from_files()</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">See _track_grid_from_files()</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.get_interpolator">
-<code class="sig-name descname">get_interpolator</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">nodes={'ICONV': 3000</em>, <em class="sig-param">'IRAD': 3000</em>, <em class="sig-param">'LUM': 0</em>, <em class="sig-param">'MRAD': 6000</em>, <em class="sig-param">'RADIUS': 0</em>, <em class="sig-param">'RRAD': 3000}</em>, <em class="sig-param">smoothing={'ICONV': 5.0</em>, <em class="sig-param">'IRAD': 6.0</em>, <em class="sig-param">'LUM': nan</em>, <em class="sig-param">'MRAD': 7.0</em>, <em class="sig-param">'RADIUS': nan</em>, <em class="sig-param">'RRAD': 6.0}</em>, <em class="sig-param">vs_log_age={'ICONV': True</em>, <em class="sig-param">'IRAD': True</em>, <em class="sig-param">'LUM': True</em>, <em class="sig-param">'MRAD': True</em>, <em class="sig-param">'RADIUS': True</em>, <em class="sig-param">'RRAD': True}</em>, <em class="sig-param">log_quantity={'ICONV': 0</em>, <em class="sig-param">'IRAD': 0</em>, <em class="sig-param">'LUM': 0</em>, <em class="sig-param">'MRAD': 0</em>, <em class="sig-param">'RADIUS': 0</em>, <em class="sig-param">'RRAD': 0}</em>, <em class="sig-param">track_fnames=None</em>, <em class="sig-param">masses=None</em>, <em class="sig-param">feh=None</em>, <em class="sig-param">model_suite='MESA'</em>, <em class="sig-param">new_interp_name=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.get_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.get_interpolator" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_interpolator</code><span class="sig-paren">(</span><em>*</em>, <em>nodes={'ICONV': 3000</em>, <em>'IRAD': 3000</em>, <em>'LUM': 0</em>, <em>'MRAD': 6000</em>, <em>'RADIUS': 0</em>, <em>'RRAD': 3000}</em>, <em>smoothing={'ICONV': 5.0</em>, <em>'IRAD': 6.0</em>, <em>'LUM': nan</em>, <em>'MRAD': 7.0</em>, <em>'RADIUS': nan</em>, <em>'RRAD': 6.0}</em>, <em>vs_log_age={'ICONV': True</em>, <em>'IRAD': True</em>, <em>'LUM': True</em>, <em>'MRAD': True</em>, <em>'RADIUS': True</em>, <em>'RRAD': True}</em>, <em>log_quantity={'ICONV': 0</em>, <em>'IRAD': 0</em>, <em>'LUM': 0</em>, <em>'MRAD': 0</em>, <em>'RADIUS': 0</em>, <em>'RRAD': 0}</em>, <em>track_fnames=None</em>, <em>masses=None</em>, <em>feh=None</em>, <em>model_suite='MESA'</em>, <em>new_interp_name=None</em>, <em>num_threads=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.get_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.get_interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a stellar evolution interpolator with the given configuration.</p>
 <p>All tracks that the interpolator should be based on must be
 pre-registered with the manager. Two ways are supported for
@@ -396,104 +405,112 @@ grid combined with a suite. The first case always works, while the
 second requires that the set of identified tracks is unique, i.e. for
 none of the mass - [Fe/H] combinations there are two or more
 tracks registered for the given suite.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nodes</strong> – The number of nodes to use for the age interpolation of
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nodes</strong> – The number of nodes to use for the age interpolation of
 each quantity of each track. Should be a dictionary with keys
 VarChangingInterpolator.quantity_list. See the POET code
 StellarEvolution::Interpolator::create_from() documentation for
-a description of what this actually means.</p></li>
-<li><p><strong>smoothing</strong> – The amount of smoothing to use for the age
+a description of what this actually means.</li>
+<li><strong>smoothing</strong> – The amount of smoothing to use for the age
 interpolation of each quantity of each track. Should be a
 dictionary with keys VarChangingInterpolator.quantity_list. See
 the POET code StellarEvolution::Interpolator::create_from()
-documentation for a description of what this actually means.</p></li>
-<li><p><strong>vs_log_age</strong> – Use log(age) instead of age as the independent
+documentation for a description of what this actually means.</li>
+<li><strong>vs_log_age</strong> – Use log(age) instead of age as the independent
 argument for the intperpolation? Should be a dictionary with
-keys VarChangingInterpolator.quantity_list.</p></li>
-<li><p><strong>log_quantity</strong> – Interpolate log(quantity) instead of quantity?
+keys VarChangingInterpolator.quantity_list.</li>
+<li><strong>log_quantity</strong> – Interpolate log(quantity) instead of quantity?
 Should be a dictionary with keys
-VarChangingInterpolator.quantity_list.</p></li>
-<li><p><strong>track_fnames</strong> – A list of files containing stellar evolution tracks
-the interpolator should be based on.</p></li>
-<li><p><strong>masses</strong> – A list of the stellar masses to include in the
+VarChangingInterpolator.quantity_list.</li>
+<li><strong>track_fnames</strong> – A list of files containing stellar evolution tracks
+the interpolator should be based on.</li>
+<li><strong>masses</strong> – A list of the stellar masses to include in the
 interpolation. Unique tracks with those masses and all selected
 [Fe/H] (see next argument) must already be registered
 with the database for the given suite. If None, all track
-masses from the given suite are used.</p></li>
-<li><p><strong>feh</strong> – A list of the stellar [Fe/H] values to include in the
+masses from the given suite are used.</li>
+<li><strong>feh</strong> – A list of the stellar [Fe/H] values to include in the
 interpolation. If None, all track [Fe/H] from the
-given suite are used.</p></li>
-<li><p><strong>model_suite</strong> – The software suite used to generate the stellar
+given suite are used.</li>
+<li><strong>model_suite</strong> – The software suite used to generate the stellar
 evolution tracks. May be omitted if tracks are specified by
-filename, but must be supplied if using masses and [Fe/H].</p></li>
-<li><p><strong>new_interp_name</strong> – Name to assign to the a newly generated
+filename, but must be supplied if using masses and [Fe/H].</li>
+<li><strong>new_interp_name</strong> – Name to assign to the a newly generated
 interolator. Ignored if an interpolator matching all other
 arguments already exists. If not specified, and no interpolator
 exists matching the remining arguments, a new interpolator is
-not generated.</p></li>
-<li><p><strong>num_threads</strong> – If a new interpolator is created this many
-simultaneous interpolation threads are used.</p></li>
+not generated.</li>
+<li><strong>num_threads</strong> – If a new interpolator is created this many
+simultaneous interpolation threads are used.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Configured per the arguments supplied or None if
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Configured per the arguments supplied or None if
 no existing interpolator is found and creating a new one is
 forbidden (see new_interp_name argument).</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" title="stellar_evolution.change_variables.VarChangingInterpolator">VarChangingInterpolator</a></p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" title="stellar_evolution.change_variables.VarChangingInterpolator">VarChangingInterpolator</a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.get_interpolator_by_name">
-<code class="sig-name descname">get_interpolator_by_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.get_interpolator_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.get_interpolator_by_name" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_interpolator_by_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.get_interpolator_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.get_interpolator_by_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the interpolator with the given name.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.get_suite_tracks">
-<em class="property">static </em><code class="sig-name descname">get_suite_tracks</code><span class="sig-paren">(</span><em class="sig-param">model_suite='MESA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.get_suite_tracks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.get_suite_tracks" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">get_suite_tracks</code><span class="sig-paren">(</span><em>model_suite='MESA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.get_suite_tracks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.get_suite_tracks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all tracks from a given suite.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.list_interpolator_names">
-<em class="property">static </em><code class="sig-name descname">list_interpolator_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.list_interpolator_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.list_interpolator_names" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">list_interpolator_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.list_interpolator_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.list_interpolator_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of all intorpolator names.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.list_suites">
-<em class="property">static </em><code class="sig-name descname">list_suites</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.list_suites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.list_suites" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">list_suites</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.list_suites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.list_suites" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of all software suites with available tracks.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.register_track">
-<code class="sig-name descname">register_track</code><span class="sig-paren">(</span><em class="sig-param">track_fname</em>, <em class="sig-param">mass</em>, <em class="sig-param">feh</em>, <em class="sig-param">model_suite='MESA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.register_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.register_track" title="Permalink to this definition">¶</a></dt>
+<code class="descname">register_track</code><span class="sig-paren">(</span><em>track_fname</em>, <em>mass</em>, <em>feh</em>, <em>model_suite='MESA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.register_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.register_track" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a track for use in creating interpolators.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.manager.StellarEvolutionManager.register_track_collection">
-<code class="sig-name descname">register_track_collection</code><span class="sig-paren">(</span><em class="sig-param">track_fnames</em>, <em class="sig-param">fname_rex=re.compile('M(?P&lt;MASS&gt;[0-9.E+-]+)_Z(?P&lt;Z&gt;[0-9.E+-]+).csv')</em>, <em class="sig-param">model_suite='MESA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.register_track_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.register_track_collection" title="Permalink to this definition">¶</a></dt>
+<code class="descname">register_track_collection</code><span class="sig-paren">(</span><em>track_fnames</em>, <em>fname_rex=re.compile('M(?P&lt;MASS&gt;[0-9.E+-]+)_Z(?P&lt;Z&gt;[0-9.E+-]+).csv')</em>, <em>model_suite='MESA'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/manager.html#StellarEvolutionManager.register_track_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.manager.StellarEvolutionManager.register_track_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a collection of tracks with [Fe/H] and M* encoded in filename.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>-track_fnames</strong> – The filenames of the tracks to add.</p></li>
-<li><p><strong>fname_rex</strong> (<em>-</em>) – A regular expression defining groups named ‘MASS’ and
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>-track_fnames</strong> – The filenames of the tracks to add.</li>
+<li><strong>fname_rex</strong> (<em>-</em>) – A regular expression defining groups named ‘MASS’ and
 either ‘Z’ or ‘FeH’ used to parse the filename for the
-stellar mass and metallicity each track applies to.</p></li>
-<li><p><strong>model_suite</strong> (<em>-</em>) – The software suite used to generate the stellar evolution
-tracks.</p></li>
+stellar mass and metallicity each track applies to.</li>
+<li><strong>model_suite</strong> (<em>-</em>) – The software suite used to generate the stellar evolution
+tracks.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -512,7 +529,7 @@ tracks.</p></li>
         <a href="stellar_evolution.manager_data_model.html" class="btn btn-neutral float-right" title="stellar_evolution.manager_data_model module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="stellar_evolution.managed_interpolator.html" class="btn btn-neutral float-left" title="stellar_evolution.managed_interpolator module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="stellar_evolution.managed_interpolator.html" class="btn btn-neutral" title="stellar_evolution.managed_interpolator module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -538,16 +555,26 @@ tracks.</p></li>
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -107,8 +107,8 @@ $(document).ready(function(){initNavTree('functions_a.html','');});
 <li>above_lock_problem_deriv_correction()
 : <a class="el" href="classEvolve_1_1BinarySystem.html#acb81be066fce4369d9002b3b01dc79de">Evolve::BinarySystem</a>
 </li>
-<li>abs_expected_precision()
-: <a class="el" href="classEvolve_1_1test__GravitationalPotential.html#a1ea27bccdb87c4bd062d2a504ed6be50">Evolve::test_GravitationalPotential</a>
+<li>abs_precision()
+: <a class="el" href="classEvolve_1_1test__GravitationalPotential.html#a78c65226e063784235739adbe25834f9">Evolve::test_GravitationalPotential</a>
 </li>
 <li>acceptable_step()
 : <a class="el" href="classEvolve_1_1OrbitSolver.html#ad406837e6e63a36b99ab8311fb0f5a6f">Evolve::OrbitSolver</a>
@@ -118,6 +118,9 @@ $(document).ready(function(){initNavTree('functions_a.html','');});
 </li>
 <li>add_break()
 : <a class="el" href="classEvolve_1_1ExpectedEvolutionMode.html#a9c65f0f0e7b2754e07e54a641cd9acde">Evolve::ExpectedEvolutionMode&lt; MODE_TYPE &gt;</a>
+</li>
+<li>add_locks_to_message()
+: <a class="el" href="classEvolve_1_1test__LockMonitoring.html#a921c2c5aa1494426d8c217bb2ce06356">Evolve::test_LockMonitoring</a>
 </li>
 <li>add_piece()
 : <a class="el" href="classPiecewiseFunction.html#adf5e2014511e097dd3380726ae2127e4">PiecewiseFunction</a>
@@ -132,7 +135,7 @@ $(document).ready(function(){initNavTree('functions_a.html','');});
 : <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a718800e78b5d42c75eb2a4e487f6a78d">Evolve::BrokenPowerlawPhaseLagZone</a>
 </li>
 <li>add_tidal_term()
-: <a class="el" href="classEvolve_1_1DissipatingZone.html#afefe280fd4559c7d878e289467e78ce5">Evolve::DissipatingZone</a>
+: <a class="el" href="classEvolve_1_1DissipatingZone.html#aaad7299171458c26f9f672ef9b7c9513">Evolve::DissipatingZone</a>
 </li>
 <li>add_to_evolution()
 : <a class="el" href="classEvolve_1_1BinarySystem.html#ac7d3cc79527e35c295cf0ce16dfe9b6e">Evolve::BinarySystem</a>
@@ -144,8 +147,11 @@ $(document).ready(function(){initNavTree('functions_a.html','');});
 <li>add_transformation()
 : <a class="el" href="classEvolve_1_1TransformedSolution.html#ae7f2c54c51811e222f1ff4036b65e729">Evolve::TransformedSolution</a>
 </li>
-<li>adjust_eccentricity_order()
-: <a class="el" href="classEvolve_1_1OrbitSolver.html#ad51cc9b17ab2439898b7d9090c559020">Evolve::OrbitSolver</a>
+<li>add_zone_locks_to_message()
+: <a class="el" href="classEvolve_1_1test__LockMonitoring.html#a5f40c4fe39dbe9bfcdda5ae2cb3648b6">Evolve::test_LockMonitoring</a>
+</li>
+<li>adjust_expansion_order()
+: <a class="el" href="classEvolve_1_1OrbitSolver.html#ab8c70e136437ea0c76f820bc15e044a3">Evolve::OrbitSolver</a>
 </li>
 <li>advance_iterator_set()
 : <a class="el" href="classEvolve_1_1StopHistoryInterval.html#a06ed976878662f2d107533b6d182512f">Evolve::StopHistoryInterval</a>
@@ -162,19 +168,13 @@ $(document).ready(function(){initNavTree('functions_a.html','');});
 , <a class="el" href="classStellarEvolution_1_1MESA_1_1EvolutionIterator.html#a174143403a8a2c218f248caff9353483">StellarEvolution::MESA::EvolutionIterator</a>
 </li>
 <li>age_to_interp_param()
-: <a class="el" href="classStellarEvolution_1_1EvolvingStellarQuantity.html#a31c6609b6f08437172d22a0195e6625b">StellarEvolution::EvolvingStellarQuantity</a>
+: <a class="el" href="classStellarEvolution_1_1EvolvingStellarQuantity.html#a49775c2c51ee8bf420e2eea73fd59447">StellarEvolution::EvolvingStellarQuantity</a>
 </li>
 <li>ages
 : <a class="el" href="classYRECEvolution.html#a07cef0b5a000090da89da6328a54b52a">YRECEvolution</a>
 </li>
 <li>ALGLIB()
 : <a class="el" href="classCore_1_1Error_1_1ALGLIB.html#a3f1c4cebeaeda26230ebb53ae7f5812e">Core::Error::ALGLIB</a>
-</li>
-<li>angle_evolution_age_deriv()
-: <a class="el" href="classEvolve_1_1BinarySystem.html#a81a3ff2aafe63d5e572d273add75f23e">Evolve::BinarySystem</a>
-</li>
-<li>angle_evolution_orbit_deriv()
-: <a class="el" href="classEvolve_1_1BinarySystem.html#a3c5fa352d2b7b17ec7720770042ff81d">Evolve::BinarySystem</a>
 </li>
 <li>angular_momentum()
 : <a class="el" href="classEvolve_1_1DissipatingZone.html#a8673569e16364e71ad5742242eca3af5">Evolve::DissipatingZone</a>
@@ -206,7 +206,7 @@ $(document).ready(function(){initNavTree('functions_a.html','');});
 : <a class="el" href="classStar_1_1EvolvingStellarZone.html#aa660297aac9ba56d67117a10b693a44d">Star::EvolvingStellarZone</a>
 </li>
 <li>arg_of_periapsis()
-: <a class="el" href="classEvolve_1_1TidalPotential.html#a8a9489cdda4ea99c6ddcc9600ac25639">Evolve::TidalPotential</a>
+: <a class="el" href="classEvolve_1_1TidalPotential.html#acf1f568e148e25d8eb447745b2ec2f20">Evolve::TidalPotential</a>
 </li>
 <li>at_exact_condition()
 : <a class="el" href="classEvolve_1_1OrbitSolver.html#a0eb257fbfa49e4cd545fc9d8965e8840">Evolve::OrbitSolver</a>
@@ -217,7 +217,7 @@ $(document).ready(function(){initNavTree('functions_a.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sun Dec 1 2019 01:10:27 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Wed May 18 2022 17:13:10 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

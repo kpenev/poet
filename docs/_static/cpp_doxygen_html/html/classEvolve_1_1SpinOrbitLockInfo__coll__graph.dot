@@ -1,7 +1,0 @@
-digraph "Evolve::SpinOrbitLockInfo"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{Evolve::SpinOrbitLockInfo\n|- __orbital_freq_mult\l- __spin_freq_mult\l- __lock_direction\l|+ SpinOrbitLockInfo()\l+ SpinOrbitLockInfo()\l+ operator=()\l+ set_lock()\l+ spin()\l+ operator()()\l+ term()\l+ operator bool()\l+ lock_direction()\l+ lock_direction()\l+ orbital_frequency_multiplier()\l+ spin_frequency_multiplier()\l+ operator==()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

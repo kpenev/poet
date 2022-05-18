@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -154,6 +149,8 @@
   <h1>Source code for orbital_evolution.initial_condition_solver</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Define class for finding initial conditions to match current properties.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">logging</span>
+
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">brentq</span>
 <span class="kn">import</span> <span class="nn">scipy</span>
 
@@ -161,10 +158,15 @@
 <span class="kn">from</span> <span class="nn">orbital_evolution.star_interface</span> <span class="k">import</span> <span class="n">EvolvingStar</span>
 <span class="kn">from</span> <span class="nn">basic_utils</span> <span class="k">import</span> <span class="n">Structure</span>
 
+<span class="c1">#No good way found to simplify</span>
+<span class="c1">#pylint: disable=too-many-instance-attributes</span>
 <div class="viewcode-block" id="InitialConditionSolver"><a class="viewcode-back" href="../../_implementation/orbital_evolution.initial_condition_solver.html#orbital_evolution.initial_condition_solver.InitialConditionSolver">[docs]</a><span class="k">class</span> <span class="nc">InitialConditionSolver</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Find initial conditions which reproduce a given system now.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="InitialConditionSolver._try_initial_conditions"><a class="viewcode-back" href="../../_implementation/orbital_evolution.initial_condition_solver.html#orbital_evolution.initial_condition_solver.InitialConditionSolver._try_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">_try_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_orbital_period</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">):</span>
+<div class="viewcode-block" id="InitialConditionSolver._try_initial_conditions"><a class="viewcode-back" href="../../_implementation/orbital_evolution.initial_condition_solver.html#orbital_evolution.initial_condition_solver.InitialConditionSolver._try_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">_try_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                <span class="n">initial_orbital_period</span><span class="p">,</span>
+                                <span class="n">disk_period</span><span class="p">,</span>
+                                <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get present orbital and stellar spin periods for initial conditions.</span>
 
@@ -184,9 +186,17 @@
 <span class="sd">                evolution is started with the input periods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Trying P0 = </span><span class="si">%s</span><span class="s1">, Pdisk = </span><span class="si">%s</span><span class="s1">&#39;</span>
-              <span class="o">%</span>
-              <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">initial_orbital_period</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">disk_period</span><span class="p">)))</span>
+        <span class="k">if</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">initial_orbital_period</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">)</span>
+                <span class="ow">in</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_saved_initial_condition_trials</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_initial_condition_trials</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">initial_orbital_period</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Trying P0 = </span><span class="si">%s</span><span class="s1">, Pdisk = </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                           <span class="nb">repr</span><span class="p">(</span><span class="n">initial_orbital_period</span><span class="p">),</span>
+                           <span class="nb">repr</span><span class="p">(</span><span class="n">disk_period</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">Binary</span><span class="p">(</span>
@@ -199,7 +209,6 @@
             <span class="n">disk_dissipation_age</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">disk_dissipation_age</span><span class="p">,</span>
             <span class="n">secondary_formation_age</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">planet_formation_age</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Constructed binary&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">core_formation_age</span><span class="p">()</span>
@@ -212,7 +221,6 @@
                               <span class="n">inclination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">periapsis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">evolution_mode</span><span class="o">=</span><span class="s1">&#39;LOCKED_SURFACE_SPIN&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Configured binary&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">):</span>
@@ -230,27 +238,32 @@
             <span class="n">companion_mass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">primary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
             <span class="n">semimajor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">semimajor</span><span class="p">(</span><span class="n">initial_orbital_period</span><span class="p">),</span>
             <span class="n">eccentricity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;initial eccentricity&#39;</span><span class="p">],</span>
-            <span class="n">spin_angmom</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]),</span>
+            <span class="n">spin_angmom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;initial_secondary_angmom&#39;</span><span class="p">],</span>
             <span class="n">locked_surface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">zero_outer_inclination</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">zero_outer_periapsis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="o">**</span><span class="n">secondary_inclination_periapsis</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Configured secondary&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
             <span class="n">final_age</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">age</span><span class="p">,</span>
             <span class="n">max_time_step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;max time step&#39;</span><span class="p">],</span>
             <span class="n">precision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;precision&#39;</span><span class="p">],</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;timeout&#39;</span><span class="p">],</span>
             <span class="n">required_ages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
         <span class="n">final_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">final_state</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Final state:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">final_state</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
         <span class="c1">#False positives</span>
         <span class="c1">#pylint: disable=no-member</span>
-        <span class="k">assert</span> <span class="n">final_state</span><span class="o">.</span><span class="n">age</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">age</span>
+        <span class="k">if</span> <span class="n">final_state</span><span class="o">.</span><span class="n">age</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">age</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">&#39;System eveloution failed at age </span><span class="si">{0!r}</span><span class="s1">, targe age </span><span class="si">{1!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">final_state</span><span class="o">.</span><span class="n">age</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">age</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="n">orbital_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">orbital_period</span><span class="p">(</span><span class="n">final_state</span><span class="o">.</span><span class="n">semimajor</span><span class="p">)</span>
         <span class="n">stellar_spin_period</span> <span class="o">=</span> <span class="p">(</span>
             <span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span>
@@ -264,15 +277,21 @@
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="c1">#pylint: enable=no-member</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Got Porb = </span><span class="si">%s</span><span class="s1">, P* = </span><span class="si">%s</span><span class="s1">&#39;</span>
-              <span class="o">%</span>
-              <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">orbital_period</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">stellar_spin_period</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got Porb = </span><span class="si">%s</span><span class="s1">, P* = </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                           <span class="nb">repr</span><span class="p">(</span><span class="n">orbital_period</span><span class="p">),</span>
+                           <span class="nb">repr</span><span class="p">(</span><span class="n">stellar_spin_period</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">orbital_period</span><span class="p">):</span>
             <span class="n">orbital_period</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_saved_initial_condition_trials</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">initial_orbital_period</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">)</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">orbital_period</span><span class="p">,</span> <span class="n">stellar_spin_period</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">orbital_period</span><span class="p">,</span> <span class="n">stellar_spin_period</span></div>
 
-<div class="viewcode-block" id="InitialConditionSolver._find_porb_range"><a class="viewcode-back" href="../../_implementation/orbital_evolution.initial_condition_solver.html#orbital_evolution.initial_condition_solver.InitialConditionSolver._find_porb_range">[docs]</a>    <span class="k">def</span> <span class="nf">_find_porb_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guess_porb_initial</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">):</span>
+<div class="viewcode-block" id="InitialConditionSolver._find_porb_range"><a class="viewcode-back" href="../../_implementation/orbital_evolution.initial_condition_solver.html#orbital_evolution.initial_condition_solver.InitialConditionSolver._find_porb_range">[docs]</a>    <span class="k">def</span> <span class="nf">_find_porb_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">guess_porb_initial</span><span class="p">,</span>
+                         <span class="n">disk_period</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find initial orbital period range where final porb error flips sign.</span>
 
@@ -290,10 +309,11 @@
 
         <span class="n">porb_min</span><span class="p">,</span> <span class="n">porb_max</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
         <span class="n">porb_initial</span> <span class="o">=</span> <span class="n">guess_porb_initial</span>
-        <span class="n">porb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_initial_conditions</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">porb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_initial_conditions</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">,</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">porb_error</span> <span class="o">=</span> <span class="n">porb</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Porb</span>
         <span class="n">guess_porb_error</span> <span class="o">=</span> <span class="n">porb_error</span>
-        <span class="n">step</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="k">if</span> <span class="n">guess_porb_error</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.5</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period_search_factor</span> <span class="k">if</span> <span class="n">guess_porb_error</span> <span class="o">&lt;</span> <span class="mi">0</span>
+                <span class="k">else</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_search_factor</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="p">(</span>
                 <span class="n">porb_error</span> <span class="o">*</span> <span class="n">guess_porb_error</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -305,21 +325,27 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">porb_max</span> <span class="o">=</span> <span class="n">porb_initial</span>
             <span class="n">porb_initial</span> <span class="o">*=</span> <span class="n">step</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Before evolution:&#39;</span>
-                  <span class="o">+</span>
-                  <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_error = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">porb_error</span><span class="p">)</span>
-                  <span class="o">+</span>
-                  <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">guess_porb_error = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">guess_porb_error</span><span class="p">)</span>
-                  <span class="o">+</span>
-                  <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_initial = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">)</span>
-                  <span class="o">+</span>
-                  <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_min = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">porb_min</span>
-                  <span class="o">+</span>
-                  <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_max = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">porb_max</span>
-                  <span class="o">+</span>
-                  <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">step = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">step</span><span class="p">)</span>
-            <span class="n">porb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_initial_conditions</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">,</span> <span class="n">disk_period</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;After evolution: porb = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">porb</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s1">&#39;Before evolution:&#39;</span>
+                    <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_error = </span><span class="si">%s</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">guess_porb_error = </span><span class="si">%s</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_initial = </span><span class="si">%s</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_min = </span><span class="si">%s</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">porb_max = </span><span class="si">%s</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">step = </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="p">),</span>
+                <span class="nb">repr</span><span class="p">(</span><span class="n">porb_error</span><span class="p">),</span>
+                <span class="nb">repr</span><span class="p">(</span><span class="n">guess_porb_error</span><span class="p">),</span>
+                <span class="nb">repr</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">),</span>
+                <span class="n">porb_min</span><span class="p">,</span>
+                <span class="n">porb_max</span><span class="p">,</span>
+                <span class="n">step</span>
+            <span class="p">)</span>
+            <span class="n">porb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_initial_conditions</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">,</span>
+                                                <span class="n">disk_period</span><span class="p">,</span>
+                                                <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;After evolution: porb = </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">porb</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">scipy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">porb</span><span class="p">):</span>
                 <span class="n">porb_error</span> <span class="o">=</span> <span class="n">porb</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Porb</span>
 
@@ -333,9 +359,12 @@
             <span class="k">if</span> <span class="n">porb_error</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">porb_min</span> <span class="o">=</span> <span class="n">porb_initial</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;For Pdisk = </span><span class="si">%s</span><span class="s1">, orbital period range: </span><span class="si">%s</span><span class="s1"> &lt; Porb &lt; </span><span class="si">%s</span><span class="s1">&#39;</span>
-              <span class="o">%</span>
-              <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">disk_period</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">porb_min</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">porb_max</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;For Pdisk = </span><span class="si">%s</span><span class="s1">, orbital period range: </span><span class="si">%s</span><span class="s1"> &lt; Porb &lt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="nb">repr</span><span class="p">(</span><span class="n">disk_period</span><span class="p">),</span>
+            <span class="nb">repr</span><span class="p">(</span><span class="n">porb_min</span><span class="p">),</span>
+            <span class="nb">repr</span><span class="p">(</span><span class="n">porb_max</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">porb_min</span><span class="p">,</span> <span class="n">porb_max</span></div>
 
 <div class="viewcode-block" id="InitialConditionSolver.__init__"><a class="viewcode-back" href="../../_implementation/orbital_evolution.initial_condition_solver.html#orbital_evolution.initial_condition_solver.InitialConditionSolver.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -344,11 +373,15 @@
                  <span class="n">disk_dissipation_age</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">evolution_max_time_step</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                  <span class="n">evolution_precision</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
+                 <span class="n">evolution_timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">orbital_period_tolerance</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
                  <span class="n">spin_tolerance</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
                  <span class="n">initial_eccentricity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                  <span class="n">initial_inclination</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                 <span class="n">max_porb_initial</span><span class="o">=</span><span class="mf">100.0</span><span class="p">):</span>
+                 <span class="n">period_search_factor</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+                 <span class="n">scaled_period_guess</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">max_porb_initial</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+                 <span class="n">initial_secondary_angmom</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the object.</span>
 
@@ -374,6 +407,14 @@
 <span class="sd">            initial_eccentricity:    The initial eccentricity with which to</span>
 <span class="sd">                start the evolution.</span>
 
+<span class="sd">            period_search_factor:    The factor by which to change the initial</span>
+<span class="sd">                period guess while searching for a range surrounding the known</span>
+<span class="sd">                present day orbital period.</span>
+
+<span class="sd">            scaled_period_guess:    The search for initial period to bracked the</span>
+<span class="sd">                observed final period will start from this value multiplied by</span>
+<span class="sd">                the final orbital period.</span>
+
 <span class="sd">            max_porb_initial:    The largest initial orbital period in days to</span>
 <span class="sd">                try before declaring a set of initial conditions unsolvable.</span>
 
@@ -381,12 +422,14 @@
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_best_initial_conditions</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;initial eccentricity&#39;</span><span class="p">:</span> <span class="n">initial_eccentricity</span><span class="p">,</span>
-            <span class="s1">&#39;initial inclination&#39;</span><span class="p">:</span> <span class="n">initial_inclination</span>
+            <span class="s1">&#39;initial inclination&#39;</span><span class="p">:</span> <span class="n">initial_inclination</span><span class="p">,</span>
+            <span class="s1">&#39;initial_secondary_angmom&#39;</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">initial_secondary_angmom</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">planet_formation_age</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;planet formation age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">planet_formation_age</span>
@@ -397,13 +440,17 @@
             <span class="s1">&#39;max time step&#39;</span><span class="p">:</span> <span class="n">evolution_max_time_step</span><span class="p">,</span>
             <span class="s1">&#39;precision&#39;</span><span class="p">:</span> <span class="n">evolution_precision</span><span class="p">,</span>
             <span class="s1">&#39;orbital period tolerance&#39;</span><span class="p">:</span> <span class="n">orbital_period_tolerance</span><span class="p">,</span>
-            <span class="s1">&#39;spin tolerance&#39;</span><span class="p">:</span> <span class="n">spin_tolerance</span>
+            <span class="s1">&#39;spin tolerance&#39;</span><span class="p">:</span> <span class="n">spin_tolerance</span><span class="p">,</span>
+            <span class="s1">&#39;timeout&#39;</span><span class="p">:</span> <span class="n">evolution_timeout</span>
         <span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_porb_initial</span> <span class="o">=</span> <span class="n">max_porb_initial</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period_search_factor</span> <span class="o">=</span> <span class="n">period_search_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaled_period_guess</span> <span class="o">=</span> <span class="n">scaled_period_guess</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_porb_initial</span> <span class="o">=</span> <span class="n">max_porb_initial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_initial_condition_trials</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InitialConditionSolver.stellar_wsurf"><a class="viewcode-back" href="../../_implementation/orbital_evolution.initial_condition_solver.html#orbital_evolution.initial_condition_solver.InitialConditionSolver.stellar_wsurf">[docs]</a>    <span class="k">def</span> <span class="nf">stellar_wsurf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">wdisk</span><span class="p">,</span>
@@ -445,6 +492,7 @@
                                                    <span class="n">disk_period</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">porb_min</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_saved_initial_condition_trials</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
             <span class="k">assert</span> <span class="n">scipy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">porb_max</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">return_difference</span> <span class="k">else</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
                                                          <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
@@ -464,6 +512,7 @@
             <span class="n">porb_initial</span><span class="p">,</span>
             <span class="n">disk_period</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_initial_condition_trials</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="n">spin_frequency</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">spin_period</span>
 
@@ -554,7 +603,7 @@
                 <span class="n">disk_period</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
             <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">get_initial_grid</span><span class="p">():</span>
+        <span class="k">def</span> <span class="nf">get_initial_grid</span><span class="p">(</span><span class="n">orbital_period_guess</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Tabulate stellar spin errors for a grid of disk periods.&quot;&quot;&quot;</span>
 
             <span class="n">reset_best_initial_conditions</span><span class="p">()</span>
@@ -573,29 +622,31 @@
                           <span class="mf">200.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span><span class="p">]</span>
 
             <span class="n">stellar_wsurf_residual_grid</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">stellar_wsurf</span><span class="p">(</span><span class="n">wdisk</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">Porb</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stellar_wsurf</span><span class="p">(</span><span class="n">wdisk</span><span class="p">,</span> <span class="n">orbital_period_guess</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">wdisk</span> <span class="ow">in</span> <span class="n">wdisk_grid</span>
             <span class="p">]</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;##    </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;disk_period&#39;</span><span class="p">,</span>
-                                         <span class="s1">&#39;current_stellar_spin&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;##    </span><span class="si">%25s</span><span class="s1"> </span><span class="si">%25s</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;disk_period&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;current_stellar_spin&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">wdisk</span><span class="p">,</span> <span class="n">wsurf_residual</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">wdisk_grid</span><span class="p">,</span>
                                              <span class="n">stellar_wsurf_residual_grid</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;##    </span><span class="si">%25.16e</span><span class="s1"> </span><span class="si">%25.16e</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="o">%</span>
-                      <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">wdisk</span><span class="p">,</span>
-                       <span class="n">wsurf_residual</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Psurf</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;## Target current stellar spin: &#39;</span>
-                  <span class="o">+</span>
-                  <span class="nb">repr</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Psurf</span><span class="p">)</span>
-                  <span class="o">+</span>
-                  <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s1">&#39;##    </span><span class="si">%25.16e</span><span class="s1"> </span><span class="si">%25.16e</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+                    <span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">wdisk</span><span class="p">,</span>
+                    <span class="n">wsurf_residual</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Psurf</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;## Target current stellar spin: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="nb">repr</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Psurf</span><span class="p">)</span>
+            <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">wdisk_grid</span><span class="p">,</span> <span class="n">stellar_wsurf_residual_grid</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary</span> <span class="o">=</span> <span class="n">star</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span> <span class="o">=</span> <span class="n">planet</span>
+        <span class="n">orbital_period_guess</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">Porb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaled_period_guess</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;disk_dissipation_age&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">disk_dissipation_age</span> <span class="o">=</span> <span class="p">(</span>
@@ -614,10 +665,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;Psurf&#39;</span><span class="p">):</span>
             <span class="n">wdisk</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">Wdisk</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;Wdisk&#39;</span><span class="p">)</span>
                      <span class="k">else</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">target</span><span class="o">.</span><span class="n">Pdisk</span><span class="p">)</span>
-            <span class="n">wstar</span><span class="p">,</span> <span class="n">porb_initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stellar_wsurf</span><span class="p">(</span><span class="n">wdisk</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">Porb</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">wstar</span><span class="p">,</span> <span class="n">porb_initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stellar_wsurf</span><span class="p">(</span><span class="n">wdisk</span><span class="p">,</span>
+                                                     <span class="n">orbital_period_guess</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">porb_initial</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">wstar</span>
 
-        <span class="n">wdisk_grid</span><span class="p">,</span> <span class="n">stellar_wsurf_residual_grid</span> <span class="o">=</span> <span class="n">get_initial_grid</span><span class="p">()</span>
+        <span class="n">wdisk_grid</span><span class="p">,</span> <span class="n">stellar_wsurf_residual_grid</span> <span class="o">=</span> <span class="n">get_initial_grid</span><span class="p">(</span>
+            <span class="n">orbital_period_guess</span>
+        <span class="p">)</span>
 
         <span class="n">nsolutions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wdisk_grid</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
@@ -632,7 +686,7 @@
                     <span class="n">f</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stellar_wsurf</span><span class="p">,</span>
                     <span class="n">a</span><span class="o">=</span><span class="n">wdisk_grid</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                     <span class="n">b</span><span class="o">=</span><span class="n">wdisk_grid</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">Porb</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">orbital_period_guess</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
                     <span class="n">xtol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;spin tolerance&#39;</span><span class="p">],</span>
                     <span class="n">rtol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;spin tolerance&#39;</span><span class="p">]</span>
                 <span class="p">)</span>
@@ -644,6 +698,7 @@
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_best_initial_conditions</span><span class="o">.</span><span class="n">initial_orbital_period</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_best_initial_conditions</span><span class="o">.</span><span class="n">disk_period</span><span class="p">)</span></div></div>
             <span class="c1">#pylint: enable=no-member</span>
+<span class="c1">#pylint: enable=too-many-instance-attributes</span>
 </pre></div>
 
            </div>
@@ -673,16 +728,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

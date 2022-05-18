@@ -1,28 +1,28 @@
-<map id="/Users/kpenev/projects/git/poet/poet_src/Star/EvolvingStellarCore.h" name="/Users/kpenev/projects/git/poet/poet_src/Star/EvolvingStellarCore.h">
-<area shape="rect" id="node2" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="1999,785,2220,829"/>
-<area shape="rect" id="node3" href="$EvolvingStellarZone_8h.html" title="Declares a base class for all stellar zones. " alt="" coords="2862,113,3039,141"/>
-<area shape="rect" id="node33" href="$Functions_8h.html" title="A hierarchy of classes representing functions. " alt="" coords="2666,541,2822,569"/>
-<area shape="rect" id="node38" href="$EvolvingStellarQuantity_8h.html" title="Declares a class implementing the intepolation of a single stellar quantity from stellar evolution tr..." alt="" coords="3154,281,3358,325"/>
-<area shape="rect" id="node4" href="$BrokenPowerlawPhaseLagZone_8h.html" title="Declares the class that provides the phase lag function to DissipatingZone objects. " alt="" coords="1052,189,1260,233"/>
-<area shape="rect" id="node5" href="$DissipatingZone_8h.html" title="Declares a class representing one zone of a body dissipative to tidal distortions. " alt="" coords="827,465,976,493"/>
-<area shape="rect" id="node28" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="990,381,1138,409"/>
-<area shape="rect" id="node29" href="$BinarySystem_8h.html" title="Defines the BinarySystem class. " alt="" coords="1524,289,1657,317"/>
-<area shape="rect" id="node30" href="$LagForcingFrequencyBreakCondition_8h.html" title="Declares a stopping condition satisfied when a forcing frequency reaches a critical value..." alt="" coords="1281,281,1500,325"/>
-<area shape="rect" id="node32" href="$LagSpinBreakCondition_8h.html" title="Declares a stopping condition monitoring for critical spin frequencies. " alt="" coords="1055,289,1257,317"/>
-<area shape="rect" id="node6" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="493,541,643,569"/>
-<area shape="rect" id="node7" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="296,625,480,653"/>
-<area shape="rect" id="node9" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="1220,625,1372,653"/>
-<area shape="rect" id="node21" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="3767,709,3836,737"/>
-<area shape="rect" id="node26" href="$TidalPotentialTerms_8h.html" title="Declare an interface for evaluating the expansion of the tidal potential. " alt="" coords="1354,541,1529,569"/>
-<area shape="rect" id="node25" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="443,709,570,737"/>
-<area shape="rect" id="node24" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="594,709,793,737"/>
-<area shape="rect" id="node39" href="$AllowedGridGrowth_8h.html" title="Declares &amp; defines a class describing how the mass&#45;[Fe/H] interpolation grid is allowed to grow..." alt="" coords="1806,465,1978,493"/>
-<area shape="rect" id="node40" href="$RemoveLogDeriv_8h.html" title="Declares a class to switch from logarithmic to linear derivative. " alt="" coords="2295,381,2452,409"/>
-<area shape="rect" id="node42" href="$SumDerivatives_8h.html" title="Declares &amp; defines a class for the derivative of a quantity which is the sum of two other quantities..." alt="" coords="3257,465,3404,493"/>
-<area shape="rect" id="node43" href="$InterpolatedDerivatives_8h_source.html" title="InterpolatedDerivatives.h" alt="" coords="2476,381,2674,409"/>
-<area shape="rect" id="node44" href="$mass__feh__interp_8h.html" title="Define a single function performing mass&#45;[Fe/H] interpolations. " alt="" coords="2489,541,2642,569"/>
-<area shape="rect" id="node46" href="$InterpSolutionIterator_8h_source.html" title="../Core/InterpSolutionIterator.h" alt="" coords="2053,465,2289,493"/>
-<area shape="rect" id="node48" href="$InterpolatingFunctionALGLIB_8h_source.html" title="../Core/InterpolatingFunction\lALGLIB.h" alt="" coords="3070,373,3293,417"/>
-<area shape="rect" id="node41" href="$LogDerivatives_8h.html" title="Declares a class for differentiating functions of log(arg) w.r.t. arg. " alt="" coords="2362,465,2555,493"/>
-<area shape="rect" id="node47" href="$SerializableSpline1dInterpolant_8h_source.html" title="SerializableSpline1dInterpolant.h" alt="" coords="3011,541,3266,569"/>
+<map id="/home/kpenev/projects/git/poet/poet_src/Star/EvolvingStellarCore.h" name="/home/kpenev/projects/git/poet/poet_src/Star/EvolvingStellarCore.h">
+<area shape="rect" id="node2" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="2018,805,2238,852"/>
+<area shape="rect" id="node3" href="$EvolvingStellarZone_8h.html" title="Declares a base class for all stellar zones. " alt="" coords="2885,117,3065,147"/>
+<area shape="rect" id="node33" href="$Functions_8h.html" title="A hierarchy of classes representing functions. " alt="" coords="2687,556,2843,585"/>
+<area shape="rect" id="node38" href="$EvolvingStellarQuantity_8h.html" title="Declares a class implementing the intepolation of a single stellar quantity from stellar evolution tr..." alt="" coords="3175,289,3382,336"/>
+<area shape="rect" id="node4" href="$BrokenPowerlawPhaseLagZone_8h.html" title="Declares the class that provides the phase lag function to DissipatingZone objects. " alt="" coords="1067,195,1277,241"/>
+<area shape="rect" id="node5" href="$DissipatingZone_8h.html" title="Declares a class representing one zone of a body dissipative to tidal distortions. " alt="" coords="835,479,987,508"/>
+<area shape="rect" id="node28" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="967,393,1119,422"/>
+<area shape="rect" id="node29" href="$BinarySystem_8h.html" title="Defines the BinarySystem class. " alt="" coords="1546,298,1681,327"/>
+<area shape="rect" id="node30" href="$LagForcingFrequencyBreakCondition_8h.html" title="Declares a stopping condition satisfied when a forcing frequency reaches a critical value..." alt="" coords="1300,289,1521,336"/>
+<area shape="rect" id="node32" href="$LagSpinBreakCondition_8h.html" title="Declares a stopping condition monitoring for critical spin frequencies. " alt="" coords="1069,298,1275,327"/>
+<area shape="rect" id="node6" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="495,556,646,585"/>
+<area shape="rect" id="node7" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="296,642,483,671"/>
+<area shape="rect" id="node9" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="1233,642,1383,671"/>
+<area shape="rect" id="node21" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="3795,728,3866,757"/>
+<area shape="rect" id="node26" href="$TidalPotentialTerms_8h.html" title="Declare an interface for evaluating the expansion of the tidal potential. " alt="" coords="1365,556,1544,585"/>
+<area shape="rect" id="node25" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="445,728,574,757"/>
+<area shape="rect" id="node24" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="599,728,799,757"/>
+<area shape="rect" id="node39" href="$AllowedGridGrowth_8h.html" title="Declares &amp; defines a class describing how the mass&#45;[Fe/H] interpolation grid is allowed to grow..." alt="" coords="1822,479,1997,508"/>
+<area shape="rect" id="node40" href="$RemoveLogDeriv_8h.html" title="Declares a class to switch from logarithmic to linear derivative. " alt="" coords="2312,393,2472,422"/>
+<area shape="rect" id="node42" href="$SumDerivatives_8h.html" title="Declares &amp; defines a class for the derivative of a quantity which is the sum of two other quantities..." alt="" coords="3278,479,3426,508"/>
+<area shape="rect" id="node43" href="$InterpolatedDerivatives_8h_source.html" title="InterpolatedDerivatives.h" alt="" coords="2497,393,2695,422"/>
+<area shape="rect" id="node44" href="$mass__feh__interp_8h.html" title="Define a single function performing mass&#45;[Fe/H] interpolations. " alt="" coords="2510,556,2663,585"/>
+<area shape="rect" id="node46" href="$InterpSolutionIterator_8h_source.html" title="../Core/InterpSolutionIterator.h" alt="" coords="2072,479,2307,508"/>
+<area shape="rect" id="node48" href="$InterpolatingFunctionALGLIB_8h_source.html" title="../Core/InterpolatingFunction\lALGLIB.h" alt="" coords="3093,384,3315,431"/>
+<area shape="rect" id="node41" href="$LogDerivatives_8h.html" title="Declares a class for differentiating functions of log(arg) w.r.t. arg. " alt="" coords="2382,479,2575,508"/>
+<area shape="rect" id="node47" href="$SerializableSpline1dInterpolant_8h_source.html" title="SerializableSpline1dInterpolant.h" alt="" coords="3033,556,3292,585"/>
 </map>

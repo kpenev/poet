@@ -1,7 +1,0 @@
-digraph "Evolve::ConstSolutionIterator"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{Evolve::ConstSolutionIterator\n|- __real_iterators\l- __mode\l- __wind_saturation\l- __last_age\l- __mstar\l- __mplanet\l- __stellar_angmom\l- __star\l- __placeholder_list\l- __placeholder_iterator\l|+ ConstSolutionIterator()\l+ operator++()\l+ operator bool()\l+ real_quantity()\l+ evolution_mode()\l+ wind_saturation()\l- create_missing_lists()\l- fix_no_evolution()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

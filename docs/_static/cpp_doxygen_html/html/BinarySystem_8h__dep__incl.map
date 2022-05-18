@@ -1,44 +1,47 @@
-<map id="/Users/kpenev/projects/git/poet/poet_src/Evolve/BinarySystem.h" name="/Users/kpenev/projects/git/poet/poet_src/Evolve/BinarySystem.h">
-<area shape="rect" id="node2" href="$ConstSolutionIterator_8h.html" title="Defines the SolutionIterator class. " alt="" coords="457,221,705,281"/>
-<area shape="rect" id="node4" href="$BinarySystem_8cpp.html" title="The definition of some of the methods of the StellarSystem class. " alt="" coords="2430,113,2626,173"/>
-<area shape="rect" id="node5" href="$BreakLockCondition_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/BreakLockCondition.cpp" alt="" coords="2650,113,2849,173"/>
-<area shape="rect" id="node6" href="$BrokenPowerlawPhaseLagZone_8h.html" title="Declares the class that provides the phase lag function to DissipatingZone objects. " alt="" coords="1599,113,1867,173"/>
-<area shape="rect" id="node28" href="$testTidalTorquePower_8h.html" title="Declare a unit tests class that check the calculations of tidal torque and power. ..." alt="" coords="1328,561,1584,637"/>
-<area shape="rect" id="node32" href="$DiskBinarySystem_8h.html" title="Declares a class of binary systems which start with a disk&#45;locked star which is then released and at ..." alt="" coords="2387,569,2584,629"/>
-<area shape="rect" id="node34" href="$OrbitSolver_8h.html" title="Defines the OrbitSolver class, the various stopping conditions and a number of other classes used whi..." alt="" coords="780,113,977,173"/>
-<area shape="rect" id="node36" href="$SaturatingSkumanichWindBody_8h.html" title="Decrales a body subject to angular momentum loss . " alt="" coords="170,329,433,389"/>
-<area shape="rect" id="node41" href="$DissipatingZone_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/DissipatingZone.cpp" alt="" coords="2872,113,3069,173"/>
-<area shape="rect" id="node42" href="$SecondaryDeathCondition_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/SecondaryDeathCondition.cpp" alt="" coords="3093,113,3336,173"/>
-<area shape="rect" id="node43" href="$SynchronizedCondition_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/SynchronizedCondition.cpp" alt="" coords="3360,113,3581,173"/>
-<area shape="rect" id="node3" href="$ConstSolutionIterator_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/ConstSolution\lIterator.cpp" alt="" coords="457,329,705,389"/>
-<area shape="rect" id="node7" href="$BrokenPowerlawPhaseLagZone_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/BrokenPowerlawPhaseLagZone.cpp" alt="" coords="1427,221,1712,281"/>
-<area shape="rect" id="node8" href="$EvolvingStellarZone_8h.html" title="Declares a base class for all stellar zones. " alt="" coords="1001,221,1185,281"/>
-<area shape="rect" id="node25" href="$PlanetZone_8h.html" title="Declares a class for the single zone of LockedPlanet objects. " alt="" coords="1210,221,1404,281"/>
-<area shape="rect" id="node30" href="$LagForcingFrequencyBreakCondition_8cpp.html" title="Definitions of some of the methods of the LagForcingFrequencyBreakCondition class. " alt="" coords="1735,221,2056,281"/>
-<area shape="rect" id="node31" href="$LagSpinBreakCondition_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/LagSpinBreakCondition.cpp" alt="" coords="2080,221,2304,281"/>
-<area shape="rect" id="node9" href="$EvolvingStellarCore_8h.html" title="Declaration of the class representing stellar cores. " alt="" coords="780,329,964,389"/>
-<area shape="rect" id="node23" href="$EvolvingStellarEnvelope_8h.html" title="Declares a class representing convective zones in low mass evolving stars or the whole star for high ..." alt="" coords="987,329,1199,389"/>
-<area shape="rect" id="node24" href="$EvolvingStellarZone_8cpp.html" title="Definitions of some of the methods of EvolvingStellarZone. " alt="" coords="1223,329,1422,389"/>
-<area shape="rect" id="node10" href="$EvolvingStar_8h.html" title="Declares the class for stars that user pre&#45;tabulated stellar evolution tracks. " alt="" coords="889,445,1073,505"/>
-<area shape="rect" id="node11" href="$Star_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Star library. " alt="" coords="2076,569,2260,629"/>
-<area shape="rect" id="node16" href="$MakeStar_8h.html" title="Declares functions for creating stars used by unit tests. " alt="" coords="667,569,869,629"/>
-<area shape="rect" id="node21" href="$testOrbitSolver_8h.html" title="Declares the test suite that exercises the OrbitSolver class and some other clasess necessary to acco..." alt="" coords="974,693,1239,753"/>
-<area shape="rect" id="node12" href="$Evolve_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Evolve library. " alt="" coords="2250,693,2446,753"/>
-<area shape="rect" id="node15" href="$Star_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="2076,817,2260,877"/>
-<area shape="rect" id="node13" href="$Evolve_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="2284,817,2481,877"/>
-<area shape="rect" id="node14" href="$Planet_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="2572,817,2766,877"/>
-<area shape="rect" id="node17" href="$MakeStar_8cpp.html" title="Implement the functions defined in MakeStar.h. " alt="" coords="730,693,950,753"/>
-<area shape="rect" id="node18" href="$testDifferentialEquations_8h.html" title="Unit tests that check the differential equations for eccentricity and semimajor against analytic expr..." alt="" coords="457,685,706,761"/>
-<area shape="rect" id="node19" href="$testDifferentialEquations_8cpp.html" title="Implement the non&#45;inline methods of test_DifferentialEquations. " alt="" coords="457,809,706,885"/>
-<area shape="rect" id="node20" href="$testEvolve_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testEvolve.cpp" alt="" coords="1103,817,1353,877"/>
-<area shape="rect" id="node22" href="$testOrbitSolver_8cpp.html" title="Defines some of the methods of the test suite that exercises the OrbitSolver class and the other clas..." alt="" coords="796,817,1078,877"/>
-<area shape="rect" id="node26" href="$Planet_8h.html" title="Declares a class for planets that are always locked to the orbit. " alt="" coords="1359,445,1553,505"/>
-<area shape="rect" id="node27" href="$Planet_2CInterface_8h.html" title="Declare C&#45;style functions for working with LockedPlanet instances. " alt="" coords="2607,569,2801,629"/>
-<area shape="rect" id="node29" href="$testTidalTorquePower_8cpp.html" title="Define the non&#45;inline methods of test_TidalTorquePower and actually run the tests if compiled in stan..." alt="" coords="1328,685,1584,761"/>
-<area shape="rect" id="node33" href="$DiskBinarySystem_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/Evolve\l/DiskBinarySystem.cpp" alt="" coords="2470,693,2666,753"/>
-<area shape="rect" id="node35" href="$OrbitSolver_8cpp.html" title="Implements some of the members of the OrbitSolver class, the various stopping conditions and a number..." alt="" coords="780,221,977,281"/>
-<area shape="rect" id="node37" href="$SaturatingSkumanichWindBody_8cpp.html" title="Definitions of some of the methods of StaturatingSkumanichWindBody. " alt="" coords="5,569,285,629"/>
-<area shape="rect" id="node38" href="$WindSaturationCondition_8h.html" title="Declaration of a stopping condition monitoring for the surface spin of a star crossing the wind satur..." alt="" coords="193,445,409,505"/>
-<area shape="rect" id="node40" href="$SingleTidalTermBody_8h.html" title="Declare a dissipative body class with a single SingleTidalTermZone. " alt="" coords="446,437,706,513"/>
-<area shape="rect" id="node39" href="$WindSaturationCondition_8cpp.html" title="Definitions of some of the methods of WindSaturationCondition. " alt="" coords="309,569,542,629"/>
+<map id="/home/kpenev/projects/git/poet/poet_src/Evolve/BinarySystem.h" name="/home/kpenev/projects/git/poet/poet_src/Evolve/BinarySystem.h">
+<area shape="rect" id="node2" href="$ConstSolutionIterator_8h.html" title="Defines the SolutionIterator class. " alt="" coords="141,229,389,293"/>
+<area shape="rect" id="node4" href="$BinarySystem_8cpp.html" title="The definition of some of the methods of the StellarSystem class. " alt="" coords="1739,117,1935,181"/>
+<area shape="rect" id="node5" href="$BreakLockCondition_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Evolve\l/BreakLockCondition.cpp" alt="" coords="1959,117,2160,181"/>
+<area shape="rect" id="node6" href="$BrokenPowerlawPhaseLagZone_8h.html" title="Declares the class that provides the phase lag function to DissipatingZone objects. " alt="" coords="1392,117,1663,181"/>
+<area shape="rect" id="node29" href="$testTidalTorquePower_8h.html" title="Declare a unit tests class that check the calculations of tidal torque and power. ..." alt="" coords="2195,583,2454,664"/>
+<area shape="rect" id="node35" href="$DiskBinarySystem_8h.html" title="Declares a class of binary systems which start with a disk&#45;locked star which is then released and at ..." alt="" coords="5,591,201,655"/>
+<area shape="rect" id="node37" href="$OrbitSolver_8h.html" title="Defines the OrbitSolver class, the various stopping conditions and a number of other classes used whi..." alt="" coords="549,117,745,181"/>
+<area shape="rect" id="node39" href="$SaturatingSkumanichWindBody_8h.html" title="Decrales a body subject to angular momentum loss . " alt="" coords="823,341,1090,405"/>
+<area shape="rect" id="node44" href="$DissipatingZone_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Evolve\l/DissipatingZone.cpp" alt="" coords="2184,117,2380,181"/>
+<area shape="rect" id="node45" href="$SecondaryDeathCondition_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Evolve\l/SecondaryDeathCondition.cpp" alt="" coords="2405,117,2650,181"/>
+<area shape="rect" id="node46" href="$SynchronizedCondition_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Evolve\l/SynchronizedCondition.cpp" alt="" coords="2675,117,2897,181"/>
+<area shape="rect" id="node3" href="$ConstSolutionIterator_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/ConstSolution\lIterator.cpp" alt="" coords="141,341,389,405"/>
+<area shape="rect" id="node7" href="$BrokenPowerlawPhaseLagZone_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Evolve\l/BrokenPowerlawPhaseLagZone.cpp" alt="" coords="994,229,1282,293"/>
+<area shape="rect" id="node8" href="$EvolvingStellarZone_8h.html" title="Declares a base class for all stellar zones. " alt="" coords="1306,229,1490,293"/>
+<area shape="rect" id="node26" href="$PlanetZone_8h.html" title="Declares a class for the single zone of LockedPlanet objects. " alt="" coords="1793,341,1987,405"/>
+<area shape="rect" id="node33" href="$LagForcingFrequencyBreakCondition_8cpp.html" title="Definitions of some of the methods of the LagForcingFrequencyBreakCondition class. " alt="" coords="1565,229,1889,293"/>
+<area shape="rect" id="node34" href="$LagSpinBreakCondition_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Evolve\l/LagSpinBreakCondition.cpp" alt="" coords="1914,229,2141,293"/>
+<area shape="rect" id="node9" href="$EvolvingStellarCore_8h.html" title="Declaration of the class representing stellar cores. " alt="" coords="1579,341,1761,405"/>
+<area shape="rect" id="node24" href="$EvolvingStellarEnvelope_8h.html" title="Declares a class representing convective zones in low mass evolving stars or the whole star for high ..." alt="" coords="1115,341,1329,405"/>
+<area shape="rect" id="node25" href="$EvolvingStellarZone_8cpp.html" title="Definitions of some of the methods of EvolvingStellarZone. " alt="" coords="1353,341,1555,405"/>
+<area shape="rect" id="node10" href="$EvolvingStar_8h.html" title="Declares the class for stars that user pre&#45;tabulated stellar evolution tracks. " alt="" coords="1075,462,1257,526"/>
+<area shape="rect" id="node23" href="$EvolvingStellarCore_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Star\l/EvolvingStellarCore.cpp" alt="" coords="1571,462,1769,526"/>
+<area shape="rect" id="node11" href="$Star_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Star library. " alt="" coords="843,591,1025,655"/>
+<area shape="rect" id="node16" href="$MakeStar_8h.html" title="Declares functions for creating stars used by unit tests. " alt="" coords="1419,591,1622,655"/>
+<area shape="rect" id="node21" href="$testOrbitSolver_8h.html" title="Declares the test suite that exercises the OrbitSolver class and some other clasess necessary to acco..." alt="" coords="1123,721,1387,785"/>
+<area shape="rect" id="node12" href="$Evolve_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Evolve library. " alt="" coords="700,721,896,785"/>
+<area shape="rect" id="node15" href="$Star_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="727,850,909,914"/>
+<area shape="rect" id="node13" href="$Evolve_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="507,850,703,914"/>
+<area shape="rect" id="node14" href="$Planet_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="933,850,1127,914"/>
+<area shape="rect" id="node17" href="$MakeStar_8cpp.html" title="Implement the functions defined in MakeStar.h. " alt="" coords="1411,721,1630,785"/>
+<area shape="rect" id="node18" href="$testDifferentialEquations_8h.html" title="Unit tests that check the differential equations for eccentricity and semimajor against analytic expr..." alt="" coords="1654,712,1902,793"/>
+<area shape="rect" id="node19" href="$testDifferentialEquations_8cpp.html" title="Implement the non&#45;inline methods of test_DifferentialEquations. " alt="" coords="1654,841,1902,923"/>
+<area shape="rect" id="node20" href="$testEvolve_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testEvolve.cpp" alt="" coords="2037,850,2287,914"/>
+<area shape="rect" id="node22" href="$testOrbitSolver_8cpp.html" title="Defines some of the methods of the test suite that exercises the OrbitSolver class and the other clas..." alt="" coords="1151,850,1432,914"/>
+<area shape="rect" id="node27" href="$Planet_8h.html" title="Declares a class for planets that are always locked to the orbit. " alt="" coords="1793,462,1987,526"/>
+<area shape="rect" id="node31" href="$testLockMonitoring_8h.html" title="Unit tests that check the machinery for monitoring potential tidal locks. " alt="" coords="1878,591,2171,655"/>
+<area shape="rect" id="node28" href="$Planet_2CInterface_8h.html" title="Declare C&#45;style functions for working with LockedPlanet instances. " alt="" coords="1049,591,1243,655"/>
+<area shape="rect" id="node30" href="$testTidalTorquePower_8cpp.html" title="Define the non&#45;inline methods of test_TidalTorquePower and actually run the tests if compiled in stan..." alt="" coords="2362,712,2621,793"/>
+<area shape="rect" id="node32" href="$testLockMonitoring_8cpp.html" title="Implement the non&#45;inline methods of test_LockMonitoring. " alt="" coords="1925,721,2236,785"/>
+<area shape="rect" id="node36" href="$DiskBinarySystem_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/Evolve\l/DiskBinarySystem.cpp" alt="" coords="5,721,201,785"/>
+<area shape="rect" id="node38" href="$OrbitSolver_8cpp.html" title="Implements some of the members of the OrbitSolver class, the various stopping conditions and a number..." alt="" coords="413,229,609,293"/>
+<area shape="rect" id="node40" href="$SaturatingSkumanichWindBody_8cpp.html" title="Definitions of some of the methods of StaturatingSkumanichWindBody. " alt="" coords="277,591,559,655"/>
+<area shape="rect" id="node41" href="$WindSaturationCondition_8h.html" title="Declaration of a stopping condition monitoring for the surface spin of a star crossing the wind satur..." alt="" coords="591,462,810,526"/>
+<area shape="rect" id="node43" href="$SingleTidalTermBody_8h.html" title="Declare a dissipative body class with a single SingleTidalTermZone. " alt="" coords="1281,453,1547,535"/>
+<area shape="rect" id="node42" href="$WindSaturationCondition_8cpp.html" title="Definitions of some of the methods of WindSaturationCondition. " alt="" coords="583,591,818,655"/>
 </map>

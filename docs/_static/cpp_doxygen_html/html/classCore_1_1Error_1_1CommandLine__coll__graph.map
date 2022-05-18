@@ -1,4 +1,4 @@
 <map id="Core::Error::CommandLine" name="Core::Error::CommandLine">
-<area shape="rect" id="node2" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="28,312,196,409"/>
-<area shape="rect" id="node3" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="29,135,195,264"/>
+<area shape="rect" id="node2" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="28,324,196,427"/>
+<area shape="rect" id="node3" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="29,139,195,276"/>
 </map>

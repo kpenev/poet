@@ -130,12 +130,12 @@ $(document).ready(function(){initNavTree('classEvolve_1_1BrokenPowerlawPhaseLagZ
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4b1a50b42f37c3350d1072b7935050e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a4b1a50b42f37c3350d1072b7935050e1">BrokenPowerlawPhaseLagZone</a> ()</td></tr>
-<tr class="memdesc:a4b1a50b42f37c3350d1072b7935050e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a non-dissipative zone. Must call <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8da2db9075046eaa2954427e0c316d59" title="Seup the zone with the given breaks/powers imposing continuity accress all breaks. Must only be called before use. ">setup()</a> if the zone is dissipative.  <a href="#a4b1a50b42f37c3350d1072b7935050e1">More...</a><br /></td></tr>
+<tr class="memdesc:a4b1a50b42f37c3350d1072b7935050e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a non-dissipative zone. Must call <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2cd10e50222cb48d4bea851629ec59d9" title="Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all brea...">setup()</a> if the zone is dissipative.  <a href="#a4b1a50b42f37c3350d1072b7935050e1">More...</a><br /></td></tr>
 <tr class="separator:a4b1a50b42f37c3350d1072b7935050e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8da2db9075046eaa2954427e0c316d59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8da2db9075046eaa2954427e0c316d59">setup</a> (const std::vector&lt; double &gt; &amp;tidal_frequency_breaks, const std::vector&lt; double &gt; &amp;spin_frequency_breaks, const std::vector&lt; double &gt; &amp;tidal_frequency_powers, const std::vector&lt; double &gt; &amp;spin_frequency_powers, double reference_phase_lag)</td></tr>
-<tr class="memdesc:a8da2db9075046eaa2954427e0c316d59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seup the zone with the given breaks/powers imposing continuity accress all breaks. Must only be called before use.  <a href="#a8da2db9075046eaa2954427e0c316d59">More...</a><br /></td></tr>
-<tr class="separator:a8da2db9075046eaa2954427e0c316d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f5e046cfa3d81bb21884716195d2fd9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a1f5e046cfa3d81bb21884716195d2fd9">configure</a> (bool initialize, double age, double orbital_frequency, double eccentricity, double orbital_angmom, double spin, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a>, bool spin_is_frequency)</td></tr>
+<tr class="memitem:a2cd10e50222cb48d4bea851629ec59d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2cd10e50222cb48d4bea851629ec59d9">setup</a> (const std::vector&lt; double &gt; &amp;tidal_frequency_breaks, const std::vector&lt; double &gt; &amp;spin_frequency_breaks, const std::vector&lt; double &gt; &amp;tidal_frequency_powers, const std::vector&lt; double &gt; &amp;spin_frequency_powers, double reference_phase_lag, double inertial_mode_enhancement=1.0, double inertial_mode_sharpness=10.0)</td></tr>
+<tr class="memdesc:a2cd10e50222cb48d4bea851629ec59d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all breaks. Must only be called before use.  <a href="#a2cd10e50222cb48d4bea851629ec59d9">More...</a><br /></td></tr>
+<tr class="separator:a2cd10e50222cb48d4bea851629ec59d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f5e046cfa3d81bb21884716195d2fd9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a1f5e046cfa3d81bb21884716195d2fd9">configure</a> (bool initialize, double age, double orbital_frequency, double eccentricity, double orbital_angmom, double spin, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>, bool spin_is_frequency)</td></tr>
 <tr class="memdesc:a1f5e046cfa3d81bb21884716195d2fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">See <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">DissipatingZone::configure()</a>.  <a href="#a1f5e046cfa3d81bb21884716195d2fd9">More...</a><br /></td></tr>
 <tr class="separator:a1f5e046cfa3d81bb21884716195d2fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a144ffc9748c4d1d21aaaa5aad1873afd"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a144ffc9748c4d1d21aaaa5aad1873afd">modified_phase_lag</a> (int orbital_frequency_multiplier, int spin_frequency_multiplier, double <a class="el" href="classEvolve_1_1DissipatingZone.html#aeeeb621477ca583d88581822485b5e66">forcing_frequency</a>, Dissipation::QuantityEntry entry, double &amp;above_lock_value) const</td></tr>
@@ -153,10 +153,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a577bc135932afb171a48613bf234a752"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a577bc135932afb171a48613bf234a752">dissipative</a> () const</td></tr>
 <tr class="memdesc:a577bc135932afb171a48613bf234a752"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff disspation has been defined for the zone.  <a href="#a577bc135932afb171a48613bf234a752">More...</a><br /></td></tr>
 <tr class="separator:a577bc135932afb171a48613bf234a752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c906309f40bbb4b8b31689f0e36f2c5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8c906309f40bbb4b8b31689f0e36f2c5">can_lock</a> () const</td></tr>
+<tr class="memdesc:a8c906309f40bbb4b8b31689f0e36f2c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return true iff the zone's dissipation is discontinuous at zero frequency.  <a href="#a8c906309f40bbb4b8b31689f0e36f2c5">More...</a><br /></td></tr>
+<tr class="separator:a8c906309f40bbb4b8b31689f0e36f2c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9ca7a72b81b4fe8c8d362cc853206c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#af9ca7a72b81b4fe8c8d362cc853206c7">~BrokenPowerlawPhaseLagZone</a> ()</td></tr>
 <tr class="memdesc:af9ca7a72b81b4fe8c8d362cc853206c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleanup.  <a href="#af9ca7a72b81b4fe8c8d362cc853206c7">More...</a><br /></td></tr>
 <tr class="separator:af9ca7a72b81b4fe8c8d362cc853206c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classEvolve_1_1DissipatingZone"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classEvolve_1_1DissipatingZone')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classEvolve_1_1DissipatingZone.html">Evolve::DissipatingZone</a></td></tr>
+<tr class="memitem:afd6fd511739d4cbd731291695ddea02d inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#afd6fd511739d4cbd731291695ddea02d">set_evolution_rates</a> (double <a class="el" href="classEvolve_1_1DissipatingZone.html#a8673569e16364e71ad5742242eca3af5">angular_momentum</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>)</td></tr>
+<tr class="memdesc:afd6fd511739d4cbd731291695ddea02d inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set evolution rates for this zone's properties for storing in the eveloution.  <a href="classEvolve_1_1DissipatingZone.html#afd6fd511739d4cbd731291695ddea02d">More...</a><br /></td></tr>
+<tr class="separator:afd6fd511739d4cbd731291695ddea02d inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeeeb621477ca583d88581822485b5e66 inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#aeeeb621477ca583d88581822485b5e66">forcing_frequency</a> (int orbital_frequency_multiplier, int spin_frequency_multiplier, double orbital_frequency) const</td></tr>
 <tr class="memdesc:aeeeb621477ca583d88581822485b5e66 inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="mdescLeft">&#160;</td><td class="mdescRight">The tidal forcing frequency for the given term and orbital frequency.  <a href="classEvolve_1_1DissipatingZone.html#aeeeb621477ca583d88581822485b5e66">More...</a><br /></td></tr>
 <tr class="separator:aeeeb621477ca583d88581822485b5e66 inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -267,19 +273,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a92bb7e7b550521d8d0e85899fce8b9af inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a92bb7e7b550521d8d0e85899fce8b9af">next_stop_age</a> () const</td></tr>
 <tr class="memdesc:a92bb7e7b550521d8d0e85899fce8b9af inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="mdescLeft">&#160;</td><td class="mdescRight">The next age when the evolution needs to be stopped for a change in one of the bodies.  <a href="classEvolve_1_1DissipatingZone.html#a92bb7e7b550521d8d0e85899fce8b9af">More...</a><br /></td></tr>
 <tr class="separator:a92bb7e7b550521d8d0e85899fce8b9af inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428c36c37e27192240a55fea68d9ae9c inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a428c36c37e27192240a55fea68d9ae9c">lock_monitored</a> (bool other=false) const</td></tr>
+<tr class="memdesc:a428c36c37e27192240a55fea68d9ae9c inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="mdescLeft">&#160;</td><td class="mdescRight">Useful for debugging.  <a href="classEvolve_1_1DissipatingZone.html#a428c36c37e27192240a55fea68d9ae9c">More...</a><br /></td></tr>
+<tr class="separator:a428c36c37e27192240a55fea68d9ae9c inherit pub_methods_classEvolve_1_1DissipatingZone"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classEvolve_1_1ZoneOrientation"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classEvolve_1_1ZoneOrientation')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classEvolve_1_1ZoneOrientation.html">Evolve::ZoneOrientation</a></td></tr>
 <tr class="memitem:affe27e26b46157940e71e848ba63fc99 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top"><a id="affe27e26b46157940e71e848ba63fc99"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ZoneOrientation</b> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ZoneOrientation</b> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>)</td></tr>
 <tr class="separator:affe27e26b46157940e71e848ba63fc99 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a91c89eb26b71fd806095ca9c3ebeda52">configure</a> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a>)</td></tr>
+<tr class="memitem:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a91c89eb26b71fd806095ca9c3ebeda52">configure</a> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>)</td></tr>
 <tr class="memdesc:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the zone orientation.  <a href="classEvolve_1_1ZoneOrientation.html#a91c89eb26b71fd806095ca9c3ebeda52">More...</a><br /></td></tr>
 <tr class="separator:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a380e8d561f1b5879ab0cd9a138c2cf1f inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a> () const</td></tr>
-<tr class="memdesc:a380e8d561f1b5879ab0cd9a138c2cf1f inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The angle between the angular momenta of the zone and the orbit.  <a href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">More...</a><br /></td></tr>
-<tr class="separator:a380e8d561f1b5879ab0cd9a138c2cf1f inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3029b0661a3228696721cf8e06e8de7c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a> () const</td></tr>
-<tr class="memdesc:a3029b0661a3228696721cf8e06e8de7c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The argument of periapsis of this zone minus the reference zone's.  <a href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">More...</a><br /></td></tr>
-<tr class="separator:a3029b0661a3228696721cf8e06e8de7c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11f84daeb5cb852058797b5f6217b56c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top"><a id="a11f84daeb5cb852058797b5f6217b56c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_evolution_rates</b> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>)</td></tr>
+<tr class="separator:a11f84daeb5cb852058797b5f6217b56c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a76515f46c29f8af1b0ca4132d2b02 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a> (bool evolution_rate=false) const</td></tr>
+<tr class="memdesc:ab5a76515f46c29f8af1b0ca4132d2b02 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The angle between the angular momenta of the zone and the orbit.  <a href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">More...</a><br /></td></tr>
+<tr class="separator:ab5a76515f46c29f8af1b0ca4132d2b02 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80242443f4384a02668c0b481dff96f6 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a> (bool evolution_rate=false) const</td></tr>
+<tr class="memdesc:a80242443f4384a02668c0b481dff96f6 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The argument of periapsis of this zone minus the reference zone's.  <a href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">More...</a><br /></td></tr>
+<tr class="separator:a80242443f4384a02668c0b481dff96f6 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -289,6 +301,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a63625427647065bdf9c074e406d8397b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a63625427647065bdf9c074e406d8397b">get_orbital_frequency</a> (const <a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system) const</td></tr>
 <tr class="memdesc:a63625427647065bdf9c074e406d8397b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current orbital frequency of the given system.  <a href="#a63625427647065bdf9c074e406d8397b">More...</a><br /></td></tr>
 <tr class="separator:a63625427647065bdf9c074e406d8397b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ac72864dfbd9a78617729b9871806c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ab5ac72864dfbd9a78617729b9871806c">get_inertial_mode_factor</a> (double abs_forcing_frequency, int orbital_frequency_multiplier, int spin_frequency_multiplier, Dissipation::QuantityEntry entry=<a class="el" href="Star_2CInterface_8h.html#a990ea4db1a54550cac7936e4ada27187">Dissipation::NO_DERIV</a>) const</td></tr>
+<tr class="memdesc:ab5ac72864dfbd9a78617729b9871806c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the factor by which dissipation is enhanced due to inertial modes or one of its logarithmic derivatives.  <a href="#ab5ac72864dfbd9a78617729b9871806c">More...</a><br /></td></tr>
+<tr class="separator:ab5ac72864dfbd9a78617729b9871806c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bf2370f48b8a4efe849434837f3af54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a4bf2370f48b8a4efe849434837f3af54">reset</a> ()</td></tr>
 <tr class="separator:a4bf2370f48b8a4efe849434837f3af54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af34cb3028353fa9768d4e5726b849363"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#af34cb3028353fa9768d4e5726b849363">set_spin_index</a> ()</td></tr>
@@ -309,6 +324,8 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:acdff0dc2327ab285c03ecaa320cd5b71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#acdff0dc2327ab285c03ecaa320cd5b71">__dissipative</a></td></tr>
 <tr class="memdesc:acdff0dc2327ab285c03ecaa320cd5b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is the zone dissipative.  <a href="#acdff0dc2327ab285c03ecaa320cd5b71">More...</a><br /></td></tr>
 <tr class="separator:acdff0dc2327ab285c03ecaa320cd5b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e348b63dfeea2fdca19e1de63896d70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2e348b63dfeea2fdca19e1de63896d70">__can_lock</a></td></tr>
+<tr class="separator:a2e348b63dfeea2fdca19e1de63896d70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14bddb4af292713a5280d251df71aead"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a14bddb4af292713a5280d251df71aead">__tidal_frequency_breaks</a></td></tr>
 <tr class="memdesc:a14bddb4af292713a5280d251df71aead"><td class="mdescLeft">&#160;</td><td class="mdescRight">The locations of the breaks in tidal frequency in rad/day.  <a href="#a14bddb4af292713a5280d251df71aead">More...</a><br /></td></tr>
 <tr class="separator:a14bddb4af292713a5280d251df71aead"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -324,6 +341,12 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:aa46203ed5b439b373a84d4bd6f97afca"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#aa46203ed5b439b373a84d4bd6f97afca">__break_phase_lags</a></td></tr>
 <tr class="memdesc:aa46203ed5b439b373a84d4bd6f97afca"><td class="mdescLeft">&#160;</td><td class="mdescRight">The phase lags at the tidal/spin frequency breaks.  <a href="#aa46203ed5b439b373a84d4bd6f97afca">More...</a><br /></td></tr>
 <tr class="separator:aa46203ed5b439b373a84d4bd6f97afca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc6eeff7fc54c1ad4266c94604920110"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#acc6eeff7fc54c1ad4266c94604920110">__inertial_mode_enhancement</a></td></tr>
+<tr class="memdesc:acc6eeff7fc54c1ad4266c94604920110"><td class="mdescLeft">&#160;</td><td class="mdescRight">See <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2cd10e50222cb48d4bea851629ec59d9" title="Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all brea...">setup()</a>  <a href="#acc6eeff7fc54c1ad4266c94604920110">More...</a><br /></td></tr>
+<tr class="separator:acc6eeff7fc54c1ad4266c94604920110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6795467954e6062000bfe816cb6c2baa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a6795467954e6062000bfe816cb6c2baa">__inertial_mode_sharpness</a></td></tr>
+<tr class="memdesc:a6795467954e6062000bfe816cb6c2baa"><td class="mdescLeft">&#160;</td><td class="mdescRight">See <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2cd10e50222cb48d4bea851629ec59d9" title="Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all brea...">setup()</a>  <a href="#a6795467954e6062000bfe816cb6c2baa">More...</a><br /></td></tr>
+<tr class="separator:a6795467954e6062000bfe816cb6c2baa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e786f3dd96901062d02255804eca894"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;::size_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8e786f3dd96901062d02255804eca894">__spin_index</a></td></tr>
 <tr class="memdesc:a8e786f3dd96901062d02255804eca894"><td class="mdescLeft">&#160;</td><td class="mdescRight">The index within __spin_frequency_powers of the powerlaw now in effect.  <a href="#a8e786f3dd96901062d02255804eca894">More...</a><br /></td></tr>
 <tr class="separator:a8e786f3dd96901062d02255804eca894"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -379,9 +402,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Create a non-dissipative zone. Must call <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8da2db9075046eaa2954427e0c316d59" title="Seup the zone with the given breaks/powers imposing continuity accress all breaks. Must only be called before use. ">setup()</a> if the zone is dissipative. </p>
+<p>Create a non-dissipative zone. Must call <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2cd10e50222cb48d4bea851629ec59d9" title="Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all brea...">setup()</a> if the zone is dissipative. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00140">140</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00174">174</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -410,7 +433,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Cleanup. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00265">265</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00318">318</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -472,7 +495,38 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00075">75</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00131">131</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a8c906309f40bbb4b8b31689f0e36f2c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c906309f40bbb4b8b31689f0e36f2c5">&#9670;&nbsp;</a></span>can_lock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Evolve::BrokenPowerlawPhaseLagZone::can_lock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Should return true iff the zone's dissipation is discontinuous at zero frequency. </p>
+
+<p>Implements <a class="el" href="classEvolve_1_1DissipatingZone.html#ac674591c99824ae12773d94a8e4c2275">Evolve::DissipatingZone</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00314">314</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -535,7 +589,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classEvolve_1_1DissipatingZone.html#a5bb25317ab0b9dedebd22488b5ea68f7">Evolve::DissipatingZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00517">517</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00616">616</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -621,7 +675,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classPlanet_1_1PlanetZone.html#a06cfe49173662c7c24b223ce03f0f7b5">Planet::PlanetZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarZone.html#afa61bd0913842ec74a8e7a6edb390376">Star::EvolvingStellarZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00259">259</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00332">332</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -652,7 +706,68 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classEvolve_1_1DissipatingZone.html#a10c785a0a346f8be4b936ec58052c750">Evolve::DissipatingZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00261">261</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00311">311</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+
+</div>
+</div>
+<a id="ab5ac72864dfbd9a78617729b9871806c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ac72864dfbd9a78617729b9871806c">&#9670;&nbsp;</a></span>get_inertial_mode_factor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Evolve::BrokenPowerlawPhaseLagZone::get_inertial_mode_factor </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>abs_forcing_frequency</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>orbital_frequency_multiplier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>spin_frequency_multiplier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Dissipation::QuantityEntry&#160;</td>
+          <td class="paramname"><em>entry</em> = <code><a class="el" href="Star_2CInterface_8h.html#a990ea4db1a54550cac7936e4ada27187">Dissipation::NO_DERIV</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculate the factor by which dissipation is enhanced due to inertial modes or one of its logarithmic derivatives. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">abs_forcing_frequency</td><td>Absolute value of the frequency of the tidal term for which </td></tr>
+    <tr><td class="paramname">orbital_frequency_multiplier</td><td>The multiplier of the orbital frequency in the expression for the forcing frequency. Only used if derivative is requested. </td></tr>
+    <tr><td class="paramname">spin_frequency_multiplier</td><td>The multiplier of the spin frequency in the expression for the forcing frequency. Only used if derivative is requested. </td></tr>
+    <tr><td class="paramname">entry</td><td>If Dissipation::NO_DERIV, return the enhancement factor. Ifthe specified quantity. If anything else, derivative is zero. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00018">18</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -719,7 +834,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00056">56</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00112">112</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -767,7 +882,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classEvolve_1_1DissipatingZone.html#a10961deecf8dc6b4a2cf4e3a8e1c96c8">Evolve::DissipatingZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00215">215</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00265">265</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -838,7 +953,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classEvolve_1_1DissipatingZone.html#a7f4b0fd78d08960a2c6c2b8445903f7a">Evolve::DissipatingZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00338">338</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00419">419</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -868,7 +983,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Print the configuration of the zone to stdlog. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00108">108</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00164">164</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -896,7 +1011,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Cleanup either during destruction or in preparation for changing dissipation. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00018">18</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00074">74</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -926,12 +1041,12 @@ Additional Inherited Members</h2></td></tr>
 <p>Properly set the value of __spin_index per the current spin of the zone. </p>
 <p>Should only be called once, when starting the evolution in a two-body configuration. After that, this values should be updated by stopping conditions. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00027">27</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00083">83</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a8da2db9075046eaa2954427e0c316d59"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8da2db9075046eaa2954427e0c316d59">&#9670;&nbsp;</a></span>setup()</h2>
+<a id="a2cd10e50222cb48d4bea851629ec59d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cd10e50222cb48d4bea851629ec59d9">&#9670;&nbsp;</a></span>setup()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -964,7 +1079,19 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>reference_phase_lag</em>&#160;</td>
+          <td class="paramname"><em>reference_phase_lag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inertial_mode_enhancement</em> = <code>1.0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inertial_mode_sharpness</em> = <code>10.0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -974,7 +1101,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Seup the zone with the given breaks/powers imposing continuity accress all breaks. Must only be called before use. </p>
+<p>Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all breaks. Must only be called before use. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tidal_frequency_breaks</td><td>The locations of the breaks in tidal frequency in rad/day. Entries should be sorted. </td></tr>
@@ -982,11 +1109,14 @@ Additional Inherited Members</h2></td></tr>
     <tr><td class="paramname">tidal_frequency_powers</td><td>The powerlaw indices for the tidal frequency dependence. Should be indexed in the same order as tidal_frequency_breaks, but must contain an additional starting entry for the powerlaw index before the first break. </td></tr>
     <tr><td class="paramname">spin_frequency_powers</td><td>The powerlaw indices for the spin frequency dependence. Should be indexed in the same order as spin_frequency_breaks, but must contain an additional starting entry for the powerlaw index before the first break. </td></tr>
     <tr><td class="paramname">reference_phase_lag</td><td>The phase lag at the first tidal and first spin frequency break. The rest are calculated by imposing continuity. </td></tr>
+    <tr><td class="paramname">inertial_mode_enhancement</td><td>The factor by which dissipation is enhanced in the inertial mode range. </td></tr>
+    <tr><td class="paramname">inertial_mode_sharpness</td><td>A parameter controlling how sharp the transition between non-enhanced and enhanced dissipation is near the inertial mode boundary.</td></tr>
   </table>
   </dd>
 </dl>
+<p>The expression for the enhancement factor is: \( \max\left[\left|\frac{2\Omega_\star}{\Omega_{m,s}}\right|^\beta, \gamma\right] \) Where \(\beta\) is inertial_mode_sharpness, and \(\gamma\) is inertial_mode_enhancement. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00162">162</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00218">218</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -1043,7 +1173,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classEvolve_1_1DissipatingZone.html#a66a99e743852bf8fd287ef5d8bdc7d56">Evolve::DissipatingZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00484">484</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html#l00583">583</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -1090,7 +1220,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00068">68</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00080">80</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1118,7 +1248,32 @@ Additional Inherited Members</h2></td></tr>
 <p>The phase lags at the tidal/spin frequency breaks. </p>
 <p>The tidal frequency break index changes faster and the spin frequency breaks index changes slower. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00035">35</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00040">40</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+
+</div>
+</div>
+<a id="a2e348b63dfeea2fdca19e1de63896d70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e348b63dfeea2fdca19e1de63896d70">&#9670;&nbsp;</a></span>__can_lock</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Evolve::BrokenPowerlawPhaseLagZone::__can_lock</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Is the zone's dissipation discontinuous at zero frequency (hence spin-orbit locks are a possibility). </p>
+
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00032">32</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1144,7 +1299,59 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Is the zone dissipative. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00031">31</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00032">32</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+
+</div>
+</div>
+<a id="acc6eeff7fc54c1ad4266c94604920110"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc6eeff7fc54c1ad4266c94604920110">&#9670;&nbsp;</a></span>__inertial_mode_enhancement</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Evolve::BrokenPowerlawPhaseLagZone::__inertial_mode_enhancement</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>See <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2cd10e50222cb48d4bea851629ec59d9" title="Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all brea...">setup()</a> </p>
+
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00059">59</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+
+</div>
+</div>
+<a id="a6795467954e6062000bfe816cb6c2baa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6795467954e6062000bfe816cb6c2baa">&#9670;&nbsp;</a></span>__inertial_mode_sharpness</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Evolve::BrokenPowerlawPhaseLagZone::__inertial_mode_sharpness</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>See <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a2cd10e50222cb48d4bea851629ec59d9" title="Seup the zone with the given breaks/powers and inertial mode enhancement. Continuous accress all brea...">setup()</a> </p>
+
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00059">59</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1170,7 +1377,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>The locations of the breaks in spin frequency in rad/day. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00035">35</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00040">40</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1196,7 +1403,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>The powerlaw indices for the spin frequency dependence. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00035">35</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00040">40</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1222,7 +1429,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>The index within __spin_frequency_powers of the powerlaw now in effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00054">54</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00066">66</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1248,7 +1455,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>The locations of the breaks in tidal frequency in rad/day. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00035">35</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00040">40</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1274,7 +1481,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>The powerlaw indices for the tidal frequency dependence. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00035">35</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00040">40</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
@@ -1304,13 +1511,13 @@ Additional Inherited Members</h2></td></tr>
 <li>(2 - m) - 5 * m' if m' &lt; 0 This way changing the eccentricity expansion coefficient only affects the tail of the vector. </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00064">64</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html#l00076">76</a> of file <a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a></li>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="BrokenPowerlawPhaseLagZone_8h_source.html">BrokenPowerlawPhaseLagZone.h</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="BrokenPowerlawPhaseLagZone_8cpp_source.html">BrokenPowerlawPhaseLagZone.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -1318,7 +1525,7 @@ Additional Inherited Members</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceEvolve.html">Evolve</a></li><li class="navelem"><a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html">BrokenPowerlawPhaseLagZone</a></li>
-    <li class="footer">Generated on Sat Nov 30 2019 22:01:04 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Fri Apr 23 2021 13:57:11 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

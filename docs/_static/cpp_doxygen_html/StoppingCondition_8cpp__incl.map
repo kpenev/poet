@@ -1,8 +1,8 @@
-<map id="/Users/kpenev/projects/git/poet/poet_src/Evolve/StoppingCondition.cpp" name="/Users/kpenev/projects/git/poet/poet_src/Evolve/StoppingCondition.cpp">
-<area shape="rect" id="node2" href="$StoppingCondition_8h.html" title="Defines the various stopping conditions needed by OrbitSolver. " alt="" coords="714,113,880,141"/>
-<area shape="rect" id="node3" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="5,341,226,385"/>
-<area shape="rect" id="node4" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="721,189,873,217"/>
-<area shape="rect" id="node17" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="204,265,273,293"/>
-<area shape="rect" id="node20" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="1540,265,1739,293"/>
-<area shape="rect" id="node21" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="1763,265,1890,293"/>
+<map id="/home/kpenev/projects/git/poet/poet_src/Evolve/StoppingCondition.cpp" name="/home/kpenev/projects/git/poet/poet_src/Evolve/StoppingCondition.cpp">
+<area shape="rect" id="node2" href="$StoppingCondition_8h.html" title="Defines the various stopping conditions needed by OrbitSolver. " alt="" coords="722,117,890,147"/>
+<area shape="rect" id="node3" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="5,349,225,396"/>
+<area shape="rect" id="node4" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="731,195,881,224"/>
+<area shape="rect" id="node17" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="204,272,275,301"/>
+<area shape="rect" id="node20" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="1561,272,1761,301"/>
+<area shape="rect" id="node21" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="1784,272,1913,301"/>
 </map>

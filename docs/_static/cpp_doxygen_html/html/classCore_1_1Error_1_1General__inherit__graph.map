@@ -1,12 +1,12 @@
 <map id="Core::Error::General" name="Core::Error::General">
-<area shape="rect" id="node3" href="$classCore_1_1Error_1_1ALGLIB.html" title="Error detected by the ALGLIB library. " alt="" coords="504,312,670,409"/>
-<area shape="rect" id="node4" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="693,312,862,409"/>
-<area shape="rect" id="node5" href="$classCore_1_1Error_1_1BadFunctionArguments.html" title="Function arguments do not satisfy some requirement. " alt="" coords="9,457,222,571"/>
-<area shape="rect" id="node7" href="$classCore_1_1Error_1_1CommandLine.html" title="Error related to parsing the command line. " alt="" coords="246,465,459,563"/>
-<area shape="rect" id="node8" href="$classCore_1_1Error_1_1GSLZeroStep.html" title="GSL step size decreased below machine precision. " alt="" coords="484,465,691,563"/>
-<area shape="rect" id="node9" href="$classCore_1_1Error_1_1IO.html" title="Input/Output exception. " alt="" coords="715,465,841,563"/>
-<area shape="rect" id="node10" href="$classCore_1_1Error_1_1NonGSLZeroStep.html" title="Maximum allowed step size decreased below machine precision. " alt="" coords="865,465,1101,563"/>
-<area shape="rect" id="node11" href="$classCore_1_1Error_1_1NotImplemented.html" title="Encountered an unimplemented feature. " alt="" coords="1126,465,1353,563"/>
-<area shape="rect" id="node12" href="$classCore_1_1Error_1_1PathNotFound.html" title="Exception indicating that a file or a directory was not found. " alt="" coords="1377,465,1589,563"/>
-<area shape="rect" id="node6" href="$classCore_1_1Error_1_1BadStellarZone.html" title="Exception indicating unrecognized or unsuitable stellar zone. " alt="" coords="5,619,225,716"/>
+<area shape="rect" id="node3" href="$classCore_1_1Error_1_1ALGLIB.html" title="Error detected by the ALGLIB library. " alt="" coords="504,324,668,427"/>
+<area shape="rect" id="node4" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="693,324,861,427"/>
+<area shape="rect" id="node5" href="$classCore_1_1Error_1_1BadFunctionArguments.html" title="Function arguments do not satisfy some requirement. " alt="" coords="9,475,222,595"/>
+<area shape="rect" id="node7" href="$classCore_1_1Error_1_1CommandLine.html" title="Error related to parsing the command line. " alt="" coords="246,483,459,586"/>
+<area shape="rect" id="node8" href="$classCore_1_1Error_1_1GSLZeroStep.html" title="GSL step size decreased below machine precision. " alt="" coords="484,483,691,586"/>
+<area shape="rect" id="node9" href="$classCore_1_1Error_1_1IO.html" title="Input/Output exception. " alt="" coords="715,483,839,586"/>
+<area shape="rect" id="node10" href="$classCore_1_1Error_1_1NonGSLZeroStep.html" title="Maximum allowed step size decreased below machine precision. " alt="" coords="863,483,1099,586"/>
+<area shape="rect" id="node11" href="$classCore_1_1Error_1_1NotImplemented.html" title="Encountered an unimplemented feature. " alt="" coords="1123,483,1348,586"/>
+<area shape="rect" id="node12" href="$classCore_1_1Error_1_1PathNotFound.html" title="Exception indicating that a file or a directory was not found. " alt="" coords="1372,483,1584,586"/>
+<area shape="rect" id="node6" href="$classCore_1_1Error_1_1BadStellarZone.html" title="Exception indicating unrecognized or unsuitable stellar zone. " alt="" coords="5,643,225,745"/>
 </map>

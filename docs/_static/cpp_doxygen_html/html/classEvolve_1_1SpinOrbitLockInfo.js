@@ -1,12 +1,10 @@
 var classEvolve_1_1SpinOrbitLockInfo =
 [
     [ "SpinOrbitLockInfo", "classEvolve_1_1SpinOrbitLockInfo.html#adf9f0b0c3fedefbec36a536c217486b4", null ],
-    [ "SpinOrbitLockInfo", "classEvolve_1_1SpinOrbitLockInfo.html#a1df763a44611ec60a45fbb73ee11371f", null ],
     [ "lock_direction", "classEvolve_1_1SpinOrbitLockInfo.html#a088dc11a98e8507d2f386e4c73582123", null ],
     [ "lock_direction", "classEvolve_1_1SpinOrbitLockInfo.html#a8f559934943781a5299a56c91419bea3", null ],
     [ "operator bool", "classEvolve_1_1SpinOrbitLockInfo.html#ae04408a18cbe71d104d1b070c155e1d3", null ],
     [ "operator()", "classEvolve_1_1SpinOrbitLockInfo.html#acc7f917246d5cbbcc2d5c951ae507dd0", null ],
-    [ "operator=", "classEvolve_1_1SpinOrbitLockInfo.html#af63d4d5e118368d458547b3419be3a7a", null ],
     [ "operator==", "classEvolve_1_1SpinOrbitLockInfo.html#ae6093847592d110e1c962e135365b384", null ],
     [ "orbital_frequency_multiplier", "classEvolve_1_1SpinOrbitLockInfo.html#a9180de9d25a27f9e9fd6cce06ad9bb35", null ],
     [ "set_lock", "classEvolve_1_1SpinOrbitLockInfo.html#acf79ad3cee7b9499417a327abc25cbd4", null ],

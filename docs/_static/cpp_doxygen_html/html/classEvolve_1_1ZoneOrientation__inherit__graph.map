@@ -1,11 +1,11 @@
 <map id="Evolve::ZoneOrientation" name="Evolve::ZoneOrientation">
-<area shape="rect" id="node2" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="340,199,561,808"/>
-<area shape="rect" id="node3" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="162,856,446,1321"/>
-<area shape="rect" id="node8" href="$classEvolve_1_1PolynomialEvolutionZone.html" title="{Evolve::PolynomialEvolutionZone\n|&#45; __mass_coefficients\l&#45; __radius_coefficients\l&#45; __inertia_coefficients\l&#45; __current_mass\l&#45; __current_radius\l&#45; __current_inertia\l|+ PolynomialEvolutionZone()\l+ configure()\l+ outer_mass()\l+ outer_mass()\l+ outer_radius()\l+ outer_radius()\l+ moment_of_inertia()\l+ moment_of_inertia()\l+ love_coefficient()\l&#45; evaluate_polynomial()\l}" alt="" coords="469,936,728,1241"/>
-<area shape="rect" id="node4" href="$classPlanet_1_1PlanetZone.html" title="The only zone of a LockedPlanet. " alt="" coords="5,1385,187,1643"/>
-<area shape="rect" id="node5" href="$classStar_1_1EvolvingStellarZone.html" title="Base class for zones of low mass evolving stars. " alt="" coords="211,1369,424,1659"/>
-<area shape="rect" id="node6" href="$classStar_1_1EvolvingStellarCore.html" title="Radiative core for low mass evolving stars. " alt="" coords="97,1707,297,1900"/>
-<area shape="rect" id="node7" href="$classStar_1_1EvolvingStellarEnvelope.html" title="Surface convective zone for low mass evolving stars or the entire star for high mass stars..." alt="" coords="321,1715,553,1892"/>
-<area shape="rect" id="node9" href="$classEvolve_1_1ConstPhaseLagZone.html" title="A zone with constant phase lag for all tidal terms. " alt="" coords="472,1457,701,1571"/>
-<area shape="rect" id="node10" href="$classEvolve_1_1SingleTidalTermZone.html" title="A zone dissipative to only a single tidal term. " alt="" coords="725,1433,955,1595"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="342,260,565,952"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="161,1000,447,1588"/>
+<area shape="rect" id="node8" href="$classEvolve_1_1PolynomialEvolutionZone.html" title="{Evolve::PolynomialEvolutionZone\n|&#45; __mass_coefficients\l&#45; __radius_coefficients\l&#45; __inertia_coefficients\l&#45; __current_mass\l&#45; __current_radius\l&#45; __current_inertia\l|+ PolynomialEvolutionZone()\l+ configure()\l+ outer_mass()\l+ outer_mass()\l+ outer_radius()\l+ outer_radius()\l+ moment_of_inertia()\l+ moment_of_inertia()\l+ love_coefficient()\l&#45; evaluate_polynomial()\l}" alt="" coords="471,1130,734,1458"/>
+<area shape="rect" id="node4" href="$classPlanet_1_1PlanetZone.html" title="The only zone of a LockedPlanet. " alt="" coords="5,1653,187,1929"/>
+<area shape="rect" id="node5" href="$classStar_1_1EvolvingStellarZone.html" title="Base class for zones of low mass evolving stars. " alt="" coords="211,1636,423,1947"/>
+<area shape="rect" id="node6" href="$classStar_1_1EvolvingStellarCore.html" title="Radiative core for low mass evolving stars. " alt="" coords="81,1995,303,2305"/>
+<area shape="rect" id="node7" href="$classStar_1_1EvolvingStellarEnvelope.html" title="Surface convective zone for low mass evolving stars or the entire star for high mass stars..." alt="" coords="327,2055,561,2245"/>
+<area shape="rect" id="node9" href="$classEvolve_1_1ConstPhaseLagZone.html" title="A zone with constant phase lag for all tidal terms. " alt="" coords="474,1723,705,1860"/>
+<area shape="rect" id="node10" href="$classEvolve_1_1SingleTidalTermZone.html" title="A zone dissipative to only a single tidal term. " alt="" coords="729,1697,964,1886"/>
 </map>

@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="orbital_evolution.binary module" href="orbital_evolution.binary.html" />
     <link rel="prev" title="evolution_cmdline_args module" href="evolution_cmdline_args.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -178,23 +173,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="module-orbital_evolution">
@@ -209,6 +199,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="orbital_evolution.c_interface_util.html">orbital_evolution.c_interface_util module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orbital_evolution.command_line_util.html">orbital_evolution.command_line_util module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="orbital_evolution.command_line_util.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="orbital_evolution.dissipating_body.html">orbital_evolution.dissipating_body module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="orbital_evolution.dissipating_body.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -246,7 +240,7 @@
         <a href="orbital_evolution.binary.html" class="btn btn-neutral float-right" title="orbital_evolution.binary module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="evolution_cmdline_args.html" class="btn btn-neutral float-left" title="evolution_cmdline_args module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="evolution_cmdline_args.html" class="btn btn-neutral" title="evolution_cmdline_args module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -272,16 +266,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -122,6 +122,7 @@ var hierarchy =
     [ "Suite", null, [
       [ "Evolve::test_DifferentialEquations", "classEvolve_1_1test__DifferentialEquations.html", null ],
       [ "Evolve::test_GravitationalPotential", "classEvolve_1_1test__GravitationalPotential.html", null ],
+      [ "Evolve::test_LockMonitoring", "classEvolve_1_1test__LockMonitoring.html", null ],
       [ "Evolve::test_OrbitSolver", "classEvolve_1_1test__OrbitSolver.html", null ],
       [ "Evolve::test_TidalTorquePower", "classEvolve_1_1test__TidalTorquePower.html", null ]
     ] ],

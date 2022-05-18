@@ -37,6 +37,8 @@ var dir_b0d6cff916ebd2669466b6e92e09c107 =
     [ "testEvolve.cpp", "testEvolve_8cpp_source.html", null ],
     [ "testGravitationalPotential.cpp", "testGravitationalPotential_8cpp.html", null ],
     [ "testGravitationalPotential.h", "testGravitationalPotential_8h.html", null ],
+    [ "testLockMonitoring.cpp", "testLockMonitoring_8cpp.html", "testLockMonitoring_8cpp" ],
+    [ "testLockMonitoring.h", "testLockMonitoring_8h.html", null ],
     [ "testOrbitSolver.cpp", "testOrbitSolver_8cpp.html", "testOrbitSolver_8cpp" ],
     [ "testOrbitSolver.h", "testOrbitSolver_8h.html", null ],
     [ "testTidalTorquePower.cpp", "testTidalTorquePower_8cpp.html", null ],

@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -158,23 +153,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="namespace-stellarevolution">
@@ -182,57 +172,57 @@
 <div class="contents local topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#namespaces" id="id2">Namespaces</a></p></li>
-<li><p><a class="reference internal" href="#classes" id="id3">Classes</a></p></li>
-<li><p><a class="reference internal" href="#enums" id="id4">Enums</a></p></li>
-<li><p><a class="reference internal" href="#functions" id="id5">Functions</a></p></li>
-<li><p><a class="reference internal" href="#variables" id="id6">Variables</a></p></li>
+<li><a class="reference internal" href="#namespaces" id="id2">Namespaces</a></li>
+<li><a class="reference internal" href="#classes" id="id3">Classes</a></li>
+<li><a class="reference internal" href="#enums" id="id4">Enums</a></li>
+<li><a class="reference internal" href="#functions" id="id5">Functions</a></li>
+<li><a class="reference internal" href="#variables" id="id6">Variables</a></li>
 </ul>
 </div>
 <div class="section" id="namespaces">
 <h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="namespace_StellarEvolution__CustomStellarEvolution.html#namespace-stellarevolution-customstellarevolution"><span class="std std-ref">Namespace StellarEvolution::CustomStellarEvolution</span></a></p></li>
-<li><p><a class="reference internal" href="namespace_StellarEvolution__MESA.html#namespace-stellarevolution-mesa"><span class="std std-ref">Namespace StellarEvolution::MESA</span></a></p></li>
+<li><a class="reference internal" href="namespace_StellarEvolution__CustomStellarEvolution.html#namespace-stellarevolution-customstellarevolution"><span class="std std-ref">Namespace StellarEvolution::CustomStellarEvolution</span></a></li>
+<li><a class="reference internal" href="namespace_StellarEvolution__MESA.html#namespace-stellarevolution-mesa"><span class="std std-ref">Namespace StellarEvolution::MESA</span></a></li>
 </ul>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="classStellarEvolution_1_1AllowedGridGrowth.html#exhale-class-classstellarevolution-1-1allowedgridgrowth"><span class="std std-ref">Class AllowedGridGrowth</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1EvolvingStellarQuantity.html#exhale-class-classstellarevolution-1-1evolvingstellarquantity"><span class="std std-ref">Class EvolvingStellarQuantity</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1InterpolatedDerivatives.html#exhale-class-classstellarevolution-1-1interpolatedderivatives"><span class="std std-ref">Class InterpolatedDerivatives</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1InterpolationQueue.html#exhale-class-classstellarevolution-1-1interpolationqueue"><span class="std std-ref">Class InterpolationQueue</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1Interpolator.html#exhale-class-classstellarevolution-1-1interpolator"><span class="std std-ref">Class Interpolator</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1LogDerivatives.html#exhale-class-classstellarevolution-1-1logderivatives"><span class="std std-ref">Class LogDerivatives</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1MockStellarEvolution.html#exhale-class-classstellarevolution-1-1mockstellarevolution"><span class="std std-ref">Class MockStellarEvolution</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1PolynomialEvolutionQuantity.html#exhale-class-classstellarevolution-1-1polynomialevolutionquantity"><span class="std std-ref">Class PolynomialEvolutionQuantity</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1RemoveLogDeriv.html#exhale-class-classstellarevolution-1-1removelogderiv"><span class="std std-ref">Class RemoveLogDeriv</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1SumDerivatives.html#exhale-class-classstellarevolution-1-1sumderivatives"><span class="std std-ref">Class SumDerivatives</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1SumQuantity.html#exhale-class-classstellarevolution-1-1sumquantity"><span class="std std-ref">Class SumQuantity</span></a></p></li>
-<li><p><a class="reference internal" href="classStellarEvolution_1_1ZeroQuantity.html#exhale-class-classstellarevolution-1-1zeroquantity"><span class="std std-ref">Class ZeroQuantity</span></a></p></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1AllowedGridGrowth.html#exhale-class-classstellarevolution-1-1allowedgridgrowth"><span class="std std-ref">Class AllowedGridGrowth</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1EvolvingStellarQuantity.html#exhale-class-classstellarevolution-1-1evolvingstellarquantity"><span class="std std-ref">Class EvolvingStellarQuantity</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1InterpolatedDerivatives.html#exhale-class-classstellarevolution-1-1interpolatedderivatives"><span class="std std-ref">Class InterpolatedDerivatives</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1InterpolationQueue.html#exhale-class-classstellarevolution-1-1interpolationqueue"><span class="std std-ref">Class InterpolationQueue</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1Interpolator.html#exhale-class-classstellarevolution-1-1interpolator"><span class="std std-ref">Class Interpolator</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1LogDerivatives.html#exhale-class-classstellarevolution-1-1logderivatives"><span class="std std-ref">Class LogDerivatives</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1MockStellarEvolution.html#exhale-class-classstellarevolution-1-1mockstellarevolution"><span class="std std-ref">Class MockStellarEvolution</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1PolynomialEvolutionQuantity.html#exhale-class-classstellarevolution-1-1polynomialevolutionquantity"><span class="std std-ref">Class PolynomialEvolutionQuantity</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1RemoveLogDeriv.html#exhale-class-classstellarevolution-1-1removelogderiv"><span class="std std-ref">Class RemoveLogDeriv</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1SumDerivatives.html#exhale-class-classstellarevolution-1-1sumderivatives"><span class="std std-ref">Class SumDerivatives</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1SumQuantity.html#exhale-class-classstellarevolution-1-1sumquantity"><span class="std std-ref">Class SumQuantity</span></a></li>
+<li><a class="reference internal" href="classStellarEvolution_1_1ZeroQuantity.html#exhale-class-classstellarevolution-1-1zeroquantity"><span class="std std-ref">Class ZeroQuantity</span></a></li>
 </ul>
 </div>
 <div class="section" id="enums">
 <h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="enum_InterpolationQuantities_8h_1abdbe1c951bf4374d58106a183e7b5765.html#exhale-enum-interpolationquantities-8h-1abdbe1c951bf4374d58106a183e7b5765"><span class="std std-ref">Enum QuantityID</span></a></p></li>
+<li><a class="reference internal" href="enum_InterpolationQuantities_8h_1abdbe1c951bf4374d58106a183e7b5765.html#exhale-enum-interpolationquantities-8h-1abdbe1c951bf4374d58106a183e7b5765"><span class="std std-ref">Enum QuantityID</span></a></li>
 </ul>
 </div>
 <div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="function_ThreadedInterpolation_8cpp_1a04a0cfad61bb9ededeb7aadb06beb310.html#exhale-function-threadedinterpolation-8cpp-1a04a0cfad61bb9ededeb7aadb06beb310"><span class="std std-ref">Function StellarEvolution::do_interpolation</span></a></p></li>
-<li><p><a class="reference internal" href="function_PolynomialEvolution_8cpp_1a1b60261683e9da19fc1f446af8c4de17.html#exhale-function-polynomialevolution-8cpp-1a1b60261683e9da19fc1f446af8c4de17"><span class="std std-ref">Function StellarEvolution::exact_track</span></a></p></li>
-<li><p><a class="reference internal" href="function_PolynomialEvolution_8cpp_1acaa7d4423d477b691dffe5f806cabb7b.html#exhale-function-polynomialevolution-8cpp-1acaa7d4423d477b691dffe5f806cabb7b"><span class="std std-ref">Function StellarEvolution::make_linear_I_evolution</span></a></p></li>
-<li><p><a class="reference internal" href="function_PolynomialEvolution_8cpp_1a8f284ee0fe28a9ce0f93e0acca27c278.html#exhale-function-polynomialevolution-8cpp-1a8f284ee0fe28a9ce0f93e0acca27c278"><span class="std std-ref">Function StellarEvolution::make_no_evolution</span></a></p></li>
-<li><p><a class="reference internal" href="function_mass__feh__interp_8cpp_1a2decadfd9cdc3a9cb9914d9f4fbf6f31.html#exhale-function-mass-feh-interp-8cpp-1a2decadfd9cdc3a9cb9914d9f4fbf6f31"><span class="std std-ref">Function StellarEvolution::mass_feh_interp</span></a></p></li>
+<li><a class="reference internal" href="function_ThreadedInterpolation_8cpp_1a04a0cfad61bb9ededeb7aadb06beb310.html#exhale-function-threadedinterpolation-8cpp-1a04a0cfad61bb9ededeb7aadb06beb310"><span class="std std-ref">Function StellarEvolution::do_interpolation</span></a></li>
+<li><a class="reference internal" href="function_PolynomialEvolution_8cpp_1a1b60261683e9da19fc1f446af8c4de17.html#exhale-function-polynomialevolution-8cpp-1a1b60261683e9da19fc1f446af8c4de17"><span class="std std-ref">Function StellarEvolution::exact_track</span></a></li>
+<li><a class="reference internal" href="function_PolynomialEvolution_8cpp_1acaa7d4423d477b691dffe5f806cabb7b.html#exhale-function-polynomialevolution-8cpp-1acaa7d4423d477b691dffe5f806cabb7b"><span class="std std-ref">Function StellarEvolution::make_linear_I_evolution</span></a></li>
+<li><a class="reference internal" href="function_PolynomialEvolution_8cpp_1a8f284ee0fe28a9ce0f93e0acca27c278.html#exhale-function-polynomialevolution-8cpp-1a8f284ee0fe28a9ce0f93e0acca27c278"><span class="std std-ref">Function StellarEvolution::make_no_evolution</span></a></li>
+<li><a class="reference internal" href="function_mass__feh__interp_8cpp_1a2decadfd9cdc3a9cb9914d9f4fbf6f31.html#exhale-function-mass-feh-interp-8cpp-1a2decadfd9cdc3a9cb9914d9f4fbf6f31"><span class="std std-ref">Function StellarEvolution::mass_feh_interp</span></a></li>
 </ul>
 </div>
 <div class="section" id="variables">
 <h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="variable_InterpolationQuantities_8h_1abf34aa821b267e8329083736691443cd.html#exhale-variable-interpolationquantities-8h-1abf34aa821b267e8329083736691443cd"><span class="std std-ref">Variable StellarEvolution::QUANTITY_NAME</span></a></p></li>
+<li><a class="reference internal" href="variable_InterpolationQuantities_8h_1abf34aa821b267e8329083736691443cd.html#exhale-variable-interpolationquantities-8h-1abf34aa821b267e8329083736691443cd"><span class="std std-ref">Variable StellarEvolution::QUANTITY_NAME</span></a></li>
 </ul>
 </div>
 </div>
@@ -265,16 +255,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

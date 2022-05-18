@@ -204,6 +204,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1test__GravitationalPotential.html">test_GravitationalPotential</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The test suite that compares the tidal potential expansion to the exact expression.  <a href="classEvolve_1_1test__GravitationalPotential.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1test__LockMonitoring.html">test_LockMonitoring</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The test suite that ensures the correct locks are selected for monitoring and the fixes applied to the tidal frequency are correct.  <a href="classEvolve_1_1test__LockMonitoring.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1test__OrbitSolver.html">test_OrbitSolver</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The test suite that exercises the <a class="el" href="classEvolve_1_1OrbitSolver.html" title="Solves the system of ODEs describing the evolution of a single planet around a single star...">OrbitSolver</a> class.  <a href="classEvolve_1_1test__OrbitSolver.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -242,22 +245,26 @@ typedef bool(*&#160;</td><td class="memItemRight" valign="bottom"><b>STOP_EVOL_T
 Enumerations</h2></td></tr>
 <tr class="memitem:a9cce22e00bdb61d9aabad3e170a5b20d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20d">ZoneEvolutionQuantities</a> { <br />
 &#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da7c74c5f04b81fa0400175a1c91b26724">ANGULAR_MOMENTUM</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da7f476ba5d9a2c1bf06f60eade6c54e37">ANGULAR_MOMENTUM_DERIV</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da6d019a45e097d89ef0bd18b216786d37">INCLINATION</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa161d0dc8826d2b0a633f6665957b68d">PERIAPSIS</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da354ad7e7c765cbe0a1a4cc58b331c49d">MOMENT_OF_INERTIA</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa9d3ebd443a68e7498e17a6eec68151b">INCLINATION_DERIV</a>, 
 <br />
-&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9651c9e7c6c4d55729089baad90447ab">MOMENT_OF_INERTIA_FIRST_DERIV</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da0e7ec834e9eff9dc8810b365a6e404ca">MOMENT_OF_INERTIA_SECOND_DERIV</a>, 
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa161d0dc8826d2b0a633f6665957b68d">PERIAPSIS</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa2ee8a75e267a0f3b42b3c79e9aba323">PERIAPSIS_DERIV</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da354ad7e7c765cbe0a1a4cc58b331c49d">MOMENT_OF_INERTIA</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9651c9e7c6c4d55729089baad90447ab">MOMENT_OF_INERTIA_FIRST_DERIV</a>, 
+<br />
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da0e7ec834e9eff9dc8810b365a6e404ca">MOMENT_OF_INERTIA_SECOND_DERIV</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da1f60c3a5740d8f021e41ddad7d7b4232">OUTER_RADIUS</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dab42383a85737ee3d0e1cdde1bb1487ef">OUTER_RADIUS_FIRST_DERIV</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9e8ca88adbf48cef55e3f0f037f51fa2">OUTER_RADIUS_SECOND_DERIV</a>, 
 <br />
-&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9e8ca88adbf48cef55e3f0f037f51fa2">OUTER_RADIUS_SECOND_DERIV</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da575772f8f9058899e3980f1f9346b1e8">OUTER_MASS</a>, 
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da575772f8f9058899e3980f1f9346b1e8">OUTER_MASS</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dac89a3367d97073c935db7241b75fd92d">OUTER_MASS_DERIV</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da43f29a31c2da9827f2eaca745e57f4c9">NUM_REAL_EVOL_QUANTITIES</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dab16a303eae079417f53138e24a97b328">E_ORDER</a> =NUM_REAL_EVOL_QUANTITIES, 
 <br />
-&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dab16a303eae079417f53138e24a97b328">E_ORDER</a> =NUM_REAL_EVOL_QUANTITIES, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daad0ba41e77f5506a9e06f923761d8858">ORBITAL_FREQ_MULTIPLIER</a>, 
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daad0ba41e77f5506a9e06f923761d8858">ORBITAL_FREQ_MULTIPLIER</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daf9f0bd82d4cffa9d5e3a5205444ee31a">SPIN_FREQ_MULTIPLIER</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da3698878116a5b6ef4ee1966bee5dbbab">NUM_EVOL_QUANTITIES</a>
 <br />
@@ -357,6 +364,9 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 Variables</h2></td></tr>
 <tr class="memitem:a2d07f6ce4f1521843a22e4d582a0cbfe"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><b>MIN_RELATIVE_STEP</b></td></tr>
 <tr class="separator:a2d07f6ce4f1521843a22e4d582a0cbfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f8637987e7bca6539fbccca4652741b"><td class="memItemLeft" align="right" valign="top"><a id="a0f8637987e7bca6539fbccca4652741b"></a>
+const double&#160;</td><td class="memItemRight" valign="bottom"><b>epsilon</b> = std::numeric_limits&lt;double&gt;::epsilon()</td></tr>
+<tr class="separator:a0f8637987e7bca6539fbccca4652741b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a846914b09cbcbf00576e7c1be13896a6"><td class="memItemLeft" align="right" valign="top"><a id="a846914b09cbcbf00576e7c1be13896a6"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><b>TSTART</b> = 2.0 * <a class="el" href="unit__tests_2shared_2Common_8h.html#a41cad9b1c5ba64778c313da6e9187846">MIN_AGE</a></td></tr>
 <tr class="separator:a846914b09cbcbf00576e7c1be13896a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -459,9 +469,15 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><b>one</b> = 1.0
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9cce22e00bdb61d9aabad3e170a5b20da7c74c5f04b81fa0400175a1c91b26724"></a>ANGULAR_MOMENTUM&#160;</td><td class="fielddoc"><p>Angular momentum of the zone. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a9cce22e00bdb61d9aabad3e170a5b20da7f476ba5d9a2c1bf06f60eade6c54e37"></a>ANGULAR_MOMENTUM_DERIV&#160;</td><td class="fielddoc"><p>The rate at which angular momentum changes. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a9cce22e00bdb61d9aabad3e170a5b20da6d019a45e097d89ef0bd18b216786d37"></a>INCLINATION&#160;</td><td class="fielddoc"><p>Inclination of the zone. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a9cce22e00bdb61d9aabad3e170a5b20daa9d3ebd443a68e7498e17a6eec68151b"></a>INCLINATION_DERIV&#160;</td><td class="fielddoc"><p>The rate at which the the inclination changes. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a9cce22e00bdb61d9aabad3e170a5b20daa161d0dc8826d2b0a633f6665957b68d"></a>PERIAPSIS&#160;</td><td class="fielddoc"><p>Periapsis of the zone. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9cce22e00bdb61d9aabad3e170a5b20daa2ee8a75e267a0f3b42b3c79e9aba323"></a>PERIAPSIS_DERIV&#160;</td><td class="fielddoc"><p>The rate at which periapsis changes. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a9cce22e00bdb61d9aabad3e170a5b20da354ad7e7c765cbe0a1a4cc58b331c49d"></a>MOMENT_OF_INERTIA&#160;</td><td class="fielddoc"><p>Moment of inertia of the zone. </p>
 </td></tr>
@@ -492,7 +508,7 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><b>one</b> = 1.0
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00027">27</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00028">28</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1176,7 +1192,7 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><b>one</b> = 1.0
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceEvolve.html">Evolve</a></li>
-    <li class="footer">Generated on Sat Nov 30 2019 22:01:04 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Fri Apr 23 2021 13:57:11 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

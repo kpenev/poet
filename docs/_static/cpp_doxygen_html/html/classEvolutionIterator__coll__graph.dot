@@ -1,7 +1,0 @@
-digraph "EvolutionIterator"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{EvolutionIterator\n|+ mass_iter\l+ age_iter\l+ radius_iter\l+ luminosity_iter\l+ rad_mass_iter\l+ core_boundary_iter\l+ conv_inertia_iter\l+ rad_inertia_iter\l|+ EvolutionIterator()\l+ EvolutionIterator()\l+ operator=()\l+ operator++()\l+ operator++()\l+ operator==()\l+ operator!=()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

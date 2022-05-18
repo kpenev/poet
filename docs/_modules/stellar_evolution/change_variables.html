@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -156,7 +151,7 @@
 
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">scipy.interpolate</span>
 <span class="kn">import</span> <span class="nn">scipy.linalg</span>
 <span class="kn">import</span> <span class="nn">scipy.optimize</span>
@@ -178,17 +173,13 @@
 
 <div class="viewcode-block" id="QuantityEvaluator.__init__"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">interpolator</span><span class="p">,</span>
-                 <span class="n">feh</span><span class="p">,</span>
-                 <span class="n">min_mass</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                 <span class="n">max_mass</span><span class="o">=</span><span class="n">scipy</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                 <span class="n">feh</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">reference_values</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set-up to use the given interpolator.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">interp</span> <span class="o">=</span> <span class="n">interpolator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">feh</span> <span class="o">=</span> <span class="n">feh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span> <span class="o">=</span> <span class="n">reference_values</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="o">=</span> <span class="n">min_mass</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span> <span class="o">=</span> <span class="n">max_mass</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;teff&#39;</span><span class="p">,</span> <span class="s1">&#39;logg&#39;</span><span class="p">,</span> <span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="s1">&#39;rho&#39;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reference_values</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span></div>
@@ -197,55 +188,79 @@
     <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="n">quantity</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Evaluate the given quantity at the given age.&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">age</span> <span class="o">&lt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">min_age</span> <span class="ow">or</span> <span class="n">age</span> <span class="o">&gt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">max_age</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="n">quantity</span><span class="o">.</span><span class="n">min_age</span> <span class="o">&lt;</span> <span class="n">age</span> <span class="o">&lt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">max_age</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">quantity</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span></div>
 
-        <span class="k">return</span> <span class="n">quantity</span><span class="p">(</span><span class="n">age</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="QuantityEvaluator.teff"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.teff">[docs]</a>    <span class="k">def</span> <span class="nf">teff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+<div class="viewcode-block" id="QuantityEvaluator.teff"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.teff">[docs]</a>    <span class="k">def</span> <span class="nf">teff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">feh</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the effective temperature for the given stellar params.&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="n">feh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
-            <span class="n">TeffK</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">),</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)),</span>
-            <span class="n">age</span>
-        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;teff&#39;</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="o">.</span><span class="n">in_range</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">)</span>
+            <span class="n">luminosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+                <span class="n">TeffK</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">luminosity</span><span class="p">),</span>
+                <span class="n">age</span>
+            <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;teff&#39;</span><span class="p">]</span>
+            <span class="n">radius</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="n">luminosity</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
 
-<div class="viewcode-block" id="QuantityEvaluator.rho"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.rho">[docs]</a>    <span class="k">def</span> <span class="nf">rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator.rho"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.rho">[docs]</a>    <span class="k">def</span> <span class="nf">rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">feh</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the density for the given stellar params.&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="n">feh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
-            <span class="n">RhoCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)),</span>
-            <span class="n">age</span>
-        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="o">.</span><span class="n">in_range</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+                <span class="n">RhoCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">radius</span><span class="p">),</span>
+                <span class="n">age</span>
+            <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span>
+            <span class="n">radius</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
 
-<div class="viewcode-block" id="QuantityEvaluator.logg"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.logg">[docs]</a>    <span class="k">def</span> <span class="nf">logg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator.logg"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.logg">[docs]</a>    <span class="k">def</span> <span class="nf">logg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">feh</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return log10(surface gravity) for the given stellar params.&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="n">feh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
-            <span class="n">LogGCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)),</span>
-            <span class="n">age</span>
-        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;logg&#39;</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="o">.</span><span class="n">in_range</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+                <span class="n">LogGCGS</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">radius</span><span class="p">),</span>
+                <span class="n">age</span>
+            <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;logg&#39;</span><span class="p">]</span>
+            <span class="n">radius</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
 
-<div class="viewcode-block" id="QuantityEvaluator.lum"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.lum">[docs]</a>    <span class="k">def</span> <span class="nf">lum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span></div>
+
+<div class="viewcode-block" id="QuantityEvaluator.lum"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.QuantityEvaluator.lum">[docs]</a>    <span class="k">def</span> <span class="nf">lum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">feh</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return log10(surface gravity) for the given stellar params.&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">mass</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_mass</span> <span class="ow">or</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mass</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="n">feh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">),</span>
-            <span class="n">age</span>
-        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;lum&#39;</span><span class="p">]</span></div></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="o">.</span><span class="n">in_range</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">):</span>
+            <span class="n">luminosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="s1">&#39;lum&#39;</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feh</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span>
+                <span class="n">luminosity</span><span class="p">,</span>
+                <span class="n">age</span>
+            <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="p">[</span><span class="s1">&#39;lum&#39;</span><span class="p">]</span>
+            <span class="n">luminosity</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span></div></div>
 
 <div class="viewcode-block" id="VarChangingInterpolator"><a class="viewcode-back" href="../../_implementation/stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator">[docs]</a><span class="k">class</span> <span class="nc">VarChangingInterpolator</span><span class="p">(</span><span class="n">MESAInterpolator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -368,7 +383,7 @@
         <span class="n">missmatch</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">evaluator</span><span class="p">,</span> <span class="n">quantity_name</span><span class="p">)</span>
                      <span class="k">for</span> <span class="n">quantity_name</span><span class="p">,</span> <span class="n">reference</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
         <span class="n">solution</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">m_t</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">miss</span><span class="p">(</span><span class="o">*</span><span class="n">m_t</span><span class="p">)</span> <span class="k">for</span> <span class="n">miss</span> <span class="ow">in</span> <span class="n">missmatch</span><span class="p">]),</span>
+            <span class="k">lambda</span> <span class="n">m_t</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">miss</span><span class="p">(</span><span class="o">*</span><span class="n">m_t</span><span class="p">)</span> <span class="k">for</span> <span class="n">miss</span> <span class="ow">in</span> <span class="n">missmatch</span><span class="p">]),</span>
             <span class="p">[</span><span class="n">mass</span><span class="p">,</span> <span class="n">age</span><span class="p">],</span>
             <span class="n">method</span><span class="o">=</span><span class="s1">&#39;lm&#39;</span><span class="p">,</span>
             <span class="n">options</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ftol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
@@ -395,7 +410,7 @@
         <span class="nb">setattr</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
             <span class="n">variable</span><span class="p">,</span>
-            <span class="n">scipy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
                          <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
                          <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
         <span class="p">)</span>
@@ -403,7 +418,7 @@
         <span class="k">for</span> <span class="n">feh_index</span><span class="p">,</span> <span class="n">feh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">feh</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">mass_index</span><span class="p">,</span> <span class="n">mass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="p">):</span>
                 <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_quantity</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">feh</span><span class="p">)</span>
-                <span class="n">age_in_range</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                <span class="n">age_in_range</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span> <span class="o">&gt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">min_age</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span> <span class="o">&lt;</span> <span class="n">quantity</span><span class="o">.</span><span class="n">max_age</span>
                 <span class="p">)</span>
@@ -437,13 +452,13 @@
 <span class="sd">            feh:    The [Fe/H] value to inteprolate to.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            2-D scipy array:</span>
+<span class="sd">            2-D numpy array:</span>
 <span class="sd">                The interepolated variable at the grid masses and ages.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1">#False positive, members created by setattr, so pylint does not see them</span>
         <span class="c1">#pylint: disable=no-member</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">mass_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">age_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
                 <span class="n">interp_y</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)[</span><span class="n">mass_index</span><span class="p">,</span>
@@ -451,7 +466,7 @@
                                                         <span class="p">:]</span>
                 <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span><span class="p">,</span> <span class="p">:]</span>
                 <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">result</span><span class="p">[</span><span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">result</span><span class="p">[</span>
                         <span class="n">mass_index</span><span class="p">,</span>
@@ -493,7 +508,7 @@
                               <span class="n">ages</span><span class="o">=</span><span class="n">ages</span><span class="p">)</span>
         <span class="c1">#False positive, members created by setattr, so pylint does not see them</span>
         <span class="c1">#pylint: disable=no-member</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
@@ -530,7 +545,7 @@
         <span class="c1">#False positive, members created by setattr, so pylint does not</span>
         <span class="c1">#see them</span>
         <span class="c1">#pylint: disable=no-member</span>
-        <span class="n">var_diff</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">var_diff</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="c1">#pylint: enable=no-member</span>
@@ -557,13 +572,13 @@
                 <span class="o">&lt;=</span>
                 <span class="mi">0</span>
             <span class="p">)</span>
-            <span class="n">sign_change</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span>
-                <span class="n">scipy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">sign_change_right</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">sign_change</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">sign_change_right</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                                  <span class="n">sign_change_up</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span>
-                <span class="n">scipy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">sign_change_right</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">sign_change_right</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span>
                                  <span class="n">sign_change_up</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:])</span>
             <span class="p">)</span>
-            <span class="n">possible_solutions</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">possible_solutions</span><span class="p">,</span>
+            <span class="n">possible_solutions</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">possible_solutions</span><span class="p">,</span>
                                                    <span class="n">sign_change</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">possible_solutions</span><span class="p">,</span> <span class="n">var_diff</span></div>
@@ -583,12 +598,12 @@
 <span class="sd">            age_high:    The upper age boundary of the cell.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            2-D scipy array:</span>
+<span class="sd">            2-D numpy array:</span>
 <span class="sd">                The matrix defining the equations for the coefficients of a</span>
 <span class="sd">                bi-linear function over the specified cell.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">coef_equations</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">coef_equations</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
         <span class="n">coef_equations</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">coef_equations</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_low</span>
         <span class="n">coef_equations</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_high</span>
@@ -607,7 +622,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            coef:    The coefficients of the two bilinear functions. Should</span>
-<span class="sd">                be a 2-D scipy array with the outer index iterating over the</span>
+<span class="sd">                be a 2-D numpy array with the outer index iterating over the</span>
 <span class="sd">                function and the inner indices iterating over the</span>
 <span class="sd">                coefficients of the corresponding bilinear function.</span>
 
@@ -631,7 +646,7 @@
             <span class="k">return</span> <span class="p">[]</span>
 
         <span class="n">sqrt_det</span> <span class="o">=</span> <span class="n">det</span><span class="o">**</span><span class="mf">0.5</span>
-        <span class="n">time_roots</span> <span class="o">=</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="o">-</span><span class="n">b</span> <span class="o">-</span> <span class="n">sqrt_det</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">+</span> <span class="n">sqrt_det</span><span class="p">)])</span>
+        <span class="n">time_roots</span> <span class="o">=</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="o">-</span><span class="n">b</span> <span class="o">-</span> <span class="n">sqrt_det</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">+</span> <span class="n">sqrt_det</span><span class="p">)])</span>
                       <span class="o">/</span>
                       <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span><span class="p">))</span>
         <span class="n">mass_roots</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span>
@@ -694,8 +709,8 @@
 
         <span class="n">possible_solutions</span><span class="p">,</span> <span class="n">var_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_candidate_cells</span><span class="p">(</span><span class="n">feh</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span> <span class="ow">in</span> <span class="n">scipy</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
-                <span class="n">scipy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">possible_solutions</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mass_index</span><span class="p">,</span> <span class="n">age_index</span> <span class="ow">in</span> <span class="n">numpy</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">possible_solutions</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="c1">#False positive, members created by setattr, so pylint does not see</span>
             <span class="c1">#them</span>
@@ -703,7 +718,7 @@
             <span class="n">age_low</span><span class="p">,</span> <span class="n">age_high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">ages</span><span class="p">[</span><span class="n">age_index</span><span class="p">:</span> <span class="n">age_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
             <span class="n">m_low</span><span class="p">,</span> <span class="n">m_high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">masses</span><span class="p">[</span><span class="n">mass_index</span><span class="p">:</span> <span class="n">mass_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
             <span class="c1">#pylint: enable=no-member</span>
-            <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span>
+            <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span>
                     <span class="n">var_diff</span><span class="p">[</span>
                         <span class="p">:,</span>
                         <span class="n">mass_index</span> <span class="p">:</span> <span class="n">mass_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
@@ -716,7 +731,7 @@
                                                            <span class="n">m_high</span><span class="p">,</span>
                                                            <span class="n">age_low</span><span class="p">,</span>
                                                            <span class="n">age_high</span><span class="p">)</span>
-            <span class="n">coef</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="n">coef</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">var_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
                 <span class="n">coef</span><span class="p">[</span><span class="n">var_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
                     <span class="n">coef_equations</span><span class="p">,</span>
@@ -764,16 +779,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

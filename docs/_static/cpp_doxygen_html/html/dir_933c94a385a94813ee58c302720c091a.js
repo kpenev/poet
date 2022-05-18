@@ -5,6 +5,7 @@ var dir_933c94a385a94813ee58c302720c091a =
     [ "EvolvingStar.h", "EvolvingStar_8h.html", [
       [ "InterpolatedEvolutionStar", "classStar_1_1InterpolatedEvolutionStar.html", "classStar_1_1InterpolatedEvolutionStar" ]
     ] ],
+    [ "EvolvingStellarCore.cpp", "EvolvingStellarCore_8cpp_source.html", null ],
     [ "EvolvingStellarCore.h", "EvolvingStellarCore_8h.html", [
       [ "EvolvingStellarCore", "classStar_1_1EvolvingStellarCore.html", "classStar_1_1EvolvingStellarCore" ]
     ] ],

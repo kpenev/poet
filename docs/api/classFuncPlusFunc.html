@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -158,37 +153,32 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <div class="section" id="class-funcplusfunc">
 <span id="exhale-class-classfuncplusfunc"></span><h1>Class FuncPlusFunc<a class="headerlink" href="#class-funcplusfunc" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file__Users_kpenev_projects_git_poet_poet_src_unit_tests_shared_PolynomialEvolution.h.html#file-users-kpenev-projects-git-poet-poet-src-unit-tests-shared-polynomialevolution-h"><span class="std std-ref">File PolynomialEvolution.h</span></a></p></li>
+<li>Defined in <a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_unit_tests_shared_PolynomialEvolution.h.html#file-home-kpenev-projects-git-poet-poet-src-unit-tests-shared-polynomialevolution-h"><span class="std std-ref">File PolynomialEvolution.h</span></a></li>
 </ul>
 <div class="section" id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="base-types">
 <h3>Base Types<a class="headerlink" href="#base-types" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">Core::OneArgumentDiffFunction</span></code> (<a class="reference internal" href="classCore_1_1OneArgumentDiffFunction.html#exhale-class-classcore-1-1oneargumentdifffunction"><span class="std std-ref">Class OneArgumentDiffFunction</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">private</span> <span class="pre">Core::FunctionDerivatives</span></code> (<a class="reference internal" href="classCore_1_1FunctionDerivatives.html#exhale-class-classcore-1-1functionderivatives"><span class="std std-ref">Class FunctionDerivatives</span></a>)</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">Core::OneArgumentDiffFunction</span></code> (<a class="reference internal" href="classCore_1_1OneArgumentDiffFunction.html#exhale-class-classcore-1-1oneargumentdifffunction"><span class="std std-ref">Class OneArgumentDiffFunction</span></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">private</span> <span class="pre">Core::FunctionDerivatives</span></code> (<a class="reference internal" href="classCore_1_1FunctionDerivatives.html#exhale-class-classcore-1-1functionderivatives"><span class="std std-ref">Class FunctionDerivatives</span></a>)</li>
 </ul>
 </div>
 </div>
@@ -225,16 +215,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

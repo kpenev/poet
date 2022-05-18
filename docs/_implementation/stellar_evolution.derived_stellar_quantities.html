@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="stellar_evolution.library_interface module" href="stellar_evolution.library_interface.html" />
     <link rel="prev" title="stellar_evolution.change_variables module" href="stellar_evolution.change_variables.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -181,23 +176,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="module-stellar_evolution.derived_stellar_quantities">
@@ -206,115 +196,127 @@
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
 <div class="graphviz"><img src="../_images/inheritance-6fdcc0185e9324ce60e65ad19d160147a2c5353c.png" alt="Inheritance diagram of LogGCGS, RhoCGS, TeffK" usemap="#inheritancebfc0ec309a" class="inheritance graphviz" /></div>
 <map id="inheritancebfc0ec309a" name="inheritancebfc0ec309a">
-<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.LogGCGS" target="_top" title="Log10 of stellar surface gravity it cgs units." alt="" coords="5,5,343,29"/>
-<area shape="rect" id="node2" href="#stellar_evolution.derived_stellar_quantities.RhoCGS" target="_top" title="Mean stellar density in cgs units." alt="" coords="367,5,696,29"/>
-<area shape="rect" id="node3" href="#stellar_evolution.derived_stellar_quantities.TeffK" target="_top" title="Stellar effective temperature in Kelvin." alt="" coords="721,5,1027,29"/>
+<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.LogGCGS" target="_top" title="Log10 of stellar surface gravity it cgs units." alt="" coords="5,5,373,31"/>
+<area shape="rect" id="node2" href="#stellar_evolution.derived_stellar_quantities.RhoCGS" target="_top" title="Mean stellar density in cgs units." alt="" coords="397,5,757,31"/>
+<area shape="rect" id="node3" href="#stellar_evolution.derived_stellar_quantities.TeffK" target="_top" title="Stellar effective temperature in Kelvin." alt="" coords="782,5,1122,31"/>
 </map><p>Define more quantities directly calculable from POET stellar evolution.</p>
 <dl class="class">
 <dt id="stellar_evolution.derived_stellar_quantities.LogGCGS">
-<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.derived_stellar_quantities.</code><code class="sig-name descname">LogGCGS</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">radius</em>, <em class="sig-param">reference_logg=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#LogGCGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.LogGCGS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="descclassname">stellar_evolution.derived_stellar_quantities.</code><code class="descname">LogGCGS</code><span class="sig-paren">(</span><em>mass</em>, <em>radius</em>, <em>reference_logg=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#LogGCGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.LogGCGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <div class="graphviz"><img src="../_images/inheritance-8a883e72b39c211e71469d0ed933544122ddf1a1.png" alt="Inheritance diagram of stellar_evolution.derived_stellar_quantities.LogGCGS" usemap="#inheritance3b2c9ec678" class="inheritance graphviz" /></div>
 <map id="inheritance3b2c9ec678" name="inheritance3b2c9ec678">
-<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.LogGCGS" target="_top" title="Log10 of stellar surface gravity it cgs units." alt="" coords="5,5,343,29"/>
+<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.LogGCGS" target="_top" title="Log10 of stellar surface gravity it cgs units." alt="" coords="5,5,373,31"/>
 </map><p>Log10 of stellar surface gravity it cgs units.</p>
 <dl class="method">
 <dt id="stellar_evolution.derived_stellar_quantities.LogGCGS.__call__">
-<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#LogGCGS.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.LogGCGS.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#LogGCGS.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.LogGCGS.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the log10(g) at the given age.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.derived_stellar_quantities.LogGCGS.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">radius</em>, <em class="sig-param">reference_logg=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#LogGCGS.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.LogGCGS.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>mass</em>, <em>radius</em>, <em>reference_logg=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#LogGCGS.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.LogGCGS.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log10 of the gravitational acceleration from mass and radius.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mass</strong> – The mass of the star whose gravity we are interpolating.</p></li>
-<li><p><strong>radius</strong> – A library_interface Quantity instance, giving the stellar
-radius as a function of age.</p></li>
-<li><p><strong>reference_logg</strong> – The returned value is the deviation from this.
-Useful when passing to solvers or minimizers.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mass</strong> – The mass of the star whose gravity we are interpolating.</li>
+<li><strong>radius</strong> – A library_interface Quantity instance, giving the stellar
+radius as a function of age.</li>
+<li><strong>reference_logg</strong> – The returned value is the deviation from this.
+Useful when passing to solvers or minimizers.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="stellar_evolution.derived_stellar_quantities.RhoCGS">
-<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.derived_stellar_quantities.</code><code class="sig-name descname">RhoCGS</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">radius</em>, <em class="sig-param">reference_rho=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#RhoCGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.RhoCGS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="descclassname">stellar_evolution.derived_stellar_quantities.</code><code class="descname">RhoCGS</code><span class="sig-paren">(</span><em>mass</em>, <em>radius</em>, <em>reference_rho=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#RhoCGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.RhoCGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <div class="graphviz"><img src="../_images/inheritance-e8243fea780dc34df249d87fad87ced30848a19c.png" alt="Inheritance diagram of stellar_evolution.derived_stellar_quantities.RhoCGS" usemap="#inheritance59af7231b5" class="inheritance graphviz" /></div>
 <map id="inheritance59af7231b5" name="inheritance59af7231b5">
-<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.RhoCGS" target="_top" title="Mean stellar density in cgs units." alt="" coords="5,5,335,29"/>
+<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.RhoCGS" target="_top" title="Mean stellar density in cgs units." alt="" coords="5,5,365,31"/>
 </map><p>Mean stellar density in cgs units.</p>
 <dl class="method">
 <dt id="stellar_evolution.derived_stellar_quantities.RhoCGS.__call__">
-<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#RhoCGS.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.RhoCGS.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#RhoCGS.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.RhoCGS.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the density (g/cm^3) at the given age.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.derived_stellar_quantities.RhoCGS.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">mass</em>, <em class="sig-param">radius</em>, <em class="sig-param">reference_rho=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#RhoCGS.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.RhoCGS.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>mass</em>, <em>radius</em>, <em>reference_rho=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#RhoCGS.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.RhoCGS.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stellar density (cgs) from mass and radius.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mass</strong> – The mass of the star whose gravity we are interpolating.</p></li>
-<li><p><strong>radius</strong> – A library_interface Quantity instance, giving the stellar
-radius as a function of age.</p></li>
-<li><p><strong>reference_rho</strong> – The returned value is the deviation from this.
-Useful when passing to solvers or minimizers.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mass</strong> – The mass of the star whose gravity we are interpolating.</li>
+<li><strong>radius</strong> – A library_interface Quantity instance, giving the stellar
+radius as a function of age.</li>
+<li><strong>reference_rho</strong> – The returned value is the deviation from this.
+Useful when passing to solvers or minimizers.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="stellar_evolution.derived_stellar_quantities.TeffK">
-<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.derived_stellar_quantities.</code><code class="sig-name descname">TeffK</code><span class="sig-paren">(</span><em class="sig-param">radius</em>, <em class="sig-param">luminosity</em>, <em class="sig-param">reference_Teff=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#TeffK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.TeffK" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="descclassname">stellar_evolution.derived_stellar_quantities.</code><code class="descname">TeffK</code><span class="sig-paren">(</span><em>radius</em>, <em>luminosity</em>, <em>reference_Teff=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#TeffK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.TeffK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <div class="graphviz"><img src="../_images/inheritance-7641755df56b546e4204c3781c40745740d88e6d.png" alt="Inheritance diagram of stellar_evolution.derived_stellar_quantities.TeffK" usemap="#inheritance6c45a05bd8" class="inheritance graphviz" /></div>
 <map id="inheritance6c45a05bd8" name="inheritance6c45a05bd8">
-<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.TeffK" target="_top" title="Stellar effective temperature in Kelvin." alt="" coords="5,5,312,29"/>
+<area shape="rect" id="node1" href="#stellar_evolution.derived_stellar_quantities.TeffK" target="_top" title="Stellar effective temperature in Kelvin." alt="" coords="5,5,345,31"/>
 </map><p>Stellar effective temperature in Kelvin.</p>
 <dl class="method">
 <dt id="stellar_evolution.derived_stellar_quantities.TeffK.__call__">
-<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#TeffK.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.TeffK.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#TeffK.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.TeffK.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the effective temperature at the given age.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.derived_stellar_quantities.TeffK.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">radius</em>, <em class="sig-param">luminosity</em>, <em class="sig-param">reference_Teff=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#TeffK.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.TeffK.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>radius</em>, <em>luminosity</em>, <em>reference_Teff=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/derived_stellar_quantities.html#TeffK.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.derived_stellar_quantities.TeffK.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective temperature from radius and luminosity.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>radius</strong> – A library_interface Quantity instance, giving the
-stellar radius as a function of age.</p></li>
-<li><p><strong>luminosity</strong> – A library_interface Quantity instance, giving the
-stellar luminosity as a function of age.</p></li>
-<li><p><strong>reference_Teff</strong> – The returned value is the deviation from this.
-Useful when passing to solvers or minimizers.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>radius</strong> – A library_interface Quantity instance, giving the
+stellar radius as a function of age.</li>
+<li><strong>luminosity</strong> – A library_interface Quantity instance, giving the
+stellar luminosity as a function of age.</li>
+<li><strong>reference_Teff</strong> – The returned value is the deviation from this.
+Useful when passing to solvers or minimizers.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -333,7 +335,7 @@ Useful when passing to solvers or minimizers.</p></li>
         <a href="stellar_evolution.library_interface.html" class="btn btn-neutral float-right" title="stellar_evolution.library_interface module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="stellar_evolution.change_variables.html" class="btn btn-neutral float-left" title="stellar_evolution.change_variables module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="stellar_evolution.change_variables.html" class="btn btn-neutral" title="stellar_evolution.change_variables module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -359,16 +361,26 @@ Useful when passing to solvers or minimizers.</p></li>
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

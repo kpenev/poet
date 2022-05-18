@@ -42,15 +42,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"IOColumns_8h.html#a175e53dd2664d327d6f044608207454f",
-"Star_2CInterface_8cpp.html#a98c1291bedae59e103961c3f46f6ca5f",
-"classCore_1_1Error_1_1NonGSLZeroStep.html",
-"classEvolve_1_1CombinedStoppingCondition.html#aee65f4963106a8a4a96a66c2d8dd2539",
-"classEvolve_1_1OrbitSolver.html#a3b7aedd722e6fd876bbc1f8b35b151ca",
-"classEvolve_1_1TransformedSolution.html#ae7f2c54c51811e222f1ff4036b65e729",
-"classStar_1_1EvolvingStellarZone.html#ad42c99ec7625ce0771645133711147d8",
-"classStellarEvolution_1_1MockStellarEvolution.html#a90dca17db4427306dd08a088bc499d2c",
-"group__StellarEvolution__group.html#ga8d168d5c25727670d8423f0e7de43a3e"
+"ExponentialDecayDiffRotBody_8cpp.html#a9984662919fb47d29bf2c64585f39447",
+"Star_2CInterface_8cpp.html#a1656fcf61cae10ad8823ec43d0ee1685",
+"classCore_1_1Error_1_1ALGLIB.html",
+"classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ac53745a06b73e66c7620c61fa8f1de4a",
+"classEvolve_1_1EccentricityExpansionCoefficients.html#ad2fa4cd8a3a40d73323bee1a74a48ec0",
+"classEvolve_1_1SynchronizedCondition.html#a86d92ae4c8fe765182f586cbddbc22bb",
+"classPlanet_1_1Planet.html#a1a539cb313b5e70e28da99d3a6ed2e1e",
+"classStellarEvolution_1_1Interpolator.html#a5f97a25d659e3e1d18a22fa6cd1c3726",
+"functions_r.html",
+"unit__tests_2shared_2Common_8h.html#a9e8c2dee3bbaebf6ddd623dc6d6808fc"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

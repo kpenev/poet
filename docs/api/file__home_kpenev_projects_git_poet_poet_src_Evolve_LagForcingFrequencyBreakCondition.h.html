@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File LagForcingFrequencyBreakCondition.h &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>File LagForcingFrequencyBreakCondition.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/file__home_kpenev_projects_git_poet_poet_src_Evolve_LagForcingFrequencyBreakCondition.h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="file-lagforcingfrequencybreakcondition-h">
+<span id="file-home-kpenev-projects-git-poet-poet-src-evolve-lagforcingfrequencybreakcondition-h"></span><h1>File LagForcingFrequencyBreakCondition.h<a class="headerlink" href="#file-lagforcingfrequencybreakcondition-h" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="dir__home_kpenev_projects_git_poet_poet_src_Evolve.html#dir-home-kpenev-projects-git-poet-poet-src-evolve"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">/home/kpenev/projects/git/poet/poet_src/Evolve</span></code>)</p>
+<p>Declares a stopping condition satisfied when a forcing frequency reaches a critical value.</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#definition-home-kpenev-projects-git-poet-poet-src-evolve-lagforcingfrequencybreakcondition-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">/home/kpenev/projects/git/poet/poet_src/Evolve/LagForcingFrequencyBreakCondition.h</span></code>)</a></li>
+<li><a class="reference internal" href="#includes" id="id2">Includes</a></li>
+<li><a class="reference internal" href="#included-by" id="id3">Included By</a></li>
+<li><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></li>
+<li><a class="reference internal" href="#classes" id="id5">Classes</a></li>
+</ul>
+</div>
+<div class="section" id="definition-home-kpenev-projects-git-poet-poet-src-evolve-lagforcingfrequencybreakcondition-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">/home/kpenev/projects/git/poet/poet_src/Evolve/LagForcingFrequencyBreakCondition.h</span></code>)<a class="headerlink" href="#definition-home-kpenev-projects-git-poet-poet-src-evolve-lagforcingfrequencybreakcondition-h" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file__home_kpenev_projects_git_poet_poet_src_Evolve_LagForcingFrequencyBreakCondition.h.html">Program Listing for File LagForcingFrequencyBreakCondition.h</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">../Core/Error.h</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">../Core/OrbitalExpressions.h</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">../Core/SharedLibraryExportMacros.h</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">DissipatingBody.h</span></code> (<a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_Evolve_DissipatingBody.h.html#file-home-kpenev-projects-git-poet-poet-src-evolve-dissipatingbody-h"><span class="std std-ref">File DissipatingBody.h</span></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">StoppingCondition.h</span></code> (<a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_Evolve_CombinedStoppingCondition.h.html#file-home-kpenev-projects-git-poet-poet-src-evolve-combinedstoppingcondition-h"><span class="std std-ref">File CombinedStoppingCondition.h</span></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">vector</span></code></li>
+</ul>
+</div>
+<div class="section" id="included-by">
+<h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_Evolve_BrokenPowerlawPhaseLagZone.h.html#file-home-kpenev-projects-git-poet-poet-src-evolve-brokenpowerlawphaselagzone-h"><span class="std std-ref">File BrokenPowerlawPhaseLagZone.h</span></a></li>
+<li><a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_Evolve_LagForcingFrequencyBreakCondition.cpp.html#file-home-kpenev-projects-git-poet-poet-src-evolve-lagforcingfrequencybreakcondition-cpp"><span class="std std-ref">File LagForcingFrequencyBreakCondition.cpp</span></a></li>
+</ul>
+</div>
+<div class="section" id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="namespace_Evolve.html#namespace-evolve"><span class="std std-ref">Namespace Evolve</span></a></li>
+</ul>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="classEvolve_1_1LagForcingFrequencyBreakCondition.html#exhale-class-classevolve-1-1lagforcingfrequencybreakcondition"><span class="std std-ref">Class LagForcingFrequencyBreakCondition</span></a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

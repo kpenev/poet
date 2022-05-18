@@ -1,11 +1,11 @@
 <map id="Core::Error::Runtime" name="Core::Error::Runtime">
-<area shape="rect" id="node4" href="$classCore_1_1Error_1_1BadFunctionArguments.html" title="Function arguments do not satisfy some requirement. " alt="" coords="9,457,222,571"/>
-<area shape="rect" id="node6" href="$classCore_1_1Error_1_1CommandLine.html" title="Error related to parsing the command line. " alt="" coords="246,465,459,563"/>
-<area shape="rect" id="node7" href="$classCore_1_1Error_1_1GSLZeroStep.html" title="GSL step size decreased below machine precision. " alt="" coords="484,465,691,563"/>
-<area shape="rect" id="node8" href="$classCore_1_1Error_1_1IO.html" title="Input/Output exception. " alt="" coords="715,465,841,563"/>
-<area shape="rect" id="node9" href="$classCore_1_1Error_1_1NonGSLZeroStep.html" title="Maximum allowed step size decreased below machine precision. " alt="" coords="865,465,1101,563"/>
-<area shape="rect" id="node10" href="$classCore_1_1Error_1_1NotImplemented.html" title="Encountered an unimplemented feature. " alt="" coords="1126,465,1353,563"/>
-<area shape="rect" id="node11" href="$classCore_1_1Error_1_1PathNotFound.html" title="Exception indicating that a file or a directory was not found. " alt="" coords="1377,465,1589,563"/>
-<area shape="rect" id="node2" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="695,135,861,264"/>
-<area shape="rect" id="node5" href="$classCore_1_1Error_1_1BadStellarZone.html" title="Exception indicating unrecognized or unsuitable stellar zone. " alt="" coords="5,619,225,716"/>
+<area shape="rect" id="node4" href="$classCore_1_1Error_1_1BadFunctionArguments.html" title="Function arguments do not satisfy some requirement. " alt="" coords="9,475,222,595"/>
+<area shape="rect" id="node6" href="$classCore_1_1Error_1_1CommandLine.html" title="Error related to parsing the command line. " alt="" coords="246,483,459,586"/>
+<area shape="rect" id="node7" href="$classCore_1_1Error_1_1GSLZeroStep.html" title="GSL step size decreased below machine precision. " alt="" coords="484,483,691,586"/>
+<area shape="rect" id="node8" href="$classCore_1_1Error_1_1IO.html" title="Input/Output exception. " alt="" coords="715,483,839,586"/>
+<area shape="rect" id="node9" href="$classCore_1_1Error_1_1NonGSLZeroStep.html" title="Maximum allowed step size decreased below machine precision. " alt="" coords="863,483,1099,586"/>
+<area shape="rect" id="node10" href="$classCore_1_1Error_1_1NotImplemented.html" title="Encountered an unimplemented feature. " alt="" coords="1123,483,1348,586"/>
+<area shape="rect" id="node11" href="$classCore_1_1Error_1_1PathNotFound.html" title="Exception indicating that a file or a directory was not found. " alt="" coords="1372,483,1584,586"/>
+<area shape="rect" id="node2" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="694,139,859,276"/>
+<area shape="rect" id="node5" href="$classCore_1_1Error_1_1BadStellarZone.html" title="Exception indicating unrecognized or unsuitable stellar zone. " alt="" coords="5,643,225,745"/>
 </map>

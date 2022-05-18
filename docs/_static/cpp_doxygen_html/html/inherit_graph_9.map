@@ -1,8 +1,8 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="5,65,198,93"/>
-<area shape="rect" id="node2" href="$classPlanet_1_1Planet.html" title="Single zone non&#45;evolving planets with huge dissipation, so they always remain locked to the disk..." alt="" coords="292,5,413,33"/>
-<area shape="rect" id="node3" href="$classStar_1_1ExponentialDecayDiffRotBody.html" title="A body with differential rotation torque between two zones given by: . " alt="" coords="246,57,459,101"/>
-<area shape="rect" id="node5" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="247,125,458,169"/>
-<area shape="rect" id="node4" href="$classStar_1_1InterpolatedEvolutionStar.html" title="Star::InterpolatedEvolutionStar" alt="" coords="507,73,746,101"/>
-<area shape="rect" id="node6" href="$classEvolve_1_1SingleTidalTermBody.html" title="A skumanich wind body with a single zone dissipative to only a single tidal term. ..." alt="" coords="512,133,741,161"/>
+<area shape="rect" id="node1" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="5,68,201,97"/>
+<area shape="rect" id="node2" href="$classPlanet_1_1Planet.html" title="Single zone non&#45;evolving planets with huge dissipation, so they always remain locked to the disk..." alt="" coords="295,5,418,35"/>
+<area shape="rect" id="node3" href="$classStar_1_1ExponentialDecayDiffRotBody.html" title="A body with differential rotation torque between two zones given by: . " alt="" coords="249,59,464,106"/>
+<area shape="rect" id="node5" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="251,130,463,177"/>
+<area shape="rect" id="node4" href="$classStar_1_1InterpolatedEvolutionStar.html" title="Star::InterpolatedEvolutionStar" alt="" coords="512,77,751,107"/>
+<area shape="rect" id="node6" href="$classEvolve_1_1SingleTidalTermBody.html" title="A skumanich wind body with a single zone dissipative to only a single tidal term. ..." alt="" coords="514,139,749,168"/>
 </map>

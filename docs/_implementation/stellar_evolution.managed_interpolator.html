@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="stellar_evolution.manager module" href="stellar_evolution.manager.html" />
     <link rel="prev" title="stellar_evolution.library_interface module" href="stellar_evolution.library_interface.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -181,23 +176,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="module-stellar_evolution.managed_interpolator">
@@ -206,107 +196,111 @@
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
 <div class="graphviz"><img src="../_images/inheritance-e32b7b54fe3a60ba0194a4f719a9d9357b886cac.png" alt="Inheritance diagram of ManagedInterpolator, VarChangingInterpolator, VarchangeAgeNode, VarchangeDependentValue, VarchangeDependentVariable, VarchangeFeHNode, VarchangeGrid, VarchangeMassNode" usemap="#inheritancebbe87db2c2" class="inheritance graphviz" /></div>
 <map id="inheritancebbe87db2c2" name="inheritancebbe87db2c2">
-<area shape="rect" id="node5" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeAgeNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="5,77,379,101"/>
-<area shape="rect" id="node7" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeDependentValue" target="_top" title="The values of the dependent variables at the grid nodes." alt="" coords="1209,77,1626,101"/>
-<area shape="rect" id="node8" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeDependentVariable" target="_top" title="The variables from which to transforming to M*, [Fe/H] and age." alt="" coords="1650,77,2081,101"/>
-<area shape="rect" id="node9" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeFeHNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="403,77,779,101"/>
-<area shape="rect" id="node10" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeGrid" target="_top" title="The currently saved variable change grids." alt="" coords="2106,77,2449,101"/>
-<area shape="rect" id="node11" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeMassNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="803,77,1185,101"/>
-<area shape="rect" id="node2" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="2473,77,2847,101"/>
-<area shape="rect" id="node4" href="#stellar_evolution.managed_interpolator.ManagedInterpolator" target="_top" title="Add properties describing the configuration of an interpolator." alt="" coords="2472,149,2849,173"/>
-<area shape="rect" id="node3" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="2498,5,2823,29"/>
-<area shape="rect" id="node6" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="403,5,779,29"/>
+<area shape="rect" id="node5" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeAgeNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="5,79,413,104"/>
+<area shape="rect" id="node7" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeDependentValue" target="_top" title="The values of the dependent variables at the grid nodes." alt="" coords="1309,79,1765,104"/>
+<area shape="rect" id="node8" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeDependentVariable" target="_top" title="The variables from which to transforming to M*, [Fe/H] and age." alt="" coords="1790,79,2263,104"/>
+<area shape="rect" id="node9" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeFeHNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="438,79,845,104"/>
+<area shape="rect" id="node10" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeGrid" target="_top" title="The currently saved variable change grids." alt="" coords="2288,79,2664,104"/>
+<area shape="rect" id="node11" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeMassNode" target="_top" title="The nodes in the mass dimension for a variable change grid." alt="" coords="869,79,1285,104"/>
+<area shape="rect" id="node2" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="2688,79,3099,104"/>
+<area shape="rect" id="node4" href="#stellar_evolution.managed_interpolator.ManagedInterpolator" target="_top" title="Add properties describing the configuration of an interpolator." alt="" coords="2685,152,3102,177"/>
+<area shape="rect" id="node3" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="2714,5,3073,31"/>
+<area shape="rect" id="node6" href="stellar_evolution.manager_data_model.html#stellar_evolution.manager_data_model.VarchangeGridNode" target="_top" title="The nodes of each variable change grid along a single dimension." alt="" coords="436,5,847,31"/>
 </map><p>Define a stellar evolution interpolator class managed through a database.</p>
 <dl class="class">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator">
-<em class="property">class </em><code class="sig-prename descclassname">stellar_evolution.managed_interpolator.</code><code class="sig-name descname">ManagedInterpolator</code><span class="sig-paren">(</span><em class="sig-param">db_interpolator</em>, <em class="sig-param">serialization_path</em>, <em class="sig-param">db_session</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">stellar_evolution.managed_interpolator.</code><code class="descname">ManagedInterpolator</code><span class="sig-paren">(</span><em>db_interpolator</em>, <em>serialization_path</em>, <em>db_session</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" title="stellar_evolution.change_variables.VarChangingInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">stellar_evolution.change_variables.VarChangingInterpolator</span></code></a></p>
 <div class="graphviz"><img src="../_images/inheritance-5cb9870d8386d8483495c3ab669a3cbbd735f85d.png" alt="Inheritance diagram of stellar_evolution.managed_interpolator.ManagedInterpolator" usemap="#inheritanced44e0c3e1e" class="inheritance graphviz" /></div>
 <map id="inheritanced44e0c3e1e" name="inheritanced44e0c3e1e">
-<area shape="rect" id="node1" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="7,77,381,101"/>
-<area shape="rect" id="node3" href="#stellar_evolution.managed_interpolator.ManagedInterpolator" target="_top" title="Add properties describing the configuration of an interpolator." alt="" coords="5,149,382,173"/>
-<area shape="rect" id="node2" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="31,5,356,29"/>
+<area shape="rect" id="node1" href="stellar_evolution.change_variables.html#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="9,79,419,104"/>
+<area shape="rect" id="node3" href="#stellar_evolution.managed_interpolator.ManagedInterpolator" target="_top" title="Add properties describing the configuration of an interpolator." alt="" coords="5,152,423,177"/>
+<area shape="rect" id="node2" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="35,5,393,31"/>
 </map><p>Add properties describing the configuration of an interpolator.</p>
 <dl class="method">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">db_interpolator</em>, <em class="sig-param">serialization_path</em>, <em class="sig-param">db_session</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>db_interpolator</em>, <em>serialization_path</em>, <em>db_session</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create VarChangingInterpolator and add properties describing config.</p>
 <p>Defines the following properties containing the information from
 db_interpolator:</p>
 <blockquote>
 <div><ul class="simple">
-<li><dl class="simple">
-<dt>name:</dt><dd><p>The human readable name of the interpolator</p>
-</dd>
+<li><dl class="first docutils">
+<dt>name:</dt>
+<dd>The human readable name of the interpolator</dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>_db_id:</dt><dd><p>The ID of the interpolator in the database.</p>
-</dd>
+<li><dl class="first docutils">
+<dt>_db_id:</dt>
+<dd>The ID of the interpolator in the database.</dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>filename:</dt><dd><p>The filename from which the interpolator was read.</p>
-</dd>
+<li><dl class="first docutils">
+<dt>filename:</dt>
+<dd>The filename from which the interpolator was read.</dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>nodes:</dt><dd><p>A dictionary indexed by quantity giving the number of
-interpolation nodes used.</p>
-</dd>
+<li><dl class="first docutils">
+<dt>nodes:</dt>
+<dd>A dictionary indexed by quantity giving the number of
+interpolation nodes used.</dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>smoothing:</dt><dd><p>Same as nodes but for the smoothing arguments.</p>
-</dd>
+<li><dl class="first docutils">
+<dt>smoothing:</dt>
+<dd>Same as nodes but for the smoothing arguments.</dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>suite:</dt><dd><p>The software suite used to generate the tracks on which the
-interpolator is based.</p>
-</dd>
+<li><dl class="first docutils">
+<dt>suite:</dt>
+<dd>The software suite used to generate the tracks on which the
+interpolator is based.</dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>track_masses:</dt><dd><p>List of stellar masses on whose tracks the interpolation is
-based.</p>
-</dd>
+<li><dl class="first docutils">
+<dt>track_masses:</dt>
+<dd>List of stellar masses on whose tracks the interpolation is
+based.</dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>track_feh:</dt><dd><p>List of stellar [Fe/H] on whose tracks the interpolation is
-based.</p>
-</dd>
+<li><dl class="first docutils">
+<dt>track_feh:</dt>
+<dd>List of stellar [Fe/H] on whose tracks the interpolation is
+based.</dd>
 </dl>
 </li>
 </ul>
 </div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>db_interpolator</strong> (<em>-</em>) – SerializedInterpolator instance from which to initialize
-self.</p></li>
-<li><p><strong>serialization_path</strong> (<em>-</em>) – The directory where serialized interpolators are stored.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>db_interpolator</strong> (<em>-</em>) – SerializedInterpolator instance from which to initialize
+self.</li>
+<li><strong>serialization_path</strong> (<em>-</em>) – The directory where serialized interpolators are stored.</li>
 </ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Keyword only arguments:</dt><dd><p>If not an empty dictionary, the underlying interpolator is
-constructed using those instead of the serialized filename.</p>
-</dd>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Keyword only arguments:</dt>
+<dd>If not an empty dictionary, the underlying interpolator is
+constructed using those instead of the serialized filename.</dd>
 </dl>
 <p>Returns: None</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator.__str__">
-<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.__str__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Human readable representation of the interpolator.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator._add_grid_variable">
-<code class="sig-name descname">_add_grid_variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._add_grid_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._add_grid_variable" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_add_grid_variable</code><span class="sig-paren">(</span><em>variable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._add_grid_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._add_grid_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares to use another dependent variable to change from.</p>
 <p>Args: see VarChangingInterpolator._add_grid_variable.</p>
 <p>Returns: None</p>
@@ -314,121 +308,171 @@ constructed using those instead of the serialized filename.</p>
 
 <dl class="method">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator._add_variable_to_db">
-<code class="sig-name descname">_add_variable_to_db</code><span class="sig-paren">(</span><em class="sig-param">variable</em>, <em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._add_variable_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._add_variable_to_db" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_add_variable_to_db</code><span class="sig-paren">(</span><em>variable</em>, <em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._add_variable_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._add_variable_to_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add pre-calculated node values of a variable to DB.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator._new_var_change_grid">
-<code class="sig-name descname">_new_var_change_grid</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">grid_name</em>, <em class="sig-param">feh</em>, <em class="sig-param">masses</em>, <em class="sig-param">ages</em>, <em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._new_var_change_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._new_var_change_grid" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_new_var_change_grid</code><span class="sig-paren">(</span><em>*</em>, <em>grid_name</em>, <em>feh</em>, <em>masses</em>, <em>ages</em>, <em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._new_var_change_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._new_var_change_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new grid with the given nodes and register it with the DB.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>grid_name</strong> – The name to assign to the new grid in the database.</p></li>
-<li><p><strong>feh</strong> – The [Fe/H] values at which to tabulate the dependent
-variables.</p></li>
-<li><p><strong>masses</strong> – The stellar masses at which to tabulate the dependent
-variables.</p></li>
-<li><p><strong>ages</strong> – The ages (in Gyrs) at which to tabulate the dependent
-variables.</p></li>
-<li><p><strong>db_session</strong> – A database session to submit queries to.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid_name</strong> – The name to assign to the new grid in the database.</li>
+<li><strong>feh</strong> – The [Fe/H] values at which to tabulate the dependent
+variables.</li>
+<li><strong>masses</strong> – The stellar masses at which to tabulate the dependent
+variables.</li>
+<li><strong>ages</strong> – The ages (in Gyrs) at which to tabulate the dependent
+variables.</li>
+<li><strong>db_session</strong> – A database session to submit queries to.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator._read_variable_from_db">
-<code class="sig-name descname">_read_variable_from_db</code><span class="sig-paren">(</span><em class="sig-param">variable</em>, <em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._read_variable_from_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._read_variable_from_db" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_read_variable_from_db</code><span class="sig-paren">(</span><em>variable</em>, <em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._read_variable_from_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._read_variable_from_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the given variable’s grid values from the DB.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>variable_name</strong> (<em>-</em>) – The name of the variable to add.</p></li>
-<li><p><strong>db_session</strong> (<em>-</em>) – A database session for queries.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>variable_name</strong> (<em>-</em>) – The name of the variable to add.</li>
+<li><strong>db_session</strong> (<em>-</em>) – A database session for queries.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None, but has the same effect as calling
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None, but has the same effect as calling
 VarChangingInterpolator._add_grid_variable, but finishes much
 faster.</p>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="stellar_evolution.managed_interpolator.ManagedInterpolator._set_var_change_grid">
-<code class="sig-name descname">_set_var_change_grid</code><span class="sig-paren">(</span><em class="sig-param">grid_name</em>, <em class="sig-param">db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._set_var_change_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._set_var_change_grid" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_set_var_change_grid</code><span class="sig-paren">(</span><em>grid_name</em>, <em>db_session</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._set_var_change_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._set_var_change_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a varchange grid from the DB and set the interpolator to use it.</p>
 <p>See VarChangingInterpolator._define_var_change_grid for newly created
 members of self.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>grid_name</strong> (<em>-</em>) – The name of the grid in the database to read.</p></li>
-<li><p><strong>db_session</strong> (<em>-</em>) – A database session for queries.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid_name</strong> (<em>-</em>) – The name of the grid in the database to read.</li>
+<li><strong>db_session</strong> (<em>-</em>) – A database session for queries.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if a grid with the given name exists, False otherwise.</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if a grid with the given name exists, False otherwise.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="stellar_evolution.managed_interpolator.ManagedInterpolator._variable_db_id">
+<em class="property">static </em><code class="descname">_variable_db_id</code><span class="sig-paren">(</span><em>variable</em>, <em>db_session</em>, <em>must_exist=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._variable_db_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._variable_db_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ID of the given varibale in the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>variable</strong> (<em>-</em>) – The name of the variable whose ID to return.</li>
+<li><strong>must_exst</strong> (<em>-</em>) – If False, and the variable is not yet in the
+varchange_dependent_variables table, a new entry is added.
+Otherwise, an exception is raised if it is not there.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The ID of the variable in the database.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li>variable_db_id</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
-<dt id="stellar_evolution.managed_interpolator.ManagedInterpolator._variable_db_id">
-<em class="property">static </em><code class="sig-name descname">_variable_db_id</code><span class="sig-paren">(</span><em class="sig-param">variable</em>, <em class="sig-param">db_session</em>, <em class="sig-param">must_exist=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator._variable_db_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator._variable_db_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the ID of the given varibale in the database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>variable</strong> (<em>-</em>) – The name of the variable whose ID to return.</p></li>
-<li><p><strong>must_exst</strong> (<em>-</em>) – If False, and the variable is not yet in the
-varchange_dependent_variables table, a new entry is added.
-Otherwise, an exception is raised if it is not there.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The ID of the variable in the database.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>variable_db_id</p></li>
-</ul>
-</p>
-</dd>
-</dl>
+<dt id="stellar_evolution.managed_interpolator.ManagedInterpolator.feh_in_range">
+<code class="descname">feh_in_range</code><span class="sig-paren">(</span><em>feh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.feh_in_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.feh_in_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>True iff the given [Fe/H] is within the interpolation grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.managed_interpolator.ManagedInterpolator.feh_range">
+<code class="descname">feh_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.feh_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.feh_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the range of [Fe/H] covered by the interpolation grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.managed_interpolator.ManagedInterpolator.in_range">
+<code class="descname">in_range</code><span class="sig-paren">(</span><em>mass</em>, <em>feh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.in_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.in_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>True iff mass and [Fe/H] are within the interpolation grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.managed_interpolator.ManagedInterpolator.mass_in_range">
+<code class="descname">mass_in_range</code><span class="sig-paren">(</span><em>mass</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.mass_in_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.mass_in_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>True iff the given mass is within the interpolation grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stellar_evolution.managed_interpolator.ManagedInterpolator.mass_range">
+<code class="descname">mass_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#ManagedInterpolator.mass_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.ManagedInterpolator.mass_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the range of masess covered by the interpolation grid.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
 <dt id="stellar_evolution.managed_interpolator.checksum_filename">
-<code class="sig-prename descclassname">stellar_evolution.managed_interpolator.</code><code class="sig-name descname">checksum_filename</code><span class="sig-paren">(</span><em class="sig-param">fname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#checksum_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.checksum_filename" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">stellar_evolution.managed_interpolator.</code><code class="descname">checksum_filename</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#checksum_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.checksum_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a str checksum of the file with the given name.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="stellar_evolution.managed_interpolator.verify_checksum">
-<code class="sig-prename descclassname">stellar_evolution.managed_interpolator.</code><code class="sig-name descname">verify_checksum</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">checksum</em>, <em class="sig-param">what</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#verify_checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.verify_checksum" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">stellar_evolution.managed_interpolator.</code><code class="descname">verify_checksum</code><span class="sig-paren">(</span><em>filename</em>, <em>checksum</em>, <em>what</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stellar_evolution/managed_interpolator.html#verify_checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stellar_evolution.managed_interpolator.verify_checksum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the given file has the expected checksum.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> – The name of the file whose checksum to verify.</p></li>
-<li><p><strong>checksum</strong> – The expected value of the checksum.</p></li>
-<li><p><strong>what</strong> – What is being verified (only used if error message if checksums
-do not match).</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> – The name of the file whose checksum to verify.</li>
+<li><strong>checksum</strong> – The expected value of the checksum.</li>
+<li><strong>what</strong> – What is being verified (only used if error message if checksums
+do not match).</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -445,7 +489,7 @@ do not match).</p></li>
         <a href="stellar_evolution.manager.html" class="btn btn-neutral float-right" title="stellar_evolution.manager module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="stellar_evolution.library_interface.html" class="btn btn-neutral float-left" title="stellar_evolution.library_interface module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="stellar_evolution.library_interface.html" class="btn btn-neutral" title="stellar_evolution.library_interface module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -471,16 +515,26 @@ do not match).</p></li>
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

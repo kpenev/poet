@@ -1,4 +1,4 @@
 <map id="Evolve::SingleTidalTermBody" name="Evolve::SingleTidalTermBody">
-<area shape="rect" id="node2" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="5,759,285,1112"/>
-<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="22,5,269,711"/>
+<area shape="rect" id="node2" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="5,815,287,1195"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="23,5,269,767"/>
 </map>

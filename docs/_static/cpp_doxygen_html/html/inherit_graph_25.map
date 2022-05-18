@@ -1,12 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classEvolve_1_1ZoneOrientation.html" title="Evolve::ZoneOrientation" alt="" coords="5,84,198,112"/>
-<area shape="rect" id="node2" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="246,84,439,112"/>
-<area shape="rect" id="node3" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="495,45,739,89"/>
-<area shape="rect" id="node8" href="$classEvolve_1_1PolynomialEvolutionZone.html" title="Evolve::PolynomialEvolutionZone" alt="" coords="487,113,746,141"/>
-<area shape="rect" id="node4" href="$classPlanet_1_1PlanetZone.html" title="The only zone of a LockedPlanet. " alt="" coords="830,5,987,33"/>
-<area shape="rect" id="node5" href="$classStar_1_1EvolvingStellarZone.html" title="Base class for zones of low mass evolving stars. " alt="" coords="808,57,1009,85"/>
-<area shape="rect" id="node6" href="$classStar_1_1EvolvingStellarCore.html" title="Radiative core for low mass evolving stars. " alt="" coords="1087,32,1287,60"/>
-<area shape="rect" id="node7" href="$classStar_1_1EvolvingStellarEnvelope.html" title="Surface convective zone for low mass evolving stars or the entire star for high mass stars..." alt="" coords="1071,84,1303,112"/>
-<area shape="rect" id="node9" href="$classEvolve_1_1ConstPhaseLagZone.html" title="A zone with constant phase lag for all tidal terms. " alt="" coords="794,111,1023,139"/>
-<area shape="rect" id="node10" href="$classEvolve_1_1SingleTidalTermZone.html" title="A zone dissipative to only a single tidal term. " alt="" coords="794,163,1023,191"/>
+<area shape="rect" id="node1" href="$classEvolve_1_1ZoneOrientation.html" title="Evolve::ZoneOrientation" alt="" coords="5,88,200,117"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1DissipatingZone.html" title="A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential..." alt="" coords="248,88,444,117"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1BrokenPowerlawPhaseLagZone.html" title="A DissipatingZone where the phase lag is described by a broken powerlaw. " alt="" coords="500,47,747,94"/>
+<area shape="rect" id="node8" href="$classEvolve_1_1PolynomialEvolutionZone.html" title="Evolve::PolynomialEvolutionZone" alt="" coords="492,119,755,148"/>
+<area shape="rect" id="node4" href="$classPlanet_1_1PlanetZone.html" title="The only zone of a LockedPlanet. " alt="" coords="841,5,999,35"/>
+<area shape="rect" id="node5" href="$classStar_1_1EvolvingStellarZone.html" title="Base class for zones of low mass evolving stars. " alt="" coords="818,59,1022,88"/>
+<area shape="rect" id="node6" href="$classStar_1_1EvolvingStellarCore.html" title="Radiative core for low mass evolving stars. " alt="" coords="1101,32,1304,61"/>
+<area shape="rect" id="node7" href="$classStar_1_1EvolvingStellarEnvelope.html" title="Surface convective zone for low mass evolving stars or the entire star for high mass stars..." alt="" coords="1085,85,1320,115"/>
+<area shape="rect" id="node9" href="$classEvolve_1_1ConstPhaseLagZone.html" title="A zone with constant phase lag for all tidal terms. " alt="" coords="805,116,1035,145"/>
+<area shape="rect" id="node10" href="$classEvolve_1_1SingleTidalTermZone.html" title="A zone dissipative to only a single tidal term. " alt="" coords="803,169,1037,199"/>
 </map>

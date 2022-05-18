@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -157,7 +152,7 @@
 <span class="sd">&quot;&quot;&quot;An interface to the POET star library.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">cdll</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_double</span><span class="p">,</span> <span class="n">c_uint</span><span class="p">,</span> <span class="n">byref</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">cdll</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_double</span><span class="p">,</span> <span class="n">c_uint</span><span class="p">,</span> <span class="n">byref</span><span class="p">,</span> <span class="n">POINTER</span>
 <span class="kn">from</span> <span class="nn">ctypes.util</span> <span class="k">import</span> <span class="n">find_library</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span>
@@ -176,21 +171,22 @@
 <span class="kn">from</span> <span class="nn">orbital_evolution.c_interface_util</span> <span class="k">import</span> <span class="n">ndpointer_or_null</span>
 <span class="c1">#pylint: enable=wrong-import-position</span>
 
-<div class="viewcode-block" id="initialize_library"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.initialize_library">[docs]</a><span class="k">def</span> <span class="nf">initialize_library</span><span class="p">():</span>
+<div class="viewcode-block" id="initialize_library"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.initialize_library">[docs]</a><span class="k">def</span> <span class="nf">initialize_library</span><span class="p">(</span><span class="n">library_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prepare the planet library for use.&quot;&quot;&quot;</span>
 
-    <span class="n">library_fname</span> <span class="o">=</span> <span class="n">find_library</span><span class="p">(</span><span class="s1">&#39;star&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">library_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">library_fname</span> <span class="o">=</span> <span class="n">find_library</span><span class="p">(</span><span class="s1">&#39;star&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">library_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Unable to find POET</span><span class="se">\&#39;</span><span class="s1">s star library.&#39;</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">library_fname</span><span class="p">)</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">stellar_evolution_library</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span>
+        <span class="n">c_double</span><span class="p">,</span>                                               <span class="c1">#mass</span>
+        <span class="n">c_double</span><span class="p">,</span>                                               <span class="c1">#feh</span>
+        <span class="n">c_double</span><span class="p">,</span>                                               <span class="c1">#wind_strength</span>
+        <span class="n">c_double</span><span class="p">,</span>                                               <span class="c1">#wind_sat_freq</span>
+        <span class="n">c_double</span><span class="p">,</span>                                               <span class="c1">#c-e_coupling_ts</span>
+        <span class="n">stellar_evolution_library</span><span class="o">.</span><span class="n">create_interpolator</span><span class="o">.</span><span class="n">restype</span>   <span class="c1">#interpolator</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_dissipating_body_p</span>
 
@@ -198,37 +194,48 @@
     <span class="n">result</span><span class="o">.</span><span class="n">destroy_star</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">set_star_dissipation</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                         <span class="c1">#star</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                             <span class="c1">#zone_index</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                             <span class="c1">#num_tidal_freq_brks</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                             <span class="c1">#num_spin_freq_brks</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>                   <span class="c1">#tidal_freq_breaks</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>                   <span class="c1">#spin_freq_breaks</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#tidal_freq_powers</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#spin_freq_powers</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_double</span>
+        <span class="n">c_double</span><span class="p">,</span>                                           <span class="c1">#ref_phase_lag</span>
+        <span class="n">c_double</span><span class="p">,</span>                                           <span class="c1">#inertial_mode_enhan</span>
+        <span class="n">c_double</span>                                            <span class="c1">#inertial_mode_sharp</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">set_star_dissipation</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span>                          <span class="c1">#star</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">c_double</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                         <span class="c1">#star</span>
+        <span class="n">c_double</span>                                            <span class="c1">#age</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="n">result</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="c1">#star</span>
+        <span class="n">c_uint</span><span class="p">,</span>                     <span class="c1">#zone_index,</span>
+        <span class="n">c_int</span><span class="p">,</span>                      <span class="c1">#orbital_frequency_multiplier,</span>
+        <span class="n">c_int</span><span class="p">,</span>                      <span class="c1">#spin_frequency_multiplier,</span>
+        <span class="n">c_double</span><span class="p">,</span>                   <span class="c1">#forcing_frequency,</span>
+        <span class="n">c_int</span><span class="p">,</span>                      <span class="c1">#deriv,</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">)</span>           <span class="c1">#above_lock_value</span>
+    <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">modified_phase_lag</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">core_formation_age</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">]</span>
@@ -241,12 +248,12 @@
     <span class="n">result</span><span class="o">.</span><span class="n">luminosity</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">luminosity_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                     <span class="c1">#star</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#age</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                         <span class="c1">#nvalues</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#result</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
     <span class="p">]</span>
@@ -255,52 +262,111 @@
     <span class="n">result</span><span class="o">.</span><span class="n">core_inertia</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="n">c_double</span><span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">core_inertia</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
 
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_deriv</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span><span class="c1">#star</span>
+                                          <span class="n">c_double</span><span class="p">,</span>                  <span class="c1">#age</span>
+                                          <span class="n">c_int</span><span class="p">]</span>                     <span class="c1">#deriv_ordr</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_deriv</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
     <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                     <span class="c1">#star</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#age</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                         <span class="c1">#nvalues</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#result</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-                                        <span class="n">c_double</span><span class="p">]</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
-
-    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_deriv_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                     <span class="c1">#star</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#age</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_int</span><span class="p">,</span>                                          <span class="c1">#deriv_order</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                         <span class="c1">#nvalues</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#result</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">core_inertia_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>     <span class="c1">#star</span>
+        <span class="n">c_double</span>                        <span class="c1">#age</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_deriv</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="c1">#star</span>
+        <span class="n">c_double</span><span class="p">,</span>                   <span class="c1">#age</span>
+        <span class="n">c_int</span>                       <span class="c1">#deriv_order</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_deriv</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                     <span class="c1">#star</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#age</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                         <span class="c1">#nvalues</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#result</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_deriv_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                     <span class="c1">#star</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#age</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_int</span><span class="p">,</span>                                          <span class="c1">#deriv_order</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                         <span class="c1">#nvalues</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#result</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">envelope_inertia_deriv_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="n">result</span><span class="o">.</span><span class="n">star_radius</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="n">c_double</span><span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">star_radius</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">star_radius_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                     <span class="c1">#star</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#age</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                         <span class="c1">#nvalues</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#result</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">star_radius_array</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="n">result</span><span class="o">.</span><span class="n">core_radius</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="c1">#star</span>
+        <span class="n">c_double</span>                    <span class="c1">#age</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">core_radius</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">core_radius_array</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>                     <span class="c1">#star</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#age</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                         <span class="c1">#nvalues,</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#result</span>
+                                  <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+
     <span class="k">return</span> <span class="n">result</span></div>
 
-<span class="n">library</span> <span class="o">=</span> <span class="n">initialize_library</span><span class="p">()</span>
+<span class="n">library</span> <span class="o">=</span> <span class="n">initialize_library</span><span class="p">(</span>
+    <span class="s1">&#39;/home/kpenev/projects/git/poet/build/libs/star/shared/release/libstar.so&#39;</span>
+<span class="p">)</span>
 
 <div class="viewcode-block" id="EvolvingStar"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar">[docs]</a><span class="k">class</span> <span class="nc">EvolvingStar</span><span class="p">(</span><span class="n">DissipatingBody</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A class for stars following interpolated stellar evolution tracks.&quot;&quot;&quot;</span>
@@ -311,20 +377,26 @@
 
     <span class="n">lib_configure_body</span> <span class="o">=</span> <span class="n">orbital_evolution_library</span><span class="o">.</span><span class="n">configure_star</span>
 
-<div class="viewcode-block" id="EvolvingStar._evaluate_stellar_property"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar._evaluate_stellar_property">[docs]</a>    <span class="k">def</span> <span class="nf">_evaluate_stellar_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+<div class="viewcode-block" id="EvolvingStar._evaluate_stellar_property"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar._evaluate_stellar_property">[docs]</a>    <span class="k">def</span> <span class="nf">_evaluate_stellar_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">deriv_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Evaluate a library function at a single age or array of ages.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
                                  <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span>
                                  <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">property_name</span> <span class="o">+</span> <span class="s1">&#39;_array&#39;</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
-                                                       <span class="n">age</span><span class="p">,</span>
-                                                       <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-                                                       <span class="n">result</span><span class="p">)</span>
+            <span class="n">c_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">property_name</span> <span class="o">+</span> <span class="s1">&#39;_array&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">deriv_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">c_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">c_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">deriv_order</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span>
 
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">property_name</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">deriv_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">property_name</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">property_name</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_body</span><span class="p">,</span>
+                                               <span class="n">age</span><span class="p">,</span>
+                                               <span class="n">deriv_order</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvolvingStar.__init__"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="o">*</span><span class="p">,</span>
@@ -361,6 +433,41 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="n">mass</span> <span class="o">&lt;</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">mass_range</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="ow">or</span>
+                <span class="n">mass</span> <span class="o">&gt;</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">mass_range</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s1">&#39;Stellar mass: </span><span class="si">%s</span><span class="s1"> is outside the range supported by the &#39;</span>
+                    <span class="s1">&#39;stelalr evolution interpolator: </span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="o">%</span>
+                <span class="p">(</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">mass</span><span class="p">),</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">interpolator</span><span class="o">.</span><span class="n">mass_range</span><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">interpolator</span><span class="o">.</span><span class="n">mass_range</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="n">metallicity</span> <span class="o">&lt;</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">feh_range</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="ow">or</span>
+                <span class="n">metallicity</span> <span class="o">&gt;</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">feh_range</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s1">&#39;Stellar metallicity: </span><span class="si">%s</span><span class="s1"> is outside the range supported by &#39;</span>
+                    <span class="s1">&#39;the stelalr evolution interpolator: </span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="o">%</span>
+                <span class="p">(</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">metallicity</span><span class="p">),</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">interpolator</span><span class="o">.</span><span class="n">feh_range</span><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">interpolator</span><span class="o">.</span><span class="n">feh_range</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metallicity</span> <span class="o">=</span> <span class="n">metallicity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wind_strength</span> <span class="o">=</span> <span class="n">wind_strength</span>
@@ -388,7 +495,9 @@
                         <span class="n">spin_frequency_breaks</span><span class="p">,</span>
                         <span class="n">tidal_frequency_powers</span><span class="p">,</span>
                         <span class="n">spin_frequency_powers</span><span class="p">,</span>
-                        <span class="n">reference_phase_lag</span><span class="p">):</span>
+                        <span class="n">reference_phase_lag</span><span class="p">,</span>
+                        <span class="n">inertial_mode_enhancement</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                        <span class="n">inertial_mode_sharpness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the dissipative properties of one of the zones of a star.</span>
 
@@ -416,6 +525,14 @@
 <span class="sd">                The phase lag at the first tidal and first spin frequency</span>
 <span class="sd">                break. The rest are calculated by imposing continuity.</span>
 
+<span class="sd">            - inertial_mode_enhancement:</span>
+<span class="sd">                A factor by which the dissipation is enhanced in the inertial</span>
+<span class="sd">                mode range. Must be &gt;= 1 (1 for no enhancement).</span>
+
+<span class="sd">            - inertial_mode_sharpness:</span>
+<span class="sd">                Parameter controlling how sharp the transition between enhanced</span>
+<span class="sd">                and non-enhanced dissipation is.</span>
+
 <span class="sd">        Returns: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -427,14 +544,18 @@
                                      <span class="n">spin_frequency_breaks</span><span class="p">,</span>
                                      <span class="n">tidal_frequency_powers</span><span class="p">,</span>
                                      <span class="n">spin_frequency_powers</span><span class="p">,</span>
-                                     <span class="n">reference_phase_lag</span><span class="p">)</span>
+                                     <span class="n">reference_phase_lag</span><span class="p">,</span>
+                                     <span class="n">inertial_mode_enhancement</span><span class="p">,</span>
+                                     <span class="n">inertial_mode_sharpness</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span>
             <span class="n">zone_index</span><span class="o">=</span><span class="n">zone_index</span><span class="p">,</span>
             <span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="n">tidal_frequency_breaks</span><span class="p">,</span>
             <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">tidal_frequency_powers</span><span class="p">,</span>
             <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="n">spin_frequency_breaks</span><span class="p">,</span>
             <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">spin_frequency_powers</span><span class="p">,</span>
-            <span class="n">reference_phase_lag</span><span class="o">=</span><span class="n">reference_phase_lag</span>
+            <span class="n">reference_phase_lag</span><span class="o">=</span><span class="n">reference_phase_lag</span><span class="p">,</span>
+            <span class="n">inertial_mode_enhancement</span><span class="o">=</span><span class="n">inertial_mode_enhancement</span><span class="p">,</span>
+            <span class="n">inertial_mode_sharpness</span><span class="o">=</span><span class="n">inertial_mode_sharpness</span>
         <span class="p">)</span></div>
     <span class="c1">#pylint: enable=arguments-differ</span>
 
@@ -518,19 +639,23 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;luminosity&#39;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvolvingStar.core_inertia"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.core_inertia">[docs]</a>    <span class="k">def</span> <span class="nf">core_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+<div class="viewcode-block" id="EvolvingStar.core_inertia"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.core_inertia">[docs]</a>    <span class="k">def</span> <span class="nf">core_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">deriv_order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the moment of inertia of the stellar core at the given age.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;core_inertia&#39;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;core_inertia_deriv&#39;</span><span class="p">,</span>
+                                               <span class="n">age</span><span class="p">,</span>
+                                               <span class="n">deriv_order</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvolvingStar.envelope_inertia"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.envelope_inertia">[docs]</a>    <span class="k">def</span> <span class="nf">envelope_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+<div class="viewcode-block" id="EvolvingStar.envelope_inertia"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.envelope_inertia">[docs]</a>    <span class="k">def</span> <span class="nf">envelope_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">deriv_order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the moment of inertia of the stellar env. at the given age.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;envelope_inertia&#39;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_stellar_property</span><span class="p">(</span><span class="s1">&#39;envelope_inertia_deriv&#39;</span><span class="p">,</span>
+                                               <span class="n">age</span><span class="p">,</span>
+                                               <span class="n">deriv_order</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvolvingStar.radius"><a class="viewcode-back" href="../../_implementation/orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar.radius">[docs]</a>    <span class="k">def</span> <span class="nf">radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the luminosity of the star at the given age.&quot;&quot;&quot;</span>
@@ -663,16 +788,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

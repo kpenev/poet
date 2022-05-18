@@ -1,7 +1,0 @@
-digraph "StellarEvolution::AllowedGridGrowth"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{StellarEvolution::Allowed\lGridGrowth\n|- __lighter\l- __heavier\l- __poorer\l- __richer\l|+ AllowedGridGrowth()\l+ lighter()\l+ heavier()\l+ poorer()\l+ richer()\l+ block_lighter()\l+ block_heavier()\l+ block_poorer()\l+ block_richer()\l+ operator bool()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

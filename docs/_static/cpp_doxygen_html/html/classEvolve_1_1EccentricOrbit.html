@@ -114,7 +114,7 @@ $(document).ready(function(){initNavTree('classEvolve_1_1EccentricOrbit.html',''
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classEvolve_1_1EccentricOrbit__coll__graph.svg" width="195" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classEvolve_1_1EccentricOrbit__coll__graph.svg" width="195" height="391"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <table class="memberdecls">
@@ -149,9 +149,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a86a12d4bc31fd7bb1d9ceec264124a32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac02d832306052d130bb847978a2212c4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1EccentricOrbit.html#ac02d832306052d130bb847978a2212c4">eccentric_anomaly</a> (double orbital_phase) const</td></tr>
 <tr class="separator:ac02d832306052d130bb847978a2212c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64c1f58b8ad19ebab77893ba84d71fee"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1EccentricOrbit.html#a64c1f58b8ad19ebab77893ba84d71fee">secondary_position</a> (double orbital_phase) const</td></tr>
-<tr class="memdesc:a64c1f58b8ad19ebab77893ba84d71fee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Secondary position vector in a coordinate system centered on the primary, with \( \hat{z} = \hat{L} \) and \( \hat{y} = \hat{S} \times \hat{L} \).  <a href="#a64c1f58b8ad19ebab77893ba84d71fee">More...</a><br /></td></tr>
-<tr class="separator:a64c1f58b8ad19ebab77893ba84d71fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa518db316bd48995738b1b4d88214d2b"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; long double, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1EccentricOrbit.html#aa518db316bd48995738b1b4d88214d2b">secondary_position</a> (double orbital_phase) const</td></tr>
+<tr class="memdesc:aa518db316bd48995738b1b4d88214d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Secondary position vector in a coordinate system centered on the primary, with \( \hat{z} = \hat{L} \) and \( \hat{y} = \hat{S} \times \hat{L} \).  <a href="#aa518db316bd48995738b1b4d88214d2b">More...</a><br /></td></tr>
+<tr class="separator:aa518db316bd48995738b1b4d88214d2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39f53daaa4b16487ebf46e0bce5aadcd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1EccentricOrbit.html#a39f53daaa4b16487ebf46e0bce5aadcd">orbital_angmom</a> () const</td></tr>
 <tr class="memdesc:a39f53daaa4b16487ebf46e0bce5aadcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The magnitude of the orbital angular momentum of the system in \( M_\odot R_\odot^2 \mathrm{rad} / \mathrm{Gyr} \).  <a href="#a39f53daaa4b16487ebf46e0bce5aadcd">More...</a><br /></td></tr>
 <tr class="separator:a39f53daaa4b16487ebf46e0bce5aadcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -352,7 +352,7 @@ Private Attributes</h2></td></tr>
 
 <p>The magnitude of the orbital angular momentum of the system in \( M_\odot R_\odot^2 \mathrm{rad} / \mathrm{Gyr} \). </p>
 
-<p class="definition">Definition at line <a class="el" href="EccentricOrbit_8cpp_source.html#l00103">103</a> of file <a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EccentricOrbit_8cpp_source.html#l00107">107</a> of file <a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a>.</p>
 
 </div>
 </div>
@@ -373,7 +373,7 @@ Private Attributes</h2></td></tr>
 
 <p>The magnitude of the orbital energy of the system in \( M_\odot R_\odot^2 / \mathrm{Gyr}^2 \). </p>
 
-<p class="definition">Definition at line <a class="el" href="EccentricOrbit_8cpp_source.html#l00116">116</a> of file <a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EccentricOrbit_8cpp_source.html#l00120">120</a> of file <a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a>.</p>
 
 </div>
 </div>
@@ -394,7 +394,7 @@ Private Attributes</h2></td></tr>
 
 <p>The orbital period of the system in days. </p>
 
-<p class="definition">Definition at line <a class="el" href="EccentricOrbit_8cpp_source.html#l00129">129</a> of file <a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EccentricOrbit_8cpp_source.html#l00133">133</a> of file <a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a>.</p>
 
 </div>
 </div>
@@ -543,14 +543,14 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a64c1f58b8ad19ebab77893ba84d71fee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64c1f58b8ad19ebab77893ba84d71fee">&#9670;&nbsp;</a></span>secondary_position()</h2>
+<a id="aa518db316bd48995738b1b4d88214d2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa518db316bd48995738b1b4d88214d2b">&#9670;&nbsp;</a></span>secondary_position()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::Vector3d Evolve::EccentricOrbit::secondary_position </td>
+          <td class="memname">Eigen::Matrix&lt; long double, 3, 1 &gt; Evolve::EccentricOrbit::secondary_position </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>orbital_phase</em></td><td>)</td>
@@ -735,8 +735,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/<a class="el" href="EccentricOrbit_8h_source.html">EccentricOrbit.h</a></li>
-<li>/Users/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/<a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/<a class="el" href="EccentricOrbit_8h_source.html">EccentricOrbit.h</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/unit_tests/testEvolve/<a class="el" href="EccentricOrbit_8cpp_source.html">EccentricOrbit.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -744,7 +744,7 @@ Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceEvolve.html">Evolve</a></li><li class="navelem"><a class="el" href="classEvolve_1_1EccentricOrbit.html">EccentricOrbit</a></li>
-    <li class="footer">Generated on Sun Dec 1 2019 01:10:26 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Wed May 18 2022 17:13:10 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -113,7 +113,7 @@ $(document).ready(function(){initNavTree('classEvolve_1_1SynchronizedCondition.h
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classEvolve_1_1SynchronizedCondition__inherit__graph.svg" width="272" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classEvolve_1_1SynchronizedCondition__inherit__graph.svg" width="274" height="576"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
@@ -128,8 +128,11 @@ $(document).ready(function(){initNavTree('classEvolve_1_1SynchronizedCondition.h
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac06584ba28a8bc4c32c668ac549d6d09"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1SynchronizedCondition.html#ac06584ba28a8bc4c32c668ac549d6d09">SynchronizedCondition</a> (int orbital_freq_mult, int spin_freq_mult, short deriv_sign, bool primary, unsigned zone_index, <a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system)</td></tr>
-<tr class="memdesc:ac06584ba28a8bc4c32c668ac549d6d09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the synchronization condition for the given planet.  <a href="#ac06584ba28a8bc4c32c668ac549d6d09">More...</a><br /></td></tr>
+<tr class="memdesc:ac06584ba28a8bc4c32c668ac549d6d09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the synchronization condition for the given object.  <a href="#ac06584ba28a8bc4c32c668ac549d6d09">More...</a><br /></td></tr>
 <tr class="separator:ac06584ba28a8bc4c32c668ac549d6d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50d5e249ca818f7fad5d5e1a9a954939"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1SynchronizedCondition.html#a50d5e249ca818f7fad5d5e1a9a954939">SynchronizedCondition</a> (const <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;monitored_lock, bool primary, unsigned zone_index, <a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system)</td></tr>
+<tr class="memdesc:a50d5e249ca818f7fad5d5e1a9a954939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the synchronization condition for the given object from a lock.  <a href="#a50d5e249ca818f7fad5d5e1a9a954939">More...</a><br /></td></tr>
+<tr class="separator:a50d5e249ca818f7fad5d5e1a9a954939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5c1dd9c7021d9056a581527782ef2f2"><td class="memItemLeft" align="right" valign="top">std::valarray&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1SynchronizedCondition.html#aa5c1dd9c7021d9056a581527782ef2f2">operator()</a> (<a class="el" href="Core_2Common_8h.html#a7953957c8a63c9c2d5c0def3988ff270">Core::EvolModeType</a> evol_mode, const std::valarray&lt; double &gt; &amp;orbit, const std::valarray&lt; double &gt; &amp;derivatives, std::valarray&lt; double &gt; &amp;stop_deriv) const</td></tr>
 <tr class="memdesc:aa5c1dd9c7021d9056a581527782ef2f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the difference between the orbital and multiplier scaled stellar spin angular velocities divided by the orbital angular velocity.  <a href="#aa5c1dd9c7021d9056a581527782ef2f2">More...</a><br /></td></tr>
 <tr class="separator:aa5c1dd9c7021d9056a581527782ef2f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,10 +186,10 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Satisfied when some multiples of the orbit and stellar rotation are synchronized. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00022">22</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00023">23</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac06584ba28a8bc4c32c668ac549d6d09"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac06584ba28a8bc4c32c668ac549d6d09">&#9670;&nbsp;</a></span>SynchronizedCondition()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac06584ba28a8bc4c32c668ac549d6d09">&#9670;&nbsp;</a></span>SynchronizedCondition() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -235,7 +238,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create the synchronization condition for the given planet. </p>
+<p>Create the synchronization condition for the given object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">orbital_freq_mult</td><td>The mutiplier in front of the orbital frequency in the lock. </td></tr>
@@ -249,6 +252,67 @@ Private Attributes</h2></td></tr>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8cpp_source.html#l00008">8</a> of file <a class="el" href="SynchronizedCondition_8cpp_source.html">SynchronizedCondition.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a50d5e249ca818f7fad5d5e1a9a954939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50d5e249ca818f7fad5d5e1a9a954939">&#9670;&nbsp;</a></span>SynchronizedCondition() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Evolve::SynchronizedCondition::SynchronizedCondition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;&#160;</td>
+          <td class="paramname"><em>monitored_lock</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>primary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>zone_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>system</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create the synchronization condition for the given object from a lock. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">monitored_lock</td><td>The lock to base the condition on. </td></tr>
+    <tr><td class="paramname">primary</td><td>Which body's spin is checked for locking. </td></tr>
+    <tr><td class="paramname">zone_index</td><td>Which zone's spin is checked for locking. </td></tr>
+    <tr><td class="paramname">system</td><td>The binary system this locking condition is attached to </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00067">67</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -281,7 +345,7 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classEvolve_1_1StoppingCondition.html#a66abfac8de73bf4de3d130c7bcb29b0a">Evolve::StoppingCondition</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8cpp_source.html#l00144">144</a> of file <a class="el" href="SynchronizedCondition_8cpp_source.html">SynchronizedCondition.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8cpp_source.html#l00139">139</a> of file <a class="el" href="SynchronizedCondition_8cpp_source.html">SynchronizedCondition.cpp</a>.</p>
 
 </div>
 </div>
@@ -332,8 +396,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the difference between the orbital and multiplier scaled stellar spin angular velocities divided by the orbital angular velocity. </p>
-<p>See <a class="el" href="classEvolve_1_1StoppingCondition.html#abc7342db68f3564462ece83ba6b36b57" title="The values of quantities which should cross zero when the condition(s) is(are) satisfied. ">StoppingCondition::operator()()</a> for a description of the arguments.</p>
-<p>The evolution mode must be FAST_PLANET, SLOW_PLANET, LOCKED_TO_DISK or NO_PLANET. </p>
+<p>See <a class="el" href="classEvolve_1_1StoppingCondition.html#abc7342db68f3564462ece83ba6b36b57" title="The values of quantities which should cross zero when the condition(s) is(are) satisfied. ">StoppingCondition::operator()()</a> for a description of the arguments. </p>
 
 <p>Implements <a class="el" href="classEvolve_1_1StoppingCondition.html#abc7342db68f3564462ece83ba6b36b57">Evolve::StoppingCondition</a>.</p>
 
@@ -366,7 +429,7 @@ Private Attributes</h2></td></tr>
 
 <p>The multiplier in front of the orbital frequency in the lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00085">85</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00108">108</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -438,7 +501,7 @@ Private Attributes</h2></td></tr>
 
 <p>The multiplier in front of the spin frequency in the lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00088">88</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00111">111</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -470,7 +533,7 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classEvolve_1_1StoppingCondition.html#a67a651e5f23534513014da5a75b96d97">Evolve::StoppingCondition</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00082">82</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00105">105</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -497,7 +560,7 @@ Private Attributes</h2></td></tr>
 
 <p>The mutiplier in front of the orbital frequency in the lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00025">25</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00026">26</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -523,7 +586,7 @@ Private Attributes</h2></td></tr>
 
 <p>Which body's spin is checked for locking. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00031">31</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00032">32</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -549,7 +612,7 @@ Private Attributes</h2></td></tr>
 
 <p>The multiplier in front of the spin frequency in the lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00025">25</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00026">26</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -575,7 +638,7 @@ Private Attributes</h2></td></tr>
 
 <p>The binary system this locking condition is attached to. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00040">40</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00041">41</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -601,7 +664,7 @@ Private Attributes</h2></td></tr>
 
 <p>The zone whose spin is monitored. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00037">37</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00038">38</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
@@ -627,13 +690,13 @@ Private Attributes</h2></td></tr>
 
 <p>Which zone is checked for locking. </p>
 
-<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00034">34</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SynchronizedCondition_8h_source.html#l00035">35</a> of file <a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a></li>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="SynchronizedCondition_8cpp_source.html">SynchronizedCondition.cpp</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="SynchronizedCondition_8cpp_source.html">SynchronizedCondition.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -641,7 +704,7 @@ Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceEvolve.html">Evolve</a></li><li class="navelem"><a class="el" href="classEvolve_1_1SynchronizedCondition.html">SynchronizedCondition</a></li>
-    <li class="footer">Generated on Sun Dec 1 2019 01:10:26 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Wed May 18 2022 17:13:10 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

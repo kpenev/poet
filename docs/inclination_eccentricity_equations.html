@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Evolution Equations From Tidal Torque+Power" href="eccentric_evolution_equations.html" />
     <link rel="prev" title="stellar_evolution.manager_data_model module" href="_implementation/stellar_evolution.manager_data_model.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -171,23 +166,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="inclined-and-eccentric-orbital-evolution">
@@ -363,9 +353,18 @@ with a period of <span class="math notranslate nohighlight">\(2\pi/\Omega\)</spa
 <div class="math notranslate nohighlight">
 \[\frac{a^3\exp(-im'\Delta \phi(t))}{r^3(t)}=\sum_s p_{m',s}
         \exp\left(-i s \Omega t\right)\]</div>
-<p>Expressions for the <span class="math notranslate nohighlight">\(p_{m',s}(e)\)</span> coefficients are derived <a class="reference internal" href="inclination_eccentricity_pms1.html"><span class="doc">here</span></a> or <a class="reference internal" href="inclination_eccentricity_pms2.html"><span class="doc">here</span></a>.</p>
-<p>Hence, our tidal potential can be written exactly as in Lai (2012), eq. 12,
-except with <span class="math notranslate nohighlight">\(m'\)</span> not limited to only 0 and 2:</p>
+<p>Where the <cite>p_{m’,s}(e)</cite> coefficients are defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{m,s}&amp;=&amp;\frac{a^3}{2\pi}\int_0^{2\pi/\omega}
+        \frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\
+&amp;=&amp; a^3\int_0^{2\pi/\omega}
+        e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)}
+        e^{i s \omega t}dt\end{split}\]</div>
+<p>Their values are calculated to high precision numerically on a dense grid of
+eccentricities and stored in a sqlite database. During evolution, POET
+interpolated within the tabulated values.</p>
+<p>Our tidal potential can be written exactly as in Lai (2012), eq. 12, except with
+<span class="math notranslate nohighlight">\(m'\)</span> not limited to only 0 and 2:</p>
 <div class="math notranslate nohighlight">
 \[U(\mathbf{r}, t)=-\sum_{m,m'} U_{m,m'}\rho^2 Y_{2,m}(\theta',\phi')
         \exp\left(-im'\Omega t\right)\]</div>
@@ -516,7 +515,7 @@ T_z &amp; = &amp; T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\
         <a href="eccentric_evolution_equations.html" class="btn btn-neutral float-right" title="Evolution Equations From Tidal Torque+Power" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="_implementation/stellar_evolution.manager_data_model.html" class="btn btn-neutral float-left" title="stellar_evolution.manager_data_model module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="_implementation/stellar_evolution.manager_data_model.html" class="btn btn-neutral" title="stellar_evolution.manager_data_model module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -542,16 +541,26 @@ T_z &amp; = &amp; T_z^0 + \lambda T_z^+ + (1-\lambda)T_z^-\\
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="orbital_evolution.transformations module" href="orbital_evolution.transformations.html" />
     <link rel="prev" title="orbital_evolution.planet_interface module" href="orbital_evolution.planet_interface.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -180,23 +175,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="module-orbital_evolution.star_interface">
@@ -205,121 +195,129 @@
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
 <div class="graphviz"><img src="../_images/inheritance-f1adf4fb4d55ebb7a6f10285c947571cac147210.png" alt="Inheritance diagram of DissipatingBody, EvolvingStar, c_dissipating_body_p, c_double, c_int, c_uint" usemap="#inheritancefa6a200f20" class="inheritance graphviz" /></div>
 <map id="inheritancefa6a200f20" name="inheritancefa6a200f20">
-<area shape="rect" id="node6" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="5,77,325,101"/>
-<area shape="rect" id="node7" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.c_dissipating_body_p" target="_top" title="Dummy class only used for type checking." alt="" coords="490,77,843,101"/>
-<area shape="rect" id="node8" href="#orbital_evolution.star_interface.EvolvingStar" target="_top" title="A class for stars following interpolated stellar evolution tracks." alt="" coords="24,149,306,173"/>
+<area shape="rect" id="node6" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="5,79,360,104"/>
+<area shape="rect" id="node7" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.c_dissipating_body_p" target="_top" title="Dummy class only used for type checking." alt="" coords="521,79,908,104"/>
+<area shape="rect" id="node8" href="#orbital_evolution.star_interface.EvolvingStar" target="_top" title="A class for stars following interpolated stellar evolution tracks." alt="" coords="27,152,339,177"/>
 </map><p>An interface to the POET star library.</p>
 <dl class="class">
 <dt id="orbital_evolution.star_interface.EvolvingStar">
-<em class="property">class </em><code class="sig-prename descclassname">orbital_evolution.star_interface.</code><code class="sig-name descname">EvolvingStar</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">mass</em>, <em class="sig-param">metallicity</em>, <em class="sig-param">wind_strength</em>, <em class="sig-param">wind_saturation_frequency</em>, <em class="sig-param">diff_rot_coupling_timescale</em>, <em class="sig-param">interpolator</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">orbital_evolution.star_interface.</code><code class="descname">EvolvingStar</code><span class="sig-paren">(</span><em>*</em>, <em>mass</em>, <em>metallicity</em>, <em>wind_strength</em>, <em>wind_saturation_frequency</em>, <em>diff_rot_coupling_timescale</em>, <em>interpolator</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" title="orbital_evolution.dissipating_body.DissipatingBody"><code class="xref py py-class docutils literal notranslate"><span class="pre">orbital_evolution.dissipating_body.DissipatingBody</span></code></a></p>
 <div class="graphviz"><img src="../_images/inheritance-3a2e13278d1f85f258e631f4e7c8ac9640ccc41d.png" alt="Inheritance diagram of orbital_evolution.star_interface.EvolvingStar" usemap="#inheritanced6dac95dbf" class="inheritance graphviz" /></div>
 <map id="inheritanced6dac95dbf" name="inheritanced6dac95dbf">
-<area shape="rect" id="node2" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="5,77,325,101"/>
-<area shape="rect" id="node3" href="#orbital_evolution.star_interface.EvolvingStar" target="_top" title="A class for stars following interpolated stellar evolution tracks." alt="" coords="24,149,306,173"/>
+<area shape="rect" id="node2" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="5,79,360,104"/>
+<area shape="rect" id="node3" href="#orbital_evolution.star_interface.EvolvingStar" target="_top" title="A class for stars following interpolated stellar evolution tracks." alt="" coords="27,152,339,177"/>
 </map><p>A class for stars following interpolated stellar evolution tracks.</p>
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">mass</em>, <em class="sig-param">metallicity</em>, <em class="sig-param">wind_strength</em>, <em class="sig-param">wind_saturation_frequency</em>, <em class="sig-param">diff_rot_coupling_timescale</em>, <em class="sig-param">interpolator</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*</em>, <em>mass</em>, <em>metallicity</em>, <em>wind_strength</em>, <em>wind_saturation_frequency</em>, <em>diff_rot_coupling_timescale</em>, <em>interpolator</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a star with the given properties and evolution.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mass</strong> (<em>-</em>) – The mass of the star in solar masses.</p></li>
-<li><p><strong>metallicity</strong> (<em>-</em>) – The metallicity ([Fe/H]) of the star.</p></li>
-<li><p><strong>wind_strength</strong> (<em>-</em>) – The efficiency of the wind carrying away angular momentum.</p></li>
-<li><p><strong>wind_saturation_frequency</strong> (<em>-</em>) – The frequency at which the wind loss saturates in rad/day.</p></li>
-<li><p><strong>diff_rot_coupling_timescale</strong> (<em>-</em>) – The timescale for differential rotation coupling.</p></li>
-<li><p><strong>interpolator</strong> (<em>-</em>) – An instance of stellar_evolution.MESAInterpolator to base the
-stellar evolution on.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mass</strong> (<em>-</em>) – The mass of the star in solar masses.</li>
+<li><strong>metallicity</strong> (<em>-</em>) – The metallicity ([Fe/H]) of the star.</li>
+<li><strong>wind_strength</strong> (<em>-</em>) – The efficiency of the wind carrying away angular momentum.</li>
+<li><strong>wind_saturation_frequency</strong> (<em>-</em>) – The frequency at which the wind loss saturates in rad/day.</li>
+<li><strong>diff_rot_coupling_timescale</strong> (<em>-</em>) – The timescale for differential rotation coupling.</li>
+<li><strong>interpolator</strong> (<em>-</em>) – An instance of stellar_evolution.MESAInterpolator to base the
+stellar evolution on.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Returns: None</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar._evaluate_stellar_property">
-<code class="sig-name descname">_evaluate_stellar_property</code><span class="sig-paren">(</span><em class="sig-param">property_name</em>, <em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar._evaluate_stellar_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar._evaluate_stellar_property" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_evaluate_stellar_property</code><span class="sig-paren">(</span><em>property_name</em>, <em>age</em>, <em>deriv_order=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar._evaluate_stellar_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar._evaluate_stellar_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate a library function at a single age or array of ages.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.core_formation_age">
-<code class="sig-name descname">core_formation_age</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.core_formation_age"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.core_formation_age" title="Permalink to this definition">¶</a></dt>
+<code class="descname">core_formation_age</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.core_formation_age"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.core_formation_age" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the age at which the core of the star forms in Gyrs.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.core_inertia">
-<code class="sig-name descname">core_inertia</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.core_inertia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.core_inertia" title="Permalink to this definition">¶</a></dt>
+<code class="descname">core_inertia</code><span class="sig-paren">(</span><em>age</em>, <em>deriv_order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.core_inertia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.core_inertia" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the moment of inertia of the stellar core at the given age.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.delete" title="Permalink to this definition">¶</a></dt>
+<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Destroy the library star object created at construction.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="orbital_evolution.star_interface.EvolvingStar.deriv_ids">
-<code class="sig-name descname">deriv_ids</code><em class="property"> = {'AGE': 1, 'NO': 0, 'ORBITAL_FREQUENCY': 3, 'SPIN_FREQUENCY': 2}</em><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.deriv_ids" title="Permalink to this definition">¶</a></dt>
+<code class="descname">deriv_ids</code><em class="property"> = {'AGE': 1, 'NO': 0, 'ORBITAL_FREQUENCY': 3, 'SPIN_FREQUENCY': 2}</em><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.deriv_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="orbital_evolution.star_interface.EvolvingStar.deriv_list">
-<code class="sig-name descname">deriv_list</code><em class="property"> = ['NO', 'AGE', 'SPIN_FREQUENCY', 'ORBITAL_FREQUENCY']</em><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.deriv_list" title="Permalink to this definition">¶</a></dt>
+<code class="descname">deriv_list</code><em class="property"> = ['NO', 'AGE', 'SPIN_FREQUENCY', 'ORBITAL_FREQUENCY']</em><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.deriv_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.detect_stellar_wind_saturation">
-<code class="sig-name descname">detect_stellar_wind_saturation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.detect_stellar_wind_saturation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.detect_stellar_wind_saturation" title="Permalink to this definition">¶</a></dt>
+<code class="descname">detect_stellar_wind_saturation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.detect_stellar_wind_saturation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.detect_stellar_wind_saturation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tell a fully configured star to set its wind saturation state.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.envelope_inertia">
-<code class="sig-name descname">envelope_inertia</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.envelope_inertia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.envelope_inertia" title="Permalink to this definition">¶</a></dt>
+<code class="descname">envelope_inertia</code><span class="sig-paren">(</span><em>age</em>, <em>deriv_order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.envelope_inertia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.envelope_inertia" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the moment of inertia of the stellar env. at the given age.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="orbital_evolution.star_interface.EvolvingStar.lib_configure_body">
-<code class="sig-name descname">lib_configure_body</code><em class="property"> = &lt;_FuncPtr object&gt;</em><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.lib_configure_body" title="Permalink to this definition">¶</a></dt>
+<code class="descname">lib_configure_body</code><em class="property"> = &lt;_FuncPtr object&gt;</em><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.lib_configure_body" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.lifetime">
-<code class="sig-name descname">lifetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.lifetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.lifetime" title="Permalink to this definition">¶</a></dt>
+<code class="descname">lifetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.lifetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.lifetime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the maximum age at which the star can be queried.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.luminosity">
-<code class="sig-name descname">luminosity</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.luminosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.luminosity" title="Permalink to this definition">¶</a></dt>
+<code class="descname">luminosity</code><span class="sig-paren">(</span><em>age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.luminosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.luminosity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the luminosity of the star at the given age.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.modified_phase_lag">
-<code class="sig-name descname">modified_phase_lag</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">zone_index</em>, <em class="sig-param">orbital_frequency_multiplier</em>, <em class="sig-param">spin_frequency_multiplier</em>, <em class="sig-param">forcing_frequency</em>, <em class="sig-param">deriv</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.modified_phase_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.modified_phase_lag" title="Permalink to this definition">¶</a></dt>
+<code class="descname">modified_phase_lag</code><span class="sig-paren">(</span><em>*</em>, <em>zone_index</em>, <em>orbital_frequency_multiplier</em>, <em>spin_frequency_multiplier</em>, <em>forcing_frequency</em>, <em>deriv</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.modified_phase_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.modified_phase_lag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the phase lag times the love number.</p>
 <p>The spin of the star must be set by calling the configure method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>zone_index</strong> (<em>-</em>) – The index of the zone whose lag to return.</p></li>
-<li><p><strong>orbital_frequency_multiplier</strong> (<em>-</em>) – The multiplier of the orbital frequency in the expression for
-the forcing frequency.</p></li>
-<li><p><strong>spin_frequency_multiplier</strong> (<em>-</em>) – The multiplier of the spin frequency in the expression for
-the forcing frequency.</p></li>
-<li><p><strong>forcing_frequency</strong> (<em>-</em>) – The forcing frequency for which to return the phase lag.</p></li>
-<li><p><strong>deriv</strong> (<em>-</em>) – One of the derivative IDs in self.deriv_ids identifying what
-derivative of the phase lag to return.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone_index</strong> (<em>-</em>) – The index of the zone whose lag to return.</li>
+<li><strong>orbital_frequency_multiplier</strong> (<em>-</em>) – The multiplier of the orbital frequency in the expression for
+the forcing frequency.</li>
+<li><strong>spin_frequency_multiplier</strong> (<em>-</em>) – The multiplier of the spin frequency in the expression for
+the forcing frequency.</li>
+<li><strong>forcing_frequency</strong> (<em>-</em>) – The forcing frequency for which to return the phase lag.</li>
+<li><strong>deriv</strong> (<em>-</em>) – One of the derivative IDs in self.deriv_ids identifying what
+derivative of the phase lag to return.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Returns: The phase lag times the love number for the given
 parameters. If the forcing frequency is exactly 0.0, two values are
 returned, the first for infinitesimal positive and the second for
@@ -328,48 +326,59 @@ infinitesimal negative forcing frequencies.</p>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.radius">
-<code class="sig-name descname">radius</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.radius" title="Permalink to this definition">¶</a></dt>
+<code class="descname">radius</code><span class="sig-paren">(</span><em>age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.radius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the luminosity of the star at the given age.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.select_interpolation_region">
-<code class="sig-name descname">select_interpolation_region</code><span class="sig-paren">(</span><em class="sig-param">age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.select_interpolation_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.select_interpolation_region" title="Permalink to this definition">¶</a></dt>
+<code class="descname">select_interpolation_region</code><span class="sig-paren">(</span><em>age</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.select_interpolation_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.select_interpolation_region" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare for interpolating stellar quantities around the given age.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>age</strong> (<em>-</em>) – The age around which interpolation will be needed.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>age</strong> (<em>-</em>) – The age around which interpolation will be needed.</td>
+</tr>
+</tbody>
+</table>
 <p>Returns: None</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.star_interface.EvolvingStar.set_dissipation">
-<code class="sig-name descname">set_dissipation</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">zone_index</em>, <em class="sig-param">tidal_frequency_breaks</em>, <em class="sig-param">spin_frequency_breaks</em>, <em class="sig-param">tidal_frequency_powers</em>, <em class="sig-param">spin_frequency_powers</em>, <em class="sig-param">reference_phase_lag</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.set_dissipation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.set_dissipation" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_dissipation</code><span class="sig-paren">(</span><em>*</em>, <em>zone_index</em>, <em>tidal_frequency_breaks</em>, <em>spin_frequency_breaks</em>, <em>tidal_frequency_powers</em>, <em>spin_frequency_powers</em>, <em>reference_phase_lag</em>, <em>inertial_mode_enhancement=1.0</em>, <em>inertial_mode_sharpness=10.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#EvolvingStar.set_dissipation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.EvolvingStar.set_dissipation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the dissipative properties of one of the zones of a star.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>zone_index</strong> (<em>-</em>) – Which zone to set the dissiaption for (0 - envelope, 1 -
-core).</p></li>
-<li><p><strong>tidal_frequency_breaks</strong> (<em>-</em>) – The locations of the breaks in tidal frequency in rad/day.
-Entries should be sorted.</p></li>
-<li><p><strong>spin_frequency_breaks</strong> (<em>-</em>) – The locations of the breaks in spin frequency in rad/day.
-Entries should be sorted.</p></li>
-<li><p><strong>tidal_frequency_powers</strong> (<em>-</em>) – The powerlaw indices for the tidal frequency dependence.
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone_index</strong> (<em>-</em>) – Which zone to set the dissiaption for (0 - envelope, 1 -
+core).</li>
+<li><strong>tidal_frequency_breaks</strong> (<em>-</em>) – The locations of the breaks in tidal frequency in rad/day.
+Entries should be sorted.</li>
+<li><strong>spin_frequency_breaks</strong> (<em>-</em>) – The locations of the breaks in spin frequency in rad/day.
+Entries should be sorted.</li>
+<li><strong>tidal_frequency_powers</strong> (<em>-</em>) – The powerlaw indices for the tidal frequency dependence.
 Should be indexed in the same order as
 tidal_frequency_breaks, but must contain an additional
-starting entry for the powerlaw index before the first break.</p></li>
-<li><p><strong>spin_frequency_powers</strong> (<em>-</em>) – The powerlaw indices for the spin frequency dependence.
+starting entry for the powerlaw index before the first break.</li>
+<li><strong>spin_frequency_powers</strong> (<em>-</em>) – The powerlaw indices for the spin frequency dependence.
 Should be indexed in the same order as spin_frequency_breaks,
 but must contain an additional starting entry for the
-powerlaw index before the first break.</p></li>
-<li><p><strong>reference_phase_lag</strong> (<em>-</em>) – The phase lag at the first tidal and first spin frequency
-break. The rest are calculated by imposing continuity.</p></li>
+powerlaw index before the first break.</li>
+<li><strong>reference_phase_lag</strong> (<em>-</em>) – The phase lag at the first tidal and first spin frequency
+break. The rest are calculated by imposing continuity.</li>
+<li><strong>inertial_mode_enhancement</strong> (<em>-</em>) – A factor by which the dissipation is enhanced in the inertial
+mode range. Must be &gt;= 1 (1 for no enhancement).</li>
+<li><strong>inertial_mode_sharpness</strong> (<em>-</em>) – Parameter controlling how sharp the transition between enhanced
+and non-enhanced dissipation is.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Returns: None</p>
 </dd></dl>
 
@@ -377,7 +386,7 @@ break. The rest are calculated by imposing continuity.</p></li>
 
 <dl class="function">
 <dt id="orbital_evolution.star_interface.initialize_library">
-<code class="sig-prename descclassname">orbital_evolution.star_interface.</code><code class="sig-name descname">initialize_library</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#initialize_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.initialize_library" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">orbital_evolution.star_interface.</code><code class="descname">initialize_library</code><span class="sig-paren">(</span><em>library_fname=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/star_interface.html#initialize_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.star_interface.initialize_library" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare the planet library for use.</p>
 </dd></dl>
 
@@ -395,7 +404,7 @@ break. The rest are calculated by imposing continuity.</p></li>
         <a href="orbital_evolution.transformations.html" class="btn btn-neutral float-right" title="orbital_evolution.transformations module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="orbital_evolution.planet_interface.html" class="btn btn-neutral float-left" title="orbital_evolution.planet_interface module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="orbital_evolution.planet_interface.html" class="btn btn-neutral" title="orbital_evolution.planet_interface module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -421,16 +430,26 @@ break. The rest are calculated by imposing continuity.</p></li>
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

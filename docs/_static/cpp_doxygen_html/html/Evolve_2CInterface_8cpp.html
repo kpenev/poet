@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Planetary Orbital Evolution due to Tides: /Users/kpenev/projects/git/poet/poet_src/Evolve/CInterface.cpp File Reference</title>
+<title>Planetary Orbital Evolution due to Tides: /home/kpenev/projects/git/poet/poet_src/Evolve/CInterface.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -120,17 +120,20 @@ $(document).ready(function(){initNavTree('Evolve_2CInterface_8cpp.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acc17daed71379e156f4bc5a28cf6c066"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#acc17daed71379e156f4bc5a28cf6c066">read_eccentricity_expansion_coefficients</a> (const char *filename)</td></tr>
-<tr class="memdesc:acc17daed71379e156f4bc5a28cf6c066"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read eccentricity expansion coefficients from a file.  <a href="#acc17daed71379e156f4bc5a28cf6c066">More...</a><br /></td></tr>
-<tr class="separator:acc17daed71379e156f4bc5a28cf6c066"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf01d616bfb8208010d05fc10180001e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#acf01d616bfb8208010d05fc10180001e">set_zone_dissipation</a> (<a class="el" href="Evolve_2CInterface_8h.html#a8646b3c873ad701746b70278a660ce1f">BrokenPowerlawPhaseLagZone</a> *zone, unsigned num_tidal_frequency_breaks, unsigned num_spin_frequency_breaks, double *tidal_frequency_breaks, double *spin_frequency_breaks, double *tidal_frequency_powers, double *spin_frequency_powers, double reference_phase_lag)</td></tr>
-<tr class="separator:acf01d616bfb8208010d05fc10180001e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c97a99ff999e15b5e479a75cb60197a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a9c97a99ff999e15b5e479a75cb60197a">prepare_eccentricity_expansion</a> (const char *filename, double precision, bool pre_load, bool disable_precision_fail)</td></tr>
+<tr class="memdesc:a9c97a99ff999e15b5e479a75cb60197a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read eccentricity expansion coefficients from a file.  <a href="#a9c97a99ff999e15b5e479a75cb60197a">More...</a><br /></td></tr>
+<tr class="separator:a9c97a99ff999e15b5e479a75cb60197a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85e93940399faa33cda04ef57b0a5b31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a85e93940399faa33cda04ef57b0a5b31">set_zone_dissipation</a> (<a class="el" href="Evolve_2CInterface_8h.html#a8646b3c873ad701746b70278a660ce1f">BrokenPowerlawPhaseLagZone</a> *zone, unsigned num_tidal_frequency_breaks, unsigned num_spin_frequency_breaks, double *tidal_frequency_breaks, double *spin_frequency_breaks, double *tidal_frequency_powers, double *spin_frequency_powers, double reference_phase_lag, double inertial_mode_enhancement, double inertial_mode_sharpness)</td></tr>
+<tr class="separator:a85e93940399faa33cda04ef57b0a5b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54199623780c87cf0d3d44d0291a6c04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a54199623780c87cf0d3d44d0291a6c04">create_star_planet_system</a> (<a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *star, CPlanet *planet, double initial_semimajor, double initial_eccentricity, double initial_inclination, double disk_lock_frequency, double disk_dissipation_age, double secondary_formation_age)</td></tr>
 <tr class="memdesc:a54199623780c87cf0d3d44d0291a6c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a binary system out of a star and a planet.  <a href="#a54199623780c87cf0d3d44d0291a6c04">More...</a><br /></td></tr>
 <tr class="separator:a54199623780c87cf0d3d44d0291a6c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75fa7b310f70b6c4b9814e178f09e4fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a75fa7b310f70b6c4b9814e178f09e4fc">create_star_star_system</a> (<a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *primary, <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *secondary, double initial_semimajor, double initial_eccentricity, double initial_inclination, double disk_lock_frequency, double disk_dissipation_age, double secondary_formation_age)</td></tr>
 <tr class="memdesc:a75fa7b310f70b6c4b9814e178f09e4fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a binary system out of two stars.  <a href="#a75fa7b310f70b6c4b9814e178f09e4fc">More...</a><br /></td></tr>
 <tr class="separator:a75fa7b310f70b6c4b9814e178f09e4fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada7c74d94ad1692dd16d576013d13af8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#ada7c74d94ad1692dd16d576013d13af8">create_planet_planet_system</a> (CPlanet *primary, CPlanet *secondary, double initial_semimajor, double initial_eccentricity, double initial_inclination, double disk_lock_frequency, double disk_dissipation_age)</td></tr>
+<tr class="memdesc:ada7c74d94ad1692dd16d576013d13af8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a binary system out of two planets.  <a href="#ada7c74d94ad1692dd16d576013d13af8">More...</a><br /></td></tr>
+<tr class="separator:ada7c74d94ad1692dd16d576013d13af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc57b698f694e0793a569343c592d3ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#adc57b698f694e0793a569343c592d3ad">destroy_binary</a> (<a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system)</td></tr>
 <tr class="memdesc:adc57b698f694e0793a569343c592d3ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy a previously created binary system.  <a href="#adc57b698f694e0793a569343c592d3ad">More...</a><br /></td></tr>
 <tr class="separator:adc57b698f694e0793a569343c592d3ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,9 +146,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae066618aa7edd5174e3a85f3100872ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#ae066618aa7edd5174e3a85f3100872ad">configure_system</a> (<a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, double age, double semimajor, double eccentricity, const double *spin_angmom, const double *inclination, const double *periapsis, int evolution_mode)</td></tr>
 <tr class="memdesc:ae066618aa7edd5174e3a85f3100872ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current state of a system.  <a href="#ae066618aa7edd5174e3a85f3100872ad">More...</a><br /></td></tr>
 <tr class="separator:ae066618aa7edd5174e3a85f3100872ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8466ef72928a565d4ad3fe8eb4c97eb1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a8466ef72928a565d4ad3fe8eb4c97eb1">evolve_system</a> (<a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, double final_age, double max_time_step, double precision, double *required_ages, unsigned num_required_ages, bool print_progress)</td></tr>
-<tr class="memdesc:a8466ef72928a565d4ad3fe8eb4c97eb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the evolution of a previously configured binary system.  <a href="#a8466ef72928a565d4ad3fe8eb4c97eb1">More...</a><br /></td></tr>
-<tr class="separator:a8466ef72928a565d4ad3fe8eb4c97eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ed78d8d4b2a32ce3ac741c48023ac5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a5ed78d8d4b2a32ce3ac741c48023ac5a">evolve_system</a> (<a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, double final_age, double max_time_step, double precision, double *required_ages, unsigned num_required_ages, bool print_progress, double max_runtime, unsigned max_time_steps)</td></tr>
+<tr class="memdesc:a5ed78d8d4b2a32ce3ac741c48023ac5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the evolution of a previously configured binary system.  <a href="#a5ed78d8d4b2a32ce3ac741c48023ac5a">More...</a><br /></td></tr>
+<tr class="separator:a5ed78d8d4b2a32ce3ac741c48023ac5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75fec141bde79f471ba19f5882aab234"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a75fec141bde79f471ba19f5882aab234">destroy_solver</a> (<a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver)</td></tr>
 <tr class="memdesc:a75fec141bde79f471ba19f5882aab234"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy a solver created by evolve_system.  <a href="#a75fec141bde79f471ba19f5882aab234">More...</a><br /></td></tr>
 <tr class="separator:a75fec141bde79f471ba19f5882aab234"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,24 +159,27 @@ Functions</h2></td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:af939307dd2ae4384b471c301c4def191"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>list_to_array</b> (const std::list&lt; T &gt; &amp;source, T *destination)</td></tr>
 <tr class="separator:af939307dd2ae4384b471c301c4def191"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae83da456ccc14a873387e786b3fa1db8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#ae83da456ccc14a873387e786b3fa1db8">get_star_evolution</a> (const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *star_arg, double *envelope_inclination, double *core_inclination, double *envelope_periapsis, double *core_periapsis, double *envelope_angmom, double *core_angmom, bool *wind_saturation)</td></tr>
-<tr class="memdesc:ae83da456ccc14a873387e786b3fa1db8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given arrays with the part of the evolution tracked by the star.  <a href="#ae83da456ccc14a873387e786b3fa1db8">More...</a><br /></td></tr>
-<tr class="separator:ae83da456ccc14a873387e786b3fa1db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9bd27786cbf20345ce0946f7e8b3c7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#af9bd27786cbf20345ce0946f7e8b3c7d">get_planet_evolution</a> (const CPlanet *planet_arg, double *inclination, double *periapsis, double *angmom)</td></tr>
-<tr class="memdesc:af9bd27786cbf20345ce0946f7e8b3c7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given array with the part of the evolution tracked by the planet.  <a href="#af9bd27786cbf20345ce0946f7e8b3c7d">More...</a><br /></td></tr>
-<tr class="separator:af9bd27786cbf20345ce0946f7e8b3c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebb0cf6b74f4b60ad9414c2eccc4d4af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#aebb0cf6b74f4b60ad9414c2eccc4d4af">get_binary_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system_arg, double *semimajor, double *eccentricity)</td></tr>
-<tr class="memdesc:aebb0cf6b74f4b60ad9414c2eccc4d4af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given arrays with the part of the evolution (the orbital state) tracked by the binary system.  <a href="#aebb0cf6b74f4b60ad9414c2eccc4d4af">More...</a><br /></td></tr>
-<tr class="separator:aebb0cf6b74f4b60ad9414c2eccc4d4af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad186df255dc82e5a613dda97b1b045a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#ad186df255dc82e5a613dda97b1b045a6">get_star_evolution</a> (const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *star_arg, double *envelope_inclination, double *core_inclination, double *envelope_periapsis, double *core_periapsis, double *envelope_angmom, double *core_angmom, bool *wind_saturation, double *envelope_inclination_rate, double *core_inclination_rate, double *envelope_periapsis_rate, double *core_periapsis_rate, double *envelope_angmom_rate, double *core_angmom_rate)</td></tr>
+<tr class="memdesc:ad186df255dc82e5a613dda97b1b045a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given arrays with the part of the evolution tracked by the star.  <a href="#ad186df255dc82e5a613dda97b1b045a6">More...</a><br /></td></tr>
+<tr class="separator:ad186df255dc82e5a613dda97b1b045a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a086066d0d4e28e2fc4aea7b121c2ea2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a086066d0d4e28e2fc4aea7b121c2ea2a">get_planet_evolution</a> (const CPlanet *planet_arg, double *inclination, double *periapsis, double *angmom, double *inclination_rate, double *periapsis_rate, double *angmom_rate)</td></tr>
+<tr class="memdesc:a086066d0d4e28e2fc4aea7b121c2ea2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given array with the part of the evolution tracked by the planet.  <a href="#a086066d0d4e28e2fc4aea7b121c2ea2a">More...</a><br /></td></tr>
+<tr class="separator:a086066d0d4e28e2fc4aea7b121c2ea2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84de51e4f021044e85b9cb0184e2b4bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a84de51e4f021044e85b9cb0184e2b4bb">get_binary_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system_arg, double *semimajor, double *eccentricity, double *semimajor_rate, double *eccentricity_rate)</td></tr>
+<tr class="memdesc:a84de51e4f021044e85b9cb0184e2b4bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given arrays with the part of the evolution (the orbital state) tracked by the binary system.  <a href="#a84de51e4f021044e85b9cb0184e2b4bb">More...</a><br /></td></tr>
+<tr class="separator:a84de51e4f021044e85b9cb0184e2b4bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89de9f82ac0059532db654ad7928ab31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a89de9f82ac0059532db654ad7928ab31">get_solver_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver_arg, double *age, int *evolution_mode)</td></tr>
 <tr class="memdesc:a89de9f82ac0059532db654ad7928ab31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given arrays with the part of the evolution tracked by the orbit solver.  <a href="#a89de9f82ac0059532db654ad7928ab31">More...</a><br /></td></tr>
 <tr class="separator:a89de9f82ac0059532db654ad7928ab31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6dce21258d2059be1407e40baa4f2f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#ad6dce21258d2059be1407e40baa4f2f7">get_star_planet_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver, const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *star, const CPlanet *planet, double *age, double *semimajor, double *eccentricity, double *envelope_inclination, double *core_inclination, double *envelope_periapsis, double *core_periapsis, double *envelope_angmom, double *core_angmom, double *planet_inclination, double *planet_periapsis, double *planet_angmom, int *evolution_mode, bool *wind_saturation)</td></tr>
-<tr class="memdesc:ad6dce21258d2059be1407e40baa4f2f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill C-style arrays with the calculated evolution of a star-planet system.  <a href="#ad6dce21258d2059be1407e40baa4f2f7">More...</a><br /></td></tr>
-<tr class="separator:ad6dce21258d2059be1407e40baa4f2f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9204566d54bfa2ccc4e5238b8401f05f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a9204566d54bfa2ccc4e5238b8401f05f">get_star_star_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver, const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *primary, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *secondary, double *age, double *semimajor, double *eccentricity, double *primary_envelope_inclination, double *primary_core_inclination, double *primary_envelope_periapsis, double *primary_core_periapsis, double *primary_envelope_angmom, double *primary_core_angmom, double *secondary_envelope_inclination, double *secondary_core_inclination, double *secondary_envelope_periapsis, double *secondary_core_periapsis, double *secondary_envelope_angmom, double *secondary_core_angmom, int *evolution_mode, bool *primary_wind_saturation, bool *secondary_wind_saturation)</td></tr>
-<tr class="memdesc:a9204566d54bfa2ccc4e5238b8401f05f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill C-style arrays with the calculated evolution of a binary star system.  <a href="#a9204566d54bfa2ccc4e5238b8401f05f">More...</a><br /></td></tr>
-<tr class="separator:a9204566d54bfa2ccc4e5238b8401f05f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a097c08dc8a3f925825dda889b90ff4eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a097c08dc8a3f925825dda889b90ff4eb">get_star_planet_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver, const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *star, const CPlanet *planet, double *age, double *semimajor, double *eccentricity, double *envelope_inclination, double *core_inclination, double *envelope_periapsis, double *core_periapsis, double *envelope_angmom, double *core_angmom, double *planet_inclination, double *planet_periapsis, double *planet_angmom, int *evolution_mode, bool *wind_saturation, double *semimajor_rate, double *eccentricity_rate, double *envelope_inclination_rate, double *core_inclination_rate, double *envelope_periapsis_rate, double *core_periapsis_rate, double *envelope_angmom_rate, double *core_angmom_rate, double *planet_inclination_rate, double *planet_periapsis_rate, double *planet_angmom_rate)</td></tr>
+<tr class="memdesc:a097c08dc8a3f925825dda889b90ff4eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill C-style arrays with the calculated evolution of a star-planet system.  <a href="#a097c08dc8a3f925825dda889b90ff4eb">More...</a><br /></td></tr>
+<tr class="separator:a097c08dc8a3f925825dda889b90ff4eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a379e8090b2d3d9de2cc0eea3ac1c1b34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a379e8090b2d3d9de2cc0eea3ac1c1b34">get_star_star_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver, const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *primary, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *secondary, double *age, double *semimajor, double *eccentricity, double *primary_envelope_inclination, double *primary_core_inclination, double *primary_envelope_periapsis, double *primary_core_periapsis, double *primary_envelope_angmom, double *primary_core_angmom, double *secondary_envelope_inclination, double *secondary_core_inclination, double *secondary_envelope_periapsis, double *secondary_core_periapsis, double *secondary_envelope_angmom, double *secondary_core_angmom, int *evolution_mode, bool *primary_wind_saturation, bool *secondary_wind_saturation, double *semimajor_rate, double *eccentricity_rate, double *primary_envelope_inclination_rate, double *primary_core_inclination_rate, double *primary_envelope_periapsis_rate, double *primary_core_periapsis_rate, double *primary_envelope_angmom_rate, double *primary_core_angmom_rate, double *secondary_envelope_inclination_rate, double *secondary_core_inclination_rate, double *secondary_envelope_periapsis_rate, double *secondary_core_periapsis_rate, double *secondary_envelope_angmom_rate, double *secondary_core_angmom_rate)</td></tr>
+<tr class="memdesc:a379e8090b2d3d9de2cc0eea3ac1c1b34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill C-style arrays with the calculated evolution of a binary star system.  <a href="#a379e8090b2d3d9de2cc0eea3ac1c1b34">More...</a><br /></td></tr>
+<tr class="separator:a379e8090b2d3d9de2cc0eea3ac1c1b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71860617a1e7e321261f6dafcb635d5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a71860617a1e7e321261f6dafcb635d5c">get_planet_planet_evolution</a> (const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver, const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, const CPlanet *primary, const CPlanet *secondary, double *age, double *semimajor, double *eccentricity, double *primary_inclination, double *primary_periapsis, double *primary_angmom, double *secondary_inclination, double *secondary_periapsis, double *secondary_angmom, int *evolution_mode, double *semimajor_rate, double *eccentricity_rate, double *primary_inclination_rate, double *primary_periapsis_rate, double *primary_angmom_rate, double *secondary_inclination_rate, double *secondary_periapsis_rate, double *secondary_angmom_rate)</td></tr>
+<tr class="memdesc:a71860617a1e7e321261f6dafcb635d5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill C-style arrays with the calculated evolution of a planet-planet system.  <a href="#a71860617a1e7e321261f6dafcb635d5c">More...</a><br /></td></tr>
+<tr class="separator:a71860617a1e7e321261f6dafcb635d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab20b7ed04a44ad00cce83993a5ecadd0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#ab20b7ed04a44ad00cce83993a5ecadd0">get_star_final_state</a> (const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *star_arg, double *envelope_inclination, double *core_inclination, double *envelope_periapsis, double *core_periapsis, double *envelope_angmom, double *core_angmom, bool *wind_saturation)</td></tr>
 <tr class="memdesc:ab20b7ed04a44ad00cce83993a5ecadd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the given pointers with the state of the given star at the end of the evolution.  <a href="#ab20b7ed04a44ad00cce83993a5ecadd0">More...</a><br /></td></tr>
 <tr class="separator:ab20b7ed04a44ad00cce83993a5ecadd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,6 +198,15 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a9319ec90d0faf8a3bc2933e7ef0b4710"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a9319ec90d0faf8a3bc2933e7ef0b4710">get_star_star_final_state</a> (const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *solver, const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *system, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *primary, const <a class="el" href="Star_2CInterface_8h.html#a50ce36e5732d6e0a1e8e6f6a618af195">EvolvingStar</a> *secondary, double *age, double *semimajor, double *eccentricity, double *primary_envelope_inclination, double *primary_core_inclination, double *primary_envelope_periapsis, double *primary_core_periapsis, double *primary_envelope_angmom, double *primary_core_angmom, double *secondary_envelope_inclination, double *secondary_core_inclination, double *secondary_envelope_periapsis, double *secondary_core_periapsis, double *secondary_envelope_angmom, double *secondary_core_angmom, int *evolution_mode, bool *primary_wind_saturation, bool *secondary_wind_saturation)</td></tr>
 <tr class="memdesc:a9319ec90d0faf8a3bc2933e7ef0b4710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill destiantions with the calculated final state of a binary star system.  <a href="#a9319ec90d0faf8a3bc2933e7ef0b4710">More...</a><br /></td></tr>
 <tr class="separator:a9319ec90d0faf8a3bc2933e7ef0b4710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c84fd00a0693406e1787b0ec9536ac4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#a7c84fd00a0693406e1787b0ec9536ac4">get_expansion_coeff_precision</a> (int m, int s)</td></tr>
+<tr class="memdesc:a7c84fd00a0693406e1787b0ec9536ac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">doc  <a href="#a7c84fd00a0693406e1787b0ec9536ac4">More...</a><br /></td></tr>
+<tr class="separator:a7c84fd00a0693406e1787b0ec9536ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af615d34fdea9880768c1dadb959fb6fc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Evolve_2CInterface_8cpp.html#af615d34fdea9880768c1dadb959fb6fc">evaluate_expansion_coeff</a> (int m, int s, double e, bool deriv)</td></tr>
+<tr class="memdesc:af615d34fdea9880768c1dadb959fb6fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">doc  <a href="#af615d34fdea9880768c1dadb959fb6fc">More...</a><br /></td></tr>
+<tr class="separator:af615d34fdea9880768c1dadb959fb6fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eebccc0c62fc379a128d77616bcc7fb"><td class="memItemLeft" align="right" valign="top"><a id="a8eebccc0c62fc379a128d77616bcc7fb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>destroy_expansion_coef</b> (const <a class="el" href="Evolve_2CInterface_8h.html#abd04266270449fe00720ad978cbaa81d">EccentricityExpansionCoefficients</a> *expansion_arg)</td></tr>
+<tr class="separator:a8eebccc0c62fc379a128d77616bcc7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -315,7 +330,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00144">144</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00178">178</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -418,7 +433,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00117">117</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00151">151</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -499,7 +514,81 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00171">171</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00205">205</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ada7c74d94ad1692dd16d576013d13af8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada7c74d94ad1692dd16d576013d13af8">&#9670;&nbsp;</a></span>create_planet_planet_system()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a>* create_planet_planet_system </td>
+          <td>(</td>
+          <td class="paramtype">CPlanet *&#160;</td>
+          <td class="paramname"><em>primary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">CPlanet *&#160;</td>
+          <td class="paramname"><em>secondary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>initial_semimajor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>initial_eccentricity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>initial_inclination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>disk_lock_frequency</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>disk_dissipation_age</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a binary system out of two planets. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">primary</td><td>The second body in the system, initially may not be there and later may be engulfed by the first body. </td></tr>
+    <tr><td class="paramname">secondary</td><td>The second body in the system, initially may not be there and later may be engulfed by the first body. </td></tr>
+    <tr><td class="paramname">initial_semimajor</td><td>The semimajor axis of the orbit at which the secondary forms in \(R_\odot\). </td></tr>
+    <tr><td class="paramname">initial_eccentricity</td><td>The eccentricity of the orbit at which the secondary forms. </td></tr>
+    <tr><td class="paramname">initial_inclination</td><td>Inclination between surface zone of primary and initial orbit in radians. </td></tr>
+    <tr><td class="paramname">disk_lock_frequency</td><td>Frequency of the surface spin of the primary when disk is present in rad/day. </td></tr>
+    <tr><td class="paramname">disk_dissipation_age</td><td>Age when disk dissipates in Gyrs. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00124">124</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -580,7 +669,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00064">64</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00076">76</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -661,7 +750,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00088">88</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00100">100</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -689,7 +778,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00112">112</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00146">146</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -717,12 +806,65 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00223">223</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00261">261</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a8466ef72928a565d4ad3fe8eb4c97eb1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8466ef72928a565d4ad3fe8eb4c97eb1">&#9670;&nbsp;</a></span>evolve_system()</h2>
+<a id="af615d34fdea9880768c1dadb959fb6fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af615d34fdea9880768c1dadb959fb6fc">&#9670;&nbsp;</a></span>evaluate_expansion_coeff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double evaluate_expansion_coeff </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>e</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>deriv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>doc </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The first index (0 or +-2). </td></tr>
+    <tr><td class="paramname">s</td><td>The second index. </td></tr>
+    <tr><td class="paramname">e</td><td>The value of the eccentricity to use. </td></tr>
+    <tr><td class="paramname">deriv</td><td>Previously, if true the result was differentiated w.r.t. to the eccentricity. Currently does nothing. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00813">813</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a5ed78d8d4b2a32ce3ac741c48023ac5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ed78d8d4b2a32ce3ac741c48023ac5a">&#9670;&nbsp;</a></span>evolve_system()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -767,7 +909,19 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>print_progress</em>&#160;</td>
+          <td class="paramname"><em>print_progress</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>max_runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>max_time_steps</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -787,16 +941,18 @@ Variables</h2></td></tr>
     <tr><td class="paramname">required_ages</td><td>Ages at which the evolution must stop precisely. </td></tr>
     <tr><td class="paramname">num_required_ages</td><td>The number of required ages. </td></tr>
     <tr><td class="paramname">print_progress</td><td>See print_progress argument to <a class="el" href="classEvolve_1_1OrbitSolver.html#a05cf68cafbe93b11062d990189aea5a0" title="Prepare to solve for the orbital evolution. ">Evolve::OrbitSolver::OrbitSolver()</a> </td></tr>
+    <tr><td class="paramname">max_runtime</td><td>The maximum time in seconds the evolutions is allowed to run. Partially calculated evolution can be queried. Any non-positive </td></tr>
+    <tr><td class="paramname">max_time_steps</td><td>The maximum number of steps (including the latest set of discarded steps) the evolution is allowed to take </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00193">193</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00227">227</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
-<a id="aebb0cf6b74f4b60ad9414c2eccc4d4af"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aebb0cf6b74f4b60ad9414c2eccc4d4af">&#9670;&nbsp;</a></span>get_binary_evolution()</h2>
+<a id="a84de51e4f021044e85b9cb0184e2b4bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84de51e4f021044e85b9cb0184e2b4bb">&#9670;&nbsp;</a></span>get_binary_evolution()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -817,7 +973,19 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double *&#160;</td>
-          <td class="paramname"><em>eccentricity</em>&#160;</td>
+          <td class="paramname"><em>eccentricity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>semimajor_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>eccentricity_rate</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -829,7 +997,7 @@ Variables</h2></td></tr>
 
 <p>Fill the given arrays with the part of the evolution (the orbital state) tracked by the binary system. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00303">303</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00390">390</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -867,12 +1035,51 @@ Variables</h2></td></tr>
 
 <p>Fill the given pointers with the final orbital state of a previously evolved system. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00494">494</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00688">688</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
-<a id="af9bd27786cbf20345ce0946f7e8b3c7d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af9bd27786cbf20345ce0946f7e8b3c7d">&#9670;&nbsp;</a></span>get_planet_evolution()</h2>
+<a id="a7c84fd00a0693406e1787b0ec9536ac4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c84fd00a0693406e1787b0ec9536ac4">&#9670;&nbsp;</a></span>get_expansion_coeff_precision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double get_expansion_coeff_precision </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>doc </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>doc </td></tr>
+    <tr><td class="paramname">s</td><td>doc </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00804">804</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a086066d0d4e28e2fc4aea7b121c2ea2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a086066d0d4e28e2fc4aea7b121c2ea2a">&#9670;&nbsp;</a></span>get_planet_evolution()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -899,7 +1106,25 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double *&#160;</td>
-          <td class="paramname"><em>angmom</em>&#160;</td>
+          <td class="paramname"><em>angmom</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>angmom_rate</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -911,7 +1136,7 @@ Variables</h2></td></tr>
 
 <p>Fill the given array with the part of the evolution tracked by the planet. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00278">278</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00349">349</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -955,7 +1180,187 @@ Variables</h2></td></tr>
 
 <p>Fill the given pointers with the state of the given planet at the end of the evolution. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00467">467</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00661">661</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a71860617a1e7e321261f6dafcb635d5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71860617a1e7e321261f6dafcb635d5c">&#9670;&nbsp;</a></span>get_planet_planet_evolution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void get_planet_planet_evolution </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="Evolve_2CInterface_8h.html#ae8f01fef538171cb7ebe130151503921">OrbitSolver</a> *&#160;</td>
+          <td class="paramname"><em>solver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Evolve_2CInterface_8h.html#abd450fb5dfc2cf9e241bf7ec997ed80a">DiskBinarySystem</a> *&#160;</td>
+          <td class="paramname"><em>system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const CPlanet *&#160;</td>
+          <td class="paramname"><em>primary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const CPlanet *&#160;</td>
+          <td class="paramname"><em>secondary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>age</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>semimajor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>eccentricity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_inclination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_periapsis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_angmom</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_inclination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_periapsis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_angmom</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>evolution_mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>semimajor_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>eccentricity_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_angmom_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_angmom_rate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill C-style arrays with the calculated evolution of a planet-planet system. </p>
+<p>All return arrays must either be allocated to the correct size or be NULL. In the latter case, the corresponding quantity is not returned. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">solver</td><td>The solver which was used to calculate the orbital evolution. </td></tr>
+    <tr><td class="paramname">system</td><td>The system which was evolved. </td></tr>
+    <tr><td class="paramname">primary</td><td>The star which was evolved. </td></tr>
+    <tr><td class="paramname">secondary</td><td>The planet which was evolved, </td></tr>
+    <tr><td class="paramname">age</td><td>An array to fill with the ages at which the evolution was calculated. </td></tr>
+    <tr><td class="paramname">semimajor</td><td>An array to fill with the semimajor axis at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">eccentricity</td><td>An array to fill with the orbital eccentricity at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">primary_inclination</td><td>An array to fill with the angle between the primary spin and the orbital angular momenta. </td></tr>
+    <tr><td class="paramname">primary_periapsis</td><td>An array to fill with the periapsis of the orbit in the equatorial plane of the primary. </td></tr>
+    <tr><td class="paramname">primary_angmom</td><td>An array to fill with the angular momentum of the primary. </td></tr>
+    <tr><td class="paramname">secondary_inclination</td><td>An array to fill wit the angle between the secondary's and the orbital angular momentum (pass NULL if the secondary is not dissipative). </td></tr>
+    <tr><td class="paramname">secondary_periapsis</td><td>An array to fill wit the periapsis of the orbit in the equatorial plane of the secondary (pass NULL if the secondary is not dissipative). </td></tr>
+    <tr><td class="paramname">secondary_angmom</td><td>An array to fill wit the angular momentum of the secondary (pass NULL if the secondary is not dissipative). </td></tr>
+    <tr><td class="paramname">evolution_mode</td><td>An array to fill with the evolution mode of the system. </td></tr>
+    <tr><td class="paramname">semimajor_rate</td><td>An array to fill with the rate at which the semimajor axis changes at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">eccentricity_rate</td><td>An array to fill with the rate the orbital eccentricity changes at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">primary_inclination_rate</td><td>An array to fill with the rate at which the angle between the primary spin and the orbital angular momenta changes. </td></tr>
+    <tr><td class="paramname">primary_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the primary. </td></tr>
+    <tr><td class="paramname">primary_angmom_rate</td><td>An array to fill with the rate of change of the angular momentum of the primary. </td></tr>
+    <tr><td class="paramname">secondary_inclination_rate</td><td>An array to fill wit the rate of change of the angle between the secondary's and the orbital angular momentum (pass NULL if the secondary is not dissipative). </td></tr>
+    <tr><td class="paramname">secondary_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the secondary (pass NULL if the secondary is not dissipative). </td></tr>
+    <tr><td class="paramname">secondary_angmom_rate</td><td>An array to fill with the range of change of the angular momentum of the secondary (pass NULL if the secondary is not dissipative). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00562">562</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -993,7 +1398,7 @@ Variables</h2></td></tr>
 
 <p>Fill the given arrays with the part of the evolution tracked by the orbit solver. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00317">317</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00408">408</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -1031,12 +1436,12 @@ Variables</h2></td></tr>
 
 <p>Fill the given pointers with the final state of an orbit solver used to calculate an evolution. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00510">510</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00704">704</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ae83da456ccc14a873387e786b3fa1db8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae83da456ccc14a873387e786b3fa1db8">&#9670;&nbsp;</a></span>get_star_evolution()</h2>
+<a id="ad186df255dc82e5a613dda97b1b045a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad186df255dc82e5a613dda97b1b045a6">&#9670;&nbsp;</a></span>get_star_evolution()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1087,7 +1492,43 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>wind_saturation</em>&#160;</td>
+          <td class="paramname"><em>wind_saturation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>envelope_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>core_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>envelope_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>core_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>envelope_angmom_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>core_angmom_rate</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1099,7 +1540,7 @@ Variables</h2></td></tr>
 
 <p>Fill the given arrays with the part of the evolution tracked by the star. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00243">243</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00281">281</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -1167,12 +1608,12 @@ Variables</h2></td></tr>
 
 <p>Fill the given pointers with the state of the given star at the end of the evolution. </p>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00419">419</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00613">613</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ad6dce21258d2059be1407e40baa4f2f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6dce21258d2059be1407e40baa4f2f7">&#9670;&nbsp;</a></span>get_star_planet_evolution()</h2>
+<a id="a097c08dc8a3f925825dda889b90ff4eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a097c08dc8a3f925825dda889b90ff4eb">&#9670;&nbsp;</a></span>get_star_planet_evolution()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1283,7 +1724,73 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>wind_saturation</em>&#160;</td>
+          <td class="paramname"><em>wind_saturation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>semimajor_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>eccentricity_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>envelope_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>core_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>envelope_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>core_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>envelope_angmom_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>core_angmom_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>planet_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>planet_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>planet_angmom_rate</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1315,11 +1822,22 @@ Variables</h2></td></tr>
     <tr><td class="paramname">planet_angmom</td><td>An array to fill wit the angular momentum of the planet (pass NULL if the planet is not dissipative). </td></tr>
     <tr><td class="paramname">evolution_mode</td><td>An array to fill with the evolution mode of the system. </td></tr>
     <tr><td class="paramname">wind_saturation</td><td>An array to fill with a flag indicating whether the angular momentum loss due to stellar wind is in the satured state (true) or not (false). </td></tr>
+    <tr><td class="paramname">semimajor_rate</td><td>An array to fill with the rate at which the semimajor axis changes at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">eccentricity_rate</td><td>An array to fill with the rate the orbital eccentricity changes at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">envelope_inclination_rate</td><td>An array to fill with the rate at which the angle between the stellar convective envelope and the orbital angular momenta changes. </td></tr>
+    <tr><td class="paramname">core_inclination_rate</td><td>An array to fill with the rate of change of the angle between the stellar radiative core and the orbital angular momenta. </td></tr>
+    <tr><td class="paramname">envelope_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the stellar convective envelope. </td></tr>
+    <tr><td class="paramname">core_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the stellar radiative core. </td></tr>
+    <tr><td class="paramname">envelope_angmom_rate</td><td>An array to fill with the rate of change of the angular momentum of the stellar convective envelope. </td></tr>
+    <tr><td class="paramname">core_angmom_rate</td><td>An array to fill with the rate of change of the angular momentum of the stellar radiative core. </td></tr>
+    <tr><td class="paramname">planet_inclination_rate</td><td>An array to fill wit the rate of change of the angle between the planet's and the orbital angular momentum (pass NULL if the planet is not dissipative). </td></tr>
+    <tr><td class="paramname">planet_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the planet (pass NULL if the planet is not dissipative). </td></tr>
+    <tr><td class="paramname">planet_angmom_rate</td><td>An array to fill with the range of change of the angular momentum of the planet (pass NULL if the planet is not dissipative). </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00332">332</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00423">423</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -1471,12 +1989,12 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00524">524</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00718">718</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a9204566d54bfa2ccc4e5238b8401f05f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9204566d54bfa2ccc4e5238b8401f05f">&#9670;&nbsp;</a></span>get_star_star_evolution()</h2>
+<a id="a379e8090b2d3d9de2cc0eea3ac1c1b34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a379e8090b2d3d9de2cc0eea3ac1c1b34">&#9670;&nbsp;</a></span>get_star_star_evolution()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1611,7 +2129,91 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>secondary_wind_saturation</em>&#160;</td>
+          <td class="paramname"><em>secondary_wind_saturation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>semimajor_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>eccentricity_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_envelope_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_core_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_envelope_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_core_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_envelope_angmom_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>primary_core_angmom_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_envelope_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_core_inclination_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_envelope_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_core_periapsis_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_envelope_angmom_rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>secondary_core_angmom_rate</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1647,11 +2249,25 @@ Variables</h2></td></tr>
     <tr><td class="paramname">evolution_mode</td><td>An array to fill with the evolution mode of the system. </td></tr>
     <tr><td class="paramname">primary_wind_saturation</td><td>An array to fill with a flag indicating whether the angular momentum loss due to stellar wind is in the satured state (true) or not (false). </td></tr>
     <tr><td class="paramname">secondary_wind_saturation</td><td>An array to fill with a flag indicating whether the angular momentum loss due to stellar wind is in the satured state (true) or not (false). </td></tr>
+    <tr><td class="paramname">semimajor_rate</td><td>An array to fill with the rate of change of the semimajor axis at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">eccentricity_rate</td><td>An array to fill with the rate of change of the orbital eccentricity at the saved evolution steps. </td></tr>
+    <tr><td class="paramname">primary_envelope_inclination_rate</td><td>An array to fill with the rate of change of the angle between the stellar convective envelope and the orbital angular momenta. </td></tr>
+    <tr><td class="paramname">primary_core_inclination_rate</td><td>An array to fill with the rate of change of the angle between the stellar radiative core and the orbital angular momenta. </td></tr>
+    <tr><td class="paramname">primary_envelope_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the stellar convective envelope. </td></tr>
+    <tr><td class="paramname">primary_core_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the stellar radiative core. </td></tr>
+    <tr><td class="paramname">primary_envelope_angmom_rate</td><td>An array to fill with the rate of change of the angular momentum of the stellar convective envelope. </td></tr>
+    <tr><td class="paramname">primary_core_angmom_rate</td><td>An array to fill with the rate of change of the angular momentum of the stellar radiative core. </td></tr>
+    <tr><td class="paramname">secondary_envelope_inclination_rate</td><td>An array to fill with the rate of change of the angle between the stellar convective envelope and the orbital angular momenta. </td></tr>
+    <tr><td class="paramname">secondary_core_inclination_rate</td><td>An array to fill with the rate of change of the angle between the stellar radiative core and the orbital angular momenta. </td></tr>
+    <tr><td class="paramname">secondary_envelope_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the stellar convective envelope. </td></tr>
+    <tr><td class="paramname">secondary_core_periapsis_rate</td><td>An array to fill with the rate of change of the periapsis of the orbit in the equatorial plane of the stellar radiative core. </td></tr>
+    <tr><td class="paramname">secondary_envelope_angmom_rate</td><td>An array to fill with the rate of change of the angular momentum of the stellar convective envelope. </td></tr>
+    <tr><td class="paramname">secondary_core_angmom_rate</td><td>An array to fill with the rate of change of the angular momentum of the stellar radiative core. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00371">371</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00486">486</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -1831,7 +2447,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00562">562</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00756">756</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -1859,22 +2475,44 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00228">228</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00266">266</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
-<a id="acc17daed71379e156f4bc5a28cf6c066"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc17daed71379e156f4bc5a28cf6c066">&#9670;&nbsp;</a></span>read_eccentricity_expansion_coefficients()</h2>
+<a id="a9c97a99ff999e15b5e479a75cb60197a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c97a99ff999e15b5e479a75cb60197a">&#9670;&nbsp;</a></span>prepare_eccentricity_expansion()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void read_eccentricity_expansion_coefficients </td>
+          <td class="memname">void prepare_eccentricity_expansion </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>precision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>pre_load</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>disable_precision_fail</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1885,8 +2523,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="acf01d616bfb8208010d05fc10180001e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf01d616bfb8208010d05fc10180001e">&#9670;&nbsp;</a></span>set_zone_dissipation()</h2>
+<a id="a85e93940399faa33cda04ef57b0a5b31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85e93940399faa33cda04ef57b0a5b31">&#9670;&nbsp;</a></span>set_zone_dissipation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1937,7 +2575,19 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>reference_phase_lag</em>&#160;</td>
+          <td class="paramname"><em>reference_phase_lag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inertial_mode_enhancement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inertial_mode_sharpness</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1956,11 +2606,13 @@ Variables</h2></td></tr>
     <tr><td class="paramname">tidal_frequency_powers</td><td>The powerlaw indices for the tidal frequency dependence. Should be indexed in the same order as tidal_frequency_breaks, but must contain an additional starting entry for the powerlaw index before the first break. </td></tr>
     <tr><td class="paramname">spin_frequency_powers</td><td>The powerlaw indices for the spin frequency dependence. Should be indexed in the same order as spin_frequency_breaks, but must contain an additional starting entry for the powerlaw index before the first break. </td></tr>
     <tr><td class="paramname">reference_phase_lag</td><td>The phase lag at the first tidal and first spin frequency break. The rest are calculated by imposing continuity. </td></tr>
+    <tr><td class="paramname">inertial_mode_enhancement</td><td>Factor by which the dissipation in the inertial mode range is enhanced relative to what is defined by all other parameters. Must be greater than 1. </td></tr>
+    <tr><td class="paramname">inertial_mode_sharpness</td><td>Parameter controlling how sharp the transition between inertial mode non-enhanced and inertial mode enhanced dissipation is. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00022">22</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Evolve_2CInterface_8cpp_source.html#l00030">30</a> of file <a class="el" href="Evolve_2CInterface_8cpp_source.html">CInterface.cpp</a>.</p>
 
 </div>
 </div>
@@ -2061,7 +2713,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_e247b8950c2da2f51dd8497aec65ce0d.html">poet_src</a></li><li class="navelem"><a class="el" href="dir_bace5b3272c3045fbaf2ba9e016347ef.html">Evolve</a></li><li class="navelem"><a class="el" href="Evolve_2CInterface_8cpp.html">CInterface.cpp</a></li>
-    <li class="footer">Generated on Sun Dec 1 2019 01:10:24 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Wed May 18 2022 17:13:10 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
