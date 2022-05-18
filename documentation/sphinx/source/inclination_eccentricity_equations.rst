@@ -230,12 +230,22 @@ with a period of :math:`2\pi/\Omega`\ , we can expand:
 	\frac{a^3\exp(-im'\Delta \phi(t))}{r^3(t)}=\sum_s p_{m',s}
 		\exp\left(-i s \Omega t\right)
 
-Expressions for the :math:`p_{m',s}(e)` coefficients are derived :doc:`here
-<inclination_eccentricity_pms1>` or :doc:`here <inclination_eccentricity_pms2>`\
-.
+Where the `p_{m',s}(e)` coefficients are defined as:
 
-Hence, our tidal potential can be written exactly as in Lai (2012), eq. 12,
-except with :math:`m'` not limited to only 0 and 2:
+.. math::
+
+	p_{m,s}&=&\frac{a^3}{2\pi}\int_0^{2\pi/\omega} 
+		\frac{e^{-im\Delta \phi(t)}}{r^3(t)}e^{i s \omega t}dt\\
+	&=& a^3\int_0^{2\pi/\omega} 
+		e^{-im\phi_0}\frac{\cos(m\phi(t))-i\sin(m\phi(t))}{r^3(t)} 
+		e^{i s \omega t}dt
+
+Their values are calculated to high precision numerically on a dense grid of
+eccentricities and stored in a sqlite database. During evolution, POET
+interpolated within the tabulated values.
+
+Our tidal potential can be written exactly as in Lai (2012), eq. 12, except with
+:math:`m'` not limited to only 0 and 2:
 
 .. math::
 
