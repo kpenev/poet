@@ -215,9 +215,7 @@ def initialize_library(library_fname=None):
 
     return result
 
-library = initialize_library(
-    '/home/kpenev/projects/git/poet/build/libs/star/shared/release/libstar.so'
-)
+library = initialize_library()
 
 class EvolvingStar(DissipatingBody):
     """A class for stars following interpolated stellar evolution tracks."""
