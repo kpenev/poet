@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -158,23 +153,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="namespace-plot-interpolated-yrec-evolution">
@@ -182,28 +172,28 @@
 <div class="contents local topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#functions" id="id2">Functions</a></p></li>
-<li><p><a class="reference internal" href="#variables" id="id3">Variables</a></p></li>
+<li><a class="reference internal" href="#functions" id="id2">Functions</a></li>
+<li><a class="reference internal" href="#variables" id="id3">Variables</a></li>
 </ul>
 </div>
 <div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1aa93419dbc2ef902ee6c949ff0f86e07a.html#exhale-function-plot-interpolated-yrec-evolution-8py-1aa93419dbc2ef902ee6c949ff0f86e07a"><span class="std std-ref">Function plot_interpolated_YREC_evolution::evol_fname</span></a></p></li>
-<li><p><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1a9354c979c8577db6e3c1a3af1981d66e.html#exhale-function-plot-interpolated-yrec-evolution-8py-1a9354c979c8577db6e3c1a3af1981d66e"><span class="std std-ref">Function plot_interpolated_YREC_evolution::plot_quantity</span></a></p></li>
-<li><p><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1af2d201fb840d5b37e3ef52a9f52d7616.html#exhale-function-plot-interpolated-yrec-evolution-8py-1af2d201fb840d5b37e3ef52a9f52d7616"><span class="std std-ref">Function plot_interpolated_YREC_evolution::read_evol_file</span></a></p></li>
-<li><p><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1aa2ff4553833de1a13b1501dac497c592.html#exhale-function-plot-interpolated-yrec-evolution-8py-1aa2ff4553833de1a13b1501dac497c592"><span class="std std-ref">Function plot_interpolated_YREC_evolution::read_YREC_file</span></a></p></li>
+<li><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1aa93419dbc2ef902ee6c949ff0f86e07a.html#exhale-function-plot-interpolated-yrec-evolution-8py-1aa93419dbc2ef902ee6c949ff0f86e07a"><span class="std std-ref">Function plot_interpolated_YREC_evolution::evol_fname</span></a></li>
+<li><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1a9354c979c8577db6e3c1a3af1981d66e.html#exhale-function-plot-interpolated-yrec-evolution-8py-1a9354c979c8577db6e3c1a3af1981d66e"><span class="std std-ref">Function plot_interpolated_YREC_evolution::plot_quantity</span></a></li>
+<li><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1af2d201fb840d5b37e3ef52a9f52d7616.html#exhale-function-plot-interpolated-yrec-evolution-8py-1af2d201fb840d5b37e3ef52a9f52d7616"><span class="std std-ref">Function plot_interpolated_YREC_evolution::read_evol_file</span></a></li>
+<li><a class="reference internal" href="function_plot__interpolated__YREC__evolution_8py_1aa2ff4553833de1a13b1501dac497c592.html#exhale-function-plot-interpolated-yrec-evolution-8py-1aa2ff4553833de1a13b1501dac497c592"><span class="std std-ref">Function plot_interpolated_YREC_evolution::read_YREC_file</span></a></li>
 </ul>
 </div>
 <div class="section" id="variables">
 <h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1a475735f75227c5de6e0ac9869122cf4d.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1a475735f75227c5de6e0ac9869122cf4d"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::evol</span></a></p></li>
-<li><p><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1a144c29c65c04c1dda7f467eb724175b3.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1a144c29c65c04c1dda7f467eb724175b3"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::pdf</span></a></p></li>
-<li><p><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1a832ea82cf049a2cb517d0cd63fb7faf9.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1a832ea82cf049a2cb517d0cd63fb7faf9"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::plot_colors</span></a></p></li>
-<li><p><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1aead61eb580c25a75d42a618cb16f74f9.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1aead61eb580c25a75d42a618cb16f74f9"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::YREC</span></a></p></li>
-<li><p><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1ace514445e1d0c7618421b0baefc848fe.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1ace514445e1d0c7618421b0baefc848fe"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::YREC_files</span></a></p></li>
-<li><p><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1aa23e653dceac38707666329cc933e476.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1aa23e653dceac38707666329cc933e476"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::YREC_masses</span></a></p></li>
+<li><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1a475735f75227c5de6e0ac9869122cf4d.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1a475735f75227c5de6e0ac9869122cf4d"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::evol</span></a></li>
+<li><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1a144c29c65c04c1dda7f467eb724175b3.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1a144c29c65c04c1dda7f467eb724175b3"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::pdf</span></a></li>
+<li><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1a832ea82cf049a2cb517d0cd63fb7faf9.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1a832ea82cf049a2cb517d0cd63fb7faf9"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::plot_colors</span></a></li>
+<li><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1aead61eb580c25a75d42a618cb16f74f9.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1aead61eb580c25a75d42a618cb16f74f9"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::YREC</span></a></li>
+<li><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1ace514445e1d0c7618421b0baefc848fe.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1ace514445e1d0c7618421b0baefc848fe"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::YREC_files</span></a></li>
+<li><a class="reference internal" href="variable_plot__interpolated__YREC__evolution_8py_1aa23e653dceac38707666329cc933e476.html#exhale-variable-plot-interpolated-yrec-evolution-8py-1aa23e653dceac38707666329cc933e476"><span class="std std-ref">Variable plot_interpolated_YREC_evolution::YREC_masses</span></a></li>
 </ul>
 </div>
 </div>
@@ -236,16 +226,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

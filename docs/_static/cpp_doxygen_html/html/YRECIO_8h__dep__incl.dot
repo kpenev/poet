@@ -1,9 +1,0 @@
-digraph "/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/YRECIO.h"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node15 [label="/Users/kpenev/projects\l/git/poet/poet_src/StellarEvolution\l/YRECIO.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node15 -> Node16 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
-  Node16 [label="/Users/kpenev/projects\l/git/poet/poet_src/StellarEvolution\l/YRECIO.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$YRECIO_8cpp.html",tooltip="Defines some of the methods of the classes for generating stellar evolution interpolators from the YR..."];
-}

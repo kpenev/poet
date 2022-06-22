@@ -1,25 +1,24 @@
-<map id="/Users/kpenev/projects/git/poet/poet_src/ConstSolutionIterator.h" name="/Users/kpenev/projects/git/poet/poet_src/ConstSolutionIterator.h">
-<area shape="rect" id="node2" href="$BinarySystem_8h.html" title="Defines the BinarySystem class. " alt="" coords="817,189,950,217"/>
-<area shape="rect" id="node5" href="$DissipatingZone_8h.html" title="Declares a class representing one zone of a body dissipative to tidal distortions. " alt="" coords="2142,341,2291,369"/>
-<area shape="rect" id="node45" href="$OrbitSolver_8h.html" title="Defines the OrbitSolver class, the various stopping conditions and a number of other classes used whi..." alt="" coords="1670,113,1784,141"/>
-<area shape="rect" id="node3" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="1873,721,2094,765"/>
-<area shape="rect" id="node4" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="753,265,902,293"/>
-<area shape="rect" id="node10" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="1662,569,1814,597"/>
-<area shape="rect" id="node22" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="2893,645,2962,673"/>
-<area shape="rect" id="node25" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="260,645,459,673"/>
-<area shape="rect" id="node34" href="$CombinedStoppingCondition_8h.html" title="Declares a class for a stopping condition that combines other stopping conditions. " alt="" coords="1283,417,1521,445"/>
-<area shape="rect" id="node38" href="$OrbitalExpressions_8h.html" title="A collection of functions which calculate various quantities for two body orbits. ..." alt="" coords="411,341,633,369"/>
-<area shape="rect" id="node39" href="$SecondaryDeathCondition_8h.html" title="Declares a stopping condition class monitoring for the death of the secondary object. " alt="" coords="513,417,734,445"/>
-<area shape="rect" id="node6" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="1999,493,2149,521"/>
-<area shape="rect" id="node7" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="2372,569,2557,597"/>
-<area shape="rect" id="node27" href="$TidalPotentialTerms_8h.html" title="Declare an interface for evaluating the expansion of the tidal potential. " alt="" coords="2375,493,2549,521"/>
-<area shape="rect" id="node33" href="$SpinOrbitLockInfo_8h.html" title="Defines the SpinOrbitLockInfo class. " alt="" coords="3468,645,3630,673"/>
-<area shape="rect" id="node36" href="$BreakLockCondition_8h.html" title="Declares a class for a stopping condition monitoring when a locked zone loses the lock..." alt="" coords="1596,417,1774,445"/>
-<area shape="rect" id="node37" href="$SynchronizedCondition_8h.html" title="Declares a stopping condition monitoring spin&#45;orbit synchronization. " alt="" coords="1797,417,1996,445"/>
-<area shape="rect" id="node26" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="2021,645,2148,673"/>
-<area shape="rect" id="node29" href="$EccentricityExpansionCoefficients_8h.html" title="Declares a class which provides the [ &#160;coefficients]{InclinationEccentricity_pms1}. " alt="" coords="3079,569,3354,597"/>
-<area shape="rect" id="node35" href="$StoppingCondition_8h.html" title="Defines the various stopping conditions needed by OrbitSolver. " alt="" coords="1475,493,1641,521"/>
-<area shape="rect" id="node46" href="$ExternalStoppingConditions_8h.html" title="Users can define any stopping condition they wish the evolution to search for in this file..." alt="" coords="1539,265,1771,293"/>
-<area shape="rect" id="node47" href="$StopInformation_8h.html" title="Declares the StopInformation class. " alt="" coords="1011,417,1159,445"/>
-<area shape="rect" id="node48" href="$StopHistoryInterval_8h.html" title="Declares the StopHistoryInterval class. " alt="" coords="2682,569,2852,597"/>
+<map id="/home/kpenev/projects/git/poet/poet_src/ConstSolutionIterator.h" name="/home/kpenev/projects/git/poet/poet_src/ConstSolutionIterator.h">
+<area shape="rect" id="node2" href="$BinarySystem_8h.html" title="Defines the BinarySystem class. " alt="" coords="1697,195,1831,224"/>
+<area shape="rect" id="node5" href="$DissipatingZone_8h.html" title="Declares a class representing one zone of a body dissipative to tidal distortions. " alt="" coords="791,349,943,379"/>
+<area shape="rect" id="node43" href="$OrbitSolver_8h.html" title="Defines the OrbitSolver class, the various stopping conditions and a number of other classes used whi..." alt="" coords="2635,117,2749,147"/>
+<area shape="rect" id="node3" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="1975,753,2195,800"/>
+<area shape="rect" id="node4" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="1501,272,1653,301"/>
+<area shape="rect" id="node9" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="1265,599,1415,628"/>
+<area shape="rect" id="node21" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="259,676,330,705"/>
+<area shape="rect" id="node24" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="1985,676,2185,705"/>
+<area shape="rect" id="node29" href="$CombinedStoppingCondition_8h.html" title="Declares a class for a stopping condition that combines other stopping conditions. " alt="" coords="2336,435,2579,465"/>
+<area shape="rect" id="node35" href="$OrbitalExpressions_8h.html" title="A collection of functions which calculate various quantities for two body orbits. ..." alt="" coords="1691,349,1912,379"/>
+<area shape="rect" id="node36" href="$SecondaryDeathCondition_8h.html" title="Declares a stopping condition class monitoring for the death of the secondary object. " alt="" coords="2037,435,2261,465"/>
+<area shape="rect" id="node6" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="686,521,837,551"/>
+<area shape="rect" id="node7" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="793,599,980,628"/>
+<area shape="rect" id="node26" href="$TidalPotentialTerms_8h.html" title="Declare an interface for evaluating the expansion of the tidal potential. " alt="" coords="1379,435,1557,465"/>
+<area shape="rect" id="node28" href="$SpinOrbitLockInfo_8h.html" title="Defines the SpinOrbitLockInfo class. " alt="" coords="245,599,408,628"/>
+<area shape="rect" id="node32" href="$BreakLockCondition_8h.html" title="Declares a class for a stopping condition monitoring when a locked zone loses the lock..." alt="" coords="971,435,1151,465"/>
+<area shape="rect" id="node33" href="$SynchronizedCondition_8h.html" title="Declares a stopping condition monitoring spin&#45;orbit synchronization. " alt="" coords="357,435,560,465"/>
+<area shape="rect" id="node25" href="$IncludeEigen_8h_source.html" title="IncludeEigen.h" alt="" coords="769,676,898,705"/>
+<area shape="rect" id="node30" href="$StoppingCondition_8h.html" title="Defines the various stopping conditions needed by OrbitSolver. " alt="" coords="1987,521,2155,551"/>
+<area shape="rect" id="node44" href="$ExternalStoppingConditions_8h.html" title="Users can define any stopping condition they wish the evolution to search for in this file..." alt="" coords="2344,272,2579,301"/>
+<area shape="rect" id="node45" href="$StopInformation_8h.html" title="Declares the StopInformation class. " alt="" coords="2957,435,3104,465"/>
+<area shape="rect" id="node46" href="$StopHistoryInterval_8h.html" title="Declares the StopHistoryInterval class. " alt="" coords="2805,599,2976,628"/>
 </map>

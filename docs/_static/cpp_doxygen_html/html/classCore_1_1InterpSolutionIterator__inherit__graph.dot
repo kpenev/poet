@@ -1,9 +1,0 @@
-digraph "Core::InterpSolutionIterator"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node0 [label="{Core::InterpSolutionIterator\n|- spline\l- node_index\l- min_diff\l- y\l- solution_iter\l- solutions\l- is_out_of_range\l|+ InterpSolutionIterator()\l+ InterpSolutionIterator()\l+ InterpSolutionIterator()\l+ operator++()\l+ operator++()\l+ operator--()\l+ operator--()\l+ operator*()\l+ operator==()\l+ operator!=()\l+ out_of_range()\l- get_solutions()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
-  Node1 [label="{std::iterator\< std\l::input_iterator_tag,\l double, ptrdiff_t, const\l double *, const double & \>\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
-}

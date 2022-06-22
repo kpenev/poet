@@ -1,5 +1,5 @@
 <map id="Star::WindSaturationCondition" name="Star::WindSaturationCondition">
-<area shape="rect" id="node2" href="$classEvolve_1_1StoppingCondition.html" title="A base class for all stopping conditions. " alt="" coords="5,832,266,1041"/>
-<area shape="rect" id="node3" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="446,760,727,1113"/>
-<area shape="rect" id="node4" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="207,5,454,711"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1StoppingCondition.html" title="A base class for all stopping conditions. " alt="" coords="5,894,268,1118"/>
+<area shape="rect" id="node3" href="$classStar_1_1SaturatingSkumanichWindBody.html" title="A DissipatingBody which loses angular momentum at a rate . " alt="" coords="449,816,731,1196"/>
+<area shape="rect" id="node4" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="210,5,455,767"/>
 </map>

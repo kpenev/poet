@@ -1,9 +1,9 @@
 <map id="inheritance6624e14e57" name="inheritance6624e14e57">
-<area shape="rect" id="node1" href="basic_utils.html#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="5,5,147,29"/>
-<area shape="rect" id="node2" href="#stellar_evolution.change_variables.QuantityEvaluator" target="_top" title="Evaluate stellar quantities fixing out of range issues etc." alt="" coords="171,5,506,29"/>
-<area shape="rect" id="node3" href="#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="506,77,880,101"/>
-<area shape="rect" id="node4" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="531,5,856,29"/>
-<area shape="rect" id="node5" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.LogGCGS" target="_top" title="Log10 of stellar surface gravity it cgs units." alt="" coords="880,5,1218,29"/>
-<area shape="rect" id="node6" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.RhoCGS" target="_top" title="Mean stellar density in cgs units." alt="" coords="1242,5,1572,29"/>
-<area shape="rect" id="node7" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.TeffK" target="_top" title="Stellar effective temperature in Kelvin." alt="" coords="1596,5,1903,29"/>
+<area shape="rect" id="node1" href="basic_utils.html#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="5,5,160,31"/>
+<area shape="rect" id="node2" href="#stellar_evolution.change_variables.QuantityEvaluator" target="_top" title="Evaluate stellar quantities fixing out of range issues etc." alt="" coords="184,5,555,31"/>
+<area shape="rect" id="node3" href="#stellar_evolution.change_variables.VarChangingInterpolator" target="_top" title="Enhance interpolators to find mass and age given other properties." alt="" coords="553,79,964,104"/>
+<area shape="rect" id="node4" href="stellar_evolution.library_interface.html#stellar_evolution.library_interface.MESAInterpolator" target="_top" title="A class for interpolating among a set of MESA tracks." alt="" coords="579,5,938,31"/>
+<area shape="rect" id="node5" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.LogGCGS" target="_top" title="Log10 of stellar surface gravity it cgs units." alt="" coords="963,5,1331,31"/>
+<area shape="rect" id="node6" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.RhoCGS" target="_top" title="Mean stellar density in cgs units." alt="" coords="1355,5,1715,31"/>
+<area shape="rect" id="node7" href="stellar_evolution.derived_stellar_quantities.html#stellar_evolution.derived_stellar_quantities.TeffK" target="_top" title="Stellar effective temperature in Kelvin." alt="" coords="1739,5,2079,31"/>
 </map>

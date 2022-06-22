@@ -1,9 +1,0 @@
-digraph "/Users/kpenev/projects/git/poet/poet_src/StellarEvolution/SumQuantity.h"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node40 [label="/Users/kpenev/projects\l/git/poet/poet_src/StellarEvolution\l/SumQuantity.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node40 -> Node41 [dir="back",color="midnightblue",fontsize="12",style="solid",fontname="Helvetica"];
-  Node41 [label="/Users/kpenev/projects\l/git/poet/poet_src/StellarEvolution\l/Interpolator.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$Interpolator_8cpp.html",tooltip="Defines some of the methods of the StellarEvolution class. "];
-}

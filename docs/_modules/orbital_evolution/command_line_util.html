@@ -1,0 +1,817 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>orbital_evolution.command_line_util &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>orbital_evolution.command_line_util</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for orbital_evolution.command_line_util</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Add and use commandline/config file options for defining evolution to run.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">join</span> <span class="k">as</span> <span class="n">join_paths</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">astropy</span> <span class="k">import</span> <span class="n">constants</span>
+
+<span class="kn">from</span> <span class="nn">stellar_evolution.manager</span> <span class="k">import</span> <span class="n">StellarEvolutionManager</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.evolve_interface</span> <span class="k">import</span> <span class="n">library</span> <span class="k">as</span>\
+    <span class="n">orbital_evolution_library</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.binary</span> <span class="k">import</span> <span class="n">Binary</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.star_interface</span> <span class="k">import</span> <span class="n">EvolvingStar</span>
+<span class="kn">from</span> <span class="nn">orbital_evolution.planet_interface</span> <span class="k">import</span> <span class="n">LockedPlanet</span>
+
+<div class="viewcode-block" id="add_star_config"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.add_star_config">[docs]</a><span class="k">def</span> <span class="nf">add_star_config</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">require_secondary</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add to the parser arguments to configure a star.</span>
+
+<span class="sd">    By default add arguments to configure the primary, use primary=False to</span>
+<span class="sd">    configure the secondary. Secondary arguments other than mass all have</span>
+<span class="sd">    None default values to allow falling back to the primary&#39;s values.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parser:    The command line/cornfig file parser, or argument group, to</span>
+<span class="sd">            add the options to.</span>
+
+<span class="sd">        primary(bool):    Whether the star being configured is the primary or</span>
+<span class="sd">            the secondary in the system.</span>
+
+<span class="sd">        require_secondary(bool):    If true, removes the possibility of leaving</span>
+<span class="sd">            secondary mass unspecified.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">component_name</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;primary&#39;</span> <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span> <span class="s1">&#39;secondary&#39;</span><span class="p">)</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;--&#39;</span> <span class="o">+</span> <span class="n">component_name</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;1&#39;</span> <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span> <span class="s1">&#39;2&#39;</span><span class="p">)</span>
+    <span class="n">extra_help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span>
+                  <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span>
+                  <span class="s1">&#39; Defaults to primary star value if not  specified.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-mass&#39;</span><span class="p">,</span> <span class="s1">&#39;--m&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="k">if</span> <span class="p">(</span><span class="n">primary</span> <span class="ow">or</span> <span class="n">require_secondary</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;The mass of the &#39;</span> <span class="o">+</span> <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39; star.&#39;</span>
+            <span class="o">+</span>
+            <span class="p">(</span>
+                <span class="s1">&#39;&#39;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">primary</span> <span class="ow">or</span> <span class="n">require_secondary</span><span class="p">)</span> <span class="k">else</span>
+                <span class="s1">&#39; If not specified, a single star evolution is calculated.&#39;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-radius&#39;</span><span class="p">,</span> <span class="s1">&#39;--R&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Make the &#39;</span>
+            <span class="o">+</span>
+            <span class="n">component_name</span>
+            <span class="o">+</span>
+            <span class="s1">&#39; component a planet of the given radius. If not specified, &#39;</span>
+            <span class="s1">&#39;but the mass is specified, the &#39;</span>
+            <span class="o">+</span>
+            <span class="n">component_name</span>
+            <span class="o">+</span>
+            <span class="s1">&#39; will be a star.&#39;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-wind-strength&#39;</span><span class="p">,</span> <span class="s1">&#39;--Kw&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mf">0.17</span> <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;The wind strength constant to assume for the &#39;</span>
+              <span class="o">+</span>
+              <span class="n">component_name</span>
+              <span class="o">+</span>
+              <span class="s1">&#39; star.&#39;</span>
+              <span class="o">+</span>
+              <span class="n">extra_help</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-wind-saturation-frequency&#39;</span><span class="p">,</span> <span class="s1">&#39;--Wsat&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mf">2.45</span> <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;The wind saturation frequency to assume for the &#39;</span>
+              <span class="o">+</span>
+              <span class="n">component_name</span>
+              <span class="o">+</span>
+              <span class="s1">&#39; star in rad/day.&#39;</span>
+              <span class="o">+</span>
+              <span class="n">extra_help</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-diff-rot-coupling-timescale&#39;</span><span class="p">,</span> <span class="s1">&#39;--Tcoup&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mf">5e-3</span> <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;The timescale (in Gyrs) on which the rotation of the core and&#39;</span>
+            <span class="s1">&#39; the envelope of the &#39;</span>
+            <span class="o">+</span>
+            <span class="n">component_name</span>
+            <span class="o">+</span>
+            <span class="s1">&#39; star decay toward synchonism.&#39;</span>
+            <span class="o">+</span>
+            <span class="n">extra_help</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-reference-dissipation&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;PhaseLag&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;TidalFrequency&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;PowerlawBefore&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;PowerlawAfter&#39;</span><span class="p">),</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Define the reference point for the dissipation in the &#39;</span>
+            <span class="o">+</span>
+            <span class="n">component_name</span>
+            <span class="o">+</span>
+            <span class="s1">&#39;. This initializes the phase lag dependence on frequnecy to a &#39;</span>
+            <span class="s1">&#39;broken powerlaw with a single break. Further breaks can be &#39;</span>
+            <span class="s1">&#39;introduced using &#39;</span>
+            <span class="o">+</span>
+            <span class="n">prefix</span>
+            <span class="o">+</span>
+            <span class="s1">&#39;-dissipation-break.&#39;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-dissipation_break&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;TidalFrequency&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;PowerlawIndex&#39;</span><span class="p">),</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Add another powerlaw break to the phase lag dependence on &#39;</span>
+        <span class="s1">&#39;frequency. All breaks specified are sorted by their distance from &#39;</span>
+        <span class="s1">&#39;the reference frequency (closest to furthest) and the powerlaw &#39;</span>
+        <span class="s1">&#39;index at each break is defined to apply for the frequency range &#39;</span>
+        <span class="s1">&#39;away from the reference.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-inertial-mode-enhancement&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;A factor by which the dissipation is larger in the inertial mode &#39;</span>
+        <span class="s1">&#39;range relative to outside of it. This is applied on top of the spin &#39;</span>
+        <span class="s1">&#39;and forcing frequency dependencies defined by the other arguments.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;-inertial-mode-sharpness&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;A parameter controlling how suddenly the enhancement due to &#39;</span>
+        <span class="s1">&#39;inertial modes gets turned on near the inertial mode range boundaries.&#39;</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_binary_config"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.add_binary_config">[docs]</a><span class="k">def</span> <span class="nf">add_binary_config</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="p">(),</span> <span class="n">require_secondary</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add command line/config file options to specify the binary to evolve.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parser:    The command line/cornfig file parser, or argument group, to</span>
+<span class="sd">            add the options to.</span>
+
+<span class="sd">        skip:    Collection of configuration options to exclude. Presumaly those</span>
+<span class="sd">            will be denifen in some other way.</span>
+
+<span class="sd">        require_secondary(bool):    If true, removes the possibility of leaving</span>
+<span class="sd">            secondary mass unspecified.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s1">&#39;feh&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span> <span class="ow">and</span> <span class="s1">&#39;metallicity&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--metallicity&#39;</span><span class="p">,</span> <span class="s1">&#39;--feh&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The metallicity of the system to evolve.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;Tdisk&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span> <span class="ow">and</span> <span class="s1">&#39;disk_dissipation_age&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--disk-dissipation-age&#39;</span><span class="p">,</span> <span class="s1">&#39;--Tdisk&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The at which the disk dissipates and the binary evolution &#39;</span>
+            <span class="s1">&#39;stars.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;Wdisk&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span> <span class="ow">and</span> <span class="s1">&#39;disk_lock_frequency&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--disk-lock-frequency&#39;</span><span class="p">,</span> <span class="s1">&#39;--Wdisk&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">7.0</span><span class="p">),</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The fixed spin frequency of the surface of the primary until &#39;</span>
+            <span class="s1">&#39;the disk dissipates.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="n">add_star_config</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">require_secondary</span><span class="o">=</span><span class="n">require_secondary</span><span class="p">)</span>
+    <span class="n">add_star_config</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">require_secondary</span><span class="o">=</span><span class="n">require_secondary</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+            <span class="s1">&#39;Porb&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+            <span class="ow">and</span>
+            <span class="s1">&#39;Porb0&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+            <span class="ow">and</span>
+            <span class="s1">&#39;initial_orbital_period&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+    <span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--initial-orbital-period&#39;</span><span class="p">,</span> <span class="s1">&#39;--Porb0&#39;</span><span class="p">,</span> <span class="s1">&#39;--Porb&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The initial orbital period (in days) in which the binary &#39;</span>
+            <span class="s1">&#39;forms.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+            <span class="s1">&#39;e&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+            <span class="ow">and</span>
+            <span class="s1">&#39;e0&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+            <span class="ow">and</span>
+            <span class="s1">&#39;initial_eccentricity&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+    <span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--initial-eccentricity&#39;</span><span class="p">,</span> <span class="s1">&#39;--e0&#39;</span><span class="p">,</span> <span class="s1">&#39;-e&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The initial eccentricity at the time the secondary appears.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+            <span class="s1">&#39;Lambda&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+            <span class="ow">and</span>
+            <span class="s1">&#39;Lambda0&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+            <span class="ow">and</span>
+            <span class="s1">&#39;initial_obliquity&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
+    <span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--initial_obliquity&#39;</span><span class="p">,</span> <span class="s1">&#39;--Lambda0&#39;</span><span class="p">,</span> <span class="s1">&#39;--Lambda&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The initial obliquity of the orbit relative to the surface &#39;</span>
+            <span class="s1">&#39;spin of the primary at the time the secondary appears.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;secondary_formation_age&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--secondary-formation-age&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The age at which the binary is formed. If left unspecified, &#39;</span>
+            <span class="s1">&#39;the binary forms at the disk dissipation age.&#39;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_evolution_config"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.add_evolution_config">[docs]</a><span class="k">def</span> <span class="nf">add_evolution_config</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add command line/config file options to specify how to run the evolution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parser:    The command line/cornfig file parser, or argument group, to</span>
+<span class="sd">            add the options to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--final-age&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The age at which to stop calculating the evolution in Gyr.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--max-time-step&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The largest timestep in Gyrs the evolution is allowed to take.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--precision&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The precision to require of the solution.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--create-c-code&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If specified a compile-able C code is saved to a file with the &#39;</span>
+        <span class="s1">&#39;given name that will calculate the specified evolution.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--eccentricity-expansion-fname&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;eccentricity_expansion_coef_O400.sqlite&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The filename storing the eccentricity expansion coefficients.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--stellar-evolution&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;INTERP_DIR&#39;</span><span class="p">,</span> <span class="s1">&#39;INTERP_NAME&#39;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">join_paths</span><span class="p">(</span>
+                <span class="n">dirname</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))),</span>
+                <span class="s1">&#39;stellar_evolution_interpolators&#39;</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;default&#39;</span>
+        <span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The directory containing serialized stellar evolutions and the &#39;</span>
+        <span class="s1">&#39;name of the interpolator to use.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--max-evolution-runtime&#39;</span><span class="p">,</span> <span class="s1">&#39;--timeout&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The maximum number of seconds calculating the orbital evolution &#39;</span>
+        <span class="s1">&#39;is allowed to take. Non-positive value results in no timeout. &#39;</span>
+        <span class="s1">&#39;Partially cumputed evolutions that time out can still be querried.&#39;</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="set_up_library"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.set_up_library">[docs]</a><span class="k">def</span> <span class="nf">set_up_library</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Define eccentricity expansion and return stellar evol interpolator.&quot;&quot;&quot;</span>
+
+    <span class="n">orbital_evolution_library</span><span class="o">.</span><span class="n">prepare_eccentricity_expansion</span><span class="p">(</span>
+        <span class="n">cmdline_args</span><span class="o">.</span><span class="n">eccentricity_expansion_fname</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">),</span>
+        <span class="mf">1e-4</span><span class="p">,</span>
+        <span class="kc">True</span><span class="p">,</span>
+        <span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">StellarEvolutionManager</span><span class="p">(</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">stellar_evolution</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_interpolator_by_name</span><span class="p">(</span>
+        <span class="n">cmdline_args</span><span class="o">.</span><span class="n">stellar_evolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span></div>
+
+<span class="c1">#Pylint false positive for astropy constants</span>
+<span class="c1">#pylint: disable=no-member</span>
+<div class="viewcode-block" id="create_planet"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.create_planet">[docs]</a><span class="k">def</span> <span class="nf">create_planet</span><span class="p">(</span><span class="n">mass</span><span class="o">=</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">M_jup</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">M_sun</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                  <span class="n">radius</span><span class="o">=</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">R_jup</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">R_sun</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                  <span class="n">phase_lag</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a configured planet to use in the evolution.&quot;&quot;&quot;</span>
+
+    <span class="n">planet</span> <span class="o">=</span> <span class="n">LockedPlanet</span><span class="p">(</span>
+        <span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span>
+        <span class="n">radius</span><span class="o">=</span><span class="n">radius</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">phase_lag</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">planet</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span><span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                                   <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                                   <span class="n">reference_phase_lag</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">phase_lag</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">planet</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span><span class="o">**</span><span class="n">phase_lag</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">planet</span></div>
+<span class="c1">#pylint: enable=no-member</span>
+
+<div class="viewcode-block" id="create_star"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.create_star">[docs]</a><span class="k">def</span> <span class="nf">create_star</span><span class="p">(</span><span class="n">interpolator</span><span class="p">,</span>
+                <span class="n">convective_phase_lag</span><span class="p">,</span>
+                <span class="o">*</span><span class="p">,</span>
+                <span class="n">mass</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">metallicity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">wind_strength</span><span class="o">=</span><span class="mf">0.17</span><span class="p">,</span>
+                <span class="n">wind_saturation_frequency</span><span class="o">=</span><span class="mf">2.45</span><span class="p">,</span>
+                <span class="n">diff_rot_coupling_timescale</span><span class="o">=</span><span class="mf">5.0e-3</span><span class="p">,</span>
+                <span class="n">interp_age</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the star to use in the evolution.&quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">%s</span><span class="s1"> Msun at t = </span><span class="si">%s</span><span class="s1"> star with dissipation </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+          <span class="nb">repr</span><span class="p">(</span><span class="n">mass</span><span class="p">),</span>
+          <span class="nb">repr</span><span class="p">(</span><span class="n">interp_age</span><span class="p">),</span>
+          <span class="nb">repr</span><span class="p">(</span><span class="n">convective_phase_lag</span><span class="p">))</span>
+    <span class="n">star</span> <span class="o">=</span> <span class="n">EvolvingStar</span><span class="p">(</span><span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span>
+                        <span class="n">metallicity</span><span class="o">=</span><span class="n">metallicity</span><span class="p">,</span>
+                        <span class="n">wind_strength</span><span class="o">=</span><span class="n">wind_strength</span><span class="p">,</span>
+                        <span class="n">wind_saturation_frequency</span><span class="o">=</span><span class="n">wind_saturation_frequency</span><span class="p">,</span>
+                        <span class="n">diff_rot_coupling_timescale</span><span class="o">=</span><span class="n">diff_rot_coupling_timescale</span><span class="p">,</span>
+                        <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">)</span>
+
+    <span class="n">star</span><span class="o">.</span><span class="n">select_interpolation_region</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">core_formation_age</span><span class="p">()</span>
+                                     <span class="k">if</span> <span class="n">interp_age</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span>
+                                     <span class="n">interp_age</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">convective_phase_lag</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">star</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span>
+                <span class="n">zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">tidal_frequency_breaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">tidal_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+                <span class="n">reference_phase_lag</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">convective_phase_lag</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">star</span><span class="o">.</span><span class="n">set_dissipation</span><span class="p">(</span><span class="n">zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                 <span class="o">**</span><span class="n">convective_phase_lag</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">star</span></div>
+
+<div class="viewcode-block" id="create_system"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.create_system">[docs]</a><span class="k">def</span> <span class="nf">create_system</span><span class="p">(</span><span class="n">primary</span><span class="p">,</span>
+                  <span class="n">secondary</span><span class="p">,</span>
+                  <span class="n">disk_lock_frequency</span><span class="p">,</span>
+                  <span class="o">*</span><span class="p">,</span>
+                  <span class="n">initial_eccentricity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                  <span class="n">porb_initial</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span>
+                  <span class="n">disk_dissipation_age</span><span class="o">=</span><span class="mf">4e-3</span><span class="p">,</span>
+                  <span class="n">initial_inclination</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                  <span class="n">secondary_formation_age</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Combine the given primary and secondar in a system ready to evolve.&quot;&quot;&quot;</span>
+
+    <span class="n">binary</span> <span class="o">=</span> <span class="n">Binary</span><span class="p">(</span><span class="n">primary</span><span class="o">=</span><span class="n">primary</span><span class="p">,</span>
+                    <span class="n">secondary</span><span class="o">=</span><span class="n">secondary</span><span class="p">,</span>
+                    <span class="n">initial_orbital_period</span><span class="o">=</span><span class="n">porb_initial</span><span class="p">,</span>
+                    <span class="n">initial_eccentricity</span><span class="o">=</span><span class="n">initial_eccentricity</span><span class="p">,</span>
+                    <span class="n">initial_inclination</span><span class="o">=</span><span class="n">initial_inclination</span><span class="p">,</span>
+                    <span class="n">disk_lock_frequency</span><span class="o">=</span><span class="n">disk_lock_frequency</span><span class="p">,</span>
+                    <span class="n">disk_dissipation_age</span><span class="o">=</span><span class="n">disk_dissipation_age</span><span class="p">,</span>
+                    <span class="n">secondary_formation_age</span><span class="o">=</span><span class="p">(</span><span class="n">secondary_formation_age</span>
+                                             <span class="ow">or</span>
+                                             <span class="n">disk_dissipation_age</span><span class="p">))</span>
+    <span class="n">binary</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+        <span class="n">age</span><span class="o">=</span><span class="p">(</span><span class="n">primary</span><span class="o">.</span><span class="n">core_formation_age</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">primary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span>
+             <span class="k">else</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">disk_dissipation_age</span><span class="p">),</span>
+        <span class="n">semimajor</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">),</span>
+        <span class="n">eccentricity</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">),</span>
+        <span class="n">spin_angmom</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+        <span class="n">inclination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">periapsis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">evolution_mode</span><span class="o">=</span><span class="s1">&#39;LOCKED_SURFACE_SPIN&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">):</span>
+        <span class="n">initial_obliquity</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="n">initial_periapsis</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">initial_obliquity</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">initial_periapsis</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">secondary</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">age</span><span class="o">=</span><span class="n">disk_dissipation_age</span><span class="p">,</span>
+                        <span class="n">companion_mass</span><span class="o">=</span><span class="n">primary</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span>
+                        <span class="n">semimajor</span><span class="o">=</span><span class="n">binary</span><span class="o">.</span><span class="n">semimajor</span><span class="p">(</span><span class="n">porb_initial</span><span class="p">),</span>
+                        <span class="n">eccentricity</span><span class="o">=</span><span class="n">initial_eccentricity</span><span class="p">,</span>
+                        <span class="n">spin_angmom</span><span class="o">=</span><span class="p">(</span>
+                            <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">)</span> <span class="k">else</span>
+                            <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+                        <span class="p">),</span>
+                        <span class="n">inclination</span><span class="o">=</span><span class="n">initial_obliquity</span><span class="p">,</span>
+                        <span class="n">periapsis</span><span class="o">=</span><span class="n">initial_periapsis</span><span class="p">,</span>
+                        <span class="n">locked_surface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">zero_outer_inclination</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">zero_outer_periapsis</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">primary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">):</span>
+        <span class="n">primary</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">):</span>
+        <span class="n">secondary</span><span class="o">.</span><span class="n">detect_stellar_wind_saturation</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">binary</span></div>
+
+<div class="viewcode-block" id="get_phase_lag_config"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.get_phase_lag_config">[docs]</a><span class="k">def</span> <span class="nf">get_phase_lag_config</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a phase lag configuration to pass directly to create_star.&quot;&quot;&quot;</span>
+
+    <span class="n">component_name</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;primary&#39;</span> <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span> <span class="s1">&#39;secondary&#39;</span><span class="p">)</span>
+    <span class="n">reference_dissipation</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span>
+                                    <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_reference_dissipation&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reference_dissipation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">reference_phase_lag</span><span class="o">=</span><span class="n">reference_dissipation</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">spin_frequency_breaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">spin_frequency_powers</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+    <span class="p">)</span>
+    <span class="n">dissipation_breaks</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_dissipation_break&#39;</span><span class="p">)</span>
+        <span class="ow">or</span>
+        <span class="p">[]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+            <span class="n">reference_dissipation</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">reference_dissipation</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="ow">and</span>
+            <span class="ow">not</span> <span class="n">dissipation_breaks</span>
+    <span class="p">):</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_powers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_breaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_breaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">dissipation_breaks</span><span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+        <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_powers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="mi">2</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">dissipation_breaks</span><span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+        <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_breaks&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_dissipation</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_powers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_dissipation</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_powers&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_dissipation</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">frequency</span><span class="p">,</span> <span class="n">power</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dissipation_breaks</span><span class="p">):</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_breaks&#39;</span><span class="p">][</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">frequency</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tidal_frequency_powers&#39;</span><span class="p">][</span><span class="n">index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">power</span>
+
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;inertial_mode_enhancement&#39;</span><span class="p">,</span> <span class="s1">&#39;inertial_mode_sharpness&#39;</span><span class="p">]:</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">param</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="get_component"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.get_component">[docs]</a><span class="k">def</span> <span class="nf">get_component</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">interpolator</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return one of the components of the system.&quot;&quot;&quot;</span>
+
+    <span class="n">component_name</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;primary&#39;</span> <span class="k">if</span> <span class="n">primary</span> <span class="k">else</span> <span class="s1">&#39;secondary&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_mass&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">primary</span>
+        <span class="k">return</span> <span class="n">create_planet</span><span class="p">()</span>
+
+    <span class="n">radius</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_radius&#39;</span><span class="p">)</span>
+    <span class="n">phase_lag_config</span> <span class="o">=</span> <span class="n">get_phase_lag_config</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">primary</span><span class="p">)</span>
+    <span class="n">mass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_mass&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">create_planet</span><span class="p">(</span><span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span>
+                             <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                             <span class="n">phase_lag</span><span class="o">=</span><span class="n">phase_lag_config</span><span class="p">)</span>
+
+    <span class="n">create_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span>
+        <span class="n">convective_phase_lag</span><span class="o">=</span><span class="n">phase_lag_config</span><span class="p">,</span>
+        <span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span>
+        <span class="n">metallicity</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">metallicity</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">arg_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;wind_strength&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;wind_saturation_frequency&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;diff_rot_coupling_timescale&#39;</span><span class="p">]:</span>
+        <span class="n">create_args</span><span class="p">[</span><span class="n">arg_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+            <span class="n">cmdline_args</span><span class="p">,</span>
+            <span class="n">component_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">arg_name</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">primary</span> <span class="ow">and</span> <span class="n">create_args</span><span class="p">[</span><span class="n">arg_name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">create_args</span><span class="p">[</span><span class="n">arg_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">cmdline_args</span><span class="p">,</span>
+                <span class="s1">&#39;primary_&#39;</span> <span class="o">+</span> <span class="n">arg_name</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">primary</span><span class="p">:</span>
+        <span class="n">create_args</span><span class="p">[</span><span class="s1">&#39;interp_age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmdline_args</span><span class="o">.</span><span class="n">disk_dissipation_age</span>
+    <span class="k">return</span> <span class="n">create_star</span><span class="p">(</span><span class="o">**</span><span class="n">create_args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_binary"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.get_binary">[docs]</a><span class="k">def</span> <span class="nf">get_binary</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">interpolator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the fully constructed binary to evolve.&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">create_system</span><span class="p">(</span>
+        <span class="n">primary</span><span class="o">=</span><span class="n">get_component</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">interpolator</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">secondary</span><span class="o">=</span><span class="n">get_component</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">interpolator</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">disk_lock_frequency</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">disk_lock_frequency</span><span class="p">,</span>
+        <span class="n">porb_initial</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">initial_orbital_period</span><span class="p">,</span>
+        <span class="n">initial_eccentricity</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">initial_eccentricity</span><span class="p">,</span>
+        <span class="n">initial_inclination</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">initial_obliquity</span><span class="p">,</span>
+        <span class="n">disk_dissipation_age</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">disk_dissipation_age</span><span class="p">,</span>
+        <span class="n">secondary_formation_age</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">cmdline_args</span><span class="o">.</span><span class="n">secondary_formation_age</span>
+            <span class="k">if</span> <span class="n">cmdline_args</span><span class="o">.</span><span class="n">secondary_mass</span> <span class="k">else</span>
+            <span class="n">cmdline_args</span><span class="o">.</span><span class="n">final_age</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="run_evolution"><a class="viewcode-back" href="../../_implementation/orbital_evolution.command_line_util.html#orbital_evolution.command_line_util.run_evolution">[docs]</a><span class="k">def</span> <span class="nf">run_evolution</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span>
+                  <span class="n">interpolator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">required_ages_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">extra_evolve_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run the evolution specified on the command line.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">interpolator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">interpolator</span> <span class="o">=</span> <span class="n">set_up_library</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;required_ages&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_evolve_args</span><span class="p">:</span>
+        <span class="n">extra_evolve_args</span><span class="p">[</span><span class="s1">&#39;required_ages&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">binary</span> <span class="o">=</span> <span class="n">get_binary</span><span class="p">(</span><span class="n">cmdline_args</span><span class="p">,</span> <span class="n">interpolator</span><span class="p">)</span>
+    <span class="n">binary</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+        <span class="n">cmdline_args</span><span class="o">.</span><span class="n">final_age</span><span class="p">,</span>
+        <span class="n">cmdline_args</span><span class="o">.</span><span class="n">max_time_step</span><span class="p">,</span>
+        <span class="n">cmdline_args</span><span class="o">.</span><span class="n">precision</span><span class="p">,</span>
+        <span class="n">create_c_code</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">create_c_code</span><span class="p">,</span>
+        <span class="n">eccentricity_expansion_fname</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">cmdline_args</span><span class="o">.</span><span class="n">eccentricity_expansion_fname</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="n">cmdline_args</span><span class="o">.</span><span class="n">max_evolution_runtime</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">extra_evolve_args</span>
+    <span class="p">)</span>
+    <span class="n">evolution</span> <span class="o">=</span> <span class="n">binary</span><span class="o">.</span><span class="n">get_evolution</span><span class="p">(</span><span class="n">required_ages_only</span><span class="o">=</span><span class="n">required_ages_only</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">component_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="s1">&#39;secondary&#39;</span><span class="p">]:</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">component_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">EvolvingStar</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">zone</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;core&#39;</span><span class="p">,</span> <span class="s1">&#39;envelope&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">deriv_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="nb">setattr</span><span class="p">(</span>
+                        <span class="n">evolution</span><span class="p">,</span>
+                        <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="p">[</span><span class="n">component_name</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="s1">&#39;inertia&#39;</span><span class="p">]</span>
+                            <span class="o">+</span>
+                            <span class="p">([</span><span class="s1">&#39;d</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">deriv_order</span><span class="p">]</span> <span class="k">if</span> <span class="n">deriv_order</span> <span class="k">else</span> <span class="p">[])</span>
+                        <span class="p">),</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">zone</span> <span class="o">+</span> <span class="s1">&#39;_inertia&#39;</span><span class="p">)(</span><span class="n">evolution</span><span class="o">.</span><span class="n">age</span><span class="p">,</span>
+                                                              <span class="n">deriv_order</span><span class="p">)</span>
+                    <span class="p">)</span>
+    <span class="n">evolution</span><span class="o">.</span><span class="n">orbital_period</span> <span class="o">=</span> <span class="n">binary</span><span class="o">.</span><span class="n">orbital_period</span><span class="p">(</span><span class="n">evolution</span><span class="o">.</span><span class="n">semimajor</span><span class="p">)</span>
+    <span class="n">binary</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">evolution</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

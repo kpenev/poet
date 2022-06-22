@@ -29,6 +29,7 @@ var namespaceEvolve =
     [ "SynchronizedCondition", "classEvolve_1_1SynchronizedCondition.html", "classEvolve_1_1SynchronizedCondition" ],
     [ "test_DifferentialEquations", "classEvolve_1_1test__DifferentialEquations.html", "classEvolve_1_1test__DifferentialEquations" ],
     [ "test_GravitationalPotential", "classEvolve_1_1test__GravitationalPotential.html", "classEvolve_1_1test__GravitationalPotential" ],
+    [ "test_LockMonitoring", "classEvolve_1_1test__LockMonitoring.html", "classEvolve_1_1test__LockMonitoring" ],
     [ "test_OrbitSolver", "classEvolve_1_1test__OrbitSolver.html", "classEvolve_1_1test__OrbitSolver" ],
     [ "test_TidalTorquePower", "classEvolve_1_1test__TidalTorquePower.html", "classEvolve_1_1test__TidalTorquePower" ],
     [ "TidalPotential", "classEvolve_1_1TidalPotential.html", "classEvolve_1_1TidalPotential" ],

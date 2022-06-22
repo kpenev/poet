@@ -1,6 +1,7 @@
 var classEvolve_1_1SynchronizedCondition =
 [
     [ "SynchronizedCondition", "classEvolve_1_1SynchronizedCondition.html#ac06584ba28a8bc4c32c668ac549d6d09", null ],
+    [ "SynchronizedCondition", "classEvolve_1_1SynchronizedCondition.html#a50d5e249ca818f7fad5d5e1a9a954939", null ],
     [ "describe", "classEvolve_1_1SynchronizedCondition.html#ae567e5c99bac8583229b162462e0b3f9", null ],
     [ "operator()", "classEvolve_1_1SynchronizedCondition.html#aa5c1dd9c7021d9056a581527782ef2f2", null ],
     [ "orbital_frequency_multiplier", "classEvolve_1_1SynchronizedCondition.html#a748e1664bd8130d3650b4ea5da9c6fa4", null ],

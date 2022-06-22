@@ -11,7 +11,7 @@ var classEvolve_1_1DissipatingBody =
     [ "angular_momentum_transfer_to_zone", "classEvolve_1_1DissipatingBody.html#a4e97f2496a0487f16e48ada5851d1af6", null ],
     [ "calculate_nontidal_torques", "classEvolve_1_1DissipatingBody.html#a099d63d29c82480e5f0258ae8f9a4926", null ],
     [ "calculate_orbit_rate_corrections", "classEvolve_1_1DissipatingBody.html#af78599cde77f723787652fd1794a1998", null ],
-    [ "change_e_order", "classEvolve_1_1DissipatingBody.html#af7745e91311897dade4fc255ac21f6cf", null ],
+    [ "change_expansion_order", "classEvolve_1_1DissipatingBody.html#a9682c072547418eb91f0e408af46db2f", null ],
     [ "collect_orbit_rates", "classEvolve_1_1DissipatingBody.html#a8ba7f1ea1da975fd3716e22199445e9c", null ],
     [ "configure", "classEvolve_1_1DissipatingBody.html#ad37052eeeeb36f18040050b9c3a55797", null ],
     [ "correct_orbit_power", "classEvolve_1_1DissipatingBody.html#a5e8df040ad7a7e0ee7e1e0f68cb32145", null ],

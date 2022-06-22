@@ -1,9 +1,0 @@
-digraph "Evolve::test_DifferentialEquations"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node0 [label="{Evolve::test_Differential\lEquations\n||+ test_DifferentialEquations()\l+ test_aligned_equations()\l+ test_error_estimate()\l# setup()\l# tear_down()\l- output_rates()\l- zahn77_semimajor_rate_coef()\l- zahn77_eccentricity\l_rate_coef()\l- check_agreement()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
-  Node1 [label="{Suite\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
-}

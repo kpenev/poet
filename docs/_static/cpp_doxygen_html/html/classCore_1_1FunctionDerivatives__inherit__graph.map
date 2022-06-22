@@ -1,17 +1,17 @@
 <map id="Core::FunctionDerivatives" name="Core::FunctionDerivatives">
-<area shape="rect" id="node2" href="$classCore_1_1CubicSplineDerivatives.html" title="A class for the derivatives of a cubic spline (=0 for order&gt;2). " alt="" coords="5,271,235,400"/>
-<area shape="rect" id="node3" href="$classCore_1_1ZeroDerivatives.html" title="The derivatives of an identically zero quantity. " alt="" coords="258,287,435,384"/>
-<area shape="rect" id="node4" href="$classCosFunction.html" title="The cosine of a function. " alt="" coords="459,239,595,432"/>
-<area shape="rect" id="node5" href="$classExponentialPlusFunc.html" title="Represents a function of the form offset + scale*exp(rate*x) as well as its derivative. " alt="" coords="618,223,814,448"/>
-<area shape="rect" id="node6" href="$classFuncPlusFunc.html" title="Represents the sum of two functions and the derivative. " alt="" coords="838,231,986,440"/>
-<area shape="rect" id="node7" href="$classFunctionRatio.html" title="The ratio of two functions;. " alt="" coords="1010,231,1155,440"/>
-<area shape="rect" id="node8" href="$classFunctionToPower.html" title="A function raised to some power. " alt="" coords="1179,231,1349,440"/>
-<area shape="rect" id="node9" href="$classLogFunction.html" title="The natural logarithm of a function. " alt="" coords="1373,239,1507,432"/>
-<area shape="rect" id="node10" href="$classPiecewiseFunction.html" title="Several functions stiched together. " alt="" coords="1530,215,1710,456"/>
-<area shape="rect" id="node11" href="$classScaledFunction.html" title="A function scaled by some constant. " alt="" coords="1734,231,1890,440"/>
-<area shape="rect" id="node12" href="$classStellarEvolution_1_1LogDerivatives.html" title="Calculate dy/dx given dy/dx, dy/dln(x), dln(y)/dx or dln(y)/dln(x). " alt="" coords="1914,223,2161,448"/>
-<area shape="rect" id="node15" href="$classStellarEvolution_1_1PolynomialEvolutionQuantity.html" title="An EvolvingStellar quantity that uses a polynomial instead of interpolating. " alt="" coords="2185,151,2434,520"/>
-<area shape="rect" id="node16" href="$classStellarEvolution_1_1SumDerivatives.html" title="Derivative class for a quantity that is the sum of two other quantities. " alt="" coords="2459,263,2712,408"/>
-<area shape="rect" id="node13" href="$classStellarEvolution_1_1InterpolatedDerivatives.html" title="Derivative class for stellar quantities which are interpolated age, mass and [Fe/H]. " alt="" coords="1806,568,2032,777"/>
-<area shape="rect" id="node14" href="$classStellarEvolution_1_1RemoveLogDeriv.html" title="Return dy/dx given dy/dln(x), dln(y)/dx or dln(y)/dln(x). " alt="" coords="2056,600,2257,745"/>
+<area shape="rect" id="node2" href="$classCore_1_1CubicSplineDerivatives.html" title="A class for the derivatives of a cubic spline (=0 for order&gt;2). " alt="" coords="5,286,239,423"/>
+<area shape="rect" id="node3" href="$classCore_1_1ZeroDerivatives.html" title="The derivatives of an identically zero quantity. " alt="" coords="263,303,442,406"/>
+<area shape="rect" id="node4" href="$classCosFunction.html" title="The cosine of a function. " alt="" coords="466,251,602,458"/>
+<area shape="rect" id="node5" href="$classExponentialPlusFunc.html" title="Represents a function of the form offset + scale*exp(rate*x) as well as its derivative. " alt="" coords="627,234,825,475"/>
+<area shape="rect" id="node6" href="$classFuncPlusFunc.html" title="Represents the sum of two functions and the derivative. " alt="" coords="849,243,998,467"/>
+<area shape="rect" id="node7" href="$classFunctionRatio.html" title="The ratio of two functions;. " alt="" coords="1023,243,1168,467"/>
+<area shape="rect" id="node8" href="$classFunctionToPower.html" title="A function raised to some power. " alt="" coords="1192,243,1364,467"/>
+<area shape="rect" id="node9" href="$classLogFunction.html" title="The natural logarithm of a function. " alt="" coords="1388,251,1523,458"/>
+<area shape="rect" id="node10" href="$classPiecewiseFunction.html" title="Several functions stiched together. " alt="" coords="1547,225,1729,484"/>
+<area shape="rect" id="node11" href="$classScaledFunction.html" title="A function scaled by some constant. " alt="" coords="1753,243,1910,467"/>
+<area shape="rect" id="node12" href="$classStellarEvolution_1_1LogDerivatives.html" title="Calculate dy/dx given dy/dx, dy/dln(x), dln(y)/dx or dln(y)/dln(x). " alt="" coords="1934,234,2185,475"/>
+<area shape="rect" id="node15" href="$classStellarEvolution_1_1PolynomialEvolutionQuantity.html" title="An EvolvingStellar quantity that uses a polynomial instead of interpolating. " alt="" coords="2209,156,2459,553"/>
+<area shape="rect" id="node16" href="$classStellarEvolution_1_1SumDerivatives.html" title="Derivative class for a quantity that is the sum of two other quantities. " alt="" coords="2483,277,2739,432"/>
+<area shape="rect" id="node13" href="$classStellarEvolution_1_1InterpolatedDerivatives.html" title="Derivative class for stellar quantities which are interpolated age, mass and [Fe/H]. " alt="" coords="1826,601,2053,825"/>
+<area shape="rect" id="node14" href="$classStellarEvolution_1_1RemoveLogDeriv.html" title="Return dy/dx given dy/dln(x), dln(y)/dx or dln(y)/dln(x). " alt="" coords="2077,636,2279,791"/>
 </map>

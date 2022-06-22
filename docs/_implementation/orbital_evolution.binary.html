@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="orbital_evolution.c_interface_util module" href="orbital_evolution.c_interface_util.html" />
     <link rel="prev" title="orbital_evolution package" href="orbital_evolution.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -180,260 +175,297 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
 </style>
 <div class="section" id="module-orbital_evolution.binary">
 <span id="orbital-evolution-binary-module"></span><h1>orbital_evolution.binary module<a class="headerlink" href="#module-orbital_evolution.binary" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="class-inheritance-diagram">
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
-<div class="graphviz"><img src="../_images/inheritance-554add5c21b718a882e15713d4c1456ac616b9a5.png" alt="Inheritance diagram of Binary, EvolvingStar, LockedPlanet, Structure, c_bool, c_double, c_int" usemap="#inheritance5a7781309b" class="inheritance graphviz" /></div>
-<map id="inheritance5a7781309b" name="inheritance5a7781309b">
-<area shape="rect" id="node7" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="154,77,473,101"/>
-<area shape="rect" id="node2" href="basic_utils.html#basic_utils.Structure" target="_top" title="An empty class used only to hold user defined attributes." alt="" coords="375,5,516,29"/>
-<area shape="rect" id="node6" href="#orbital_evolution.binary.Binary" target="_top" title="A class for binaries POET can evolve." alt="" coords="926,5,1125,29"/>
-<area shape="rect" id="node8" href="orbital_evolution.planet_interface.html#orbital_evolution.planet_interface.LockedPlanet" target="_top" title="A class for tidally locked and thus non&#45;dissipative planets." alt="" coords="5,149,307,173"/>
-<area shape="rect" id="node9" href="orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar" target="_top" title="A class for stars following interpolated stellar evolution tracks." alt="" coords="331,149,613,173"/>
+<div class="graphviz"><img src="../_images/inheritance-079ee9e14851d147d1c78e8ff4bd1790ce41229e.png" alt="Inheritance diagram of Binary, EvolvingStar, LockedPlanet, SimpleNamespace, c_bool, c_double, c_int" usemap="#inheritance48bbe27a8d" class="inheritance graphviz" /></div>
+<map id="inheritance48bbe27a8d" name="inheritance48bbe27a8d">
+<area shape="rect" id="node6" href="orbital_evolution.dissipating_body.html#orbital_evolution.dissipating_body.DissipatingBody" target="_top" title="A base class for any body in a POET system." alt="" coords="168,79,523,104"/>
+<area shape="rect" id="node5" href="#orbital_evolution.binary.Binary" target="_top" title="A class for binaries POET can evolve." alt="" coords="817,5,1039,31"/>
+<area shape="rect" id="node7" href="orbital_evolution.planet_interface.html#orbital_evolution.planet_interface.LockedPlanet" target="_top" title="A class for tidally locked and thus non&#45;dissipative planets." alt="" coords="5,152,339,177"/>
+<area shape="rect" id="node8" href="orbital_evolution.star_interface.html#orbital_evolution.star_interface.EvolvingStar" target="_top" title="A class for stars following interpolated stellar evolution tracks." alt="" coords="363,152,675,177"/>
 </map><p>Define a class for binaries which can be evolved.</p>
 <dl class="class">
 <dt id="orbital_evolution.binary.Binary">
-<em class="property">class </em><code class="sig-prename descclassname">orbital_evolution.binary.</code><code class="sig-name descname">Binary</code><span class="sig-paren">(</span><em class="sig-param">primary</em>, <em class="sig-param">secondary</em>, <em class="sig-param">*</em>, <em class="sig-param">disk_lock_frequency</em>, <em class="sig-param">disk_dissipation_age</em>, <em class="sig-param">initial_semimajor=None</em>, <em class="sig-param">initial_orbital_period=None</em>, <em class="sig-param">initial_eccentricity=0.0</em>, <em class="sig-param">initial_inclination=0.0</em>, <em class="sig-param">secondary_formation_age=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="descclassname">orbital_evolution.binary.</code><code class="descname">Binary</code><span class="sig-paren">(</span><em>primary</em>, <em>secondary</em>, <em>*</em>, <em>disk_lock_frequency</em>, <em>disk_dissipation_age</em>, <em>initial_semimajor=None</em>, <em>initial_orbital_period=None</em>, <em>initial_eccentricity=0.0</em>, <em>initial_inclination=0.0</em>, <em>secondary_formation_age=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <div class="graphviz"><img src="../_images/inheritance-2a16a27f9b5ad7cdb18fbefc09c45cc0646a4b28.png" alt="Inheritance diagram of orbital_evolution.binary.Binary" usemap="#inheritance6ce7ade907" class="inheritance graphviz" /></div>
 <map id="inheritance6ce7ade907" name="inheritance6ce7ade907">
-<area shape="rect" id="node1" href="#orbital_evolution.binary.Binary" target="_top" title="A class for binaries POET can evolve." alt="" coords="5,5,204,29"/>
+<area shape="rect" id="node1" href="#orbital_evolution.binary.Binary" target="_top" title="A class for binaries POET can evolve." alt="" coords="5,5,227,31"/>
 </map><p>A class for binaries POET can evolve.</p>
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">primary</em>, <em class="sig-param">secondary</em>, <em class="sig-param">*</em>, <em class="sig-param">disk_lock_frequency</em>, <em class="sig-param">disk_dissipation_age</em>, <em class="sig-param">initial_semimajor=None</em>, <em class="sig-param">initial_orbital_period=None</em>, <em class="sig-param">initial_eccentricity=0.0</em>, <em class="sig-param">initial_inclination=0.0</em>, <em class="sig-param">secondary_formation_age=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>primary</em>, <em>secondary</em>, <em>*</em>, <em>disk_lock_frequency</em>, <em>disk_dissipation_age</em>, <em>initial_semimajor=None</em>, <em>initial_orbital_period=None</em>, <em>initial_eccentricity=0.0</em>, <em>initial_inclination=0.0</em>, <em>secondary_formation_age=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a binary system out of two bodies.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>primary</strong> (<em>-</em>) – The first body in the system. Assumed to always be there, so
-for a star-planet system this should be the star.</p></li>
-<li><p><strong>secondary</strong> (<em>-</em>) – The second body in the system, initially may not be there and
-later may be engulfed by the first body.</p></li>
-<li><p><strong>disk_lock_frequency</strong> (<em>-</em>) – Frequency of the surface spin of the primary when disk is
-present in rad/day.</p></li>
-<li><p><strong>disk_dissipation_age</strong> (<em>-</em>) – Age when disk dissipates in Gyrs.</p></li>
-<li><p><strong>initial_semimajor</strong> (<em>-</em>) – The semimajor axis of the orbit at which the secondary forms
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>primary</strong> (<em>-</em>) – The first body in the system. Assumed to always be there, so
+for a star-planet system this should be the star.</li>
+<li><strong>secondary</strong> (<em>-</em>) – The second body in the system, initially may not be there and
+later may be engulfed by the first body.</li>
+<li><strong>disk_lock_frequency</strong> (<em>-</em>) – Frequency of the surface spin of the primary when disk is
+present in rad/day.</li>
+<li><strong>disk_dissipation_age</strong> (<em>-</em>) – Age when disk dissipates in Gyrs.</li>
+<li><strong>initial_semimajor</strong> (<em>-</em>) – The semimajor axis of the orbit at which the secondary forms
 in solar radii. If omitted, initial_orbital_period must be
-specified.</p></li>
-<li><p><strong>initial_orbital_period</strong> (<em>-</em>) – Alternative to specifying the initial semimajor axis.</p></li>
-<li><p><strong>initial_eccentricity</strong> (<em>-</em>) – The eccentricity of the orbit at which the secondary forms.</p></li>
-<li><p><strong>initial_inclination</strong> (<em>-</em>) – Inclination between surface zone of primary and initial orbit
-in radians.</p></li>
-<li><p><strong>secondary_formation_age</strong> (<em>-</em>) – Age when the secondary forms.</p></li>
+specified.</li>
+<li><strong>initial_orbital_period</strong> (<em>-</em>) – Alternative to specifying the initial semimajor axis.</li>
+<li><strong>initial_eccentricity</strong> (<em>-</em>) – The eccentricity of the orbit at which the secondary forms.</li>
+<li><strong>initial_inclination</strong> (<em>-</em>) – Inclination between surface zone of primary and initial orbit
+in radians.</li>
+<li><strong>secondary_formation_age</strong> (<em>-</em>) – Age when the secondary forms.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Returns: None</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary._create_c_code">
-<code class="sig-name descname">_create_c_code</code><span class="sig-paren">(</span><em class="sig-param">c_code_fname</em>, <em class="sig-param">*</em>, <em class="sig-param">final_age</em>, <em class="sig-param">max_time_step</em>, <em class="sig-param">precision</em>, <em class="sig-param">eccentricity_expansion_fname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary._create_c_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary._create_c_code" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_create_c_code</code><span class="sig-paren">(</span><em>c_code_fname</em>, <em>*</em>, <em>final_age</em>, <em>max_time_step</em>, <em>precision</em>, <em>eccentricity_expansion_fname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary._create_c_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary._create_c_code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a c++ file calculating the currently set-up evolution.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary._get_evolution_quantities">
-<code class="sig-name descname">_get_evolution_quantities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary._get_evolution_quantities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary._get_evolution_quantities" title="Permalink to this definition">¶</a></dt>
+<code class="descname">_get_evolution_quantities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary._get_evolution_quantities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary._get_evolution_quantities" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of quantities in the evolution of the binary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list of the evolution quantities tracked for an evolution of
-the current system.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>]</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>None</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of the evolution quantities tracked for an evolution of
+the current system.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="orbital_evolution.binary.Binary._get_required_age_indices">
+<code class="descname">_get_required_age_indices</code><span class="sig-paren">(</span><em>evolution_ages</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary._get_required_age_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary._get_required_age_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indices within evolution_ages of <cite>self._required_ages</cite>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.configure">
-<code class="sig-name descname">configure</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">age</em>, <em class="sig-param">semimajor</em>, <em class="sig-param">eccentricity</em>, <em class="sig-param">spin_angmom</em>, <em class="sig-param">inclination</em>, <em class="sig-param">periapsis</em>, <em class="sig-param">evolution_mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descname">configure</code><span class="sig-paren">(</span><em>*</em>, <em>age</em>, <em>semimajor</em>, <em>eccentricity</em>, <em>spin_angmom</em>, <em>inclination</em>, <em>periapsis</em>, <em>evolution_mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.configure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the current state (orbit) of a system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>age</strong> (<em>-</em>) – The age to set the system to.</p></li>
-<li><p><strong>semimajor</strong> (<em>-</em>) – The semimajor axis of the orbit in solar radii.</p></li>
-<li><p><strong>eccentricity</strong> (<em>-</em>) – The eccentricity of the orbit.</p></li>
-<li><p><strong>spin_angmom</strong> (<em>-</em>) – The spin angular momenta of the zones of the bodies (body 1
-first, outermost zone to innermost, followed by body 2).</p></li>
-<li><p><strong>inclination</strong> (<em>-</em>) – The inclinations of the zones of the bodies (same order as
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>age</strong> (<em>-</em>) – The age to set the system to.</li>
+<li><strong>semimajor</strong> (<em>-</em>) – The semimajor axis of the orbit in solar radii.</li>
+<li><strong>eccentricity</strong> (<em>-</em>) – The eccentricity of the orbit.</li>
+<li><strong>spin_angmom</strong> (<em>-</em>) – The spin angular momenta of the zones of the bodies (body 1
+first, outermost zone to innermost, followed by body 2).</li>
+<li><strong>inclination</strong> (<em>-</em>) – The inclinations of the zones of the bodies (same order as
 spin_angmom). The surface zone inclination must be omitted
-for single body systems.</p></li>
-<li><p><strong>periapsis</strong> (<em>-</em>) – The arguments of periapsis of the zones of the bodies (same
+for single body systems.</li>
+<li><strong>periapsis</strong> (<em>-</em>) – The arguments of periapsis of the zones of the bodies (same
 order as spin_angmom, but not including the surface zone of
-the first body).</p></li>
-<li><p><strong>evolution_mode</strong> (<em>-</em>) – The evolution mode to assume. Must be one of the constants
-defined.</p></li>
+the first body).</li>
+<li><strong>evolution_mode</strong> (<em>-</em>) – The evolution mode to assume. Must be one of the constants
+defined.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Returns: None</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.delete" title="Permalink to this definition">¶</a></dt>
+<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Destroy the binary created at construction.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="orbital_evolution.binary.Binary.evolution_modes">
-<code class="sig-name descname">evolution_modes</code><em class="property"> = ['LOCKED_SURFACE_SPIN', 'BINARY', 'SINGLE', 'TABULATION']</em><a class="headerlink" href="#orbital_evolution.binary.Binary.evolution_modes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">evolution_modes</code><em class="property"> = ['LOCKED_SURFACE_SPIN', 'BINARY', 'SINGLE', 'TABULATION']</em><a class="headerlink" href="#orbital_evolution.binary.Binary.evolution_modes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="orbital_evolution.binary.Binary.evolution_quantity_c_type">
-<em class="property">static </em><code class="sig-name descname">evolution_quantity_c_type</code><span class="sig-paren">(</span><em class="sig-param">quantity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.evolution_quantity_c_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.evolution_quantity_c_type" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">evolution_quantity_c_type</code><span class="sig-paren">(</span><em>quantity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.evolution_quantity_c_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.evolution_quantity_c_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ctypes type of the given evolution quantity.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.evolve">
-<code class="sig-name descname">evolve</code><span class="sig-paren">(</span><em class="sig-param">final_age</em>, <em class="sig-param">max_time_step</em>, <em class="sig-param">precision</em>, <em class="sig-param">required_ages</em>, <em class="sig-param">*</em>, <em class="sig-param">print_progress=False</em>, <em class="sig-param">create_c_code=''</em>, <em class="sig-param">eccentricity_expansion_fname=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.evolve" title="Permalink to this definition">¶</a></dt>
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>final_age</em>, <em>max_time_step</em>, <em>precision</em>, <em>required_ages</em>, <em>*</em>, <em>print_progress=False</em>, <em>create_c_code=''</em>, <em>eccentricity_expansion_fname=None</em>, <em>timeout=0</em>, <em>max_time_steps=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.evolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evolve the system forward from its current state.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>final_age</strong> (<em>-</em>) – The age at which to stop the evolution in Gyrs. The starting
-age must be already set for the system through configure.</p></li>
-<li><p><strong>max_time_step</strong> (<em>-</em>) – The maximum size of the time step allowed in Gyrs.</p></li>
-<li><p><strong>precision</strong> (<em>-</em>) – The precision to require of the solution.</p></li>
-<li><p><strong>required_ages</strong> (<em>-</em>) – Ages at which the evolution must stop precisely.</p></li>
-<li><p><strong>print_progress</strong> (<em>-</em>) – Should output be created to show the progress in time steps.</p></li>
-<li><p><strong>create_c_code</strong> (<em>-</em>) – The name of a file to create which when compiled
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>final_age</strong> (<em>-</em>) – The age at which to stop the evolution in Gyrs. The starting
+age must be already set for the system through configure.</li>
+<li><strong>max_time_step</strong> (<em>-</em>) – The maximum size of the time step allowed in Gyrs.</li>
+<li><strong>precision</strong> (<em>-</em>) – The precision to require of the solution.</li>
+<li><strong>required_ages</strong> (<em>-</em>) – Ages at which the evolution must stop precisely.</li>
+<li><strong>print_progress</strong> (<em>-</em>) – Should output be created to show the progress in time steps.</li>
+<li><strong>create_c_code</strong> (<em>-</em>) – The name of a file to create which when compiled
 will calculate the exact evolution currently set-up for this
-binary. If empty, no such file is created.</p></li>
-<li><p><strong>eccentricity_expansion_fname</strong> (<em>-</em>) – The filename from which
+binary. If empty, no such file is created.</li>
+<li><strong>eccentricity_expansion_fname</strong> (<em>-</em>) – The filename from which
 eccentricity expansion coefficients were read. Only used if
-create_c_code is not empty.</p></li>
+create_c_code is not empty.</li>
+<li><strong>timeout</strong> (<em>-</em>) – The maximum number of seconds the evolution is allowed to run.
+Non-positive value results in no timeout. Partially cumputed
+evolutions that time out can still be querried.</li>
+<li><strong>max_time_steps</strong> (<em>-</em>) – The maximum number of time steps the evolution is allowed to
+take (also includes the current set of discarded steps).</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Returnns: None</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.final_state">
-<code class="sig-name descname">final_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.final_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.final_state" title="Permalink to this definition">¶</a></dt>
+<code class="descname">final_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.final_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.final_state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the final evolution state of a system (all quantities).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.get_evolution">
-<code class="sig-name descname">get_evolution</code><span class="sig-paren">(</span><em class="sig-param">quantities=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.get_evolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.get_evolution" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_evolution</code><span class="sig-paren">(</span><em>quantities=None</em>, <em>required_ages_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.get_evolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.get_evolution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the last calculated evolution.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>quantities</strong> (<em>-</em>) – An iterable of quantities to read the evolution of.
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>quantities</strong> – An iterable of quantities to read the evolution of.
 The evolution of omitted quantities can still be obtained later
 by subsequent calls to this method. The allowed entries are in
 the star_star_evolution_quantities for binary star systems or in
 star_planet_evolution_quantities for a star-planet system. If
 None, it defaults to the full list of quantities for the given
-system.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A structure with mebers named the same way as the input list of
+system.</li>
+<li><strong>required_ages_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – If True, the evolution returned
+contains only the values of the quantities at the
+<cite>required_ages</cite> specified when evolve() was called.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A structure with mebers named the same way as the input list of
 quantities containing the values of the corresponding quantity
 at each evolution step. The order is always in increasing age.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Sturture</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Sturture</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.orbital_angular_momentum">
-<code class="sig-name descname">orbital_angular_momentum</code><span class="sig-paren">(</span><em class="sig-param">semimajor</em>, <em class="sig-param">eccentricity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.orbital_angular_momentum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.orbital_angular_momentum" title="Permalink to this definition">¶</a></dt>
+<code class="descname">orbital_angular_momentum</code><span class="sig-paren">(</span><em>semimajor</em>, <em>eccentricity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.orbital_angular_momentum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.orbital_angular_momentum" title="Permalink to this definition">¶</a></dt>
 <dd><p>The orbital agular momentum for the given semimajor/eccentricity.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>semimajor</strong> (<em>-</em>) – The semimajor axis of the system.</p></li>
-<li><p><strong>eccentricity</strong> (<em>-</em>) – The orbital eccentricity.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>semimajor</strong> (<em>-</em>) – The semimajor axis of the system.</li>
+<li><strong>eccentricity</strong> (<em>-</em>) – The orbital eccentricity.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The orbital angular momentum if the two bodies are in an orbit
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The orbital angular momentum if the two bodies are in an orbit
 with the given semimajor axis and eccentricity in solar units.</p>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.orbital_frequency">
-<code class="sig-name descname">orbital_frequency</code><span class="sig-paren">(</span><em class="sig-param">semimajor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.orbital_frequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.orbital_frequency" title="Permalink to this definition">¶</a></dt>
+<code class="descname">orbital_frequency</code><span class="sig-paren">(</span><em>semimajor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.orbital_frequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.orbital_frequency" title="Permalink to this definition">¶</a></dt>
 <dd><p>The orbital frequency of the system for the given semimajor axis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>semimajor</strong> (<em>-</em>) – The semimajor axis at which the system’s orbital period is
-required in solar radii.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The orbital period in days if the two bodies of this system are
-in an orbit with the given semimajor axis.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>semimajor</strong> (<em>-</em>) – The semimajor axis at which the system’s orbital period is
+required in solar radii.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The orbital period in days if the two bodies of this system are
+in an orbit with the given semimajor axis.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.orbital_period">
-<code class="sig-name descname">orbital_period</code><span class="sig-paren">(</span><em class="sig-param">semimajor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.orbital_period"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.orbital_period" title="Permalink to this definition">¶</a></dt>
+<code class="descname">orbital_period</code><span class="sig-paren">(</span><em>semimajor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.orbital_period"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.orbital_period" title="Permalink to this definition">¶</a></dt>
 <dd><p>The orbital period of the system for the given semimajor axis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>semimajor</strong> (<em>-</em>) – The semimajor axis at which the system’s orbital period is
-required in solar radii.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The orbital period in days if the two bodies of this system are
-in an orbit with the given semimajor axis.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>semimajor</strong> (<em>-</em>) – The semimajor axis at which the system’s orbital period is
+required in solar radii.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The orbital period in days if the two bodies of this system are
+in an orbit with the given semimajor axis.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="orbital_evolution.binary.Binary.semimajor">
-<code class="sig-name descname">semimajor</code><span class="sig-paren">(</span><em class="sig-param">orbital_period</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.semimajor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.semimajor" title="Permalink to this definition">¶</a></dt>
+<code class="descname">semimajor</code><span class="sig-paren">(</span><em>orbital_period</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/orbital_evolution/binary.html#Binary.semimajor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#orbital_evolution.binary.Binary.semimajor" title="Permalink to this definition">¶</a></dt>
 <dd><p>The semimajor axis of the system for the given orbital period.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>orbital_period</strong> (<em>-</em>) – The orbital period at which the system’s orbital period is
-required in days.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The semimajor axis in solar radii if the two bodies of this
-system are in an orbit with the given period.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>orbital_period</strong> (<em>-</em>) – The orbital period at which the system’s orbital period is
+required in days.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The semimajor axis in solar radii if the two bodies of this
+system are in an orbit with the given period.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -452,7 +484,7 @@ system are in an orbit with the given period.</p>
         <a href="orbital_evolution.c_interface_util.html" class="btn btn-neutral float-right" title="orbital_evolution.c_interface_util module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="orbital_evolution.html" class="btn btn-neutral float-left" title="orbital_evolution package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="orbital_evolution.html" class="btn btn-neutral" title="orbital_evolution package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -478,16 +510,26 @@ system are in an orbit with the given period.</p>
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

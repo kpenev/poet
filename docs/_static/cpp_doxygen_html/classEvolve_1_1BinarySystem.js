@@ -22,6 +22,7 @@ var classEvolve_1_1BinarySystem =
     [ "eccentricity_evolution", "classEvolve_1_1BinarySystem.html#a9455f2696c404b9ade5898db0782f8ed", null ],
     [ "eccentricity_evolution", "classEvolve_1_1BinarySystem.html#a447fe02016fe84b40711da5b6b1f070b", null ],
     [ "eccentricity_evolution_expansion_error", "classEvolve_1_1BinarySystem.html#a94b2bd45faf02d33c306e08d8849fc8b", null ],
+    [ "eccentricity_evolution_rate", "classEvolve_1_1BinarySystem.html#aa6439b7ab6e83c1bc0f5bc0b55c1082a", null ],
     [ "eccentricity_jacobian", "classEvolve_1_1BinarySystem.html#aae714d1beddcdaa71ab57488216be14e", null ],
     [ "eccentricity_order", "classEvolve_1_1BinarySystem.html#ad8a0279d1ac027b250e14bdb9edc90fe", null ],
     [ "evolution_mode", "classEvolve_1_1BinarySystem.html#aaed8e54e2023249bdc21fcba99245529", null ],
@@ -58,6 +59,7 @@ var classEvolve_1_1BinarySystem =
     [ "semimajor_evolution", "classEvolve_1_1BinarySystem.html#ae69ac49a6f97198c9afdec3cfe0ca67a", null ],
     [ "semimajor_evolution", "classEvolve_1_1BinarySystem.html#af7d2fd5a905b2427b5b0392ad0cd84e4", null ],
     [ "semimajor_evolution_expansion_error", "classEvolve_1_1BinarySystem.html#ac6a094fcbe0d5056f8c796c71f03bcf6", null ],
+    [ "semimajor_evolution_rate", "classEvolve_1_1BinarySystem.html#a8cf141ffc491458059dbf478840aef6a", null ],
     [ "semimajor_jacobian", "classEvolve_1_1BinarySystem.html#aaf7e44d9317d5c05970ebc5d186f6310", null ],
     [ "single_body_differential_equations", "classEvolve_1_1BinarySystem.html#a04359b439ad0700d4f917c7aea428157", null ],
     [ "single_body_jacobian", "classEvolve_1_1BinarySystem.html#a6c96b84be6757495cce333277e77c3ea", null ],
@@ -76,6 +78,8 @@ var classEvolve_1_1BinarySystem =
     [ "__body2", "classEvolve_1_1BinarySystem.html#a38fc97d25db36bca25e3c1afc3d233f2", null ],
     [ "__eccentricity", "classEvolve_1_1BinarySystem.html#ab539406c24144be768a3b62acb3feec1", null ],
     [ "__eccentricity_evolution", "classEvolve_1_1BinarySystem.html#aafabff6fe35ff9f0e632e2bce92c56e1", null ],
+    [ "__eccentricity_rate", "classEvolve_1_1BinarySystem.html#a78ae74cc61b18a4b571c5b8b0ea64221", null ],
+    [ "__eccentricity_rate_evolution", "classEvolve_1_1BinarySystem.html#a49388c59c552c92d2395bc14d2a26c10", null ],
     [ "__evolution_mode", "classEvolve_1_1BinarySystem.html#a203b8edde87299e632507389615b95b5", null ],
     [ "__locked_zones", "classEvolve_1_1BinarySystem.html#adc8352f9848a28b8dde40431d9d33023", null ],
     [ "__name", "classEvolve_1_1BinarySystem.html#a0ba6ff276e25773082dfd6b091669c14", null ],
@@ -88,5 +92,7 @@ var classEvolve_1_1BinarySystem =
     [ "__orbital_angmom", "classEvolve_1_1BinarySystem.html#a8e9e913ad4564c47a388499af4e1d026", null ],
     [ "__orbital_energy", "classEvolve_1_1BinarySystem.html#a032c3a35a81ede38778cc318c8d70336", null ],
     [ "__semimajor", "classEvolve_1_1BinarySystem.html#af2ba9719b95ae35c279e97375c91e4fe", null ],
-    [ "__semimajor_evolution", "classEvolve_1_1BinarySystem.html#a5e132f132f1524430bbd550917020084", null ]
+    [ "__semimajor_evolution", "classEvolve_1_1BinarySystem.html#a5e132f132f1524430bbd550917020084", null ],
+    [ "__semimajor_rate", "classEvolve_1_1BinarySystem.html#a7afdc91faa27cb33f8edf3f41680fb77", null ],
+    [ "__semimajor_rate_evolution", "classEvolve_1_1BinarySystem.html#ac0cb58c77b2015f3db72152acc98c277", null ]
 ];

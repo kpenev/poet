@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="orbital_evolution package" href="orbital_evolution.html" />
     <link rel="prev" title="basic_utils module" href="basic_utils.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -178,23 +173,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="module-evolution_cmdline_args">
@@ -203,52 +193,58 @@
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
 <div class="graphviz"><img src="../_images/inheritance-63d1c47d51493f6e422cf6d30ae624c0ae914ad6.png" alt="Inheritance diagram of StellarEvolutionManager" usemap="#inheritance8b571c8692" class="inheritance graphviz" /></div>
 <map id="inheritance8b571c8692" name="inheritance8b571c8692">
-<area shape="rect" id="node1" href="stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager" target="_top" title="Class for managing a collection of stellar evolution inteprolations." alt="" coords="5,5,328,29"/>
+<area shape="rect" id="node1" href="stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager" target="_top" title="Class for managing a collection of stellar evolution inteprolations." alt="" coords="5,5,360,31"/>
 </map><p>Provide functions for adding parameters defining the evolution model.</p>
 <dl class="function">
 <dt id="evolution_cmdline_args.add_and_parse_evolution_args">
-<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_and_parse_evolution_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em>, <em class="sig-param">disk_args=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_and_parse_evolution_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_and_parse_evolution_args" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">evolution_cmdline_args.</code><code class="descname">add_and_parse_evolution_args</code><span class="sig-paren">(</span><em>parser</em>, <em>disk_args=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_and_parse_evolution_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_and_parse_evolution_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add arguments for the binary evolution, some setup &amp; return interpolator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>parser</strong> (<em>-</em>) – An instance of argparse.ArgumentParser to fill with
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parser</strong> (<em>-</em>) – An instance of argparse.ArgumentParser to fill with
 arguments defining the evolution. Must alraedy contain all other
-arguments.</p></li>
-<li><p><strong>disk_args</strong> (<em>-</em>) – Should command line arguments be added for configuring
-the initial circumstellar disk holding the primary’s spin locked?</p></li>
+arguments.</li>
+<li><strong>disk_args</strong> (<em>-</em>) – Should command line arguments be added for configuring
+the initial circumstellar disk holding the primary’s spin locked?</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>An object containing the parsed command line arguments as</dt>
+<dd><p class="first last">members.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>An object containing the parsed command line arguments as</dt><dd><p>members.</p>
-</dd>
-<dt>:class:ManagedInterpolator:</dt><dd><p>A stellar evolution interpolator instance.</p>
+<dt>:class:ManagedInterpolator:</dt>
+<dd><p class="first last">A stellar evolution interpolator instance.</p>
 </dd>
 </dl>
 </p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>same as parser.parse_args()</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">same as parser.parse_args()</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="evolution_cmdline_args.add_disk_args">
-<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_disk_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_disk_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_disk_args" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">evolution_cmdline_args.</code><code class="descname">add_disk_args</code><span class="sig-paren">(</span><em>parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_disk_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_disk_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add command line options for the initial disk spin locking.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="evolution_cmdline_args.add_orbital_evolution_args">
-<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_orbital_evolution_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_orbital_evolution_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_orbital_evolution_args" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">evolution_cmdline_args.</code><code class="descname">add_orbital_evolution_args</code><span class="sig-paren">(</span><em>parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_orbital_evolution_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_orbital_evolution_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add to parser all arguments controlling the orbital evolution.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="evolution_cmdline_args.add_spindown_args">
-<code class="sig-prename descclassname">evolution_cmdline_args.</code><code class="sig-name descname">add_spindown_args</code><span class="sig-paren">(</span><em class="sig-param">parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_spindown_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_spindown_args" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">evolution_cmdline_args.</code><code class="descname">add_spindown_args</code><span class="sig-paren">(</span><em>parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evolution_cmdline_args.html#add_spindown_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evolution_cmdline_args.add_spindown_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add command line options for spindown model parameters to parser.</p>
 </dd></dl>
 
@@ -266,7 +262,7 @@ the initial circumstellar disk holding the primary’s spin locked?</p></li>
         <a href="orbital_evolution.html" class="btn btn-neutral float-right" title="orbital_evolution package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_utils.html" class="btn btn-neutral float-left" title="basic_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_utils.html" class="btn btn-neutral" title="basic_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -292,16 +288,26 @@ the initial circumstellar disk holding the primary’s spin locked?</p></li>
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

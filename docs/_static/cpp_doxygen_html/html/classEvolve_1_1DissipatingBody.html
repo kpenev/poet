@@ -214,9 +214,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1ac0066f43d59ee60df1cb92a5b4dd44"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingBody.html#a1ac0066f43d59ee60df1cb92a5b4dd44">next_stop_age</a> () const</td></tr>
 <tr class="memdesc:a1ac0066f43d59ee60df1cb92a5b4dd44"><td class="mdescLeft">&#160;</td><td class="mdescRight">The next age when the evolution needs to be stopped for a change in one of the bodies.  <a href="#a1ac0066f43d59ee60df1cb92a5b4dd44">More...</a><br /></td></tr>
 <tr class="separator:a1ac0066f43d59ee60df1cb92a5b4dd44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7745e91311897dade4fc255ac21f6cf"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingBody.html#af7745e91311897dade4fc255ac21f6cf">change_e_order</a> (unsigned new_e_order, <a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system, bool primary)</td></tr>
-<tr class="memdesc:af7745e91311897dade4fc255ac21f6cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the eccentricity expansion order for all dissipative zones.  <a href="#af7745e91311897dade4fc255ac21f6cf">More...</a><br /></td></tr>
-<tr class="separator:af7745e91311897dade4fc255ac21f6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9682c072547418eb91f0e408af46db2f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingBody.html#a9682c072547418eb91f0e408af46db2f">change_expansion_order</a> (unsigned new_expansion_order, <a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system, bool primary)</td></tr>
+<tr class="memdesc:a9682c072547418eb91f0e408af46db2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the eccentricity expansion order for all dissipative zones.  <a href="#a9682c072547418eb91f0e408af46db2f">More...</a><br /></td></tr>
+<tr class="separator:a9682c072547418eb91f0e408af46db2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1d98b47a862059a06d953aed1d03245"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingBody.html#af1d98b47a862059a06d953aed1d03245">~DissipatingBody</a> ()</td></tr>
 <tr class="memdesc:af1d98b47a862059a06d953aed1d03245"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual destructor.  <a href="#af1d98b47a862059a06d953aed1d03245">More...</a><br /></td></tr>
 <tr class="separator:af1d98b47a862059a06d953aed1d03245"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -278,7 +278,7 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:a7c17a5dc576aeb0db04fde4fdf6429f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tidal torques and their derivatives on each zone for spin frequency approaching potential lock from below.  <a href="#a7c17a5dc576aeb0db04fde4fdf6429f8">More...</a><br /></td></tr>
 <tr class="separator:a7c17a5dc576aeb0db04fde4fdf6429f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a65469c0994adddcc62066d3e961aa8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Dissipation::QuantityEntry &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingBody.html#a6a65469c0994adddcc62066d3e961aa8">__orbit_entries</a></td></tr>
-<tr class="memdesc:a6a65469c0994adddcc62066d3e961aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The quantities w.r.t. which derivatives of the orbit energy gain and torque are pre-calculated or error, if the value is __expansion_error_id.  <a href="#a6a65469c0994adddcc62066d3e961aa8">More...</a><br /></td></tr>
+<tr class="memdesc:a6a65469c0994adddcc62066d3e961aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The quantities w.r.t. which derivatives of the orbit energy gain and torque are pre-calculated.  <a href="#a6a65469c0994adddcc62066d3e961aa8">More...</a><br /></td></tr>
 <tr class="separator:a6a65469c0994adddcc62066d3e961aa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80ae393a057cf8a4de578378225ce36c"><td class="memItemLeft" align="right" valign="top">std::valarray&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingBody.html#a80ae393a057cf8a4de578378225ce36c">__orbit_power</a></td></tr>
 <tr class="memdesc:a80ae393a057cf8a4de578378225ce36c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total tidal power (and derivatives and error) gained by the orbit from this body.  <a href="#a80ae393a057cf8a4de578378225ce36c">More...</a><br /></td></tr>
@@ -325,7 +325,7 @@ Private Attributes</h2></td></tr>
 
 <p>Some initializations for new objects. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00422">422</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00415">415</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -354,7 +354,7 @@ Private Attributes</h2></td></tr>
 
 <p>Virtual destructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00601">601</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00600">600</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -386,7 +386,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1SaturatingSkumanichWindBody.html#a542a5e7360159da30585ad3ade726628">Star::SaturatingSkumanichWindBody</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01028">1028</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01010">1010</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -552,7 +552,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00187">187</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00180">180</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -608,7 +608,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00306">306</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00299">299</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -664,7 +664,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00240">240</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00233">233</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -720,7 +720,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00372">372</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00365">365</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -776,12 +776,12 @@ Private Attributes</h2></td></tr>
 
 <p>Calculates the correction the orbital energy gain and torque due to switching locked zones from fully below to fully above. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00164">164</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00157">157</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
-<a id="af7745e91311897dade4fc255ac21f6cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7745e91311897dade4fc255ac21f6cf">&#9670;&nbsp;</a></span>change_e_order()</h2>
+<a id="a9682c072547418eb91f0e408af46db2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9682c072547418eb91f0e408af46db2f">&#9670;&nbsp;</a></span>change_expansion_order()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -790,10 +790,10 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Evolve::DissipatingBody::change_e_order </td>
+          <td class="memname">void Evolve::DissipatingBody::change_expansion_order </td>
           <td>(</td>
           <td class="paramtype">unsigned&#160;</td>
-          <td class="paramname"><em>new_e_order</em>, </td>
+          <td class="paramname"><em>new_expansion_order</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -823,14 +823,14 @@ Private Attributes</h2></td></tr>
 <p>Change the eccentricity expansion order for all dissipative zones. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">new_e_order</td><td>The new eccentricity expansion order. </td></tr>
+    <tr><td class="paramname">new_expansion_order</td><td>The new eccentricity expansion order. </td></tr>
     <tr><td class="paramname">system</td><td>The system being evolved. </td></tr>
     <tr><td class="paramname">primary</td><td>Is the body the primary in the system. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01059">1059</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01041">1041</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -990,7 +990,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1ExponentialDecayDiffRotBody.html#a28e6a412fc5df87eaf3e4e3e53eba081">Star::ExponentialDecayDiffRotBody</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00603">603</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00587">587</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1051,7 +1051,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00438">438</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00430">430</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1087,7 +1087,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00523">523</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00511">511</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1132,7 +1132,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Locks the given zone's spin to the orbit with the given frequency ratio. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00314">314</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00313">313</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1161,7 +1161,7 @@ Private Attributes</h2></td></tr>
 
 <p>The mass of the body (constant with age). </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00534">534</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00533">533</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1192,7 +1192,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1InterpolatedEvolutionStar.html#ab304a55a503f5899d896fc6f29d38b9f">Star::InterpolatedEvolutionStar</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00586">586</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00585">585</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1245,7 +1245,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00742">742</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00729">729</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1328,7 +1328,7 @@ Private Attributes</h2></td></tr>
 
 <p>The number of zones currently in a spin-orbit lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00339">339</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00338">338</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1393,7 +1393,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00527">527</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00526">526</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1426,7 +1426,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1InterpolatedEvolutionStar.html#a791a79a7f6297f601084d930a369a5db">Star::InterpolatedEvolutionStar</a>, and <a class="el" href="classPlanet_1_1Planet.html#a28edc668a1b4df00ca4a464d4e38272c">Planet::Planet</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00582">582</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00581">581</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1457,7 +1457,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1SaturatingSkumanichWindBody.html#a29b04eea3a800f2134749fc2eb444bee">Star::SaturatingSkumanichWindBody</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01040">1040</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01022">1022</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1495,7 +1495,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1SaturatingSkumanichWindBody.html#a3bd5ceb03e345e0b7e645836aabd2121">Star::SaturatingSkumanichWindBody</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01034">1034</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01016">1016</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1523,7 +1523,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00827">827</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00814">814</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1553,7 +1553,7 @@ Private Attributes</h2></td></tr>
 
 <p>Sets the frequency at which the surface is locked (if any). </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00549">549</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00548">548</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1582,7 +1582,7 @@ Private Attributes</h2></td></tr>
 
 <p>The surface spin freuqency of the body. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00538">538</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00537">537</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1613,7 +1613,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1SaturatingSkumanichWindBody.html#abf0b75193ecaeaf9f42112cd46ee0588">Star::SaturatingSkumanichWindBody</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00577">577</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00576">576</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1663,7 +1663,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1SaturatingSkumanichWindBody.html#a5e4329ab64a887e9251fd569692e947e">Star::SaturatingSkumanichWindBody</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01046">1046</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l01028">1028</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1693,7 +1693,7 @@ Private Attributes</h2></td></tr>
 <p>Angular velocity of the surface zone when locked (assumed constant). </p>
 <p>For example this could be the frequency of the stellar convective zone when locked to the disk. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00545">545</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00544">544</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1740,7 +1740,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00849">849</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00836">836</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1787,7 +1787,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00906">906</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00893">893</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1840,7 +1840,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00985">985</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00972">972</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1886,7 +1886,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00797">797</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8cpp_source.html#l00784">784</a> of file <a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a>.</p>
 
 </div>
 </div>
@@ -1941,7 +1941,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00376">376</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00375">375</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -1988,7 +1988,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00324">324</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00323">323</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2087,7 +2087,7 @@ Private Attributes</h2></td></tr>
 
 <p>The fractional contribution of the above the lock rates for locked zones and their derivatives. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00115">115</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00114">114</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2166,7 +2166,7 @@ Private Attributes</h2></td></tr>
 
 <p>The number of zones currently in a spin-orbit lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00111">111</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00110">110</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2190,9 +2190,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The quantities w.r.t. which derivatives of the orbit energy gain and torque are pre-calculated or error, if the value is __expansion_error_id. </p>
+<p>The quantities w.r.t. which derivatives of the orbit energy gain and torque are pre-calculated. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00080">80</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00079">79</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2219,7 +2219,7 @@ Private Attributes</h2></td></tr>
 <p>Total tidal power (and derivatives and error) gained by the orbit from this body. </p>
 <p>The derivatives are only w.r.t. the non-zone specific quantities listed in __orbit_entries. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00088">88</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00087">87</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2245,7 +2245,7 @@ Private Attributes</h2></td></tr>
 
 <p>Corrections to __orbit_power_below (undifferentiated) if single zones switch to above. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00088">88</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00087">87</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2273,7 +2273,7 @@ Private Attributes</h2></td></tr>
 <p>In the coordinate system of the topmost zone.</p>
 <p>The derivatives are only w.r.t. the non-zone specific quantities listed in __orbit_entries. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00101">101</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00100">100</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2300,7 +2300,7 @@ Private Attributes</h2></td></tr>
 <p>Corrections to __orbit_torque_below (undifferentiated) if single zones switch to above. </p>
 <p>It has already been transformed to the coordinate system of the surface zone. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00101">101</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingBody_8h_source.html#l00100">100</a> of file <a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a>.</p>
 
 </div>
 </div>
@@ -2437,8 +2437,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a></li>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingBody_8h_source.html">DissipatingBody.h</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingBody_8cpp_source.html">DissipatingBody.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -2446,7 +2446,7 @@ Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceEvolve.html">Evolve</a></li><li class="navelem"><a class="el" href="classEvolve_1_1DissipatingBody.html">DissipatingBody</a></li>
-    <li class="footer">Generated on Sun Dec 1 2019 01:10:25 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Wed May 18 2022 17:13:10 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

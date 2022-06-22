@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -492,14 +487,6 @@
             <span class="n">flags</span> <span class="o">|=</span> <span class="n">_FUNCFLAG_USE_ERRNO</span>
         <span class="k">if</span> <span class="n">use_last_error</span><span class="p">:</span>
             <span class="n">flags</span> <span class="o">|=</span> <span class="n">_FUNCFLAG_USE_LASTERROR</span>
-        <span class="k">if</span> <span class="n">_sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;aix&quot;</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;When the name contains &quot;.a(&quot; and ends with &quot;)&quot;,</span>
-<span class="sd">               e.g., &quot;libFOO.a(libFOO.so)&quot; - this is taken to be an</span>
-<span class="sd">               archive(member) syntax for dlopen(), and the mode is adjusted.</span>
-<span class="sd">               Otherwise, name is presented to dlopen() as a file argument.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;.a(&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
-                <span class="n">mode</span> <span class="o">|=</span> <span class="p">(</span> <span class="n">_os</span><span class="o">.</span><span class="n">RTLD_MEMBER</span> <span class="o">|</span> <span class="n">_os</span><span class="o">.</span><span class="n">RTLD_NOW</span> <span class="p">)</span>
 
         <span class="k">class</span> <span class="nc">_FuncPtr</span><span class="p">(</span><span class="n">_CFuncPtr</span><span class="p">):</span>
             <span class="n">_flags_</span> <span class="o">=</span> <span class="n">flags</span>
@@ -602,7 +589,10 @@
     <span class="n">windll</span> <span class="o">=</span> <span class="n">LibraryLoader</span><span class="p">(</span><span class="n">WinDLL</span><span class="p">)</span>
     <span class="n">oledll</span> <span class="o">=</span> <span class="n">LibraryLoader</span><span class="p">(</span><span class="n">OleDLL</span><span class="p">)</span>
 
-    <span class="n">GetLastError</span> <span class="o">=</span> <span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetLastError</span>
+    <span class="k">if</span> <span class="n">_os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span><span class="p">:</span>
+        <span class="n">GetLastError</span> <span class="o">=</span> <span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetLastError</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">GetLastError</span> <span class="o">=</span> <span class="n">windll</span><span class="o">.</span><span class="n">coredll</span><span class="o">.</span><span class="n">GetLastError</span>
     <span class="kn">from</span> <span class="nn">_ctypes</span> <span class="k">import</span> <span class="n">get_last_error</span><span class="p">,</span> <span class="n">set_last_error</span>
 
     <span class="k">def</span> <span class="nf">WinError</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">descr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -724,16 +714,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

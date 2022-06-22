@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['tear_5fdown',['tear_down',['../classEvolve_1_1test__DifferentialEquations.html#a4fdb602f9172fe18d763f71678942419',1,'Evolve::test_DifferentialEquations::tear_down()'],['../classEvolve_1_1test__GravitationalPotential.html#aab750743dd44ec2c9e579a17e1612b83',1,'Evolve::test_GravitationalPotential::tear_down()']]],
+  ['tear_5fdown',['tear_down',['../classEvolve_1_1test__DifferentialEquations.html#a4fdb602f9172fe18d763f71678942419',1,'Evolve::test_DifferentialEquations::tear_down()'],['../classEvolve_1_1test__GravitationalPotential.html#aab750743dd44ec2c9e579a17e1612b83',1,'Evolve::test_GravitationalPotential::tear_down()'],['../classEvolve_1_1test__LockMonitoring.html#aeb424b6c26eb0f2f02027e9fd8a53d4f',1,'Evolve::test_LockMonitoring::tear_down()']]],
   ['term',['term',['../classEvolve_1_1SpinOrbitLockInfo.html#a6158776dfb51c187e4eb3a72ba64966d',1,'Evolve::SpinOrbitLockInfo']]],
   ['test_5faligned_5fequations',['test_aligned_equations',['../classEvolve_1_1test__DifferentialEquations.html#a94e5cfa900d3abff21bf25de617c3d2f',1,'Evolve::test_DifferentialEquations']]],
   ['test_5faligned_5forbit',['test_aligned_orbit',['../classEvolve_1_1test__TidalTorquePower.html#a7ecc21d47758076f25e189bf593c9228',1,'Evolve::test_TidalTorquePower']]],
@@ -9,10 +9,13 @@ var searchData=
   ['test_5ferror_5festimate',['test_error_estimate',['../classEvolve_1_1test__DifferentialEquations.html#aa6e09affff0d940671ef6397c3a5b9cb',1,'Evolve::test_DifferentialEquations']]],
   ['test_5fexpansion',['test_expansion',['../classEvolve_1_1test__GravitationalPotential.html#a68eb77af8bcab2f9fe98a80538cd3bca',1,'Evolve::test_GravitationalPotential']]],
   ['test_5fgravitationalpotential',['test_GravitationalPotential',['../classEvolve_1_1test__GravitationalPotential.html#a0be100d38e0fec750e53695e65c06140',1,'Evolve::test_GravitationalPotential']]],
+  ['test_5flock_5finit',['test_lock_init',['../classEvolve_1_1test__LockMonitoring.html#a3e6eb337abb3820c4058767476f6a1fe',1,'Evolve::test_LockMonitoring']]],
+  ['test_5flockmonitoring',['test_LockMonitoring',['../classEvolve_1_1test__LockMonitoring.html#a2271705dbc4e4d9d668ba4f0c40d1b16',1,'Evolve::test_LockMonitoring']]],
   ['test_5fno_5fplanet_5fscenario',['test_no_planet_scenario',['../classEvolve_1_1test__OrbitSolver.html#af6831b62465e357c14d68f1fae6173b6',1,'Evolve::test_OrbitSolver']]],
   ['test_5fsingle_5fpoint',['test_single_point',['../classEvolve_1_1test__GravitationalPotential.html#a5c4659db65ec8975bdd8f77465b52827',1,'Evolve::test_GravitationalPotential']]],
   ['test_5fsolution',['test_solution',['../classEvolve_1_1test__OrbitSolver.html#ab52e1e3dfb5e1807a7313a473e0edde1',1,'Evolve::test_OrbitSolver']]],
   ['test_5fsystem',['test_system',['../classEvolve_1_1test__GravitationalPotential.html#ace29b3624373bef87e7cff62ab8fa3e5',1,'Evolve::test_GravitationalPotential']]],
+  ['test_5ftidal_5ffrequency_5ffix',['test_tidal_frequency_fix',['../classEvolve_1_1test__LockMonitoring.html#a38bf4f5b9e73fb1e104ea10f7ee28138',1,'Evolve::test_LockMonitoring']]],
   ['test_5ftidaltorquepower',['test_TidalTorquePower',['../classEvolve_1_1test__TidalTorquePower.html#a93ce6190df36e052842a17d1cd048991',1,'Evolve::test_TidalTorquePower']]],
   ['tidal_5forbit_5fpower',['tidal_orbit_power',['../classEvolve_1_1DissipatingBody.html#a45c2f7a7d8aca5164a68de66f381d559',1,'Evolve::DissipatingBody']]],
   ['tidal_5forbit_5ftorque',['tidal_orbit_torque',['../classEvolve_1_1DissipatingBody.html#a6ce7634ec460f746d1ca2da95523dc81',1,'Evolve::DissipatingBody::tidal_orbit_torque(Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV, unsigned deriv_zone_index=0, const Eigen::VectorXd &amp;above_lock_fraction_deriv=Eigen::VectorXd()) const'],['../classEvolve_1_1DissipatingBody.html#a43872d986773765a871a2a702172511c',1,'Evolve::DissipatingBody::tidal_orbit_torque(const DissipatingZone &amp;reference_zone, Dissipation::QuantityEntry deriv=Dissipation::NO_DERIV, unsigned deriv_zone_index=0, const Eigen::VectorXd &amp;above_lock_fraction_deriv=Eigen::VectorXd()) const']]],

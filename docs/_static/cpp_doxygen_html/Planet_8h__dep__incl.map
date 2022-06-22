@@ -1,14 +1,16 @@
-<map id="/Users/kpenev/projects/git/poet/poet_src/Planet/Planet.h" name="/Users/kpenev/projects/git/poet/poet_src/Planet/Planet.h">
-<area shape="rect" id="node2" href="$Planet_2CInterface_8h.html" title="Declare C&#45;style functions for working with LockedPlanet instances. " alt="" coords="391,121,585,181"/>
-<area shape="rect" id="node7" href="$testDifferentialEquations_8h.html" title="Unit tests that check the differential equations for eccentricity and semimajor against analytic expr..." alt="" coords="609,113,858,189"/>
-<area shape="rect" id="node10" href="$testOrbitSolver_8h.html" title="Declares the test suite that exercises the OrbitSolver class and some other clasess necessary to acco..." alt="" coords="882,121,1147,181"/>
-<area shape="rect" id="node12" href="$testTidalTorquePower_8h.html" title="Declare a unit tests class that check the calculations of tidal torque and power. ..." alt="" coords="1171,113,1426,189"/>
-<area shape="rect" id="node3" href="$Evolve_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Evolve library. " alt="" coords="255,245,452,305"/>
-<area shape="rect" id="node5" href="$Planet_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="434,361,628,421"/>
-<area shape="rect" id="node4" href="$Evolve_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="214,361,410,421"/>
-<area shape="rect" id="node6" href="$Star_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="5,361,189,421"/>
-<area shape="rect" id="node8" href="$testDifferentialEquations_8cpp.html" title="Implement the non&#45;inline methods of test_DifferentialEquations. " alt="" coords="588,237,836,313"/>
-<area shape="rect" id="node9" href="$testEvolve_8cpp_source.html" title="/Users/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testEvolve.cpp" alt="" coords="860,245,1111,305"/>
-<area shape="rect" id="node11" href="$testOrbitSolver_8cpp.html" title="Defines some of the methods of the test suite that exercises the OrbitSolver class and the other clas..." alt="" coords="1135,245,1417,305"/>
-<area shape="rect" id="node13" href="$testTidalTorquePower_8cpp.html" title="Define the non&#45;inline methods of test_TidalTorquePower and actually run the tests if compiled in stan..." alt="" coords="1442,237,1697,313"/>
+<map id="/home/kpenev/projects/git/poet/poet_src/Planet/Planet.h" name="/home/kpenev/projects/git/poet/poet_src/Planet/Planet.h">
+<area shape="rect" id="node2" href="$Planet_2CInterface_8h.html" title="Declare C&#45;style functions for working with LockedPlanet instances. " alt="" coords="203,126,396,190"/>
+<area shape="rect" id="node7" href="$testDifferentialEquations_8h.html" title="Unit tests that check the differential equations for eccentricity and semimajor against analytic expr..." alt="" coords="437,117,685,199"/>
+<area shape="rect" id="node10" href="$testOrbitSolver_8h.html" title="Declares the test suite that exercises the OrbitSolver class and some other clasess necessary to acco..." alt="" coords="709,126,973,190"/>
+<area shape="rect" id="node12" href="$testTidalTorquePower_8h.html" title="Declare a unit tests class that check the calculations of tidal torque and power. ..." alt="" coords="997,117,1255,199"/>
+<area shape="rect" id="node14" href="$testLockMonitoring_8h.html" title="Unit tests that check the machinery for monitoring potential tidal locks. " alt="" coords="1279,126,1573,190"/>
+<area shape="rect" id="node3" href="$Evolve_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Evolve library. " alt="" coords="201,255,397,319"/>
+<area shape="rect" id="node5" href="$Planet_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="5,376,199,440"/>
+<area shape="rect" id="node4" href="$Evolve_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="223,376,419,440"/>
+<area shape="rect" id="node6" href="$Star_2CInterface_8cpp.html" title="The definitions of the functions declared in CInterface.h. " alt="" coords="443,376,625,440"/>
+<area shape="rect" id="node8" href="$testDifferentialEquations_8cpp.html" title="Implement the non&#45;inline methods of test_DifferentialEquations. " alt="" coords="422,247,670,328"/>
+<area shape="rect" id="node9" href="$testEvolve_8cpp_source.html" title="/home/kpenev/projects\l/git/poet/poet_src/unit\l_tests/testEvolve/testEvolve.cpp" alt="" coords="1001,255,1251,319"/>
+<area shape="rect" id="node11" href="$testOrbitSolver_8cpp.html" title="Defines some of the methods of the test suite that exercises the OrbitSolver class and the other clas..." alt="" coords="695,255,976,319"/>
+<area shape="rect" id="node13" href="$testTidalTorquePower_8cpp.html" title="Define the non&#45;inline methods of test_TidalTorquePower and actually run the tests if compiled in stan..." alt="" coords="1275,247,1534,328"/>
+<area shape="rect" id="node15" href="$testLockMonitoring_8cpp.html" title="Implement the non&#45;inline methods of test_LockMonitoring. " alt="" coords="1557,255,1868,319"/>
 </map>

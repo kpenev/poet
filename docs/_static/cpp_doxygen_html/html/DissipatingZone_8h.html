@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Planetary Orbital Evolution due to Tides: /Users/kpenev/projects/git/poet/poet_src/Evolve/DissipatingZone.h File Reference</title>
+<title>Planetary Orbital Evolution due to Tides: /home/kpenev/projects/git/poet/poet_src/Evolve/DissipatingZone.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -118,6 +118,7 @@ $(document).ready(function(){initNavTree('DissipatingZone_8h.html','');});
 <code>#include &quot;<a class="el" href="SynchronizedCondition_8h_source.html">SynchronizedCondition.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Core_2Common_8h_source.html">../Core/Common.h</a>&quot;</code><br />
 <code>#include &lt;valarray&gt;</code><br />
+<code>#include &lt;boost/math/special_functions/sign.hpp&gt;</code><br />
 </div><div class="textblock"><div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Include dependency graph for DissipatingZone.h:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -155,22 +156,26 @@ Namespaces</h2></td></tr>
 Enumerations</h2></td></tr>
 <tr class="memitem:a9cce22e00bdb61d9aabad3e170a5b20d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20d">Evolve::ZoneEvolutionQuantities</a> { <br />
 &#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da7c74c5f04b81fa0400175a1c91b26724">Evolve::ANGULAR_MOMENTUM</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da7f476ba5d9a2c1bf06f60eade6c54e37">Evolve::ANGULAR_MOMENTUM_DERIV</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da6d019a45e097d89ef0bd18b216786d37">Evolve::INCLINATION</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa161d0dc8826d2b0a633f6665957b68d">Evolve::PERIAPSIS</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da354ad7e7c765cbe0a1a4cc58b331c49d">Evolve::MOMENT_OF_INERTIA</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa9d3ebd443a68e7498e17a6eec68151b">Evolve::INCLINATION_DERIV</a>, 
 <br />
-&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9651c9e7c6c4d55729089baad90447ab">Evolve::MOMENT_OF_INERTIA_FIRST_DERIV</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da0e7ec834e9eff9dc8810b365a6e404ca">Evolve::MOMENT_OF_INERTIA_SECOND_DERIV</a>, 
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa161d0dc8826d2b0a633f6665957b68d">Evolve::PERIAPSIS</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daa2ee8a75e267a0f3b42b3c79e9aba323">Evolve::PERIAPSIS_DERIV</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da354ad7e7c765cbe0a1a4cc58b331c49d">Evolve::MOMENT_OF_INERTIA</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9651c9e7c6c4d55729089baad90447ab">Evolve::MOMENT_OF_INERTIA_FIRST_DERIV</a>, 
+<br />
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da0e7ec834e9eff9dc8810b365a6e404ca">Evolve::MOMENT_OF_INERTIA_SECOND_DERIV</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da1f60c3a5740d8f021e41ddad7d7b4232">Evolve::OUTER_RADIUS</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dab42383a85737ee3d0e1cdde1bb1487ef">Evolve::OUTER_RADIUS_FIRST_DERIV</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9e8ca88adbf48cef55e3f0f037f51fa2">Evolve::OUTER_RADIUS_SECOND_DERIV</a>, 
 <br />
-&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da9e8ca88adbf48cef55e3f0f037f51fa2">Evolve::OUTER_RADIUS_SECOND_DERIV</a>, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da575772f8f9058899e3980f1f9346b1e8">Evolve::OUTER_MASS</a>, 
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da575772f8f9058899e3980f1f9346b1e8">Evolve::OUTER_MASS</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dac89a3367d97073c935db7241b75fd92d">Evolve::OUTER_MASS_DERIV</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da43f29a31c2da9827f2eaca745e57f4c9">Evolve::NUM_REAL_EVOL_QUANTITIES</a>, 
+<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dab16a303eae079417f53138e24a97b328">Evolve::E_ORDER</a> =NUM_REAL_EVOL_QUANTITIES, 
 <br />
-&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20dab16a303eae079417f53138e24a97b328">Evolve::E_ORDER</a> =NUM_REAL_EVOL_QUANTITIES, 
-<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daad0ba41e77f5506a9e06f923761d8858">Evolve::ORBITAL_FREQ_MULTIPLIER</a>, 
+&#160;&#160;<a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daad0ba41e77f5506a9e06f923761d8858">Evolve::ORBITAL_FREQ_MULTIPLIER</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20daf9f0bd82d4cffa9d5e3a5205444ee31a">Evolve::SPIN_FREQ_MULTIPLIER</a>, 
 <a class="el" href="namespaceEvolve.html#a9cce22e00bdb61d9aabad3e170a5b20da3698878116a5b6ef4ee1966bee5dbbab">Evolve::NUM_EVOL_QUANTITIES</a>
 <br />
@@ -194,7 +199,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_e247b8950c2da2f51dd8497aec65ce0d.html">poet_src</a></li><li class="navelem"><a class="el" href="dir_bace5b3272c3045fbaf2ba9e016347ef.html">Evolve</a></li><li class="navelem"><a class="el" href="DissipatingZone_8h.html">DissipatingZone.h</a></li>
-    <li class="footer">Generated on Sun Dec 1 2019 01:10:24 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Wed May 18 2022 17:13:10 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

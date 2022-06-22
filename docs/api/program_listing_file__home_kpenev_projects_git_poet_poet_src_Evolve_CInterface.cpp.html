@@ -1,0 +1,814 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File CInterface.cpp &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File CInterface.cpp</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file__home_kpenev_projects_git_poet_poet_src_Evolve_CInterface.cpp.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="program-listing-for-file-cinterface-cpp">
+<span id="program-listing-file-home-kpenev-projects-git-poet-poet-src-evolve-cinterface-cpp"></span><h1>Program Listing for File CInterface.cpp<a class="headerlink" href="#program-listing-for-file-cinterface-cpp" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_Evolve_CInterface.cpp.html#file-home-kpenev-projects-git-poet-poet-src-evolve-cinterface-cpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">/home/kpenev/projects/git/poet/poet_src/Evolve/CInterface.cpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#define BUILDING_LIBRARY</span>
+<span class="cp">#include</span> <span class="cpf">&quot;CInterface.h&quot;</span><span class="cp"></span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">LOCKED_SURFACE_SPIN_EVOL_MODE</span> <span class="o">=</span> <span class="n">Core</span><span class="o">::</span><span class="n">LOCKED_SURFACE_SPIN</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">BINARY_EVOL_MODE</span> <span class="o">=</span> <span class="n">Core</span><span class="o">::</span><span class="n">BINARY</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">SINGLE_EVOL_MODE</span> <span class="o">=</span> <span class="n">Core</span><span class="o">::</span><span class="n">SINGLE</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">TABULATION_EVOL_MODE</span> <span class="o">=</span> <span class="n">Core</span><span class="o">::</span><span class="n">TABULATION</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">double</span> <span class="n">NaN</span> <span class="o">=</span> <span class="n">Core</span><span class="o">::</span><span class="n">NaN</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">read_eccentricity_expansion_coefficients</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Evolve</span><span class="o">::</span><span class="n">TidalPotentialTerms</span><span class="o">::</span><span class="n">read_eccentricity_expansion</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">set_zone_dissipation</span><span class="p">(</span><span class="n">BrokenPowerlawPhaseLagZone</span> <span class="o">*</span><span class="n">zone</span><span class="p">,</span>
+                          <span class="kt">unsigned</span> <span class="n">num_tidal_frequency_breaks</span><span class="p">,</span>
+                          <span class="kt">unsigned</span> <span class="n">num_spin_frequency_breaks</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">tidal_frequency_breaks</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">spin_frequency_breaks</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">tidal_frequency_powers</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">spin_frequency_powers</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="n">reference_phase_lag</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Evolve</span><span class="o">::</span><span class="n">BrokenPowerlawPhaseLagZone</span> <span class="o">*</span><span class="n">real_zone</span> <span class="o">=</span>
+        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Evolve</span><span class="o">::</span><span class="n">BrokenPowerlawPhaseLagZone</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">zone</span><span class="p">);</span>
+
+    <span class="n">real_zone</span><span class="o">-&gt;</span><span class="n">setup</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">num_tidal_frequency_breaks</span>
+            <span class="o">?</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span>
+                <span class="n">tidal_frequency_breaks</span><span class="p">,</span>
+                <span class="n">tidal_frequency_breaks</span> <span class="o">+</span> <span class="n">num_tidal_frequency_breaks</span>
+            <span class="p">)</span>
+            <span class="o">:</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">()</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="n">num_spin_frequency_breaks</span>
+            <span class="o">?</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span>
+                <span class="n">spin_frequency_breaks</span><span class="p">,</span>
+                <span class="n">spin_frequency_breaks</span> <span class="o">+</span> <span class="n">num_spin_frequency_breaks</span>
+            <span class="p">)</span>
+            <span class="o">:</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">()</span>
+        <span class="p">),</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span>
+            <span class="n">tidal_frequency_powers</span><span class="p">,</span>
+            <span class="n">tidal_frequency_powers</span> <span class="o">+</span> <span class="n">num_tidal_frequency_breaks</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">),</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span>
+            <span class="n">spin_frequency_powers</span><span class="p">,</span>
+            <span class="n">spin_frequency_powers</span> <span class="o">+</span> <span class="n">num_spin_frequency_breaks</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">),</span>
+        <span class="n">reference_phase_lag</span>
+    <span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="nf">create_star_planet_system</span><span class="p">(</span><span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">star</span><span class="p">,</span>
+                                            <span class="n">CPlanet</span> <span class="o">*</span><span class="n">planet</span><span class="p">,</span>
+                                            <span class="kt">double</span> <span class="n">initial_semimajor</span><span class="p">,</span>
+                                            <span class="kt">double</span> <span class="n">initial_eccentricity</span><span class="p">,</span>
+                                            <span class="kt">double</span> <span class="n">initial_inclination</span><span class="p">,</span>
+                                            <span class="kt">double</span> <span class="n">disk_lock_frequency</span><span class="p">,</span>
+                                            <span class="kt">double</span> <span class="n">disk_dissipation_age</span><span class="p">,</span>
+                                            <span class="kt">double</span> <span class="n">secondary_formation_age</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">DiskBinarySystem</span><span class="o">*&gt;</span><span class="p">(</span>
+        <span class="k">new</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span><span class="p">(</span>
+            <span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">star</span><span class="p">),</span>
+            <span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Planet</span><span class="o">::</span><span class="n">Planet</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">planet</span><span class="p">),</span>
+            <span class="n">initial_semimajor</span><span class="p">,</span>
+            <span class="n">initial_eccentricity</span><span class="p">,</span>
+            <span class="n">initial_inclination</span><span class="p">,</span>
+            <span class="n">disk_lock_frequency</span><span class="p">,</span>
+            <span class="n">disk_dissipation_age</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">secondary_formation_age</span><span class="p">,</span>
+                     <span class="n">disk_dissipation_age</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="nf">create_star_star_system</span><span class="p">(</span><span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">primary</span><span class="p">,</span>
+                                          <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">secondary</span><span class="p">,</span>
+                                          <span class="kt">double</span> <span class="n">initial_semimajor</span><span class="p">,</span>
+                                          <span class="kt">double</span> <span class="n">initial_eccentricity</span><span class="p">,</span>
+                                          <span class="kt">double</span> <span class="n">initial_inclination</span><span class="p">,</span>
+                                          <span class="kt">double</span> <span class="n">disk_lock_frequency</span><span class="p">,</span>
+                                          <span class="kt">double</span> <span class="n">disk_dissipation_age</span><span class="p">,</span>
+                                          <span class="kt">double</span> <span class="n">secondary_formation_age</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">DiskBinarySystem</span><span class="o">*&gt;</span><span class="p">(</span>
+        <span class="k">new</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span><span class="p">(</span>
+            <span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">primary</span><span class="p">),</span>
+            <span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">secondary</span><span class="p">),</span>
+            <span class="n">initial_semimajor</span><span class="p">,</span>
+            <span class="n">initial_eccentricity</span><span class="p">,</span>
+            <span class="n">initial_inclination</span><span class="p">,</span>
+            <span class="n">disk_lock_frequency</span><span class="p">,</span>
+            <span class="n">disk_dissipation_age</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">secondary_formation_age</span><span class="p">,</span>
+                     <span class="n">disk_dissipation_age</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">destroy_binary</span><span class="p">(</span><span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">delete</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">system</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">configure_star</span><span class="p">(</span><span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">star</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">age</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">companion_mass</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">semimajor</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">eccentricity</span><span class="p">,</span>
+                    <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">spin_angmom</span><span class="p">,</span>
+                    <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">inclination</span><span class="p">,</span>
+                    <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">periapsis</span><span class="p">,</span>
+                    <span class="kt">bool</span> <span class="n">locked_surface</span><span class="p">,</span>
+                    <span class="kt">bool</span> <span class="n">zero_outer_inclination</span><span class="p">,</span>
+                    <span class="kt">bool</span> <span class="n">zero_outer_periapsis</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">star</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">configure</span><span class="p">(</span>
+        <span class="nb">true</span><span class="p">,</span>
+        <span class="n">age</span><span class="p">,</span>
+        <span class="n">companion_mass</span><span class="p">,</span>
+        <span class="n">semimajor</span><span class="p">,</span>
+        <span class="n">eccentricity</span><span class="p">,</span>
+        <span class="n">spin_angmom</span><span class="p">,</span>
+        <span class="n">inclination</span><span class="p">,</span>
+        <span class="n">periapsis</span><span class="p">,</span>
+        <span class="n">locked_surface</span><span class="p">,</span>
+        <span class="n">zero_outer_inclination</span><span class="p">,</span>
+        <span class="n">zero_outer_periapsis</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">configure_planet</span><span class="p">(</span><span class="n">CPlanet</span> <span class="o">*</span><span class="n">planet</span><span class="p">,</span>
+                      <span class="kt">double</span> <span class="n">age</span><span class="p">,</span>
+                      <span class="kt">double</span> <span class="n">companion_mass</span><span class="p">,</span>
+                      <span class="kt">double</span> <span class="n">semimajor</span><span class="p">,</span>
+                      <span class="kt">double</span> <span class="n">eccentricity</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">spin_angmom</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">inclination</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">periapsis</span><span class="p">,</span>
+                      <span class="kt">bool</span> <span class="n">locked_surface</span><span class="p">,</span>
+                      <span class="kt">bool</span> <span class="n">zero_outer_inclination</span><span class="p">,</span>
+                      <span class="kt">bool</span> <span class="n">zero_outer_periapsis</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Planet</span><span class="o">::</span><span class="n">Planet</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">planet</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">configure</span><span class="p">(</span>
+        <span class="nb">true</span><span class="p">,</span>
+        <span class="n">age</span><span class="p">,</span>
+        <span class="n">companion_mass</span><span class="p">,</span>
+        <span class="n">semimajor</span><span class="p">,</span>
+        <span class="n">eccentricity</span><span class="p">,</span>
+        <span class="n">spin_angmom</span><span class="p">,</span>
+        <span class="n">inclination</span><span class="p">,</span>
+        <span class="n">periapsis</span><span class="p">,</span>
+        <span class="n">locked_surface</span><span class="p">,</span>
+        <span class="n">zero_outer_inclination</span><span class="p">,</span>
+        <span class="n">zero_outer_periapsis</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">configure_system</span><span class="p">(</span><span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span><span class="p">,</span>
+                      <span class="kt">double</span> <span class="n">age</span><span class="p">,</span>
+                      <span class="kt">double</span> <span class="n">semimajor</span><span class="p">,</span>
+                      <span class="kt">double</span> <span class="n">eccentricity</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">spin_angmom</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">inclination</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">periapsis</span><span class="p">,</span>
+                      <span class="kt">int</span> <span class="n">evolution_mode</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">evolution_mode</span> <span class="o">&lt;</span> <span class="n">TABULATION_EVOL_MODE</span><span class="p">);</span>
+    <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">system</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">configure</span><span class="p">(</span>
+        <span class="nb">true</span><span class="p">,</span>
+        <span class="n">age</span><span class="p">,</span>
+        <span class="n">semimajor</span><span class="p">,</span>
+        <span class="n">eccentricity</span><span class="p">,</span>
+        <span class="n">spin_angmom</span><span class="p">,</span>
+        <span class="n">inclination</span><span class="p">,</span>
+        <span class="n">periapsis</span><span class="p">,</span>
+        <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Core</span><span class="o">::</span><span class="n">EvolModeType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">evolution_mode</span><span class="p">)</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">OrbitSolver</span> <span class="o">*</span><span class="nf">evolve_system</span><span class="p">(</span><span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span><span class="p">,</span>
+                           <span class="kt">double</span> <span class="n">final_age</span><span class="p">,</span>
+                           <span class="kt">double</span> <span class="n">max_time_step</span><span class="p">,</span>
+                           <span class="kt">double</span> <span class="n">precision</span><span class="p">,</span>
+                           <span class="kt">double</span> <span class="o">*</span><span class="n">required_ages</span><span class="p">,</span>
+                           <span class="kt">unsigned</span> <span class="n">num_required_ages</span><span class="p">,</span>
+                           <span class="kt">bool</span> <span class="n">print_progress</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">.</span><span class="n">setf</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ios_base</span><span class="o">::</span><span class="n">scientific</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">.</span><span class="n">precision</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+    <span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span><span class="p">(</span><span class="n">final_age</span><span class="p">,</span>
+                                                          <span class="n">precision</span><span class="p">,</span>
+                                                          <span class="n">print_progress</span><span class="p">);</span>
+<span class="cp">#ifdef NDEBUG</span>
+    <span class="k">try</span> <span class="p">{</span>
+<span class="cp">#endif</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">solver</span><span class="p">)(</span>
+            <span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">system</span><span class="p">),</span>
+            <span class="n">max_time_step</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">required_ages</span><span class="p">,</span>
+                              <span class="n">required_ages</span> <span class="o">+</span> <span class="n">num_required_ages</span><span class="p">)</span>
+        <span class="p">);</span>
+<span class="cp">#ifdef NDEBUG</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+<span class="cp">#endif</span>
+    <span class="k">return</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">OrbitSolver</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">solver</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">destroy_solver</span><span class="p">(</span><span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">delete</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">solver</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">unsigned</span> <span class="nf">num_evolution_steps</span><span class="p">(</span><span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span><span class="o">*&gt;</span><span class="p">(</span>
+        <span class="n">solver</span>
+    <span class="p">)</span><span class="o">-&gt;</span><span class="n">evolution_ages</span><span class="p">().</span><span class="n">size</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="n">list_to_array</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">source</span><span class="p">,</span> <span class="n">T</span> <span class="o">*</span><span class="n">destination</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">source</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">destination</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_star_evolution</span><span class="p">(</span><span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">star_arg</span><span class="p">,</span>
+                        <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_inclination</span><span class="p">,</span>
+                        <span class="kt">double</span> <span class="o">*</span><span class="n">core_inclination</span><span class="p">,</span>
+                        <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_periapsis</span><span class="p">,</span>
+                        <span class="kt">double</span> <span class="o">*</span><span class="n">core_periapsis</span><span class="p">,</span>
+                        <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_angmom</span><span class="p">,</span>
+                        <span class="kt">double</span> <span class="o">*</span><span class="n">core_angmom</span><span class="p">,</span>
+                        <span class="kt">bool</span> <span class="o">*</span><span class="n">wind_saturation</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span> <span class="o">*</span><span class="n">star</span> <span class="o">=</span>
+        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">star_arg</span><span class="p">);</span>
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">star</span><span class="o">-&gt;</span><span class="n">envelope</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">INCLINATION</span><span class="p">),</span>
+                  <span class="n">envelope_inclination</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">star</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">INCLINATION</span><span class="p">),</span>
+                  <span class="n">core_inclination</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">star</span><span class="o">-&gt;</span><span class="n">envelope</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">PERIAPSIS</span><span class="p">),</span>
+                  <span class="n">envelope_periapsis</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">star</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">PERIAPSIS</span><span class="p">),</span>
+                  <span class="n">core_periapsis</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span>
+        <span class="n">star</span><span class="o">-&gt;</span><span class="n">envelope</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">ANGULAR_MOMENTUM</span><span class="p">),</span>
+        <span class="n">envelope_angmom</span>
+    <span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">star</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">ANGULAR_MOMENTUM</span><span class="p">),</span>
+                  <span class="n">core_angmom</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">star</span><span class="o">-&gt;</span><span class="n">wind_saturation_evolution</span><span class="p">(),</span> <span class="n">wind_saturation</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_planet_evolution</span><span class="p">(</span><span class="k">const</span> <span class="n">CPlanet</span> <span class="o">*</span><span class="n">planet_arg</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">inclination</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">periapsis</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">angmom</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Planet</span><span class="o">::</span><span class="n">Planet</span> <span class="o">*</span><span class="n">planet</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Planet</span><span class="o">::</span><span class="n">Planet</span><span class="o">*&gt;</span><span class="p">(</span>
+        <span class="n">planet_arg</span>
+    <span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span>
+        <span class="n">planet</span><span class="o">-&gt;</span><span class="n">zone</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">INCLINATION</span><span class="p">),</span>
+        <span class="n">inclination</span>
+    <span class="p">);</span>
+    <span class="n">list_to_array</span><span class="p">(</span>
+        <span class="n">planet</span><span class="o">-&gt;</span><span class="n">zone</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">PERIAPSIS</span><span class="p">),</span>
+        <span class="n">periapsis</span>
+    <span class="p">);</span>
+    <span class="n">list_to_array</span><span class="p">(</span>
+        <span class="n">planet</span><span class="o">-&gt;</span><span class="n">zone</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">ANGULAR_MOMENTUM</span><span class="p">),</span>
+        <span class="n">angmom</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_binary_evolution</span><span class="p">(</span><span class="k">const</span> <span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system_arg</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">semimajor</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">eccentricity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span> <span class="o">=</span>
+        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">system_arg</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">system</span><span class="o">-&gt;</span><span class="n">semimajor_evolution</span><span class="p">(),</span> <span class="n">semimajor</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">system</span><span class="o">-&gt;</span><span class="n">eccentricity_evolution</span><span class="p">(),</span> <span class="n">eccentricity</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_solver_evolution</span><span class="p">(</span><span class="k">const</span> <span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver_arg</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">age</span><span class="p">,</span>
+                          <span class="kt">int</span> <span class="o">*</span><span class="n">evolution_mode</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span> <span class="o">=</span>
+        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">solver_arg</span><span class="p">);</span>
+
+    <span class="n">list_to_array</span><span class="p">(</span><span class="n">solver</span><span class="o">-&gt;</span><span class="n">evolution_ages</span><span class="p">(),</span> <span class="n">age</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">evolution_mode</span><span class="p">)</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">solver</span><span class="o">-&gt;</span><span class="n">mode_evolution</span><span class="p">().</span><span class="n">begin</span><span class="p">(),</span>
+                  <span class="n">solver</span><span class="o">-&gt;</span><span class="n">mode_evolution</span><span class="p">().</span><span class="n">end</span><span class="p">(),</span>
+                  <span class="n">evolution_mode</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_star_planet_evolution</span><span class="p">(</span><span class="k">const</span> <span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">star</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="n">CPlanet</span> <span class="o">*</span><span class="n">planet</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">age</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">semimajor</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">eccentricity</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_inclination</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">core_inclination</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_periapsis</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">core_periapsis</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_angmom</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">core_angmom</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">planet_inclination</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">planet_periapsis</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">planet_angmom</span><span class="p">,</span>
+                               <span class="kt">int</span> <span class="o">*</span><span class="n">evolution_mode</span><span class="p">,</span>
+                               <span class="kt">bool</span> <span class="o">*</span><span class="n">wind_saturation</span><span class="p">)</span>
+<span class="p">{</span>
+
+    <span class="n">get_solver_evolution</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">evolution_mode</span><span class="p">);</span>
+
+    <span class="n">get_binary_evolution</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">semimajor</span><span class="p">,</span> <span class="n">eccentricity</span><span class="p">);</span>
+
+    <span class="n">get_star_evolution</span><span class="p">(</span><span class="n">star</span><span class="p">,</span>
+                       <span class="n">envelope_inclination</span><span class="p">,</span>
+                       <span class="n">core_inclination</span><span class="p">,</span>
+                       <span class="n">envelope_periapsis</span><span class="p">,</span>
+                       <span class="n">core_periapsis</span><span class="p">,</span>
+                       <span class="n">envelope_angmom</span><span class="p">,</span>
+                       <span class="n">core_angmom</span><span class="p">,</span>
+                       <span class="n">wind_saturation</span><span class="p">);</span>
+
+    <span class="n">get_planet_evolution</span><span class="p">(</span><span class="n">planet</span><span class="p">,</span>
+                         <span class="n">planet_inclination</span><span class="p">,</span>
+                         <span class="n">planet_periapsis</span><span class="p">,</span>
+                         <span class="n">planet_angmom</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_star_star_evolution</span><span class="p">(</span><span class="k">const</span> <span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span><span class="p">,</span>
+                             <span class="k">const</span> <span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span><span class="p">,</span>
+                             <span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">primary</span><span class="p">,</span>
+                             <span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">secondary</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">age</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">semimajor</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">eccentricity</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">primary_envelope_inclination</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">primary_core_inclination</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">primary_envelope_periapsis</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">primary_core_periapsis</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">primary_envelope_angmom</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">primary_core_angmom</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_envelope_inclination</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_core_inclination</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_envelope_periapsis</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_core_periapsis</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_envelope_angmom</span><span class="p">,</span>
+                             <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_core_angmom</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="o">*</span><span class="n">evolution_mode</span><span class="p">,</span>
+                             <span class="kt">bool</span> <span class="o">*</span><span class="n">primary_wind_saturation</span><span class="p">,</span>
+                             <span class="kt">bool</span> <span class="o">*</span><span class="n">secondary_wind_saturation</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">get_solver_evolution</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">evolution_mode</span><span class="p">);</span>
+
+    <span class="n">get_binary_evolution</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">semimajor</span><span class="p">,</span> <span class="n">eccentricity</span><span class="p">);</span>
+
+    <span class="n">get_star_evolution</span><span class="p">(</span><span class="n">primary</span><span class="p">,</span>
+                       <span class="n">primary_envelope_inclination</span><span class="p">,</span>
+                       <span class="n">primary_core_inclination</span><span class="p">,</span>
+                       <span class="n">primary_envelope_periapsis</span><span class="p">,</span>
+                       <span class="n">primary_core_periapsis</span><span class="p">,</span>
+                       <span class="n">primary_envelope_angmom</span><span class="p">,</span>
+                       <span class="n">primary_core_angmom</span><span class="p">,</span>
+                       <span class="n">primary_wind_saturation</span><span class="p">);</span>
+
+    <span class="n">get_star_evolution</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span>
+                       <span class="n">secondary_envelope_inclination</span><span class="p">,</span>
+                       <span class="n">secondary_core_inclination</span><span class="p">,</span>
+                       <span class="n">secondary_envelope_periapsis</span><span class="p">,</span>
+                       <span class="n">secondary_core_periapsis</span><span class="p">,</span>
+                       <span class="n">secondary_envelope_angmom</span><span class="p">,</span>
+                       <span class="n">secondary_core_angmom</span><span class="p">,</span>
+                       <span class="n">secondary_wind_saturation</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_star_final_state</span><span class="p">(</span><span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">star_arg</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_inclination</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">core_inclination</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_periapsis</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">core_periapsis</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_angmom</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">core_angmom</span><span class="p">,</span>
+                          <span class="kt">bool</span> <span class="o">*</span><span class="n">wind_saturation</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span> <span class="o">*</span><span class="n">star</span> <span class="o">=</span>
+        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Star</span><span class="o">::</span><span class="n">InterpolatedEvolutionStar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">star_arg</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">envelope_inclination</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">envelope_inclination</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">star</span><span class="o">-&gt;</span><span class="n">envelope</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span><span class="n">Evolve</span><span class="o">::</span><span class="n">INCLINATION</span><span class="p">).</span><span class="n">back</span><span class="p">()</span>
+        <span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">core_inclination</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">core_inclination</span> <span class="o">=</span> <span class="n">star</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">INCLINATION</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">envelope_periapsis</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">envelope_periapsis</span> <span class="o">=</span> <span class="n">star</span><span class="o">-&gt;</span><span class="n">envelope</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">PERIAPSIS</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">core_periapsis</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">core_periapsis</span> <span class="o">=</span> <span class="n">star</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">PERIAPSIS</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">envelope_angmom</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">envelope_angmom</span> <span class="o">=</span> <span class="n">star</span><span class="o">-&gt;</span><span class="n">envelope</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">ANGULAR_MOMENTUM</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">core_angmom</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">core_angmom</span> <span class="o">=</span> <span class="n">star</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">ANGULAR_MOMENTUM</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">wind_saturation</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">wind_saturation</span> <span class="o">=</span> <span class="n">star</span><span class="o">-&gt;</span><span class="n">wind_saturation_evolution</span><span class="p">().</span><span class="n">back</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_planet_final_state</span><span class="p">(</span><span class="k">const</span> <span class="n">CPlanet</span> <span class="o">*</span><span class="n">planet_arg</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">inclination</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">periapsis</span><span class="p">,</span>
+                          <span class="kt">double</span> <span class="o">*</span><span class="n">angmom</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Planet</span><span class="o">::</span><span class="n">Planet</span> <span class="o">*</span><span class="n">planet</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Planet</span><span class="o">::</span><span class="n">Planet</span><span class="o">*&gt;</span><span class="p">(</span>
+        <span class="n">planet_arg</span>
+    <span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">inclination</span> <span class="o">=</span> <span class="n">planet</span><span class="o">-&gt;</span><span class="n">zone</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">INCLINATION</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">periapsis</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">periapsis</span> <span class="o">=</span> <span class="n">planet</span><span class="o">-&gt;</span><span class="n">zone</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">PERIAPSIS</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">angmom</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">angmom</span> <span class="o">=</span> <span class="n">planet</span><span class="o">-&gt;</span><span class="n">zone</span><span class="p">().</span><span class="n">get_evolution_real</span><span class="p">(</span>
+            <span class="n">Evolve</span><span class="o">::</span><span class="n">ANGULAR_MOMENTUM</span>
+        <span class="p">).</span><span class="n">back</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_binary_final_state</span><span class="p">(</span><span class="k">const</span> <span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system_arg</span><span class="p">,</span>
+                            <span class="kt">double</span> <span class="o">*</span><span class="n">semimajor</span><span class="p">,</span>
+                            <span class="kt">double</span> <span class="o">*</span><span class="n">eccentricity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span> <span class="o">=</span>
+        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">DiskBinarySystem</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">system_arg</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">semimajor</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">semimajor</span> <span class="o">=</span> <span class="n">system</span><span class="o">-&gt;</span><span class="n">semimajor_evolution</span><span class="p">().</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">eccentricity</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">eccentricity</span> <span class="o">=</span> <span class="n">system</span><span class="o">-&gt;</span><span class="n">eccentricity_evolution</span><span class="p">().</span><span class="n">back</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_solver_final_state</span><span class="p">(</span><span class="k">const</span> <span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver_arg</span><span class="p">,</span>
+                            <span class="kt">double</span> <span class="o">*</span><span class="n">age</span><span class="p">,</span>
+                            <span class="kt">int</span> <span class="o">*</span><span class="n">evolution_mode</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span> <span class="o">=</span>
+        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Evolve</span><span class="o">::</span><span class="n">OrbitSolver</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">solver_arg</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">age</span> <span class="o">=</span> <span class="n">solver</span><span class="o">-&gt;</span><span class="n">evolution_ages</span><span class="p">().</span><span class="n">back</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">evolution_mode</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">evolution_mode</span> <span class="o">=</span> <span class="n">solver</span><span class="o">-&gt;</span><span class="n">mode_evolution</span><span class="p">().</span><span class="n">back</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_star_planet_final_state</span><span class="p">(</span><span class="k">const</span> <span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span><span class="p">,</span>
+                                 <span class="k">const</span> <span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span><span class="p">,</span>
+                                 <span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">star</span><span class="p">,</span>
+                                 <span class="k">const</span> <span class="n">CPlanet</span> <span class="o">*</span><span class="n">planet</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">age</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">semimajor</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">eccentricity</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_inclination</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">core_inclination</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_periapsis</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">core_periapsis</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">envelope_angmom</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">core_angmom</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">planet_inclination</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">planet_periapsis</span><span class="p">,</span>
+                                 <span class="kt">double</span> <span class="o">*</span><span class="n">planet_angmom</span><span class="p">,</span>
+                                 <span class="kt">int</span> <span class="o">*</span><span class="n">evolution_mode</span><span class="p">,</span>
+                                 <span class="kt">bool</span> <span class="o">*</span><span class="n">wind_saturation</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">get_solver_final_state</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">evolution_mode</span><span class="p">);</span>
+
+    <span class="n">get_binary_final_state</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">semimajor</span><span class="p">,</span> <span class="n">eccentricity</span><span class="p">);</span>
+
+    <span class="n">get_star_final_state</span><span class="p">(</span><span class="n">star</span><span class="p">,</span>
+                         <span class="n">envelope_inclination</span><span class="p">,</span>
+                         <span class="n">core_inclination</span><span class="p">,</span>
+                         <span class="n">envelope_periapsis</span><span class="p">,</span>
+                         <span class="n">core_periapsis</span><span class="p">,</span>
+                         <span class="n">envelope_angmom</span><span class="p">,</span>
+                         <span class="n">core_angmom</span><span class="p">,</span>
+                         <span class="n">wind_saturation</span><span class="p">);</span>
+
+    <span class="n">get_planet_final_state</span><span class="p">(</span><span class="n">planet</span><span class="p">,</span>
+                           <span class="n">planet_inclination</span><span class="p">,</span>
+                           <span class="n">planet_periapsis</span><span class="p">,</span>
+                           <span class="n">planet_angmom</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">get_star_star_final_state</span><span class="p">(</span><span class="k">const</span> <span class="n">OrbitSolver</span> <span class="o">*</span><span class="n">solver</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="n">DiskBinarySystem</span> <span class="o">*</span><span class="n">system</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">primary</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="n">EvolvingStar</span> <span class="o">*</span><span class="n">secondary</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">age</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">semimajor</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">eccentricity</span><span class="p">,</span>
+
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">primary_envelope_inclination</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">primary_core_inclination</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">primary_envelope_periapsis</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">primary_core_periapsis</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">primary_envelope_angmom</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">primary_core_angmom</span><span class="p">,</span>
+
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_envelope_inclination</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_core_inclination</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_envelope_periapsis</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_core_periapsis</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_envelope_angmom</span><span class="p">,</span>
+                               <span class="kt">double</span> <span class="o">*</span><span class="n">secondary_core_angmom</span><span class="p">,</span>
+                               <span class="kt">int</span> <span class="o">*</span><span class="n">evolution_mode</span><span class="p">,</span>
+                               <span class="kt">bool</span> <span class="o">*</span><span class="n">primary_wind_saturation</span><span class="p">,</span>
+                               <span class="kt">bool</span> <span class="o">*</span><span class="n">secondary_wind_saturation</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">get_solver_final_state</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">evolution_mode</span><span class="p">);</span>
+
+    <span class="n">get_binary_final_state</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">semimajor</span><span class="p">,</span> <span class="n">eccentricity</span><span class="p">);</span>
+
+    <span class="n">get_star_final_state</span><span class="p">(</span><span class="n">primary</span><span class="p">,</span>
+                         <span class="n">primary_envelope_inclination</span><span class="p">,</span>
+                         <span class="n">primary_core_inclination</span><span class="p">,</span>
+                         <span class="n">primary_envelope_periapsis</span><span class="p">,</span>
+                         <span class="n">primary_core_periapsis</span><span class="p">,</span>
+                         <span class="n">primary_envelope_angmom</span><span class="p">,</span>
+                         <span class="n">primary_core_angmom</span><span class="p">,</span>
+                         <span class="n">primary_wind_saturation</span><span class="p">);</span>
+
+    <span class="n">get_star_final_state</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span>
+                         <span class="n">secondary_envelope_inclination</span><span class="p">,</span>
+                         <span class="n">secondary_core_inclination</span><span class="p">,</span>
+                         <span class="n">secondary_envelope_periapsis</span><span class="p">,</span>
+                         <span class="n">secondary_core_periapsis</span><span class="p">,</span>
+                         <span class="n">secondary_envelope_angmom</span><span class="p">,</span>
+                         <span class="n">secondary_core_angmom</span><span class="p">,</span>
+                         <span class="n">secondary_wind_saturation</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -24,6 +24,8 @@ var group__UnitTests__group =
     [ "testDifferentialEquations.h", "testDifferentialEquations_8h.html", null ],
     [ "testGravitationalPotential.cpp", "testGravitationalPotential_8cpp.html", null ],
     [ "testGravitationalPotential.h", "testGravitationalPotential_8h.html", null ],
+    [ "testLockMonitoring.cpp", "testLockMonitoring_8cpp.html", null ],
+    [ "testLockMonitoring.h", "testLockMonitoring_8h.html", null ],
     [ "testOrbitSolver.cpp", "testOrbitSolver_8cpp.html", null ],
     [ "testOrbitSolver.h", "testOrbitSolver_8h.html", null ],
     [ "testTidalTorquePower.cpp", "testTidalTorquePower_8cpp.html", null ],
@@ -165,6 +167,7 @@ var group__UnitTests__group =
     ] ],
     [ "ConstPhaseLagZone", "classEvolve_1_1ConstPhaseLagZone.html", [
       [ "ConstPhaseLagZone", "classEvolve_1_1ConstPhaseLagZone.html#a62dbf13c79657b959165d728722e99b5", null ],
+      [ "can_lock", "classEvolve_1_1ConstPhaseLagZone.html#a472b4dc9b5a9c2f02816f0db60e05519", null ],
       [ "dissipative", "classEvolve_1_1ConstPhaseLagZone.html#a1b68c1963175fa450531b00d20d0246d", null ],
       [ "modified_phase_lag", "classEvolve_1_1ConstPhaseLagZone.html#aeebe6a0ee999e77912f83691350cb52c", null ],
       [ "__phase_lag", "classEvolve_1_1ConstPhaseLagZone.html#a562d694b32de651cab31103ff33f80c9", null ]
@@ -188,6 +191,7 @@ var group__UnitTests__group =
     ] ],
     [ "SingleTidalTermZone", "classEvolve_1_1SingleTidalTermZone.html", [
       [ "SingleTidalTermZone", "classEvolve_1_1SingleTidalTermZone.html#a777fb83f24e3afd58d8cbc452e2781c1", null ],
+      [ "can_lock", "classEvolve_1_1SingleTidalTermZone.html#ab39576c5fbd0b17a30eea62c2627fbc6", null ],
       [ "dissipative", "classEvolve_1_1SingleTidalTermZone.html#ad4d8ac5ed05cdc34431308154caaf385", null ],
       [ "modified_phase_lag", "classEvolve_1_1SingleTidalTermZone.html#a9ee768d5f5ba3e837d657fffee8513c3", null ],
       [ "__orbital_frequency_multiplier", "classEvolve_1_1SingleTidalTermZone.html#a8ce7e3f8a6d3c5aeacb0d4e852021972", null ],
@@ -207,18 +211,34 @@ var group__UnitTests__group =
     ] ],
     [ "test_GravitationalPotential", "classEvolve_1_1test__GravitationalPotential.html", [
       [ "test_GravitationalPotential", "classEvolve_1_1test__GravitationalPotential.html#a0be100d38e0fec750e53695e65c06140", null ],
-      [ "abs_expected_precision", "classEvolve_1_1test__GravitationalPotential.html#a1ea27bccdb87c4bd062d2a504ed6be50", null ],
+      [ "abs_precision", "classEvolve_1_1test__GravitationalPotential.html#a78c65226e063784235739adbe25834f9", null ],
       [ "print_orbit", "classEvolve_1_1test__GravitationalPotential.html#ab08e6d264ffb6fedb658e676287851db", null ],
-      [ "print_tidal_potential", "classEvolve_1_1test__GravitationalPotential.html#a282e1c6a0f081ca38603748800dceb11", null ],
+      [ "print_tidal_potential", "classEvolve_1_1test__GravitationalPotential.html#acc42615048152843c4e7609c5b2622b7", null ],
       [ "setup", "classEvolve_1_1test__GravitationalPotential.html#a487cad4a661569cee84f1441ad24b106", null ],
       [ "tear_down", "classEvolve_1_1test__GravitationalPotential.html#aab750743dd44ec2c9e579a17e1612b83", null ],
       [ "test_expansion", "classEvolve_1_1test__GravitationalPotential.html#a68eb77af8bcab2f9fe98a80538cd3bca", null ],
-      [ "test_single_point", "classEvolve_1_1test__GravitationalPotential.html#a5c4659db65ec8975bdd8f77465b52827", null ],
-      [ "test_system", "classEvolve_1_1test__GravitationalPotential.html#ace29b3624373bef87e7cff62ab8fa3e5", null ]
+      [ "test_single_point", "classEvolve_1_1test__GravitationalPotential.html#a7e5e218a4a349a823d94257f7af06016", null ],
+      [ "test_system", "classEvolve_1_1test__GravitationalPotential.html#aed8a0042da093e83325722754b4d145e", null ]
+    ] ],
+    [ "test_LockMonitoring", "classEvolve_1_1test__LockMonitoring.html", [
+      [ "test_LockMonitoring", "classEvolve_1_1test__LockMonitoring.html#a2271705dbc4e4d9d668ba4f0c40d1b16", null ],
+      [ "add_locks_to_message", "classEvolve_1_1test__LockMonitoring.html#a921c2c5aa1494426d8c217bb2ce06356", null ],
+      [ "add_zone_locks_to_message", "classEvolve_1_1test__LockMonitoring.html#a5f40c4fe39dbe9bfcdda5ae2cb3648b6", null ],
+      [ "check_monitored_locks", "classEvolve_1_1test__LockMonitoring.html#ab3eff0efcbbbe3524d4fd48b902fea5c", null ],
+      [ "check_tidal_frequency_range", "classEvolve_1_1test__LockMonitoring.html#a5cff8f868d32938dc65e6a3d8740869a", null ],
+      [ "check_unlocked_tidal_frequency", "classEvolve_1_1test__LockMonitoring.html#a89f521938cd57cfa07dccc508464a027", null ],
+      [ "sample_range", "classEvolve_1_1test__LockMonitoring.html#ada06eed04651e1926bd4e252c23a8bac", null ],
+      [ "set_expansion_order", "classEvolve_1_1test__LockMonitoring.html#a44c7f109955aa73f64472a7213fa190f", null ],
+      [ "set_orbital_spin_frequeqncy", "classEvolve_1_1test__LockMonitoring.html#ad9bfa9e055dd666a1ecaf363fcdccac3", null ],
+      [ "setup", "classEvolve_1_1test__LockMonitoring.html#a36595bb03b0d13183a9531028e6f9390", null ],
+      [ "tear_down", "classEvolve_1_1test__LockMonitoring.html#aeb424b6c26eb0f2f02027e9fd8a53d4f", null ],
+      [ "test_lock_init", "classEvolve_1_1test__LockMonitoring.html#a3e6eb337abb3820c4058767476f6a1fe", null ],
+      [ "test_tidal_frequency_fix", "classEvolve_1_1test__LockMonitoring.html#a38bf4f5b9e73fb1e104ea10f7ee28138", null ],
+      [ "__zone", "classEvolve_1_1test__LockMonitoring.html#a13acb85b727f69438f6d3938690050f0", null ]
     ] ],
     [ "test_OrbitSolver", "classEvolve_1_1test__OrbitSolver.html", [
       [ "calculate_expected_unlocked_evolution", "classEvolve_1_1test__OrbitSolver.html#aafd37c628ea76deb113bd1797e7c095d", null ],
-      [ "evolve", "classEvolve_1_1test__OrbitSolver.html#aed022f06b47bdb578e92f6543767f3cf", null ],
+      [ "evolve", "classEvolve_1_1test__OrbitSolver.html#a1cb726fc610ec119dbc3179694bb4d9c", null ],
       [ "get_evolution", "classEvolve_1_1test__OrbitSolver.html#a0803021e02b99a82c352342100c90733", null ],
       [ "make_single_component_star", "classEvolve_1_1test__OrbitSolver.html#ae27ef9c93de2418789fcc56f1daf9ac9", null ],
       [ "set_single_component_dissipation", "classEvolve_1_1test__OrbitSolver.html#a9277d302198212ad78dcac4911f45192", null ],

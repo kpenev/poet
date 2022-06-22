@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -168,6 +163,8 @@
     <span class="n">c_uint</span><span class="p">,</span>\
     <span class="n">c_bool</span><span class="p">,</span>\
     <span class="n">c_char_p</span><span class="p">,</span>\
+    <span class="n">c_wchar_p</span><span class="p">,</span>\
+    <span class="n">c_longdouble</span><span class="p">,</span>\
     <span class="n">POINTER</span>
 <span class="kn">from</span> <span class="nn">ctypes.util</span> <span class="k">import</span> <span class="n">find_library</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
@@ -183,34 +180,50 @@
 
 <div class="viewcode-block" id="c_solver_p"><a class="viewcode-back" href="../../_implementation/orbital_evolution.evolve_interface.html#orbital_evolution.evolve_interface.c_solver_p">[docs]</a><span class="k">class</span> <span class="nc">c_solver_p</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Place holder type for orbit evolution solver from the C-library.&quot;&quot;&quot;</span></div>
+
 <span class="c1">#pylint: enable=invalid-name</span>
 <span class="c1">#pylint: enable=too-few-public-methods</span>
 
-<div class="viewcode-block" id="initialize_library"><a class="viewcode-back" href="../../_implementation/orbital_evolution.evolve_interface.html#orbital_evolution.evolve_interface.initialize_library">[docs]</a><span class="k">def</span> <span class="nf">initialize_library</span><span class="p">():</span>
+<div class="viewcode-block" id="initialize_library"><a class="viewcode-back" href="../../_implementation/orbital_evolution.evolve_interface.html#orbital_evolution.evolve_interface.initialize_library">[docs]</a><span class="k">def</span> <span class="nf">initialize_library</span><span class="p">(</span><span class="n">library_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prepare the orbital evolution library for use.&quot;&quot;&quot;</span>
 
-    <span class="n">library_fname</span> <span class="o">=</span> <span class="n">find_library</span><span class="p">(</span><span class="s1">&#39;evolve&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">library_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">library_fname</span> <span class="o">=</span> <span class="n">find_library</span><span class="p">(</span><span class="s1">&#39;evolve&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">library_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Unable to find POET</span><span class="se">\&#39;</span><span class="s1">s evolve library.&#39;</span><span class="p">)</span>
+
     <span class="n">result</span> <span class="o">=</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">library_fname</span><span class="p">)</span>
 
-    <span class="n">result</span><span class="o">.</span><span class="n">read_eccentricity_expansion_coefficients</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">read_eccentricity_expansion_coefficients</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">prepare_eccentricity_expansion</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_char_p</span><span class="p">,</span>   <span class="c1">#filename</span>
+        <span class="n">c_double</span><span class="p">,</span>   <span class="c1">#precision</span>
+        <span class="n">c_bool</span><span class="p">,</span>     <span class="c1">#pre_load</span>
+        <span class="n">c_bool</span>      <span class="c1">#disable_precision_fali</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">prepare_eccentricity_expansion</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_dissipating_body_p</span><span class="p">,</span>
-                                                 <span class="n">c_dissipating_body_p</span><span class="p">,</span>
-                                                 <span class="n">c_double</span><span class="p">,</span>
-                                                 <span class="n">c_double</span><span class="p">,</span>
-                                                 <span class="n">c_double</span><span class="p">,</span>
-                                                 <span class="n">c_double</span><span class="p">,</span>
-                                                 <span class="n">c_double</span><span class="p">,</span>
-                                                 <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>   <span class="c1">#star</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>   <span class="c1">#planet</span>
+        <span class="n">c_double</span><span class="p">,</span>               <span class="c1">#initial_semimajor</span>
+        <span class="n">c_double</span><span class="p">,</span>               <span class="c1">#initial_eccentricity</span>
+        <span class="n">c_double</span><span class="p">,</span>               <span class="c1">#initial_inclination</span>
+        <span class="n">c_double</span><span class="p">,</span>               <span class="c1">#disk_lock_frequency</span>
+        <span class="n">c_double</span><span class="p">,</span>               <span class="c1">#disk_dissipation_age</span>
+        <span class="n">c_double</span>                <span class="c1">#secondary_formation_age</span>
+    <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_binary_p</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">create_star_star_system</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">argtypes</span>
     <span class="p">)</span>
     <span class="n">result</span><span class="o">.</span><span class="n">create_star_star_system</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span>
+    <span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">create_planet_planet_system</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">argtypes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">create_planet_planet_system</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span>
     <span class="p">)</span>
 
@@ -220,23 +233,23 @@
     <span class="n">result</span><span class="o">.</span><span class="n">destroy_binary</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">configure_planet</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                               <span class="c1">#planet</span>
+        <span class="n">c_double</span><span class="p">,</span>                                           <span class="c1">#age</span>
+        <span class="n">c_double</span><span class="p">,</span>                                           <span class="c1">#companion_mass</span>
+        <span class="n">c_double</span><span class="p">,</span>                                           <span class="c1">#semimajor</span>
+        <span class="n">c_double</span><span class="p">,</span>                                           <span class="c1">#eccentricity</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#spin_angmom</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>                   <span class="c1">#inclination</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>                   <span class="c1">#periapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_bool</span><span class="p">,</span>
-        <span class="n">c_bool</span><span class="p">,</span>
-        <span class="n">c_bool</span>
+        <span class="n">c_bool</span><span class="p">,</span>                                             <span class="c1">#locked_surface</span>
+        <span class="n">c_bool</span><span class="p">,</span>                                             <span class="c1">#zero_outer_inclin.</span>
+        <span class="n">c_bool</span>                                              <span class="c1">#zero_outer_periaps.</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">configure_planet</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -244,33 +257,35 @@
     <span class="n">result</span><span class="o">.</span><span class="n">configure_star</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">configure_planet</span><span class="o">.</span><span class="n">restype</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">configure_system</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">c_binary_p</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_binary_p</span><span class="p">,</span>                                     <span class="c1">#system</span>
+        <span class="n">c_double</span><span class="p">,</span>                                       <span class="c1">#age</span>
+        <span class="n">c_double</span><span class="p">,</span>                                       <span class="c1">#semimajor</span>
+        <span class="n">c_double</span><span class="p">,</span>                                       <span class="c1">#eccentricity</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#spin_angmom</span>
                                   <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>               <span class="c1">#inclination</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>               <span class="c1">#periapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_int</span>
+        <span class="n">c_int</span>                                           <span class="c1">#evolution_mode</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">configure_system</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">c_binary_p</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">c_double</span><span class="p">,</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">c_binary_p</span><span class="p">,</span>                             <span class="c1">#system</span>
+        <span class="n">c_double</span><span class="p">,</span>                               <span class="c1">#final_age</span>
+        <span class="n">c_double</span><span class="p">,</span>                               <span class="c1">#max_time_step</span>
+        <span class="n">c_double</span><span class="p">,</span>                               <span class="c1">#precision</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>       <span class="c1">#required_ages</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">c_uint</span><span class="p">,</span>
-        <span class="n">c_bool</span>
+        <span class="n">c_uint</span><span class="p">,</span>                                 <span class="c1">#num_required_ages</span>
+        <span class="n">c_bool</span><span class="p">,</span>                                 <span class="c1">#print_progress</span>
+        <span class="n">c_double</span><span class="p">,</span>                               <span class="c1">#max_runtime</span>
+        <span class="n">c_uint</span>                                  <span class="c1">#max_time_steps</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_solver_p</span>
 
@@ -281,168 +296,324 @@
     <span class="n">result</span><span class="o">.</span><span class="n">num_evolution_steps</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_uint</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_planet_evolution</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="c1"># solver</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="c1">#system</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span> <span class="c1">#star</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span> <span class="c1">#planet</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#age</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>               <span class="c1">#solver</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>   <span class="c1">#system</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#star</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#planet</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#age</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#semimajor</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#semimajor</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#eccentricity</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#eccentricity</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#envelope inclination</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#envelope inclination</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#core_inclination</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#core_inclination</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#envelope_periapsis</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#envelope_periapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#core_periapsis</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#core_periapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#envelope_angmom</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#envelope_angmom</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#core_angmom</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#core_angmom</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#planet_inclination</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#planet_inclination</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#planet_periapsis</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#planet_periapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span> <span class="c1">#planet_angmom</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#planet_angmom</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_int</span><span class="p">,</span> <span class="c1">#evolution_mode</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_int</span><span class="p">,</span>              <span class="c1">#evolution_mode</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span> <span class="c1">#wind_saturation</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span>             <span class="c1">#wind_saturation</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#semimajor rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#eccentricity rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#envelope inclination rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#core_inclination rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#envelope_periapsis rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#core_periapsis rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#envelope_angmom rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#core_angmom rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#planet_inclination rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#planet_periapsis rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#planet_angmom rate</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_planet_evolution</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_star_evolution</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>               <span class="c1">#solver</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>   <span class="c1">#system</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#primary</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#secondary</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#age</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#semimajor</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#eccentricity</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_envelope_inclin</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_core_inclination</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_envelope_perapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_core_periapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_envelope_angmom</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_core_angmom</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_envelope_inclin</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_core_inclination</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_envelope_periaps</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_core_periapsis</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_envelope_angmom</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_core_angmom</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_int</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_int</span><span class="p">,</span>              <span class="c1">#evolution_mode</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span>             <span class="c1">#primary_wind_saturation</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
-        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_bool</span><span class="p">,</span>             <span class="c1">#secondary_wind_saturation</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#semimajor_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#eccentricity_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_env_incl_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_core_incl_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_env_periapsis_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_core_periapsis_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_env_angmom_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_core_angmom_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_env_incl_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_core_incl_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_env_peri_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_core_peri_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_env_angmom_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_core_angmom_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
+
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">get_star_star_evolution</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">get_planet_planet_evolution</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>               <span class="c1">#solver</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>   <span class="c1">#system</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#primary</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#secondary</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#age</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#semimajor</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#eccentricity</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_inclination</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_perapsis</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_angmom</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_inclination</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_periaps</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_angmom</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_int</span><span class="p">,</span>              <span class="c1">#evolution_mode</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#semimajor_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#eccentricity_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_incl_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_periapsis_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#primary_angmom_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_incl_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_peri_rate</span>
+                          <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">),</span>
+        <span class="n">ndpointer_or_null</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">c_double</span><span class="p">,</span>           <span class="c1">#secondary_angmom_rate</span>
                           <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                           <span class="n">flags</span><span class="o">=</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_star_evolution</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
+
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_planet_final_state</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="c1">#solver</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span> <span class="c1">#system</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span> <span class="c1">#star</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span> <span class="c1">#planet</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#age</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#semimajor</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#eccentricity</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#envelope_inclination</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#core_inclination</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#envelovpe_peripasis</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#core_periapsis</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#envolepo_angmom</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#core_angmom</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#planet_inclination</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#planet_periapsis</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span> <span class="c1">#planet_angmom</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">),</span> <span class="c1">#evolution_mode</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_bool</span><span class="p">)</span> <span class="c1">#wind_saturation</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>               <span class="c1">#solver</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>   <span class="c1">#system</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#star</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#planet</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#age</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#semimajor</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#eccentricity</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#envelope_inclination</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#core_inclination</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#envelovpe_peripasis</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#core_periapsis</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#envolepo_angmom</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#core_angmom</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#planet_inclination</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#planet_periapsis</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#planet_angmom</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">),</span>                             <span class="c1">#evolution_mode</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_bool</span><span class="p">)</span>                             <span class="c1">#wind_saturation</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_planet_final_state</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_star_final_state</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span>
-        <span class="n">c_dissipating_body_p</span><span class="p">,</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_bool</span><span class="p">),</span>
-        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_bool</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">evolve_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>               <span class="c1">#solver</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">create_star_planet_system</span><span class="o">.</span><span class="n">restype</span><span class="p">,</span>   <span class="c1">#system</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#primary</span>
+        <span class="n">c_dissipating_body_p</span><span class="p">,</span>                       <span class="c1">#secondary</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#age</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#semimajor</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#eccentricity</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#primary_env_inclination</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#primary_core_inclination</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#primary_env_periapsis</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#primary_core_periapsis</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#primary_env_angmom</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#primary_core_angmom</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#secondary_env_inclination</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#secondary_core_inclination</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#secondary_env_periapsis</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#secondary_core_periapsis</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#secondary_env_angmom</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">),</span>                          <span class="c1">#secondary_core_angmom</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">),</span>                             <span class="c1">#evolution_mode</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_bool</span><span class="p">),</span>                            <span class="c1">#primary_wind_saturation</span>
+        <span class="n">POINTER</span><span class="p">(</span><span class="n">c_bool</span><span class="p">)</span>                             <span class="c1">#secondary_wind_saturation</span>
     <span class="p">]</span>
     <span class="n">result</span><span class="o">.</span><span class="n">get_star_star_final_state</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="n">result</span><span class="o">.</span><span class="n">get_expansion_coeff_precision</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_int</span><span class="p">,</span>  <span class="c1">#m</span>
+        <span class="n">c_int</span>   <span class="c1">#s</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">get_expansion_coeff_precision</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">evaluate_expansion_coeff</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">c_int</span><span class="p">,</span>      <span class="c1">#m</span>
+        <span class="n">c_int</span><span class="p">,</span>      <span class="c1">#s</span>
+        <span class="n">c_double</span><span class="p">,</span>   <span class="c1">#e</span>
+        <span class="n">c_bool</span>      <span class="c1">#deriv</span>
+    <span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">evaluate_expansion_coeff</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
     <span class="k">return</span> <span class="n">result</span></div>
 
-<span class="n">library</span> <span class="o">=</span> <span class="n">initialize_library</span><span class="p">()</span>
+<span class="n">library</span> <span class="o">=</span> <span class="n">initialize_library</span><span class="p">(</span>
+    <span class="s1">&#39;/home/kpenev/projects/git/poet/build/libs/evolve/shared/release/libevolve.so&#39;</span>
+<span class="p">)</span>
 </pre></div>
 
            </div>
@@ -472,16 +643,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

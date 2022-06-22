@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -158,23 +153,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="namespace-evolve">
@@ -183,115 +173,115 @@
 <div class="contents local topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#namespaces" id="id2">Namespaces</a></p></li>
-<li><p><a class="reference internal" href="#classes" id="id3">Classes</a></p></li>
-<li><p><a class="reference internal" href="#enums" id="id4">Enums</a></p></li>
-<li><p><a class="reference internal" href="#functions" id="id5">Functions</a></p></li>
-<li><p><a class="reference internal" href="#typedefs" id="id6">Typedefs</a></p></li>
-<li><p><a class="reference internal" href="#variables" id="id7">Variables</a></p></li>
+<li><a class="reference internal" href="#namespaces" id="id2">Namespaces</a></li>
+<li><a class="reference internal" href="#classes" id="id3">Classes</a></li>
+<li><a class="reference internal" href="#enums" id="id4">Enums</a></li>
+<li><a class="reference internal" href="#functions" id="id5">Functions</a></li>
+<li><a class="reference internal" href="#typedefs" id="id6">Typedefs</a></li>
+<li><a class="reference internal" href="#variables" id="id7">Variables</a></li>
 </ul>
 </div>
 <div class="section" id="namespaces">
 <h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="namespace_Evolve__Dissipation.html#namespace-evolve-dissipation"><span class="std std-ref">Namespace Evolve::Dissipation</span></a></p></li>
+<li><a class="reference internal" href="namespace_Evolve__Dissipation.html#namespace-evolve-dissipation"><span class="std std-ref">Namespace Evolve::Dissipation</span></a></li>
 </ul>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="classEvolve_1_1BinarySystem.html#exhale-class-classevolve-1-1binarysystem"><span class="std std-ref">Class BinarySystem</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1BreakLockCondition.html#exhale-class-classevolve-1-1breaklockcondition"><span class="std std-ref">Class BreakLockCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#exhale-class-classevolve-1-1brokenpowerlawphaselagzone"><span class="std std-ref">Class BrokenPowerlawPhaseLagZone</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1CombinedStoppingCondition.html#exhale-class-classevolve-1-1combinedstoppingcondition"><span class="std std-ref">Class CombinedStoppingCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1ConstPhaseLagZone.html#exhale-class-classevolve-1-1constphaselagzone"><span class="std std-ref">Class ConstPhaseLagZone</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1ConstSolutionIterator.html#exhale-class-classevolve-1-1constsolutioniterator"><span class="std std-ref">Class ConstSolutionIterator</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1DiskBinarySystem.html#exhale-class-classevolve-1-1diskbinarysystem"><span class="std std-ref">Class DiskBinarySystem</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1DissipatingBody.html#exhale-class-classevolve-1-1dissipatingbody"><span class="std std-ref">Class DissipatingBody</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1DissipatingZone.html#exhale-class-classevolve-1-1dissipatingzone"><span class="std std-ref">Class DissipatingZone</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1EccentricityExpansionCoefficients.html#exhale-class-classevolve-1-1eccentricityexpansioncoefficients"><span class="std std-ref">Class EccentricityExpansionCoefficients</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1EccentricOrbit.html#exhale-class-classevolve-1-1eccentricorbit"><span class="std std-ref">Class EccentricOrbit</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1ExpectedEvolutionMode.html#exhale-class-classevolve-1-1expectedevolutionmode"><span class="std std-ref">Template Class ExpectedEvolutionMode</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1ExternalStoppingCondition.html#exhale-class-classevolve-1-1externalstoppingcondition"><span class="std std-ref">Class ExternalStoppingCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1ExtremumInformation.html#exhale-class-classevolve-1-1extremuminformation"><span class="std std-ref">Class ExtremumInformation</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1LagForcingFrequencyBreakCondition.html#exhale-class-classevolve-1-1lagforcingfrequencybreakcondition"><span class="std std-ref">Class LagForcingFrequencyBreakCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1NoStopCondition.html#exhale-class-classevolve-1-1nostopcondition"><span class="std std-ref">Class NoStopCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1OrbitSolver.html#exhale-class-classevolve-1-1orbitsolver"><span class="std std-ref">Class OrbitSolver</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1PolynomialEvolutionZone.html#exhale-class-classevolve-1-1polynomialevolutionzone"><span class="std std-ref">Class PolynomialEvolutionZone</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1RotFastCondition.html#exhale-class-classevolve-1-1rotfastcondition"><span class="std std-ref">Class RotFastCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1SecondaryDeathCondition.html#exhale-class-classevolve-1-1secondarydeathcondition"><span class="std std-ref">Class SecondaryDeathCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1SingleTidalTermBody.html#exhale-class-classevolve-1-1singletidaltermbody"><span class="std std-ref">Class SingleTidalTermBody</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1SingleTidalTermZone.html#exhale-class-classevolve-1-1singletidaltermzone"><span class="std std-ref">Class SingleTidalTermZone</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1SpinOrbitLockInfo.html#exhale-class-classevolve-1-1spinorbitlockinfo"><span class="std std-ref">Class SpinOrbitLockInfo</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1StopHistoryInterval.html#exhale-class-classevolve-1-1stophistoryinterval"><span class="std std-ref">Class StopHistoryInterval</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1StopInformation.html#exhale-class-classevolve-1-1stopinformation"><span class="std std-ref">Class StopInformation</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1StoppingCondition.html#exhale-class-classevolve-1-1stoppingcondition"><span class="std std-ref">Class StoppingCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1SynchronizedCondition.html#exhale-class-classevolve-1-1synchronizedcondition"><span class="std std-ref">Class SynchronizedCondition</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1test__DifferentialEquations.html#exhale-class-classevolve-1-1test-differentialequations"><span class="std std-ref">Class test_DifferentialEquations</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1test__GravitationalPotential.html#exhale-class-classevolve-1-1test-gravitationalpotential"><span class="std std-ref">Class test_GravitationalPotential</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1test__OrbitSolver.html#exhale-class-classevolve-1-1test-orbitsolver"><span class="std std-ref">Class test_OrbitSolver</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1test__TidalTorquePower.html#exhale-class-classevolve-1-1test-tidaltorquepower"><span class="std std-ref">Class test_TidalTorquePower</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1TidalPotential.html#exhale-class-classevolve-1-1tidalpotential"><span class="std std-ref">Class TidalPotential</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1TidalPotentialExpansion.html#exhale-class-classevolve-1-1tidalpotentialexpansion"><span class="std std-ref">Class TidalPotentialExpansion</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1TidalPotentialTerms.html#exhale-class-classevolve-1-1tidalpotentialterms"><span class="std std-ref">Class TidalPotentialTerms</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1TidalTermTriplet.html#exhale-class-classevolve-1-1tidaltermtriplet"><span class="std std-ref">Class TidalTermTriplet</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1TransformedSolution.html#exhale-class-classevolve-1-1transformedsolution"><span class="std std-ref">Class TransformedSolution</span></a></p></li>
-<li><p><a class="reference internal" href="classEvolve_1_1ZoneOrientation.html#exhale-class-classevolve-1-1zoneorientation"><span class="std std-ref">Class ZoneOrientation</span></a></p></li>
+<li><a class="reference internal" href="classEvolve_1_1BinarySystem.html#exhale-class-classevolve-1-1binarysystem"><span class="std std-ref">Class BinarySystem</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1BreakLockCondition.html#exhale-class-classevolve-1-1breaklockcondition"><span class="std std-ref">Class BreakLockCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#exhale-class-classevolve-1-1brokenpowerlawphaselagzone"><span class="std std-ref">Class BrokenPowerlawPhaseLagZone</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1CombinedStoppingCondition.html#exhale-class-classevolve-1-1combinedstoppingcondition"><span class="std std-ref">Class CombinedStoppingCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1ConstPhaseLagZone.html#exhale-class-classevolve-1-1constphaselagzone"><span class="std std-ref">Class ConstPhaseLagZone</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1ConstSolutionIterator.html#exhale-class-classevolve-1-1constsolutioniterator"><span class="std std-ref">Class ConstSolutionIterator</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1DiskBinarySystem.html#exhale-class-classevolve-1-1diskbinarysystem"><span class="std std-ref">Class DiskBinarySystem</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1DissipatingBody.html#exhale-class-classevolve-1-1dissipatingbody"><span class="std std-ref">Class DissipatingBody</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1DissipatingZone.html#exhale-class-classevolve-1-1dissipatingzone"><span class="std std-ref">Class DissipatingZone</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1EccentricityExpansionCoefficients.html#exhale-class-classevolve-1-1eccentricityexpansioncoefficients"><span class="std std-ref">Class EccentricityExpansionCoefficients</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1EccentricOrbit.html#exhale-class-classevolve-1-1eccentricorbit"><span class="std std-ref">Class EccentricOrbit</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1ExpectedEvolutionMode.html#exhale-class-classevolve-1-1expectedevolutionmode"><span class="std std-ref">Template Class ExpectedEvolutionMode</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1ExternalStoppingCondition.html#exhale-class-classevolve-1-1externalstoppingcondition"><span class="std std-ref">Class ExternalStoppingCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1ExtremumInformation.html#exhale-class-classevolve-1-1extremuminformation"><span class="std std-ref">Class ExtremumInformation</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1LagForcingFrequencyBreakCondition.html#exhale-class-classevolve-1-1lagforcingfrequencybreakcondition"><span class="std std-ref">Class LagForcingFrequencyBreakCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1NoStopCondition.html#exhale-class-classevolve-1-1nostopcondition"><span class="std std-ref">Class NoStopCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1OrbitSolver.html#exhale-class-classevolve-1-1orbitsolver"><span class="std std-ref">Class OrbitSolver</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1PolynomialEvolutionZone.html#exhale-class-classevolve-1-1polynomialevolutionzone"><span class="std std-ref">Class PolynomialEvolutionZone</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1RotFastCondition.html#exhale-class-classevolve-1-1rotfastcondition"><span class="std std-ref">Class RotFastCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1SecondaryDeathCondition.html#exhale-class-classevolve-1-1secondarydeathcondition"><span class="std std-ref">Class SecondaryDeathCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1SingleTidalTermBody.html#exhale-class-classevolve-1-1singletidaltermbody"><span class="std std-ref">Class SingleTidalTermBody</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1SingleTidalTermZone.html#exhale-class-classevolve-1-1singletidaltermzone"><span class="std std-ref">Class SingleTidalTermZone</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1SpinOrbitLockInfo.html#exhale-class-classevolve-1-1spinorbitlockinfo"><span class="std std-ref">Class SpinOrbitLockInfo</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1StopHistoryInterval.html#exhale-class-classevolve-1-1stophistoryinterval"><span class="std std-ref">Class StopHistoryInterval</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1StopInformation.html#exhale-class-classevolve-1-1stopinformation"><span class="std std-ref">Class StopInformation</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1StoppingCondition.html#exhale-class-classevolve-1-1stoppingcondition"><span class="std std-ref">Class StoppingCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1SynchronizedCondition.html#exhale-class-classevolve-1-1synchronizedcondition"><span class="std std-ref">Class SynchronizedCondition</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1test__DifferentialEquations.html#exhale-class-classevolve-1-1test-differentialequations"><span class="std std-ref">Class test_DifferentialEquations</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1test__GravitationalPotential.html#exhale-class-classevolve-1-1test-gravitationalpotential"><span class="std std-ref">Class test_GravitationalPotential</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1test__OrbitSolver.html#exhale-class-classevolve-1-1test-orbitsolver"><span class="std std-ref">Class test_OrbitSolver</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1test__TidalTorquePower.html#exhale-class-classevolve-1-1test-tidaltorquepower"><span class="std std-ref">Class test_TidalTorquePower</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1TidalPotential.html#exhale-class-classevolve-1-1tidalpotential"><span class="std std-ref">Class TidalPotential</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1TidalPotentialExpansion.html#exhale-class-classevolve-1-1tidalpotentialexpansion"><span class="std std-ref">Class TidalPotentialExpansion</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1TidalPotentialTerms.html#exhale-class-classevolve-1-1tidalpotentialterms"><span class="std std-ref">Class TidalPotentialTerms</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1TidalTermTriplet.html#exhale-class-classevolve-1-1tidaltermtriplet"><span class="std std-ref">Class TidalTermTriplet</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1TransformedSolution.html#exhale-class-classevolve-1-1transformedsolution"><span class="std std-ref">Class TransformedSolution</span></a></li>
+<li><a class="reference internal" href="classEvolve_1_1ZoneOrientation.html#exhale-class-classevolve-1-1zoneorientation"><span class="std std-ref">Class ZoneOrientation</span></a></li>
 </ul>
 </div>
 <div class="section" id="enums">
 <h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="enum_namespaceEvolve_1af9a345b081cd4c660932793f3a078c1a.html#exhale-enum-namespaceevolve-1af9a345b081cd4c660932793f3a078c1a"><span class="std std-ref">Enum RealEvolutionQuantity</span></a></p></li>
-<li><p><a class="reference internal" href="enum_namespaceEvolve_1a85153f462ec2e3c59f6425b9830e4296.html#exhale-enum-namespaceevolve-1a85153f462ec2e3c59f6425b9830e4296"><span class="std std-ref">Enum StoppingConditionType</span></a></p></li>
-<li><p><a class="reference internal" href="enum_namespaceEvolve_1a9cce22e00bdb61d9aabad3e170a5b20d.html#exhale-enum-namespaceevolve-1a9cce22e00bdb61d9aabad3e170a5b20d"><span class="std std-ref">Enum ZoneEvolutionQuantities</span></a></p></li>
+<li><a class="reference internal" href="enum_namespaceEvolve_1af9a345b081cd4c660932793f3a078c1a.html#exhale-enum-namespaceevolve-1af9a345b081cd4c660932793f3a078c1a"><span class="std std-ref">Enum RealEvolutionQuantity</span></a></li>
+<li><a class="reference internal" href="enum_namespaceEvolve_1a85153f462ec2e3c59f6425b9830e4296.html#exhale-enum-namespaceevolve-1a85153f462ec2e3c59f6425b9830e4296"><span class="std std-ref">Enum StoppingConditionType</span></a></li>
+<li><a class="reference internal" href="enum_namespaceEvolve_1a9cce22e00bdb61d9aabad3e170a5b20d.html#exhale-enum-namespaceevolve-1a9cce22e00bdb61d9aabad3e170a5b20d"><span class="std std-ref">Enum ZoneEvolutionQuantities</span></a></li>
 </ul>
 </div>
 <div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a02fa6d486e001989b3949314377ccb9a.html#exhale-function-namespaceevolve-1a02fa6d486e001989b3949314377ccb9a"><span class="std std-ref">Function Evolve::locked_sat_deriv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1ae20e6cef17b7965d7e3827cdbe434475.html#exhale-function-namespaceevolve-1ae20e6cef17b7965d7e3827cdbe434475"><span class="std std-ref">Function Evolve::locked_sat_eq</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1aabe8d69b07b4c14b3d3a2a2e5e4d9b01.html#exhale-function-namespaceevolve-1aabe8d69b07b4c14b3d3a2a2e5e4d9b01"><span class="std std-ref">Function Evolve::locked_sat_eq_deriv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1af7b40ff86b084b10dcf7e8c1adc76c2c.html#exhale-function-namespaceevolve-1af7b40ff86b084b10dcf7e8c1adc76c2c"><span class="std std-ref">Function Evolve::locked_unsat_deriv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1ac3f30d1a5d9613386b98d6c0486987cd.html#exhale-function-namespaceevolve-1ac3f30d1a5d9613386b98d6c0486987cd"><span class="std std-ref">Function Evolve::locked_unsat_eq</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a7d7bfc3771901bab05e9eadefb586268.html#exhale-function-namespaceevolve-1a7d7bfc3771901bab05e9eadefb586268"><span class="std std-ref">Function Evolve::locked_unsat_eq_deriv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1aced8b80f49824ae588dd11249c1f7a39.html#exhale-function-namespaceevolve-1aced8b80f49824ae588dd11249c1f7a39"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const ZoneEvolutionQuantities&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1aee7ef5e9057dab6eca681e247692526c.html#exhale-function-namespaceevolve-1aee7ef5e9057dab6eca681e247692526c"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const Dissipation::Quantity&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a42021c77d495e9d56d62eded58638d3b.html#exhale-function-namespaceevolve-1a42021c77d495e9d56d62eded58638d3b"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, Dissipation::QuantityEntry)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1ae2a357cdebea9f647525fd4ab3d54ea0.html#exhale-function-namespaceevolve-1ae2a357cdebea9f647525fd4ab3d54ea0"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const SpinOrbitLockInfo&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a3fda8642b6aa5d960dcb7f90d6aaa656.html#exhale-function-namespaceevolve-1a3fda8642b6aa5d960dcb7f90d6aaa656"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, StopHistoryInterval)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a20ec6b604754c92c27dcbbaccd5c9682.html#exhale-function-namespaceevolve-1a20ec6b604754c92c27dcbbaccd5c9682"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, RealEvolutionQuantity)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a05b706d120f2b565231fc945d41ea120.html#exhale-function-namespaceevolve-1a05b706d120f2b565231fc945d41ea120"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const StopInformation&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a61119fe5581ffb2edb8cfa64e81255ed.html#exhale-function-namespaceevolve-1a61119fe5581ffb2edb8cfa64e81255ed"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const StoppingConditionType&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1aedb0bf8c5fb20a7b5ce1794adb363d76.html#exhale-function-namespaceevolve-1aedb0bf8c5fb20a7b5ce1794adb363d76"><span class="std std-ref">Function Evolve::stellar_system_diff_eq</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1a40467adaf50f95c3b3b42985934f4a62.html#exhale-function-namespaceevolve-1a40467adaf50f95c3b3b42985934f4a62"><span class="std std-ref">Function Evolve::stellar_system_jacobian</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1adb4ad17284cee2e42ad9989f6f2ce794.html#exhale-function-namespaceevolve-1adb4ad17284cee2e42ad9989f6f2ce794"><span class="std std-ref">Function Evolve::zone_specific</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceEvolve_1ac14b98e9fe68989f19e4a6f9f0e2aea1.html#exhale-function-namespaceevolve-1ac14b98e9fe68989f19e4a6f9f0e2aea1"><span class="std std-ref">Function Evolve::zone_to_zone_transform</span></a></p></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a02fa6d486e001989b3949314377ccb9a.html#exhale-function-namespaceevolve-1a02fa6d486e001989b3949314377ccb9a"><span class="std std-ref">Function Evolve::locked_sat_deriv</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1ae20e6cef17b7965d7e3827cdbe434475.html#exhale-function-namespaceevolve-1ae20e6cef17b7965d7e3827cdbe434475"><span class="std std-ref">Function Evolve::locked_sat_eq</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1aabe8d69b07b4c14b3d3a2a2e5e4d9b01.html#exhale-function-namespaceevolve-1aabe8d69b07b4c14b3d3a2a2e5e4d9b01"><span class="std std-ref">Function Evolve::locked_sat_eq_deriv</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1af7b40ff86b084b10dcf7e8c1adc76c2c.html#exhale-function-namespaceevolve-1af7b40ff86b084b10dcf7e8c1adc76c2c"><span class="std std-ref">Function Evolve::locked_unsat_deriv</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1ac3f30d1a5d9613386b98d6c0486987cd.html#exhale-function-namespaceevolve-1ac3f30d1a5d9613386b98d6c0486987cd"><span class="std std-ref">Function Evolve::locked_unsat_eq</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a7d7bfc3771901bab05e9eadefb586268.html#exhale-function-namespaceevolve-1a7d7bfc3771901bab05e9eadefb586268"><span class="std std-ref">Function Evolve::locked_unsat_eq_deriv</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1aced8b80f49824ae588dd11249c1f7a39.html#exhale-function-namespaceevolve-1aced8b80f49824ae588dd11249c1f7a39"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const ZoneEvolutionQuantities&amp;)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1aee7ef5e9057dab6eca681e247692526c.html#exhale-function-namespaceevolve-1aee7ef5e9057dab6eca681e247692526c"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const Dissipation::Quantity&amp;)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a42021c77d495e9d56d62eded58638d3b.html#exhale-function-namespaceevolve-1a42021c77d495e9d56d62eded58638d3b"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, Dissipation::QuantityEntry)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1ae2a357cdebea9f647525fd4ab3d54ea0.html#exhale-function-namespaceevolve-1ae2a357cdebea9f647525fd4ab3d54ea0"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const SpinOrbitLockInfo&amp;)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a3fda8642b6aa5d960dcb7f90d6aaa656.html#exhale-function-namespaceevolve-1a3fda8642b6aa5d960dcb7f90d6aaa656"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, StopHistoryInterval)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a05b706d120f2b565231fc945d41ea120.html#exhale-function-namespaceevolve-1a05b706d120f2b565231fc945d41ea120"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const StopInformation&amp;)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a61119fe5581ffb2edb8cfa64e81255ed.html#exhale-function-namespaceevolve-1a61119fe5581ffb2edb8cfa64e81255ed"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, const StoppingConditionType&amp;)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a20ec6b604754c92c27dcbbaccd5c9682.html#exhale-function-namespaceevolve-1a20ec6b604754c92c27dcbbaccd5c9682"><span class="std std-ref">Function Evolve::operator&lt;&lt;(std::ostream&amp;, RealEvolutionQuantity)</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1aedb0bf8c5fb20a7b5ce1794adb363d76.html#exhale-function-namespaceevolve-1aedb0bf8c5fb20a7b5ce1794adb363d76"><span class="std std-ref">Function Evolve::stellar_system_diff_eq</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1a40467adaf50f95c3b3b42985934f4a62.html#exhale-function-namespaceevolve-1a40467adaf50f95c3b3b42985934f4a62"><span class="std std-ref">Function Evolve::stellar_system_jacobian</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1adb4ad17284cee2e42ad9989f6f2ce794.html#exhale-function-namespaceevolve-1adb4ad17284cee2e42ad9989f6f2ce794"><span class="std std-ref">Function Evolve::zone_specific</span></a></li>
+<li><a class="reference internal" href="function_namespaceEvolve_1ac14b98e9fe68989f19e4a6f9f0e2aea1.html#exhale-function-namespaceevolve-1ac14b98e9fe68989f19e4a6f9f0e2aea1"><span class="std std-ref">Function Evolve::zone_to_zone_transform</span></a></li>
 </ul>
 </div>
 <div class="section" id="typedefs">
 <h2>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="typedef_namespaceEvolve_1a0f88ef47b2b1111af672a0b42000b151.html#exhale-typedef-namespaceevolve-1a0f88ef47b2b1111af672a0b42000b151"><span class="std std-ref">Typedef Evolve::GSL_JAC_TYPE</span></a></p></li>
-<li><p><a class="reference internal" href="typedef_namespaceEvolve_1a16aff3b815a3803ac614312d3acfbbaf.html#exhale-typedef-namespaceevolve-1a16aff3b815a3803ac614312d3acfbbaf"><span class="std std-ref">Typedef Evolve::GSL_ODE_TYPE</span></a></p></li>
-<li><p><a class="reference internal" href="typedef_namespaceEvolve_1a41a21e3dac64351bfc78074ad6c352af.html#exhale-typedef-namespaceevolve-1a41a21e3dac64351bfc78074ad6c352af"><span class="std std-ref">Typedef Evolve::STOP_EVOL_TYPE</span></a></p></li>
+<li><a class="reference internal" href="typedef_namespaceEvolve_1a0f88ef47b2b1111af672a0b42000b151.html#exhale-typedef-namespaceevolve-1a0f88ef47b2b1111af672a0b42000b151"><span class="std std-ref">Typedef Evolve::GSL_JAC_TYPE</span></a></li>
+<li><a class="reference internal" href="typedef_namespaceEvolve_1a16aff3b815a3803ac614312d3acfbbaf.html#exhale-typedef-namespaceevolve-1a16aff3b815a3803ac614312d3acfbbaf"><span class="std std-ref">Typedef Evolve::GSL_ODE_TYPE</span></a></li>
+<li><a class="reference internal" href="typedef_namespaceEvolve_1a41a21e3dac64351bfc78074ad6c352af.html#exhale-typedef-namespaceevolve-1a41a21e3dac64351bfc78074ad6c352af"><span class="std std-ref">Typedef Evolve::STOP_EVOL_TYPE</span></a></li>
 </ul>
 </div>
 <div class="section" id="variables">
 <h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a2d07f6ce4f1521843a22e4d582a0cbfe.html#exhale-variable-namespaceevolve-1a2d07f6ce4f1521843a22e4d582a0cbfe"><span class="std std-ref">Variable Evolve::MIN_RELATIVE_STEP</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1ab795881d4cd94ea4f063b01aef130b4f.html#exhale-variable-namespaceevolve-1ab795881d4cd94ea4f063b01aef130b4f"><span class="std std-ref">Variable Evolve::Mjup_to_Msun</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a403a9181b8c618238a0e758dacee5224.html#exhale-variable-namespaceevolve-1a403a9181b8c618238a0e758dacee5224"><span class="std std-ref">Variable Evolve::nan_func</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1ac95fb1df57f6317e6cedf4a5e32f96d0.html#exhale-variable-namespaceevolve-1ac95fb1df57f6317e6cedf4a5e32f96d0"><span class="std std-ref">Variable Evolve::one</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a7e379512ec4f1106b4dfb0d956353460.html#exhale-variable-namespaceevolve-1a7e379512ec4f1106b4dfb0d956353460"><span class="std std-ref">Variable Evolve::one_func</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a846ad1960262a0b63047d4b34a2910f2.html#exhale-variable-namespaceevolve-1a846ad1960262a0b63047d4b34a2910f2"><span class="std std-ref">Variable Evolve::Rjup_to_Rsun</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a846914b09cbcbf00576e7c1be13896a6.html#exhale-variable-namespaceevolve-1a846914b09cbcbf00576e7c1be13896a6"><span class="std std-ref">Variable Evolve::TSTART</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a5e7e3e254e680c3c5f2d841dbb7d7cd7.html#exhale-variable-namespaceevolve-1a5e7e3e254e680c3c5f2d841dbb7d7cd7"><span class="std std-ref">Variable Evolve::two_func</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a74b7e65c7f2a0c97f1e037d5cb407ed8.html#exhale-variable-namespaceevolve-1a74b7e65c7f2a0c97f1e037d5cb407ed8"><span class="std std-ref">Variable Evolve::two_hundred_func</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1a47d8d104a80ef00693adc18905f9f0aa.html#exhale-variable-namespaceevolve-1a47d8d104a80ef00693adc18905f9f0aa"><span class="std std-ref">Variable Evolve::zero</span></a></p></li>
-<li><p><a class="reference internal" href="variable_namespaceEvolve_1acdb45be7dbd65b7bb5a909f1bc78f4f8.html#exhale-variable-namespaceevolve-1acdb45be7dbd65b7bb5a909f1bc78f4f8"><span class="std std-ref">Variable Evolve::zero_func</span></a></p></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a2d07f6ce4f1521843a22e4d582a0cbfe.html#exhale-variable-namespaceevolve-1a2d07f6ce4f1521843a22e4d582a0cbfe"><span class="std std-ref">Variable Evolve::MIN_RELATIVE_STEP</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1ab795881d4cd94ea4f063b01aef130b4f.html#exhale-variable-namespaceevolve-1ab795881d4cd94ea4f063b01aef130b4f"><span class="std std-ref">Variable Evolve::Mjup_to_Msun</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a403a9181b8c618238a0e758dacee5224.html#exhale-variable-namespaceevolve-1a403a9181b8c618238a0e758dacee5224"><span class="std std-ref">Variable Evolve::nan_func</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1ac95fb1df57f6317e6cedf4a5e32f96d0.html#exhale-variable-namespaceevolve-1ac95fb1df57f6317e6cedf4a5e32f96d0"><span class="std std-ref">Variable Evolve::one</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a7e379512ec4f1106b4dfb0d956353460.html#exhale-variable-namespaceevolve-1a7e379512ec4f1106b4dfb0d956353460"><span class="std std-ref">Variable Evolve::one_func</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a846ad1960262a0b63047d4b34a2910f2.html#exhale-variable-namespaceevolve-1a846ad1960262a0b63047d4b34a2910f2"><span class="std std-ref">Variable Evolve::Rjup_to_Rsun</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a846914b09cbcbf00576e7c1be13896a6.html#exhale-variable-namespaceevolve-1a846914b09cbcbf00576e7c1be13896a6"><span class="std std-ref">Variable Evolve::TSTART</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a5e7e3e254e680c3c5f2d841dbb7d7cd7.html#exhale-variable-namespaceevolve-1a5e7e3e254e680c3c5f2d841dbb7d7cd7"><span class="std std-ref">Variable Evolve::two_func</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a74b7e65c7f2a0c97f1e037d5cb407ed8.html#exhale-variable-namespaceevolve-1a74b7e65c7f2a0c97f1e037d5cb407ed8"><span class="std std-ref">Variable Evolve::two_hundred_func</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1a47d8d104a80ef00693adc18905f9f0aa.html#exhale-variable-namespaceevolve-1a47d8d104a80ef00693adc18905f9f0aa"><span class="std std-ref">Variable Evolve::zero</span></a></li>
+<li><a class="reference internal" href="variable_namespaceEvolve_1acdb45be7dbd65b7bb5a909f1bc78f4f8.html#exhale-variable-namespaceevolve-1acdb45be7dbd65b7bb5a909f1bc78f4f8"><span class="std std-ref">Variable Evolve::zero_func</span></a></li>
 </ul>
 </div>
 </div>
@@ -324,16 +314,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

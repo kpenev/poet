@@ -130,9 +130,12 @@ $(document).ready(function(){initNavTree('classEvolve_1_1DissipatingZone.html','
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7fbae7fa783f8ae8d361e2384c1455f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0">configure</a> (bool initialize, double age, double orbital_frequency, double eccentricity, double orbital_angmom, double spin, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a>, bool spin_is_frequency)</td></tr>
+<tr class="memitem:a7fbae7fa783f8ae8d361e2384c1455f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0">configure</a> (bool initialize, double age, double orbital_frequency, double eccentricity, double orbital_angmom, double spin, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>, bool spin_is_frequency)</td></tr>
 <tr class="memdesc:a7fbae7fa783f8ae8d361e2384c1455f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the current orbit, triggering re-calculation of all quantities.  <a href="#a7fbae7fa783f8ae8d361e2384c1455f0">More...</a><br /></td></tr>
 <tr class="separator:a7fbae7fa783f8ae8d361e2384c1455f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd6fd511739d4cbd731291695ddea02d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#afd6fd511739d4cbd731291695ddea02d">set_evolution_rates</a> (double <a class="el" href="classEvolve_1_1DissipatingZone.html#a8673569e16364e71ad5742242eca3af5">angular_momentum</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>)</td></tr>
+<tr class="memdesc:afd6fd511739d4cbd731291695ddea02d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set evolution rates for this zone's properties for storing in the eveloution.  <a href="#afd6fd511739d4cbd731291695ddea02d">More...</a><br /></td></tr>
+<tr class="separator:afd6fd511739d4cbd731291695ddea02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeeeb621477ca583d88581822485b5e66"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#aeeeb621477ca583d88581822485b5e66">forcing_frequency</a> (int orbital_frequency_multiplier, int spin_frequency_multiplier, double orbital_frequency) const</td></tr>
 <tr class="memdesc:aeeeb621477ca583d88581822485b5e66"><td class="mdescLeft">&#160;</td><td class="mdescRight">The tidal forcing frequency for the given term and orbital frequency.  <a href="#aeeeb621477ca583d88581822485b5e66">More...</a><br /></td></tr>
 <tr class="separator:aeeeb621477ca583d88581822485b5e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,7 +167,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa76ed014bcb3a3fe9d7d74d5811c0aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Locks the zone spin to the orbit in the given ratio.  <a href="#aa76ed014bcb3a3fe9d7d74d5811c0aa2">More...</a><br /></td></tr>
 <tr class="separator:aa76ed014bcb3a3fe9d7d74d5811c0aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f4b0fd78d08960a2c6c2b8445903f7a"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a7f4b0fd78d08960a2c6c2b8445903f7a">modified_phase_lag</a> (int orbital_frequency_multiplier, int spin_frequency_multiplier, double <a class="el" href="classEvolve_1_1DissipatingZone.html#aeeeb621477ca583d88581822485b5e66">forcing_frequency</a>, Dissipation::QuantityEntry entry, double &amp;above_lock_value) const =0</td></tr>
-<tr class="memdesc:a7f4b0fd78d08960a2c6c2b8445903f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return the tidal phase lag time the love number for the given tidal term (or one of its derivatives).  <a href="#a7f4b0fd78d08960a2c6c2b8445903f7a">More...</a><br /></td></tr>
+<tr class="memdesc:a7f4b0fd78d08960a2c6c2b8445903f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return the tidal phase lag times the love number for the given tidal term (or one of its derivatives).  <a href="#a7f4b0fd78d08960a2c6c2b8445903f7a">More...</a><br /></td></tr>
 <tr class="separator:a7f4b0fd78d08960a2c6c2b8445903f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10961deecf8dc6b4a2cf4e3a8e1c96c8"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a10961deecf8dc6b4a2cf4e3a8e1c96c8">love_coefficient</a> (int orbital_frequency_multiplier, int spin_frequency_multiplier, Dissipation::QuantityEntry entry) const =0</td></tr>
 <tr class="memdesc:a10961deecf8dc6b4a2cf4e3a8e1c96c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return the corresponding component of the love coefficient (Lai 2012 Equation 24).  <a href="#a10961deecf8dc6b4a2cf4e3a8e1c96c8">More...</a><br /></td></tr>
@@ -217,11 +220,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7189d0d1324fc363178a287869c06c7f"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a7189d0d1324fc363178a287869c06c7f">outer_mass</a> (double age, int deriv_order=0) const =0</td></tr>
 <tr class="memdesc:a7189d0d1324fc363178a287869c06c7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as outer_mass(int), but may be evaluated at a different age than last <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a>.  <a href="#a7189d0d1324fc363178a287869c06c7f">More...</a><br /></td></tr>
 <tr class="separator:a7189d0d1324fc363178a287869c06c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab33abd7d352c916f39649565fec124ee"><td class="memItemLeft" align="right" valign="top">virtual unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#ab33abd7d352c916f39649565fec124ee">eccentricity_order</a> () const</td></tr>
-<tr class="separator:ab33abd7d352c916f39649565fec124ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bb25317ab0b9dedebd22488b5ea68f7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a5bb25317ab0b9dedebd22488b5ea68f7">change_e_order</a> (unsigned new_e_order, <a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system, bool primary, unsigned zone_index)</td></tr>
-<tr class="memdesc:a5bb25317ab0b9dedebd22488b5ea68f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the order of the eccentricity expansion performed.  <a href="#a5bb25317ab0b9dedebd22488b5ea68f7">More...</a><br /></td></tr>
-<tr class="separator:a5bb25317ab0b9dedebd22488b5ea68f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1924ee4b5175ad725830ada31f520ff3"><td class="memItemLeft" align="right" valign="top">virtual unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a1924ee4b5175ad725830ada31f520ff3">expansion_order</a> () const</td></tr>
+<tr class="separator:a1924ee4b5175ad725830ada31f520ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e1a239b29a68c5de26b44bcead84f39"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a1e1a239b29a68c5de26b44bcead84f39">change_expansion_order</a> (unsigned new_expansion_order, <a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system, bool primary, unsigned zone_index)</td></tr>
+<tr class="memdesc:a1e1a239b29a68c5de26b44bcead84f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the order of the eccentricity expansion performed.  <a href="#a1e1a239b29a68c5de26b44bcead84f39">More...</a><br /></td></tr>
+<tr class="separator:a1e1a239b29a68c5de26b44bcead84f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acce09d0673b1d5a45db97e7487c6a597"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#acce09d0673b1d5a45db97e7487c6a597">add_to_evolution</a> ()</td></tr>
 <tr class="memdesc:acce09d0673b1d5a45db97e7487c6a597"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends the state defined by last <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a>, to the evolution.  <a href="#acce09d0673b1d5a45db97e7487c6a597">More...</a><br /></td></tr>
 <tr class="separator:acce09d0673b1d5a45db97e7487c6a597"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,6 +249,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a10c785a0a346f8be4b936ec58052c750"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a10c785a0a346f8be4b936ec58052c750">dissipative</a> () const =0</td></tr>
 <tr class="memdesc:a10c785a0a346f8be4b936ec58052c750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return true iff the zone has some non-zero dissipation.  <a href="#a10c785a0a346f8be4b936ec58052c750">More...</a><br /></td></tr>
 <tr class="separator:a10c785a0a346f8be4b936ec58052c750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac674591c99824ae12773d94a8e4c2275"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#ac674591c99824ae12773d94a8e4c2275">can_lock</a> () const =0</td></tr>
+<tr class="memdesc:ac674591c99824ae12773d94a8e4c2275"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return true iff the zone's dissipation is discontinuous at zero frequency.  <a href="#ac674591c99824ae12773d94a8e4c2275">More...</a><br /></td></tr>
+<tr class="separator:ac674591c99824ae12773d94a8e4c2275"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66a99e743852bf8fd287ef5d8bdc7d56"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classEvolve_1_1CombinedStoppingCondition.html">CombinedStoppingCondition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a66a99e743852bf8fd287ef5d8bdc7d56">stopping_conditions</a> (<a class="el" href="classEvolve_1_1BinarySystem.html">BinarySystem</a> &amp;system, bool primary, unsigned zone_index)</td></tr>
 <tr class="memdesc:a66a99e743852bf8fd287ef5d8bdc7d56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conditions detecting the next possible discontinuities in the evolution due to this zone.  <a href="#a66a99e743852bf8fd287ef5d8bdc7d56">More...</a><br /></td></tr>
 <tr class="separator:a66a99e743852bf8fd287ef5d8bdc7d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -258,19 +264,27 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a92bb7e7b550521d8d0e85899fce8b9af"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a92bb7e7b550521d8d0e85899fce8b9af">next_stop_age</a> () const</td></tr>
 <tr class="memdesc:a92bb7e7b550521d8d0e85899fce8b9af"><td class="mdescLeft">&#160;</td><td class="mdescRight">The next age when the evolution needs to be stopped for a change in one of the bodies.  <a href="#a92bb7e7b550521d8d0e85899fce8b9af">More...</a><br /></td></tr>
 <tr class="separator:a92bb7e7b550521d8d0e85899fce8b9af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428c36c37e27192240a55fea68d9ae9c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a428c36c37e27192240a55fea68d9ae9c">lock_monitored</a> (bool other=false) const</td></tr>
+<tr class="memdesc:a428c36c37e27192240a55fea68d9ae9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return either of the locks being monitored.  <a href="#a428c36c37e27192240a55fea68d9ae9c">More...</a><br /></td></tr>
+<tr class="separator:a428c36c37e27192240a55fea68d9ae9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affed1ad49251220ce729338430fcb166"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#affed1ad49251220ce729338430fcb166">swap_monitored_locks</a> ()</td></tr>
+<tr class="separator:affed1ad49251220ce729338430fcb166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classEvolve_1_1ZoneOrientation"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classEvolve_1_1ZoneOrientation')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classEvolve_1_1ZoneOrientation.html">Evolve::ZoneOrientation</a></td></tr>
 <tr class="memitem:affe27e26b46157940e71e848ba63fc99 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top"><a id="affe27e26b46157940e71e848ba63fc99"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ZoneOrientation</b> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ZoneOrientation</b> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>=<a class="el" href="Evolve_2CInterface_8h.html#aef83dd7728926710f27d9fa3898683d0">Core::NaN</a>)</td></tr>
 <tr class="separator:affe27e26b46157940e71e848ba63fc99 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a91c89eb26b71fd806095ca9c3ebeda52">configure</a> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a>)</td></tr>
+<tr class="memitem:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a91c89eb26b71fd806095ca9c3ebeda52">configure</a> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>)</td></tr>
 <tr class="memdesc:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the zone orientation.  <a href="classEvolve_1_1ZoneOrientation.html#a91c89eb26b71fd806095ca9c3ebeda52">More...</a><br /></td></tr>
 <tr class="separator:a91c89eb26b71fd806095ca9c3ebeda52 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a380e8d561f1b5879ab0cd9a138c2cf1f inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">inclination</a> () const</td></tr>
-<tr class="memdesc:a380e8d561f1b5879ab0cd9a138c2cf1f inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The angle between the angular momenta of the zone and the orbit.  <a href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f">More...</a><br /></td></tr>
-<tr class="separator:a380e8d561f1b5879ab0cd9a138c2cf1f inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3029b0661a3228696721cf8e06e8de7c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">periapsis</a> () const</td></tr>
-<tr class="memdesc:a3029b0661a3228696721cf8e06e8de7c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The argument of periapsis of this zone minus the reference zone's.  <a href="classEvolve_1_1ZoneOrientation.html#a3029b0661a3228696721cf8e06e8de7c">More...</a><br /></td></tr>
-<tr class="separator:a3029b0661a3228696721cf8e06e8de7c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11f84daeb5cb852058797b5f6217b56c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top"><a id="a11f84daeb5cb852058797b5f6217b56c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_evolution_rates</b> (double <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a>, double <a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a>)</td></tr>
+<tr class="separator:a11f84daeb5cb852058797b5f6217b56c inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a76515f46c29f8af1b0ca4132d2b02 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">inclination</a> (bool evolution_rate=false) const</td></tr>
+<tr class="memdesc:ab5a76515f46c29f8af1b0ca4132d2b02 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The angle between the angular momenta of the zone and the orbit.  <a href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02">More...</a><br /></td></tr>
+<tr class="separator:ab5a76515f46c29f8af1b0ca4132d2b02 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80242443f4384a02668c0b481dff96f6 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">periapsis</a> (bool evolution_rate=false) const</td></tr>
+<tr class="memdesc:a80242443f4384a02668c0b481dff96f6 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="mdescLeft">&#160;</td><td class="mdescRight">The argument of periapsis of this zone minus the reference zone's.  <a href="classEvolve_1_1ZoneOrientation.html#a80242443f4384a02668c0b481dff96f6">More...</a><br /></td></tr>
+<tr class="separator:a80242443f4384a02668c0b481dff96f6 inherit pub_methods_classEvolve_1_1ZoneOrientation"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -286,33 +300,39 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a93ebbccffe66c639790d0f611e4b09b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a93ebbccffe66c639790d0f611e4b09b3">fix_forcing_frequency</a> (const <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;limit, int orbital_frequency_multiplier, int spin_frequency_multiplier, double &amp;<a class="el" href="classEvolve_1_1DissipatingZone.html#aeeeb621477ca583d88581822485b5e66">forcing_frequency</a>) const</td></tr>
 <tr class="memdesc:a93ebbccffe66c639790d0f611e4b09b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure the forcing frequency has the correct sign per the given constraint.  <a href="#a93ebbccffe66c639790d0f611e4b09b3">More...</a><br /></td></tr>
 <tr class="separator:a93ebbccffe66c639790d0f611e4b09b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a613a0e46703484a582466b96bbd41d24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a613a0e46703484a582466b96bbd41d24">update_lock_to_lower_e_order</a> (<a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;lock)</td></tr>
-<tr class="memdesc:a613a0e46703484a582466b96bbd41d24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates a <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html" title="Defines a lock between the spin of a dissipating body and the orbit. ">SpinOrbitLockInfo</a> variable as appropriate when decreasing the eccentricity expansion order.  <a href="#a613a0e46703484a582466b96bbd41d24">More...</a><br /></td></tr>
-<tr class="separator:a613a0e46703484a582466b96bbd41d24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0379880f9b0e842290a7bab7916e70a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a0379880f9b0e842290a7bab7916e70a1">update_locks_to_higher_e_order</a> (unsigned new_e_order)</td></tr>
-<tr class="memdesc:a0379880f9b0e842290a7bab7916e70a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates __lock and __other_lock to accomodate increasing __e_order.  <a href="#a0379880f9b0e842290a7bab7916e70a1">More...</a><br /></td></tr>
-<tr class="separator:a0379880f9b0e842290a7bab7916e70a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9981819b1c075522ddea01cebea6eec7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a9981819b1c075522ddea01cebea6eec7">initialize_locks</a> ()</td></tr>
-<tr class="memdesc:a9981819b1c075522ddea01cebea6eec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the locks the first time the zone is <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> -ed.  <a href="#a9981819b1c075522ddea01cebea6eec7">More...</a><br /></td></tr>
-<tr class="separator:a9981819b1c075522ddea01cebea6eec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afefe280fd4559c7d878e289467e78ce5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#afefe280fd4559c7d878e289467e78ce5">add_tidal_term</a> (int m, int mp, double tidal_frequency, const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;U_value, const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;U_i_deriv, const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;U_e_deriv, const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;U_error)</td></tr>
-<tr class="memdesc:afefe280fd4559c7d878e289467e78ce5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a term to the tidal torque and power arrays.  <a href="#afefe280fd4559c7d878e289467e78ce5">More...</a><br /></td></tr>
-<tr class="separator:afefe280fd4559c7d878e289467e78ce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f596ea9c6de0b066e39795762edb48e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a5f596ea9c6de0b066e39795762edb48e">update_lock_to_lower_expansion_order</a> (<a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;lock)</td></tr>
+<tr class="memdesc:a5f596ea9c6de0b066e39795762edb48e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates a <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html" title="Defines a lock between the spin of a dissipating body and the orbit. ">SpinOrbitLockInfo</a> variable as appropriate when decreasing the eccentricity expansion order.  <a href="#a5f596ea9c6de0b066e39795762edb48e">More...</a><br /></td></tr>
+<tr class="separator:a5f596ea9c6de0b066e39795762edb48e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa33f058876c420139a3bc59f57f7e033"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#aa33f058876c420139a3bc59f57f7e033">limit_above_lock_per_expansion_order</a> (int proposed_orbital_multiplier, int proposed_spin_multiplier)</td></tr>
+<tr class="memdesc:aa33f058876c420139a3bc59f57f7e033"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up __other_lock to the closest term above, given the term that would be used without limit to the orbital multiplier.  <a href="#aa33f058876c420139a3bc59f57f7e033">More...</a><br /></td></tr>
+<tr class="separator:aa33f058876c420139a3bc59f57f7e033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae81ae8515c3089cd743095a31fa11cc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#ae81ae8515c3089cd743095a31fa11cc8">set_faster_spin_lock</a> (int proposed_orbital_multiplier, int proposed_spin_multiplier)</td></tr>
+<tr class="memdesc:ae81ae8515c3089cd743095a31fa11cc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set up the lock that would be triggered if the spin increased by absolute value, given the closest term from an infinite expansion.  <a href="#ae81ae8515c3089cd743095a31fa11cc8">More...</a><br /></td></tr>
+<tr class="separator:ae81ae8515c3089cd743095a31fa11cc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a893de71e9153207332e98e91034788b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a893de71e9153207332e98e91034788b4">select_locks_to_monitor</a> ()</td></tr>
+<tr class="memdesc:a893de71e9153207332e98e91034788b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the locks the first time the zone is <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> -ed.  <a href="#a893de71e9153207332e98e91034788b4">More...</a><br /></td></tr>
+<tr class="separator:a893de71e9153207332e98e91034788b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad7299171458c26f9f672ef9b7c9513"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#aaad7299171458c26f9f672ef9b7c9513">add_tidal_term</a> (int m, int mp, double tidal_frequency, const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;U_value, const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;U_i_deriv, const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;U_e_deriv)</td></tr>
+<tr class="memdesc:aaad7299171458c26f9f672ef9b7c9513"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a term to the tidal torque and power arrays.  <a href="#aaad7299171458c26f9f672ef9b7c9513">More...</a><br /></td></tr>
+<tr class="separator:aaad7299171458c26f9f672ef9b7c9513"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa68dbd304e022be2fa286a6f1146f87"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#aaa68dbd304e022be2fa286a6f1146f87">check_locks_consistency</a> () const</td></tr>
 <tr class="memdesc:aaa68dbd304e022be2fa286a6f1146f87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs a bunch of asserts to check the consistency of __lock and __other_lock.  <a href="#aaa68dbd304e022be2fa286a6f1146f87">More...</a><br /></td></tr>
 <tr class="separator:aaa68dbd304e022be2fa286a6f1146f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a853780b894554836850671f4478c6174"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a853780b894554836850671f4478c6174">__e_order</a></td></tr>
-<tr class="memdesc:a853780b894554836850671f4478c6174"><td class="mdescLeft">&#160;</td><td class="mdescRight">The expansion order in eccentricity to use.  <a href="#a853780b894554836850671f4478c6174">More...</a><br /></td></tr>
-<tr class="separator:a853780b894554836850671f4478c6174"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a891853c141dc180f8c811f53c268f109"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a891853c141dc180f8c811f53c268f109">__expansion_order</a></td></tr>
+<tr class="memdesc:a891853c141dc180f8c811f53c268f109"><td class="mdescLeft">&#160;</td><td class="mdescRight">The tidal potential expansion order to use.  <a href="#a891853c141dc180f8c811f53c268f109">More...</a><br /></td></tr>
+<tr class="separator:a891853c141dc180f8c811f53c268f109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56653c28281ef1086cc391722ec2825c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEvolve_1_1TidalPotentialTerms.html">TidalPotentialTerms</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a56653c28281ef1086cc391722ec2825c">__potential_term</a></td></tr>
 <tr class="memdesc:a56653c28281ef1086cc391722ec2825c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The expansion of the tidal potential in series.  <a href="#a56653c28281ef1086cc391722ec2825c">More...</a><br /></td></tr>
 <tr class="separator:a56653c28281ef1086cc391722ec2825c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a497dda1141128c210eab6acfaf76e743"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a497dda1141128c210eab6acfaf76e743">__angular_momentum</a></td></tr>
 <tr class="memdesc:a497dda1141128c210eab6acfaf76e743"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current angular momentum of the zone.  <a href="#a497dda1141128c210eab6acfaf76e743">More...</a><br /></td></tr>
 <tr class="separator:a497dda1141128c210eab6acfaf76e743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ecb9adf419c03c8eaf4260bf5beef43"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a5ecb9adf419c03c8eaf4260bf5beef43">__angular_momentum_evolution_rate</a></td></tr>
+<tr class="memdesc:a5ecb9adf419c03c8eaf4260bf5beef43"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current rate of angular momentum evolution of the zone.  <a href="#a5ecb9adf419c03c8eaf4260bf5beef43">More...</a><br /></td></tr>
+<tr class="separator:a5ecb9adf419c03c8eaf4260bf5beef43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a351999746f6a8e5f8180ed111c9b846d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a351999746f6a8e5f8180ed111c9b846d">__spin_frequency</a></td></tr>
 <tr class="memdesc:a351999746f6a8e5f8180ed111c9b846d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current spin frequency of the zone.  <a href="#a351999746f6a8e5f8180ed111c9b846d">More...</a><br /></td></tr>
 <tr class="separator:a351999746f6a8e5f8180ed111c9b846d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -323,7 +343,7 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:a84a11a63d6dd62d2e454d3f046618503"><td class="mdescLeft">&#160;</td><td class="mdescRight">The absolute value of the angular momentum of the orbit.  <a href="#a84a11a63d6dd62d2e454d3f046618503">More...</a><br /></td></tr>
 <tr class="separator:a84a11a63d6dd62d2e454d3f046618503"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a9f305ddc17718354d69e4be68d8d7a"><td class="memItemLeft" align="right" valign="top">std::valarray&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#a9a9f305ddc17718354d69e4be68d8d7a">__power</a></td></tr>
-<tr class="memdesc:a9a9f305ddc17718354d69e4be68d8d7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dimensionless tidal power and its error and derivatives.  <a href="#a9a9f305ddc17718354d69e4be68d8d7a">More...</a><br /></td></tr>
+<tr class="memdesc:a9a9f305ddc17718354d69e4be68d8d7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dimensionless tidal power and its derivatives.  <a href="#a9a9f305ddc17718354d69e4be68d8d7a">More...</a><br /></td></tr>
 <tr class="separator:a9a9f305ddc17718354d69e4be68d8d7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc121cbe94df53795affe8e8f8c42d74"><td class="memItemLeft" align="right" valign="top">std::valarray&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEvolve_1_1DissipatingZone.html#abc121cbe94df53795affe8e8f8c42d74">__torque_x</a></td></tr>
 <tr class="memdesc:abc121cbe94df53795affe8e8f8c42d74"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dimensionless tidal torque in the x direction and its derivatives.  <a href="#abc121cbe94df53795affe8e8f8c42d74">More...</a><br /></td></tr>
@@ -365,10 +385,10 @@ Static Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A layer of a system body for which the tidal bulge is not exactly in phase with the tidal potential. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00122">122</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00132">132</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="afefe280fd4559c7d878e289467e78ce5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afefe280fd4559c7d878e289467e78ce5">&#9670;&nbsp;</a></span>add_tidal_term()</h2>
+<a id="aaad7299171458c26f9f672ef9b7c9513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaad7299171458c26f9f672ef9b7c9513">&#9670;&nbsp;</a></span>add_tidal_term()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -410,13 +430,7 @@ Static Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;&#160;</td>
-          <td class="paramname"><em>U_e_deriv</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classEvolve_1_1TidalTermTriplet.html">TidalTermTriplet</a> &amp;&#160;</td>
-          <td class="paramname"><em>U_error</em>&#160;</td>
+          <td class="paramname"><em>U_e_deriv</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -440,12 +454,11 @@ Static Private Attributes</h2></td></tr>
     <tr><td class="paramname">U_value</td><td>The \(\mathcal{U}_{m-1, m&#39;}\), \(\mathcal{U}_{m, m&#39;}\), and \(\mathcal{U}_{m+1, m&#39;}\) terms </td></tr>
     <tr><td class="paramname">U_i_deriv</td><td>The derivative with respect to inclination of U_value. </td></tr>
     <tr><td class="paramname">U_e_deriv</td><td>The derivative with respect to eccentricity of U_value. </td></tr>
-    <tr><td class="paramname">U_error</td><td>Estimate of the error in U_value due to truncating the eccentricity expansion. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00341">341</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00302">302</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -474,7 +487,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Appends the state defined by last <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a>, to the evolution. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00983">983</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00866">866</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -503,12 +516,12 @@ Static Private Attributes</h2></td></tr>
 
 <p>The angular momentum of the given zone in \(M_\odot R_\odot^2\). </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00537">537</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00580">580</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
-<a id="a5bb25317ab0b9dedebd22488b5ea68f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bb25317ab0b9dedebd22488b5ea68f7">&#9670;&nbsp;</a></span>change_e_order()</h2>
+<a id="ac674591c99824ae12773d94a8e4c2275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac674591c99824ae12773d94a8e4c2275">&#9670;&nbsp;</a></span>can_lock()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -517,10 +530,39 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void DissipatingZone::change_e_order </td>
+          <td class="memname">virtual bool Evolve::DissipatingZone::can_lock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Should return true iff the zone's dissipation is discontinuous at zero frequency. </p>
+
+<p>Implemented in <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a8c906309f40bbb4b8b31689f0e36f2c5">Evolve::BrokenPowerlawPhaseLagZone</a>, <a class="el" href="classEvolve_1_1SingleTidalTermZone.html#ab39576c5fbd0b17a30eea62c2627fbc6">Evolve::SingleTidalTermZone</a>, and <a class="el" href="classEvolve_1_1ConstPhaseLagZone.html#a472b4dc9b5a9c2f02816f0db60e05519">Evolve::ConstPhaseLagZone</a>.</p>
+
+</div>
+</div>
+<a id="a1e1a239b29a68c5de26b44bcead84f39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e1a239b29a68c5de26b44bcead84f39">&#9670;&nbsp;</a></span>change_expansion_order()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DissipatingZone::change_expansion_order </td>
           <td>(</td>
           <td class="paramtype">unsigned&#160;</td>
-          <td class="paramname"><em>new_e_order</em>, </td>
+          <td class="paramname"><em>new_expansion_order</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -556,7 +598,7 @@ Static Private Attributes</h2></td></tr>
 <p>Changes the order of the eccentricity expansion performed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">new_e_order</td><td>The new eccentricity expansion order. </td></tr>
+    <tr><td class="paramname">new_expansion_order</td><td>The new eccentricity expansion order. </td></tr>
     <tr><td class="paramname">system</td><td>The system being evolved. </td></tr>
     <tr><td class="paramname">primary</td><td>Is the body this zone is part of, the primary in the system. </td></tr>
     <tr><td class="paramname">zone_index</td><td>The index of the zone in the body. </td></tr>
@@ -564,9 +606,9 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#ac2af6c71b9ecb9c3a6db3fff4421c1a5">Evolve::BrokenPowerlawPhaseLagZone</a>.</p>
+<p>Reimplemented in <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a1db283782b293d1bf14f21fe088f9539">Evolve::BrokenPowerlawPhaseLagZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00941">941</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00825">825</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -595,7 +637,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Runs a bunch of asserts to check the consistency of __lock and __other_lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00105">105</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00113">113</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -693,7 +735,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a1f5e046cfa3d81bb21884716195d2fd9">Evolve::BrokenPowerlawPhaseLagZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a06cfe49173662c7c24b223ce03f0f7b5">Planet::PlanetZone</a>, <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a2c8fce80b5bba7fba1cb92888a59b61e">Evolve::PolynomialEvolutionZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarZone.html#afa61bd0913842ec74a8e7a6edb390376">Star::EvolvingStellarZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00536">536</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00443">443</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -740,7 +782,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00512">512</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00419">419</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -773,8 +815,8 @@ Static Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ab33abd7d352c916f39649565fec124ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab33abd7d352c916f39649565fec124ee">&#9670;&nbsp;</a></span>eccentricity_order()</h2>
+<a id="a1924ee4b5175ad725830ada31f520ff3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1924ee4b5175ad725830ada31f520ff3">&#9670;&nbsp;</a></span>expansion_order()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -783,7 +825,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual unsigned Evolve::DissipatingZone::eccentricity_order </td>
+          <td class="memname">virtual unsigned Evolve::DissipatingZone::expansion_order </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -797,7 +839,7 @@ Static Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>To what order should eccentricity expansion be performed for the given value of the eccentricity. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00755">755</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00774">774</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -859,7 +901,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00045">45</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00048">48</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -906,7 +948,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00658">658</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00558">558</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -936,7 +978,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The tabulated evolution of an integer quantity so far. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00795">795</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00814">814</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -966,7 +1008,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The tabulated evolution of a real valued quantity so far. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00785">785</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00804">804</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1015,14 +1057,13 @@ Static Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The rate at which the inclination between this zone and the orbit is changing. </p>
-<p><a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> must already have been called, and <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f" title="The angle between the angular momenta of the zone and the orbit. ">inclination()</a> and <a class="el" href="classEvolve_1_1DissipatingZone.html#aea6860ea5888742cdf0b0f0a5ca69ebf" title="The spin frequency of the given zone. ">spin_frequency()</a> must be current. </p>
+<p><a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> must already have been called, and <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02" title="The angle between the angular momenta of the zone and the orbit. ">inclination()</a> and <a class="el" href="classEvolve_1_1DissipatingZone.html#aea6860ea5888742cdf0b0f0a5ca69ebf" title="The spin frequency of the given zone. ">spin_frequency()</a> must be current. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">orbit_torque</td><td>The torque on the orbit or reference zone due all zones (including this one) in this zone's coordinate system. </td></tr>
     <tr><td class="paramname">zone_torque</td><td>All torques acting on this zone (i.e. tidal, angular momentum loss due to wind for the surface zone and coupling to neightboring zones due to differential rotation). </td></tr>
     <tr><td class="paramname">entry</td><td>If:<ul>
 <li>Dissipation::NO_DERIV - the value of the inclination evolution is returned,</li>
-<li>Dissipation::EXPANSION_ERROR - the orbit_torque and zone_torque arguments must be error estemates and the error estimate of the inclination evolution rate is returned.</li>
 <li>all other values - the derivative of the rate with respect to the given quantity is returned. For zone-specific quantities, derivative with respect to this zone's quantity is computed. If derivatives with respect to other zone's quantities are required, those only come in through the orbit torque and zone torque, so pass the corresponding derivative instead of the actual torques, and ignore this and subsequent arguments. </li>
 </ul>
 </td></tr>
@@ -1032,37 +1073,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00803">803</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a9981819b1c075522ddea01cebea6eec7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9981819b1c075522ddea01cebea6eec7">&#9670;&nbsp;</a></span>initialize_locks()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void DissipatingZone::initialize_locks </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Initializes the locks the first time the zone is <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> -ed. </p>
-<p>The spin frequency and orbital frequency must already be set. </p>
-
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00285">285</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00699">699</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -1092,7 +1103,45 @@ Static Private Attributes</h2></td></tr>
 
 <p>Notify the zone that it is in the process of initializing or not. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00277">277</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00305">305</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+
+</div>
+</div>
+<a id="aa33f058876c420139a3bc59f57f7e033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa33f058876c420139a3bc59f57f7e033">&#9670;&nbsp;</a></span>limit_above_lock_per_expansion_order()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Evolve::DissipatingZone::limit_above_lock_per_expansion_order </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>proposed_orbital_multiplier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>proposed_spin_multiplier</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set up __other_lock to the closest term above, given the term that would be used without limit to the orbital multiplier. </p>
 
 </div>
 </div>
@@ -1121,7 +1170,37 @@ Static Private Attributes</h2></td></tr>
 
 <p>The currntly held lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00438">438</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00480">480</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+
+</div>
+</div>
+<a id="a428c36c37e27192240a55fea68d9ae9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428c36c37e27192240a55fea68d9ae9c">&#9670;&nbsp;</a></span>lock_monitored()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a>&amp; Evolve::DissipatingZone::lock_monitored </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>other</em> = <code>false</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return either of the locks being monitored. </p>
+
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00879">879</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1161,7 +1240,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Should return true iff the given term is presently locked. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00428">428</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00470">470</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1190,7 +1269,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Should return true iff any tidal term is locked. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00434">434</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00476">476</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1219,7 +1298,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The index of this zone in the list of locked zones (valid only if locked). </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00807">807</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00826">826</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1248,7 +1327,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Reference to the <a class="el" href="classEvolve_1_1DissipatingZone.html#ae09bb044450f2ccc422f2ca6fd8e9da1" title="Reference to the locked_zone_index() of this zone. ">locked_zone_index()</a> of this zone. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00815">815</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00834">834</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1358,7 +1437,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Should return the tidal phase lag time the love number for the given tidal term (or one of its derivatives). </p>
+<p>Should return the tidal phase lag times the love number for the given tidal term (or one of its derivatives). </p>
 <p>In case the forcing frequency is exactly zero, it should return the phase lag for the case of the spin frequency approaching the term from below. The lag for spin frequency approaching from above should be written to above_lock_value. If the forcing frequency is non-zero, leave above_lock_value untouched. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -1412,7 +1491,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#ad2242d84c80ecb6c1c25366f3b97caeb">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#acbbbdd7abeadf3bed5ba92e8f4503f48">Planet::PlanetZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a6a127a3b58215746979a0a3891518079">Star::EvolvingStellarCore</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a9594160ae78f3a89571547eab62b8ac9">Star::EvolvingStellarEnvelope</a>.</p>
+<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#ad2242d84c80ecb6c1c25366f3b97caeb">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a6a127a3b58215746979a0a3891518079">Star::EvolvingStellarCore</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#acbbbdd7abeadf3bed5ba92e8f4503f48">Planet::PlanetZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a9594160ae78f3a89571547eab62b8ac9">Star::EvolvingStellarEnvelope</a>.</p>
 
 </div>
 </div>
@@ -1464,7 +1543,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a95244e3bf57b77c93205e35d2bb1779c">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a1c622ee4044e98e58402c4da63f300a3">Planet::PlanetZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a4904fba9dc67579466c788c2d7240152">Star::EvolvingStellarCore</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a6569f22b6e5aa76247ceb80cafc28987">Star::EvolvingStellarEnvelope</a>.</p>
+<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a95244e3bf57b77c93205e35d2bb1779c">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a4904fba9dc67579466c788c2d7240152">Star::EvolvingStellarCore</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a1c622ee4044e98e58402c4da63f300a3">Planet::PlanetZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a6569f22b6e5aa76247ceb80cafc28987">Star::EvolvingStellarEnvelope</a>.</p>
 
 </div>
 </div>
@@ -1495,7 +1574,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1EvolvingStellarZone.html#a1f46c65efd4229f43ec6df8028c0aa91">Star::EvolvingStellarZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00852">852</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00875">875</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1537,7 +1616,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a6e5907775b60d683fcc137b14a81d4a2">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a02accc55e88cddd833f4939c89673c7b">Planet::PlanetZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a0ab09de3afb2674081c8bc7fa7069ec1">Star::EvolvingStellarCore</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a718f67fc9fbce27da8d19d77a365b9c7">Star::EvolvingStellarEnvelope</a>.</p>
+<p>Implemented in <a class="el" href="classStar_1_1EvolvingStellarCore.html#a0ab09de3afb2674081c8bc7fa7069ec1">Star::EvolvingStellarCore</a>, <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a6e5907775b60d683fcc137b14a81d4a2">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a02accc55e88cddd833f4939c89673c7b">Planet::PlanetZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a718f67fc9fbce27da8d19d77a365b9c7">Star::EvolvingStellarEnvelope</a>.</p>
 
 </div>
 </div>
@@ -1577,7 +1656,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Same as outer_mass(int), but may be evaluated at a different age than last <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a>. </p>
 
-<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a9d325ca4cd80e758a4099c8be6e44f10">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a0d7c0835b2a46e54d3fbead6cfec47ab">Planet::PlanetZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a51a20a3c32b515dc6d752a04ae8c78c0">Star::EvolvingStellarCore</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a820681ccb122eec3442db5ea928ba731">Star::EvolvingStellarEnvelope</a>.</p>
+<p>Implemented in <a class="el" href="classStar_1_1EvolvingStellarCore.html#a51a20a3c32b515dc6d752a04ae8c78c0">Star::EvolvingStellarCore</a>, <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a9d325ca4cd80e758a4099c8be6e44f10">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a0d7c0835b2a46e54d3fbead6cfec47ab">Planet::PlanetZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#a820681ccb122eec3442db5ea928ba731">Star::EvolvingStellarEnvelope</a>.</p>
 
 </div>
 </div>
@@ -1619,7 +1698,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#ab8ec1089643a327f9d9ad0dbd865543d">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a3068652575f0d76ef427d6b78c1a6dcb">Planet::PlanetZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a513e24776b6e48c5b30f73fcfe505c77">Star::EvolvingStellarCore</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#ac949bbf9ff20f6a36fd9f31f74454443">Star::EvolvingStellarEnvelope</a>.</p>
+<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#ab8ec1089643a327f9d9ad0dbd865543d">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a513e24776b6e48c5b30f73fcfe505c77">Star::EvolvingStellarCore</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a3068652575f0d76ef427d6b78c1a6dcb">Planet::PlanetZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#ac949bbf9ff20f6a36fd9f31f74454443">Star::EvolvingStellarEnvelope</a>.</p>
 
 </div>
 </div>
@@ -1659,7 +1738,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Same as outer_radius(int) but may be evaluated at a different age than for last confgure(). </p>
 
-<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a68876c203411f01cd7d6199497f2f7d0">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a6926a28db53e5fdf651b7093f06b98a4">Planet::PlanetZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a9b55c198ac08786a8978eb6149d133aa">Star::EvolvingStellarCore</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#ad5fe06c85ccd73a2889a01993bbaaefb">Star::EvolvingStellarEnvelope</a>.</p>
+<p>Implemented in <a class="el" href="classEvolve_1_1PolynomialEvolutionZone.html#a68876c203411f01cd7d6199497f2f7d0">Evolve::PolynomialEvolutionZone</a>, <a class="el" href="classStar_1_1EvolvingStellarCore.html#a9b55c198ac08786a8978eb6149d133aa">Star::EvolvingStellarCore</a>, <a class="el" href="classPlanet_1_1PlanetZone.html#a6926a28db53e5fdf651b7093f06b98a4">Planet::PlanetZone</a>, and <a class="el" href="classStar_1_1EvolvingStellarEnvelope.html#ad5fe06c85ccd73a2889a01993bbaaefb">Star::EvolvingStellarEnvelope</a>.</p>
 
 </div>
 </div>
@@ -1708,7 +1787,7 @@ Static Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The rate at which the periapsis of the orbit/reference zone in this zone's equatorial plane is changing. </p>
-<p>Either <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> or <a class="el" href="classEvolve_1_1DissipatingZone.html#aa0ac0157cffe04947000fa515cd22bf4" title="Defines the angular momentum of the reference zone for single body evolution. ">set_reference_zone_angmom()</a> must already have been called, and <a class="el" href="classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f" title="The angle between the angular momenta of the zone and the orbit. ">inclination()</a> and <a class="el" href="classEvolve_1_1DissipatingZone.html#aea6860ea5888742cdf0b0f0a5ca69ebf" title="The spin frequency of the given zone. ">spin_frequency()</a> must be current. </p>
+<p>Either <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> or <a class="el" href="classEvolve_1_1DissipatingZone.html#aa0ac0157cffe04947000fa515cd22bf4" title="Defines the angular momentum of the reference zone for single body evolution. ">set_reference_zone_angmom()</a> must already have been called, and <a class="el" href="classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02" title="The angle between the angular momenta of the zone and the orbit. ">inclination()</a> and <a class="el" href="classEvolve_1_1DissipatingZone.html#aea6860ea5888742cdf0b0f0a5ca69ebf" title="The spin frequency of the given zone. ">spin_frequency()</a> must be current. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">orbit_torque</td><td>The torque on the orbit due to all other zones in this zone's coordinate system. </td></tr>
@@ -1720,7 +1799,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00699">699</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00609">609</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -1753,7 +1832,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classStar_1_1EvolvingStellarZone.html#ad42c99ec7625ce0771645133711147d8">Star::EvolvingStellarZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00847">847</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00870">870</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1774,7 +1853,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Update the zone as necessary when the held lock disappears from the expansion. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00896">896</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00778">778</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -1802,7 +1881,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00919">919</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00802">802</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -1831,7 +1910,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Discards all evolution. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l01028">1028</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00916">916</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -1867,7 +1946,136 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l01036">1036</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00924">924</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a893de71e9153207332e98e91034788b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a893de71e9153207332e98e91034788b4">&#9670;&nbsp;</a></span>select_locks_to_monitor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DissipatingZone::select_locks_to_monitor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the locks the first time the zone is <a class="el" href="classEvolve_1_1DissipatingZone.html#a7fbae7fa783f8ae8d361e2384c1455f0" title="Defines the current orbit, triggering re-calculation of all quantities. ">configure()</a> -ed. </p>
+<p>The spin frequency and orbital frequency must already be set. </p>
+
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00234">234</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+
+</div>
+</div>
+<a id="afd6fd511739d4cbd731291695ddea02d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd6fd511739d4cbd731291695ddea02d">&#9670;&nbsp;</a></span>set_evolution_rates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Evolve::DissipatingZone::set_evolution_rates </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>angular_momentum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inclination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>periapsis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set evolution rates for this zone's properties for storing in the eveloution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">angular_momentum</td><td>The rate at which the magnitude of the angular momentum changes </td></tr>
+    <tr><td class="paramname">inclination</td><td>The rate at which the obliquity changes </td></tr>
+    <tr><td class="paramname">periapsis</td><td>The rate at which the periapsis changes </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00355">355</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+
+</div>
+</div>
+<a id="ae81ae8515c3089cd743095a31fa11cc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae81ae8515c3089cd743095a31fa11cc8">&#9670;&nbsp;</a></span>set_faster_spin_lock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Evolve::DissipatingZone::set_faster_spin_lock </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>proposed_orbital_multiplier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>proposed_spin_multiplier</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set up the lock that would be triggered if the spin increased by absolute value, given the closest term from an infinite expansion. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">proposed_orbital_multiplier</td><td>The proposed coefficient for the orbital frequency for the closest term to the current combination of orbital and spin frequencies that would lock if the spin got larger by absolute value, if the tidal potential expansion was calculated up to infinitely large s. Should be negative if the spin of the zone is negative. </td></tr>
+    <tr><td class="paramname">proposed_spin_multiplier</td><td>The proposed coefficient of the zone spin frequency for the closest term to the current combination of orbital and spin frequencies that would lock if the spin got larger by absolute value, if the tidal potential expansion was calculated up to infinitely large s. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1907,7 +2115,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Locks the zone spin to the orbit in the given ratio. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00451">451</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00493">493</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1937,7 +2145,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Defines the angular momentum of the reference zone for single body evolution. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00345">345</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00390">390</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1966,7 +2174,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The spin frequency of the given zone. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00534">534</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00577">577</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -1995,7 +2203,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Notifies the zone that its spin just jumped discontinously. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00841">841</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00864">864</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2052,7 +2260,36 @@ Static Private Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classEvolve_1_1BrokenPowerlawPhaseLagZone.html#a0519309f1f01dc58b2f9a9c579c7fbaa">Evolve::BrokenPowerlawPhaseLagZone</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l01046">1046</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00934">934</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
+
+</div>
+</div>
+<a id="affed1ad49251220ce729338430fcb166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affed1ad49251220ce729338430fcb166">&#9670;&nbsp;</a></span>swap_monitored_locks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Evolve::DissipatingZone::swap_monitored_locks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Switch the two locks being monitored (does not change zone behavior).</p>
+<p>This is just for convenience to simplify lock tracking by users of this class. </p>
+
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00891">891</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2099,7 +2336,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00540">540</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00583">583</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2146,7 +2383,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00562">562</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00602">602</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2187,7 +2424,7 @@ Static Private Attributes</h2></td></tr>
 <p>The dimensionless tidal torque along x. </p>
 <p>See <a class="el" href="classEvolve_1_1DissipatingZone.html#a4f46420b06ab821566bef6806dbe7a98" title="The dimensionless tidal power or one of its derivatives. ">tidal_power()</a> for a description of the arguments. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00589">589</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00626">626</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2234,7 +2471,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00605">605</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00639">639</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2275,7 +2512,7 @@ Static Private Attributes</h2></td></tr>
 <p>The dimensionless torque along y. </p>
 <p>See <a class="el" href="classEvolve_1_1DissipatingZone.html#a4f46420b06ab821566bef6806dbe7a98" title="The dimensionless tidal power or one of its derivatives. ">tidal_power()</a> for a description of the arguments. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00636">636</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00667">667</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2322,7 +2559,7 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00656">656</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00684">684</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2363,7 +2600,7 @@ Static Private Attributes</h2></td></tr>
 <p>The dimensionless tidal torque along z. </p>
 <p>See <a class="el" href="classEvolve_1_1DissipatingZone.html#a4f46420b06ab821566bef6806dbe7a98" title="The dimensionless tidal power or one of its derivatives. ">tidal_power()</a> for a description of the arguments. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00681">681</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00706">706</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2410,12 +2647,12 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00697">697</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00719">719</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
-<a id="a613a0e46703484a582466b96bbd41d24"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a613a0e46703484a582466b96bbd41d24">&#9670;&nbsp;</a></span>update_lock_to_lower_e_order()</h2>
+<a id="a5f596ea9c6de0b066e39795762edb48e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f596ea9c6de0b066e39795762edb48e">&#9670;&nbsp;</a></span>update_lock_to_lower_expansion_order()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2424,7 +2661,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void DissipatingZone::update_lock_to_lower_e_order </td>
+          <td class="memname">void DissipatingZone::update_lock_to_lower_expansion_order </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html">SpinOrbitLockInfo</a> &amp;&#160;</td>
           <td class="paramname"><em>lock</em></td><td>)</td>
@@ -2439,39 +2676,9 @@ Static Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Updates a <a class="el" href="classEvolve_1_1SpinOrbitLockInfo.html" title="Defines a lock between the spin of a dissipating body and the orbit. ">SpinOrbitLockInfo</a> variable as appropriate when decreasing the eccentricity expansion order. </p>
-<p>__e_order must already be updated to the new value. </p>
+<p>__expansion_order must already be updated to the new value. </p>
 
 <p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00189">189</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a0379880f9b0e842290a7bab7916e70a1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0379880f9b0e842290a7bab7916e70a1">&#9670;&nbsp;</a></span>update_locks_to_higher_e_order()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void DissipatingZone::update_locks_to_higher_e_order </td>
-          <td>(</td>
-          <td class="paramtype">unsigned&#160;</td>
-          <td class="paramname"><em>new_e_order</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Updates __lock and __other_lock to accomodate increasing __e_order. </p>
-
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8cpp_source.html#l00236">236</a> of file <a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a>.</p>
 
 </div>
 </div>
@@ -2498,12 +2705,12 @@ Static Private Attributes</h2></td></tr>
 
 <p>The current angular momentum of the zone. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00140">140</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00150">150</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
-<a id="a853780b894554836850671f4478c6174"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a853780b894554836850671f4478c6174">&#9670;&nbsp;</a></span>__e_order</h2>
+<a id="a5ecb9adf419c03c8eaf4260bf5beef43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ecb9adf419c03c8eaf4260bf5beef43">&#9670;&nbsp;</a></span>__angular_momentum_evolution_rate</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2512,7 +2719,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned Evolve::DissipatingZone::__e_order</td>
+          <td class="memname">double Evolve::DissipatingZone::__angular_momentum_evolution_rate</td>
         </tr>
       </table>
   </td>
@@ -2522,9 +2729,9 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The expansion order in eccentricity to use. </p>
+<p>The current rate of angular momentum evolution of the zone. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00125">125</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00150">150</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2550,7 +2757,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The integer quantities whose evolution is tracked. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00195">195</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00207">207</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2576,7 +2783,33 @@ Static Private Attributes</h2></td></tr>
 
 <p>The floating point quantities whose evolution is tracked. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00192">192</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00204">204</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+
+</div>
+</div>
+<a id="a891853c141dc180f8c811f53c268f109"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a891853c141dc180f8c811f53c268f109">&#9670;&nbsp;</a></span>__expansion_order</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned Evolve::DissipatingZone::__expansion_order</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The tidal potential expansion order to use. </p>
+
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00135">135</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2602,7 +2835,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Is the zone in the middle of initializing (disable lock check)? </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00202">202</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00214">214</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2629,7 +2862,7 @@ Static Private Attributes</h2></td></tr>
 <p>The lock the zone is currently held at (disabled if not locked). </p>
 <p>If the zone is not locked, this is one of the two terms closest to the current spin-orbit ratio and its sign is correct. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00185">185</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00197">197</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2655,7 +2888,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>If this zone is locked, this is its index in the list of locked zones in the system. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00199">199</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00211">211</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2681,7 +2914,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The absolute value of the angular momentum of the orbit. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00140">140</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00150">150</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2707,7 +2940,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The orbital frequency (rad/day). </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00140">140</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00150">150</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2733,7 +2966,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The term closest matched by the current spin-orbit ratio in the other direction from __lock. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00185">185</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00197">197</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2759,7 +2992,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The expansion of the tidal potential in series. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00128">128</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00138">138</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2783,10 +3016,10 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The dimensionless tidal power and its error and derivatives. </p>
-<p>Consists of pairs of numbers one for each derivative. The first number of each pair is always filled and if the zone is in a lock it is the tidal power calculated assuming the zone spin frequency approaches the lock from below. The second number is filled only if the zone is in a spin-orbit lock and is the tidal power assuming the zone spin frequency approaches the lock from above. After all derivatives the final pair of numbers give the error in the undifferentiated value. </p>
+<p>The dimensionless tidal power and its derivatives. </p>
+<p>Consists of pairs of numbers one for each derivative. The first number of each pair is always filled and if the zone is in a lock it is the tidal power calculated assuming the zone spin frequency approaches the lock from below. The second number is filled only if the zone is in a spin-orbit lock and is the tidal power assuming the zone spin frequency approaches the lock from above. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00161">161</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00173">173</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2812,7 +3045,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>The current spin frequency of the zone. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00140">140</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00150">150</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2839,7 +3072,7 @@ Static Private Attributes</h2></td></tr>
 <p>The dimensionless tidal torque in the x direction and its derivatives. </p>
 <p>See description of __power for details on the content. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00161">161</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00173">173</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2865,7 +3098,7 @@ Static Private Attributes</h2></td></tr>
 <b>Initial value:</b><div class="fragment"><div class="line">={0.0,           </div><div class="line">                                                           1.0,           </div><div class="line">                                                           std::sqrt(1.5),</div><div class="line">                                                           std::sqrt(1.5),</div><div class="line">                                                           1.0}</div></div><!-- fragment -->
 <p>\(\kappa_{m,m&#39;}^-/\kappa_{m,m&#39;}\) as a function of \(m=-2 \ldots 2\). </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00136">136</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00146">146</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2891,7 +3124,7 @@ Static Private Attributes</h2></td></tr>
 <b>Initial value:</b><div class="fragment"><div class="line">={1.0,</div><div class="line">                                                          std::sqrt(1.5),</div><div class="line">                                                          std::sqrt(1.5),</div><div class="line">                                                          1.0,</div><div class="line">                                                          0.0}</div></div><!-- fragment -->
 <p>\(\kappa_{m,m&#39;}^+/\kappa_{m,m&#39;}\) as a function of \(m=-2 \ldots 2\). </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00132">132</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00142">142</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2918,7 +3151,7 @@ Static Private Attributes</h2></td></tr>
 <p>The dimensionless tidal torque in the y direction and its derivatives. </p>
 <p>See description of __power for details on the content. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00161">161</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00173">173</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
@@ -2945,13 +3178,13 @@ Static Private Attributes</h2></td></tr>
 <p>The dimensionless tidal torque in the z direction and its derivatives. </p>
 <p>See description of __power for details on the content. </p>
 
-<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00161">161</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DissipatingZone_8h_source.html#l00173">173</a> of file <a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a></li>
-<li>/Users/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingZone_8h_source.html">DissipatingZone.h</a></li>
+<li>/home/kpenev/projects/git/poet/poet_src/Evolve/<a class="el" href="DissipatingZone_8cpp_source.html">DissipatingZone.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -2959,7 +3192,7 @@ Static Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceEvolve.html">Evolve</a></li><li class="navelem"><a class="el" href="classEvolve_1_1DissipatingZone.html">DissipatingZone</a></li>
-    <li class="footer">Generated on Sun Dec 1 2019 01:10:26 for Planetary Orbital Evolution due to Tides by
+    <li class="footer">Generated on Wed May 18 2022 17:13:10 for Planetary Orbital Evolution due to Tides by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

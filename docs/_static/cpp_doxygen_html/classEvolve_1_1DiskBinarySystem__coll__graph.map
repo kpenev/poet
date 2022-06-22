@@ -1,4 +1,4 @@
 <map id="Evolve::DiskBinarySystem" name="Evolve::DiskBinarySystem">
-<area shape="rect" id="node2" href="$classEvolve_1_1BinarySystem.html" title="Describes a system of two bodies orbiting each other. " alt="" coords="18,791,240,1448"/>
-<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="5,5,253,711"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1BinarySystem.html" title="Describes a system of two bodies orbiting each other. " alt="" coords="11,849,245,1559"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1DissipatingBody.html" title="A base class for any body contributing to tidal dissipation. " alt="" coords="5,5,251,767"/>
 </map>

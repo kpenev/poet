@@ -1,9 +1,18 @@
 var searchData=
 [
-  ['z_5ffrom_5ffeh',['z_from_feh',['../group__StellarEvolution__group.html#ga6b8b63e13cb806849928575ca9feead1',1,'z_from_feh(double feh):&#160;CInterface.cpp'],['../group__StellarEvolution__group.html#ga6b8b63e13cb806849928575ca9feead1',1,'z_from_feh(double feh):&#160;CInterface.cpp']]],
-  ['zahn77_5feccentricity_5frate_5fcoef',['zahn77_eccentricity_rate_coef',['../classEvolve_1_1test__DifferentialEquations.html#a8664cbbff9db80b5b74e5d49b0a75e8c',1,'Evolve::test_DifferentialEquations']]],
-  ['zahn77_5fsemimajor_5frate_5fcoef',['zahn77_semimajor_rate_coef',['../classEvolve_1_1test__DifferentialEquations.html#ac5d27086da6b3ba7292321217a290f3f',1,'Evolve::test_DifferentialEquations']]],
-  ['zeroderivatives',['ZeroDerivatives',['../classCore_1_1ZeroDerivatives.html#ad9bc0be49579fb2e0d4656452508b84d',1,'Core::ZeroDerivatives']]],
-  ['zone',['zone',['../classEvolve_1_1DissipatingBody.html#a018652f1e3dbf59ec377873dbe03a2e0',1,'Evolve::DissipatingBody::zone(unsigned zone_index) const =0'],['../classEvolve_1_1DissipatingBody.html#a431bafeb3fb51c0b225807e8c758df68',1,'Evolve::DissipatingBody::zone(unsigned zone_index)=0'],['../classPlanet_1_1Planet.html#ac2a15e0f8407df7228e81eaaefacafd1',1,'Planet::Planet::zone(unsigned zone_index) const'],['../classPlanet_1_1Planet.html#ad2d7be293119bc3b6f99e5c368e39932',1,'Planet::Planet::zone(unsigned zone_index)'],['../classPlanet_1_1Planet.html#a30b403c2cb0ebadfa3cd91e9bd95dedb',1,'Planet::Planet::zone() const'],['../classPlanet_1_1Planet.html#a1a539cb313b5e70e28da99d3a6ed2e1e',1,'Planet::Planet::zone()'],['../classStar_1_1InterpolatedEvolutionStar.html#a99477ac1cc609d4801cd30220686e4c1',1,'Star::InterpolatedEvolutionStar::zone(unsigned zone_index)'],['../classStar_1_1InterpolatedEvolutionStar.html#ac42745f0a7598e4653ffdceced0a050e',1,'Star::InterpolatedEvolutionStar::zone(unsigned zone_index) const'],['../classEvolve_1_1SingleTidalTermBody.html#a3a2635f045bcb0ec5ce4712c6c5936bb',1,'Evolve::SingleTidalTermBody::zone(unsigned zone_index) const'],['../classEvolve_1_1SingleTidalTermBody.html#a5b2eb31b10c53c6be66c53b89923164d',1,'Evolve::SingleTidalTermBody::zone(unsigned zone_index)']]],
-  ['zone_5fto_5fzone_5ftransform',['zone_to_zone_transform',['../namespaceEvolve.html#ac14b98e9fe68989f19e4a6f9f0e2aea1',1,'Evolve']]]
+  ['_7ebrokenpowerlawphaselagzone',['~BrokenPowerlawPhaseLagZone',['../classEvolve_1_1BrokenPowerlawPhaseLagZone.html#af9ca7a72b81b4fe8c8d362cc853206c7',1,'Evolve::BrokenPowerlawPhaseLagZone']]],
+  ['_7ecombinedstoppingcondition',['~CombinedStoppingCondition',['../classEvolve_1_1CombinedStoppingCondition.html#ab905e9751c375a612d66d1595e2bb77e',1,'Evolve::CombinedStoppingCondition']]],
+  ['_7ecommandlineoptions',['~CommandLineOptions',['../classCommandLineOptions.html#a71097297049056c0415ec59555d8ae19',1,'CommandLineOptions']]],
+  ['_7edissipatingbody',['~DissipatingBody',['../classEvolve_1_1DissipatingBody.html#af1d98b47a862059a06d953aed1d03245',1,'Evolve::DissipatingBody']]],
+  ['_7eevolvingstellarzone',['~EvolvingStellarZone',['../classStar_1_1EvolvingStellarZone.html#af905224a577b37a3bbda87502048763d',1,'Star::EvolvingStellarZone']]],
+  ['_7efunctionderivatives',['~FunctionDerivatives',['../classCore_1_1FunctionDerivatives.html#a11ef72095743e807b5bf4f37aee012bb',1,'Core::FunctionDerivatives']]],
+  ['_7egeneral',['~General',['../classCore_1_1Error_1_1General.html#a35eb17dffd2ddea22ad81e8051277fcb',1,'Core::Error::General']]],
+  ['_7einterpolatedderivatives',['~InterpolatedDerivatives',['../classStellarEvolution_1_1InterpolatedDerivatives.html#ab8eb98a50c5fc03badcca0787bf5185f',1,'StellarEvolution::InterpolatedDerivatives']]],
+  ['_7einterpolatedevolutionstar',['~InterpolatedEvolutionStar',['../classStar_1_1InterpolatedEvolutionStar.html#a371777d475edaf58d0c6f13b66708166',1,'Star::InterpolatedEvolutionStar']]],
+  ['_7eoneargumentfunction',['~OneArgumentFunction',['../classCore_1_1OneArgumentFunction.html#a7b36225a3a34b83a2b6e54852dd89fa9',1,'Core::OneArgumentFunction']]],
+  ['_7eorbitsolver',['~OrbitSolver',['../classEvolve_1_1OrbitSolver.html#af75436fee73a9c5f9526137336151e7c',1,'Evolve::OrbitSolver']]],
+  ['_7eremovelogderiv',['~RemoveLogDeriv',['../classStellarEvolution_1_1RemoveLogDeriv.html#aaa01aa6742749228602e325ddfbae91b',1,'StellarEvolution::RemoveLogDeriv']]],
+  ['_7esumderivatives',['~SumDerivatives',['../classStellarEvolution_1_1SumDerivatives.html#a418bd4466a28d5c38bb4025ba643635b',1,'StellarEvolution::SumDerivatives']]],
+  ['_7esumquantity',['~SumQuantity',['../classStellarEvolution_1_1SumQuantity.html#aba8cda704793a121c4dd18a914ac211c',1,'StellarEvolution::SumQuantity']]],
+  ['_7etransformedsolution',['~TransformedSolution',['../classEvolve_1_1TransformedSolution.html#a09465c5b30c0c95a39790b602b7f9342',1,'Evolve::TransformedSolution']]]
 ];

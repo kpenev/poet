@@ -17,23 +17,13 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -42,16 +32,21 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Python Interface" href="python_interface.html" />
     <link rel="prev" title="(P)lanetary (O)rbital (E)volution due to (T)ides (POET)" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -163,23 +158,18 @@
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
+.nbinput.nblast,
+.nboutput.nblast {
     margin-bottom: 19px;  /* padding has already 5px */
 }
 
 /* ... except between code cells! */
-.nblast.container + .nbinput.container {
+.nblast + .nbinput {
     margin-top: -19px;
 }
 
 .admonition > p:before {
     margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
 }
 </style>
 <div class="section" id="installation">
@@ -192,19 +182,23 @@ getting the GNU science library.</p>
 <h2>Installation Steps:<a class="headerlink" href="#installation-steps" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ol class="arabic">
-<li><p>Install  <a class="reference external" href="https://www.java.com/en/download/">JAVA</a></p></li>
-<li><p>Install required libraries:</p>
-<p>2.1 gls</p>
+<li><p class="first">Install  <a class="reference external" href="https://www.java.com/en/download/">JAVA</a></p>
+</li>
+<li><p class="first">Install required libraries:</p>
+<p>2.1 gsl</p>
 <p>2.2 glscblas</p>
 <p>2.3 boost_serialization</p>
 <p>2.4 pthread</p>
 </li>
-<li><p>Run a terminal and <code class="docutils literal notranslate"><span class="pre">cd</span></code> to a place where you would like to download POET</p></li>
+<li><p class="first">Run a terminal and <code class="docutils literal notranslate"><span class="pre">cd</span></code> to a place where you would like to download POET</p>
+</li>
 </ol>
 <ol class="arabic" start="3">
-<li><p>Clone the poet repository: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:kpenev/poet.git</span></code></p></li>
-<li><p>Change to the root directory: <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">poet</span></code></p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">./gradlew</span> <span class="pre">build</span></code>. This should take a few minutes and end with a
+<li><p class="first">Clone the poet repository: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:kpenev/poet.git</span></code></p>
+</li>
+<li><p class="first">Change to the root directory: <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">poet</span></code></p>
+</li>
+<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">./gradlew</span> <span class="pre">build</span></code>. This should take a few minutes and end with a
 message that the build was successful. Something along the lines of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(base) domat:poet kpenev$ ./gradlew build
 Starting a Gradle Daemon (subsequent builds will be faster)
@@ -214,7 +208,7 @@ BUILD SUCCESSFUL in 4m 58s
 </pre></div>
 </div>
 </li>
-<li><p>The step above will create 4 shared libraries, with paths relative to poet:</p>
+<li><p class="first">The step above will create 4 shared libraries, with paths relative to poet:</p>
 <p>6.1 <code class="docutils literal notranslate"><span class="pre">build/libs/evolve/shared/release/libevolve.dylib</span></code> (MacOS) or
 <code class="docutils literal notranslate"><span class="pre">build/libs/evolve/shared/release/libevolve.so</span></code> (Linux)</p>
 <p>6.2 <code class="docutils literal notranslate"><span class="pre">build/libs/planet/shared/release/libplanet.dylib</span></code> (MacOS) or
@@ -231,7 +225,7 @@ system can find them when requested. If you have sudo privileges, the
 standard is to copy them to <code class="docutils literal notranslate"><span class="pre">/usr/local/lib/</span></code>. Other options are
 operating system specific.</p>
 </li>
-<li><p>Copy (or symlink) the sub-directory <code class="docutils literal notranslate"><span class="pre">PythonPackage</span></code> to a location
+<li><p class="first">Copy (or symlink) the sub-directory <code class="docutils literal notranslate"><span class="pre">PythonPackage</span></code> to a location
 where the python import mechanism can find it. The examples in this
 documentation will assume that the top level of the package is called
 <code class="docutils literal notranslate"><span class="pre">poet</span></code>. For example if using python3.7 under anaconda:</p>
@@ -249,7 +243,7 @@ export PYTHONPATH=$PYTHONPATH:~/my_python_packages
 or <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> file under MacOS, otherwise you will have to execute
 that in each shell where you plan to run POET.</p>
 </li>
-<li><p>Create the defalut stellar evolution interpolator:</p>
+<li><p class="first">Create the defalut stellar evolution interpolator:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">scripts</span>
 <span class="o">./</span><span class="n">add_default_interpolator</span>
 </pre></div>
@@ -275,7 +269,7 @@ his is going on, you can use the –num-threads argument.</p>
         <a href="python_interface.html" class="btn btn-neutral float-right" title="Python Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="(P)lanetary (O)rbital (E)volution due to (T)ides (POET)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="(P)lanetary (O)rbital (E)volution due to (T)ides (POET)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -301,16 +295,26 @@ his is going on, you can use the –num-threads argument.</p>
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

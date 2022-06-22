@@ -1,9 +1,0 @@
-digraph "YRECEvolution"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node0 [label="{YRECEvolution\n|- mass_list\l- ages\l- radii\l- luminosities\l- rad_masses\l- core_boundaries\l- conv_inertias\l- rad_inertias\l|+ YRECEvolution()\l+ YRECEvolution()\l- read_model_file()\l- begin()\l- end()\l- move()\l- sort_masses()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
-  Node1 [label="{StellarEvolution\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
-}

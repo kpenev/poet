@@ -1,6 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classEvolve_1_1test__DifferentialEquations.html" title="The test suite that compares the differential equations for eccentricity and semimajor axis to litera..." alt="" coords="118,5,307,49"/>
-<area shape="rect" id="node3" href="$classEvolve_1_1test__GravitationalPotential.html" title="The test suite that compares the tidal potential expansion to the exact expression. " alt="" coords="111,73,314,117"/>
-<area shape="rect" id="node4" href="$classEvolve_1_1test__OrbitSolver.html" title="The test suite that exercises the OrbitSolver class. " alt="" coords="116,141,309,169"/>
-<area shape="rect" id="node5" href="$classEvolve_1_1test__TidalTorquePower.html" title="The test suite that compares the tidal torque and power for a single zone against expectations..." alt="" coords="115,193,310,237"/>
+<area shape="rect" id="node2" href="$classEvolve_1_1test__DifferentialEquations.html" title="The test suite that compares the differential equations for eccentricity and semimajor axis to litera..." alt="" coords="128,5,319,52"/>
+<area shape="rect" id="node3" href="$classEvolve_1_1test__GravitationalPotential.html" title="The test suite that compares the tidal potential expansion to the exact expression. " alt="" coords="122,76,325,123"/>
+<area shape="rect" id="node4" href="$classEvolve_1_1test__LockMonitoring.html" title="The test suite that ensures the correct locks are selected for monitoring and the fixes applied to th..." alt="" coords="112,147,335,177"/>
+<area shape="rect" id="node5" href="$classEvolve_1_1test__OrbitSolver.html" title="The test suite that exercises the OrbitSolver class. " alt="" coords="127,201,320,230"/>
+<area shape="rect" id="node6" href="$classEvolve_1_1test__TidalTorquePower.html" title="The test suite that compares the tidal torque and power for a single zone against expectations..." alt="" coords="123,255,323,301"/>
 </map>

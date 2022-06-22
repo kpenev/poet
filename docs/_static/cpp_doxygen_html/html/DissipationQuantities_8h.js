@@ -8,7 +8,6 @@ var DissipationQuantities_8h =
     [ "ECCENTRICITY_DECAY", "DissipationQuantities_8h.html#a57a6daf405ee8ed494362ffd130748bf", null ],
     [ "END_DIMENSIONLESS_DERIV", "DissipationQuantities_8h.html#a5d9011e9c98f204d24391ff0ae742efd", null ],
     [ "END_PHASE_LAG_DERIV", "DissipationQuantities_8h.html#acbb76d52e409fb07d340822425dd84e4", null ],
-    [ "EXPANSION_ERROR", "DissipationQuantities_8h.html#a150f09099b0a24bf66a57f2c7edfbf2d", null ],
     [ "INCLINATION", "DissipationQuantities_8h.html#ab91510e9eeb267cd711473413e3b87be", null ],
     [ "INCLINATION_DECAY", "DissipationQuantities_8h.html#a772802930fea0244f1113e1f39ffd0f7", null ],
     [ "MOMENT_OF_INERTIA", "DissipationQuantities_8h.html#afc74d8d409c6e503a560a0c679229421", null ],

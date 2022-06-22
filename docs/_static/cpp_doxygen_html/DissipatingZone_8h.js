@@ -4,8 +4,11 @@ var DissipatingZone_8h =
     [ "DissipatingZone", "classEvolve_1_1DissipatingZone.html", "classEvolve_1_1DissipatingZone" ],
     [ "ZoneEvolutionQuantities", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20d", [
       [ "ANGULAR_MOMENTUM", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20da7c74c5f04b81fa0400175a1c91b26724", null ],
+      [ "ANGULAR_MOMENTUM_DERIV", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20da7f476ba5d9a2c1bf06f60eade6c54e37", null ],
       [ "INCLINATION", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20da6d019a45e097d89ef0bd18b216786d37", null ],
+      [ "INCLINATION_DERIV", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20daa9d3ebd443a68e7498e17a6eec68151b", null ],
       [ "PERIAPSIS", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20daa161d0dc8826d2b0a633f6665957b68d", null ],
+      [ "PERIAPSIS_DERIV", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20daa2ee8a75e267a0f3b42b3c79e9aba323", null ],
       [ "MOMENT_OF_INERTIA", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20da354ad7e7c765cbe0a1a4cc58b331c49d", null ],
       [ "MOMENT_OF_INERTIA_FIRST_DERIV", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20da9651c9e7c6c4d55729089baad90447ab", null ],
       [ "MOMENT_OF_INERTIA_SECOND_DERIV", "DissipatingZone_8h.html#a9cce22e00bdb61d9aabad3e170a5b20da0e7ec834e9eff9dc8810b365a6e404ca", null ],

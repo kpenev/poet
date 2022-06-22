@@ -1,5 +1,5 @@
 <map id="Core::Error::BadFunctionArguments" name="Core::Error::BadFunctionArguments">
-<area shape="rect" id="node5" href="$classCore_1_1Error_1_1BadStellarZone.html" title="Exception indicating unrecognized or unsuitable stellar zone. " alt="" coords="5,619,225,716"/>
-<area shape="rect" id="node2" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="31,312,200,409"/>
-<area shape="rect" id="node3" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="32,135,198,264"/>
+<area shape="rect" id="node5" href="$classCore_1_1Error_1_1BadStellarZone.html" title="Exception indicating unrecognized or unsuitable stellar zone. " alt="" coords="5,643,225,745"/>
+<area shape="rect" id="node2" href="$classCore_1_1Error_1_1Runtime.html" title="Any runtime error. " alt="" coords="31,324,199,427"/>
+<area shape="rect" id="node3" href="$classCore_1_1Error_1_1General.html" title="The base class of all exceptions. " alt="" coords="33,139,198,276"/>
 </map>

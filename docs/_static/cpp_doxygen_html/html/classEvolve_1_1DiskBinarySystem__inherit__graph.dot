@@ -1,9 +1,0 @@
-digraph "Evolve::DiskBinarySystem"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node0 [label="{Evolve::DiskBinarySystem\n|- __initial_semimajor\l- __initial_eccentricity\l- __initial_inclination\l- __disk_lock_frequency\l- __disk_dissipation_age\l- __secondary_formation_age\l|+ DiskBinarySystem()\l+ disk_dissipation_age()\l+ reached_critical_age()\l+ next_stop_age()\l+ ~DiskBinarySystem()\l- release_surface_spin()\l- add_secondary()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
-  Node1 [label="{Evolve::BinarySystem\n|- __name\l- __semimajor_evolution\l- __eccentricity_evolution\l- __age\l- __semimajor\l- __eccentricity\l- __orbital_energy\l- __orbital_angmom\l- __orbit_power\l- __orbit_power_expansion\l_error\land 15 more...\l|+ BinarySystem()\l+ get_name()\l+ configure()\l+ configure()\l+ age()\l+ primary()\l+ secondary()\l+ number_zones()\l+ number_locked_zones()\l+ semimajor()\land 21 more...\l- find_locked_zones()\l- locked_surface_differential\l_equations()\l- locked_surface_jacobian()\l- single_body_differential\l_equations()\l- fill_single_body_jacobian()\l- single_body_jacobian()\l- semimajor_evolution()\l- semimajor_evolution\l_expansion_error()\l- eccentricity_evolution()\l- eccentricity_evolution\l_expansion_error()\land 23 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEvolve_1_1BinarySystem.html",tooltip="Describes a system of two bodies orbiting each other. "];
-}

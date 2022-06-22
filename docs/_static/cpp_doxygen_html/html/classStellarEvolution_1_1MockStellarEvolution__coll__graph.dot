@@ -1,9 +1,0 @@
-digraph "StellarEvolution::MockStellarEvolution"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node2 [label="{StellarEvolution::MockStellar\lEvolution\n|- __R\l- __Iconv\l- __Irad\l- __Itot\l- __Rcore\l- __Mcore\l- __Menv\l- __Lum\l- __core_formation_age\l|+ MockStellarEvolution()\l+ operator()()\l+ core_formation_age()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
-  Node3 [label="{StellarEvolution::Interpolator\n|- __track_masses\l- __track_feh\l- __interpolated_quantities\l- __vs_log_age\l- __log_quantity\l- __core_formation\l|+ Interpolator()\l+ Interpolator()\l+ create_from()\l+ operator()()\l+ core_formation_age()\l+ save_state()\l+ load_state()\l+ delete_tracks()\l+ ~Interpolator()\l- serialize()\l- find_first_core_index()\l- perform_queued_interpolations()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classStellarEvolution_1_1Interpolator.html",tooltip="A class that interpolates among stellar evolution tracks. "];
-}

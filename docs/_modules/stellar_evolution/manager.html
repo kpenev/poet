@@ -17,39 +17,34 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/unlimited_width.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
 
           
@@ -741,6 +736,8 @@
         <span class="sd">&quot;&quot;&quot;Return the interpolator with the given name.&quot;&quot;&quot;</span>
 
         <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="c1">#False positive</span>
+            <span class="c1">#pylint: disable=no-member</span>
             <span class="k">return</span> <span class="n">ManagedInterpolator</span><span class="p">(</span>
                 <span class="n">db_interpolator</span><span class="o">=</span><span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
                     <span class="n">SerializedInterpolator</span>
@@ -750,32 +747,47 @@
                 <span class="n">serialization_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialization_path</span><span class="p">,</span>
                 <span class="n">db_session</span><span class="o">=</span><span class="n">db_session</span>
             <span class="p">)</span></div>
+            <span class="c1">#pylint: enable=no-member</span>
 
 <div class="viewcode-block" id="StellarEvolutionManager.list_interpolator_names"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.list_interpolator_names">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">list_interpolator_names</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;Return a list of all intorpolator names.&quot;&quot;&quot;</span>
 
         <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span>
-                    <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span></div>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span>
+                <span class="c1">#False positive</span>
+                <span class="c1">#pylint: disable=no-member</span>
+                <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">SerializedInterpolator</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="c1">#pylint: enable=no-member</span>
+            <span class="p">]</span></div>
 
 <div class="viewcode-block" id="StellarEvolutionManager.list_suites"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.list_suites">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">list_suites</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;Return a list of all software suites with available tracks.&quot;&quot;&quot;</span>
 
         <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span>
-                    <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span></div>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span>
+                <span class="c1">#False positive</span>
+                <span class="c1">#pylint: disable=no-member</span>
+                <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="c1">#pylint: enable=no-member</span>
+
+            <span class="p">]</span></div>
 
 <div class="viewcode-block" id="StellarEvolutionManager.get_suite_tracks"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.get_suite_tracks">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_suite_tracks</span><span class="p">(</span><span class="n">model_suite</span><span class="o">=</span><span class="s1">&#39;MESA&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return all tracks from a given suite.&quot;&quot;&quot;</span>
 
         <span class="k">with</span> <span class="n">db_session_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+            <span class="c1">#False positive</span>
+            <span class="c1">#pylint: disable=no-member</span>
             <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Track</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">and_</span><span class="p">(</span><span class="n">Track</span><span class="o">.</span><span class="n">model_suite_id</span> <span class="o">==</span> <span class="n">ModelSuite</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                      <span class="n">ModelSuite</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_suite</span><span class="p">)</span>
             <span class="p">)</span></div>
+            <span class="c1">#pylint: enable=no-member</span>
 
 <div class="viewcode-block" id="StellarEvolutionManager.register_track"><a class="viewcode-back" href="../../_implementation/stellar_evolution.manager.html#stellar_evolution.manager.StellarEvolutionManager.register_track">[docs]</a>    <span class="k">def</span> <span class="nf">register_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                        <span class="n">track_fname</span><span class="p">,</span>
@@ -857,16 +869,26 @@
   
 
 
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

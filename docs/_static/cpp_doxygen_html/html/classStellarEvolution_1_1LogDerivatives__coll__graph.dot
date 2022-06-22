@@ -1,9 +1,0 @@
-digraph "StellarEvolution::LogDerivatives"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node4 [label="{StellarEvolution::LogDerivatives\n|- __x\l- __log_x\l- __log_y\l- __underlying_deriv\l_values\l- __deriv_values\l|+ LogDerivatives()\l+ order()\l# calc_deriv()\l- transform_log_x_deriv()\l- transform_log_y_deriv()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="12",style="solid",arrowtail="onormal",fontname="Helvetica"];
-  Node5 [label="{Core::FunctionDerivatives\n||+ order()\l+ ~FunctionDerivatives()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCore_1_1FunctionDerivatives.html",tooltip="A class representing arbitrary order derivatives of a function. "];
-}

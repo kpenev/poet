@@ -1,32 +1,31 @@
-<map id="/Users/kpenev/projects/git/poet/poet_src/Star/CInterface.cpp" name="/Users/kpenev/projects/git/poet/poet_src/Star/CInterface.cpp">
-<area shape="rect" id="node2" href="$Star_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Star library. " alt="" coords="3592,189,3700,217"/>
-<area shape="rect" id="node41" href="$Evolve_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Evolve library. " alt="" coords="3735,113,3909,141"/>
-<area shape="rect" id="node3" href="$StellarEvolution_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the StellarEvolution library..." alt="" coords="1926,341,2072,385"/>
-<area shape="rect" id="node4" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="2892,753,3112,797"/>
-<area shape="rect" id="node27" href="$EvolvingStar_8h.html" title="Declares the class for stars that user pre&#45;tabulated stellar evolution tracks. " alt="" coords="2551,265,2674,293"/>
-<area shape="rect" id="node37" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="2404,593,2589,621"/>
-<area shape="rect" id="node5" href="$MESAIO_8h.html" title="Defines the classes for generating stellar evolution interpolators from the MESA tracks. " alt="" coords="940,433,1037,461"/>
-<area shape="rect" id="node6" href="$Interpolator_8h.html" title="Defines the StellarEvolution class needed for interpolating among stellar evolution tracks..." alt="" coords="830,509,944,537"/>
-<area shape="rect" id="node8" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="1190,677,1259,705"/>
-<area shape="rect" id="node19" href="$IOUtil_8h_source.html" title="../IO/IOUtil.h" alt="" coords="1026,593,1135,621"/>
-<area shape="rect" id="node20" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="2815,593,2914,621"/>
-<area shape="rect" id="node24" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="3242,677,3441,705"/>
-<area shape="rect" id="node7" href="$EvolvingStellarQuantity_8h.html" title="Declares a class implementing the intepolation of a single stellar quantity from stellar evolution tr..." alt="" coords="1261,593,1460,621"/>
-<area shape="rect" id="node14" href="$InterpolationQuantities_8h.html" title="Defines constant to serve as identifier of the various quantities handled by the stellar evolution in..." alt="" coords="1535,593,1730,621"/>
-<area shape="rect" id="node28" href="$SaturatingSkumanichWindBody_8h.html" title="Decrales a body subject to angular momentum loss . " alt="" coords="2970,349,3228,377"/>
-<area shape="rect" id="node35" href="$ExponentialDecayDiffRotBody_8h.html" title="Declares a DissipatingBody with exponentially decaying differential rotation coupling. " alt="" coords="2407,433,2655,461"/>
-<area shape="rect" id="node39" href="$EvolvingStellarCore_8h.html" title="Declaration of the class representing stellar cores. " alt="" coords="1757,509,1932,537"/>
-<area shape="rect" id="node40" href="$EvolvingStellarEnvelope_8h.html" title="Declares a class representing convective zones in low mass evolving stars or the whole star for high ..." alt="" coords="2368,349,2575,377"/>
-<area shape="rect" id="node29" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="3135,509,3349,537"/>
-<area shape="rect" id="node31" href="$BinarySystem_8h.html" title="Defines the BinarySystem class. " alt="" coords="3286,433,3485,461"/>
-<area shape="rect" id="node30" href="$OrbitalExpressions_8h.html" title="A collection of functions which calculate various quantities for two body orbits. ..." alt="" coords="3444,593,3666,621"/>
-<area shape="rect" id="node32" href="$CombinedStoppingCondition_8h.html" title="Declares a class for a stopping condition that combines other stopping conditions. " alt="" coords="3675,509,3913,537"/>
-<area shape="rect" id="node36" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="2404,509,2554,537"/>
-<area shape="rect" id="node42" href="$DiskBinarySystem_8h.html" title="Declares a class of binary systems which start with a disk&#45;locked star which is then released and at ..." alt="" coords="2781,349,2945,377"/>
-<area shape="rect" id="node43" href="$OrbitSolver_8h.html" title="Defines the OrbitSolver class, the various stopping conditions and a number of other classes used whi..." alt="" coords="3813,349,3927,377"/>
-<area shape="rect" id="node49" href="$Planet_2CInterface_8h.html" title="Declare C&#45;style functions for working with LockedPlanet instances. " alt="" coords="4784,349,4956,377"/>
-<area shape="rect" id="node44" href="$ExternalStoppingConditions_8h.html" title="Users can define any stopping condition they wish the evolution to search for in this file..." alt="" coords="4350,433,4582,461"/>
-<area shape="rect" id="node45" href="$StopInformation_8h.html" title="Declares the StopInformation class. " alt="" coords="4605,433,4753,461"/>
-<area shape="rect" id="node46" href="$StopHistoryInterval_8h.html" title="Declares the StopHistoryInterval class. " alt="" coords="2109,593,2279,621"/>
-<area shape="rect" id="node50" href="$Planet_8h.html" title="Declares a class for planets that are always locked to the orbit. " alt="" coords="4827,433,4907,461"/>
+<map id="/home/kpenev/projects/git/poet/poet_src/Star/CInterface.cpp" name="/home/kpenev/projects/git/poet/poet_src/Star/CInterface.cpp">
+<area shape="rect" id="node2" href="$Star_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Star library. " alt="" coords="2161,195,2269,224"/>
+<area shape="rect" id="node40" href="$Evolve_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the Evolve library. " alt="" coords="3219,117,3392,147"/>
+<area shape="rect" id="node3" href="$StellarEvolution_2CInterface_8h.html" title="Declare C&#45;style functions for accessing the functionality of the StellarEvolution library..." alt="" coords="1359,349,1506,396"/>
+<area shape="rect" id="node4" href="$SharedLibraryExportMacros_8h_source.html" title="../Core/SharedLibraryExport\lMacros.h" alt="" coords="2548,771,2768,817"/>
+<area shape="rect" id="node26" href="$EvolvingStar_8h.html" title="Declares the class for stars that user pre&#45;tabulated stellar evolution tracks. " alt="" coords="2101,272,2228,301"/>
+<area shape="rect" id="node36" href="$DissipationQuantities_8h.html" title="Declaration of enumerations of dissipation quantities and derivatives. " alt="" coords="2332,607,2519,637"/>
+<area shape="rect" id="node5" href="$MESAIO_8h.html" title="Defines the classes for generating stellar evolution interpolators from the MESA tracks. " alt="" coords="901,444,998,473"/>
+<area shape="rect" id="node6" href="$Interpolator_8h.html" title="Defines the StellarEvolution class needed for interpolating among stellar evolution tracks..." alt="" coords="1031,521,1146,551"/>
+<area shape="rect" id="node8" href="$Error_8h.html" title="Defines the exception hierarchy used by this code. " alt="" coords="1237,693,1308,723"/>
+<area shape="rect" id="node17" href="$IOUtil_8h_source.html" title="../IO/IOUtil.h" alt="" coords="351,607,458,637"/>
+<area shape="rect" id="node18" href="$Core_2Common_8h.html" title="Declaration of some general purpose utilities. " alt="" coords="2848,607,2948,637"/>
+<area shape="rect" id="node22" href="$AstronomicalConstants_8h.html" title="Defines various astronomical constants. " alt="" coords="3038,693,3238,723"/>
+<area shape="rect" id="node7" href="$EvolvingStellarQuantity_8h.html" title="Declares a class implementing the intepolation of a single stellar quantity from stellar evolution tr..." alt="" coords="1303,607,1506,637"/>
+<area shape="rect" id="node27" href="$SaturatingSkumanichWindBody_8h.html" title="Decrales a body subject to angular momentum loss . " alt="" coords="2510,358,2773,387"/>
+<area shape="rect" id="node34" href="$ExponentialDecayDiffRotBody_8h.html" title="Declares a DissipatingBody with exponentially decaying differential rotation coupling. " alt="" coords="2354,444,2606,473"/>
+<area shape="rect" id="node38" href="$EvolvingStellarCore_8h.html" title="Declaration of the class representing stellar cores. " alt="" coords="1631,521,1810,551"/>
+<area shape="rect" id="node39" href="$EvolvingStellarEnvelope_8h.html" title="Declares a class representing convective zones in low mass evolving stars or the whole star for high ..." alt="" coords="1916,358,2127,387"/>
+<area shape="rect" id="node28" href="$DissipatingBody_8h.html" title="Declares the DissipatingBody class. " alt="" coords="2936,521,3153,551"/>
+<area shape="rect" id="node30" href="$BinarySystem_8h.html" title="Defines the BinarySystem class. " alt="" coords="3006,444,3205,473"/>
+<area shape="rect" id="node29" href="$OrbitalExpressions_8h.html" title="A collection of functions which calculate various quantities for two body orbits. ..." alt="" coords="3226,607,3447,637"/>
+<area shape="rect" id="node31" href="$CombinedStoppingCondition_8h.html" title="Declares a class for a stopping condition that combines other stopping conditions. " alt="" coords="3999,521,4242,551"/>
+<area shape="rect" id="node35" href="$ZoneOrientation_8h.html" title="Declares a class for orientations of zones of DissipatingBody objects. " alt="" coords="2456,521,2606,551"/>
+<area shape="rect" id="node41" href="$DiskBinarySystem_8h.html" title="Declares a class of binary systems which start with a disk&#45;locked star which is then released and at ..." alt="" coords="3022,358,3189,387"/>
+<area shape="rect" id="node42" href="$OrbitSolver_8h.html" title="Defines the OrbitSolver class, the various stopping conditions and a number of other classes used whi..." alt="" coords="3448,358,3563,387"/>
+<area shape="rect" id="node49" href="$Planet_2CInterface_8h.html" title="Declare C&#45;style functions for working with LockedPlanet instances. " alt="" coords="3826,358,3996,387"/>
+<area shape="rect" id="node43" href="$ExternalStoppingConditions_8h.html" title="Users can define any stopping condition they wish the evolution to search for in this file..." alt="" coords="4418,521,4652,551"/>
+<area shape="rect" id="node44" href="$StopInformation_8h.html" title="Declares the StopInformation class. " alt="" coords="4535,444,4682,473"/>
+<area shape="rect" id="node45" href="$StopHistoryInterval_8h.html" title="Declares the StopHistoryInterval class. " alt="" coords="2087,607,2258,637"/>
+<area shape="rect" id="node50" href="$Planet_8h.html" title="Declares a class for planets that are always locked to the orbit. " alt="" coords="3870,444,3952,473"/>
 </map>

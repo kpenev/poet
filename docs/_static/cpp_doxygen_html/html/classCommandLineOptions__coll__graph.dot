@@ -1,7 +1,0 @@
-digraph "CommandLineOptions"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{CommandLineOptions\n|- __input_column_names\l- __output_column_descr\l- __track_column_descr\l- __track_column_units\l- __defaults\l- __default_track_smoothing\l- __default_track_nodes\l- __direct_value_options\l- __custom_track_smoothing\l- __custom_track_nodes\land 21 more...\l- __default_outfname\l- __default_serialized_evol\l- __default_output_columns\l- __default_track_columns\l- __default_eccentricity\l_expansion\l|+ CommandLineOptions()\l+ get_real_value()\l+ input()\l+ input_filename()\l+ output_filename()\l+ serialized_stellar\l_evolution()\l+ eccentricity_expansion()\l+ start_locked()\l+ use_YREC()\l+ input_from_list()\land 10 more...\l- cstr_copy()\l- cstr_copy()\l- define_options()\l- set_defaults()\l- parse_column_list()\l- postprocess()\l- cleanup()\l- init_input_column_names()\l- init_output_column\l_descriptions()\l- init_track_column_descriptions\l_and_units()\l- init_defaults()\l- setup()\l- verify_custom_stellar\l_evolution()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

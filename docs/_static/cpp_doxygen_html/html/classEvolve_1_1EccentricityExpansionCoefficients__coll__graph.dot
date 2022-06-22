@@ -1,7 +1,0 @@
-digraph "Evolve::EccentricityExpansionCoefficients"
-{
- // INTERACTIVE_SVG=YES
-  edge [fontname="Helvetica",fontsize="12",labelfontname="Helvetica",labelfontsize="12"];
-  node [fontname="Helvetica",fontsize="12",shape=record];
-  Node1 [label="{Evolve::EccentricityExpansion\lCoefficients\n|- __max_e_power\l- __alpha\l- __gamma_plus\l- __gamma_minus\l- __useable\l|+ EccentricityExpansionCoefficients()\l+ read()\l+ max_e_power()\l+ operator()()\l- inner_index()\l- p_m2s()\l- p_0s()\l- p_p2s()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-}

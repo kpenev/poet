@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['inclination',['inclination',['../classEvolve_1_1ZoneOrientation.html#a380e8d561f1b5879ab0cd9a138c2cf1f',1,'Evolve::ZoneOrientation::inclination()'],['../classEvolve_1_1TidalPotential.html#a8e0b45514f84be33ddb69740231e9d0f',1,'Evolve::TidalPotential::inclination() const'],['../classEvolve_1_1TidalPotential.html#ae13409b079b8cc1bf850f267153f0037',1,'Evolve::TidalPotential::inclination()']]],
+  ['inclination',['inclination',['../classEvolve_1_1ZoneOrientation.html#ab5a76515f46c29f8af1b0ca4132d2b02',1,'Evolve::ZoneOrientation::inclination()'],['../classEvolve_1_1TidalPotential.html#a8e0b45514f84be33ddb69740231e9d0f',1,'Evolve::TidalPotential::inclination() const'],['../classEvolve_1_1TidalPotential.html#ae13409b079b8cc1bf850f267153f0037',1,'Evolve::TidalPotential::inclination()']]],
   ['inclination_5fevolution',['inclination_evolution',['../classEvolve_1_1DissipatingZone.html#a766251d298e095532c396b7c9bfc5c21',1,'Evolve::DissipatingZone']]],
   ['inclination_5fevolution_5fzone_5fderivs',['inclination_evolution_zone_derivs',['../classEvolve_1_1BinarySystem.html#abebc1ec6d958dce7d351e41cdd46dd3e',1,'Evolve::BinarySystem']]],
   ['indefinite_5fintegral',['indefinite_integral',['../classOblique10LinearQuantity.html#a68bfbb6222e63d483a00e265efdfcab4',1,'Oblique10LinearQuantity::indefinite_integral()'],['../classOblique20LinearQuantity.html#a66aca5027fdfdf2c3b4eeed117b0bd2d',1,'Oblique20LinearQuantity::indefinite_integral()']]],

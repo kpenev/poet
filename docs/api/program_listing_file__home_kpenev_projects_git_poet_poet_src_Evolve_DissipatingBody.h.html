@@ -1,0 +1,529 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Program Listing for File DissipatingBody.h &mdash; (P)lanetary (O)rbital (E)volution due to (T)ides  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/unlimited_width.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> (P)lanetary (O)rbital (E)volution due to (T)ides
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://kpenev.github.io/poet/_static/cpp_doxygen_html/index.html">The C++ interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inclination_eccentricity_equations.html">A detailed derivation of the equations specifying the evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">(P)lanetary (O)rbital (E)volution due to (T)ides</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Program Listing for File DissipatingBody.h</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/program_listing_file__home_kpenev_projects_git_poet_poet_src_Evolve_DissipatingBody.h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="program-listing-for-file-dissipatingbody-h">
+<span id="program-listing-file-home-kpenev-projects-git-poet-poet-src-evolve-dissipatingbody-h"></span><h1>Program Listing for File DissipatingBody.h<a class="headerlink" href="#program-listing-for-file-dissipatingbody-h" title="Permalink to this headline">¶</a></h1>
+<p>↰ <a class="reference internal" href="file__home_kpenev_projects_git_poet_poet_src_Evolve_DissipatingBody.h.html#file-home-kpenev-projects-git-poet-poet-src-evolve-dissipatingbody-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">/home/kpenev/projects/git/poet/poet_src/Evolve/DissipatingBody.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef __DISSIPATING_BODY_H</span>
+<span class="cp">#define __DISSIPATING_BODY_H</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;../Core/SharedLibraryExportMacros.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;DissipatingZone.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../Core/OrbitalExpressions.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../Core/AstronomicalConstants.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;../Core/Common.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;valarray&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cassert&gt;</span><span class="cp"></span>
+
+<span class="k">namespace</span> <span class="n">Evolve</span> <span class="p">{</span>
+
+    <span class="k">class</span> <span class="nc">BinarySystem</span><span class="p">;</span>
+
+    <span class="k">class</span> <span class="nc">LIB_PUBLIC</span> <span class="n">DissipatingBody</span> <span class="p">{</span>
+    <span class="k">private</span><span class="o">:</span>
+        <span class="kt">double</span>
+            <span class="n">__power_norm</span><span class="p">,</span>
+
+            <span class="n">__orbital_frequency</span><span class="p">,</span>
+
+            <span class="n">__dorbital_frequency_da</span><span class="p">,</span>
+
+            <span class="n">__surface_lock_frequency</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">&gt;</span> <span class="o">&gt;</span>
+            <span class="n">__angular_momentum_transfer</span><span class="p">,</span>
+
+            <span class="n">__tidal_torques_above</span><span class="p">,</span>
+
+            <span class="n">__tidal_torques_below</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span><span class="o">&gt;</span> <span class="n">__orbit_entries</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span>
+            <span class="n">__orbit_power</span><span class="p">,</span>
+
+            <span class="n">__orbit_power_correction</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">&gt;</span> <span class="n">__orbit_torque</span><span class="p">,</span>
+
+            <span class="n">__orbit_torque_correction</span><span class="p">;</span>
+
+        <span class="kt">unsigned</span> <span class="n">__num_locked_zones</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span> <span class="n">__above_lock_fractions</span><span class="p">;</span>
+
+        <span class="kt">double</span> <span class="nf">normalize_torques</span><span class="p">(</span>
+            <span class="kt">double</span> <span class="n">companion_mass</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">semimajor</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">orbital_frequency</span>
+        <span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">collect_orbit_rates</span><span class="p">(</span>
+            <span class="kt">double</span> <span class="n">orbital_frequency</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">torque_norm</span>
+        <span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">calculate_orbit_rate_corrections</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">angular_momentum_transfer</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">DissipatingZone</span> <span class="o">&amp;</span><span class="n">outer_zone</span><span class="p">,</span>
+
+            <span class="k">const</span> <span class="n">DissipatingZone</span> <span class="o">&amp;</span><span class="n">inner_zone</span><span class="p">,</span>
+
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="o">&amp;</span><span class="n">outer_angmom_gain</span><span class="p">,</span>
+
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="o">&amp;</span><span class="n">inner_angmom_gain</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">with_respect_to_outer</span><span class="o">=</span><span class="nb">false</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">angular_momentum_transfer_from_top</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">with_respect_to_outer</span><span class="o">=</span><span class="nb">false</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">angular_momentum_transfer_from_bottom</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">with_respect_to_inner</span><span class="o">=</span><span class="nb">false</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">angular_momentum_transfer_to_zone</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">int</span> <span class="n">deriv_zone</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="kt">void</span> <span class="nf">calculate_nontidal_torques</span><span class="p">();</span>
+
+        <span class="kt">void</span> <span class="nf">correct_orbit_power</span><span class="p">(</span>
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="o">&amp;</span><span class="n">above_lock_fractions_age_deriv</span><span class="p">,</span>
+
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="o">&amp;</span><span class="n">above_lock_fractions_semimajor_deriv</span><span class="p">,</span>
+
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="o">&amp;</span><span class="n">above_lock_fractions_eccentricity_deriv</span><span class="p">,</span>
+
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="o">&amp;</span><span class="n">above_lock_fractions_radius_deriv</span>
+        <span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">correct_orbit_torque</span><span class="p">(</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">above_lock_fractions</span>
+        <span class="p">);</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">DissipatingBody</span><span class="p">();</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">configure</span><span class="p">(</span>
+            <span class="kt">bool</span> <span class="n">initialize</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">age</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">companion_mass</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">semimajor</span><span class="p">,</span>
+
+            <span class="kt">double</span> <span class="n">eccentricity</span><span class="p">,</span>
+
+            <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">spin_angmom</span><span class="p">,</span>
+
+            <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">inclination</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
+
+            <span class="k">const</span> <span class="kt">double</span> <span class="o">*</span><span class="n">periapsis</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">locked_surface</span> <span class="o">=</span> <span class="nb">false</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">zero_outer_inclination</span> <span class="o">=</span> <span class="nb">false</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">zero_outer_periapsis</span> <span class="o">=</span> <span class="nb">false</span>
+        <span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">lock_zone_spin</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+                            <span class="kt">int</span> <span class="n">orbital_frequency_multiplier</span><span class="p">,</span>
+                            <span class="kt">int</span> <span class="n">spin_frequency_multiplier</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">zone</span><span class="p">(</span><span class="n">zone_index</span><span class="p">).</span><span class="n">set_lock</span><span class="p">(</span><span class="n">orbital_frequency_multiplier</span><span class="p">,</span>
+                                      <span class="n">spin_frequency_multiplier</span><span class="p">);</span>
+            <span class="o">++</span><span class="n">__num_locked_zones</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">void</span> <span class="nf">unlock_zone_spin</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+
+            <span class="kt">short</span> <span class="n">direction</span>
+        <span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">zone</span><span class="p">(</span><span class="n">zone_index</span><span class="p">).</span><span class="n">release_lock</span><span class="p">();</span>
+            <span class="k">else</span> <span class="n">zone</span><span class="p">(</span><span class="n">zone_index</span><span class="p">).</span><span class="n">release_lock</span><span class="p">(</span><span class="n">direction</span><span class="p">);</span>
+            <span class="o">--</span><span class="n">__num_locked_zones</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">unsigned</span> <span class="nf">number_locked_zones</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span><span class="k">return</span> <span class="n">__num_locked_zones</span><span class="p">;}</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">nontidal_torque</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">int</span> <span class="n">deriv_zone</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="k">const</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="o">&amp;</span><span class="n">tidal_torque</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">above</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">entry</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span>
+        <span class="p">)</span> <span class="k">const</span>
+        <span class="p">{</span>
+            <span class="n">assert</span><span class="p">(</span><span class="n">zone_index</span><span class="o">&lt;</span><span class="n">number_zones</span><span class="p">());</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">above</span>
+                    <span class="o">?</span> <span class="nl">__tidal_torques_above</span>
+                    <span class="p">:</span> <span class="n">__tidal_torques_below</span><span class="p">)[</span><span class="n">zone_index</span><span class="p">][</span><span class="n">entry</span><span class="p">];</span>
+        <span class="p">}</span>
+
+        <span class="kt">double</span> <span class="n">tidal_power</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">above</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">entry</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="kt">void</span> <span class="nf">set_above_lock_fractions</span><span class="p">(</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">valarray</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">above_lock_fractions</span>
+        <span class="p">);</span>
+
+        <span class="kt">double</span> <span class="nf">tidal_orbit_power</span><span class="p">(</span>
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">entry</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">unsigned</span> <span class="n">deriv_zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+
+            <span class="k">const</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="o">&amp;</span>
+            <span class="n">above_lock_fraction_deriv</span><span class="o">=</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="p">()</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">tidal_orbit_torque</span><span class="p">(</span>
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">unsigned</span> <span class="n">deriv_zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+
+            <span class="k">const</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="o">&amp;</span>
+            <span class="n">above_lock_fraction_deriv</span><span class="o">=</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="p">()</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">tidal_orbit_torque</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">DissipatingZone</span> <span class="o">&amp;</span><span class="n">reference_zone</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">unsigned</span> <span class="n">deriv_zone_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+
+            <span class="k">const</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="o">&amp;</span><span class="n">above_lock_fraction_deriv</span><span class="o">=</span>
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="p">()</span>
+        <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+        <span class="k">virtual</span> <span class="kt">unsigned</span> <span class="nf">number_zones</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+        <span class="k">virtual</span> <span class="k">const</span> <span class="n">DissipatingZone</span> <span class="o">&amp;</span><span class="n">zone</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span>
+        <span class="p">)</span> <span class="k">const</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+        <span class="k">virtual</span> <span class="n">DissipatingZone</span> <span class="o">&amp;</span><span class="n">zone</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">zone_index</span>
+        <span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+        <span class="k">virtual</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">angular_momentum_coupling</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">top_zone_index</span><span class="p">,</span>
+
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">with_respect_to_top</span><span class="o">=</span><span class="nb">false</span>
+        <span class="p">)</span> <span class="k">const</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+        <span class="k">virtual</span> <span class="kt">double</span> <span class="nf">angular_momentum_loss</span><span class="p">(</span>
+            <span class="n">Dissipation</span><span class="o">::</span><span class="n">QuantityEntry</span> <span class="n">deriv</span><span class="o">=</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span>
+        <span class="p">)</span> <span class="k">const</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+        <span class="kt">double</span> <span class="nf">radius</span><span class="p">(</span>
+            <span class="kt">int</span> <span class="n">deriv_order</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span> <span class="k">const</span>
+        <span class="p">{</span><span class="k">return</span> <span class="n">zone</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">outer_radius</span><span class="p">(</span><span class="n">deriv_order</span><span class="p">);}</span>
+
+        <span class="kt">double</span> <span class="nf">mass</span><span class="p">()</span> <span class="k">const</span>
+        <span class="p">{</span><span class="k">return</span> <span class="n">zone</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">outer_mass</span><span class="p">(</span><span class="n">Dissipation</span><span class="o">::</span><span class="n">NO_DERIV</span><span class="p">);}</span>
+
+        <span class="kt">double</span> <span class="nf">spin_frequency</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span><span class="k">return</span> <span class="n">zone</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">spin_frequency</span><span class="p">();}</span>
+
+        <span class="kt">double</span> <span class="nf">surface_lock_frequency</span><span class="p">()</span> <span class="k">const</span>
+        <span class="p">{</span><span class="k">return</span> <span class="n">__surface_lock_frequency</span><span class="p">;}</span>
+
+        <span class="kt">void</span> <span class="nf">set_surface_lock_frequency</span><span class="p">(</span><span class="kt">double</span> <span class="n">frequency</span><span class="p">)</span>
+        <span class="p">{</span><span class="n">__surface_lock_frequency</span><span class="o">=</span><span class="n">frequency</span><span class="p">;}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">add_to_evolution</span><span class="p">();</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">rewind_evolution</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">nsteps</span>
+        <span class="p">);</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">reset_evolution</span><span class="p">();</span>
+
+        <span class="k">virtual</span> <span class="n">CombinedStoppingCondition</span> <span class="o">*</span><span class="nf">stopping_conditions</span><span class="p">(</span>
+            <span class="n">BinarySystem</span> <span class="o">&amp;</span><span class="n">system</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">primary</span>
+        <span class="p">);</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">spin_jumped</span><span class="p">()</span> <span class="p">{</span><span class="n">zone</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">spin_jumped</span><span class="p">();}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">reached_critical_age</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="p">{</span><span class="n">assert</span><span class="p">(</span><span class="nb">false</span><span class="p">);}</span>
+
+        <span class="k">virtual</span> <span class="kt">double</span> <span class="nf">next_stop_age</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span><span class="k">return</span> <span class="n">Core</span><span class="o">::</span><span class="n">Inf</span><span class="p">;}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">change_e_order</span><span class="p">(</span>
+            <span class="kt">unsigned</span> <span class="n">new_e_order</span><span class="p">,</span>
+
+            <span class="n">BinarySystem</span> <span class="o">&amp;</span><span class="n">system</span><span class="p">,</span>
+
+            <span class="kt">bool</span> <span class="n">primary</span>
+        <span class="p">);</span>
+
+        <span class="k">virtual</span> <span class="o">~</span><span class="n">DissipatingBody</span><span class="p">()</span> <span class="p">{}</span>
+    <span class="p">};</span> <span class="c1">//End DissipatingBody class.</span>
+
+<span class="p">}</span> <span class="c1">//End Evolve namespace.</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Kaloyan Penev
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
