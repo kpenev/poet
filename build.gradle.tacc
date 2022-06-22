@@ -1,0 +1,469 @@
+plugins {
+    id 'cpp'
+    id "org.ysb33r.doxygen" version "0.4"
+}
+
+import org.gradle.internal.os.OperatingSystem;
+
+model {
+
+    buildTypes {
+        debug
+        release
+        profile
+    }
+}
+
+model {
+    //Common configuration for all binaries
+    binaries {
+        all {
+
+            if(buildType == buildTypes.release) {
+                cppCompiler.define "NDEBUG"
+            } else if(buildType == buildTypes.debug) {
+                cppCompiler.define "VERBOSE_DEBUG"
+//                cppCompiler.define "_GLIBCXX_DEBUG"
+            }
+
+            if (toolChain in Gcc || toolChain in Clang) {
+                if (toolChain in Gcc)
+                    cppCompiler.define "TOOLCHAIN_GCC"
+                else
+                    cppCompiler.define "TOOLCHAIN_CLANG"
+
+                cppCompiler.args "-W", "-Wall",
+                                 "-std=c++11",
+                                 "-fvisibility=hidden",
+                                 "-pedantic",
+                                 "-I${System.env.BOOST_ROOT}/include"
+                "gsl-config --cflags".execute().text.tokenize().each{cppCompiler.args it}
+
+                linker.args "-L${System.env.BOOST_ROOT}/lib",
+                            "-lboost_serialization",
+                            "-lpthread",
+                            "-lsqlite3"
+                getGSLLinkerArgs().each{linker.args it}
+
+                if(buildType == buildTypes.release) {
+                    cppCompiler.args "-O3"
+                } else {
+                    cppCompiler.args "-ggdb", "-pg"
+                    if(buildType == buildTypes.debug) cppCompiler.args "-O0"
+                }
+            } else if (toolChain in VisualCpp ) {
+                cppCompiler.define 'TOOLCHAIN_MSVC'
+                if(buildType == buildTypes.debug) {
+                    cppCompiler.args '/Zi'
+                }
+                cppCompiler.args '/FS'
+                cppCompiler.args '/EHsc'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\include'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\shared'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um'
+                cppCompiler.args '/IC:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.16299.0\\ucrt'
+                cppCompiler.args '/IC:\\cygwin64\\usr\\include'
+                cppCompiler.args '/IC:\\Users\\Briana\\Downloads\\Phys lab\\boost_1_65_1\\boost_1_65_1'
+                cppCompiler.args '/std:c++14'
+            }
+
+        }
+        withType(StaticLibraryBinarySpec) {
+            if(toolChain in Gcc || toolChain in Clang) {
+                cppCompiler.args '-fPIC'
+            }
+        }
+
+    }
+
+    components {
+        eigen(NativeLibrarySpec) {
+            sources.cpp {
+                source {}
+                exportedHeaders {
+                    srcDir "poet_src/third_party_libs/Eigen"
+                }
+            }
+        }
+        dirent(NativeLibrarySpec) {
+            sources.cpp {
+                source {
+                    srcDir "poet_src/third_party_libs/dirent_hacked"
+                    include "**/*.c"
+                }
+                exportedHeaders {
+                    srcDir "poet_src/third_party_libs/dirent_hacked"
+                }
+            }
+        }
+        stellarEvolution(NativeLibrarySpec) {
+            sources.cpp {
+                lib library: "eigen"
+                lib library: "dirent"
+                source {
+                    srcDir "poet_src/StellarEvolution"
+                    include "**/*.cpp"
+                    exclude "**/CustomStellarEvolution.cpp"
+                    exclude "**/YRECIO.cpp"
+                }
+                source {
+                    srcDir "poet_src/Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "poet_src/StellarEvolution/"
+                }
+            }
+        }
+        evolve(NativeLibrarySpec) {
+            sources.cpp{
+                lib library: "eigen"
+                lib library: "dirent"
+                source {
+                    srcDir "poet_src/Evolve"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "poet_src/Evolve/"
+                }
+            }
+        }
+        planet(NativeLibrarySpec) {
+            sources.cpp {
+                lib library: "eigen"
+                lib library: "evolve"
+                lib library: "dirent"
+                source {
+                    srcDir "poet_src/Planet"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "poet_src/Planet/"
+                }
+            }
+
+        }
+        star(NativeLibrarySpec) {
+            sources.cpp {
+                lib library: "eigen"
+                lib library: "evolve"
+                lib library: "stellarEvolution"
+                lib library: "dirent"
+                source {
+                    srcDir "poet_src/Star"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "poet_src/Star/"
+                }
+            }
+
+        }
+
+//        testEvolve(NativeExecutableSpec) {
+//            sources.cpp {
+//                source {
+//                    srcDir "poet_src/unit_tests/testEvolve"
+//                    source {
+//                        srcDir "poet_src/unit_tests/shared"
+//                        include "**/*.cpp"
+//                    }
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/Core"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+//                    include "**/*.cpp"
+//                }
+//            }
+//            binaries.all {
+//                cppCompiler.define "STANDALONE"
+//                linker.args "-l" + ensureLibraryVersion("cpptest")
+//
+//                lib library: "eigen", linkage: 'static'
+//                lib library: "stellarEvolution", linkage: 'static'
+//                lib library: "star", linkage: 'static'
+//                lib library: "planet", linkage: 'static'
+//                lib library: "evolve", linkage: 'static'
+//                lib library: "dirent", linkage: 'static'
+//            }
+//        }
+
+        debugStellarEvolution(NativeExecutableSpec) {
+            sources.cpp {
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "dirent", linkage: "static"
+                source {
+                    srcDir "poet_src/debug"
+                    include "**/stellar_evolution.c"
+                }
+            }
+        }
+
+        debugPlanetStarEvolution(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "poet_src/debug"
+                    include "**/planet_star_evolution.cpp"
+                }
+            }
+            binaries.all {
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "star", linkage: "static"
+                lib library: "planet", linkage: "static"
+                lib library: "evolve", linkage: "static"
+                lib library: "dirent", linkage: "static"
+            }
+        }
+
+        debugStarStarEvolution(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "poet_src/debug"
+                    include "**/star_star_evolution.cpp"
+                }
+            }
+            binaries.all {
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "star", linkage: "static"
+                lib library: "planet", linkage: "static"
+                lib library: "evolve", linkage: "static"
+                lib library: "dirent", linkage: "static"
+            }
+        }
+        debugStarStarSlowEvolution(NativeExecutableSpec) {
+            sources.cpp {
+                source {
+                    srcDir "poet_src/debug"
+                    include "**/star_star_slow_evolution.cpp"
+                }
+            }
+            binaries.all {
+                lib library: "eigen", linkage: "static"
+                lib library: "stellarEvolution", linkage: "static"
+                lib library: "star", linkage: "static"
+                lib library: "planet", linkage: "static"
+                lib library: "evolve", linkage: "static"
+                lib library: "dirent", linkage: "static"
+            }
+        }
+
+//        poet(NativeExecutableSpec) {
+//            sources.cpp {
+//                lib library: "alglib"
+//                lib library: "eigen"
+//                lib library: "stellarEvolution"
+//                source {
+//                    srcDir "poet_src"
+//                    exclude "**/unit_tests/"
+//                    exclude "**/StellarEvolution/"
+//                    exclude "**/third_party_libs/"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/Core"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/IO"
+//                    include "**/*.cpp"
+//                }
+//                source {
+//                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+//                    include "**/*.cpp"
+//                }
+//            }
+//        }
+    }
+}
+
+doxygen {
+    generate_html true
+    template "documentation/doxygen/DoxygenConfig"
+    source "poet_src/Core"
+    source "poet_src/StellarEvolution"
+    source "poet_src/Evolve"
+    source "poet_src/Planet"
+    source "poet_src/Star"
+    source "documentation"
+    source "PythonPackage"
+    include "**/*.h"
+    include "**/*.cpp"
+    include "**/*.py"
+    include "**/*.md"
+}
+
+
+def findLibraryLinux(String libNameStart)
+{
+    def libInfoList
+    try {
+        libInfoList = "ldconfig -p".execute().text.split('\n')
+    } catch (Exception ex) {
+        throw new ProjectConfigurationException(
+            "Failed to execute command: ldconfig -p",
+            new NullPointerException()
+        )
+    }
+    def libSearch = ~(
+        "lib(?<name>${libNameStart}.*)\\.so\\.(?<version>[0-9.]*)\\s+.*=>"
+    )
+    def previousMatch = false
+    for(String libInfo : libInfoList) {
+        def match = libInfo =~ libSearch
+        if(match) {
+            if(previousMatch) {
+                throw new ProjectConfigurationException(
+                    "Multiple link candidates found for library " +
+                    "${libNameStart}:\n" +
+                    "\t${previousMatch}\n" +
+                    "\tand\n" +
+                    "\t${libInfo}",
+                    new NullPointerException()
+                )
+            }
+            previousMatch = libInfo
+            def absLibFileName = libInfo.split('=>')[1].trim()
+            return [match.group("name"),
+                    match.group("version"),
+                    absLibFileName]
+        }
+    }
+    if(!previousMatch) {
+        throw new ProjectConfigurationException(
+            "No candidate ${libNameStart} library found!",
+            new NullPointerException()
+        );
+    }
+}
+
+def findLibraryMacOS(String libName)
+{
+    def libFullPath
+    libFullPath = "ld -l${libName} -dylib -t".execute().text.trim()
+    if(!libFullPath) 
+        throw new ProjectConfigurationException(
+            "No candidate ${libName} library found!",
+            new NullPointerException()
+        );
+
+    def versionSearch = ~(
+        "${libName}[0-9.]*.dylib \\(.* current version (?<version>[0-9.]*)"
+    )
+
+    def otoolOutput = (
+        "otool -L ${libFullPath}".execute().text.split('\n')
+    )
+    for(String line : otoolOutput) {
+        def match = line =~ versionSearch
+        if(match) return [libName, match.group("version"), libFullPath]
+    }
+    throw new ProjectConfigurationException(
+        "Failed to determine the version of ${libName} library!",
+        new NullPointerException()
+    );
+}
+
+def findLibrary(String libNameStart)
+{
+    if(OperatingSystem.current().isLinux())
+        return findLibraryLinux(libNameStart)
+    else if(OperatingSystem.current().isMacOsX())
+        return findLibraryMacOS(libNameStart)
+    else {
+        return [libNameStart, "0.0.0", ""]
+    }
+}
+
+def ensureLibraryVersion(String libNameStart,
+                         Map versionRange = [:])
+{
+    def(String libName,
+        String libVersion,
+        String libAbsFileName) = findLibrary(libNameStart)
+    if(libVersion == "0.0.0") return libName
+    if(versionRange.containsKey('min'))
+        assert(libVersion >= versionRange['min'])
+    if(versionRange.containsKey('max'))
+        assert(libVersion <= versionRange['max'])
+    return libName
+}
+
+def getGSLLinkerArgs()
+{
+    if(OperatingSystem.current().isWindows()) {
+        return ["-lgsl", "-lgslcblas"]
+    } else {
+        try {
+            return "gsl-config --libs".execute().text.tokenize()
+        } catch (ReportedException) {
+            throw new MissingResourceException(
+                "Unable to configure linking with GSL: gsl-config --libs " +
+                "failed!"
+            );
+        }
+    }
+}
+
+task showCompilerOptions {
+   doLast {
+      println '\n-----------------------------------------------------\n'
+      println 'Compiler options:'
+      FileTree tree = fileTree('build').include('**/options.txt')
+      // Iterate over the contents of a tree
+      tree.each {File file ->
+          println 'Content of file ' + file + ':\n'
+          println file.text
+          println '------\n'
+      }
+   }
+}
+
+task showCompilerOutput {
+   dependsOn showCompilerOptions
+   doLast {
+      println '\n-----------------------------------------------------\n'
+      println 'Compiler output:'
+      FileTree tree = fileTree('build').include('**/output.txt')
+      // Iterate over the contents of a tree
+      tree.each {File file ->
+          println 'Content of file ' + file + ':\n'
+          println file.text
+          println '------\n'
+      }
+   }
+}
