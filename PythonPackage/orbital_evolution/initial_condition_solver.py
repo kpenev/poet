@@ -50,6 +50,21 @@ class InitialConditionSolver:
                            repr(disk_period))
         if self.binary is not None:
             self.binary.delete()
+        self._logger.debug(
+            'Binary setup:'
+            '\tP0: %s\n'
+            '\te0: %s\n'
+            '\ti0: %s\n'
+            '\tWdisk: %s\n'
+            '\tTdisk: %s=\n'
+            '\tTsecondary; %s\n',
+            repr(initial_orbital_period),
+            repr(self.parameters['initial eccentricity']),
+            repr(self.parameters['initial inclination']),
+            repr(2.0 * scipy.pi / disk_period),
+            repr(self.target.disk_dissipation_age),
+            repr(self.target.planet_formation_age)
+        )
         self.binary = Binary(
             primary=self.primary,
             secondary=self.secondary,
@@ -65,6 +80,8 @@ class InitialConditionSolver:
             self.primary.core_formation_age()
         )
 
+        self._logger.debug('Binary config: age: %s',
+                           repr(self.primary.core_formation_age()))
         self.binary.configure(age=self.primary.core_formation_age(),
                               semimajor=float('nan'),
                               eccentricity=float('nan'),
@@ -84,6 +101,21 @@ class InitialConditionSolver:
                 inclination=None,
                 periapsis=None
             )
+        self._logger.debug(
+            'Secondary config:\n'
+            '\tage: %s\n'
+            '\tMc: %s\n'
+            '\ta0: %s\n'
+            '\te0: %s\n'
+            '\tL0: %s\n'
+            '\tothers: %s',
+            repr(self.target.planet_formation_age),
+            repr(self.binary.primary.mass),
+            repr(self.binary.semimajor(initial_orbital_period)),
+            repr(self.parameters['initial eccentricity']),
+            repr(self.parameters['initial_secondary_angmom']),
+            repr(secondary_inclination_periapsis)
+        )
         self.secondary.configure(
             age=self.target.planet_formation_age,
             companion_mass=self.binary.primary.mass,
@@ -97,6 +129,17 @@ class InitialConditionSolver:
         )
         if isinstance(self.secondary, EvolvingStar):
             self.secondary.detect_stellar_wind_saturation()
+        self._logger.debug(
+            'Evolving:\n'
+            '\tfinal_age: %s\n'
+            '\tmax_time_step: %s\n'
+            '\tprecision: %s\n'
+            '\ttimeout: %s\n',
+            repr(self.target.age),
+            repr(self.configuration['max time step']),
+            repr(self.configuration['precision']),
+            repr(self.configuration['timeout'])
+        )
         self.binary.evolve(
             final_age=self.target.age,
             max_time_step=self.configuration['max time step'],
@@ -108,7 +151,13 @@ class InitialConditionSolver:
         final_state = self.binary.final_state()
         #False positives
         #pylint: disable=no-member
-        assert final_state.age == self.target.age
+        if final_state.age != self.target.age:
+            raise RuntimeError(
+                'System eveloution failed at age {0!r}, targe age {1!r}'.format(
+                    final_state.age,
+                    self.target.age
+                )
+            )
         orbital_period = self.binary.orbital_period(final_state.semimajor)
         stellar_spin_period = (
             2.0 * scipy.pi
