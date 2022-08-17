@@ -53,9 +53,7 @@ def initialize_library(library_fname=None):
 
     return result
 
-library = initialize_library(
-    '/home/kpenev/projects/git/poet/build/libs/planet/shared/release/libplanet.so'
-)
+library = initialize_library()
 
 class LockedPlanet(DissipatingBody):
     """A class for tidally locked and thus non-dissipative planets."""
