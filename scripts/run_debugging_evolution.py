@@ -41,6 +41,12 @@ def parse_configuration():
         is_config_file=True,
         help='Config file to use instead of default.'
     )
+    parser.add_argument(
+        '--create-config',
+        default=None,
+        help='Filename to create a config file where all options are set per '
+        'what is currently parsed.'
+    )
 
     add_binary_config(parser)
     add_evolution_config(parser)
@@ -68,7 +74,14 @@ def parse_configuration():
         'range.'
     )
 
-    return parser.parse_args()
+    result = parser.parse_args()
+    if result.create_config:
+        print('Creating config file: ' + repr(result.create_config))
+        parser.write_config_file(result,
+                                 [result.create_config],
+                                 exit_after=True)
+    return result
+
 
 def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
     """Add tangent lines to the current plot."""

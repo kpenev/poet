@@ -13,7 +13,10 @@ from orbital_evolution.binary import Binary
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 
-def add_star_config(parser, primary=True, require_secondary=False):
+def add_star_config(parser,
+                    primary=True,
+                    require_secondary=False,
+                    dissipation=True):
     """
     Add to the parser arguments to configure a star.
 
@@ -112,59 +115,62 @@ def add_star_config(parser, primary=True, require_secondary=False):
             extra_help
         )
     )
-    parser.add_argument(
-        prefix + '-reference-dissipation',
-        nargs=4,
-        metavar=('PhaseLag',
-                 'TidalFrequency',
-                 'PowerlawBefore',
-                 'PowerlawAfter'),
-        type=float,
-        default=None,
-        help=(
-            'Define the reference point for the dissipation in the '
-            +
-            component_name
-            +
-            '. This initializes the phase lag dependence on frequnecy to a '
-            'broken powerlaw with a single break. Further breaks can be '
-            'introduced using '
-            +
-            prefix
-            +
-            '-dissipation-break.'
+    if dissipation:
+        parser.add_argument(
+            prefix + '-reference-dissipation',
+            nargs=4,
+            metavar=('PhaseLag',
+                     'TidalFrequency',
+                     'PowerlawBefore',
+                     'PowerlawAfter'),
+            type=float,
+            default=None,
+            help=(
+                'Define the reference point for the dissipation in the '
+                +
+                component_name
+                +
+                '. This initializes the phase lag dependence on frequnecy to a '
+                'broken powerlaw with a single break. Further breaks can be '
+                'introduced using '
+                +
+                prefix
+                +
+                '-dissipation-break.'
+            )
         )
-    )
-    parser.add_argument(
-        prefix + '-dissipation_break',
-        nargs=2,
-        metavar=('TidalFrequency',
-                 'PowerlawIndex'),
-        action='append',
-        help='Add another powerlaw break to the phase lag dependence on '
-        'frequency. All breaks specified are sorted by their distance from '
-        'the reference frequency (closest to furthest) and the powerlaw '
-        'index at each break is defined to apply for the frequency range '
-        'away from the reference.'
-    )
-    parser.add_argument(
-        prefix + '-inertial-mode-enhancement',
-        type=float,
-        default=1.0,
-        help='A factor by which the dissipation is larger in the inertial mode '
-        'range relative to outside of it. This is applied on top of the spin '
-        'and forcing frequency dependencies defined by the other arguments.'
-    )
-    parser.add_argument(
-        prefix + '-inertial-mode-sharpness',
-        type=float,
-        default=10.0,
-        help='A parameter controlling how suddenly the enhancement due to '
-        'inertial modes gets turned on near the inertial mode range boundaries.'
-    )
+        parser.add_argument(
+            prefix + '-dissipation_break',
+            nargs=2,
+            metavar=('TidalFrequency',
+                     'PowerlawIndex'),
+            action='append',
+            help='Add another powerlaw break to the phase lag dependence on '
+            'frequency. All breaks specified are sorted by their distance from '
+            'the reference frequency (closest to furthest) and the powerlaw '
+            'index at each break is defined to apply for the frequency range '
+            'away from the reference.'
+        )
+        parser.add_argument(
+            prefix + '-inertial-mode-enhancement',
+            type=float,
+            default=1.0,
+            help='A factor by which the dissipation is larger in the inertial mode '
+            'range relative to outside of it. This is applied on top of the spin '
+            'and forcing frequency dependencies defined by the other arguments.'
+        )
+        parser.add_argument(
+            prefix + '-inertial-mode-sharpness',
+            type=float,
+            default=10.0,
+            help='A parameter controlling how suddenly the enhancement due to '
+            'inertial modes gets turned on near the inertial mode range boundaries.'
+        )
 
 
-def add_binary_config(parser, skip=(), require_secondary=False):
+def add_binary_config(parser,
+                      skip=(),
+                      **star_config_kwargs):
     """
     Add command line/config file options to specify the binary to evolve.
 
@@ -208,8 +214,11 @@ def add_binary_config(parser, skip=(), require_secondary=False):
             'the disk dissipates.'
         )
 
-    add_star_config(parser, primary=True, require_secondary=require_secondary)
-    add_star_config(parser, primary=False, require_secondary=require_secondary)
+    if 'dissipation' in skip:
+        star_config_kwargs['dissipation'] = False
+
+    add_star_config(parser, primary=True, **star_config_kwargs)
+    add_star_config(parser, primary=False, **star_config_kwargs)
 
     if (
             'Porb' not in skip
@@ -248,7 +257,7 @@ def add_binary_config(parser, skip=(), require_secondary=False):
             'initial_obliquity' not in skip
     ):
         parser.add_argument(
-            '--initial_obliquity', '--Lambda0', '--Lambda',
+            '--initial-obliquity', '--Lambda0', '--Lambda',
             type=float,
             default=0.0,
             help='The initial obliquity of the orbit relative to the surface '
@@ -302,7 +311,10 @@ def add_evolution_config(parser):
     )
     parser.add_argument(
         '--eccentricity-expansion-fname',
-        default='eccentricity_expansion_coef_O400.sqlite',
+        default=join_paths(
+            dirname(dirname(dirname(__file__))),
+            'eccentricity_expansion_coef_O400.sqlite'
+        ),
         help='The filename storing the eccentricity expansion coefficients.'
     )
     parser.add_argument(

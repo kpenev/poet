@@ -256,7 +256,7 @@ class InitialConditionSolver:
                 period guess while searching for a range surrounding the known
                 present day orbital period.
 
-            scaled_period_guess:    The search for initial period to bracked the
+            scaled_period_guess:    The search for initial period to bracket the
                 observed final period will start from this value multiplied by
                 the final orbital period.
 
