@@ -735,9 +735,19 @@ namespace Evolve {
     {
         return (
             (
-                std::abs(stop_info.stop_condition_precision())
-                <=
-                __precision
+                (
+                    std::abs(stop_info.stop_condition_precision())
+                    <=
+                    __precision
+                )
+                &&
+                (
+                    stop_info.deriv_sign_at_crossing()
+                    ==
+                    __stopping_conditions->expected_crossing_deriv_sign(
+                        stop_info.stop_condition_index()
+                    )
+                )
             )
             ||
             (

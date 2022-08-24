@@ -131,10 +131,13 @@ namespace Evolve {
         double precision
     )
     {
-        __max_ignore_eccentricity.resize(3 * (__max_s + 1), Core::NaN);
+        __max_ignore_eccentricity.resize(3 * (__max_s + 2), Core::NaN);
 
         for(int m=2; m >= -2; m -= 2)
         {
+            __max_ignore_eccentricity[local_index(m, __max_s + 1)] = (
+                __allow_precision_fail ? 0.0 : 1.0
+            );
             for(int s=0; s <= __max_s; ++s)
             {
                 int destination_i = local_index(m, s);
@@ -526,18 +529,24 @@ namespace Evolve {
                 "Attempting to evaluate p_ms before reading interpolation data"
             );
 
-        if(m != 0 && std::abs(m) != 2)
-            throw Core::Error::BadFunctionArguments(
-                "Asking for p_{m,s} with m other than +-2 and 0"
-            );
-        if(s > __max_s)
-            throw Core::Error::BadFunctionArguments(
-                "Attempting to evaluate larger s than is available!"
-            );
-        if(e > __max_e[local_index(m, s)])
-            throw Core::Error::BadFunctionArguments(
-                "Attempting to evaluate larger e than is accounted for!"
-            );
+        if(m != 0 && std::abs(m) != 2) {
+            std::ostringstream msg;
+            msg << "Asking for p_{m,s} with m = " << m
+                << ". Only +-2 and 0 are allowed!";
+            throw Core::Error::BadFunctionArguments(msg.str());
+        } if(s > __max_s) {
+            std::ostringstream msg;
+            msg << "Attempting to evaluate s = " << s
+                << ". Maximum s = " << __max_s << " is available!";
+            throw Core::Error::BadFunctionArguments(msg.str());
+        } if(e > __max_e[local_index(m, s)]) {
+            std::ostringstream msg;
+            msg <<"Attempting to evaluate p_" << m << ", " << s
+                << " for e = " << e
+                << ". Maximum e = " << __max_e[local_index(m, s)]
+                << " is available!";
+            throw Core::Error::BadFunctionArguments(msg.str());
+        }
 
         if(check_known_e(m, s, e)) {
             //TODO: handle deriv properly

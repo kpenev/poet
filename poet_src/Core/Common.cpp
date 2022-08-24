@@ -253,7 +253,17 @@ namespace Core {
                              double dy0, double dy1,
                              double *extremum_y)
     {
-        assert(dy0*dy1<0);
+        if(!(dy0*dy1<0))
+            std::cerr << "Finding extremum with: "
+                      << ", x0 = " << x0
+                      << ", y0 = " << y0
+                      << ", x1 = " << x1
+                      << ", y1 = " << y1
+                      << ", dy0 = " << dy0
+                      << ", dy1 = " << dy1
+                      << std::endl;
+
+        assert(dy0*dy1<=0);
         double dx=x1-x0;
         double x1_2=std::pow(x1, 2), x0_2=std::pow(x0, 2),
                a=(dx*(dy1+dy0) - 2.0*(y1-y0))/std::pow(dx, 3),
