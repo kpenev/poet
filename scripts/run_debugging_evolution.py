@@ -53,7 +53,7 @@ def parse_configuration():
 
     parser.add_argument(
         '--plot',
-        nargs=2,
+        nargs='+',
         action='append',
         metavar=('X_EXPR', 'Y_EXPR'),
         default=[],
@@ -154,11 +154,16 @@ def main(cmdline_args):
     print(repr(evolution))
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
-    for plot in cmdline_args.plot + cmdline_args.plot_with_tangents:
+    for plot in cmdline_args.plot:
         plot_data = [evaluator(expression) for expression in plot]
-        pyplot.plot(plot_data[0], plot_data[1])
-        if len(plot) == 4:
-            plot_tangents(*plot_data)
+        for plot_y in plot_data[1:]:
+            pyplot.plot(plot_data[0], plot_y)
+        pyplot.show()
+        pyplot.cla()
+
+
+    for plot in cmdline_args.plot_with_tangents:
+        plot_tangents(*[evaluator(expression) for expression in plot])
         pyplot.show()
         pyplot.cla()
 

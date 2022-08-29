@@ -742,6 +742,8 @@ namespace Evolve {
                 )
                 &&
                 (
+                    !stop_info.is_crossing()
+                    ||
                     stop_info.deriv_sign_at_crossing()
                     ==
                     __stopping_conditions->expected_crossing_deriv_sign(
