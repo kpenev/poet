@@ -115,6 +115,15 @@ def add_star_config(parser,
             extra_help
         )
     )
+    if not primary:
+        parser.add_argument(
+            '--secondary-initial-angmom',
+            type=float,
+            nargs=2,
+            default=[0.1, 0.1],
+            help='The initial angular momentum of the secondary. Ignored if the'
+            ' secondary is a planet.'
+        )
     if dissipation:
         parser.add_argument(
             prefix + '-reference-dissipation',
@@ -140,7 +149,7 @@ def add_star_config(parser,
             )
         )
         parser.add_argument(
-            prefix + '-dissipation_break',
+            prefix + '-dissipation-break',
             nargs=2,
             metavar=('TidalFrequency',
                      'PowerlawIndex'),
@@ -426,7 +435,8 @@ def create_system(primary,
                   porb_initial=3.5,
                   disk_dissipation_age=4e-3,
                   initial_inclination=0.0,
-                  secondary_formation_age=None):
+                  secondary_formation_age=None,
+                  secondary_initial_angmom=[0.1, 0.1]):
     """Combine the given primary and secondar in a system ready to evolve."""
 
     binary = Binary(primary=primary,
@@ -461,7 +471,7 @@ def create_system(primary,
                         semimajor=binary.semimajor(porb_initial),
                         eccentricity=initial_eccentricity,
                         spin_angmom=(
-                            numpy.array([0.01, 0.01])
+                            numpy.array(secondary_initial_angmom)
                             if isinstance(secondary, EvolvingStar) else
                             numpy.array([0.0])
                         ),
@@ -580,7 +590,8 @@ def get_binary(cmdline_args, interpolator):
             cmdline_args.secondary_formation_age
             if cmdline_args.secondary_mass else
             cmdline_args.final_age
-        )
+        ),
+        secondary_initial_angmom=cmdline_args.secondary_initial_angmom
     )
 
 def run_evolution(cmdline_args,
@@ -612,7 +623,7 @@ def run_evolution(cmdline_args,
         component = getattr(binary, component_name)
         if isinstance(component, EvolvingStar):
             for zone in ['core', 'envelope']:
-                for deriv_order in range(3):
+                for deriv_order in range(1):
                     setattr(
                         evolution,
                         '_'.join(

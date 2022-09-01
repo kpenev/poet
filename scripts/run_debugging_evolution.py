@@ -150,14 +150,15 @@ def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
 def main(cmdline_args):
     """Avoid polluting the global namespace."""
 
-    evolution = run_evolution(cmdline_args)
+    evolution = run_evolution(cmdline_args, print_progress=True)
     print(repr(evolution))
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
     for plot in cmdline_args.plot:
         plot_data = [evaluator(expression) for expression in plot]
-        for plot_y in plot_data[1:]:
-            pyplot.plot(plot_data[0], plot_y)
+        for plot_y, label in zip(plot_data[1:], plot[1:]):
+            pyplot.plot(plot_data[0], plot_y, label=label)
+        pyplot.legend()
         pyplot.show()
         pyplot.cla()
 

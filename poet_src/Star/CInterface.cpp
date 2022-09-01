@@ -204,6 +204,8 @@ void zone_inertia_array(Star::EvolvingStellarZone &zone,
             zone.select_interpolation_region(age[i]);
         else
             zone.reached_critical_age(age[i]);
+        std::cout << "Calculating d" << deriv_order << "I/dt" << deriv_order
+                  << "(t=" << age[i] << ")" << std::endl;
         result[i] = zone.moment_of_inertia(age[i], deriv_order);
     }
 }
