@@ -58,8 +58,9 @@ namespace Evolve {
             ///See setup()
             __inertial_mode_enhancement,
 
-            ///See setup()
-            __inertial_mode_sharpness;
+            ///\brief The fraction of the spin frequency over which the
+            ///transition from non-boosted to inertial mode boosted occurs.
+            __inertial_mode_transition;
 
         ///\brief The index within __spin_frequency_powers of the powerlaw
         ///now in effect.
@@ -211,7 +212,7 @@ namespace Evolve {
             ///boundary.
             ///
             ///The expression for the enhancement factor is:
-            /// \f$ \max\left[\left|\frac{2\Omega_\star}{\Omega_{m,s}}\right|^\beta, \gamma\right] \f$
+            /// \f$ \min\left[\left|\frac{2\Omega_\star}{\Omega_{m,s}}\right|^\beta, \gamma\right] \f$
             ///Where \f$\beta\f$ is inertial_mode_sharpness, and
             /// \f$\gamma\f$ is inertial_mode_enhancement.
             double inertial_mode_sharpness = 10.0

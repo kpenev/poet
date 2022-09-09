@@ -25,18 +25,21 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
                       << std::string(fname.substr(fname.size() - 7))
                       << std::endl;
 
-            if(interpolator)
+            if(interpolator) {
+                closedir(dirstream);
                 throw Core::Error::IO(
                     "Multiple candidate interpolators fund in "
                     +
                     interpolator_dir
                 );
+            }
             interpolator = load_interpolator(
                 (interpolator_dir + fname).c_str()
             );
 
         }
     }
+    closedir(dirstream);
     if(!interpolator)
         throw Core::Error::IO(
             "No interpolators found in "
@@ -330,6 +333,7 @@ int main(int, char **)
     destroy_solver(solver);
     delete[] age;
     delete[] semimajor;
+    delete[] eccentricity;
     delete[] primary_lconv;
     delete[] primary_lrad;
     delete[] secondary_lconv;

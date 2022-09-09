@@ -28,46 +28,53 @@ namespace Evolve {
             return 0.0;
         }
 
-        double abs_spin_frequency = std::abs(spin_frequency()),
-               abs_forcing_frequency = std::abs(forcing_frequency);
-        if(entry == Dissipation::NO_DERIV)
+        double abs_forcing_to_spin_frequency = std::abs(forcing_frequency
+                                                        /
+                                                        spin_frequency());
+        if(abs_forcing_to_spin_frequency > 2.0)
+            return (entry == Dissipation::NO_DERIV ? 1.0 : 0.0);
+
+        if(abs_forcing_to_spin_frequency < 2.0 - __inertial_mode_transition)
             return (
-                abs_forcing_frequency > 2.0 * abs_spin_frequency
-                ? 1.0
-                : std::min(
-                    std::pow(
-                        2.0 * abs_spin_frequency / abs_forcing_frequency,
-                        __inertial_mode_sharpness
-                    ),
-                    __inertial_mode_enhancement
-                )
+                entry == Dissipation::NO_DERIV
+                ? __inertial_mode_enhancement
+                : 0.0
             );
 
-        if(
-            abs_forcing_frequency > 2.0 * abs_spin_frequency
-            ||
-            (
-                std::pow(
-                    2.0 * abs_spin_frequency / abs_forcing_frequency,
-                    __inertial_mode_sharpness
+        if(entry == Dissipation::NO_DERIV)
+            return std::pow(
+                __inertial_mode_enhancement,
+                (
+                    (2.0 - abs_forcing_to_spin_frequency)
+                    /
+                    __inertial_mode_transition
                 )
-                >
-                __inertial_mode_enhancement
-            )
-        )
-            return 0.0;
+            );
 
         if(entry == Dissipation::ORBITAL_FREQUENCY)
-            return -(__inertial_mode_sharpness * orbital_frequency_multiplier
-                     /
-                     forcing_frequency);
+            return (
+                std::log(__inertial_mode_enhancement)
+                /
+                (__inertial_mode_transition * std::abs(spin_frequency()))
+                *
+                (forcing_frequency > 0 ? 1.0 : -1.0)
+                *
+                orbital_frequency_multiplier
+            );
 
         if(entry == Dissipation::SPIN_FREQUENCY)
-            return __inertial_mode_sharpness * (
-                1.0 / spin_frequency()
-                +
-                spin_frequency_multiplier / forcing_frequency
-            );
+            return (
+                spin_frequency_multiplier
+                *
+                (
+                    forcing_frequency / spin_frequency() > 0
+                    ? 1.0
+                    : -1.0
+                )
+                -
+                abs_forcing_to_spin_frequency
+            ) / spin_frequency();
+
         return 0.0;
     }
 
@@ -301,16 +308,16 @@ namespace Evolve {
         }
 
         __inertial_mode_enhancement = inertial_mode_enhancement;
-        __inertial_mode_sharpness = inertial_mode_sharpness;
+        __inertial_mode_transition = 1.0 / inertial_mode_sharpness;
         if(__inertial_mode_enhancement != 1) {
-            if(__inertial_mode_enhancement < 1)
-                throw Core::Error::BadFunctionArguments(
-                    "Inertial mode enhancement must be greater than 1."
-                );
-            if(__inertial_mode_sharpness <= 0)
+            if(
+                inertial_mode_sharpness <= 0
+                ||
+                inertial_mode_sharpness > 1.0
+            )
                 throw Core::Error::BadFunctionArguments(
                     "Sharpness parameter for inertial mode enhancement must be "
-                    "strictly positive."
+                    "strictly positive and less than one."
                 );
         }
 #ifndef NDEBUG
