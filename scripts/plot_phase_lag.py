@@ -8,6 +8,7 @@ import logging
 from matplotlib import pyplot
 import numpy
 from configargparse import ArgumentParser, DefaultsFormatter
+from scipy.integrate import solve_ivp
 
 from basic_utils import calc_semimajor
 from stellar_evolution.manager import StellarEvolutionManager
@@ -130,7 +131,16 @@ def parse_configuration():
         'substitutions for all variables that will be evaluated at multiple '
         'values.'
     )
+    parser.add_argument(
+        '--logging-level',
+        choices=['debug', 'info', 'warning', 'error', 'critical'],
+        default='info',
+        help='The verbosity of log messages.'
+    )
     result = parser.parse_args()
+
+    logging.basicConfig(level=getattr(logging, result.logging_level.upper()))
+
     plot_x = None
     for var_name in ['age', 'spin_frequency', 'orbital_frequency']:
         to_validate = getattr(result, var_name)
@@ -214,6 +224,72 @@ def get_plot_params(config):
     return plot_x, plot_params
 
 
+def evaluate_phase_lag(star, param_values, deriv='NO'):
+    """Calc the phase lag of a star or one of its derivatives & forcing freq."""
+
+    assume_m2 = 1.0
+    star.configure(
+        age=param_values['age'],
+        semimajor=calc_semimajor(
+            star.mass,
+            assume_m2,
+            2.0 * numpy.pi / param_values['orbital_frequency']
+        ),
+        spin_angmom=numpy.array([
+            (
+                star.envelope_inertia(param_values['age'])
+                *
+                param_values['spin_frequency']
+            ),
+            (
+                star.core_inertia(param_values['age'])
+                *
+                param_values['spin_frequency']
+            )
+        ]),
+        companion_mass=assume_m2,
+        eccentricity=0.0,
+        inclination=numpy.array([0.0]),
+        periapsis=numpy.array([0.0]),
+        locked_surface=False,
+        zero_outer_inclination=True,
+        zero_outer_periapsis=True
+    )
+    forcing_frequency=(
+        (
+            param_values['orbital_multiplier']
+            *
+            param_values['orbital_frequency']
+        )
+        -
+        (
+            param_values['spin_multiplier']
+            *
+            param_values['spin_frequency']
+        )
+    )
+    lag = star.modified_phase_lag(
+        zone_index=0,
+        orbital_frequency_multiplier=param_values['orbital_multiplier'],
+        spin_frequency_multiplier=param_values['spin_multiplier'],
+        forcing_frequency=forcing_frequency,
+        deriv=star.deriv_ids[deriv]
+    )
+    if forcing_frequency == 0:
+        lag = lag[0]
+    return lag, forcing_frequency
+
+
+def dy_dx(x, _, x_var_name, star, param_values):
+    """Return the derivative of the curve to plot."""
+
+    assert param_values[x_var_name] is None
+    param_values[x_var_name] = x
+    result = evaluate_phase_lag(star, param_values, x_var_name.upper())[0]
+    param_values[x_var_name] = None
+    return [result]
+
+
 def get_plot_y(star, param_values, plot_x):
     """Return the y coordinates of the points for a single plot."""
 
@@ -224,59 +300,39 @@ def get_plot_y(star, param_values, plot_x):
             break
     assert x_var_name is not None
 
-    assume_m2 = 1.0
     plot_y = numpy.empty(plot_x.shape)
+    old_forcing_frequency = numpy.nan
+    jump_index = None
     for y_dest, x_value in enumerate(plot_x):
         param_values[x_var_name] = x_value
-        star.configure(
-            age=param_values['age'],
-            semimajor=calc_semimajor(
-                star.mass,
-                assume_m2,
-                2.0 * numpy.pi / param_values['orbital_frequency']
-            ),
-            spin_angmom=numpy.array([
-                (
-                    star.envelope_inertia(param_values['age'])
-                    *
-                    param_values['spin_frequency']
-                ),
-                (
-                    star.core_inertia(param_values['age'])
-                    *
-                    param_values['spin_frequency']
-                )
-            ]),
-            companion_mass=assume_m2,
-            eccentricity=0.0,
-            inclination=numpy.array([0.0]),
-            periapsis=numpy.array([0.0]),
-            locked_surface=False,
-            zero_outer_inclination=True,
-            zero_outer_periapsis=True
+        plot_y[y_dest], forcing_frequency = evaluate_phase_lag(
+            star,
+            param_values
         )
-        plot_y[y_dest] = star.modified_phase_lag(
-            zone_index=0,
-            orbital_frequency_multiplier=param_values['orbital_multiplier'],
-            spin_frequency_multiplier=param_values['spin_multiplier'],
-            forcing_frequency=(
-                (
-                    param_values['spin_multiplier']
-                    *
-                    param_values['spin_frequency']
-                )
-                -
-                (
-                    param_values['orbital_multiplier']
-                    *
-                    param_values['orbital_frequency']
-                )
-            ),
-            deriv=star.deriv_ids['NO']
-        )
+        if forcing_frequency * old_forcing_frequency < 0:
+            jump_index = y_dest
+        old_forcing_frequency = forcing_frequency
 
     param_values[x_var_name] = None
-    return plot_y
+    integrated_plot_y = solve_ivp(
+        fun=dy_dx,
+        t_span=(plot_x[0], plot_x[-1]),
+        y0=[plot_y[0]],
+        t_eval=plot_x,
+        args=(x_var_name, star, param_values),
+        max_step=(plot_x[-1] - plot_x[0]) / (10.0 * plot_x.size)
+    )
+    if not integrated_plot_y.success:
+        logging.critical('Integrating dy_dx failed: %s',
+                         integrated_plot_y.message)
+    integrated_plot_y = integrated_plot_y.y[0]
+    if jump_index is not None:
+        integrated_plot_y[jump_index:] += (
+            float(plot_y[jump_index])
+            -
+            float(integrated_plot_y[jump_index])
+        )
+    return plot_y, integrated_plot_y
 
 
 def main(config):
@@ -310,20 +366,28 @@ def main(config):
     plot_x, plot_params = get_plot_params(config)
     for param_values in plot_params:
         plot_fname = config.plot_fname.format_map(param_values)
-        plot_y = get_plot_y(star, param_values, plot_x)
-        negative_y = (plot_y < 0)
-        pyplot.plot(plot_x[numpy.logical_not(negative_y)],
-                    plot_y[numpy.logical_not(negative_y)],
-                    '.g',
-                    markersize=0.2)
-        pyplot.plot(plot_x[negative_y],
-                    -plot_y[negative_y],
-                    '.r',
-                    markersize=0.2)
+        y_values = get_plot_y(star, param_values, plot_x)
+        for plot_y, symbol, label_start in zip(y_values,
+                                               ['x', '+'],
+                                               ['direct', 'integrated']):
+            include_in_plot = (plot_y >= 0)
+            sign = 1
+            for color, label_end in  [('g',  ' >= 0'), ('r', ' < 0')]:
+                logging.debug('Plot y: %s', repr(plot_y))
+                logging.debug('Include in plot: %s', repr(include_in_plot))
+                pyplot.plot(plot_x[include_in_plot],
+                            sign * plot_y[include_in_plot],
+                            symbol + color,
+                            markersize=3.0,
+                            markeredgewidth=1.0,
+                            label=label_start + label_end)
+                include_in_plot = numpy.logical_not(include_in_plot)
+                sign=-1
+
+        pyplot.legend()
         pyplot.savefig(plot_fname)
         logging.info('Generated %s', plot_fname)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
     main(parse_configuration())

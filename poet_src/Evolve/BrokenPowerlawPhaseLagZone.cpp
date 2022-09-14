@@ -52,28 +52,34 @@ namespace Evolve {
             );
 
         if(entry == Dissipation::ORBITAL_FREQUENCY)
-            return (
+            return -(
                 std::log(__inertial_mode_enhancement)
                 /
                 (__inertial_mode_transition * std::abs(spin_frequency()))
-                *
-                (forcing_frequency > 0 ? 1.0 : -1.0)
                 *
                 orbital_frequency_multiplier
             );
 
         if(entry == Dissipation::SPIN_FREQUENCY)
             return (
-                spin_frequency_multiplier
-                *
                 (
-                    forcing_frequency / spin_frequency() > 0
-                    ? 1.0
-                    : -1.0
+                    abs_forcing_to_spin_frequency
+                    +
+                    spin_frequency_multiplier
+                    *
+                    (
+                        forcing_frequency / spin_frequency() > 0
+                        ? 1.0
+                        : -1.0
+                    )
                 )
-                -
-                abs_forcing_to_spin_frequency
-            ) / spin_frequency();
+                *
+                std::log(__inertial_mode_enhancement)
+                /
+                __inertial_mode_transition
+                /
+                spin_frequency()
+            );
 
         return 0.0;
     }
@@ -309,17 +315,11 @@ namespace Evolve {
 
         __inertial_mode_enhancement = inertial_mode_enhancement;
         __inertial_mode_transition = 1.0 / inertial_mode_sharpness;
-        if(__inertial_mode_enhancement != 1) {
-            if(
-                inertial_mode_sharpness <= 0
-                ||
-                inertial_mode_sharpness > 1.0
-            )
-                throw Core::Error::BadFunctionArguments(
-                    "Sharpness parameter for inertial mode enhancement must be "
-                    "strictly positive and less than one."
-                );
-        }
+        if(__inertial_mode_enhancement != 1 && inertial_mode_sharpness <= 1.0)
+            throw Core::Error::BadFunctionArguments(
+                "Sharpness parameter for inertial mode enhancement must be "
+                "strictly greater than one."
+            );
 #ifndef NDEBUG
         print_configuration();
 #endif
@@ -520,6 +520,8 @@ namespace Evolve {
                         : 0.0
                     )
                     +
+                    (forcing_frequency > 0 ? 1.0 : -1.0)
+                    *
                     get_inertial_mode_factor(forcing_frequency,
                                              orbital_frequency_multiplier,
                                              spin_frequency_multiplier,
