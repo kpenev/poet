@@ -290,7 +290,7 @@ def dy_dx(x, _, x_var_name, star, param_values):
     return [result]
 
 
-def get_plot_y(star, param_values, plot_x):
+def get_plot_y(star, param_values, plot_x, integrate=True):
     """Return the y coordinates of the points for a single plot."""
 
     x_var_name = None
@@ -314,6 +314,9 @@ def get_plot_y(star, param_values, plot_x):
         old_forcing_frequency = forcing_frequency
 
     param_values[x_var_name] = None
+    if not integrate:
+        return [plot_y]
+
     integrated_plot_y = solve_ivp(
         fun=dy_dx,
         t_span=(plot_x[0], plot_x[-1]),
@@ -333,6 +336,28 @@ def get_plot_y(star, param_values, plot_x):
             float(integrated_plot_y[jump_index])
         )
     return plot_y, integrated_plot_y
+
+
+def generate_plots(star, param_values, plot_x, integrate=True):
+    """Generate a plot of phase lag in the current axes."""
+
+    y_values = get_plot_y(star, param_values, plot_x, integrate=integrate)
+    for plot_y, symbol, label_start in zip(y_values,
+                                           ['x', '+'],
+                                           ['direct', 'integrated']):
+        include_in_plot = (plot_y >= 0)
+        sign = 1
+        for color, label_end in  [('g',  ' >= 0'), ('r', ' < 0')]:
+            logging.debug('Plot y: %s', repr(plot_y))
+            logging.debug('Include in plot: %s', repr(include_in_plot))
+            pyplot.plot(plot_x[include_in_plot],
+                        sign * plot_y[include_in_plot],
+                        symbol + color,
+                        markersize=3.0,
+                        markeredgewidth=1.0,
+                        label=label_start + label_end)
+            include_in_plot = numpy.logical_not(include_in_plot)
+            sign=-1
 
 
 def main(config):
@@ -366,24 +391,7 @@ def main(config):
     plot_x, plot_params = get_plot_params(config)
     for param_values in plot_params:
         plot_fname = config.plot_fname.format_map(param_values)
-        y_values = get_plot_y(star, param_values, plot_x)
-        for plot_y, symbol, label_start in zip(y_values,
-                                               ['x', '+'],
-                                               ['direct', 'integrated']):
-            include_in_plot = (plot_y >= 0)
-            sign = 1
-            for color, label_end in  [('g',  ' >= 0'), ('r', ' < 0')]:
-                logging.debug('Plot y: %s', repr(plot_y))
-                logging.debug('Include in plot: %s', repr(include_in_plot))
-                pyplot.plot(plot_x[include_in_plot],
-                            sign * plot_y[include_in_plot],
-                            symbol + color,
-                            markersize=3.0,
-                            markeredgewidth=1.0,
-                            label=label_start + label_end)
-                include_in_plot = numpy.logical_not(include_in_plot)
-                sign=-1
-
+        generate_plots(star, param_values, plot_x)
         pyplot.legend()
         pyplot.savefig(plot_fname)
         logging.info('Generated %s', plot_fname)
