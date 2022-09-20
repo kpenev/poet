@@ -50,6 +50,8 @@ def initialize_library(library_fname=None):
         c_double,                                       #inertial_mode_enhancmnt
         c_double                                        #inertial_mode_sharpness
     ]
+    result.get_planet_inertia.argtypes = [result.create_planet.restype]
+    result.get_planet_inertia.restype = c_double
 
     return result
 
@@ -126,6 +128,13 @@ class LockedPlanet(DissipatingBody):
             inertial_mode_enhancement=inertial_mode_enhancement,
             inertial_mode_sharpness=inertial_mode_sharpness
         )
+
+
+    def inertia(self):
+        """Return the moment of inertia of the planet."""
+
+        return library.get_planet_inertia(self.c_body)
+
     #pylint: enable=arguments-differ
 
 if __name__ == '__main__':
