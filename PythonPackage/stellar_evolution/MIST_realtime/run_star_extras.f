@@ -284,9 +284,11 @@
           found_cz = .false.
           do zone = 1, s% nz, 1
               if (&
-                      & s % mixing_type(zone) .ne. no_mixing &
+                      & s % mixing_type(zone) .eq. convective_mixing &
+                      & .or. &
+                      & s % mixing_type(zone) .eq. softened_convective_mixing &
                       & .and. &
-                      & s % mixing_type(zone) .ne. minimum_mixing &
+                      & s % mixing_type(zone) .eq. semiconvective_mixing &
               ) then
                   found_cz = .true.
                   conv_envelope_bottom_zone = zone
