@@ -272,8 +272,8 @@
           integer, intent(out) :: ierr
           type (star_info), pointer :: s
           logical :: found_cz
-          real(dp) :: break
-          integer :: zone
+          real(dp) :: break, conv_bottom_r
+          integer :: zone, overshoot_start, overshoot_end
 
           real(dp), parameter :: min_break = 0.01
 
@@ -291,10 +291,20 @@
                       & s % mixing_type(zone) .eq. semiconvective_mixing &
               ) then
                   found_cz = .true.
-                  conv_envelope_bottom_zone = zone
+                  overshoot_start = zone + 1
+                  overshoot_end = overshoot_start
                   break = 0.0
               else
-                  if (found_cz .and. break > min_break) exit
+                  if (found_cz) then
+                      if (break > min_break) exit
+                      if (&
+                          & overshoot_end .eq. zone &
+                          & .and. &
+                          & s % mixing_type(zone) .eq. overshoot_mixing &
+                      ) then
+                          overshoot_end = zone + 1
+                      endif
+                  endif
                   if (&
                           & s % mixing_type(zone) .eq. no_mixing &
                           & .or. &
@@ -312,6 +322,18 @@
           if (break < min_break) then
               conv_envelope_bottom_zone = s % nz + 1
           endif
+          conv_bottom_r = ((s % r(overshoot_start) + s % r(overshoot_end)) / 2.0)
+
+          do zone = overshoot_start, overshoot_end - 1, 1
+              if (&
+                  & abs(s % r(zone) - conv_bottom_r) &
+                  & < &
+                  & abs(s % r(zone + 1) - conv_bottom_r) &
+              ) then
+                  conv_envelope_bottom_zone = zone
+                  return
+              endif
+          end do
       end function conv_envelope_bottom_zone
       
       subroutine data_for_extra_history_columns(id, id_extra, n, names, vals, ierr)

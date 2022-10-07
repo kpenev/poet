@@ -1,0 +1,6 @@
+#!/bin/bash -l
+
+source /home/user/.bashrc
+
+cd make
+make clean
