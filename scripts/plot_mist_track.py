@@ -75,7 +75,7 @@ def main(config):
     )
 
     interpolated = {
-        q: interpolator(q, 1.0, 0.0)
+        q: interpolator(q, config.mass, config.feh)
         for q in interpolator.quantity_list
     }
 
