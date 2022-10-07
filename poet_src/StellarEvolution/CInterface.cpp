@@ -15,6 +15,9 @@ const int IRAD = StellarEvolution::IRAD;
 const int MRAD = StellarEvolution::MRAD;
 const int RRAD = StellarEvolution::RRAD;
 const int NUM_QUANTITIES = StellarEvolution::NUM_QUANTITIES;
+const double Yprimordial = StellarEvolution::MESA::Yprimordial;
+const double Yprotosun = StellarEvolution::MESA::Yprotosun;
+const double Zprotosun = StellarEvolution::MESA::Zprotosun;
 
 MESAInterpolator* create_interpolator(const char *mesa_dir,
                                       double *smoothing,

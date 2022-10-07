@@ -8,6 +8,7 @@ from ctypes import\
     byref
 from ctypes.util import find_library
 import re
+from collections import namedtuple
 
 import numpy
 
@@ -137,6 +138,17 @@ def initialize_library():
 
     result.z_from_feh.argtypes = [c_double]
     result.z_from_feh.restype = c_double
+
+    lib_constants = ['Yprimordial', 'Yprotosun', 'Zprotosun']
+    result.constants = namedtuple(
+        'StellarEvolutionConstants',
+        lib_constants
+    )(
+        *(
+            c_double.in_dll(result, const_name).value
+            for const_name in lib_constants
+        )
+    )
 
     return result
 

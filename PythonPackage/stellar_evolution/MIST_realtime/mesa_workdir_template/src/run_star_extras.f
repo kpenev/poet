@@ -324,6 +324,7 @@
           endif
           conv_bottom_r = ((s % r(overshoot_start) + s % r(overshoot_end)) / 2.0)
 
+          conv_envelope_bottom_zone = overshoot_start
           do zone = overshoot_start, overshoot_end - 1, 1
               if (&
                   & abs(s % r(zone) - conv_bottom_r) &
