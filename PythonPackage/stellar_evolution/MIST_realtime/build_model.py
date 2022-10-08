@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Define class for building and using MIST models in POET."""
 
-from os import path, listdir
+from os import path, listdir, makedirs
 from abc import ABC, abstractmethod
 from tempfile import TemporaryDirectory
 import shutil
@@ -11,8 +11,10 @@ try:
     from spython.main import Client as SingularityClient
 except ModuleNotFoundError:
     import docker
+from mesa_reader import MesaData
+import pandas
 
-from stellar_evolution.library_interface import library
+from stellar_evolution.library_interface import library, MESAInterpolator
 
 _workdir_template = path.join(path.dirname(__file__), 'mesa_workdir_template')
 
@@ -61,8 +63,42 @@ class TemporaryMESAWorkDirectory(TemporaryDirectory):
         return workdir_name
 
 
+def convert_history_to_track(initial_mass,
+                             history_fname,
+                             track_fname,
+                             min_age=None):
+    """Convert a MESA history file to a track ready to interplate."""
+
+    history = MesaData(history_fname)
+
+    if min_age:
+        selected_points = (history.star_age >= min_age)
+    else:
+        selected_points = slice(None)
+
+    pandas.DataFrame(
+        dict(age=history.star_age[selected_points],
+             R_star=10.0**history.log_R[selected_points],
+             L_star=10.0**history.log_L[selected_points],
+             M_star=history.star_mass[selected_points],
+             R_tachocline=history.rcore[selected_points],
+             M_ini=initial_mass[selected_points],
+             M_conv=(history.star_mass - history.mcore)[selected_points],
+             M_rad=history.mcore[selected_points],
+             I_conv=history.env_inertia[selected_points],
+             I_rad=history.core_inertia[selected_points])
+    ).to_csv(
+        track_fname,
+        na_rep='NaN',
+        index=False
+    )
+
+
 class MISTTrackMakerBase(ABC):
     """Class for generating and processing MIST stellar evolution tracks."""
+
+    #TODO: Implement more general templating of any file in mesa work dir and
+    #use to allow specifying number of threads to use
 
     @staticmethod
     def _generate_inlist(mass,
@@ -85,24 +121,7 @@ class MISTTrackMakerBase(ABC):
 
             destination(str):    The filename of the inlist to generate.
 
-            config:    Controls the precision with which stellar evolution is
-                calculated. See MESA documentation for description of
-                parameters. If unspecified, the following defaults are used:
-
-                    * when_to_stop_rtol = 0
-
-                    * when_to_stop_atol = 1e-6
-
-                    * varcontrol_target = 3d-4
-
-                    * delta_lgTeff_limit = 0.005
-
-                    * delta_lgTeff_hard_limit = 0.01
-
-                    * delta_lgL_limit = 0.02
-
-                    * delta_lgL_hard_limit = 0.05
-
+            config:    See ``mesa_config`` argument to `run_mesa()`
 
             profile_interval(int or None):    Whether to generate profiles and
                 with what frequnecy (number of models between profiles).
@@ -251,8 +270,25 @@ class MISTTrackMakerBase(ABC):
                 MESA working directory to generate history and possibly profiles
                 in.
 
-            mesa_config:    Additional configuration for how to run MESA (see
-                `generate_inlist()` for allowed configurations
+            mesa_config:    Controls the precision with which stellar evolution
+                is calculated and whether to generate profiles. See MESA
+                documentation for description of parameters. If unspecified, the
+                following precision defaults are used and no profiles are
+                generated:
+
+                    * when_to_stop_rtol = 0
+
+                    * when_to_stop_atol = 1e-6
+
+                    * varcontrol_target = 3d-4
+
+                    * delta_lgTeff_limit = 0.005
+
+                    * delta_lgTeff_hard_limit = 0.01
+
+                    * delta_lgL_limit = 0.02
+
+                    * delta_lgL_hard_limit = 0.05
 
         Returns:
             None
@@ -264,6 +300,70 @@ class MISTTrackMakerBase(ABC):
                               path.join(mesa_workdir, 'inlist'),
                               **mesa_config)
         self._execute_mesa_command('./rn', mesa_workdir)
+
+
+    def create_interpolator(self,
+                            mass,
+                            feh,
+                            max_age,
+                            mesa_workdir,
+                            *,
+                            min_age=None,
+                            interpolation_config=None,
+                            **mesa_config):
+        """
+        Create interpolator from existing history or creating one if needed.
+
+        Args:
+            mass(float):    The mass of the star to create an interpolator for.
+
+            feh(float):    The [Fe/H] of the star to create an interpolator for.
+
+            max_age(float):    The latest age at which the interpolator can be
+                evaluated.
+
+            mesa_workdir(str):    Path to directory either containing a MESA run
+                or which will be used for a fresh MESA run. If a history file is
+                found, it is assumed to apply for the given star.
+
+            min_age(float):    If specified, entries from the MESA history file
+                for ages less than this in Gyr are not used in the interplation.
+
+            interpolation_config(dict):    See
+            `MESAInterpolator.get_create_interpolator_config()` for full
+            description.
+
+            mesa_config:    See `run_mesa()`.
+
+        Returns:
+            MESAInterpolator:
+                The interpolator allowing evaluating POET relevant quantities
+                for the given star.
+        """
+
+        history_fname = path.join(mesa_workdir, 'LOGS', 'history.data')
+        track_dir = path.join(mesa_workdir, 'TRACK')
+        track_fname = path.join(
+            track_dir,
+            'M{!r}_Z{!r}.csv'.format(mass, library.z_from_feh(feh))
+        )
+        if not path.exists(track_fname):
+            if not path.exists(history_fname):
+                self.run_mesa(mass, feh, max_age, mesa_workdir, **mesa_config)
+                assert path.exists(history_fname)
+            if not path.exists(track_dir):
+                makedirs(track_dir)
+            convert_history_to_track(mass, history_fname, track_fname, min_age)
+
+        if interpolation_config is None:
+            interpolation_config = dict()
+        return MESAInterpolator(
+            mesa_dir=track_dir,
+            **MESAInterpolator.get_create_interpolator_config(
+                **interpolation_config
+            ),
+            num_threads=interpolation_config.get('num_threads', 1)
+        )
 
 
 class DockerMISTTrackMaker(MISTTrackMakerBase):
