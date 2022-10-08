@@ -177,7 +177,53 @@ def plot_history(config, history, interpolator, pdf):
         pyplot.close()
 
 
+def plot_profiles(config, mesa_data, pdf):
+    """Create plots involing the MESA profiles."""
 
+    history = mesa_data.history_data
+    for model_number in mesa_data.model_numbers[-2:]:
+        #False positive
+        #pylint: disable=no-member
+        profile_age = history.star_age[model_number - 1]
+        #pylint: enable=no-member
+
+        profile = mesa_data.profile_data(model_number=model_number)
+    #    print('Mcore=%.3f, Rcore=%.3f, Ienv=%.3e, Icore=%.3e'
+    #          %
+    #          process_profile(profile))
+        pyplot.plot(
+            profile.radius / 10.0**history.log_R[model_number - 1],
+            profile.mixing_type,
+            '-g'
+        )
+        pyplot.axvline(
+            (
+                history.rcore[model_number - 1]
+                /
+                10.0**history.log_R[model_number - 1]
+            ),
+            color='green'
+        )
+        pyplot.plot(profile.mass / history.star_mass[model_number - 1],
+                    profile.mixing_type,
+                    '-r')
+        pyplot.axvline(
+            (
+                history.mcore[model_number - 1]
+                /
+                history.star_mass[model_number - 1]
+            ),
+            color='red'
+        )
+        pyplot.title('Mixing($M$ and $R$) at $t=%.3e$ Gyr'
+                     %
+                     (profile_age/1e9))
+        if config.output is None:
+            pyplot.show()
+            pyplot.clf()
+        else:
+            pdf.savefig()
+            pyplot.close()
 
 
 def main(config):
@@ -217,52 +263,9 @@ def main(config):
 
         plot_history(config, history, interpolator, pdf)
 
-        if not config.profile_interval:
-            return
+        if config.profile_interval:
+            plot_profiles(config, mesa_data, pdf)
 
-        for model_number in mesa_data.model_numbers[-2:]:
-            #False positive
-            #pylint: disable=no-member
-            profile_age = mesa_data.history_data.star_age[model_number - 1]
-            #pylint: enable=no-member
-
-            profile = mesa_data.profile_data(model_number=model_number)
-        #    print('Mcore=%.3f, Rcore=%.3f, Ienv=%.3e, Icore=%.3e'
-        #          %
-        #          process_profile(profile))
-            pyplot.plot(
-                profile.radius / 10.0**history.log_R[model_number - 1],
-                profile.mixing_type,
-                '-g'
-            )
-            pyplot.axvline(
-                (
-                    history.rcore[model_number - 1]
-                    /
-                    10.0**history.log_R[model_number - 1]
-                ),
-                color='green'
-            )
-            pyplot.plot(profile.mass / history.star_mass[model_number - 1],
-                        profile.mixing_type,
-                        '-r')
-            pyplot.axvline(
-                (
-                    history.mcore[model_number - 1]
-                    /
-                    history.star_mass[model_number - 1]
-                ),
-                color='red'
-            )
-            pyplot.title('Mixing($M$ and $R$) at $t=%.3e$ Gyr'
-                         %
-                         (profile_age/1e9))
-            if config.output is None:
-                pyplot.show()
-                pyplot.clf()
-            else:
-                pdf.savefig()
-                pyplot.close()
 
     if config.output is not None:
         pdf.close()
