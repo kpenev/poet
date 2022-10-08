@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Define class for building and using MIST models in POET."""
 
-from os import path, listdir, makedirs
+from os import path, listdir
 from abc import ABC, abstractmethod
 from tempfile import TemporaryDirectory
 import shutil
 import logging
 
 try:
-    import spython
+    from spython.main import Client as SingularityClient
 except ModuleNotFoundError:
     import docker
 
@@ -171,8 +171,39 @@ class MISTTrackMakerBase(ABC):
 
 
     @abstractmethod
+    def _execute_container_command(self, command, container_workdir):
+        """Run command in the MESA container from the given container dir."""
+
+
     def _execute_mesa_command(self, command, mesa_workdir):
         """Execute one of the MESA commands in the given working directory."""
+
+        container_workdir = path.join(
+            self._container_workdir_parent,
+            path.relpath(mesa_workdir, self._mesa_workdir_parent)
+        )
+        logging.getLogger(__name__).debug(
+            'Starting MESA command %s in %s -> %s working directory in docker',
+            repr(command),
+            repr(mesa_workdir),
+            repr(container_workdir)
+        )
+        exit_code, output = self._execute_container_command(
+            command,
+            container_workdir
+        )
+        if exit_code:
+            raise RuntimeError(
+                'MESA command {!r} in {!r} -> {!r} working directory failed '
+                'with return code {:d} and output:\n{!s}'.format(
+                    command,
+                    mesa_workdir,
+                    container_workdir,
+                    exit_code,
+                    output
+                )
+            )
+
 
 
     def _ensure_mesa_executable(self):
@@ -195,9 +226,12 @@ class MISTTrackMakerBase(ABC):
             shutil.copystat(created_fname, expected_fname)
 
 
-    def __init__(self):
+    def __init__(self, mesa_workdir_parent, container_workdir_parent):
         """Prepare to generate MIST tracks."""
 
+        self._mesa_workdir_parent = mesa_workdir_parent
+        self._container_workdir_parent = container_workdir_parent
+        TemporaryMESAWorkDirectory.set_workdir_parent(mesa_workdir_parent)
         self._ensure_mesa_executable()
 
 
@@ -235,32 +269,10 @@ class MISTTrackMakerBase(ABC):
 class DockerMISTTrackMaker(MISTTrackMakerBase):
     """Generate MIST tracks using mesa through docker."""
 
-    def _execute_mesa_command(self, command, mesa_workdir):
+    def _execute_container_command(self, command, container_workdir):
         """Execute one of the MESA commands in the given working directory."""
 
-        container_workdir = path.join(
-            self._container_workdir_parent,
-            path.relpath(mesa_workdir, self._mesa_workdir_parent)
-        )
-        logging.getLogger(__name__).debug(
-            'Starting MESA command %s in %s -> %s working directory in docker',
-            repr(command),
-            repr(mesa_workdir),
-            repr(container_workdir)
-        )
-        exit_code, output = self._mesa.exec_run(command,
-                                                workdir=container_workdir)
-        if exit_code:
-            raise RuntimeError(
-                'MESA command {!r} in {!r} -> {!r} working directory failed '
-                'with return code {:d} and output:\n{!s}'.format(
-                    command,
-                    mesa_workdir,
-                    container_workdir,
-                    exit_code,
-                    output
-                )
-            )
+        return self._mesa.exec_run(command, workdir=container_workdir)
 
 
     def __init__(self,
@@ -278,33 +290,55 @@ class DockerMISTTrackMaker(MISTTrackMakerBase):
         container_mounts = (
             docker.APIClient().inspect_container('mesa-r7503')['Mounts']
         )
-        self._mesa_workdir_parent = None
-        self._container_workdir_parent = container_workdir_parent
+        mesa_workdir_parent = None
+
         for mount in container_mounts:
             if mount['Destination'] == container_workdir_parent:
-                self._mesa_workdir_parent = mount['Source']
+                mesa_workdir_parent = mount['Source']
 
-        if self._mesa_workdir_parent is None:
+        if mesa_workdir_parent is None:
             raise RuntimeError('No mount point found for MESA working '
                                'directories in docker container '
                                +
                                container_name)
 
-        TemporaryMESAWorkDirectory.set_workdir_parent(
-            self._mesa_workdir_parent
-        )
-
         if self._mesa.status != 'running':
             self._mesa.start()
-        super().__init__()
+        super().__init__(mesa_workdir_parent, container_workdir_parent)
 
 
 class SingularityMISTTrackMaker(MISTTrackMakerBase):
     """Generate MIST tracks using mesa through singularity."""
 
-    def _execute_mesa_command(self, command, mesa_workdir):
-        raise NotImplementedError()
+    def _execute_container_command(self, command, container_workdir):
+        """Execute one of the MESA commands in the given working directory."""
+
+        result = SingularityClient.execute(self._mesa,
+                                           command,
+                                           options=['--pwd', container_workdir],
+                                           return_result=True)
+        return result['return_code'], result['message']
 
 
-MISTTrackMaker = (SingularityMISTTrackMaker if 'spython' in globals()
+    def __init__(
+            self,
+            container_fname='/work/05392/kpenev/shared/mesa/nudome_14.0.sif',
+            mesa_workdir_parent='/work/05392/kpenev/shared/mesa/mesa-r7503',
+            container_workdir_parent='/home/user/mnt'
+    ):
+        """Start the container instance to run MESA v7503 in."""
+
+        self._mesa = SingularityClient.instance(
+            container_fname,
+            options=[
+                '--cleanenv',
+                '--hostname', 'mesa-r7503',
+                '--no-home',
+                '--bind', mesa_workdir_parent + ':' + container_workdir_parent
+            ]
+        )
+        super().__init__(mesa_workdir_parent, container_workdir_parent)
+
+
+MISTTrackMaker = (SingularityMISTTrackMaker if 'SingularityClient' in globals()
                   else DockerMISTTrackMaker)

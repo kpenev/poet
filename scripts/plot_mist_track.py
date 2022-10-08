@@ -2,17 +2,17 @@
 
 """Utilities for creating custom MIST tracks on the fly."""
 
-from os import path, makedirs
+from os import path
 import logging
 
 from matplotlib import pyplot
+from matplotlib.backends.backend_pdf import PdfPages
 from configargparse import ArgumentParser, DefaultsFormatter
 from mesa_reader import MesaLogDir, MesaData
 import numpy
 
 from stellar_evolution.manager import StellarEvolutionManager
 from stellar_evolution import MISTTrackMaker, TemporaryMESAWorkDirectory
-from stellar_evolution.MIST_realtime.build_model import _init_mesa_workdir
 
 def parse_command_line():
     """Return the configuration for what track to plot and how."""
@@ -63,7 +63,121 @@ def parse_command_line():
         help='How frequently to generate profiles. Plots are shown for each '
         'profile.'
     )
+    parser.add_argument(
+        '--output', '-o',
+        type=str,
+        default=None,
+        help='The filename to save the plots as (multi-page PDF).'
+    )
     return parser.parse_args()
+
+
+def plot_history(config, history, interpolator, pdf):
+    """Create plots involing the MESA history columns."""
+
+    if interpolator.in_range(config.mass, config.feh):
+        interpolated = {
+            q: interpolator(q, config.mass, config.feh)
+            for q in interpolator.quantity_list
+        }
+    else:
+        interpolated = None
+
+    pyplot.semilogx(history.star_age,
+                    10.0**history.log_R,
+                    label=r'$R_\star$')
+    pyplot.semilogx(history.star_age, history.rcore, label='$R_{core}$')
+
+    if interpolated is not None:
+        interp_ages = numpy.copy(
+            history.star_age[
+                numpy.logical_and(
+                    history.star_age > interpolated['RADIUS'].min_age,
+                    history.star_age < interpolated['RADIUS'].max_age
+                )
+            ]
+        )
+
+        pyplot.semilogx(
+            interp_ages,
+            interpolated['RRAD'](interp_ages),
+            label=r'Interp: $R_{core}$'
+        )
+        pyplot.semilogx(
+            interp_ages,
+            interpolated['RADIUS'](interp_ages),
+            label=r'Interp: $R_\star$'
+        )
+
+    pyplot.axhline(y=0)
+    pyplot.legend()
+    if config.output is None:
+        pyplot.show()
+        pyplot.clf()
+    else:
+        pdf.savefig()
+        pyplot.close()
+
+    pyplot.semilogx(
+        history.star_age,
+        history.mcore / history.star_mass,
+        label=r'$M_{core}/M_\star$'
+    )
+    pyplot.semilogx(
+        history.star_age,
+        (
+            interpolated['MRAD'](numpy.copy(history.star_age))
+            /
+            history.star_mass
+        ),
+        label=r'Interp: $M_{core}/M_\star$'
+    )
+    pyplot.axhline(y=0)
+    pyplot.axhline(y=1)
+    pyplot.legend()
+    pyplot.show()
+    pyplot.clf()
+
+    pyplot.semilogx(history.star_age,
+                    history.core_inertia,
+                    label='$I_{core}$')
+    pyplot.semilogx(history.star_age,
+                    history.env_inertia,
+                    label='$I_{env}$')
+    pyplot.semilogx(history.star_age,
+                    history.core_inertia + history.env_inertia,
+                    label='$I_{tot}$')
+    pyplot.semilogx(
+        interp_ages,
+        interpolated['IRAD'](interp_ages),
+        label='Interp: $I_{core}$'
+    )
+    pyplot.semilogx(
+        interp_ages,
+        interpolated['ICONV'](interp_ages),
+        label='Interp: $I_{env}$'
+    )
+    pyplot.semilogx(
+        interp_ages,
+        (
+            interpolated['ICONV'](interp_ages)
+            +
+            interpolated['IRAD'](interp_ages)
+        ),
+        label='Interp: $I_{tot}$'
+    )
+
+
+    pyplot.legend()
+    if config.output is None:
+        pyplot.show()
+        pyplot.clf()
+    else:
+        pdf.savefig()
+        pyplot.close()
+
+
+
 
 
 def main(config):
@@ -74,10 +188,10 @@ def main(config):
         config.stellar_evolution[1]
     )
 
-    interpolated = {
-        q: interpolator(q, config.mass, config.feh)
-        for q in interpolator.quantity_list
-    }
+    if config.output is None:
+        pdf = None
+    else:
+        pdf = PdfPages(config.output)
 
     create_mist_track = MISTTrackMaker()
     with TemporaryMESAWorkDirectory() as mesa_workdir:
@@ -96,94 +210,22 @@ def main(config):
             history = MesaData(
                 path.join(mesa_workdir, 'LOGS/history.data')
             )
+        #False positive
+        #pylint: disable=no-member
         history.star_age /= 1e9
-        interp_ages = numpy.copy(
-            history.star_age[
-                numpy.logical_and(
-                    history.star_age > interpolated['RADIUS'].min_age,
-                    history.star_age < interpolated['RADIUS'].max_age
-                )
-            ]
-        )
+        #pylint: enable=no-member
 
-        pyplot.semilogx(history.star_age,
-                        10.0**history.log_R,
-                        label='$R_\star$')
-        pyplot.semilogx(history.star_age, history.rcore, label='$R_{core}$')
-        pyplot.semilogx(
-            interp_ages,
-            interpolated['RRAD'](interp_ages),
-            label='Interp: $R_{core}$'
-        )
-        pyplot.semilogx(
-            interp_ages,
-            interpolated['RADIUS'](interp_ages),
-            label='Interp: $R_\star$'
-        )
-        pyplot.axhline(y=0)
-        pyplot.legend()
-        pyplot.show()
-        pyplot.clf()
-
-        pyplot.semilogx(
-            history.star_age,
-            history.mcore / history.star_mass,
-            label='$M_{core}/M_\star$'
-        )
-        pyplot.semilogx(
-            history.star_age,
-            (
-                interpolated['MRAD'](numpy.copy(history.star_age))
-                /
-                history.star_mass
-            ),
-            label='Interp: $M_{core}/M_\star$'
-        )
-        pyplot.axhline(y=0)
-        pyplot.axhline(y=1)
-        pyplot.legend()
-        pyplot.show()
-        pyplot.clf()
-
-        pyplot.semilogx(history.star_age,
-                        history.core_inertia,
-                        label='$I_{core}$')
-        pyplot.semilogx(history.star_age,
-                        history.env_inertia,
-                        label='$I_{env}$')
-        pyplot.semilogx(history.star_age,
-                        history.core_inertia + history.env_inertia,
-                        label='$I_{tot}$')
-        pyplot.semilogx(
-            interp_ages,
-            interpolated['IRAD'](interp_ages),
-            label='Interp: $I_{core}$'
-        )
-        pyplot.semilogx(
-            interp_ages,
-            interpolated['ICONV'](interp_ages),
-            label='Interp: $I_{env}$'
-        )
-        pyplot.semilogx(
-            interp_ages,
-            (
-                interpolated['ICONV'](interp_ages)
-                +
-                interpolated['IRAD'](interp_ages)
-            ),
-            label='Interp: $I_{tot}$'
-        )
-
-
-        pyplot.legend()
-        pyplot.show()
-        pyplot.clf()
+        plot_history(config, history, interpolator, pdf)
 
         if not config.profile_interval:
             return
 
         for model_number in mesa_data.model_numbers[-2:]:
+            #False positive
+            #pylint: disable=no-member
             profile_age = mesa_data.history_data.star_age[model_number - 1]
+            #pylint: enable=no-member
+
             profile = mesa_data.profile_data(model_number=model_number)
         #    print('Mcore=%.3f, Rcore=%.3f, Ienv=%.3e, Icore=%.3e'
         #          %
@@ -215,11 +257,17 @@ def main(config):
             pyplot.title('Mixing($M$ and $R$) at $t=%.3e$ Gyr'
                          %
                          (profile_age/1e9))
-            pyplot.show()
-            pyplot.clf()
+            if config.output is None:
+                pyplot.show()
+                pyplot.clf()
+            else:
+                pdf.savefig()
+                pyplot.close()
+
+    if config.output is not None:
+        pdf.close()
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     main(parse_command_line())
-
