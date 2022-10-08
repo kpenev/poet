@@ -30,7 +30,7 @@ def _init_mesa_workdir(workdir_name):
             try:
                 shutil.copyfile(orig, copy)
                 shutil.copymode(orig, copy)
-            except IsADirectoryError:
+            except OSError:
                 shutil.copytree(orig, copy)
 
 
@@ -322,8 +322,11 @@ class SingularityMISTTrackMaker(MISTTrackMakerBase):
 
     def __init__(
             self,
+            mesa_dir='/work/05392/kpenev/shared/mesa/mesa-r7503',
             container_fname='/work/05392/kpenev/shared/mesa/nudome_14.0.sif',
-            mesa_workdir_parent='/work/05392/kpenev/shared/mesa/mesa-r7503',
+            mesa_workdir_parent=(
+                '/work/05392/kpenev/shared/mesa/MIST_workdir_root'
+            ),
             container_workdir_parent='/home/user/mnt'
     ):
         """Start the container instance to run MESA v7503 in."""
@@ -334,7 +337,10 @@ class SingularityMISTTrackMaker(MISTTrackMakerBase):
                 '--cleanenv',
                 '--hostname', 'mesa-r7503',
                 '--no-home',
-                '--bind', mesa_workdir_parent + ':' + container_workdir_parent
+                '--bind', ','.join([
+                    mesa_workdir_parent + ':' + container_workdir_parent,
+                    mesa_dir + ':/home/user/mesa'
+                ])
             ]
         )
         super().__init__(mesa_workdir_parent, container_workdir_parent)

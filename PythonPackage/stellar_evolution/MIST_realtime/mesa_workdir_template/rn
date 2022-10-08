@@ -1,5 +1,7 @@
 #!/bin/bash -il
 
+export HOME=/home/user
+
 source /home/user/.bashrc
 
 rm -f restart_photo
