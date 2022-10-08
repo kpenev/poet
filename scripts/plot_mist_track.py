@@ -135,8 +135,12 @@ def plot_history(config, history, interpolator, pdf):
     pyplot.axhline(y=0)
     pyplot.axhline(y=1)
     pyplot.legend()
-    pyplot.show()
-    pyplot.clf()
+    if config.output is None:
+        pyplot.show()
+        pyplot.clf()
+    else:
+        pdf.savefig()
+        pyplot.close()
 
     pyplot.semilogx(history.star_age,
                     history.core_inertia,
