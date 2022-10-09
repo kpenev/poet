@@ -128,6 +128,8 @@ def plot_history(config, history, compare_interpolators, pdf):
 
 
     for interp_i, interpolated in enumerate(compare_interpolated):
+        if interpolated  is None:
+            continue
 
         pyplot.semilogx(
             history.star_age,
@@ -155,6 +157,9 @@ def plot_history(config, history, compare_interpolators, pdf):
         label=r'$M_{core}/M_\star$'
     )
     for interp_i, interpolated in enumerate(compare_interpolated):
+        if interpolated  is None:
+            continue
+
         pyplot.semilogx(
             history.star_age,
             (
@@ -184,18 +189,21 @@ def plot_history(config, history, compare_interpolators, pdf):
     pyplot.semilogx(history.star_age,
                     history.core_inertia + history.env_inertia,
                     label='$I_{tot}$')
-    pyplot.semilogx(
-        interp_ages,
-        interpolated['IRAD'](interp_ages),
-        label='Interp: $I_{core}$'
-    )
-    pyplot.semilogx(
-        interp_ages,
-        interpolated['ICONV'](interp_ages),
-        label='Interp: $I_{env}$'
-    )
-
     for interp_i, interpolated in enumerate(compare_interpolated):
+        if interpolated  is None:
+            continue
+
+        pyplot.semilogx(
+            interp_ages[interp_i],
+            interpolated['IRAD'](interp_ages[interp_i]),
+            label='Interp: $I_{core}$'
+        )
+        pyplot.semilogx(
+            interp_ages[interp_i],
+            interpolated['ICONV'](interp_ages[interp_i]),
+            label='Interp: $I_{env}$'
+        )
+
         pyplot.semilogx(
             interp_ages[interp_i],
             (
