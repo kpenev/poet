@@ -267,7 +267,7 @@
 
       !Return the index of the zone whose outer boundary is the bottom
       !of the convective envelope
-      integer function conv_envelope_bottom_zone(id, ierr)
+      real(dp) function conv_envelope_bottom_zone(id, ierr)
           integer, intent(in) :: id
           integer, intent(out) :: ierr
           type (star_info), pointer :: s
@@ -327,11 +327,17 @@
           conv_envelope_bottom_zone = overshoot_start
           do zone = overshoot_start, overshoot_end - 1, 1
               if (&
-                  & abs(s % r(zone) - conv_bottom_r) &
-                  & < &
-                  & abs(s % r(zone + 1) - conv_bottom_r) &
+                  & s % r(zone) >= conv_bottom_r &
+                  & .and. &
+                  & s % r(zone + 1) < conv_bottom_r &
               ) then
-                  conv_envelope_bottom_zone = zone
+                  conv_envelope_bottom_zone = (&
+                      & (conv_bottom_r - s % r(zone + 1)) &
+                      & / &
+                      & (s % r(zone) - s % r(zone + 1)) &
+                      & + &
+                      & zone &
+                  &)
                   return
               endif
           end do
@@ -344,15 +350,18 @@
           integer, intent(out) :: ierr
           type (star_info), pointer :: s
 
-          integer :: conv_bottom_zone, i
-          real(dp) :: inorm
+          integer :: i, conv_bottom_zone
+          real(dp) :: inorm, frac_bottom_zone
 
           ierr = 0
           call star_ptr(id, s, ierr)
           if (ierr /= 0) return
 
           !calculate moment of inertia
-          conv_bottom_zone = conv_envelope_bottom_zone(id, ierr)
+          frac_bottom_zone = conv_envelope_bottom_zone(id, ierr)
+
+          conv_bottom_zone = int(frac_bottom_zone) + 1
+          frac_bottom_zone = frac_bottom_zone - conv_bottom_zone
 
           inorm = 3.0 * Msun * Rsun * Rsun / 2.0
 
@@ -362,13 +371,32 @@
               vals(1) = 0.0
               vals(2) = 0.0
           else
-              vals(1) = s % r(conv_bottom_zone) / Rsun
-              vals(2) = s % m(conv_bottom_zone) / Msun
+              vals(1) = (&
+                  & (1.0 - frac_bottom_zone) * s % r(conv_bottom_zone) &
+                  & + &
+                  & frac_bottom_zone * s % r(conv_bottom_zone - 1)
+              &)/ Rsun
+              vals(2) = (&
+                  & (1.0 - frac_bottom_zone) * s % m(conv_bottom_zone) &
+                  & + &
+                  & frac_bottom_zone * s % m(conv_bottom_zone - 1)
+              &)/ Msun
           endif
+
+          <++> HANDLE FRACTIONAL INERTIA <++>
 
           !core moment of inertia
           names(3) = 'core_inertia'
-          vals(3) = 0.0
+          vals(3) = (&
+              & s % dm(frac_bottom_zone - 1) &
+              & * &
+              & s % rmid(frac_bottom_zone - 1) &
+              & * & 
+              & s % rmid(frac_bottom_zone - 1) &
+          & )
+          vals(4) = (1.0 - frac_bottom_zone) * vals(3)
+          vals(3) = frac_bottom_zone * vals(3)
+
           do i = conv_bottom_zone, s % nz
               vals(3) = vals(3) + s % dm(i) * s % rmid(i) * s % rmid(i)
           end do
@@ -376,8 +404,7 @@
 
           !envelope moment of inertia
           names(4) = 'env_inertia'
-          vals(4) = 0.0
-          do i = 1, conv_bottom_zone - 1
+          do i = 1, conv_bottom_zone - 2
               vals(4) = vals(4) + s % dm(i) * s % rmid(i) * s % rmid(i)
           end do
           vals(4) = vals(4) / inorm
