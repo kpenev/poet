@@ -13,6 +13,7 @@ import numpy
 
 from stellar_evolution.manager import StellarEvolutionManager
 from stellar_evolution import MISTTrackMaker, TemporaryMESAWorkDirectory
+from stellar_evolution.library_interface import MESAInterpolator
 
 def parse_command_line():
     """Return the configuration for what track to plot and how."""
@@ -72,41 +73,53 @@ def parse_command_line():
     return parser.parse_args()
 
 
-def plot_history(config, history, interpolator, pdf):
+def plot_history(config, history, compare_interpolators, pdf):
     """Create plots involing the MESA history columns."""
-
-    if interpolator.in_range(config.mass, config.feh):
-        interpolated = {
-            q: interpolator(q, config.mass, config.feh)
-            for q in interpolator.quantity_list
-        }
-    else:
-        interpolated = None
 
     pyplot.semilogx(history.star_age,
                     10.0**history.log_R,
                     label=r'$R_\star$')
     pyplot.semilogx(history.star_age, history.rcore, label='$R_{core}$')
 
-    if interpolated is not None:
-        interp_ages = numpy.copy(
+    compare_interpolated = [None for interpolator in compare_interpolators]
+    interp_ages = [slice(False) for interpolator in compare_interpolators]
+    for interp_i, interpolator in enumerate(compare_interpolators):
+        if not interpolator.in_range(config.mass, config.feh):
+            continue
+
+        compare_interpolated[interp_i] = {
+            q: interpolator(q, config.mass, config.feh)
+            for q in interpolator.quantity_list
+        }
+        interp_ages[interp_i] = numpy.copy(
             history.star_age[
                 numpy.logical_and(
-                    history.star_age > interpolated['RADIUS'].min_age,
-                    history.star_age < interpolated['RADIUS'].max_age
+                    (
+                        history.star_age
+                        >
+                        compare_interpolated[interp_i]['RADIUS'].min_age
+                    ),
+                    (
+                        history.star_age
+                        <
+                        compare_interpolated[interp_i]['RADIUS'].max_age
+                    )
                 )
             ]
         )
 
+
+    for interp_i, interpolated in enumerate(compare_interpolated):
+
         pyplot.semilogx(
-            interp_ages,
-            interpolated['RRAD'](interp_ages),
-            label=r'Interp: $R_{core}$'
+            history.star_age,
+            interpolated['RRAD'](numpy.copy(history.star_age)),
+            label=r'Interp %d: $R_{core}$' % interp_i
         )
         pyplot.semilogx(
-            interp_ages,
-            interpolated['RADIUS'](interp_ages),
-            label=r'Interp: $R_\star$'
+            interp_ages[interp_i],
+            interpolated['RADIUS'](interp_ages[interp_i]),
+            label=r'Interp %d: $R_\star$' % interp_i
         )
 
     pyplot.axhline(y=0)
@@ -123,15 +136,17 @@ def plot_history(config, history, interpolator, pdf):
         history.mcore / history.star_mass,
         label=r'$M_{core}/M_\star$'
     )
-    pyplot.semilogx(
-        history.star_age,
-        (
-            interpolated['MRAD'](numpy.copy(history.star_age))
-            /
-            history.star_mass
-        ),
-        label=r'Interp: $M_{core}/M_\star$'
-    )
+    for interp_i, interpolated in enumerate(compare_interpolated):
+        pyplot.semilogx(
+            history.star_age,
+            (
+                interpolated['MRAD'](numpy.copy(history.star_age))
+                /
+                history.star_mass
+            ),
+            label=r'Interp %d: $M_{core}/M_\star$' % interp_i
+        )
+
     pyplot.axhline(y=0)
     pyplot.axhline(y=1)
     pyplot.legend()
@@ -161,15 +176,17 @@ def plot_history(config, history, interpolator, pdf):
         interpolated['ICONV'](interp_ages),
         label='Interp: $I_{env}$'
     )
-    pyplot.semilogx(
-        interp_ages,
-        (
-            interpolated['ICONV'](interp_ages)
-            +
-            interpolated['IRAD'](interp_ages)
-        ),
-        label='Interp: $I_{tot}$'
-    )
+
+    for interp_i, interpolated in enumerate(compare_interpolated):
+        pyplot.semilogx(
+            interp_ages[interp_i],
+            (
+                interpolated['ICONV'](interp_ages[interp_i])
+                +
+                interpolated['IRAD'](interp_ages[interp_i])
+            ),
+            label='Interp %d: $I_{tot}$' % interp_i
+        )
 
 
     pyplot.legend()
@@ -234,9 +251,9 @@ def main(config):
     """Avoid polluting global namespace."""
 
     manager = StellarEvolutionManager(config.stellar_evolution[0])
-    interpolator = manager.get_interpolator_by_name(
-        config.stellar_evolution[1]
-    )
+    compare_interpolators = [
+        manager.get_interpolator_by_name(config.stellar_evolution[1])
+    ]
 
     if config.output is None:
         pdf = None
@@ -245,11 +262,18 @@ def main(config):
 
     create_mist_track = MISTTrackMaker()
     with TemporaryMESAWorkDirectory() as mesa_workdir:
-        create_mist_track.run_mesa(mass=config.mass,
-                                   feh=config.feh,
-                                   max_age=config.max_age,
-                                   mesa_workdir=mesa_workdir,
-                                   profile_interval=config.profile_interval)
+        compare_interpolators.append(
+            create_mist_track.create_interpolator(
+                mass=config.mass,
+                feh=config.feh,
+                max_age=config.max_age,
+                mesa_workdir=mesa_workdir,
+                profile_interval=config.profile_interval,
+                interpolation_config={
+                    q: dict(nodes=1000) for q in MESAInterpolator.quantity_list
+                }
+            )
+        )
         if config.profile_interval:
             mesa_data = MesaLogDir(
                 path.join(mesa_workdir, 'LOGS')
@@ -265,7 +289,7 @@ def main(config):
         history.star_age /= 1e9
         #pylint: enable=no-member
 
-        plot_history(config, history, interpolator, pdf)
+        plot_history(config, history, compare_interpolators, pdf)
 
         if config.profile_interval:
             plot_profiles(config, mesa_data, pdf)

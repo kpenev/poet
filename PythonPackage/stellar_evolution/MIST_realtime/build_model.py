@@ -18,23 +18,6 @@ from stellar_evolution.library_interface import library, MESAInterpolator
 
 _workdir_template = path.join(path.dirname(__file__), 'mesa_workdir_template')
 
-def _init_mesa_workdir(workdir_name):
-    """Add all non-template entries of _workdir_template to given directory."""
-
-    for entry in listdir(_workdir_template):
-        if (
-                not entry.endswith('_template')
-                and
-                entry not in ['README.rst', '.gitignore']
-        ):
-            orig = path.join(_workdir_template, entry)
-            copy = path.join(workdir_name, entry)
-            try:
-                shutil.copyfile(orig, copy)
-                shutil.copymode(orig, copy)
-            except OSError:
-                shutil.copytree(orig, copy)
-
 
 class TemporaryMESAWorkDirectory(TemporaryDirectory):
     """Wrap around python temporary directories to add MESA contents."""
@@ -53,14 +36,6 @@ class TemporaryMESAWorkDirectory(TemporaryDirectory):
             raise RuntimeError('Argument `dir` must not be specified when '
                                'creating temporary MESA work directories.')
         super().__init__(*args, dir=self._workdir_parent, **kwargs)
-
-
-    def __enter__(self):
-        """Make temp directory and initialize it per `_init_mesa_workdir()."""
-
-        workdir_name = super().__enter__()
-        _init_mesa_workdir(workdir_name)
-        return workdir_name
 
 
 def convert_history_to_track(initial_mass,
@@ -94,22 +69,48 @@ def convert_history_to_track(initial_mass,
     )
 
 
+def _setup_mesa_workdir(mesa_workdir, substitutions):
+    """Use given substitutions and templates to create MESA working dir."""
+
+
+    ignore_workdir_template_files = ['README.rst', '.gitignore']
+
+    for entry in listdir(_workdir_template):
+        source = path.join(_workdir_template, entry)
+        destination = path.join(mesa_workdir, entry)
+        if entry.endswith('_template'):
+            destination = destination[:-len('_template')]
+            assert not path.exists(destination)
+            with open(destination, 'w') as inlist:
+                inlist.write(
+                    open(source).read().format_map(substitutions)
+                )
+        elif entry not in ignore_workdir_template_files:
+            try:
+                shutil.copyfile(source, destination)
+                shutil.copymode(source, destination)
+            except OSError:
+                shutil.copytree(source, destination)
+
+
 class MISTTrackMakerBase(ABC):
     """Class for generating and processing MIST stellar evolution tracks."""
 
     #TODO: Implement more general templating of any file in mesa work dir and
     #use to allow specifying number of threads to use
 
-    @staticmethod
-    def _generate_inlist(mass,
-                         feh,
-                         max_age,
-                         destination,
-                         *,
-                         profile_interval=None,
-                         **config):
+    @classmethod
+    def _prepare_run(cls,
+                     mass,
+                     feh,
+                     max_age,
+                     mesa_workdir,
+                     *,
+                     profile_interval=None,
+                     num_threads=1,
+                     **config):
         """
-        Generate the inlist to run MESA with per current stellar properties.
+        Generate required inputs to run MESA for specified stellar properties.
 
         Args:
             mass(float):    The mass of the star to simulate.
@@ -119,22 +120,23 @@ class MISTTrackMakerBase(ABC):
             max_age(float):    The last age to include in the generated
                 evolution track.
 
-            destination(str):    The filename of the inlist to generate.
+            mesa_workdir(str):    The MESA working directory to configure.
 
             config:    See ``mesa_config`` argument to `run_mesa()`
 
             profile_interval(int or None):    Whether to generate profiles and
                 with what frequnecy (number of models between profiles).
 
+            num_threads(int):    The maximum number of threads to allow MESA to
+                use.
+
         Returns:
             str:
                 Name of the inlist file generated.
         """
 
-        assert not path.exists(destination)
-
         initial_z = library.z_from_feh(feh)
-        inlist_substitutions = dict(
+        substitutions = dict(
             INITIAL_MASS=mass,
             INITIAL_Z=initial_z,
             MAX_AGE=max_age * 1e9,
@@ -149,7 +151,7 @@ class MISTTrackMakerBase(ABC):
             DELTA_LGL_HARD_LIMIT=0.05
         )
         for k in config:
-            inlist_substitutions[k.upper()] = config[k]
+            substitutions[k.upper()] = config[k]
 
         h2_h1_ratio = 2e-5
         he3_he4_ratio = 1.66e-4
@@ -165,28 +167,21 @@ class MISTTrackMakerBase(ABC):
         )
         initial_h = 1.0 - initial_he - initial_z
 
-        inlist_substitutions['INITIAL_H1'] = initial_h / (1.0 + h2_h1_ratio)
-        inlist_substitutions['INITIAL_H2'] = (
-            inlist_substitutions['INITIAL_H1']
+        substitutions['INITIAL_H1'] = initial_h / (1.0 + h2_h1_ratio)
+        substitutions['INITIAL_H2'] = (
+            substitutions['INITIAL_H1']
             *
             h2_h1_ratio
         )
-        inlist_substitutions['INITIAL_HE4'] = initial_he / (1.0 + he3_he4_ratio)
-        inlist_substitutions['INITIAL_HE3'] = (
-            inlist_substitutions['INITIAL_HE4']
+        substitutions['INITIAL_HE4'] = initial_he / (1.0 + he3_he4_ratio)
+        substitutions['INITIAL_HE3'] = (
+            substitutions['INITIAL_HE4']
             *
             he3_he4_ratio
         )
 
-        with open(destination, 'w') as inlist:
-            inlist.write(
-                open(
-                    path.join(_workdir_template, 'inlist_template')
-                ).read(
-                ).format_map(
-                    inlist_substitutions
-                )
-            )
+        substitutions['NUM_THREADS'] = num_threads
+        _setup_mesa_workdir(mesa_workdir, substitutions)
 
 
     @abstractmethod
@@ -270,11 +265,12 @@ class MISTTrackMakerBase(ABC):
                 MESA working directory to generate history and possibly profiles
                 in.
 
-            mesa_config:    Controls the precision with which stellar evolution
-                is calculated and whether to generate profiles. See MESA
-                documentation for description of parameters. If unspecified, the
-                following precision defaults are used and no profiles are
-                generated:
+            mesa_config:    Controls the following::
+
+                * the precision with which stellar evolution is calculated. See
+                  MESA documentation for description of parameters. If
+                  unspecified, the following precision defaults are used and no
+                  profiles are generated:
 
                     * when_to_stop_rtol = 0
 
@@ -290,15 +286,22 @@ class MISTTrackMakerBase(ABC):
 
                     * delta_lgL_hard_limit = 0.05
 
+
+                * profile_interval: Profile is output when step number is
+                  divisible by this value.
+
+                * num_threads: maximum number of threads to use (see MESA use of
+                  OMP_NUM_THREADS environment variable).
+
         Returns:
             None
         """
 
-        self._generate_inlist(mass,
-                              feh,
-                              max_age,
-                              path.join(mesa_workdir, 'inlist'),
-                              **mesa_config)
+        self._prepare_run(mass,
+                          feh,
+                          max_age,
+                          path.join(mesa_workdir, 'inlist'),
+                          **mesa_config)
         self._execute_mesa_command('./rn', mesa_workdir)
 
 

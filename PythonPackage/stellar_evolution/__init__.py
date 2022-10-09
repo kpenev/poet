@@ -4,7 +4,9 @@ from glob import glob
 import os.path
 
 from sqlalchemy.orm import sessionmaker
-from stellar_evolution.MIST_realtime.build_model import MISTTrackMaker, TemporaryMESAWorkDirectory
+from stellar_evolution.MIST_realtime.build_model import \
+    MISTTrackMaker,\
+    TemporaryMESAWorkDirectory
 
 #This is actually a class not a variable
 #pylint: disable=invalid-name
