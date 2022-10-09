@@ -12,6 +12,7 @@ try:
 except ModuleNotFoundError:
     import docker
 from mesa_reader import MesaData
+import numpy
 import pandas
 
 from stellar_evolution.library_interface import library, MESAInterpolator
@@ -47,9 +48,11 @@ def convert_history_to_track(initial_mass,
     history = MesaData(history_fname)
 
     if min_age:
-        selected_points = (history.star_age >= min_age)
+        selected_points = (history.star_age >= min_age * 1e9)
+        num_points = selected_points.sum()
     else:
         selected_points = slice(None)
+        num_points = history.star_age.size
 
     pandas.DataFrame(
         dict(age=history.star_age[selected_points],
@@ -57,7 +60,7 @@ def convert_history_to_track(initial_mass,
              L_star=10.0**history.log_L[selected_points],
              M_star=history.star_mass[selected_points],
              R_tachocline=history.rcore[selected_points],
-             M_ini=initial_mass[selected_points],
+             M_ini=numpy.full(num_points, initial_mass),
              M_conv=(history.star_mass - history.mcore)[selected_points],
              M_rad=history.mcore[selected_points],
              I_conv=history.env_inertia[selected_points],
@@ -85,7 +88,11 @@ def _setup_mesa_workdir(mesa_workdir, substitutions):
                 inlist.write(
                     open(source).read().format_map(substitutions)
                 )
+            shutil.copymode(source, destination)
         elif entry not in ignore_workdir_template_files:
+            logging.getLogger(__name__).debug('Copying %s -> %s',
+                                              source,
+                                              destination)
             try:
                 shutil.copyfile(source, destination)
                 shutil.copymode(source, destination)
@@ -95,9 +102,6 @@ def _setup_mesa_workdir(mesa_workdir, substitutions):
 
 class MISTTrackMakerBase(ABC):
     """Class for generating and processing MIST stellar evolution tracks."""
-
-    #TODO: Implement more general templating of any file in mesa work dir and
-    #use to allow specifying number of threads to use
 
     @classmethod
     def _prepare_run(cls,
@@ -300,7 +304,7 @@ class MISTTrackMakerBase(ABC):
         self._prepare_run(mass,
                           feh,
                           max_age,
-                          path.join(mesa_workdir, 'inlist'),
+                          mesa_workdir,
                           **mesa_config)
         self._execute_mesa_command('./rn', mesa_workdir)
 

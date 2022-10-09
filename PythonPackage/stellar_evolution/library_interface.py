@@ -285,6 +285,7 @@ class MESAInterpolator:
                     param,
                     getattr(cls, 'default_' + param)[q_name]
                 )
+        return kwargs
 
 
     def delete(self):

@@ -1,4 +1,5 @@
 .*.swp
+.*.swo
 *.pyc
 stellar_evolution_interpolators
 MESA_tracks

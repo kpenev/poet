@@ -4,6 +4,7 @@
 
 from os import path
 import logging
+from multiprocessing import cpu_count
 
 from matplotlib import pyplot
 from matplotlib.backends.backend_pdf import PdfPages
@@ -58,6 +59,13 @@ def parse_command_line():
         'the generated MIST track).'
     )
     parser.add_argument(
+        '--mist-interp-min-age',
+        type=float,
+        default=1e-4,
+        help='Ages earlier than this (in Gyrs) are not used when building the '
+        'MIST interpolator to plot.'
+    )
+    parser.add_argument(
         '--profile-interval',
         type=int,
         default=None,
@@ -69,6 +77,12 @@ def parse_command_line():
         type=str,
         default=None,
         help='The filename to save the plots as (multi-page PDF).'
+    )
+    parser.add_argument(
+        '--ncpu',
+        type=int,
+        default=cpu_count(),
+        help='The maximum number of CPUs to use when running MESA.'
     )
     return parser.parse_args()
 
@@ -84,7 +98,11 @@ def plot_history(config, history, compare_interpolators, pdf):
     compare_interpolated = [None for interpolator in compare_interpolators]
     interp_ages = [slice(False) for interpolator in compare_interpolators]
     for interp_i, interpolator in enumerate(compare_interpolators):
-        if not interpolator.in_range(config.mass, config.feh):
+        if (
+                hasattr(interpolator, 'in_range')
+                and
+                not interpolator.in_range(config.mass, config.feh)
+        ):
             continue
 
         compare_interpolated[interp_i] = {
@@ -269,9 +287,14 @@ def main(config):
                 max_age=config.max_age,
                 mesa_workdir=mesa_workdir,
                 profile_interval=config.profile_interval,
+                min_age=config.mist_interp_min_age,
                 interpolation_config={
-                    q: dict(nodes=1000) for q in MESAInterpolator.quantity_list
-                }
+                    q: dict(
+                        nodes=1000,
+                        smoothing=3
+                    ) for q in MESAInterpolator.quantity_list
+                },
+                num_threads=config.ncpu
             )
         )
         if config.profile_interval:
