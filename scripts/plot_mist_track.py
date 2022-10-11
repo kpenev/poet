@@ -16,6 +16,8 @@ from stellar_evolution.manager import StellarEvolutionManager
 from stellar_evolution import MISTTrackMaker, TemporaryMESAWorkDirectory
 from stellar_evolution.library_interface import MESAInterpolator
 
+#TODO: 1.5Msun needs 2000 nodes not 1000
+
 def parse_command_line():
     """Return the configuration for what track to plot and how."""
 
@@ -84,16 +86,38 @@ def parse_command_line():
         default=cpu_count(),
         help='The maximum number of CPUs to use when running MESA.'
     )
-    return parser.parse_args()
+    parser.add_argument(
+        '--interp-config',
+        nargs=5,
+        metavar=('QUANTITY', 'NODES', 'SMOOTHING', 'LOGAGE', 'LOGQUANTITY'),
+        action='append',
+        default=[],
+        help='Change the default configuration for interpolating one of the '
+        'quantities. By default all quantities are interpolated with 1000 '
+        'nodes, with smoothing 3 and using log(quantity) vs log(age). LOGAGE '
+        'and LOGQUANTITY should be either ``T`` or ``F``.'
+    )
+    parser.add_argument(
+        '--plot-logy',
+        action='store_true',
+        default=False,
+        help='If passed, y axis of the plots is in log scale.'
+    )
+    result = parser.parse_args()
+    for cfg in result.interp_config:
+        assert cfg[3].upper() in 'TF'
+        assert cfg[4].upper() in 'TF'
+
+    return result
 
 
 def plot_history(config, history, compare_interpolators, pdf):
     """Create plots involing the MESA history columns."""
 
-    pyplot.semilogx(history.star_age,
-                    10.0**history.log_R,
-                    label=r'$R_\star$')
-    pyplot.semilogx(history.star_age, history.rcore, label='$R_{core}$')
+    pyplot.plot(history.star_age,
+                10.0**history.log_R,
+                label=r'$R_\star$')
+    pyplot.plot(history.star_age, history.rcore, label='$R_{core}$')
 
     compare_interpolated = [None for interpolator in compare_interpolators]
     interp_ages = [slice(False) for interpolator in compare_interpolators]
@@ -131,12 +155,12 @@ def plot_history(config, history, compare_interpolators, pdf):
         if interpolated  is None:
             continue
 
-        pyplot.semilogx(
-            history.star_age,
-            interpolated['RRAD'](numpy.copy(history.star_age)),
+        pyplot.plot(
+            interp_ages[interp_i],
+            interpolated['RRAD'](interp_ages[interp_i]),
             label=r'Interp %d: $R_{core}$' % interp_i
         )
-        pyplot.semilogx(
+        pyplot.plot(
             interp_ages[interp_i],
             interpolated['RADIUS'](interp_ages[interp_i]),
             label=r'Interp %d: $R_\star$' % interp_i
@@ -144,14 +168,9 @@ def plot_history(config, history, compare_interpolators, pdf):
 
     pyplot.axhline(y=0)
     pyplot.legend()
-    if config.output is None:
-        pyplot.show()
-        pyplot.clf()
-    else:
-        pdf.savefig()
-        pyplot.close()
+    finalize_plot(pdf, config)
 
-    pyplot.semilogx(
+    pyplot.plot(
         history.star_age,
         history.mcore / history.star_mass,
         label=r'$M_{core}/M_\star$'
@@ -160,12 +179,12 @@ def plot_history(config, history, compare_interpolators, pdf):
         if interpolated  is None:
             continue
 
-        pyplot.semilogx(
-            history.star_age,
+        pyplot.plot(
+            interp_ages[interp_i],
             (
-                interpolated['MRAD'](numpy.copy(history.star_age))
+                interpolated['MRAD'](interp_ages[interp_i])
                 /
-                history.star_mass
+                config.mass
             ),
             label=r'Interp %d: $M_{core}/M_\star$' % interp_i
         )
@@ -173,38 +192,33 @@ def plot_history(config, history, compare_interpolators, pdf):
     pyplot.axhline(y=0)
     pyplot.axhline(y=1)
     pyplot.legend()
-    if config.output is None:
-        pyplot.show()
-        pyplot.clf()
-    else:
-        pdf.savefig()
-        pyplot.close()
+    finalize_plot(pdf, config)
 
-    pyplot.semilogx(history.star_age,
-                    history.core_inertia,
-                    label='$I_{core}$')
-    pyplot.semilogx(history.star_age,
-                    history.env_inertia,
-                    label='$I_{env}$')
-    pyplot.semilogx(history.star_age,
-                    history.core_inertia + history.env_inertia,
-                    label='$I_{tot}$')
+    pyplot.plot(history.star_age,
+                history.core_inertia,
+                label='$I_{core}$')
+    pyplot.plot(history.star_age,
+                history.env_inertia,
+                label='$I_{env}$')
+    pyplot.plot(history.star_age,
+                history.core_inertia + history.env_inertia,
+                label='$I_{tot}$')
     for interp_i, interpolated in enumerate(compare_interpolated):
         if interpolated  is None:
             continue
 
-        pyplot.semilogx(
+        pyplot.plot(
             interp_ages[interp_i],
             interpolated['IRAD'](interp_ages[interp_i]),
-            label='Interp: $I_{core}$'
+            label='Interp %d: $I_{core}$' % interp_i
         )
-        pyplot.semilogx(
+        pyplot.plot(
             interp_ages[interp_i],
             interpolated['ICONV'](interp_ages[interp_i]),
-            label='Interp: $I_{env}$'
+            label='Interp %d: $I_{env}$' % interp_i
         )
 
-        pyplot.semilogx(
+        pyplot.plot(
             interp_ages[interp_i],
             (
                 interpolated['ICONV'](interp_ages[interp_i])
@@ -216,12 +230,7 @@ def plot_history(config, history, compare_interpolators, pdf):
 
 
     pyplot.legend()
-    if config.output is None:
-        pyplot.show()
-        pyplot.clf()
-    else:
-        pdf.savefig()
-        pyplot.close()
+    finalize_plot(pdf, config)
 
 
 def plot_profiles(config, mesa_data, pdf):
@@ -265,12 +274,22 @@ def plot_profiles(config, mesa_data, pdf):
         pyplot.title('Mixing($M$ and $R$) at $t=%.3e$ Gyr'
                      %
                      (profile_age/1e9))
-        if config.output is None:
-            pyplot.show()
-            pyplot.clf()
-        else:
-            pdf.savefig()
-            pyplot.close()
+
+        finalize_plot(pdf, config)
+
+
+def finalize_plot(pdf, config):
+    """Save or show the plot and get ready for next one."""
+
+    pyplot.xscale('log')
+    if config.plot_logy:
+        pyplot.yscale('log')
+    if config.output is None:
+        pyplot.show()
+        pyplot.clf()
+    else:
+        pdf.savefig()
+        pyplot.close()
 
 
 def main(config):
@@ -287,6 +306,29 @@ def main(config):
         pdf = PdfPages(config.output)
 
     create_mist_track = MISTTrackMaker()
+    interpolation_config = {
+        q: dict(
+            nodes=1000,
+            smoothing=3,
+            log_quantity=True,
+            vs_log_age=True
+        ) for q in MESAInterpolator.quantity_list
+    }
+    for (
+            quantity,
+            nodes,
+            smoothing,
+            vs_log_age,
+            log_quantity
+    ) in config.interp_config:
+        assert quantity.upper() in interpolation_config
+        interpolation_config[quantity.upper()] = dict(
+            nodes=int(nodes),
+            smoothing=float(smoothing),
+            vs_log_age=(vs_log_age.upper() == 'T'),
+            log_quantity=(log_quantity.upper() == 'T')
+        )
+
     with TemporaryMESAWorkDirectory() as mesa_workdir:
         compare_interpolators.append(
             create_mist_track.create_interpolator(
@@ -296,12 +338,7 @@ def main(config):
                 mesa_workdir=mesa_workdir,
                 profile_interval=config.profile_interval,
                 min_age=config.mist_interp_min_age,
-                interpolation_config={
-                    q: dict(
-                        nodes=1000,
-                        smoothing=3
-                    ) for q in MESAInterpolator.quantity_list
-                },
+                interpolation_config=interpolation_config,
                 num_threads=config.ncpu
             )
         )
