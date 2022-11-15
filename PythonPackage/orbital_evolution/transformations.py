@@ -1,6 +1,6 @@
 """For now just define transformation from log10(Q) to phase lag."""
 
-from math import pi, log10
+from numpy import pi, log10
 
 #lgQ is the most intuitive name for log10(Q).
 #pylint: disable=invalid-name
