@@ -1,0 +1,16 @@
+#!/bin/bash -il
+
+export HOME=/home/user
+
+source /home/user/.bashrc
+
+export OMP_NUM_THREADS={NUM_THREADS:d}
+
+rm -f restart_photo
+date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"
+if [[ -e star.exe ]];then
+	./star.exe
+else
+	./star
+fi
+date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"

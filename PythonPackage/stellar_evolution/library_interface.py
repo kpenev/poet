@@ -8,6 +8,7 @@ from ctypes import\
     byref
 from ctypes.util import find_library
 import re
+from collections import namedtuple
 
 import numpy
 
@@ -138,6 +139,17 @@ def initialize_library():
     result.z_from_feh.argtypes = [c_double]
     result.z_from_feh.restype = c_double
 
+    lib_constants = ['Yprimordial', 'Yprotosun', 'Zprotosun']
+    result.constants = namedtuple(
+        'StellarEvolutionConstants',
+        lib_constants
+    )(
+        *(
+            c_double.in_dll(result, const_name).value
+            for const_name in lib_constants
+        )
+    )
+
     return result
 
 library = initialize_library()
@@ -236,6 +248,45 @@ class MESAInterpolator:
             self.interpolator = library.load_interpolator(
                 kwargs['interpolator_fname'].encode('ascii')
             )
+
+    @classmethod
+    def get_create_interpolator_config(cls, **custom_config):
+        """
+        Return args for creating new interpolator, filling defaults as needed.
+
+        Args:
+            custom_config:    Configuration for how to interpolate the POET
+                relevant quantities. May have an entry for everything in
+                `MESAInterpolator.quantity_list`, omitted quantities use the
+                defaults from MESAInterpolator. For each qunatity user may
+                specify: ``smoothing``, ``nodes``, ``vs_log_age``,
+                ``log_quantity``.
+
+        Returns:
+            dict:
+                Entries for ``smoothing``, ``nodes``, ``vs_log_age``, and
+                ``log_quantity`` to pass to __init__ to create an interpolator.
+        """
+
+        num_quantities = len(cls.quantity_list)
+
+        kwargs = dict(
+            smoothing=numpy.empty(num_quantities, dtype=c_double),
+            nodes=numpy.empty(num_quantities, dtype=c_int),
+            vs_log_age=numpy.empty(num_quantities, dtype=c_bool),
+            log_quantity=numpy.empty(num_quantities, dtype=c_bool)
+        )
+
+        for q_name, q_index in cls.quantity_ids.items():
+            q_config = custom_config.get(q_name, dict())
+
+            for param in kwargs:
+                kwargs[param][q_index] = q_config.get(
+                    param,
+                    getattr(cls, 'default_' + param)[q_name]
+                )
+        return kwargs
+
 
     def delete(self):
         """Free the resources allocated at construction."""
