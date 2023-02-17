@@ -2,6 +2,7 @@
 
 from math import pi
 from os.path import dirname, join as join_paths
+import logging
 
 import numpy
 from astropy import constants
@@ -12,6 +13,8 @@ from orbital_evolution.evolve_interface import library as\
 from orbital_evolution.binary import Binary
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
+
+_logger = logging.getLogger(__name__)
 
 def add_star_config(parser,
                     primary=True,
@@ -120,9 +123,11 @@ def add_star_config(parser,
             '--secondary-initial-angmom',
             type=float,
             nargs=2,
-            default=[0.1, 0.1],
+            default=None,
             help='The initial angular momentum of the secondary. Ignored if the'
-            ' secondary is a planet.'
+            ' secondary is a planet. If the secondary is a star and this is not'
+            ' specified the angular momentum is initialized like for the '
+            'primary (disk formalism).'
         )
     if dissipation:
         parser.add_argument(
@@ -164,16 +169,18 @@ def add_star_config(parser,
             prefix + '-inertial-mode-enhancement',
             type=float,
             default=1.0,
-            help='A factor by which the dissipation is larger in the inertial mode '
-            'range relative to outside of it. This is applied on top of the spin '
-            'and forcing frequency dependencies defined by the other arguments.'
+            help='A factor by which the dissipation is larger in the inertial '
+            'mode range relative to outside of it. This is applied on top of '
+            'the spin and forcing frequency dependencies defined by the other '
+            'arguments.'
         )
         parser.add_argument(
             prefix + '-inertial-mode-sharpness',
             type=float,
             default=10.0,
             help='A parameter controlling how suddenly the enhancement due to '
-            'inertial modes gets turned on near the inertial mode range boundaries.'
+            'inertial modes gets turned on near the inertial mode range '
+            'boundaries.'
         )
 
 
@@ -397,10 +404,12 @@ def create_star(interpolator,
                 interp_age=None):
     """Create the star to use in the evolution."""
 
-    print('Creating %s Msun at t = %s star with dissipation %s',
-          repr(mass),
-          repr(interp_age),
-          repr(convective_phase_lag))
+    _logger.debug(
+        'Creating %s Msun at t = %s star with dissipation %s',
+        repr(mass),
+        repr(interp_age),
+        repr(convective_phase_lag)
+    )
     star = EvolvingStar(mass=mass,
                         metallicity=metallicity,
                         wind_strength=wind_strength,
@@ -436,7 +445,7 @@ def create_system(primary,
                   disk_dissipation_age=4e-3,
                   initial_inclination=0.0,
                   secondary_formation_age=None,
-                  secondary_initial_angmom=[0.1, 0.1]):
+                  secondary_initial_angmom=(0.1, 0.1)):
     """Combine the given primary and secondar in a system ready to evolve."""
 
     binary = Binary(primary=primary,
@@ -575,6 +584,47 @@ def get_component(cmdline_args, interpolator, primary=True):
         create_args['interp_age'] = cmdline_args.disk_dissipation_age
     return create_star(**create_args)
 
+
+def find_initial_secondary_angmom(cmdline_args,
+                                  interpolator,
+                                  **extra_evolve_args):
+    """Run disk evolution for the secondary to find initial angmom."""
+
+    _logger.debug('Finding initial secondary angular momentum using disks')
+    binary = create_system(
+        primary=get_component(cmdline_args, interpolator, False),
+        secondary=get_component(cmdline_args, interpolator, True),
+        disk_lock_frequency=cmdline_args.disk_lock_frequency,
+        porb_initial=cmdline_args.initial_orbital_period,
+        initial_eccentricity=cmdline_args.initial_eccentricity,
+        initial_inclination=cmdline_args.initial_obliquity,
+        disk_dissipation_age=cmdline_args.disk_dissipation_age,
+        secondary_formation_age=cmdline_args.final_age,
+        secondary_initial_angmom=(0.0, 0.0)
+    )
+    binary.evolve(
+        cmdline_args.disk_dissipation_age,
+        cmdline_args.max_time_step,
+        cmdline_args.precision,
+        create_c_code=False,
+        eccentricity_expansion_fname=(
+            cmdline_args.eccentricity_expansion_fname.encode('ascii')
+        ),
+        timeout=cmdline_args.max_evolution_runtime,
+        **extra_evolve_args
+    )
+    final_state = binary.final_state()
+
+    _logger.debug('Final state of secondary evolution: %s',
+                  repr(final_state))
+
+    binary.delete()
+    return (
+        final_state.primary_envelope_angmom,
+        final_state.primary_core_angmom
+    )
+
+
 def get_binary(cmdline_args, interpolator):
     """Return the fully constructed binary to evolve."""
 
@@ -597,6 +647,7 @@ def get_binary(cmdline_args, interpolator):
 def run_evolution(cmdline_args,
                   interpolator=None,
                   required_ages_only=False,
+                  final_state_only=False,
                   **extra_evolve_args):
     """Run the evolution specified on the command line."""
 
@@ -606,7 +657,18 @@ def run_evolution(cmdline_args,
     if 'required_ages' not in extra_evolve_args:
         extra_evolve_args['required_ages'] = None
 
+    if (
+        cmdline_args.secondary_initial_angmom is None
+        and
+        cmdline_args.secondary_radius is None
+    ):
+        cmdline_args.secondary_initial_angmom = find_initial_secondary_angmom(
+            cmdline_args,
+            interpolator,
+            **extra_evolve_args
+        )
     binary = get_binary(cmdline_args, interpolator)
+    _logger.debug('Evolving binary')
     binary.evolve(
         cmdline_args.final_age,
         cmdline_args.max_time_step,
@@ -618,22 +680,28 @@ def run_evolution(cmdline_args,
         timeout=cmdline_args.max_evolution_runtime,
         **extra_evolve_args
     )
-    evolution = binary.get_evolution(required_ages_only=required_ages_only)
+    if final_state_only:
+        result = binary.final_state()
+    else:
+        result = binary.get_evolution(required_ages_only=required_ages_only)
+
+    _logger.debug('Evolution result: %s', repr(result))
+
     for component_name in ['primary', 'secondary']:
         component = getattr(binary, component_name)
         if isinstance(component, EvolvingStar):
             for zone in ['core', 'envelope']:
                 for deriv_order in range(1):
                     setattr(
-                        evolution,
+                        result,
                         '_'.join(
                             [component_name, zone, 'inertia']
                             +
                             (['d%d' % deriv_order] if deriv_order else [])
                         ),
-                        getattr(component, zone + '_inertia')(evolution.age,
+                        getattr(component, zone + '_inertia')(result.age,
                                                               deriv_order)
                     )
-    evolution.orbital_period = binary.orbital_period(evolution.semimajor)
+    result.orbital_period = binary.orbital_period(result.semimajor)
     binary.delete()
-    return evolution
+    return result
