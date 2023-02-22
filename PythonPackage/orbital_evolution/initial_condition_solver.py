@@ -113,7 +113,7 @@ class InitialConditionSolver:
             repr(self.binary.primary.mass),
             repr(self.binary.semimajor(initial_orbital_period)),
             repr(self.parameters['initial eccentricity']),
-            repr(self.parameters['initial_secondary_angmom']),
+            repr(self.parameters['initial secondary angmom']),
             repr(secondary_inclination_periapsis)
         )
         self.secondary.configure(
@@ -121,7 +121,7 @@ class InitialConditionSolver:
             companion_mass=self.binary.primary.mass,
             semimajor=self.binary.semimajor(initial_orbital_period),
             eccentricity=self.parameters['initial eccentricity'],
-            spin_angmom=self.parameters['initial_secondary_angmom'],
+            spin_angmom=self.parameters['initial secondary angmom'],
             locked_surface=False,
             zero_outer_inclination=True,
             zero_outer_periapsis=True,
@@ -206,8 +206,12 @@ class InitialConditionSolver:
         porb = self._try_initial_conditions(porb_initial, disk_period, True)[0]
         porb_error = porb - self.target.Porb
         guess_porb_error = porb_error
-        step = (self.period_search_factor if guess_porb_error < 0
-                else 1.0 / self.period_search_factor)
+        step = (
+            (self.period_search_factor if guess_porb_error < 0
+             else 1.0 / self.period_search_factor)
+            -
+            1
+        ) * porb_initial
 
         while (
                 porb_error * guess_porb_error > 0
@@ -218,7 +222,7 @@ class InitialConditionSolver:
                 porb_min = porb_initial
             else:
                 porb_max = porb_initial
-            porb_initial *= step
+            porb_initial += step
             self._logger.debug(
                 (
                     'Before evolution:'
@@ -242,6 +246,9 @@ class InitialConditionSolver:
             self._logger.debug('After evolution: porb = %s', repr(porb))
             if not scipy.isnan(porb):
                 porb_error = porb - self.target.Porb
+            step *= 2
+            if porb_initial + step < 0:
+                step = -0.5 * porb_initial
 
         if scipy.isnan(porb_error):
             return scipy.nan, scipy.nan
@@ -323,7 +330,7 @@ class InitialConditionSolver:
         self.parameters = {
             'initial eccentricity': initial_eccentricity,
             'initial inclination': initial_inclination,
-            'initial_secondary_angmom': scipy.array(initial_secondary_angmom)
+            'initial secondary angmom': scipy.array(initial_secondary_angmom)
         }
         if planet_formation_age:
             self.parameters['planet formation age'] = planet_formation_age
