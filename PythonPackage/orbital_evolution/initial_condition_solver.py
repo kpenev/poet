@@ -152,12 +152,20 @@ class InitialConditionSolver:
         #False positives
         #pylint: disable=no-member
         if final_state.age != self.target.age:
-            raise RuntimeError(
-                'System eveloution failed at age {0!r}, targe age {1!r}'.format(
-                    final_state.age,
-                    self.target.age
+            if (
+                    hasattr(self.target, 'Psurf')
+                    or
+                    not scipy.isnan(final_state.semimajor)
+            ):
+                raise RuntimeError(
+                    'System eveloution failed at age '
+                    '{0!r}, targe age {1!r}'.format(
+                        final_state.age,
+                        self.target.age
+                    )
                 )
-            )
+            self._logger.warning('Evolution failed after planet death')
+            return 0.0, scipy.nan
         orbital_period = self.binary.orbital_period(final_state.semimajor)
         stellar_spin_period = (
             2.0 * scipy.pi
