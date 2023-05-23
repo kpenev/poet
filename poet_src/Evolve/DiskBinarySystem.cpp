@@ -85,7 +85,7 @@ namespace Evolve {
         }
         if(__initial_inclination<0 || __initial_inclination>M_PI) {
             std::ostringstream msg;
-            msg << "Invalid initial inclination: " << initial_eccentricity
+            msg << "Invalid initial inclination: " << __initial_inclination
                 << " encountered in DiskBinarySystem constructor, must be "
                    "between 0 and pi!";
             throw Core::Error::BadFunctionArguments(msg.str());
