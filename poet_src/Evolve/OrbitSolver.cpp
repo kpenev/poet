@@ -735,9 +735,21 @@ namespace Evolve {
     {
         return (
             (
-                std::abs(stop_info.stop_condition_precision())
-                <=
-                __precision
+                (
+                    std::abs(stop_info.stop_condition_precision())
+                    <=
+                    __precision
+                )
+                &&
+                (
+                    !stop_info.is_crossing()
+                    ||
+                    stop_info.deriv_sign_at_crossing()
+                    ==
+                    __stopping_conditions->expected_crossing_deriv_sign(
+                        stop_info.stop_condition_index()
+                    )
+                )
             )
             ||
             (
@@ -1035,6 +1047,7 @@ namespace Evolve {
 #endif
             throw Core::Error::NonGSLZeroStep();
         }
+        max_next_t = std::min(stop.stop_age(), t);
         t = last_good_t;
         if(stop.is_crossing())
             stop.stop_condition_precision() = (
@@ -1042,7 +1055,6 @@ namespace Evolve {
                 stop.stop_condition_index()
                 ]
             );
-        max_next_t = stop.stop_age();
         step_size = 0.1 * (max_next_t - t);
     }
 
@@ -1122,14 +1134,23 @@ namespace Evolve {
                 if(!first_step) {
                     step_size = std::max(step_size,
                                          3.0 * (MIN_RELATIVE_STEP * t - t));
-                    status = gsl_odeiv2_evolve_apply(evolve,
-                                                     step_control,
-                                                     step,
-                                                     &ode_system,
-                                                     &t,
-                                                     max_next_t,
-                                                     &step_size,
-                                                     &(orbit[0]));
+                    try {
+                        status = gsl_odeiv2_evolve_apply(evolve,
+                                                         step_control,
+                                                         step,
+                                                         &ode_system,
+                                                         &t,
+                                                         max_next_t,
+                                                         &step_size,
+                                                         &(orbit[0]));
+                    } catch(Core::Error::BadFunctionArguments &exception) {
+                        std::cerr << exception.what()
+                                  << ": "
+                                  << exception.get_message()
+                                  << std::endl;
+                        t += step_size;
+                        status = GSL_EDOM;
+                    }
                 }
                 if (status == GSL_FAILURE) {
 #ifndef NDEBUG

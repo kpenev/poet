@@ -2,6 +2,7 @@
 
 from math import pi
 from os.path import dirname, join as join_paths
+import logging
 
 import numpy
 from astropy import constants
@@ -13,7 +14,12 @@ from orbital_evolution.binary import Binary
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 
-def add_star_config(parser, primary=True, require_secondary=False):
+_logger = logging.getLogger(__name__)
+
+def add_star_config(parser,
+                    primary=True,
+                    require_secondary=False,
+                    dissipation=True):
     """
     Add to the parser arguments to configure a star.
 
@@ -112,59 +118,75 @@ def add_star_config(parser, primary=True, require_secondary=False):
             extra_help
         )
     )
-    parser.add_argument(
-        prefix + '-reference-dissipation',
-        nargs=4,
-        metavar=('PhaseLag',
-                 'TidalFrequency',
-                 'PowerlawBefore',
-                 'PowerlawAfter'),
-        type=float,
-        default=None,
-        help=(
-            'Define the reference point for the dissipation in the '
-            +
-            component_name
-            +
-            '. This initializes the phase lag dependence on frequnecy to a '
-            'broken powerlaw with a single break. Further breaks can be '
-            'introduced using '
-            +
-            prefix
-            +
-            '-dissipation-break.'
+    if not primary:
+        parser.add_argument(
+            '--secondary-initial-angmom',
+            type=float,
+            nargs=2,
+            default=None,
+            help='The initial angular momentum of the secondary. Ignored if the'
+            ' secondary is a planet. If the secondary is a star and this is not'
+            ' specified the angular momentum is initialized like for the '
+            'primary (disk formalism).'
         )
-    )
-    parser.add_argument(
-        prefix + '-dissipation_break',
-        nargs=2,
-        metavar=('TidalFrequency',
-                 'PowerlawIndex'),
-        action='append',
-        help='Add another powerlaw break to the phase lag dependence on '
-        'frequency. All breaks specified are sorted by their distance from '
-        'the reference frequency (closest to furthest) and the powerlaw '
-        'index at each break is defined to apply for the frequency range '
-        'away from the reference.'
-    )
-    parser.add_argument(
-        prefix + '-inertial-mode-enhancement',
-        type=float,
-        default=1.0,
-        help='A factor by which the dissipation is larger in the inertial mode '
-        'range relative to outside of it. This is applied on top of the spin '
-        'and forcing frequency dependencies defined by the other arguments.'
-    )
-    parser.add_argument(
-        prefix + '-inertial-mode-sharpness',
-        type=float,
-        default=10.0,
-        help='A parameter controlling how suddenly the enhancement due to '
-        'inertial modes gets turned on near the inertial mode range boundaries.'
-    )
+    if dissipation:
+        parser.add_argument(
+            prefix + '-reference-dissipation',
+            nargs=4,
+            metavar=('PhaseLag',
+                     'TidalFrequency',
+                     'PowerlawBefore',
+                     'PowerlawAfter'),
+            type=float,
+            default=None,
+            help=(
+                'Define the reference point for the dissipation in the '
+                +
+                component_name
+                +
+                '. This initializes the phase lag dependence on frequnecy to a '
+                'broken powerlaw with a single break. Further breaks can be '
+                'introduced using '
+                +
+                prefix
+                +
+                '-dissipation-break.'
+            )
+        )
+        parser.add_argument(
+            prefix + '-dissipation-break',
+            nargs=2,
+            metavar=('TidalFrequency',
+                     'PowerlawIndex'),
+            action='append',
+            help='Add another powerlaw break to the phase lag dependence on '
+            'frequency. All breaks specified are sorted by their distance from '
+            'the reference frequency (closest to furthest) and the powerlaw '
+            'index at each break is defined to apply for the frequency range '
+            'away from the reference.'
+        )
+        parser.add_argument(
+            prefix + '-inertial-mode-enhancement',
+            type=float,
+            default=1.0,
+            help='A factor by which the dissipation is larger in the inertial '
+            'mode range relative to outside of it. This is applied on top of '
+            'the spin and forcing frequency dependencies defined by the other '
+            'arguments.'
+        )
+        parser.add_argument(
+            prefix + '-inertial-mode-sharpness',
+            type=float,
+            default=10.0,
+            help='A parameter controlling how suddenly the enhancement due to '
+            'inertial modes gets turned on near the inertial mode range '
+            'boundaries.'
+        )
 
 
-def add_binary_config(parser, skip=(), require_secondary=False):
+def add_binary_config(parser,
+                      skip=(),
+                      **star_config_kwargs):
     """
     Add command line/config file options to specify the binary to evolve.
 
@@ -208,8 +230,11 @@ def add_binary_config(parser, skip=(), require_secondary=False):
             'the disk dissipates.'
         )
 
-    add_star_config(parser, primary=True, require_secondary=require_secondary)
-    add_star_config(parser, primary=False, require_secondary=require_secondary)
+    if 'dissipation' in skip:
+        star_config_kwargs['dissipation'] = False
+
+    add_star_config(parser, primary=True, **star_config_kwargs)
+    add_star_config(parser, primary=False, **star_config_kwargs)
 
     if (
             'Porb' not in skip
@@ -248,7 +273,7 @@ def add_binary_config(parser, skip=(), require_secondary=False):
             'initial_obliquity' not in skip
     ):
         parser.add_argument(
-            '--initial_obliquity', '--Lambda0', '--Lambda',
+            '--initial-obliquity', '--Lambda0', '--Lambda',
             type=float,
             default=0.0,
             help='The initial obliquity of the orbit relative to the surface '
@@ -302,7 +327,10 @@ def add_evolution_config(parser):
     )
     parser.add_argument(
         '--eccentricity-expansion-fname',
-        default='eccentricity_expansion_coef_O400.sqlite',
+        default=join_paths(
+            dirname(dirname(dirname(__file__))),
+            'eccentricity_expansion_coef_O400.sqlite'
+        ),
         help='The filename storing the eccentricity expansion coefficients.'
     )
     parser.add_argument(
@@ -376,10 +404,12 @@ def create_star(interpolator,
                 interp_age=None):
     """Create the star to use in the evolution."""
 
-    print('Creating %s Msun at t = %s star with dissipation %s',
-          repr(mass),
-          repr(interp_age),
-          repr(convective_phase_lag))
+    _logger.debug(
+        'Creating %s Msun at t = %s star with dissipation %s',
+        repr(mass),
+        repr(interp_age),
+        repr(convective_phase_lag)
+    )
     star = EvolvingStar(mass=mass,
                         metallicity=metallicity,
                         wind_strength=wind_strength,
@@ -414,7 +444,8 @@ def create_system(primary,
                   porb_initial=3.5,
                   disk_dissipation_age=4e-3,
                   initial_inclination=0.0,
-                  secondary_formation_age=None):
+                  secondary_formation_age=None,
+                  secondary_initial_angmom=(0.1, 0.1)):
     """Combine the given primary and secondar in a system ready to evolve."""
 
     binary = Binary(primary=primary,
@@ -449,7 +480,7 @@ def create_system(primary,
                         semimajor=binary.semimajor(porb_initial),
                         eccentricity=initial_eccentricity,
                         spin_angmom=(
-                            numpy.array([0.01, 0.01])
+                            numpy.array(secondary_initial_angmom)
                             if isinstance(secondary, EvolvingStar) else
                             numpy.array([0.0])
                         ),
@@ -553,6 +584,47 @@ def get_component(cmdline_args, interpolator, primary=True):
         create_args['interp_age'] = cmdline_args.disk_dissipation_age
     return create_star(**create_args)
 
+
+def find_initial_secondary_angmom(cmdline_args,
+                                  interpolator,
+                                  **extra_evolve_args):
+    """Run disk evolution for the secondary to find initial angmom."""
+
+    _logger.debug('Finding initial secondary angular momentum using disks')
+    binary = create_system(
+        primary=get_component(cmdline_args, interpolator, False),
+        secondary=get_component(cmdline_args, interpolator, True),
+        disk_lock_frequency=cmdline_args.disk_lock_frequency,
+        porb_initial=cmdline_args.initial_orbital_period,
+        initial_eccentricity=cmdline_args.initial_eccentricity,
+        initial_inclination=cmdline_args.initial_obliquity,
+        disk_dissipation_age=cmdline_args.disk_dissipation_age,
+        secondary_formation_age=cmdline_args.final_age,
+        secondary_initial_angmom=(0.0, 0.0)
+    )
+    binary.evolve(
+        cmdline_args.disk_dissipation_age,
+        cmdline_args.max_time_step,
+        cmdline_args.precision,
+        create_c_code=False,
+        eccentricity_expansion_fname=(
+            cmdline_args.eccentricity_expansion_fname.encode('ascii')
+        ),
+        timeout=cmdline_args.max_evolution_runtime,
+        **extra_evolve_args
+    )
+    final_state = binary.final_state()
+
+    _logger.debug('Final state of secondary evolution: %s',
+                  repr(final_state))
+
+    binary.delete()
+    return (
+        final_state.primary_envelope_angmom,
+        final_state.primary_core_angmom
+    )
+
+
 def get_binary(cmdline_args, interpolator):
     """Return the fully constructed binary to evolve."""
 
@@ -568,12 +640,14 @@ def get_binary(cmdline_args, interpolator):
             cmdline_args.secondary_formation_age
             if cmdline_args.secondary_mass else
             cmdline_args.final_age
-        )
+        ),
+        secondary_initial_angmom=cmdline_args.secondary_initial_angmom
     )
 
 def run_evolution(cmdline_args,
                   interpolator=None,
                   required_ages_only=False,
+                  final_state_only=False,
                   **extra_evolve_args):
     """Run the evolution specified on the command line."""
 
@@ -583,7 +657,18 @@ def run_evolution(cmdline_args,
     if 'required_ages' not in extra_evolve_args:
         extra_evolve_args['required_ages'] = None
 
+    if (
+        cmdline_args.secondary_initial_angmom is None
+        and
+        cmdline_args.secondary_radius is None
+    ):
+        cmdline_args.secondary_initial_angmom = find_initial_secondary_angmom(
+            cmdline_args,
+            interpolator,
+            **extra_evolve_args
+        )
     binary = get_binary(cmdline_args, interpolator)
+    _logger.debug('Evolving binary')
     binary.evolve(
         cmdline_args.final_age,
         cmdline_args.max_time_step,
@@ -595,22 +680,28 @@ def run_evolution(cmdline_args,
         timeout=cmdline_args.max_evolution_runtime,
         **extra_evolve_args
     )
-    evolution = binary.get_evolution(required_ages_only=required_ages_only)
+    if final_state_only:
+        result = binary.final_state()
+    else:
+        result = binary.get_evolution(required_ages_only=required_ages_only)
+
+    _logger.debug('Evolution result: %s', repr(result))
+
     for component_name in ['primary', 'secondary']:
         component = getattr(binary, component_name)
         if isinstance(component, EvolvingStar):
             for zone in ['core', 'envelope']:
-                for deriv_order in range(3):
+                for deriv_order in range(1):
                     setattr(
-                        evolution,
+                        result,
                         '_'.join(
                             [component_name, zone, 'inertia']
                             +
                             (['d%d' % deriv_order] if deriv_order else [])
                         ),
-                        getattr(component, zone + '_inertia')(evolution.age,
+                        getattr(component, zone + '_inertia')(result.age,
                                                               deriv_order)
                     )
-    evolution.orbital_period = binary.orbital_period(evolution.semimajor)
+    result.orbital_period = binary.orbital_period(result.semimajor)
     binary.delete()
-    return evolution
+    return result

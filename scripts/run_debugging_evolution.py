@@ -41,13 +41,19 @@ def parse_configuration():
         is_config_file=True,
         help='Config file to use instead of default.'
     )
+    parser.add_argument(
+        '--create-config',
+        default=None,
+        help='Filename to create a config file where all options are set per '
+        'what is currently parsed.'
+    )
 
     add_binary_config(parser)
     add_evolution_config(parser)
 
     parser.add_argument(
         '--plot',
-        nargs=2,
+        nargs='+',
         action='append',
         metavar=('X_EXPR', 'Y_EXPR'),
         default=[],
@@ -68,7 +74,14 @@ def parse_configuration():
         'range.'
     )
 
-    return parser.parse_args()
+    result = parser.parse_args()
+    if result.create_config:
+        print('Creating config file: ' + repr(result.create_config))
+        parser.write_config_file(result,
+                                 [result.create_config],
+                                 exit_after=True)
+    return result
+
 
 def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
     """Add tangent lines to the current plot."""
@@ -137,15 +150,21 @@ def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
 def main(cmdline_args):
     """Avoid polluting the global namespace."""
 
-    evolution = run_evolution(cmdline_args)
+    evolution = run_evolution(cmdline_args, print_progress=True)
     print(repr(evolution))
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
-    for plot in cmdline_args.plot + cmdline_args.plot_with_tangents:
+    for plot in cmdline_args.plot:
         plot_data = [evaluator(expression) for expression in plot]
-        pyplot.plot(plot_data[0], plot_data[1])
-        if len(plot) == 4:
-            plot_tangents(*plot_data)
+        for plot_y, label in zip(plot_data[1:], plot[1:]):
+            pyplot.plot(plot_data[0], plot_y, label=label)
+        pyplot.legend()
+        pyplot.show()
+        pyplot.cla()
+
+
+    for plot in cmdline_args.plot_with_tangents:
+        plot_tangents(*[evaluator(expression) for expression in plot])
         pyplot.show()
         pyplot.cla()
 

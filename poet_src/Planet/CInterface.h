@@ -28,7 +28,7 @@ extern "C" {
 
     ///Set the dissipative properties of the planet
     LIB_PUBLIC void set_planet_dissipation(
-        ///The star to set the dissipation for.
+        ///The planet to set the dissipation for.
         CPlanet *planet,
 
         ///See same name argument to set_zone_dissipation()
@@ -57,6 +57,12 @@ extern "C" {
 
         ///See same name argument to set_zone_dissipation()
         double inertial_mode_sharpness
+    );
+
+    ///Return the moment of inertia of the given planet.
+    LIB_PUBLIC double get_planet_inertia(
+        ///The planet to get the moment of inertia for
+        CPlanet *planet
     );
 
 } //End extern "C"

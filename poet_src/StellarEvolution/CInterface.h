@@ -39,6 +39,15 @@ extern "C" {
     ///The number of interpolation quantities currentyl supported.
     LIB_PUBLIC extern const int NUM_QUANTITIES;
 
+    ///The assumed primordial Helium fraction of the universe.
+    LIB_PUBLIC extern const double Yprimordial;
+
+    ///The assumed Helium fraction with which the Sun formed.
+    LIB_PUBLIC extern const double Yprotosun;
+
+    ///The assumed metal fraction with which the Sun formed.
+    LIB_PUBLIC extern const double Zprotosun;
+
     ///Opaque struct to cast to/from StellarEvolution::Interpolator pointers.
     struct LIB_PUBLIC MESAInterpolator;
 

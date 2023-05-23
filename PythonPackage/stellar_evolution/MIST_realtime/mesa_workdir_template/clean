@@ -1,0 +1,8 @@
+#!/bin/bash -il
+
+export HOME=/home/user
+
+source /home/user/.bashrc
+
+cd make
+make clean

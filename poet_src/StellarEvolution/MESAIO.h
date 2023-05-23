@@ -1,8 +1,8 @@
 /**\file
  *
  * \brief Defines the classes for generating stellar evolution interpolators
- * from the MESA tracks. 
- * 
+ * from the MESA tracks.
+ *
  * \ingroup StellarEvolution_group
  */
 
@@ -39,10 +39,10 @@ namespace StellarEvolution {
         ///The primordial Helium fraction of the universe.
         const double Yprimordial = 0.249;
 
-        ///The Helium fraction with which the Sun formed.
+        ///The Helium fraction with which the Sun formed (MIST used 0.2703).
         const double Yprotosun = 0.2612;
 
-        ///The metal fraction with which the Sun formed.
+        ///The metal fraction with which the Sun formed (MIST used 0.0142).
         const double Zprotosun = 0.0150;
 
         ///The hydrogen fraction with which the Sun formed.
@@ -91,7 +91,7 @@ namespace StellarEvolution {
             IRAD,
 
 
-            ///The total number of interesting columns 
+            ///The total number of interesting columns
             NUM_COLUMNS
         };
 
@@ -131,14 +131,14 @@ namespace StellarEvolution {
                 {return __column_numbers;}
         };
 
-        
+
 
         ///\brief An iterator over the list of extracted tracks.
         ///
         ///\ingroup StellarSystem_group
         class LIB_LOCAL EvolutionIterator {
         public:
-            ///\brief Create an iterator, which must have all its *_iter 
+            ///\brief Create an iterator, which must have all its *_iter
             ///members set before it can be used.
             EvolutionIterator() : quantity_iter(NUM_QUANTITIES) {}
 
@@ -200,21 +200,21 @@ namespace StellarEvolution {
             ///StellarEvolution::NUM_QUANTITIES.
             static const std::vector<QuantityID> __column_to_quantity;
 
-            ///\brief The default amount of smoothing to use for each 
+            ///\brief The default amount of smoothing to use for each
             ///quantity. See StellarEvolution::Interpolator::create_from.
             static const std::vector<double> __default_smoothing;
 
-            ///\brief The default number of node to use for each 
+            ///\brief The default number of node to use for each
             ///quantity. See StellarEvolution::Interpolator::create_from.
             static const std::vector<int> __default_nodes;
 
             ///\brief The default selection of interpolation argument (age vs
-            ///log(age) for each quantity. See 
+            ///log(age) for each quantity. See
             ///StellarEvolution::Interpolator::create_from.
             static const std::vector<bool> __default_vs_log_age;
 
             ///\brief The default selection of interpolation function
-            ///(quantity vs log(quantity) for each quantity. See 
+            ///(quantity vs log(quantity) for each quantity. See
             ///StellarEvolution::Interpolator::create_from.
             static const std::vector<bool> __default_log_quantity;
 
@@ -244,8 +244,8 @@ namespace StellarEvolution {
             ///\brief Parse the mass (in \f$M_\odot\f$) and [Fe/H] from a
             ///track filename.
             ///
-            ///If the filaneme follows the expected pattern, add the parsed 
-            ///values to ::__mass_list and ::__feh_list respectively 
+            ///If the filaneme follows the expected pattern, add the parsed
+            ///values to ::__mass_list and ::__feh_list respectively
             ///and return true. If the filename is not formatted as expected
             ///return false and leave ::__mass_list and ::__feh_list
             ///unchanged.

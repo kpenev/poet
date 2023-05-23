@@ -49,24 +49,25 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 1.000759144393417;
-    const double SECONDARY_MASS = 0.45733389293510174;
-    const double FEH = -0.1370590893856221;
-    const double INITIAL_PERIOD = 16.026007472710152;
-    const double LGQ_MIN = 5.304149197016376;
-    const double LGQ_BREAK_PERIOD = 1.349572446046645;
-    const double LGQ_POWERLAW = -4.815017303503146;
-    const double FINAL_AGE = 0.12147711253580529;
+    const double PRIMARY_MASS = 0.9972238194452616;
+    const double SECONDARY_MASS = 0.7067481573996018;
+    const double FEH = 0.23453536043318451;
+    const double INITIAL_PERIOD = 9.288559077956364;
+//    const double LGQ_MIN = 4.6;
+    const double LGQ_BREAK_PERIOD = 2.0 * M_PI / 9.42144622;
+    const double LGQ_POWERLAW = -0.88014652;
+    const double FINAL_AGE = 7.627475419905787;
 
-    double initial_secondary_angmom[] = {0.11939496582754605,
-                                         0.0};
+//    double initial_secondary_angmom[] = {1.43525535, 0.43099626};
+    double initial_secondary_angmom[] = {0.29759528, 0.};
 
-    const double DISK_PERIOD = 10.001;
-    const double DISK_DISSIPATION_AGE = 0.002;
+
+//    const double DISK_PERIOD = 1.0;
+    const double DISK_DISSIPATION_AGE = 0.006;
     const double WIND_SATURATION_FREQUENCY = 2.54;
     const double WIND_STRENGTH = 0.17;
     const double DIFF_ROT_COUPLING_TIMESCALE = 5e-3;
-    const double INITIAL_ECCENTRICITY = 0.8;
+    const double INITIAL_ECCENTRICITY = 0.2111204612539938;
     const double INCLINATION = 0.0;
     const double LOCK_PERIOD = 50.0;
 
@@ -75,8 +76,8 @@ int main(int, char **)
         SECONDARY_MASS,
         INITIAL_PERIOD
     );
-    const double DISK_FREQUENCY = 2.0 * M_PI / DISK_PERIOD;
-    double ref_phase_lag = 15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
+    const double DISK_FREQUENCY = 1.223357025376092;//2.0 * M_PI / DISK_PERIOD;
+    double ref_phase_lag = 6.500842612574014e-09;//15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
@@ -84,10 +85,10 @@ int main(int, char **)
         "eccentricity_expansion_coef_O400.sqlite",
         1e-4,
         true,
-        false
+        true
     );
     MESAInterpolator *primary_interpolator = get_interpolator(
-        "stellar_evolution_interpolators_bkp/"
+        "stellar_evolution_interpolators/"
     );
 
 
@@ -97,7 +98,7 @@ int main(int, char **)
 
     tidal_frequency_powers[0] = 0.0;
     if(LGQ_POWERLAW > 0) {
-        ref_phase_lag *= std::pow(LGQ_BREAK_PERIOD / LOCK_PERIOD, LGQ_POWERLAW);
+        //ref_phase_lag *= std::pow(LGQ_BREAK_PERIOD / LOCK_PERIOD, LGQ_POWERLAW);
         tidal_frequency_breaks[0] = 2.0 * M_PI / LOCK_PERIOD;
         tidal_frequency_breaks[1] = 2.0 * M_PI / LGQ_BREAK_PERIOD;
         tidal_frequency_powers[2] = 0.0;
@@ -190,13 +191,13 @@ int main(int, char **)
         solver = evolve_system(
             system,
             FINAL_AGE,    //final age
-            1e-3,   //max timestep
-            1e-6,   //precision
+            1e-2,   //max timestep
+            1e-5,   //precision
             NULL,   //required ages
             0,      //num required ages
             true,  //Print stepping progress?
-            0,      //Max runtime [s]
-            1000000 //Max time steps
+            3600.0,      //Max runtime [s]
+            0 //Max time steps
         );
     } catch(const Core::Error::General &exception) {
         std::cerr << "Exception: "
@@ -204,6 +205,7 @@ int main(int, char **)
                   << ": "
                   << exception.get_message()
                   << std::endl;
+        throw;
     }
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],

@@ -1,0 +1,23 @@
+        lgQ_min: 6.8900656983425606
+        lgQ_inertial_boost: 1.0
+        lgQ_break_period: 3.671882567363107
+        lgQ_powerlaw: 0.005632927366177043
+        disk_dissipation_age: 0.002
+        primary_disk_lock_period: 10.0
+        primary_wind_strength: 0.17
+        primary_wind_saturation: 2.45
+        primary_core_envelope_coupling_timescale: 0.005
+        initial_eccentricity: 0.8
+        secondary_disk_lock_period: 10.0
+        secondary_wind_strength: 0.17
+        secondary_wind_saturation: 2.45
+        secondary_core_envelope_coupling_timescale: 0.005
+        age: 0.15555690961852284
+        feh: 
+        orbital_period: 18.42641161482753
+        primary_mass: 
+        secondary_mass: 
+        cmd_primary_radius: 0.7179564480947286
+        cmd_secondary_radius: 0.5458813536287009
+0.1652685416803047 -> w = 0.6283185307179586, 0.0 -> w = nan
+Trying P0 = , Pdisk = 10.0

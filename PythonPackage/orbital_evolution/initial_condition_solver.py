@@ -50,6 +50,21 @@ class InitialConditionSolver:
                            repr(disk_period))
         if self.binary is not None:
             self.binary.delete()
+        self._logger.debug(
+            'Binary setup:'
+            '\tP0: %s\n'
+            '\te0: %s\n'
+            '\ti0: %s\n'
+            '\tWdisk: %s\n'
+            '\tTdisk: %s=\n'
+            '\tTsecondary; %s\n',
+            repr(initial_orbital_period),
+            repr(self.parameters['initial eccentricity']),
+            repr(self.parameters['initial inclination']),
+            repr(2.0 * scipy.pi / disk_period),
+            repr(self.target.disk_dissipation_age),
+            repr(self.target.planet_formation_age)
+        )
         self.binary = Binary(
             primary=self.primary,
             secondary=self.secondary,
@@ -65,6 +80,8 @@ class InitialConditionSolver:
             self.primary.core_formation_age()
         )
 
+        self._logger.debug('Binary config: age: %s',
+                           repr(self.primary.core_formation_age()))
         self.binary.configure(age=self.primary.core_formation_age(),
                               semimajor=float('nan'),
                               eccentricity=float('nan'),
@@ -84,12 +101,27 @@ class InitialConditionSolver:
                 inclination=None,
                 periapsis=None
             )
+        self._logger.debug(
+            'Secondary config:\n'
+            '\tage: %s\n'
+            '\tMc: %s\n'
+            '\ta0: %s\n'
+            '\te0: %s\n'
+            '\tL0: %s\n'
+            '\tothers: %s',
+            repr(self.target.planet_formation_age),
+            repr(self.binary.primary.mass),
+            repr(self.binary.semimajor(initial_orbital_period)),
+            repr(self.parameters['initial eccentricity']),
+            repr(self.parameters['initial secondary angmom']),
+            repr(secondary_inclination_periapsis)
+        )
         self.secondary.configure(
             age=self.target.planet_formation_age,
             companion_mass=self.binary.primary.mass,
             semimajor=self.binary.semimajor(initial_orbital_period),
             eccentricity=self.parameters['initial eccentricity'],
-            spin_angmom=self.parameters['initial_secondary_angmom'],
+            spin_angmom=self.parameters['initial secondary angmom'],
             locked_surface=False,
             zero_outer_inclination=True,
             zero_outer_periapsis=True,
@@ -97,6 +129,17 @@ class InitialConditionSolver:
         )
         if isinstance(self.secondary, EvolvingStar):
             self.secondary.detect_stellar_wind_saturation()
+        self._logger.debug(
+            'Evolving:\n'
+            '\tfinal_age: %s\n'
+            '\tmax_time_step: %s\n'
+            '\tprecision: %s\n'
+            '\ttimeout: %s\n',
+            repr(self.target.age),
+            repr(self.configuration['max time step']),
+            repr(self.configuration['precision']),
+            repr(self.configuration['timeout'])
+        )
         self.binary.evolve(
             final_age=self.target.age,
             max_time_step=self.configuration['max time step'],
@@ -108,7 +151,21 @@ class InitialConditionSolver:
         final_state = self.binary.final_state()
         #False positives
         #pylint: disable=no-member
-        assert final_state.age == self.target.age
+        if final_state.age != self.target.age:
+            if (
+                    hasattr(self.target, 'Psurf')
+                    or
+                    not scipy.isnan(final_state.semimajor)
+            ):
+                raise RuntimeError(
+                    'System eveloution failed at age '
+                    '{0!r}, targe age {1!r}'.format(
+                        final_state.age,
+                        self.target.age
+                    )
+                )
+            self._logger.warning('Evolution failed after planet death')
+            return 0.0, scipy.nan
         orbital_period = self.binary.orbital_period(final_state.semimajor)
         stellar_spin_period = (
             2.0 * scipy.pi
@@ -157,8 +214,12 @@ class InitialConditionSolver:
         porb = self._try_initial_conditions(porb_initial, disk_period, True)[0]
         porb_error = porb - self.target.Porb
         guess_porb_error = porb_error
-        step = (self.period_search_factor if guess_porb_error < 0
-                else 1.0 / self.period_search_factor)
+        step = (
+            (self.period_search_factor if guess_porb_error < 0
+             else 1.0 / self.period_search_factor)
+            -
+            1
+        ) * porb_initial
 
         while (
                 porb_error * guess_porb_error > 0
@@ -169,7 +230,7 @@ class InitialConditionSolver:
                 porb_min = porb_initial
             else:
                 porb_max = porb_initial
-            porb_initial *= step
+            porb_initial += step
             self._logger.debug(
                 (
                     'Before evolution:'
@@ -193,6 +254,9 @@ class InitialConditionSolver:
             self._logger.debug('After evolution: porb = %s', repr(porb))
             if not scipy.isnan(porb):
                 porb_error = porb - self.target.Porb
+            step *= 2
+            if porb_initial + step < 0:
+                step = -0.5 * porb_initial
 
         if scipy.isnan(porb_error):
             return scipy.nan, scipy.nan
@@ -256,7 +320,7 @@ class InitialConditionSolver:
                 period guess while searching for a range surrounding the known
                 present day orbital period.
 
-            scaled_period_guess:    The search for initial period to bracked the
+            scaled_period_guess:    The search for initial period to bracket the
                 observed final period will start from this value multiplied by
                 the final orbital period.
 
@@ -274,7 +338,7 @@ class InitialConditionSolver:
         self.parameters = {
             'initial eccentricity': initial_eccentricity,
             'initial inclination': initial_inclination,
-            'initial_secondary_angmom': scipy.array(initial_secondary_angmom)
+            'initial secondary angmom': scipy.array(initial_secondary_angmom)
         }
         if planet_formation_age:
             self.parameters['planet formation age'] = planet_formation_age
