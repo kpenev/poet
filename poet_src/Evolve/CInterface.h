@@ -11,6 +11,7 @@
 #include "OrbitSolver.h"
 #include "../Star/CInterface.h"
 #include "../Planet/CInterface.h"
+#include "../SingleTermNonEvolvingBody/CInterface.h"
 
 extern "C" {
     ///\brief Evolution mode ID for when the surface rotation of one of the
@@ -39,6 +40,9 @@ extern "C" {
 
     ///Opaque struct to cast to/from Evolve::BrokenPowerlawPhasLagZone
     struct LIB_PUBLIC BrokenPowerlawPhaseLagZone;
+
+    ///Opaque struct to cast to/from Evolve::SingleTermZone
+    struct LIB_PUBLIC SingleTermZone;
 
     ///Opaque struct to cast to/from Evolve::EccentricityExpansionCoefficients
     struct LIB_PUBLIC EccentricityExpansionCoefficients;
@@ -93,6 +97,23 @@ extern "C" {
         ///Parameter controlling how sharp the transition between inertial mode
         ///non-enhanced and inertial mode enhanced dissipation is.
         double inertial_mode_sharpness
+    );
+
+    ///Set the dissipation of zone with only one tidal term contributiong.
+    LIB_PUBLIC void set_single_term_zone_dissipation(
+        ///The zone to set the dissipation of
+        SingleTermZone *zone,
+
+        ///The multiplier of the orbital frequency in the expression for
+        ///the forcing frequency for the only dissipative term.
+        int orbital_frequency_multiplier,
+
+        ///The multiplier of the spin frequency in the expression for
+        ///the forcing frequency for the only dissipative term.
+        int spin_frequency_multiplier,
+
+        ///The phase lag to assume for the only dissipative term.
+        double phase_lag
     );
 
     ///Create a binary system out of a star and a planet.
@@ -188,6 +209,32 @@ extern "C" {
         double disk_dissipation_age
     );
 
+    LIB_PUBLIC DiskBinarySystem *create_single_term_system(
+        ///The primary object in the system
+        CSingleTermNonEvolvingBody *primary,
+
+        ///The secondary object in the system
+        CSingleTermNonEvolvingBody *secondary,
+
+        ///The semimajor axis of the orbit at which the secondary forms in
+        /// \f$R_\odot\f$.
+        double initial_semimajor,
+
+        ///The eccentricity of the orbit at which the secondary forms.
+        double initial_eccentricity,
+
+        ///Inclination between surface zone of primary and initial orbit in
+        ///radians.
+        double initial_inclination,
+
+        ///Frequency of the surface spin of the primary when disk is present
+        ///in rad/day.
+        double disk_lock_frequency,
+
+        ///Age when disk dissipates in Gyrs.
+        double disk_dissipation_age
+    );
+
     ///Destroy a previously created binary system.
     LIB_PUBLIC void destroy_binary(
         ///The system to destroy.
@@ -201,6 +248,54 @@ extern "C" {
     LIB_PUBLIC void configure_planet(
         ///The body to configure.
         CPlanet *planet,
+
+        ///The age to set the body to.
+        double age,
+
+        ///The mass of the second body in the system.
+        double companion_mass,
+
+        ///The semimajor axis of the orbit in \f$R_\odot\f$.
+        double semimajor,
+
+        ///The eccentricity of the orbit
+        double eccentricity,
+
+        ///The spin angular momenta of the non-locked zones of the body
+        ///(outermost zone to innermost).
+        const double *spin_angmom,
+
+        ///The inclinations of the zones of the body (same order as
+        ///spin_angmom). If NULL, all inclinations are assumed zero.
+        const double *inclination,
+
+        ///The arguments of periapsis of the zones of the bodies (same
+        ///order as spin_angmom). If NULL, all periapses are assumed
+        ///zero.
+        const double *periapsis,
+
+        ///If true, the outermost zone's spin is assumed locked to a
+        ///disk and spin_angmom is assumed to start from the next zone.
+        bool locked_surface,
+
+        ///If true, the outermost zone's inclination is assumed to be
+        ///zero and the inclination argument is assumed to start from the
+        ///next zone.
+        bool zero_outer_inclination,
+
+        ///If true, the outermost zone's periapsis is assumed to be
+        ///zero and the inclination argument is assumed to start from the
+        ///next zone.
+        bool zero_outer_periapsis
+    );
+
+    ///\brief Defines the orbit an with single dissipative tidal term is in.
+    ///
+    ///The inclinations and arguments of periapsis must be already set for
+    ///all zones.
+    LIB_PUBLIC void configure_single_term_body(
+        ///The body to configure.
+        CSingleTermNonEvolvingBody *body,
 
         ///The age to set the body to.
         double age,
@@ -321,6 +416,23 @@ extern "C" {
         ///The evolution mode to assume. Must be one of the constants
         ///defined.
         int evolution_mode
+    );
+
+    ///\brief Calculate the rate at which the properties of the binary system
+    ///evolve
+    ///
+    ///Both objects must be fully configured (dissipation, wind parameters etc).
+    ///
+    ///See BinarySystem::differential_equations for description of the
+    ///arguments.
+    LIB_PUBLIC void differential_equations(
+        ///The system to find the evolution rates for.
+        DiskBinarySystem *system,
+
+        double age,
+        const double *parameters,
+        Core::EvolModeType evolution_mode,
+        double *differential_equations
     );
 
     ///Calculate the evolution of a previously configured binary system.

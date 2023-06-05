@@ -73,6 +73,18 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
 
 }
 
+void set_single_term_zone_dissipation(SingleTermZone *zone,
+                                      int orbital_frequency_multiplier,
+                                      int spin_frequency_multiplier,
+                                      double phase_lag)
+{
+    Evolve::SingleTermZone *real_zone =
+        reinterpret_cast<Evolve::SingleTermZone*>(zone);
+    real_zone->setup(orbital_frequency_multiplier,
+                     spin_frequency_multiplier,
+                     phase_lag);
+}
+
 DiskBinarySystem *create_star_planet_system(EvolvingStar *star,
                                             CPlanet *planet,
                                             double initial_semimajor,
@@ -143,6 +155,30 @@ DiskBinarySystem *create_planet_planet_system(CPlanet *primary,
     );
 }
 
+DiskBinarySystem *create_single_term_system(
+    CSingleTermNonEvolvingBody *primary,
+    CSingleTermNonEvolvingBody *secondary,
+    double initial_semimajor,
+    double initial_eccentricity,
+    double initial_inclination,
+    double disk_lock_frequency,
+    double disk_dissipation_age
+)
+{
+    return reinterpret_cast<DiskBinarySystem*>(
+        new Evolve::DiskBinarySystem(
+            *reinterpret_cast<SingleTermNonEvolvingBody::SingleTermNonEvolvingBody*>(primary),
+            *reinterpret_cast<SingleTermNonEvolvingBody::SingleTermNonEvolvingBody*>(secondary),
+            initial_semimajor,
+            initial_eccentricity,
+            initial_inclination,
+            disk_lock_frequency,
+            disk_dissipation_age,
+            disk_dissipation_age
+        )
+    );
+}
+
 void destroy_binary(DiskBinarySystem *system)
 {
     delete reinterpret_cast<Evolve::DiskBinarySystem*>(system);
@@ -202,6 +238,36 @@ void configure_planet(CPlanet *planet,
     );
 }
 
+void configure_single_term_body(CSingleTermNonEvolvingBody *body,
+                                double age,
+                                double companion_mass,
+                                double semimajor,
+                                double eccentricity,
+                                const double *spin_angmom,
+                                const double *inclination,
+                                const double *periapsis,
+                                bool locked_surface,
+                                bool zero_outer_inclination,
+                                bool zero_outer_periapsis)
+{
+    reinterpret_cast<SingleTermNonEvolvingBody::SingleTermNonEvolvingBody*>(
+        body
+    )->configure(
+        true,
+        age,
+        companion_mass,
+        semimajor,
+        eccentricity,
+        spin_angmom,
+        inclination,
+        periapsis,
+        locked_surface,
+        zero_outer_inclination,
+        zero_outer_periapsis
+    );
+}
+
+
 void configure_system(DiskBinarySystem *system,
                       double age,
                       double semimajor,
@@ -221,6 +287,28 @@ void configure_system(DiskBinarySystem *system,
         inclination,
         periapsis,
         static_cast<Core::EvolModeType>(evolution_mode)
+    );
+}
+
+void differential_equations(DiskBinarySystem *system,
+                            double age,
+                            const double *parameters,
+                            Core::EvolModeType evolution_mode,
+                            double *differential_equations)
+{
+    Evolve::DiskBinarySystem* real_system =  (
+        reinterpret_cast<Evolve::DiskBinarySystem*>(system)
+    );
+    std::valarray<double> diff_eq_parameters;
+    if(!parameters) {
+        real_system->fill_orbit(diff_eq_parameters);
+        parameters = &diff_eq_parameters[0];
+    }
+    real_system->differential_equations(
+        age,
+        parameters,
+        evolution_mode,
+        differential_equations
     );
 }
 

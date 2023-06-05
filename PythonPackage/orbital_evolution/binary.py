@@ -9,6 +9,7 @@ import numpy
 
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
+from orbital_evolution.single_term_interface import SingleTermBody
 from orbital_evolution.evolve_interface import library
 from basic_utils import\
     calc_semimajor,\
@@ -330,9 +331,14 @@ class Binary:
             secondary_formation_age
         )
         if isinstance(primary, LockedPlanet):
-            assert(isinstance(secondary, LockedPlanet))
+            assert isinstance(secondary, LockedPlanet)
             c_create_func = library.create_planet_planet_system
             self._c_get_evolution_func = library.get_planet_planet_evolution
+            create_args = create_args[:-1]
+        elif isinstance(primary, SingleTermBody):
+            assert isinstance(secondary, SingleTermBody)
+            c_create_func = library.create_single_term_system
+            self._c_get_evolution_func = None
             create_args = create_args[:-1]
         elif isinstance(secondary, LockedPlanet):
             c_create_func = library.create_star_planet_system
@@ -414,6 +420,24 @@ class Binary:
                                  inclination,
                                  periapsis,
                                  self._evolution_mode_ids[evolution_mode])
+
+    def calculate_rates(self, age, parameters=None, evolution_mode='BINARY'):
+        """Return the rates at which the system parameters evolve."""
+
+        result = numpy.empty(
+            7
+            +
+            (1 if isinstance(self.primary, EvolvingStar) else 0)
+            +
+            (1 if isinstance(self.secondary, EvolvingStar) else 0)
+        )
+        library.differential_equations(self.c_binary,
+                                       age,
+                                       parameters,
+                                       self._evolution_mode_ids[evolution_mode],
+                                       result)
+        return result
+
 
     def evolve(self,
                final_age,
