@@ -290,6 +290,16 @@ void configure_system(DiskBinarySystem *system,
     );
 }
 
+
+void set_expansion_order(DiskBinarySystem *system,
+                         unsigned order)
+{
+    reinterpret_cast<Evolve::DiskBinarySystem*>(system)->change_expansion_order(
+        order
+    );
+}
+
+
 void differential_equations(DiskBinarySystem *system,
                             double age,
                             const double *parameters,

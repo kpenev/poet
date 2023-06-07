@@ -22,19 +22,9 @@ namespace Evolve {
     ) const
     {
         if(
-            !(
-                (
-                    orbital_frequency_multiplier == __orbital_frequency_multiplier
-                    &&
-                    spin_frequency_multiplier == __spin_frequency_multiplier
-                )
-                ||
-                (
-                    orbital_frequency_multiplier == -__orbital_frequency_multiplier
-                    &&
-                    spin_frequency_multiplier == -__spin_frequency_multiplier
-                )
-            )
+            orbital_frequency_multiplier != __orbital_frequency_multiplier
+            ||
+            spin_frequency_multiplier != __spin_frequency_multiplier
             ||
             entry != Dissipation::NO_DERIV
         )
@@ -49,6 +39,16 @@ namespace Evolve {
             }
 
         }
+
+#ifndef NDEBUG
+        std::cerr << "Getting lag at: wtide(" << forcing_frequency
+                  << ") = " << orbital_frequency_multiplier
+                  << " * worb - " << spin_frequency_multiplier
+                  << " * wspin(" << spin_frequency() << ") : "
+                  << (forcing_frequency > 0 ? "+" : "-")
+                  << __phase_lag
+                  << std::endl;
+#endif
 
         return (forcing_frequency > 0 ? __phase_lag : -__phase_lag);
 

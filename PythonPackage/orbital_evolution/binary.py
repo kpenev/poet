@@ -421,7 +421,19 @@ class Binary:
                                  periapsis,
                                  self._evolution_mode_ids[evolution_mode])
 
-    def calculate_rates(self, age, parameters=None, evolution_mode='BINARY'):
+
+    def set_expansion_order(self, expansion_order):
+        """
+        Set the eccentricity expansion order to use (only calculate_rates).
+        """
+
+        library.set_expansion_order(self.c_binary, expansion_order)
+
+
+    def calculate_rates(self,
+                        age,
+                        parameters=None,
+                        evolution_mode='BINARY'):
         """Return the rates at which the system parameters evolve."""
 
         result = numpy.empty(

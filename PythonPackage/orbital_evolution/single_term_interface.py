@@ -34,6 +34,10 @@ def initialize_library(library_fname=None):
         c_int,      #spin_frequency_multiplier
         c_double,   #the phase lag of the only dissipative term
     ]
+    result.get_single_term_non_evolving_body_inertia.argtyes = [
+        result.create_single_term_non_evolving_body.restype
+    ]
+    result.get_single_term_non_evolving_body_inertia.restype = c_double
 
     return result
 

@@ -157,6 +157,12 @@ def initialize_library(library_fname=None):
     result.num_evolution_steps.argtypes = [result.evolve_system.restype]
     result.num_evolution_steps.restype = c_uint
 
+    result.set_expansion_order.argtypes = [
+        result.create_star_planet_system.restype,   #The binary
+        c_uint                                      #The order to set
+    ]
+    result.set_expansion_order.restype = None
+
     result.differential_equations.argtypes = [
         result.create_star_planet_system.restype,       #the binary
         c_double,                                       #age

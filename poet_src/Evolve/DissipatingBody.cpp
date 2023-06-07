@@ -1048,6 +1048,12 @@ namespace Evolve {
                                                       system,
                                                       primary,
                                                       zone_ind);
+#ifndef NDEBUG
+            else
+                std::cerr << "Zone  " << zone_ind
+                          << " not dissipative, not changing expansion order!"
+                          << std::endl;
+#endif
     }
 
 } //End Envolve namespace.

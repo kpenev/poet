@@ -418,6 +418,15 @@ extern "C" {
         int evolution_mode
     );
 
+    ///Manually set the eccentricity expansion order for the system.
+    LIB_PUBLIC void set_expansion_order(
+        ///The system to find the evolution rates for.
+        DiskBinarySystem *system,
+
+        ///The order to set.
+        unsigned order
+    );
+
     ///\brief Calculate the rate at which the properties of the binary system
     ///evolve
     ///
