@@ -371,6 +371,114 @@ def plot_single_term_synchronization():
     pyplot.show()
 
 
+def get_leading_frequencies(binary, scaled_wspin):
+    """Return the frequency of the most important tidal terms."""
+
+    max_rates = dict(semimajor=0.0, eccentricity=0.0, spin=0.0)
+    result = dict()
+    for worb_multiplier in [-2, 2]:
+        for wspin_multiplier in [-2, 2]:
+            binary.primary.set_dissipation(worb_multiplier,
+                                           wspin_multiplier,
+                                           1e-6)
+            abs_rates = numpy.absolute(binary.calculate_rates(1.0))
+            for quantity, rate_ind in [('semimajor', 0),
+                                       ('eccentricity', 1),
+                                       ('spin', -2)]:
+                if abs_rates[rate_ind] > max_rates[quantity]:
+                    max_rates[quantity] = abs_rates[rate_ind]
+                    result[quantity] = (float(worb_multiplier)
+                                        -
+                                        wspin_multiplier * scaled_wspin)
+    return result
+
+
+def get_leading_frequencies_vs_e(eval_e,
+                                 wspin='ps',
+                                 semimajor='const angmom',
+                                 expansion_order=100):
+    """Return the the frequency of the most important term vs eccentricity."""
+
+    result = dict(
+        semimajor=numpy.empty(eval_e.shape),
+        eccentricity=numpy.empty(eval_e.shape),
+        spin=numpy.empty(eval_e.shape),
+        orbital_freq=numpy.empty(eval_e.shape),
+        spin_freq=numpy.empty(eval_e.shape)
+    )
+    binary, binary_config = create_single_term_binary(
+        eccentricity=eval_e[0],
+        semimajor=(10.0 * u.R_sun if semimajor == 'const angmom'
+                   else semimajor),
+        expansion_order=expansion_order
+    )
+
+    if semimajor == 'const angmom':
+        a_scale = 10.0 * u.R_sun * (1.0 + eval_e.max())
+        worb_scale = binary.orbital_frequency(a_scale.to_value(u.R_sun))
+    else:
+        worb = binary.orbital_frequency(semimajor.to_value(u.R_sun))
+        worb_scale = worb
+
+    if wspin != 'ps':
+        binary_config['spin_angmom'] = (
+            wspin
+            *
+            numpy.array([binary.primary.inertia(), binary.secondary.inertia()])
+        )
+
+
+    for index, eccentricity in enumerate(eval_e):
+        binary_config['eccentricity'] = eccentricity
+        if semimajor == 'const angmom':
+            binary_config['semimajor'] = (a_scale.to_value(u.R_sun)
+                                          /
+                                          (1.0 - eccentricity**2))
+            worb = binary.orbital_frequency(binary_config['semimajor'])
+
+        if wspin == 'ps':
+            scaled_wspin = get_hut_pseudo_synchronous_spin(eccentricity)
+            binary_config['spin_angmom'] = (
+                worb
+                *
+                scaled_wspin
+                *
+                numpy.array([binary.primary.inertia(),
+                             binary.secondary.inertia()])
+            )
+
+        binary.configure(**binary_config)
+        for quantity, wtide in get_leading_frequencies(binary,
+                                                       scaled_wspin).items():
+            result[quantity][index] = wtide * worb / worb_scale
+        result['orbital_freq'][index] = worb / worb_scale
+        result['spin_freq'][index] = scaled_wspin * worb / worb_scale
+
+    return result
+
+
+def plot_leading_frequency_vs_e(eval_e,
+                                wspin='ps',
+                                semimajor='const angmom',
+                                expansion_order=100):
+    """Make a plot of the frequency of the most important term vs eccentr."""
+
+    leading_frequencies = get_leading_frequencies_vs_e(eval_e,
+                                                       wspin,
+                                                       semimajor,
+                                                       expansion_order)
+    for quantity in ['semimajor',
+                     'eccentricity',
+                     'spin',
+                     'orbital_freq',
+                     'spin_freq']:
+        pyplot.semilogy(eval_e,
+                        numpy.absolute(leading_frequencies[quantity]),
+                        '-',
+                        label=quantity)
+    pyplot.legend()
+    pyplot.show()
+
 
 def main():
     """Avoid polluting global namespace."""
@@ -386,6 +494,9 @@ def main():
         True,
         True
     )
+
+    plot_leading_frequency_vs_e(numpy.linspace(0, 0.8, 801))
+    exit(0)
 
     plot_single_term_synchronization()
 
