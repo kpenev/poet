@@ -1,15 +1,113 @@
-"""Create a plot showing the contribution of each tidal term to evolution."""
+#!/usr/bin/env python3
+
+"""Create plots showing contribution of sepaarate tidal terms to evolution."""
 
 from os import path
 
 from matplotlib import pyplot
 import numpy
 from astropy import units as u
+from configargparse import ArgumentParser, DefaultsFormatter
 
 from orbital_evolution.evolve_interface import library as\
     orbital_evolution_library
 from orbital_evolution.binary import Binary
-from orbital_evolution import SingleTermBody, LockedPlanet
+from orbital_evolution import \
+    SingleTermBody, \
+    LockedPlanet, \
+    phase_lag as calc_phase_lag
+
+def parse_command_line():
+    """Return the configuration for what evolution to run and how."""
+
+    parser = ArgumentParser(
+        description=__doc__,
+        default_config_files=['plot_tidal_terms.cfg'],
+        formatter_class=DefaultsFormatter,
+        ignore_unknown_config_file_keys=False
+    )
+    parser.add_argument(
+        '--config', '-c',
+        is_config_file=True,
+        help='Config file to use instead of default.'
+    )
+    parser.add_argument(
+        '--eccentricity-expansion-fname',
+        default=path.join(
+            path.dirname(path.dirname(path.abspath(__file__))),
+            'eccentricity_expansion_coef_O400.sqlite'
+        ),
+        help='The filename storing the eccentricity expansion coefficients.'
+    )
+    parser.add_argument(
+        '--frequencies-vs-e',
+        default=None,
+        help='Specify a filename to save a plot of the leading tidal frequency,'
+        ' the spin frequency, and the orbital period vs eccentricity. Empty '
+        'string results in the plot being shown instead of saved. If not '
+        'specified, the plot is not generated.'
+    )
+    parser.add_argument(
+        '--spin-frequency', '--wspin',
+        default='ps',
+        help="The spin frequency to assume for the various plots. Use ``'ps'`` "
+        '(default) to assume pseudo-synchronous rotation.'
+    )
+    parser.add_argument(
+        '--semimajor-axis',
+        default='const angmom',
+        help='The semimajor axis to assume for frequencies plot. Use '
+        "``'const_angmom'`` (default) to set it so angular momentum is the same"
+        'for each point.'
+    )
+    parser.add_argument(
+        '--single-term-rates-vs-spin',
+        default=None,
+        help='Enable plotting of the contribution of various tidal terms for '
+        'circular orbit as a function of spin. Plot is saved with the specified'
+        'filename, or shown if empty string.'
+    )
+    parser.add_argument(
+        '--rate-spectra-eccentricities',
+        type=float,
+        nargs='+',
+        default=[],
+        help='Specify eccentricities for which to plot rate spectra. No figure '
+        'is generated if empty.'
+    )
+    parser.add_argument(
+        '--rate-spectra',
+        default='',
+        help='Filename to save the spectrum of tidal evolution waves. Plot is '
+        'shown if empty string.'
+    )
+    parser.add_argument(
+        '--min-lgQ',
+        type=float,
+        default=7.0,
+        help='The log10(Q) value for tidal frequencies where dissiaption is '
+        'saturated.'
+    )
+    parser.add_argument(
+        '--Q-period-powerlaw',
+        type=float,
+        default=1.0,
+        help='The powerlaw index of the dependence of Q on tidal period.'
+    )
+    parser.add_argument(
+        '--Q-break-period',
+        type=float,
+        default=0.001,
+        help='The break period to assume for Q vs Ptide in days.'
+    )
+    parser.add_argument(
+        '--pseudo-synchronization',
+        default=None,
+        help='Enable plotting showing pseudo-synhcronization. Save the plots '
+        'with the given filanem or show if empty string.'
+    )
+    return parser.parse_args()
+
 
 #e is more readable than eccentricity in this case
 #pylint: disable=invalid-name
@@ -314,7 +412,7 @@ def plot_rate_spectra(eccentricity, **rate_config):
         print('Include %d negative values' % include.sum())
 
 
-def plot_single_term_synchronization():
+def plot_single_term_rates_vs_spin():
     """Plot evolution vs spin term by term."""
 
     semimajor = 10.0 * u.R_sun
@@ -368,7 +466,6 @@ def plot_single_term_synchronization():
     pyplot.axvline(x=1.0, color='black')
     pyplot.title('Spin rate')
     pyplot.legend()
-    pyplot.show()
 
 
 def get_leading_frequencies(binary, scaled_wspin):
@@ -467,71 +564,81 @@ def plot_leading_frequency_vs_e(eval_e,
                                                        wspin,
                                                        semimajor,
                                                        expansion_order)
-    for quantity in ['semimajor',
-                     'eccentricity',
-                     'spin',
-                     'orbital_freq',
-                     'spin_freq']:
+    for quantity, label in [('semimajor', None),
+                            ('eccentricity', '$P_{tide}$'),
+                            ('spin', None),
+                            ('orbital_freq', '$P_{orb}$'),
+                            ('spin_freq', r'$P_\star$')]:
         pyplot.semilogy(eval_e,
                         numpy.absolute(leading_frequencies[quantity]),
                         '-',
-                        label=quantity)
+                        label=label)
     pyplot.legend()
-    pyplot.show()
+    pyplot.xlabel('Eccentricity')
+    pyplot.ylabel('Period [days]')
 
 
-def main():
+#pylint: disable=too-many-branches
+def main(config):
     """Avoid polluting global namespace."""
 
-    e_expansion_fname = path.join(
-        path.dirname(path.dirname(path.abspath(__file__))),
-        'eccentricity_expansion_coef_O400.sqlite'
-    )
-    assert path.exists(e_expansion_fname)
     orbital_evolution_library.prepare_eccentricity_expansion(
-        e_expansion_fname.encode('ascii'),
+        config.eccentricity_expansion_fname.encode('ascii'),
         1e-4,
         True,
         True
     )
 
-    plot_leading_frequency_vs_e(numpy.linspace(0, 0.8, 801))
-    exit(0)
+    if config.frequencies_vs_e is not None:
+        plot_leading_frequency_vs_e(
+            numpy.linspace(0, 0.8, 801),
+            config.spin_frequency,
+            config.semimajor_axis,
+        )
+        if config.frequencies_vs_e:
+            pyplot.savefig(config.frequencies_vs_e)
+        else:
+            pyplot.show()
 
-    plot_single_term_synchronization()
+    if config.single_term_rates_vs_spin is not None:
+        plot_single_term_rates_vs_spin()
+        if config.plot_single_term_rates_vs_spin:
+            pyplot.savefig(config.plot_single_term_rates_vs_spin)
+        else:
+            pyplot.show()
 
-    plot_rate_spectra(0.8,
-                      max_phase_lag=1e-6,
-                      tidal_powerlaw=1.0,
-                      break_frequency=2e3 * numpy.pi)
-    plot_rate_spectra(0.5,
-                      max_phase_lag=1e-6,
-                      tidal_powerlaw=1.0,
-                      break_frequency=2e3 * numpy.pi)
-    plot_rate_spectra(0.3,
-                      max_phase_lag=1e-6,
-                      tidal_powerlaw=1.0,
-                      break_frequency=2e3 * numpy.pi)
-    plot_rate_spectra(0.1,
-                      max_phase_lag=1e-6,
-                      tidal_powerlaw=1.0,
-                      break_frequency=2e3 * numpy.pi)
-    pyplot.show()
+    for eccentricity in config.rate_spectra_eccentricities:
+        plot_rate_spectra(
+            eccentricity,
+            max_phase_lag=calc_phase_lag(config.min_lgQ),
+            tidal_powerlaw=config.Q_period_powerlaw,
+            break_frequency=2.0 * numpy.pi / config.Q_break_period
+        )
+    if config.rate_spectra_eccentricities:
+        if config.rate_spectra:
+            pyplot.savefig(config.rate_spectra)
+        else:
+            pyplot.show()
 
-    pyplot.subplot(221)
-    plot_pseudosynchronization(spin_scale='orbit')
+    if config.pseudo_synchronization is not None:
+        pyplot.subplot(221)
+        plot_pseudosynchronization(spin_scale='orbit')
 
-    pyplot.subplot(222)
-    plot_pseudosynchronization(spin_scale='ps')
+        pyplot.subplot(222)
+        plot_pseudosynchronization(spin_scale='ps')
 
-    pyplot.subplot(223)
-    plot_pseudosynchronization(spin_scale='ps', log=True)
+        pyplot.subplot(223)
+        plot_pseudosynchronization(spin_scale='ps', log=True)
 
-    pyplot.subplot(224)
-    plot_pseudosynchronization(spin_scale='orbit', log=True)
+        pyplot.subplot(224)
+        plot_pseudosynchronization(spin_scale='orbit', log=True)
 
-    pyplot.show()
+        if config.pseudo_synhcronization:
+            pyplot.savefig(config.pseudo_synhcronization)
+        else:
+            pyplot.show()
+#pylint: enable=too-many-branches
 
 
 if __name__ == '__main__':
-    main()
+    main(parse_command_line())
