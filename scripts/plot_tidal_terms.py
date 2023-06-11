@@ -574,8 +574,11 @@ def plot_leading_frequency_vs_e(eval_e,
                         '-',
                         label=label)
     pyplot.legend()
+    pyplot.ylim(0.01, 10)
+    pyplot.xlim(min(eval_e), max(eval_e))
+    pyplot.grid(which='both')
     pyplot.xlabel('Eccentricity')
-    pyplot.ylabel('Period [days]')
+    pyplot.ylabel('Scaled Period')
 
 
 #pylint: disable=too-many-branches
