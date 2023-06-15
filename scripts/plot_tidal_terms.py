@@ -476,44 +476,67 @@ def plot_single_term_rates_vs_spin():
     pyplot.legend()
 
 
-def get_leading_frequencies(binary, scaled_wspin, expansion_order):
+#Simple enough
+#pylint: disable=too-many-locals
+def get_leading_frequencies(binary,
+                            *,
+                            scaled_wspin,
+                            scaled_wbreak,
+                            tidal_powerlaw,
+                            max_phase_lag,
+                            expansion_order):
     """Return the frequency of the most important tidal terms."""
 
-    max_rates = dict(semimajor=-1.0, eccentricity=-1.0, spin=-1.0)
+    max_rates = dict(semimajor=0.0, eccentricity=0.0, spin=0.0)
     leading_worb_multiplier = dict()
     leading_wspin_multiplier = dict()
     result = dict()
     for worb_multiplier in range(-expansion_order, expansion_order + 1):
         for wspin_multiplier in range(-2, 3):
-            binary.primary.set_dissipation(worb_multiplier,
-                                           wspin_multiplier,
-                                           1e-6)
+            scaled_wtide = (float(worb_multiplier)
+                            -
+                            float(wspin_multiplier) * scaled_wspin)
+            binary.primary.set_dissipation(
+                worb_multiplier,
+                wspin_multiplier,
+                phase_lag=(
+                    max_phase_lag
+                    *
+                    min(
+                        1.0,
+                        (scaled_wtide / scaled_wbreak)**tidal_powerlaw
+                    )
+                )
+            )
             abs_rates = numpy.absolute(binary.calculate_rates(1.0))
             for quantity, rate_ind in [('semimajor', 0),
                                        ('eccentricity', 1),
                                        ('spin', -2)]:
                 if abs_rates[rate_ind] > max_rates[quantity]:
                     max_rates[quantity] = abs_rates[rate_ind]
-                    result[quantity] = (float(worb_multiplier)
-                                        -
-                                        float(wspin_multiplier) * scaled_wspin)
+                    result[quantity] = scaled_wtide
                     leading_worb_multiplier[quantity] = worb_multiplier
                     leading_wspin_multiplier[quantity] = wspin_multiplier
     return result, leading_worb_multiplier, leading_wspin_multiplier
+#pylint: enable=too-many-locals
 
 
 #This is straightforward to understand, no need to simplify
 #pylint: disable=too-many-locals
 def get_leading_frequencies_vs_e(eval_e,
+                                 *,
                                  wspin='ps',
                                  semimajor='const angmom',
+                                 break_frequency,
+                                 tidal_powerlaw,
+                                 max_phase_lag,
                                  expansion_order=100):
     """Return the the frequency of the most important term vs eccentricity."""
 
     result = dict(
-        semimajor=numpy.empty(eval_e.shape),
-        eccentricity=numpy.empty(eval_e.shape),
-        spin=numpy.empty(eval_e.shape),
+        semimajor=numpy.ones(eval_e.shape),
+        eccentricity=numpy.ones(eval_e.shape),
+        spin=numpy.ones(eval_e.shape),
         orbital_freq=numpy.empty(eval_e.shape),
         spin_freq=numpy.empty(eval_e.shape),
         semimajor_worb_mult=numpy.empty(eval_e.shape, dtype=int),
@@ -570,8 +593,11 @@ def get_leading_frequencies_vs_e(eval_e,
             leading_worb_multiplier,
             leading_wspin_multiplier
         ) = get_leading_frequencies(binary,
-                                    scaled_wspin,
-                                    expansion_order)
+                                    scaled_wspin=scaled_wspin,
+                                    scaled_wbreak=break_frequency / worb_scale,
+                                    tidal_powerlaw=tidal_powerlaw,
+                                    max_phase_lag=max_phase_lag,
+                                    expansion_order=expansion_order)
         for quantity, wtide in leading_wtide.items():
             result[quantity][index] = wtide * worb / worb_scale
             result[quantity + '_worb_mult'][index] = (
@@ -593,15 +619,23 @@ def plot_leading_term_vs_e(eval_e,
                            frequencies_fname,
                            multipliers_fname,
                            *,
+                           break_frequency,
+                           tidal_powerlaw,
+                           max_phase_lag,
                            wspin='ps',
                            semimajor='const angmom',
                            expansion_order=100):
     """Make a plot of the frequency of the most important term vs eccentr."""
 
-    leading_frequencies = get_leading_frequencies_vs_e(eval_e,
-                                                       wspin,
-                                                       semimajor,
-                                                       expansion_order)
+    leading_frequencies = get_leading_frequencies_vs_e(
+        eval_e,
+        wspin=wspin,
+        semimajor=semimajor,
+        break_frequency=break_frequency,
+        tidal_powerlaw=tidal_powerlaw,
+        max_phase_lag=max_phase_lag,
+        expansion_order=expansion_order
+    )
     if frequencies_fname is not None:
         for quantity, label in [('eccentricity', '$P_{tide}: e$'),
                                 #('semimajor', '$P_{tide}: a$'),
@@ -616,7 +650,7 @@ def plot_leading_term_vs_e(eval_e,
                 linewidth=5
             )
         pyplot.legend()
-        pyplot.ylim(0.01, 10)
+        pyplot.ylim(0.3, 100)
         pyplot.xlim(min(eval_e), max(eval_e))
         pyplot.grid(which='both')
         pyplot.xlabel('Eccentricity')
@@ -663,6 +697,8 @@ def plot_leading_term_vs_e(eval_e,
 def main(config):
     """Avoid polluting global namespace."""
 
+    print('Config: ' + repr(config))
+
     orbital_evolution_library.prepare_eccentricity_expansion(
         config.eccentricity_expansion_fname.encode('ascii'),
         1e-4,
@@ -670,13 +706,20 @@ def main(config):
         True
     )
 
-    if config.frequencies_vs_e is not None or config.top_terms_vs_e is not None:
+    if (
+            (config.frequencies_vs_e is not None)
+            or
+            (config.top_terms_vs_e is not None)
+    ):
         plot_leading_term_vs_e(
             eval_e=numpy.linspace(0, 0.8, 8001),
             frequencies_fname=config.frequencies_vs_e,
             multipliers_fname=config.top_terms_vs_e,
             wspin=config.spin_frequency,
-            semimajor=config.semimajor_axis
+            semimajor=config.semimajor_axis,
+            max_phase_lag=calc_phase_lag(config.min_lgQ),
+            tidal_powerlaw=config.Q_period_powerlaw,
+            break_frequency=2.0 * numpy.pi / config.Q_break_period
         )
 
     if config.single_term_rates_vs_spin is not None:
@@ -717,3 +760,6 @@ def main(config):
         else:
             pyplot.show()
 #pylint: enable=too-many-branches
+
+if __name__ == '__main__':
+    main(parse_command_line())
