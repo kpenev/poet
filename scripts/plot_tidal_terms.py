@@ -48,6 +48,14 @@ def parse_command_line():
         'specified, the plot is not generated.'
     )
     parser.add_argument(
+        '--top-terms-vs-e',
+        default=None,
+        help='Specify a filename to save a plot of the leading tidal term '
+        '(orbit and spin multipliers) vs eccentricity. Empty string results in '
+        'the plot being shown instead of saved. If not specified, the plot is '
+        'not generated.'
+    )
+    parser.add_argument(
         '--spin-frequency', '--wspin',
         default='ps',
         help="The spin frequency to assume for the various plots. Use ``'ps'`` "
@@ -468,13 +476,15 @@ def plot_single_term_rates_vs_spin():
     pyplot.legend()
 
 
-def get_leading_frequencies(binary, scaled_wspin):
+def get_leading_frequencies(binary, scaled_wspin, expansion_order):
     """Return the frequency of the most important tidal terms."""
 
-    max_rates = dict(semimajor=0.0, eccentricity=0.0, spin=0.0)
+    max_rates = dict(semimajor=-1.0, eccentricity=-1.0, spin=-1.0)
+    leading_worb_multiplier = dict()
+    leading_wspin_multiplier = dict()
     result = dict()
-    for worb_multiplier in [-2, 2]:
-        for wspin_multiplier in [-2, 2]:
+    for worb_multiplier in range(-expansion_order, expansion_order + 1):
+        for wspin_multiplier in range(-2, 3):
             binary.primary.set_dissipation(worb_multiplier,
                                            wspin_multiplier,
                                            1e-6)
@@ -486,10 +496,14 @@ def get_leading_frequencies(binary, scaled_wspin):
                     max_rates[quantity] = abs_rates[rate_ind]
                     result[quantity] = (float(worb_multiplier)
                                         -
-                                        wspin_multiplier * scaled_wspin)
-    return result
+                                        float(wspin_multiplier) * scaled_wspin)
+                    leading_worb_multiplier[quantity] = worb_multiplier
+                    leading_wspin_multiplier[quantity] = wspin_multiplier
+    return result, leading_worb_multiplier, leading_wspin_multiplier
 
 
+#This is straightforward to understand, no need to simplify
+#pylint: disable=too-many-locals
 def get_leading_frequencies_vs_e(eval_e,
                                  wspin='ps',
                                  semimajor='const angmom',
@@ -501,7 +515,13 @@ def get_leading_frequencies_vs_e(eval_e,
         eccentricity=numpy.empty(eval_e.shape),
         spin=numpy.empty(eval_e.shape),
         orbital_freq=numpy.empty(eval_e.shape),
-        spin_freq=numpy.empty(eval_e.shape)
+        spin_freq=numpy.empty(eval_e.shape),
+        semimajor_worb_mult=numpy.empty(eval_e.shape, dtype=int),
+        semimajor_wspin_mult=numpy.empty(eval_e.shape, dtype=int),
+        eccentricity_worb_mult=numpy.empty(eval_e.shape, dtype=int),
+        eccentricity_wspin_mult=numpy.empty(eval_e.shape, dtype=int),
+        spin_worb_mult=numpy.empty(eval_e.shape, dtype=int),
+        spin_wspin_mult=numpy.empty(eval_e.shape, dtype=int),
     )
     binary, binary_config = create_single_term_binary(
         eccentricity=eval_e[0],
@@ -545,41 +565,99 @@ def get_leading_frequencies_vs_e(eval_e,
             )
 
         binary.configure(**binary_config)
-        for quantity, wtide in get_leading_frequencies(binary,
-                                                       scaled_wspin).items():
+        (
+            leading_wtide,
+            leading_worb_multiplier,
+            leading_wspin_multiplier
+        ) = get_leading_frequencies(binary,
+                                    scaled_wspin,
+                                    expansion_order)
+        for quantity, wtide in leading_wtide.items():
             result[quantity][index] = wtide * worb / worb_scale
+            result[quantity + '_worb_mult'][index] = (
+                leading_worb_multiplier[quantity]
+            )
+            result[quantity + '_wspin_mult'][index] = (
+                leading_wspin_multiplier[quantity]
+            )
+
+
         result['orbital_freq'][index] = worb / worb_scale
         result['spin_freq'][index] = scaled_wspin * worb / worb_scale
 
     return result
+#pylint: enable=too-many-locals
 
 
-def plot_leading_frequency_vs_e(eval_e,
-                                wspin='ps',
-                                semimajor='const angmom',
-                                expansion_order=100):
+def plot_leading_term_vs_e(eval_e,
+                           frequencies_fname,
+                           multipliers_fname,
+                           *,
+                           wspin='ps',
+                           semimajor='const angmom',
+                           expansion_order=100):
     """Make a plot of the frequency of the most important term vs eccentr."""
 
     leading_frequencies = get_leading_frequencies_vs_e(eval_e,
                                                        wspin,
                                                        semimajor,
                                                        expansion_order)
-    for quantity, label in [('semimajor', None),
-                            ('eccentricity', '$P_{tide}$'),
-                            ('spin', None),
-                            ('orbital_freq', '$P_{orb}$'),
-                            ('spin_freq', r'$P_\star$')]:
-        pyplot.semilogy(eval_e,
-                        numpy.absolute(leading_frequencies[quantity]),
-                        '-',
-                        label=label)
-    pyplot.legend()
-    pyplot.ylim(0.01, 10)
-    pyplot.xlim(min(eval_e), max(eval_e))
-    pyplot.grid(which='both')
-    pyplot.xlabel('Eccentricity')
-    pyplot.ylabel('Scaled Period')
+    if frequencies_fname is not None:
+        for quantity, label in [('eccentricity', '$P_{tide}: e$'),
+                                #('semimajor', '$P_{tide}: a$'),
+                                #('spin', r'$P_{tide}: \Omega_\star$'),
+                                ('orbital_freq', '$P_{orb}$'),
+                                ('spin_freq', r'$P_\star$')]:
+            pyplot.semilogy(
+                eval_e,
+                1.0 / numpy.absolute(leading_frequencies[quantity]),
+                '-',
+                label=label,
+                linewidth=5
+            )
+        pyplot.legend()
+        pyplot.ylim(0.01, 10)
+        pyplot.xlim(min(eval_e), max(eval_e))
+        pyplot.grid(which='both')
+        pyplot.xlabel('Eccentricity')
+        pyplot.ylabel('Scaled Period')
+        if frequencies_fname:
+            pyplot.savefig(frequencies_fname)
+        else:
+            pyplot.show()
 
+    if multipliers_fname:
+        for quantity, label_end in [('eccentricity', 'e')]:#,
+#                                ('semimajor', 'a'),
+#                                ('spin', r'\Omega_\star')]:
+            sign = numpy.empty(eval_e.shape)
+            sign[leading_frequencies[quantity + '_wspin_mult'] >= 0] = 1
+            sign[leading_frequencies[quantity + '_wspin_mult'] < 0] = -1
+            pyplot.plot(
+                eval_e,
+                sign * leading_frequencies[quantity + '_worb_mult'],
+                'o',
+                label='$m_{orb}: ' + label_end + '$',
+                linewidth=5
+            )
+            pyplot.plot(
+                eval_e,
+                sign * leading_frequencies[quantity + '_wspin_mult'],
+                'o',
+                label='$m_{spin}: ' + label_end + '$',
+                linewidth=5
+            )
+
+        pyplot.legend()
+        pyplot.ylim(0, 30)
+        pyplot.xlim(min(eval_e), max(eval_e))
+        pyplot.grid(which='both')
+        pyplot.xlabel('Eccentricity')
+        pyplot.ylabel('Dominant multipliers')
+        if multipliers_fname:
+            pyplot.savefig(multipliers_fname)
+        else:
+            pyplot.show()
 
 #pylint: disable=too-many-branches
 def main(config):
@@ -592,16 +670,14 @@ def main(config):
         True
     )
 
-    if config.frequencies_vs_e is not None:
-        plot_leading_frequency_vs_e(
-            numpy.linspace(0, 0.8, 801),
-            config.spin_frequency,
-            config.semimajor_axis,
+    if config.frequencies_vs_e is not None or config.top_terms_vs_e is not None:
+        plot_leading_term_vs_e(
+            eval_e=numpy.linspace(0, 0.8, 8001),
+            frequencies_fname=config.frequencies_vs_e,
+            multipliers_fname=config.top_terms_vs_e,
+            wspin=config.spin_frequency,
+            semimajor=config.semimajor_axis
         )
-        if config.frequencies_vs_e:
-            pyplot.savefig(config.frequencies_vs_e)
-        else:
-            pyplot.show()
 
     if config.single_term_rates_vs_spin is not None:
         plot_single_term_rates_vs_spin()
@@ -641,7 +717,3 @@ def main(config):
         else:
             pyplot.show()
 #pylint: enable=too-many-branches
-
-
-if __name__ == '__main__':
-    main(parse_command_line())
