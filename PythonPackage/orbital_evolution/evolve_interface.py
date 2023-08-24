@@ -77,6 +77,12 @@ def initialize_library(library_fname=None):
     result.create_planet_planet_system.restype = (
         result.create_star_planet_system.restype
     )
+    result.create_single_term_system.argtypes = (
+        result.create_star_planet_system.argtypes[:-1]
+    )
+    result.create_single_term_system.restype = (
+        result.create_star_planet_system.restype
+    )
 
     result.destroy_binary.argtypes = [
         result.create_star_planet_system.restype
@@ -103,6 +109,11 @@ def initialize_library(library_fname=None):
         c_bool                                              #zero_outer_periaps.
     ]
     result.configure_planet.restype = None
+
+    result.configure_single_term_body.argtypes = (
+        result.configure_planet.argtypes
+    )
+    result.configure_single_term_body.restype = None
 
     result.configure_star.argtypes = result.configure_planet.argtypes
     result.configure_star.restype = result.configure_planet.restype
@@ -145,6 +156,25 @@ def initialize_library(library_fname=None):
 
     result.num_evolution_steps.argtypes = [result.evolve_system.restype]
     result.num_evolution_steps.restype = c_uint
+
+    result.set_expansion_order.argtypes = [
+        result.create_star_planet_system.restype,   #The binary
+        c_uint                                      #The order to set
+    ]
+    result.set_expansion_order.restype = None
+
+    result.differential_equations.argtypes = [
+        result.create_star_planet_system.restype,       #the binary
+        c_double,                                       #age
+        ndpointer_or_null(dtype=c_double,               #orbit (aka. parameters)
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        c_int,                                          #evolution mode
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #diff. eq. array to fill
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS')
+    ]
+    result.differential_equations.restype = None
 
     result.get_star_planet_evolution.argtypes = [
         result.evolve_system.restype,               #solver

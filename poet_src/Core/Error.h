@@ -168,7 +168,7 @@ namespace Core {
         public:
             ///Create a too-small GSL step size exception.
             NonGSLZeroStep() :
-                Runtime("Breaking due to condtions or NaNs has decreased "
+                Runtime("Breaking due to conditions or NaNs has decreased "
                         "maximum step size to zero! Aborting") {}
 
             ///Returns "Tiny step" as the error type.
