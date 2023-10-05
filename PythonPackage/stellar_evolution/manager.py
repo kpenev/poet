@@ -10,7 +10,8 @@ from math import isnan
 import sys
 
 import numpy
-from sqlalchemy import exists, and_, func, create_engine
+#from sqlalchemy import exists, and_, func, create_engine
+import sqlalchemy
 
 sys.path.append('..')
 
@@ -80,7 +81,7 @@ class StellarEvolutionManager:
         """
 
         for table in DataModelBase.metadata.sorted_tables:
-            if not db_engine.has_table(table.name):
+            if not sqlalchemy.inspect(db_engine).has_table(table.name):
                 table.create(db_engine)
                 if table.name == 'quantities':
                     self._define_evolution_quantities(db_session)
@@ -456,7 +457,7 @@ class StellarEvolutionManager:
 
         if not os.path.exists(serialization_path):
             os.makedirs(serialization_path)
-        db_engine = create_engine(
+        db_engine = sqlalchemy.create_engine(
             'sqlite:///'
             +
             os.path.join(serialization_path, 'serialized.sqlite'),
