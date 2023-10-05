@@ -5,6 +5,7 @@ import os.path
 
 from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
+from orbital_evolution.single_term_interface import SingleTermBody
 from orbital_evolution.initial_condition_solver import InitialConditionSolver
 from orbital_evolution.transformations import phase_lag, lgQ
 

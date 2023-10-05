@@ -162,8 +162,30 @@ model {
                     srcDir "poet_src/Planet/"
                 }
             }
-
         }
+        singleTermNonEvolvingBody(NativeLibrarySpec) {
+            sources.cpp {
+                lib library: "eigen"
+                lib library: "evolve"
+                lib library: "dirent"
+                source {
+                    srcDir "poet_src/SingleTermNonEvolvingBody"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/Core"
+                    include "**/*.cpp"
+                }
+                source {
+                    srcDir "poet_src/third_party_libs/alglib/alglib/src"
+                    include "**/*.cpp"
+                }
+                exportedHeaders {
+                    srcDir "poet_src/SingleTermNonEvolvingBody/"
+                }
+            }
+        }
+
         star(NativeLibrarySpec) {
             sources.cpp {
                 lib library: "eigen"
@@ -186,7 +208,6 @@ model {
                     srcDir "poet_src/Star/"
                 }
             }
-
         }
 
         testEvolve(NativeExecutableSpec) {
@@ -216,6 +237,7 @@ model {
                 lib library: "stellarEvolution", linkage: 'static'
                 lib library: "star", linkage: 'static'
                 lib library: "planet", linkage: 'static'
+                lib library: "singleTermNonEvolvingBody", linkage: 'static'
                 lib library: "evolve", linkage: 'static'
                 lib library: "dirent", linkage: 'static'
             }
@@ -319,6 +341,7 @@ doxygen {
     source "poet_src/StellarEvolution"
     source "poet_src/Evolve"
     source "poet_src/Planet"
+    source "poet_src/SingleTermNonEvolvingBody"
     source "poet_src/Star"
     source "documentation"
     source "PythonPackage"
@@ -374,8 +397,13 @@ def findLibraryLinux(String libNameStart)
 
 def findLibraryMacOS(String libName)
 {
-    def libFullPath
-    libFullPath = "ld -l${libName} -dylib -t".execute().text.trim()
+    return [libName, "0.0.0", ""]
+    def libFullPath = new StringBuilder(), errorMessage = new StringBuilder()
+    def ldProcess = "ld -l${libName} -dylib -arch x86_64 -t".execute()
+    ldProcess.consumeProcessOutput(libFullPath, errorMessage)
+    ldProcess.waitFor()
+    println 'Full library path for ' + libName + ': ' + libFullPath
+    println 'ld command error message: ' + errorMessage
     if(!libFullPath) 
         throw new ProjectConfigurationException(
             "No candidate ${libName} library found!",

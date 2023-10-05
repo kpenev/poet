@@ -20,7 +20,7 @@
 namespace Evolve {
 
     ///\brief A DissipatingZone where the phase lag is described by a broken
-    ///powerlaw.
+    ///powerlaw of tidal and spin frequency.
     ///
     ///By default the zone is non-dissipative.
     class LIB_PUBLIC BrokenPowerlawPhaseLagZone : virtual public DissipatingZone {
@@ -231,14 +231,14 @@ namespace Evolve {
             bool spin_is_frequency
         );
 
-        ///\brief Should return the tidal phase lag times the love number for
-        ///the given tidal term (or one of its derivatives).
+        ///\brief Return the tidal phase lag times the love number for the given
+        ///tidal term (or one of its derivatives).
         ///
-        ///In case the forcing frequency is exactly zero, it should return
-        ///the phase lag for the case of the spin frequency approaching the
-        ///term from below. The lag for spin frequency approaching from above
-        ///should be written to above_lock_value. If the forcing frequency is
-        ///non-zero, leave above_lock_value untouched.
+        ///In case the forcing frequency is exactly zero, return the phase lag
+        ///for the case of the spin frequency approaching the term from below.
+        ///The lag for spin frequency approaching from above is be written to
+        ///above_lock_value. If the forcing frequency is non-zero,
+        ///above_lock_value is not modified.
         virtual double modified_phase_lag(
             ///The multiplier of the orbital frequency in the
             ///expression for the forcing frequency.
@@ -261,8 +261,8 @@ namespace Evolve {
             double &above_lock_value
         ) const;
 
-        ///\brief Should return the corresponding component of the love
-        ///coefficient (Lai 2012 Equation 24).
+        ///\brief Return the corresponding component of the love coefficient
+        ///(Lai 2012 Equation 24).
         virtual double love_coefficient(
             ///The multiplier of the orbital frequency in the
             ///expression for the forcing frequency.
