@@ -65,6 +65,9 @@ extern "C" {
         ///The number of breaks in the spin frequency dependence.
         unsigned num_spin_frequency_breaks,
 
+        ///The number of age breaks in the dissipation.
+        unsigned num_age_breaks,
+
         ///The locations of the breaks in tidal frequency in rad/day.
         ///Entries should be sorted.
         double *tidal_frequency_breaks,
@@ -85,9 +88,13 @@ extern "C" {
         ///index before the first break.
         double *spin_frequency_powers,
 
+
+        ///The ages at which the dissipation has discontinuities.
+        double *age_breaks,
+
         ///The phase lag at the first tidal and first spin frequency break.
         ///The rest are calculated by imposing continuity.
-        double reference_phase_lag,
+        double *reference_phase_lags,
 
         ///Factor by which the dissipation in the inertial mode range is
         ///enhanced relative to what is defined by all other parameters. Must be

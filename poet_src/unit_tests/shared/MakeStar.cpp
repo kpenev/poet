@@ -27,6 +27,6 @@ Star::InterpolatedEvolutionStar *make_const_lag_star(
                            std::vector<double>(),//W* breaks
                            std::vector<double>(1, 0.0),//Wtide pow.
                            std::vector<double>(1, 0.0),//W* pow.
-                           phase_lag);
+                           std::vector<double>(1, phase_lag));
     return star;
 }

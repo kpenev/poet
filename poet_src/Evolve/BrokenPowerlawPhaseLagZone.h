@@ -48,11 +48,17 @@ namespace Evolve {
             ///\brief The powerlaw indices for the spin frequency dependence.
             __spin_frequency_powers,
 
+            ///The reference phase lag for each age range
+            __reference_phase_lags,
+
             ///\brief The phase lags at the tidal/spin frequency breaks.
             ///
             ///The tidal frequency break index changes faster and the spin
             ///frequency breaks index changes slower.
-            __break_phase_lags;
+            __break_phase_lags,
+
+            ///Ages at which the phase lag changes.
+            __age_breaks;
 
         double
             ///See setup()
@@ -60,7 +66,9 @@ namespace Evolve {
 
             ///\brief The fraction of the spin frequency over which the
             ///transition from non-boosted to inertial mode boosted occurs.
-            __inertial_mode_transition;
+            __inertial_mode_transition,
+
+            __next_stop_age;
 
         ///\brief The index within __spin_frequency_powers of the powerlaw
         ///now in effect.
@@ -199,9 +207,10 @@ namespace Evolve {
             ///index before the first break.
             const std::vector<double> &spin_frequency_powers,
 
-            ///The phase lag at the first tidal and first spin frequency
-            ///break. The rest are calculated by imposing continuity.
-            double reference_phase_lag,
+            ///The phase lag at the first tidal and first spin frequency break
+            ///for each age range. The rest are calculated by imposing
+            ///continuity with spin and tidal frequency.
+            const std::vector<double> &reference_phase_lags,
 
             ///The factor by which dissipation is enhanced in the inertial mode
             ///range.
@@ -215,7 +224,10 @@ namespace Evolve {
             /// \f$ \min\left[\left|\frac{2\Omega_\star}{\Omega_{m,s}}\right|^\beta, \gamma\right] \f$
             ///Where \f$\beta\f$ is inertial_mode_sharpness, and
             /// \f$\gamma\f$ is inertial_mode_enhancement.
-            double inertial_mode_sharpness = 10.0
+            double inertial_mode_sharpness = 10.0,
+
+            ///Ages at which the phase lag changes. Should be sorted.
+            const std::vector<double> &age_breaks = std::vector<double>()
         );
 
         ///See DissipatingZone::configure().
@@ -339,6 +351,16 @@ namespace Evolve {
 #endif
             reset();
         }
+
+        ///\brief Change the zone as necessary at the given age.
+        ///
+        ///Handles age discontinuities in the dissipation.
+        virtual void reached_critical_age(double age);
+
+        ///\brief The next age when the evolution needs to be stopped for a
+        ///change in the dissipation.
+        virtual double next_stop_age() const {return __next_stop_age;}
+
 
     }; //End BrokenPowerlawPhaseLagZone class.
 

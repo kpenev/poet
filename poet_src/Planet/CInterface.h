@@ -38,6 +38,9 @@ extern "C" {
         unsigned num_spin_frequency_breaks,
 
         ///See same name argument to set_zone_dissipation()
+        unsigned num_age_breaks,
+
+        ///See same name argument to set_zone_dissipation()
         double *tidal_frequency_breaks,
 
         ///See same name argument to set_zone_dissipation()
@@ -50,7 +53,10 @@ extern "C" {
         double *spin_frequency_powers,
 
         ///See same name argument to set_zone_dissipation()
-        double reference_phase_lag,
+        double *age_breaks,
+
+        ///See same name argument to set_zone_dissipation()
+        double *reference_phase_lags,
 
         ///See same name argument to set_zone_dissipation()
         double inertial_mode_enhancement,

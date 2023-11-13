@@ -666,12 +666,20 @@ namespace Evolve {
                                    zone_inclination,
                                    zone_periapsis,
                                    locked_surface && zone_index == 0);
+#ifndef NDEBUG
+            std::cerr << "Configured zone " << zone_index << std::endl;
+#endif
+
         }
         for(
             unsigned zone_index = 0;
             zone_index < number_zones();
             ++zone_index
         ) {
+#ifndef NDEBUG
+            std::cerr << "Setting torques for zone " << zone_index << std::endl;
+#endif
+
             DissipatingZone &current_zone = zone(zone_index);
             if(zone_index < number_zones() - 1) {
                 __angular_momentum_transfer[zone_index].resize(2);
@@ -718,12 +726,22 @@ namespace Evolve {
                 above = !above;
             } while(above);
         }
+#ifndef NDEBUG
+        std::cerr << "Collecting orbit evolution rates."<< std::endl;
+#endif
+
         collect_orbit_rates(__orbital_frequency,
                             normalize_torques(companion_mass,
                                               semimajor,
                                               __orbital_frequency));
+#ifndef NDEBUG
+        std::cerr << "Dealing with spin-orbit locks."<< std::endl;
+#endif
         calculate_orbit_rate_corrections();
         __above_lock_fractions.resize(0);
+#ifndef NDEBUG
+        std::cerr << "Finished configuring dissipating body."<< std::endl;
+#endif
     }
 
     Eigen::Vector3d DissipatingBody::nontidal_torque(
@@ -1037,6 +1055,22 @@ namespace Evolve {
                                                             zone_ind);
         return result;
     }
+
+    void DissipatingBody::reached_critical_age(double age)
+    {
+        for(unsigned zone_ind = 0; zone_ind < number_zones(); ++zone_ind)
+            zone(zone_ind).reached_critical_age(age);
+    }
+
+    double DissipatingBody::next_stop_age() const
+    {
+        double result = std::numeric_limits<double>::infinity();
+        for(unsigned zone_ind = 0; zone_ind < number_zones(); ++zone_ind)
+            result = std::min(zone(zone_ind).next_stop_age(), result);
+        return result;
+    }
+
+
 
     void DissipatingBody::change_expansion_order(unsigned new_expansion_order,
                                                  BinarySystem &system,

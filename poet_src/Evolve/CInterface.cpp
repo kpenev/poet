@@ -30,11 +30,13 @@ void prepare_eccentricity_expansion(const char *filename,
 void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
                           unsigned num_tidal_frequency_breaks,
                           unsigned num_spin_frequency_breaks,
+                          unsigned num_age_breaks,
                           double *tidal_frequency_breaks,
                           double *spin_frequency_breaks,
                           double *tidal_frequency_powers,
                           double *spin_frequency_powers,
-                          double reference_phase_lag,
+                          double *age_breaks,
+                          double *reference_phase_lags,
                           double inertial_mode_enhancement,
                           double inertial_mode_sharpness)
 {
@@ -66,9 +68,20 @@ void set_zone_dissipation(BrokenPowerlawPhaseLagZone *zone,
             spin_frequency_powers,
             spin_frequency_powers + num_spin_frequency_breaks + 1
         ),
-        reference_phase_lag,
+        std::vector<double>(
+            reference_phase_lags,
+            reference_phase_lags + num_age_breaks + 1
+        ),
         inertial_mode_enhancement,
-        inertial_mode_sharpness
+        inertial_mode_sharpness,
+        (
+            num_age_breaks
+            ? std::vector<double>(
+                age_breaks,
+                age_breaks + num_age_breaks
+            )
+            : std::vector<double>()
+        )
     );
 
 }
@@ -209,6 +222,10 @@ void configure_star(EvolvingStar *star,
         zero_outer_inclination,
         zero_outer_periapsis
     );
+#ifndef NDEBUG
+    std::cerr << "Finished c-interface configuring star."<< std::endl;
+#endif
+
 }
 
 void configure_planet(CPlanet *planet,

@@ -324,7 +324,7 @@ namespace Evolve {
             std::vector<double>(),
             std::vector<double>(1, 0.0),
             std::vector<double>(1, 0.0),
-            1.0,
+            std::vector<double>(1, 1.0),
             1.0,
             1.0
         );

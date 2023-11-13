@@ -867,8 +867,7 @@ namespace Evolve {
         ///\brief Change the body as necessary at the given age.
         ///
         ///Handles things like interpolation discontinuities.
-        virtual void reached_critical_age(double)
-        {assert(false);}
+        virtual void reached_critical_age(double) {}
 
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.

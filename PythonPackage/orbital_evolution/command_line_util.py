@@ -182,6 +182,14 @@ def add_star_config(parser,
             'inertial modes gets turned on near the inertial mode range '
             'boundaries.'
         )
+        parser.add_argument(
+            prefix + '-age-dissipation-jump',
+            nargs=2,
+            type=float,
+            action='append',
+            metavar=('Age', 'JumpFactor'),
+            help='Add a jump in the dissipation at a given age.'
+        )
 
 
 def add_binary_config(parser,
@@ -383,11 +391,14 @@ def create_planet(mass=(constants.M_jup / constants.M_sun).to(''),
     )
     if phase_lag:
         try:
-            planet.set_dissipation(tidal_frequency_breaks=None,
-                                   spin_frequency_breaks=None,
-                                   tidal_frequency_powers=numpy.array([0.0]),
-                                   spin_frequency_powers=numpy.array([0.0]),
-                                   reference_phase_lag=float(phase_lag))
+            planet.set_dissipation(
+                tidal_frequency_breaks=None,
+                spin_frequency_breaks=None,
+                age_breaks=None,
+                tidal_frequency_powers=numpy.array([0.0]),
+                spin_frequency_powers=numpy.array([0.0]),
+                reference_phase_lags=numpy.array([float(phase_lag)])
+            )
         except TypeError:
             planet.set_dissipation(**phase_lag)
     return planet
@@ -427,9 +438,10 @@ def create_star(interpolator,
                 zone_index=0,
                 tidal_frequency_breaks=None,
                 spin_frequency_breaks=None,
+                age_breaks=None,
                 tidal_frequency_powers=numpy.array([0.0]),
                 spin_frequency_powers=numpy.array([0.0]),
-                reference_phase_lag=float(convective_phase_lag)
+                reference_phase_lags=numpy.array([float(convective_phase_lag)])
             )
         except TypeError:
             star.set_dissipation(zone_index=0,
@@ -501,16 +513,30 @@ def get_phase_lag_config(cmdline_args, primary=True):
     """Return a phase lag configuration to pass directly to create_star."""
 
     component_name = ('primary' if primary else 'secondary')
-    reference_dissipation = getattr(cmdline_args,
-                                    component_name + '_reference_dissipation')
+    age_breaks = getattr(cmdline_args, component_name + '_age_dissipation_jump')
+    reference_dissipation = getattr(
+        cmdline_args,
+        component_name + '_reference_dissipation'
+    )
     if reference_dissipation is None:
         return None
 
-    result = dict(
-        reference_phase_lag=reference_dissipation[0],
-        spin_frequency_breaks=None,
-        spin_frequency_powers=numpy.array([0.0]),
+    reference_phase_lags = numpy.empty(
+        (1 if age_breaks is None else len(age_breaks)),
+        dtype=float
     )
+    reference_phase_lags[0] = reference_dissipation[0]
+    if age_breaks is not None:
+        for i, (_, jump) in enumerate(age_breaks):
+            reference_phase_lags[i + 1] = reference_phase_lags[i] * jump
+
+    result = {
+        'reference_phase_lags': reference_phase_lags,
+        'spin_frequency_breaks': None,
+        'spin_frequency_powers': numpy.array([0.0]),
+        'age_breaks': (None if age_breaks is None
+                       else numpy.array([age for age, _ in age_breaks]))
+    }
     dissipation_breaks = (
         getattr(cmdline_args, component_name + '_dissipation_break')
         or

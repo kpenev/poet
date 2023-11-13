@@ -578,11 +578,11 @@ namespace Evolve {
         ///\brief Change the body as necessary at the given age.
         ///
         ///Handles things like interpolation discontinuities.
-        virtual void reached_critical_age(double) {assert(false);}
+        virtual void reached_critical_age(double age);
 
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.
-        virtual double next_stop_age() const {return Core::Inf;}
+        virtual double next_stop_age() const;
 
         ///Change the eccentricity expansion order for all dissipative zones.
         virtual void change_expansion_order(

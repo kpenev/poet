@@ -8,20 +8,45 @@
 #include <iostream>
 #include <valarray>
 
+MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
+{
+    MESAInterpolator *interpolator=NULL;
+    DIR *dirstream = opendir(interpolator_dir.c_str());
+    for(struct dirent *entry; (entry = readdir(dirstream));) {
+        std::string fname(entry->d_name);
+        std::cout << "Fname: " << fname << std::endl;
+        if(
+            fname[0] != '.'
+            &&
+            fname.substr(fname.size() - 7) != ".sqlite"
+        ) {
+            std::cout << "Fname tail: "
+                      << std::string(fname.substr(fname.size() - 7))
+                      << std::endl;
+
+            if(interpolator)
+                throw Core::Error::IO(
+                    "Multiple candidate interpolators fund in "
+                    +
+                    interpolator_dir
+                );
+            interpolator = load_interpolator(
+                (interpolator_dir + fname).c_str()
+            );
+
+        }
+    }
+    if(!interpolator)
+        throw Core::Error::IO(
+            "No interpolators found in "
+            +
+            interpolator_dir
+        );
+    return interpolator;
+}
+
 int main(int, char **)
 {
-    MESAInterpolator *interpolator = load_interpolator(
-        "stellar_evolution_interpolators/"
-        "660499e5-8692-4fd9-a5bd-9397bbe481e3"
-    );
-
-    prepare_eccentricity_expansion(
-        "eccentricity_expansion_coef_O400.sqlite",
-        1e-4,
-        true,
-        false
-    );
-
     const double Mjup_to_Msun = (Core::AstroConst::jupiter_mass
                                  /
                                  Core::AstroConst::solar_mass),
@@ -29,58 +54,140 @@ int main(int, char **)
                                  /
                                  Core::AstroConst::solar_radius);
 
-    double mstar = 1.0,
-           mplanet = 1.0,//100.0 * Mjup_to_Msun,
-           rplanet = 1.0 * Rjup_to_Msun,
-           a0 = 25.0,
-           e0 = 0.8,
-           zero = 0.0,
-           phase_lag = 3e-8;
+    const double STAR_MASS = 0.8021362093562747;
+    const double PLANET_MASS = 0.006909308339572223;
+    const double PLANET_RADIUS = 0.09464394270895214;
+    const double FEH = 0.22600928;
+//    const double INITIAL_PERIOD = ;
+    const double LGQ_MIN = 2.0;
+    const double LGQ_BREAK_PERIOD = 1.0;
+    const double LGQ_POWERLAW = 0;
+    const bool DISSIPATIVE_STAR = false;
+    const bool DISSIPATIVE_PLANET = true;
+    const double FINAL_AGE = 4.495718172918945;
 
-    CPlanet *planet = create_planet(mplanet, rplanet);
+//    double initial_secondary_angmom[] = {1.43525535, 0.43099626};
+    double initial_secondary_angmom[] = {1.79981886e-05};
+
+
+    const double DISK_PERIOD = 6.48175405473875;
+    const double DISK_DISSIPATION_AGE = 0.02;
+    const double WIND_SATURATION_FREQUENCY = 2.78;
+    const double WIND_STRENGTH = 0.17;
+    const double DIFF_ROT_COUPLING_TIMESCALE = 5e-2;
+    const double INITIAL_ECCENTRICITY = 0.78;
+    const double INCLINATION = 0.0;
+    const double LOCK_PERIOD = 20.0;
+
+    const double INITIAL_SEMIMAJOR = 7.929015451160677;
+/*    Core::semimajor_from_period(
+        PRIMARY_MASS,
+        SECONDARY_MASS,
+        INITIAL_PERIOD
+    );*/
+    const double DISK_FREQUENCY = 2.0 * M_PI / DISK_PERIOD;
+    double ref_phase_lag = 15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
+
+
+    MESAInterpolator *interpolator = get_interpolator(
+        "../../stellar_evolution_interpolators/"
+    );
+
+    prepare_eccentricity_expansion(
+        "../../eccentricity_expansion_coef_O400.sqlite",
+        1e-4,
+        true,
+        true
+    );
+
+    CPlanet *planet = create_planet(PLANET_MASS, PLANET_RADIUS);
     configure_planet(planet,
-                     5e-3,
-                     mstar,
-                     a0,
-                     e0,
-                     &zero,
+                     DISK_DISSIPATION_AGE,
+                     STAR_MASS,
+                     INITIAL_SEMIMAJOR,
+                     INITIAL_ECCENTRICITY,
+                     initial_secondary_angmom,
                      NULL,
                      NULL,
                      false,
                      true,
                      true);
 
-    EvolvingStar *star = create_star(mstar,
-                                     0.0,
-                                     0.13,
-                                     2.78,
-                                     1.0e-3,
+    EvolvingStar *star = create_star(STAR_MASS,
+                                     FEH,
+                                     WIND_STRENGTH,
+                                     WIND_SATURATION_FREQUENCY,
+                                     DIFF_ROT_COUPLING_TIMESCALE,
                                      interpolator);
     select_interpolation_region(star, core_formation_age(star));
 
-    double break_frequency = 2.0 * M_PI / 20;
-    double powerlaws[] = {1.0, 0.0};//-3.1};
-    set_star_dissipation(star,
-                         0,
-                         0,
-                         0,
-                         NULL,
-                         NULL,
-                         &zero,
-                         &zero,
-                         phase_lag,
-                         1.0,
-                         10.0);
+    double zero = 0.0;
+    unsigned num_breaks;
+    if(LGQ_POWERLAW == 0)
+        num_breaks = 0;
+    else if(LGQ_POWERLAW > 0)
+        num_breaks = 2;
+    else
+        num_breaks = 1;
+
+    std::valarray<double> tidal_frequency_breaks(num_breaks),
+                          tidal_frequency_powers(num_breaks + 1);
+
+    tidal_frequency_powers[0] = 0.0;
+    if(LGQ_POWERLAW > 0) {
+        //ref_phase_lag *= std::pow(LGQ_BREAK_PERIOD / LOCK_PERIOD, LGQ_POWERLAW);
+        tidal_frequency_breaks[0] = 2.0 * M_PI / LOCK_PERIOD;
+        tidal_frequency_breaks[1] = 0.67344225;//2.0 * M_PI / LGQ_BREAK_PERIOD;
+        tidal_frequency_powers[2] = 0.0;
+    } else if(LGQ_POWERLAW < 0) {
+        tidal_frequency_breaks[0] = 2.0 * M_PI / LGQ_BREAK_PERIOD;
+    }
+    if(LGQ_POWERLAW != 0)
+        tidal_frequency_powers[1] = LGQ_POWERLAW;
+
+
+    if(DISSIPATIVE_STAR)
+        set_star_dissipation(
+            star,
+            0,                            //zone index
+            tidal_frequency_breaks.size(),//# tidal frequency breaks
+            0,                            //# spin frequency breaks
+            0,                            //# age breaks
+            &(tidal_frequency_breaks[0]), //tidal frequency breaks
+            NULL,                         //spin frequency breaks
+            &(tidal_frequency_powers[0]), //tidal frequency powers
+            &zero,                        //spin frequency powers
+            NULL,                         //age breaks
+            &ref_phase_lag,
+            1.0,
+            0.0
+        );
+
+    if(DISSIPATIVE_PLANET)
+        set_planet_dissipation(
+            planet,
+            tidal_frequency_breaks.size(),//# tidal frequency breaks
+            0,                            //# spin frequency breaks
+            0,                            //# age breaks
+            &(tidal_frequency_breaks[0]), //tidal frequency breaks
+            NULL,                         //spin frequency breaks
+            &(tidal_frequency_powers[0]), //tidal frequency powers
+            &zero,                        //spin frequency powers
+            NULL,                         //age breaks
+            &ref_phase_lag,
+            1.0,
+            0.0
+        );
 
     DiskBinarySystem *system = create_star_planet_system(
         star,
         planet,
-        a0,
-        e0,
-        0.0,
-        1.0,
-        5e-3,
-        0.0
+        INITIAL_SEMIMAJOR,
+        INITIAL_ECCENTRICITY,
+        0.0, //initial inclination
+        DISK_FREQUENCY,
+        DISK_DISSIPATION_AGE,
+        DISK_DISSIPATION_AGE
     );
     configure_system(system,
                      core_formation_age(star),
@@ -92,17 +199,27 @@ int main(int, char **)
                      LOCKED_SURFACE_SPIN_EVOL_MODE);
     detect_stellar_wind_saturation(star);
 
-    OrbitSolver *solver = evolve_system(
-        system,
-        10.0,
-        1e-3,
-        1e-4,
-        NULL,
-        0,
-        true,
-        0,
-        0
-    );
+    OrbitSolver *solver;
+    try {
+        solver = evolve_system(
+            system,
+            FINAL_AGE,
+            1e-3,
+            1e-6,
+            NULL,
+            0,
+            true,
+            0,
+            0
+        );
+    } catch(std::exception &exception) {
+        std::cerr << "Exception: "
+                  << exception.what()
+//                  << ": "
+ //                 << exception.get_message()
+                  << std::endl;
+    }
+
     int num_steps = num_evolution_steps(solver);
     double *age = new double[num_steps],
            *semimajor = new double[num_steps],
@@ -151,8 +268,8 @@ int main(int, char **)
     for(int i = 0; i < num_steps; ++i)
         std::cout << std::setw(25) << age[i]
                   << std::setw(25) << Core::orbital_angular_velocity(
-                      mstar,
-                      mplanet,
+                      STAR_MASS,
+                      PLANET_MASS,
                       semimajor[i]
                   )
                   << std::setw(25) << (lconv[i]

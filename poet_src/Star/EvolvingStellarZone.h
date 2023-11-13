@@ -25,7 +25,7 @@ namespace Star {
         ///The age for the last configure() call.
         double __current_age;
 
-        ///\brief Pre-computed values and derivatives for quantities which 
+        ///\brief Pre-computed values and derivatives for quantities which
         ///only depend on age at the current age.
         mutable std::vector< const Core::FunctionDerivatives* >
             __current_age_quantities;
@@ -46,7 +46,7 @@ namespace Star {
             std::initializer_list<
                 const StellarEvolution::EvolvingStellarQuantity*
             > evolving_quantities
-        ) : 
+        ) :
             __current_age(Core::NaN),
             __current_age_quantities(evolving_quantities.size(), NULL),
             __evolving_quantities(evolving_quantities)
@@ -85,7 +85,7 @@ namespace Star {
             bool spin_is_frequency
         );
 
-        ///\brief The current age value of the given quantity (or its 
+        ///\brief The current age value of the given quantity (or its
         ///derivative).
         ///
         ///Computes the value if necessary or retrieves it from
@@ -109,7 +109,7 @@ namespace Star {
             size_t quantity,
 
             ///The age at which to evaluate the quantity/derivative.
-            double age, 
+            double age,
 
             ///The order of the derivitive to return
             unsigned deriv_order=0
@@ -120,8 +120,8 @@ namespace Star {
 
         ///\brief Change the body as necessary at the given age.
         ///
-        ///Handles things like interpolation discontinuities. 
-        void reached_critical_age(double age);
+        ///Handles things like interpolation discontinuities.
+        virtual void reached_critical_age(double age);
 
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.

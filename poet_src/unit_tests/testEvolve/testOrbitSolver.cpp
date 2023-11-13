@@ -123,10 +123,10 @@ namespace Evolve {
         }
 
         zone->setup(breaks,
-                   std::vector<double>(),
-                   powerlaw_indices,
-                   std::vector<double>(1, 0.0),
-                   phase_lag);
+                    std::vector<double>(),
+                    powerlaw_indices,
+                    std::vector<double>(1, 0.0),
+                    std::vector<double>(1, phase_lag));
     }
 
     void test_OrbitSolver::make_single_component_star(
@@ -1849,7 +1849,7 @@ namespace Evolve {
                         std::vector<double>(),//W* breaks
                         std::vector<double>(1, 0.0),//Wtide pow.
                         std::vector<double>(1, 0.0),//W* pow.
-                        lag
+                        std::vector<double>(1, lag)
                     );
                 } else
                     break;
@@ -2781,7 +2781,7 @@ namespace Evolve {
                         std::vector<double>(),//W* breaks
                         std::vector<double>(1, 0.0),//Wtide pow.
                         std::vector<double>(1, 0.0),//W* pow.
-                        phase_lag
+                        std::vector<double>(1, phase_lag)
                     );
                 } else
                     break;

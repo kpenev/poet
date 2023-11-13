@@ -5,6 +5,7 @@
 from os import path
 
 from matplotlib import pyplot
+from matplotlib.ticker import ScalarFormatter
 import numpy
 from astropy import units as u
 from configargparse import ArgumentParser, DefaultsFormatter
@@ -54,6 +55,15 @@ def parse_command_line():
         '(orbit and spin multipliers) vs eccentricity. Empty string results in '
         'the plot being shown instead of saved. If not specified, the plot is '
         'not generated.'
+    )
+    parser.add_argument(
+        '--evolution-vs-e',
+        default=None,
+        help='Specify a filename to save a plot of the evolution of the orbital'
+        ' and spin frequencies vs eccentricity (i.e. same plot as '
+        '--frequencies-vs-e but without the tidal frequencies). Empty string '
+        'results in the plot being shown instead of saved. If not specified, '
+        'the plot is not generated.'
     )
     parser.add_argument(
         '--spin-frequency', '--wspin',
@@ -168,23 +178,29 @@ def create_single_term_binary(*,
     binary.set_expansion_order(expansion_order)
 
     worb = binary.orbital_frequency(semimajor.to_value(u.R_sun))
+    print(f'Single term binary worb = {worb!r}')
+    hut_pseudo_synchronous_factor = get_hut_pseudo_synchronous_spin(
+        eccentricity
+    )
+    print(f'Hut factor: {hut_pseudo_synchronous_factor!r}')
 
-    binary_config = dict(
-        age=1.0,
-        semimajor=semimajor.to_value(u.R_sun),
-        eccentricity=eccentricity,
-        spin_angmom=(
+    binary_config = {
+        'age': 1.0,
+        'semimajor': semimajor.to_value(u.R_sun),
+        'eccentricity': eccentricity,
+        'spin_angmom': (
             worb
             *
-            get_hut_pseudo_synchronous_spin(eccentricity)
+            hut_pseudo_synchronous_factor
             *
             numpy.array([primary.inertia(), secondary.inertia()])
         ),
-        inclination=numpy.array([0.0, 0.0]),
-        periapsis=numpy.array([0.0]),
-        evolution_mode='BINARY'
-    )
+        'inclination': numpy.array([0.0, 0.0]),
+        'periapsis': numpy.array([0.0]),
+        'evolution_mode': 'BINARY'
+    }
 
+    print(f'Configuring binary per: {binary_config!r}')
     binary.configure(**binary_config)
     return binary, binary_config
 
@@ -238,21 +254,21 @@ def create_constant_time_lag_binary(*,
     )
 
 
-    binary_config = dict(
-        age=1.0,
-        semimajor=semimajor.to_value(u.R_sun),
-        eccentricity=eccentricity,
-        spin_angmom=(
+    binary_config = {
+        'age': 1.0,
+        'semimajor': semimajor.to_value(u.R_sun),
+        'eccentricity': eccentricity,
+        'spin_angmom': (
             spin_orbit_ratio
             *
             binary.orbital_frequency(semimajor.to_value(u.R_sun))
             *
             numpy.array([primary.inertia(), secondary.inertia()])
         ),
-        inclination=numpy.array([0.0, 0.0]),
-        periapsis=numpy.array([0.0]),
-        evolution_mode='BINARY'
-    )
+        'inclination': numpy.array([0.0, 0.0]),
+        'periapsis': numpy.array([0.0]),
+        'evolution_mode': 'BINARY'
+    }
 
     binary.configure(**binary_config)
     return binary, binary_config
@@ -282,12 +298,9 @@ def plot_pseudosynchronization(eccentricities=(0.1, 0.3, 0.5, 0.7),
         torque = numpy.empty(scaled_spins.shape)
         angmom_scale = binary_config['spin_angmom']
         print(
-            'Const time lag rates at pseudo synchronization (e=%s): %s'
-            %
-            (
-                ecc,
-                repr(const_timelag_binary.calculate_rates(1.0)),
-            )
+            f'Const time lag rates at pseudo synchronization (e={ecc!r}): '
+            +
+            repr(const_timelag_binary.calculate_rates(1.0)),
         )
 
         for index, spin_factor in enumerate(scaled_spins):
@@ -321,7 +334,7 @@ def get_rate_spectra(eccentricity,
                      expansion_order=100,
                      max_phase_lag=1e-6,
                      tidal_powerlaw=0.0,
-                     break_frequency=(2.0 * numpy.pi)):
+                     break_frequency=2.0 * numpy.pi):
     """Return rates and frequencies to plot."""
 
     semimajor = 10.0 * u.R_sun
@@ -334,13 +347,13 @@ def get_rate_spectra(eccentricity,
     worb = binary.orbital_frequency(semimajor.to_value(u.R_sun))
     wspin = binary_config['spin_angmom'][0] / binary.primary.inertia()
     num_terms = 10 * expansion_order + 5
-    result = dict(
-        frequencies=numpy.zeros(num_terms),
-        phase_lags=numpy.zeros(num_terms),
-        semimajor=numpy.zeros(num_terms),
-        eccentricity=numpy.zeros(num_terms),
-        spin=numpy.zeros(num_terms)
-    )
+    result = {
+        'frequencies': numpy.zeros(num_terms),
+        'phase_lags': numpy.zeros(num_terms),
+        'semimajor': numpy.zeros(num_terms),
+        'eccentricity': numpy.zeros(num_terms),
+        'spin': numpy.zeros(num_terms)
+    }
     for worb_multiplier in range(-expansion_order, expansion_order + 1):
         for wspin_multiplier in range(-2, 3):
             if worb_multiplier == 0 and wspin_multiplier == 0:
@@ -380,44 +393,36 @@ def plot_rate_spectra(eccentricity, **rate_config):
                                            'semimajor',
                                            'eccentricity',
                                            'spin']):
-        print('Max absolute %s rate: %s'
-              %
-              (repr(quantity), repr(numpy.abs(rate_spectra[quantity]).max())))
+        print(f'Max absolute {quantity!r} rate: '
+              +
+              repr(numpy.abs(rate_spectra[quantity]).max()))
         pyplot.subplot(2, 2, plot_index + 1)
         pyplot.title(quantity)
         if plot_index == 0:
-            plot_config = dict(label=('e = ' + str(eccentricity)))
+            plot_config = {'label': 'e = ' + str(eccentricity)}
         else:
-            plot_config = dict(color=color)
+            plot_config = {'color': color}
         include = rate_spectra[quantity] > 1e-100
         if include.any():
-            print('Positive range: (%s, %s)'
-                  %
-                  (
-                      repr(rate_spectra[quantity][include].min()),
-                      repr(rate_spectra[quantity][include].max())
-                  ))
+            print(f'Positive range: ({rate_spectra[quantity][include].min()!r},'
+                  f' {rate_spectra[quantity][include].max()!r})')
             color = pyplot.semilogy(rate_spectra['frequencies'][include],
                                     rate_spectra[quantity][include],
                                     'o',
                                     **plot_config)[0].get_color()
-            plot_config = dict(color=color)
-        print('Include %d positive values' % include.sum())
+            plot_config = {'color': color}
+        print(f'Include {include.sum():d} positive values')
 
 
         include = rate_spectra[quantity] < -1e-100
         if include.any():
-            print('Negative range: (%s, %s)'
-                  %
-                  (
-                      repr(rate_spectra[quantity][include].min()),
-                      repr(rate_spectra[quantity][include].max())
-                  ))
+            print(f'Negative range: ({rate_spectra[quantity][include].min()!r},'
+                  f' {rate_spectra[quantity][include].max()!r})')
             color = pyplot.semilogy(rate_spectra['frequencies'][include],
                                     -rate_spectra[quantity][include],
                                     'x',
                                     **plot_config)[0].get_color()
-        print('Include %d negative values' % include.sum())
+        print(f'Include {include.sum():d} negative values')
 
 
 def plot_single_term_rates_vs_spin():
@@ -439,10 +444,10 @@ def plot_single_term_rates_vs_spin():
             binary.primary.set_dissipation(worb_multiplier,
                                            wspin_multiplier,
                                            1e-6)
-            rates = dict(
-                semimajor=numpy.empty(scaled_spins.shape),
-                spin=numpy.empty(scaled_spins.shape)
-            )
+            rates = {
+                'semimajor': numpy.empty(scaled_spins.shape),
+                'spin': numpy.empty(scaled_spins.shape)
+            }
             for index, wspin_factor in enumerate(scaled_spins):
                 binary_config['spin_angmom'] = (
                     wspin_factor
@@ -461,7 +466,7 @@ def plot_single_term_rates_vs_spin():
                 scaled_spins,
                 rates['semimajor'],
                 'o',
-                label='%d worb - %d wspin' % (worb_multiplier, wspin_multiplier)
+                label=f'{worb_multiplier:d} worb - {wspin_multiplier:d} wspin'
             )
             pyplot.subplot(122)
             pyplot.plot(scaled_spins, rates['spin'], 'o')
@@ -487,10 +492,15 @@ def get_leading_frequencies(binary,
                             expansion_order):
     """Return the frequency of the most important tidal terms."""
 
-    max_rates = dict(semimajor=0.0, eccentricity=0.0, spin=0.0)
-    leading_worb_multiplier = dict()
-    leading_wspin_multiplier = dict()
-    result = dict()
+    max_rates = {'semimajor': 0.0, 'eccentricity': 0.0, 'spin': 0.0}
+    leading_worb_multiplier = {}
+    leading_wspin_multiplier = {}
+    result = {}
+    print(f'Scaled wspin: {scaled_wspin!r}')
+    print(f'Scaled wbreak: {scaled_wbreak!r}')
+    print(f'Max phase lag: {max_phase_lag!r}')
+    print(f'expansion order: {expansion_order!r}')
+
     for worb_multiplier in range(-expansion_order, expansion_order + 1):
         for wspin_multiplier in range(-2, 3):
             scaled_wtide = (float(worb_multiplier)
@@ -533,19 +543,19 @@ def get_leading_frequencies_vs_e(eval_e,
                                  expansion_order=100):
     """Return the the frequency of the most important term vs eccentricity."""
 
-    result = dict(
-        semimajor=numpy.ones(eval_e.shape),
-        eccentricity=numpy.ones(eval_e.shape),
-        spin=numpy.ones(eval_e.shape),
-        orbital_freq=numpy.empty(eval_e.shape),
-        spin_freq=numpy.empty(eval_e.shape),
-        semimajor_worb_mult=numpy.empty(eval_e.shape, dtype=int),
-        semimajor_wspin_mult=numpy.empty(eval_e.shape, dtype=int),
-        eccentricity_worb_mult=numpy.empty(eval_e.shape, dtype=int),
-        eccentricity_wspin_mult=numpy.empty(eval_e.shape, dtype=int),
-        spin_worb_mult=numpy.empty(eval_e.shape, dtype=int),
-        spin_wspin_mult=numpy.empty(eval_e.shape, dtype=int),
-    )
+    result = {
+        'semimajor': numpy.ones(eval_e.shape),
+        'eccentricity': numpy.ones(eval_e.shape),
+        'spin': numpy.ones(eval_e.shape),
+        'orbital_freq': numpy.empty(eval_e.shape),
+        'spin_freq': numpy.empty(eval_e.shape),
+        'semimajor_worb_mult': numpy.zeros(eval_e.shape, dtype=int),
+        'semimajor_wspin_mult': numpy.zeros(eval_e.shape, dtype=int),
+        'eccentricity_worb_mult': numpy.zeros(eval_e.shape, dtype=int),
+        'eccentricity_wspin_mult': numpy.zeros(eval_e.shape, dtype=int),
+        'spin_worb_mult': numpy.zeros(eval_e.shape, dtype=int),
+        'spin_wspin_mult': numpy.zeros(eval_e.shape, dtype=int),
+    }
     binary, binary_config = create_single_term_binary(
         eccentricity=eval_e[0],
         semimajor=(10.0 * u.R_sun if semimajor == 'const angmom'
@@ -588,25 +598,27 @@ def get_leading_frequencies_vs_e(eval_e,
             )
 
         binary.configure(**binary_config)
-        (
-            leading_wtide,
-            leading_worb_multiplier,
-            leading_wspin_multiplier
-        ) = get_leading_frequencies(binary,
-                                    scaled_wspin=scaled_wspin,
-                                    scaled_wbreak=break_frequency / worb_scale,
-                                    tidal_powerlaw=tidal_powerlaw,
-                                    max_phase_lag=max_phase_lag,
-                                    expansion_order=expansion_order)
-        for quantity, wtide in leading_wtide.items():
-            result[quantity][index] = wtide * worb / worb_scale
-            result[quantity + '_worb_mult'][index] = (
-                leading_worb_multiplier[quantity]
+        if expansion_order:
+            (
+                leading_wtide,
+                leading_worb_multiplier,
+                leading_wspin_multiplier
+            ) = get_leading_frequencies(
+                binary,
+                scaled_wspin=scaled_wspin,
+                scaled_wbreak=break_frequency / worb_scale,
+                tidal_powerlaw=tidal_powerlaw,
+                max_phase_lag=max_phase_lag,
+                expansion_order=expansion_order
             )
-            result[quantity + '_wspin_mult'][index] = (
-                leading_wspin_multiplier[quantity]
-            )
-
+            for quantity, wtide in leading_wtide.items():
+                result[quantity][index] = wtide * worb / worb_scale
+                result[quantity + '_worb_mult'][index] = (
+                    leading_worb_multiplier[quantity]
+                )
+                result[quantity + '_wspin_mult'][index] = (
+                    leading_wspin_multiplier[quantity]
+                )
 
         result['orbital_freq'][index] = worb / worb_scale
         result['spin_freq'][index] = scaled_wspin * worb / worb_scale
@@ -624,7 +636,8 @@ def plot_leading_term_vs_e(eval_e,
                            max_phase_lag,
                            wspin='ps',
                            semimajor='const angmom',
-                           expansion_order=100):
+                           expansion_order=100,
+                           no_tidal_frequency=False):
     """Make a plot of the frequency of the most important term vs eccentr."""
 
     leading_frequencies = get_leading_frequencies_vs_e(
@@ -634,15 +647,18 @@ def plot_leading_term_vs_e(eval_e,
         break_frequency=break_frequency,
         tidal_powerlaw=tidal_powerlaw,
         max_phase_lag=max_phase_lag,
-        expansion_order=expansion_order
+        expansion_order=(0 if no_tidal_frequency else expansion_order)
     )
     if frequencies_fname is not None:
+        pyplot.yscale('log')
         for quantity, label in [('eccentricity', '$P_{tide}: e$'),
                                 #('semimajor', '$P_{tide}: a$'),
                                 #('spin', r'$P_{tide}: \Omega_\star$'),
                                 ('orbital_freq', '$P_{orb}$'),
                                 ('spin_freq', r'$P_\star$')]:
-            pyplot.semilogy(
+            if quantity == 'eccentricity' and no_tidal_frequency:
+                continue
+            pyplot.plot(
                 eval_e,
                 1.0 / numpy.absolute(leading_frequencies[quantity]),
                 '-',
@@ -650,7 +666,12 @@ def plot_leading_term_vs_e(eval_e,
                 linewidth=5
             )
         pyplot.legend()
-        pyplot.ylim(0.3, 100)
+        if no_tidal_frequency:
+            pyplot.ylim(0.2, 5)
+            pyplot.yticks([0.2, 0.5, 1, 2, 5])
+            pyplot.gca().get_yaxis().set_major_formatter(ScalarFormatter())
+        else:
+            pyplot.ylim(0.3, 100)
         pyplot.xlim(min(eval_e), max(eval_e))
         pyplot.grid(which='both')
         pyplot.xlabel('Eccentricity')
@@ -699,28 +720,58 @@ def main(config):
 
     print('Config: ' + repr(config))
 
-    orbital_evolution_library.prepare_eccentricity_expansion(
-        config.eccentricity_expansion_fname.encode('ascii'),
-        1e-4,
-        True,
-        True
-    )
+    if (
+            (config.frequencies_vs_e is not None)
+        or
+            (config.top_terms_vs_e is not None)
+        or
+            (config.single_term_rates_vs_spin is not None)
+        or
+            (len(config.rate_spectra_eccentricities) > 0)
+        or
+            True
+    ):
+        orbital_evolution_library.prepare_eccentricity_expansion(
+            config.eccentricity_expansion_fname.encode('ascii'),
+            1e-4,
+            True,
+            True
+        )
 
     if (
             (config.frequencies_vs_e is not None)
-            or
+        or
             (config.top_terms_vs_e is not None)
+        or
+            (config.evolution_vs_e is not None)
+
     ):
+        plot_kwargs = {
+            'eval_e': numpy.linspace(0, 0.8, 8001),
+            'multipliers_fname': config.top_terms_vs_e,
+            'wspin': config.spin_frequency,
+            'semimajor': config.semimajor_axis,
+            'max_phase_lag': calc_phase_lag(config.min_lgQ),
+            'tidal_powerlaw': config.Q_period_powerlaw,
+            'break_frequency': 2.0 * numpy.pi / config.Q_break_period
+
+        }
         plot_leading_term_vs_e(
-            eval_e=numpy.linspace(0, 0.8, 8001),
-            frequencies_fname=config.frequencies_vs_e,
-            multipliers_fname=config.top_terms_vs_e,
-            wspin=config.spin_frequency,
-            semimajor=config.semimajor_axis,
-            max_phase_lag=calc_phase_lag(config.min_lgQ),
-            tidal_powerlaw=config.Q_period_powerlaw,
-            break_frequency=2.0 * numpy.pi / config.Q_break_period
+            frequencies_fname=config.evolution_vs_e or config.frequencies_vs_e,
+            no_tidal_frequency=(config.evolution_vs_e is not None),
+            **plot_kwargs
         )
+        if (
+                config.evolution_vs_e is not None
+                and
+                config.frequencies_vs_e is not None
+        ):
+            plot_leading_term_vs_e(
+                frequencies_fname=config.frequencies_vs_e,
+                no_tidal_frequency=(config.evolution_vs_e is not None),
+                **plot_kwargs
+            )
+
 
     if config.single_term_rates_vs_spin is not None:
         plot_single_term_rates_vs_spin()

@@ -103,6 +103,7 @@ namespace Star {
             std::cerr << std::endl;
 #endif
         }
+        BrokenPowerlawPhaseLagZone::reached_critical_age(age);
     }
 
     double EvolvingStellarZone::next_stop_age() const

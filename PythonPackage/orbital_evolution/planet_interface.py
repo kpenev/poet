@@ -34,6 +34,7 @@ def initialize_library(library_fname=None):
         result.create_planet.restype,                   #planet
         c_uint,                                         #num_tidal_freq_breaks
         c_uint,                                         #num_spin_freq_breaks
+        c_uint,                                         #num_age_breaks
         ndpointer_or_null(dtype=c_double,               #tidal_freq_breaks
                           ndim=1,
                           flags='C_CONTIGUOUS'),
@@ -46,7 +47,12 @@ def initialize_library(library_fname=None):
         numpy.ctypeslib.ndpointer(dtype=c_double,       #spin_freq_powers
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_double,                                       #reference_phase_lag
+        ndpointer_or_null(dtype=c_double,       #age_breaks
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #reference_phase_lags
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
         c_double,                                       #inertial_mode_enhancmnt
         c_double                                        #inertial_mode_sharpness
     ]
@@ -96,7 +102,8 @@ class LockedPlanet(DissipatingBody):
                         spin_frequency_breaks,
                         tidal_frequency_powers,
                         spin_frequency_powers,
-                        reference_phase_lag,
+                        age_breaks,
+                        reference_phase_lags,
                         inertial_mode_enhancement=1.0,
                         inertial_mode_sharpness=10.0):
         """
@@ -108,16 +115,20 @@ class LockedPlanet(DissipatingBody):
             None
         """
 
-        library.set_planet_dissipation(self.c_body,
-                                       tidal_frequency_powers.size - 1,
-                                       spin_frequency_powers.size - 1,
-                                       tidal_frequency_breaks,
-                                       spin_frequency_breaks,
-                                       tidal_frequency_powers,
-                                       spin_frequency_powers,
-                                       reference_phase_lag,
-                                       inertial_mode_enhancement,
-                                       inertial_mode_sharpness)
+        library.set_planet_dissipation(
+            self.c_body,
+            tidal_frequency_powers.size - 1,
+            spin_frequency_powers.size - 1,
+            0 if age_breaks is None else age_breaks.size,
+            tidal_frequency_breaks,
+            spin_frequency_breaks,
+            tidal_frequency_powers,
+            spin_frequency_powers,
+            age_breaks,
+            reference_phase_lags,
+            inertial_mode_enhancement,
+            inertial_mode_sharpness
+        )
         super().set_dissipation(
             zone_index=0,
             tidal_frequency_breaks=tidal_frequency_breaks,

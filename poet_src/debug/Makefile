@@ -1,4 +1,4 @@
-LIBRARIES = $(shell (find ../../build/libs/*/static/debug -maxdepth 1 -type f -name "*lib*"))
+LIBRARIES = $(shell (find ../../build/libs/*/static/release -maxdepth 1 -type f -name "*lib*"))
 LIB_PATHS = $(dir $(LIBRARIES))
 LIB_NAMES = $(patsubst lib%,%, $(basename $(notdir $(LIBRARIES))))
 
@@ -6,6 +6,7 @@ EXECUTABLES = $(basename $(shell (ls *.cpp)))
 
 CPP_FLAGS = -std=c++11 -g -Wall -O3 \
 			-DTOOLCHAIN_GCC \
+			-DNDEBUG \
 			-I../third_party_libs/Eigen/ \
 			-I../third_party_libs/alglib/ \
 			-I../third_party_libs/dirent_hacked/ \
@@ -23,7 +24,7 @@ LINK_FLAGS = $(addprefix -l, $(LIB_NAMES)) \
 
 all: $(EXECUTABLES)
 
-%: %.cpp
+%: 
 	g++  $(CPP_FLAGS) -o $@ $@.cpp $(LINK_FLAGS)
 
 clean:

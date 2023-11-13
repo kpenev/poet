@@ -45,25 +45,31 @@ def initialize_library(library_fname=None):
     result.destroy_star.restype = None
 
     result.set_star_dissipation.argtypes = [
-        result.create_star.restype,                         #star
-        c_uint,                                             #zone_index
-        c_uint,                                             #num_tidal_freq_brks
-        c_uint,                                             #num_spin_freq_brks
-        ndpointer_or_null(dtype=c_double,                   #tidal_freq_breaks
+        result.create_star.restype,                     #star
+        c_uint,                                         #zone_index
+        c_uint,                                         #num_tidal_freq_brks
+        c_uint,                                         #num_spin_freq_brks
+        c_uint,                                         #num_age_breaks
+        ndpointer_or_null(dtype=c_double,               #tidal_freq_breaks
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        ndpointer_or_null(dtype=c_double,                   #spin_freq_breaks
+        ndpointer_or_null(dtype=c_double,               #spin_freq_breaks
                           ndim=1,
                           flags='C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype=c_double,           #tidal_freq_powers
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #tidal_freq_powers
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        numpy.ctypeslib.ndpointer(dtype=c_double,           #spin_freq_powers
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #spin_freq_powers
                                   ndim=1,
                                   flags='C_CONTIGUOUS'),
-        c_double,                                           #ref_phase_lag
-        c_double,                                           #inertial_mode_enhan
-        c_double                                            #inertial_mode_sharp
+        ndpointer_or_null(dtype=c_double,       #age_breaks
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
+        numpy.ctypeslib.ndpointer(dtype=c_double,       #reference_phase_lags
+                                  ndim=1,
+                                  flags='C_CONTIGUOUS'),
+        c_double,                                       #inertial_mode_enhan
+        c_double                                        #inertial_mode_sharp
     ]
     result.set_star_dissipation.restype = None
 
@@ -344,7 +350,8 @@ class EvolvingStar(DissipatingBody):
                         spin_frequency_breaks,
                         tidal_frequency_powers,
                         spin_frequency_powers,
-                        reference_phase_lag,
+                        age_breaks,
+                        reference_phase_lags,
                         inertial_mode_enhancement=1.0,
                         inertial_mode_sharpness=10.0):
         """
@@ -370,7 +377,7 @@ class EvolvingStar(DissipatingBody):
                 Should be indexed in the same order as spin_frequency_breaks,
                 but must contain an additional starting entry for the
                 powerlaw index before the first break.
-            - reference_phase_lag:
+            - reference_phase_lag-:
                 The phase lag at the first tidal and first spin frequency
                 break. The rest are calculated by imposing continuity.
 
@@ -385,24 +392,33 @@ class EvolvingStar(DissipatingBody):
         Returns: None
         """
 
-        library.set_star_dissipation(self.c_body,
-                                     zone_index,
-                                     tidal_frequency_powers.size - 1,
-                                     spin_frequency_powers.size - 1,
-                                     tidal_frequency_breaks,
-                                     spin_frequency_breaks,
-                                     tidal_frequency_powers,
-                                     spin_frequency_powers,
-                                     reference_phase_lag,
-                                     inertial_mode_enhancement,
-                                     inertial_mode_sharpness)
+        assert (
+            (age_breaks is None and reference_phase_lags.size == 1)
+            or
+            (reference_phase_lags.size == age_breaks.size + 1)
+        )
+        library.set_star_dissipation(
+            self.c_body,
+            zone_index,
+            tidal_frequency_powers.size - 1,
+            spin_frequency_powers.size - 1,
+            0 if age_breaks is None else age_breaks.size,
+            tidal_frequency_breaks,
+            spin_frequency_breaks,
+            tidal_frequency_powers,
+            spin_frequency_powers,
+            age_breaks,
+            reference_phase_lags,
+            inertial_mode_enhancement,
+            inertial_mode_sharpness
+        )
         super().set_dissipation(
             zone_index=zone_index,
             tidal_frequency_breaks=tidal_frequency_breaks,
             tidal_frequency_powers=tidal_frequency_powers,
             spin_frequency_breaks=spin_frequency_breaks,
             spin_frequency_powers=spin_frequency_powers,
-            reference_phase_lag=reference_phase_lag,
+            reference_phase_lags=reference_phase_lags,
             inertial_mode_enhancement=inertial_mode_enhancement,
             inertial_mode_sharpness=inertial_mode_sharpness
         )
