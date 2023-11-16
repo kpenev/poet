@@ -8,6 +8,8 @@ from ctypes.util import find_library
 
 import numpy
 
+import logging
+
 sys.path.append('..')
 
 #Need to add POEP packageto module search path before importing.
@@ -377,7 +379,9 @@ class EvolvingStar(DissipatingBody):
                 Should be indexed in the same order as spin_frequency_breaks,
                 but must contain an additional starting entry for the
                 powerlaw index before the first break.
-            - reference_phase_lag-:
+            - age_breaks:
+                The locations of the breaks in age in Gyrs.
+            - reference_phase_lags:
                 The phase lag at the first tidal and first spin frequency
                 break. The rest are calculated by imposing continuity.
 
@@ -492,7 +496,11 @@ class EvolvingStar(DissipatingBody):
     def core_formation_age(self):
         """Return the age at which the core of the star forms in Gyrs."""
 
-        return library.core_formation_age(self.c_body)
+        logger = logging.getLogger(__name__)
+        logger.debug('Getting core formation age.')
+        age = library.core_formation_age(self.c_body)
+        logger.debug('Got core formation age: %s', repr(age))
+        return age
 
     def lifetime(self):
         """Return the maximum age at which the star can be queried."""
