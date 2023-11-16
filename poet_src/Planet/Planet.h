@@ -81,7 +81,8 @@ namespace Planet {
         {return 0;}
 
         ///No critical ages for non-evolving non-dissipating planets.
-        void reached_critical_age(double) {}
+        void reached_critical_age(double age)
+        {__zone.reached_critical_age(age);}
 
     }; //End LockedPlanet class.
 

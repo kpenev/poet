@@ -49,14 +49,14 @@ MESAInterpolator *get_interpolator(const std::string &interpolator_dir)
 int main(int, char **)
 {
 
-    const double PRIMARY_MASS = 0.6620892028674282;
-    const double SECONDARY_MASS = 0.6980321144997704;
-    const double FEH = 0.05901856036209373;
-    const double INITIAL_PERIOD = 8.374424480599478;
-    const double LGQ_MIN = 6.50726395212751;
-    const double LGQ_BREAK_PERIOD = 17.04695458957988;
-    const double LGQ_POWERLAW = -3.987366982231917;
-    const double FINAL_AGE = 0.14236975009918243;
+    const double PRIMARY_MASS = 0.94;
+    const double SECONDARY_MASS = 0.60;
+    const double FEH = 0.007;
+    const double INITIAL_PERIOD = 50.0;
+    const double LGQ_MIN = 20.0;
+    const double LGQ_BREAK_PERIOD = 2.9578562443466514;
+    const double LGQ_POWERLAW = -4.44462284528867;
+    const double FINAL_AGE = 5.89;
 
 //    double initial_secondary_angmom[] = {1.43525535, 0.43099626};
     double initial_secondary_angmom[] = {0.18107625135357644,
@@ -78,7 +78,6 @@ int main(int, char **)
         INITIAL_PERIOD
     );
     const double DISK_FREQUENCY = 2.0 * M_PI / DISK_PERIOD;
-    double ref_phase_lag = 15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
 
     std::cerr << "Starting evolution with a0 = " << INITIAL_SEMIMAJOR << std::endl;
 
@@ -93,7 +92,7 @@ int main(int, char **)
     );
 
 
-    double zero = 0.0;
+    double zero = 0.0, one = 1.0;
 
     unsigned num_breaks;
     if(LGQ_POWERLAW == 0)
@@ -104,7 +103,13 @@ int main(int, char **)
         num_breaks = 1;
 
     std::valarray<double> tidal_frequency_breaks(num_breaks),
-                          tidal_frequency_powers(num_breaks + 1);
+                          tidal_frequency_powers(num_breaks + 1),
+                          ref_phase_lag(2);
+
+    ref_phase_lag[0] =
+        ref_phase_lag[1] =
+        15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
+
 
     tidal_frequency_powers[0] = 0.0;
     if(LGQ_POWERLAW > 0) {
@@ -137,13 +142,13 @@ int main(int, char **)
                          0,          //zone index
                          tidal_frequency_breaks.size(),//# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         0,          //# spin age breaks
+                         1,          //# age breaks
                          &(tidal_frequency_breaks[0]),       //tidal frequency breaks
                          NULL,       //spin frequency breaks
                          &(tidal_frequency_powers[0]),      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         NULL,       //age breaks
-                         &ref_phase_lag,
+                         &one,       //age breaks
+                         &(ref_phase_lag[0]),
                          1.0,
                          0.0);
 
@@ -154,19 +159,19 @@ int main(int, char **)
                                           DIFF_ROT_COUPLING_TIMESCALE,
                                           primary_interpolator);
     select_interpolation_region(secondary, DISK_DISSIPATION_AGE);
-    set_star_dissipation(secondary,
+/*    set_star_dissipation(secondary,
                          0,          //zone index
                          tidal_frequency_breaks.size(),//# tidal frequency breaks
                          0,          //# spin frequency breaks
-                         0,          //# age breaks
+                         1,          //# age breaks
                          &(tidal_frequency_breaks[0]),       //tidal frequency breaks
                          NULL,       //spin frequency breaks
                          &(tidal_frequency_powers[0]),      //tidal frequency powers
                          &zero,      //spin frequency powers
-                         NULL,       //age breaks
-                         &ref_phase_lag,
+                         &one,       //age breaks
+                         &(ref_phase_lag[0]),
                          1.0,
-                         0.0);
+                         0.0);*/
 
     configure_star(secondary,
                    DISK_DISSIPATION_AGE,        //formation age

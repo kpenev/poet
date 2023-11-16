@@ -50,43 +50,47 @@ int main(int, char **)
     const double Mjup_to_Msun = (Core::AstroConst::jupiter_mass
                                  /
                                  Core::AstroConst::solar_mass),
-                 Rjup_to_Msun = (Core::AstroConst::jupiter_radius
+                 Rjup_to_Rsun = (Core::AstroConst::jupiter_radius
                                  /
                                  Core::AstroConst::solar_radius);
 
-    const double STAR_MASS = 0.8021362093562747;
-    const double PLANET_MASS = 0.006909308339572223;
-    const double PLANET_RADIUS = 0.09464394270895214;
-    const double FEH = 0.22600928;
+    const double STAR_MASS = 0.60;
+    const double PLANET_MASS = Mjup_to_Msun;
+    const double PLANET_RADIUS = Rjup_to_Rsun;
+    const double FEH = 0.007;
 //    const double INITIAL_PERIOD = ;
-    const double LGQ_MIN = 2.0;
-    const double LGQ_BREAK_PERIOD = 1.0;
-    const double LGQ_POWERLAW = 0;
-    const bool DISSIPATIVE_STAR = false;
-    const bool DISSIPATIVE_PLANET = true;
-    const double FINAL_AGE = 4.495718172918945;
+    const double LGQ_MIN = 20.0;
+    const double LGQ_BREAK_PERIOD = 2.9578562443466514;
+    const double LGQ_POWERLAW = -4.44462284528867;
+    const bool DISSIPATIVE_STAR = true;
+    const bool DISSIPATIVE_PLANET = false;
+    const double FINAL_AGE = 0.01;
 
 //    double initial_secondary_angmom[] = {1.43525535, 0.43099626};
     double initial_secondary_angmom[] = {1.79981886e-05};
 
 
-    const double DISK_PERIOD = 6.48175405473875;
-    const double DISK_DISSIPATION_AGE = 0.02;
-    const double WIND_SATURATION_FREQUENCY = 2.78;
+    const double DISK_PERIOD = 5.0;
+    const double DISK_DISSIPATION_AGE = 0.01;
+    const double WIND_SATURATION_FREQUENCY = 2.45;
     const double WIND_STRENGTH = 0.17;
-    const double DIFF_ROT_COUPLING_TIMESCALE = 5e-2;
-    const double INITIAL_ECCENTRICITY = 0.78;
+    const double DIFF_ROT_COUPLING_TIMESCALE = 0.01;
+    const double INITIAL_ECCENTRICITY = 0.8;
     const double INCLINATION = 0.0;
-    const double LOCK_PERIOD = 20.0;
+    const double LOCK_PERIOD = 50.0;
 
-    const double INITIAL_SEMIMAJOR = 7.929015451160677;
-/*    Core::semimajor_from_period(
-        PRIMARY_MASS,
-        SECONDARY_MASS,
+    const double INITIAL_PERIOD = 100.0;
+    const double INITIAL_SEMIMAJOR = Core::semimajor_from_period(
+        STAR_MASS,
+        PLANET_MASS,
         INITIAL_PERIOD
-    );*/
+    );
     const double DISK_FREQUENCY = 2.0 * M_PI / DISK_PERIOD;
-    double ref_phase_lag = 15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
+
+    std::valarray<double> ref_phase_lag(2);
+    ref_phase_lag[0] =
+        ref_phase_lag[1] =
+        15.0 / (16.0 * M_PI * std::pow(10.0, LGQ_MIN));
 
 
     MESAInterpolator *interpolator = get_interpolator(
@@ -121,7 +125,7 @@ int main(int, char **)
                                      interpolator);
     select_interpolation_region(star, core_formation_age(star));
 
-    double zero = 0.0;
+    double zero = 0.0, one=1.0;
     unsigned num_breaks;
     if(LGQ_POWERLAW == 0)
         num_breaks = 0;
@@ -152,13 +156,13 @@ int main(int, char **)
             0,                            //zone index
             tidal_frequency_breaks.size(),//# tidal frequency breaks
             0,                            //# spin frequency breaks
-            0,                            //# age breaks
+            1,                            //# age breaks
             &(tidal_frequency_breaks[0]), //tidal frequency breaks
             NULL,                         //spin frequency breaks
             &(tidal_frequency_powers[0]), //tidal frequency powers
             &zero,                        //spin frequency powers
-            NULL,                         //age breaks
-            &ref_phase_lag,
+            &one,                         //age breaks
+            &(ref_phase_lag[0]),
             1.0,
             0.0
         );
@@ -168,13 +172,13 @@ int main(int, char **)
             planet,
             tidal_frequency_breaks.size(),//# tidal frequency breaks
             0,                            //# spin frequency breaks
-            0,                            //# age breaks
+            1,                            //# age breaks
             &(tidal_frequency_breaks[0]), //tidal frequency breaks
             NULL,                         //spin frequency breaks
             &(tidal_frequency_powers[0]), //tidal frequency powers
             &zero,                        //spin frequency powers
-            NULL,                         //age breaks
-            &ref_phase_lag,
+            &one,                         //age breaks
+            &(ref_phase_lag[0]),
             1.0,
             0.0
         );
