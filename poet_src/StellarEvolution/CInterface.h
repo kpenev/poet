@@ -55,6 +55,10 @@ extern "C" {
     ///StellarEvolution::EvolvingStellarQuantity pointers.
     struct LIB_PUBLIC EvolvingStellarQuantity;
 
+    ///\brief Define lower limit for a given stellar evolution quantity.
+    LIB_PUBLIC void set_interp_quantity_lower_limit(int quantityID,
+                                                    double lower_limit);
+
     ///\brief Create an interpolator from a directory containing MESA tracks.
     ///
     ///The result must be de-allocated when no longer necessary.

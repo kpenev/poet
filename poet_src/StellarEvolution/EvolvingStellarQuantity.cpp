@@ -452,26 +452,33 @@ namespace StellarEvolution {
             }
         }
         if(derivatives == NULL) {
-            double result = mass_feh_interp(__interp_masses,
-                                            __interp_feh,
-                                            track_values,
-                                            __mass,
-                                            __feh);
+            double result = std::max(
+                __lower_limit,
+                mass_feh_interp(__interp_masses,
+                                __interp_feh,
+                                track_values,
+                                __mass,
+                                __feh)
+            );
             delete track_derivatives;
             return (__log_quantity ? std::exp(result) : result);
-        } else {
-            *derivatives = new InterpolatedDerivatives(
-                __mass,
-                __feh,
-                track_derivatives,
-                __interp_masses,
-                __interp_feh,
-                NaN,
-                __log_quantity,
-                true
-            );
-            return (*derivatives)->order(0);
         }
+        *derivatives = new InterpolatedDerivatives(
+            __mass,
+            __feh,
+            track_derivatives,
+            __interp_masses,
+            __interp_feh,
+            NaN,
+            __log_quantity,
+            true
+        );
+        if((*derivatives)->order(0) < __lower_limit) {
+            delete *derivatives;
+            *derivatives=new Core::ZeroDerivatives(__lower_limit);
+            return __lower_limit;
+        }
+        return (*derivatives)->order(0);
     }
 
     double EvolvingStellarQuantity::age_to_interp_param(
@@ -516,6 +523,7 @@ namespace StellarEvolution {
         const std::valarray<double> &track_masses,
         const std::valarray<double> &track_feh,
         const std::vector<const OneArgumentDiffFunction *> &evolution_tracks,
+        double lower_limit,
         bool log_age,
         bool log_quantity,
         bool starts_zero
@@ -529,7 +537,8 @@ namespace StellarEvolution {
         __track_feh(track_feh),
         __min_interp_ages(evolution_tracks.size()),
         __max_interp_ages(evolution_tracks.size()),
-        __evolution_tracks(evolution_tracks)
+        __evolution_tracks(evolution_tracks),
+        __lower_limit(lower_limit)
     {
 #ifndef NDEBUG
         std::cerr << "Creating quantity with mass: " << mass
@@ -537,6 +546,7 @@ namespace StellarEvolution {
                   << ", with track masses: " << track_masses << std::endl
                   << " and track [Fe/H]: " << track_feh << std::endl
                   << " with " << evolution_tracks.size() << " tracks"
+                  << " lower limit: " << lower_limit
                   << std::endl;
 #endif
 

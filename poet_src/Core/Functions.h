@@ -1,7 +1,7 @@
 /**\file
  *
  * \brief A hierarchy of classes representing functions.
- * 
+ *
  * \ingroup Utilities_group
  */
 
@@ -82,15 +82,15 @@ namespace Core {
     public:
         ///\brief Constuct a spline derivative.
         ///
-        ///Creates the derivative variable with the values of the function 
-        ///and first and second derivatives as specified. All higher order 
+        ///Creates the derivative variable with the values of the function
+        ///and first and second derivatives as specified. All higher order
         ///derivatives are zero.
         CubicSplineDerivatives(
             ///The value of the function (zeroth derivative)
             double func_value,
 
             ///The first derivative.
-            double first_deriv, 
+            double first_deriv,
 
             ///The second derivative.
             double second_deriv);
@@ -101,7 +101,7 @@ namespace Core {
 
     ///\brief A class representing a once differentiable function of a single
     ///argument
-    class LIB_LOCAL OneArgumentDiffFunction 
+    class LIB_LOCAL OneArgumentDiffFunction
         : public OneArgumentFunction<double,double> {
     private :
 #ifndef NO_SERIALIZE
@@ -112,8 +112,8 @@ namespace Core {
         ///The second parameter is supposed to be version
         template<class Archive>
             void serialize(Archive & ar, const unsigned int) {
-                ar & boost::serialization::base_object< 
-                        OneArgumentFunction<double,double> 
+                ar & boost::serialization::base_object<
+                        OneArgumentFunction<double,double>
                      >(*this);
             }
 #endif
@@ -131,12 +131,16 @@ namespace Core {
     ///
     ///\ingroup StellarSystem_group
     class LIB_LOCAL ZeroDerivatives : public FunctionDerivatives {
+    private:
+        double __zeroth_deriv;
     public:
         ///Create a derivative of an identically zero quantity.
-        ZeroDerivatives() {}
+        ZeroDerivatives(double zeroth_deriv=0) : __zeroth_deriv(zeroth_deriv)
+        {}
 
         ///The deriv_order-th derivative.
-        double order(unsigned =1) const {return 0;}
+        double order(unsigned order=1) const
+        {return (order == 0 ? __zeroth_deriv : 0);}
     };
 
     ///A class representing a function that is identically zero.
@@ -174,7 +178,7 @@ namespace Core {
         ///given y value.
         InterpSolutionIterator crossings(double =0) const;
     };
-   
+
 } //End Core namespace.
 
 #endif

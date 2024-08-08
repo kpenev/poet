@@ -2,7 +2,7 @@
  *
  * \brief Defines the StellarEvolution class needed for interpolating among
  * stellar evolution tracks.
- * 
+ *
  * \ingroup StellarEvolution_group
  */
 
@@ -31,7 +31,7 @@ namespace StellarEvolution {
 
     ///\brief A class that interpolates among stellar evolution tracks.
     ///
-    ///Uses a  set of pre-computed evolution tracks to generate 
+    ///Uses a  set of pre-computed evolution tracks to generate
     ///inrpolating functions that represents reasonably well the evolution of
     ///various properties of an arbitrary mass star as a function of age.
     ///
@@ -43,16 +43,18 @@ namespace StellarEvolution {
     private:
         friend class boost::serialization::access;
 
+        static std::valarray<double> __lower_limits;
+
         ///Serialize the current interpolation.
         template<class Archive> void serialize(
             ///The archive to serialize to.
-            Archive & ar, 
+            Archive & ar,
 
             ///Version number. Ignored!
             const unsigned int
-        ); 
+        );
 
-        std::valarray<double> 
+        std::valarray<double>
             ///The stellar masses for which evolution tracks are available in
             /// \f$M_\odot\f$
             __track_masses,
@@ -109,7 +111,7 @@ namespace StellarEvolution {
             ///The stellar [Fe/H] for which evolution tracks are tabulated.
             const std::valarray<double> &tabulated_feh,
 
-            ///A set of ages for each track in Gyr on the grid defined by 
+            ///A set of ages for each track in Gyr on the grid defined by
             ///\p track_masses and \p track_feh. The mass index
             ///varies faster.
             const std::list< std::valarray<double> > &tabulated_ages,
@@ -117,7 +119,7 @@ namespace StellarEvolution {
             ///A set of stellar quantities for each age of each track. See
             ///StellarEvolution::QuantityID for the list, order and units
             ///of the quantities.
-            const std::vector< std::list< std::valarray<double> > > 
+            const std::vector< std::list< std::valarray<double> > >
             &tabulated_quantities,
 
             ///\brief How much to smooth each quantity when fitting. Use NaN
@@ -155,6 +157,11 @@ namespace StellarEvolution {
                         num_threads);
         }
 
+        static void set_lower_limit(QuantityID quantity, double lower_limit)
+        {
+            __lower_limits[quantity] = lower_limit;
+        }
+
         ///Fully setup an object created by the default constructor.
         void create_from(
             ///The stellar masses (in \f$M_\odot\f$) for which evolution
@@ -165,7 +172,7 @@ namespace StellarEvolution {
             ///tabulated.
             const std::valarray<double> &tabulated_feh,
 
-            ///A set of ages for each track in Gyr on the grid defined by 
+            ///A set of ages for each track in Gyr on the grid defined by
             ///\p track_masses and \p track_feh. The mass index
             ///varies faster.
             const std::list< std::valarray<double> > &tabulated_ages,
@@ -173,7 +180,7 @@ namespace StellarEvolution {
             ///A set of stellar quantities for each age of each track. See
             ///StellarEvolution::QuantityID for the list, order and units
             ///of the quantities.
-            const std::vector< std::list< std::valarray<double> > > 
+            const std::vector< std::list< std::valarray<double> > >
             &tabulated_quantities,
 
             ///\brief How much to smooth each quantity when fitting. Use NaN
