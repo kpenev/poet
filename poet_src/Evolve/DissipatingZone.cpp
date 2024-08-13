@@ -469,6 +469,7 @@ namespace Evolve {
                   << spin / (spin_is_frequency ? 1.0 : moment_of_inertia())
                   << ", L = "
                   << spin * (spin_is_frequency ? moment_of_inertia() : 1.0)
+                  << ", I = " << moment_of_inertia()
                   << ", inclination = " << inclination
                   << ", periapsis = " << periapsis
                   << std::endl;

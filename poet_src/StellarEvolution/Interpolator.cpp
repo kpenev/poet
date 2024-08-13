@@ -1,7 +1,7 @@
 /**\file
  *
  * \brief Defines some of the methods of the StellarEvolution class.
- * 
+ *
  * \ingroup StellarEvolution_group
  */
 
@@ -11,6 +11,11 @@
 #include "../Core/Functions.h"
 
 namespace StellarEvolution {
+
+    std::valarray<double> Interpolator::__lower_limits(
+        -std::numeric_limits<double>::infinity(),
+        NUM_QUANTITIES
+    );
 
     int Interpolator::find_first_core_index(
         const std::valarray<double> &core_mass
@@ -30,7 +35,7 @@ namespace StellarEvolution {
         unsigned num_threads
     )
     {
-        
+
         for(
             interpolation_queue.calculate(num_threads);
             interpolation_queue;
@@ -74,7 +79,7 @@ namespace StellarEvolution {
         assert(vs_log_age.size() == NUM_QUANTITIES);
         assert(log_quantity.size() == NUM_QUANTITIES);
 
-        typedef std::list< std::valarray<double> >::const_iterator 
+        typedef std::list< std::valarray<double> >::const_iterator
             track_quantity_iter;
 
         track_quantity_iter ages_iter=tabulated_ages.begin();
@@ -92,7 +97,7 @@ namespace StellarEvolution {
                    ==
                    num_tracks);
             __interpolated_quantities[quantity_index].resize(num_tracks);
-            track_iter[quantity_index] = 
+            track_iter[quantity_index] =
                 tabulated_quantities[quantity_index].begin();
         }
 
@@ -105,7 +110,7 @@ namespace StellarEvolution {
             std::clog << "Grid point " << grid_index
                 << ": M = "
                 << tabulated_masses[grid_index % tabulated_masses.size()]
-                << ", [Fe/H] = " 
+                << ", [Fe/H] = "
                 << tabulated_feh[grid_index
                                  /
                                  tabulated_masses.size()]
@@ -125,7 +130,7 @@ namespace StellarEvolution {
                 (*(track_iter[MRAD]))[first_core_index] == 0
             );
 
-            if(!no_core) 
+            if(!no_core)
                 __core_formation = std::min(
                     __core_formation,
                     (*ages_iter)[std::max(0, first_core_index - 1)]
@@ -140,7 +145,7 @@ namespace StellarEvolution {
             ) {
 
                 if(quantity_index >= FIRST_CORE_QUANTITY && no_core) {
-                    __interpolated_quantities[quantity_index][grid_index] = 
+                    __interpolated_quantities[quantity_index][grid_index] =
                         new Core::ZeroFunction();
                     __vs_log_age[quantity_index] = false;
                     __log_quantity[quantity_index] = false;
@@ -180,7 +185,7 @@ namespace StellarEvolution {
 
             ++ages_iter;
             for(
-                size_t quantity_index = 0; 
+                size_t quantity_index = 0;
                 quantity_index < NUM_QUANTITIES;
                 ++quantity_index
             )
@@ -188,7 +193,7 @@ namespace StellarEvolution {
         }
         perform_queued_interpolations(interpolation_queue, num_threads);
         for(
-            std::list<const std::valarray<double> *>::iterator 
+            std::list<const std::valarray<double> *>::iterator
                 del_iter = to_delete.begin();
             del_iter != to_delete.end();
             ++del_iter
@@ -202,12 +207,20 @@ namespace StellarEvolution {
         double feh
     ) const
     {
+#ifndef NDEBUG
+        std::cerr << "Creating interpolated " << quantity
+                  << " for m=" << mass
+                  << ", feh=" << feh
+                  << ", with lower limit: " << __lower_limits[quantity]
+                  << std::endl;
+#endif
         return new EvolvingStellarQuantity(
             mass,
             feh,
-            __track_masses, 
+            __track_masses,
             __track_feh,
             __interpolated_quantities[quantity],
+            __lower_limits[quantity],
             __vs_log_age[quantity],
             __log_quantity[quantity],
             quantity >= FIRST_CORE_QUANTITY
@@ -217,14 +230,14 @@ namespace StellarEvolution {
     void Interpolator::delete_tracks()
     {
         for(
-            std::vector< 
+            std::vector<
                 std::vector<const OneArgumentDiffFunction*>
             >::iterator quantity_tracks = __interpolated_quantities.begin();
             quantity_tracks != __interpolated_quantities.end();
             ++quantity_tracks
         )
             for(
-                std::vector<const OneArgumentDiffFunction*>::iterator 
+                std::vector<const OneArgumentDiffFunction*>::iterator
                     track = quantity_tracks->begin();
                 track != quantity_tracks->end();
                 ++track

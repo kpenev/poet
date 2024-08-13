@@ -255,7 +255,7 @@ class StellarEvolutionManager:
 
         track_counts = db_session.query(
             SerializedInterpolator.id,
-            func.count('*').label('num_tracks')
+            sqlalchemy.func.count('*').label('num_tracks')
         ).join(
             SerializedInterpolator.tracks
         ).group_by(
@@ -264,8 +264,8 @@ class StellarEvolutionManager:
 
         match_config = (
             [
-                exists().where(
-                    and_(
+                sqlalchemy.exists().where(
+                    sqlalchemy.and_(
                         InterpolationParameters.interpolator_id
                         ==
                         SerializedInterpolator.id
@@ -635,7 +635,7 @@ class StellarEvolutionManager:
             #False positive
             #pylint: disable=no-member
             return db_session.query(Track).filter(
-                and_(Track.model_suite_id == ModelSuite.id,
+                sqlalchemy.and_(Track.model_suite_id == ModelSuite.id,
                      ModelSuite.name == model_suite)
             )
             #pylint: enable=no-member

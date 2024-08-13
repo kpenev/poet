@@ -181,7 +181,11 @@ namespace Evolve {
         ///\brief Create a non-dissipative zone. Must call setup() if
         ///the zone is dissipative.
         BrokenPowerlawPhaseLagZone()
-            : __dissipative(false), __can_lock(false) {}
+            :
+                __dissipative(false),
+                __can_lock(false),
+                __next_stop_age(Core::Inf)
+        {}
 
         ///\brief Seup the zone with the given breaks/powers and inertial mode
         ///enhancement. Continuous accress all breaks. Must only be called
@@ -359,8 +363,9 @@ namespace Evolve {
 
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in the dissipation.
-        virtual double next_stop_age() const {return __next_stop_age;}
-
+        virtual double next_stop_age() const {
+            return std::min(__next_stop_age, DissipatingZone::next_stop_age());
+        }
 
     }; //End BrokenPowerlawPhaseLagZone class.
 

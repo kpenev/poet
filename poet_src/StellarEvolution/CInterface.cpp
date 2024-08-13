@@ -19,6 +19,15 @@ const double Yprimordial = StellarEvolution::MESA::Yprimordial;
 const double Yprotosun = StellarEvolution::MESA::Yprotosun;
 const double Zprotosun = StellarEvolution::MESA::Zprotosun;
 
+void set_interp_quantity_lower_limit(int quantityID, double lower_limit)
+{
+    assert(quantityID >= 0 && quantityID < NUM_QUANTITIES);
+    StellarEvolution::Interpolator::set_lower_limit(
+        static_cast<StellarEvolution::QuantityID>(quantityID),
+        lower_limit
+    );
+}
+
 MESAInterpolator* create_interpolator(const char *mesa_dir,
                                       double *smoothing,
                                       int *nodes,

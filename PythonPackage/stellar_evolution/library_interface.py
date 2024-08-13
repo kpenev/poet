@@ -34,6 +34,9 @@ def initialize_library():
 
     num_quantities = c_int.in_dll(result, 'NUM_QUANTITIES').value
 
+    result.set_interp_quantity_lower_limit.argtypes = [c_int, c_double]
+    result.set_interp_quantity_lower_limit.restype = None
+
     result.create_interpolator.argtypes = [
         c_char_p,
         numpy.ctypeslib.ndpointer(dtype=c_double,
@@ -197,6 +200,20 @@ class MESAInterpolator:
 
     default_log_quantity = {q_name: library.default_log_quantity(q_id)
                             for q_name, q_id in quantity_ids.items()}
+
+    @classmethod
+    def set_quantity_lower_limit(cls, quantity, limit):
+        """
+        Set up a min value when interpolating of the given quantity.
+
+        Must be called before creating an interpolator object.
+        """
+
+        library.set_interp_quantity_lower_limit(
+            cls.quantity_ids[quantity.upper()],
+            1e-6
+        )
+
 
     def __init__(self, **kwargs):
         """

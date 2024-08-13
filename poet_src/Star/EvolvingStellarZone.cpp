@@ -108,7 +108,7 @@ namespace Star {
 
     double EvolvingStellarZone::next_stop_age() const
     {
-        double result = Core::Inf;
+        double result = Evolve::BrokenPowerlawPhaseLagZone::next_stop_age();
         for(size_t i = 0; i < __evolving_quantities.size(); ++i)
             result = std::min(
                 result,

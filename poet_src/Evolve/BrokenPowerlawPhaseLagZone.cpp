@@ -275,7 +275,7 @@ namespace Evolve {
 #ifndef NDEBUG
         print_configuration();
 #endif
-    }//End BrokenPowerlawPhaseLagZone::BrokenPowerlawPhaseLagZone definition.
+    }//End BrokenPowerlawPhaseLagZone::setup definition.
 
     void BrokenPowerlawPhaseLagZone::configure(
         bool initialize,

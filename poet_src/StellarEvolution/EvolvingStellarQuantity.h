@@ -2,7 +2,7 @@
  *
  * \brief Declares a class implementing the intepolation of a single stellar
  * quantity from stellar evolution tracks.
- * 
+ *
  * \ingroup StellarSystem_group
  */
 
@@ -37,7 +37,7 @@ namespace StellarEvolution {
     ///\ingroup StellarSystem_group
     class LIB_PUBLIC EvolvingStellarQuantity : public OneArgumentDiffFunction {
     private:
-        double 
+        double
             ///The mass to which to interpolate in \f$M_\odot\f$.
             __mass,
 
@@ -45,12 +45,12 @@ namespace StellarEvolution {
             __feh;
 
 
-        double 
+        double
             ///The minimum age for which this quantity is defined in Gyr.
             __min_age,
 
             ///The maximum age for which this quantity is defined in Gyr.
-            __max_age; 
+            __max_age;
 
         ///Whether the tracks have log(age) instead of age as their argument.
         bool __log_age;
@@ -61,19 +61,19 @@ namespace StellarEvolution {
         ///Should the quantity be assumed zero below the minimum track age.
         bool __initially_zero;
 
-        std::valarray<double> 
+        std::valarray<double>
             ///\brief The masses of the evolution tracks.
             __track_masses,
 
             ///The [Fe/H] of the evolution tracks.
             __track_feh;
 
-        std::valarray<double> 
-            ///\brief The minimum interpolation age for the current star to 
+        std::valarray<double>
+            ///\brief The minimum interpolation age for the current star to
             ///which each track can contribute.
             __min_interp_ages,
 
-            ///\brief The maximum interpolation age for the current star to 
+            ///\brief The maximum interpolation age for the current star to
             ///which each track can contribute.
             __max_interp_ages;
 
@@ -85,7 +85,9 @@ namespace StellarEvolution {
         ///current interpolation grid is valid.
         mutable std::vector<double>::const_iterator __next_grid_change_age;
 
-        mutable size_t 
+        double __lower_limit;
+
+        mutable size_t
             ///\brief The index of the smallest track mass not smaller than
             /// ::__mass.
             __mass_index_above,
@@ -115,7 +117,7 @@ namespace StellarEvolution {
             ///interpolation.
             __interp_feh;
 
-        mutable size_t 
+        mutable size_t
             ///\brief The index within ::__track_masses of the lowest mass
             ///currently participating in the interpolation.
             __min_interp_mass_index,
@@ -132,7 +134,7 @@ namespace StellarEvolution {
             ///[Fe/H] currently participating in the interpolation.
             __max_interp_feh_index;
 
-        ///\brief Return the index within ::__evolution_tracks for the given 
+        ///\brief Return the index within ::__evolution_tracks for the given
         ///mass and [Fe/H] indices.
         inline size_t track_index(
             ///The index within ::__track_masses of the desired mass.
@@ -143,7 +145,7 @@ namespace StellarEvolution {
         ) const
         {return feh_index * __track_masses.size() + mass_index;}
 
-        ///\brief Answer if a given track can participate in interpolating to 
+        ///\brief Answer if a given track can participate in interpolating to
         ///the given age.
         inline bool track_in_range(
             ///The index of the track to check within ::__evolution_tracks.
@@ -159,7 +161,7 @@ namespace StellarEvolution {
                     __max_interp_ages[track_i] >= age);
         }
 
-        ///\brief Answer if a given track can participate in interpolating to 
+        ///\brief Answer if a given track can participate in interpolating to
         ///the given age.
         inline bool track_in_range(
             ///The index of the mass of the track to check within
@@ -174,14 +176,14 @@ namespace StellarEvolution {
             double age) const
         {return track_in_range(track_index(mass_i, feh_i), age);}
 
-        ///\brief Verify that the stellar mass and [Fe/H] are within 
+        ///\brief Verify that the stellar mass and [Fe/H] are within
         ///range of the evolution tracks.
         void check_grid_range() const;
 
         ///\brief The two indices within the given sorted array defining the
         ///closed internal containing value.
         ///
-        ///If value is not exactly equal to an array entry, the two indices 
+        ///If value is not exactly equal to an array entry, the two indices
         ///are consecutive, if the value is exactly equal to an entry, the
         ///two indices are the same.
         void find_cell(
@@ -201,7 +203,7 @@ namespace StellarEvolution {
         ///Fill the ::__min_interp_ages and ::__max_interp_ages members.
         void set_interp_age_ranges();
 
-        ///\brief Interpolate the quantity for the given track to the given 
+        ///\brief Interpolate the quantity for the given track to the given
         ///age, returning NaN if out of age range.
         ///
         ///If derivatives is not NULL initializes that to a pointer to a
@@ -254,7 +256,7 @@ namespace StellarEvolution {
         ///If derivatives is not NULL initializes that to a pointer to a
         ///derivatives at the current age structure.
         double interpolate(
-            double age, 
+            double age,
             const FunctionDerivatives **derivatives=NULL
         ) const;
 
@@ -287,7 +289,7 @@ namespace StellarEvolution {
             double feh
         ) const;
 
-        ///\brief Return the age in Gyrs given an interpolation parameter, 
+        ///\brief Return the age in Gyrs given an interpolation parameter,
         ///mass, and [Fe/H].
         ///
         ///Must be an increasing monotonic function
@@ -312,10 +314,10 @@ namespace StellarEvolution {
         ///Create an evolving quantity that interpolates to the given mass.
         EvolvingStellarQuantity(
             ///The stellar mass to interpolate to in \f$M_\odot\f$
-            double mass, 
+            double mass,
 
             ///The stellar (\f$[Fe/H]f$) to interpolate to.
-            double feh, 
+            double feh,
 
             ///The masses for which evolution tracks are given in
             /// \f$M_\odot\f$
@@ -328,14 +330,19 @@ namespace StellarEvolution {
             ///The evolution tracks of the relevant quantity on the grid
             ///defined by \p track_masses and \p track_feh. The
             //mass index varies faster.
-            const std::vector<const OneArgumentDiffFunction *> 
+            const std::vector<const OneArgumentDiffFunction *>
             &evolution_tracks,
+
+            ///Minimum value to impose on this quantity. If the interpolation
+            ///result is smaller than this, this value is returned and all
+            ///derivatives are set to zero.
+            double lower_limit,
 
             ///Whether the track uses log(age) as the independent argument
             ///instead of age.
             bool log_age=true,
 
-            ///Whether the track is uses log(quantity) as the dependent 
+            ///Whether the track is uses log(quantity) as the dependent
             ///argument instead of quantity.
             bool log_quantity=true,
 
@@ -364,7 +371,7 @@ namespace StellarEvolution {
 
         ///\brief The smallest age for which the quantity can be interpolated
         ///in Gyr.
-        virtual double range_low() const 
+        virtual double range_low() const
         {return (__initially_zero ? -Core::Inf : __min_age);}
 
         ///The ages at which the quantity may be discontinuous.

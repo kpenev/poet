@@ -65,7 +65,11 @@ namespace Star {
         ) :
             EvolvingStellarZone({mass, radius, moment_of_inertia}),
             __formation_age(formation_age)
-        {}
+        {
+#ifndef NDEBUG
+            std::cerr << "Created stellar envelope." << std::endl;
+#endif
+        }
 
         ///See DissipatingZone::moment_of_inertia(int).
         double moment_of_inertia(int deriv_order = 0) const
