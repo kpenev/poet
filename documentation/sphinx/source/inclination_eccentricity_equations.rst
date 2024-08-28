@@ -283,7 +283,7 @@ with :math:`\delta\bar{\rho}_{m,s}=-\nabla\cdot(\rho\mathbf{\bar{\xi}}_{m,s})`,
 spin angular velocity of :math:`M`\ , and :math:`\omega_0\equiv\sqrt{GM/R^3}` is
 the dynamical frequency of :math:`M`\ .
 
-Here are the detailed devirations of :doc:`the tidal torque
+Here are the detailed derivations of :doc:`the tidal torque
 <inclination_eccentricity_torque>` and :doc:`the tidal power
 <inclination_eccentricity_power>`\ .
 
