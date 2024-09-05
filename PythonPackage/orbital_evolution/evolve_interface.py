@@ -425,7 +425,7 @@ def initialize_library(library_fname=None):
                           ndim=1,
                           flags='C_CONTIGUOUS')
     ]
-    result.get_star_star_evolution.restype = None
+    result.get_planet_planet_evolution.restype = None
 
 
     result.get_star_planet_final_state.argtypes = [

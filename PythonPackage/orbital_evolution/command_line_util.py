@@ -7,6 +7,7 @@ import logging
 import numpy
 from astropy import constants
 
+from stellar_evolution.library_interface import MESAInterpolator
 from stellar_evolution.manager import StellarEvolutionManager
 from orbital_evolution.evolve_interface import library as\
     orbital_evolution_library
@@ -15,6 +16,7 @@ from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 
 _logger = logging.getLogger(__name__)
+
 
 def add_star_config(parser,
                     primary=True,
@@ -356,6 +358,14 @@ def add_evolution_config(parser):
         'name of the interpolator to use.'
     )
     parser.add_argument(
+        '--interp-lower-limits',
+        nargs='+',
+        metavar='QUANTIY:LIMIT',
+        default=[],
+        help='Define lower limits to impose on interpolated stellar evolution '
+        'quantities.'
+    )
+    parser.add_argument(
         '--max-evolution-runtime', '--timeout',
         type=float,
         default=0,
@@ -366,6 +376,11 @@ def add_evolution_config(parser):
 
 def set_up_library(cmdline_args):
     """Define eccentricity expansion and return stellar evol interpolator."""
+
+    print(f'Lower limits: {cmdline_args.interp_lower_limits!r}')
+    for limit_str in cmdline_args.interp_lower_limits:
+        quantity, limit = limit_str.split(':')
+        MESAInterpolator.set_quantity_lower_limit(quantity, float(limit))
 
     orbital_evolution_library.prepare_eccentricity_expansion(
         cmdline_args.eccentricity_expansion_fname.encode('ascii'),

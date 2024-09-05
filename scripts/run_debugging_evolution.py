@@ -55,7 +55,7 @@ def parse_configuration():
         '--plot',
         nargs='+',
         action='append',
-        metavar=('X_EXPR', 'Y_EXPR'),
+        metavar=('FILENAME X_EXPR Y_EXPR [YEXPR ...]'),
         default=[],
         help='Add another plot to create. Each quantity can be a mathematical '
         'expression involving evolution quantities.'
@@ -63,9 +63,9 @@ def parse_configuration():
 
     parser.add_argument(
         '--plot-with-tangents',
-        nargs=4,
+        nargs=5,
         action='append',
-        metavar=('X_EXPR', 'Y_EXPR', 'DYDX_EXPR', 'NUM_TANGENTS'),
+        metavar=('FILENAME', 'X_EXPR', 'Y_EXPR', 'DYDX_EXPR', 'NUM_TANGENTS'),
         default=[],
         help='Add another plot that will also show tangent lines calculated '
         'assuming `DYDX_EXPR` evaluates to the slope at a given point. Tangent '
@@ -155,18 +155,18 @@ def main(cmdline_args):
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
     for plot in cmdline_args.plot:
-        plot_data = [evaluator(expression) for expression in plot]
-        for plot_y, label in zip(plot_data[1:], plot[1:]):
+        plot_data = [evaluator(expression) for expression in plot[1:]]
+        for plot_y, label in zip(plot_data[1:], plot[2:]):
             pyplot.plot(plot_data[0], plot_y, label=label)
         pyplot.legend()
-        pyplot.show()
-        pyplot.cla()
+        pyplot.savefig(plot[0])
+        pyplot.clf()
 
 
     for plot in cmdline_args.plot_with_tangents:
-        plot_tangents(*[evaluator(expression) for expression in plot])
-        pyplot.show()
-        pyplot.cla()
+        plot_tangents(*[evaluator(expression) for expression in plot[1:]])
+        pyplot.savefig(plot[0])
+        pyplot.clf()
 
 if __name__ == '__main__':
     main(parse_configuration())
