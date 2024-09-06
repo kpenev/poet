@@ -2,25 +2,26 @@
 
 """Run evolutions with prescribed parameters and IC for debugging."""
 
-import matplotlib
-matplotlib.use('TkAgg')
-
-#pylint: disable=wrong-import-position
-#pylint: disable=wrong-import-order
+import logging
 import sys
-sys.path.append('../PythonPackage')
-sys.path.append('../scripts')
 
-
+import matplotlib
 from matplotlib import pyplot
 from configargparse import ArgumentParser, DefaultsFormatter
 import asteval
 import numpy
 
+sys.path.append('../PythonPackage')
+sys.path.append('../scripts')
+
+#pylint: disable=wrong-import-position
+#pylint: disable=wrong-import-order
 from orbital_evolution.command_line_util import\
     add_binary_config,\
     add_evolution_config,\
     run_evolution
+
+matplotlib.use('TkAgg')
 
 #pylint: enable=wrong-import-position
 #pylint: enable=wrong-import-order
@@ -73,8 +74,15 @@ def parse_configuration():
         '`NUM_TANGENTS` evenly spaced values of `X_EXPR` covering the full '
         'range.'
     )
+    parser.add_argument(
+        '--logging-level',
+        choices=['debug', 'info', 'warning', 'error', 'critical'],
+        default='info',
+        help='The verbosity level of logging messages to use.'
+    )
 
     result = parser.parse_args()
+    logging.basicConfig(level=getattr(logging, result.logging_level.upper()))
     if result.create_config:
         print('Creating config file: ' + repr(result.create_config))
         parser.write_config_file(result,

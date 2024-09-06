@@ -212,7 +212,7 @@ class MESAInterpolator:
         print(f'Setting lower limit to {quantity}: {limit!r}')
         library.set_interp_quantity_lower_limit(
             cls.quantity_ids[quantity.upper()],
-            1e-6
+            limit
         )
 
 
