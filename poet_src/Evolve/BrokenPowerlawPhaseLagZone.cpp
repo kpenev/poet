@@ -290,62 +290,65 @@ namespace Evolve {
     )
     {
 
-        if(initialize && !std::isnan(orbital_frequency)) {
+        if(initialize) {
             initializing(true);
             reached_critical_age(age);
 
+            if(!std::isnan(orbital_frequency)) {
+
 #ifndef NDEBUG
-            std::cerr << "Initializing broken powerlaw lag zone at t = "
-                      << age
-                      << (initialize ? " for the first time " : " ")
-                      << "with Worb = " << orbital_frequency
-                      << ", " << (spin_is_frequency ? "W" : "L") << "* = "
-                      << spin
-                      << ", e = " << eccentricity
-                      << ", inclination = " << inclination
-                      << ", periapsis = " << periapsis
-                      << "."
-                      << std::endl;
+                std::cerr << "Initializing broken powerlaw lag zone at t = "
+                          << age
+                          << (initialize ? " for the first time " : " ")
+                          << "with Worb = " << orbital_frequency
+                          << ", " << (spin_is_frequency ? "W" : "L") << "* = "
+                          << spin
+                          << ", e = " << eccentricity
+                          << ", inclination = " << inclination
+                          << ", periapsis = " << periapsis
+                          << "."
+                          << std::endl;
 #endif
 
-            configure_spin(spin, spin_is_frequency);
+                configure_spin(spin, spin_is_frequency);
 
-            set_spin_index();
+                set_spin_index();
 
-            __tidal_indices.resize(5 * (expansion_order() + 3));
+                __tidal_indices.resize(5 * (expansion_order() + 3));
 #ifndef NDEBUG
-            std::cerr << "__tidal_indices size = "
-                      << __tidal_indices.size()
-                      << std::endl;
+                std::cerr << "__tidal_indices size = "
+                          << __tidal_indices.size()
+                          << std::endl;
 #endif
 
-            std::vector< std::vector<double>::size_type >::iterator
-                destination = __tidal_indices.begin();
+                std::vector< std::vector<double>::size_type >::iterator
+                    destination = __tidal_indices.begin();
 
-            for(
-                int mp = 0;
-                mp <= static_cast<int>(expansion_order()) + 2;
-                ++mp
-            ) {
-                for(int m = -2; m <= 2; ++m) {
-                    double abs_forcing_frequency = std::abs(
-                        forcing_frequency(mp, m, orbital_frequency)
-                    );
-                    *destination = get_tidal_index(abs_forcing_frequency);
-                    if(
-                        *destination < __tidal_frequency_breaks.size()
-                        &&
-                        (
-                            __tidal_frequency_breaks[*destination]
-                            ==
-                            abs_forcing_frequency
-                        )
-                    )
-                        throw Core::Error::BadFunctionArguments(
-                            "Starting evolution from exactly a critical tidal "
-                            "forcing frequency is not currently supported."
+                for(
+                    int mp = 0;
+                    mp <= static_cast<int>(expansion_order()) + 2;
+                    ++mp
+                ) {
+                    for(int m = -2; m <= 2; ++m) {
+                        double abs_forcing_frequency = std::abs(
+                            forcing_frequency(mp, m, orbital_frequency)
                         );
-                    ++destination;
+                        *destination = get_tidal_index(abs_forcing_frequency);
+                        if(
+                            *destination < __tidal_frequency_breaks.size()
+                            &&
+                            (
+                                __tidal_frequency_breaks[*destination]
+                                ==
+                                abs_forcing_frequency
+                            )
+                        )
+                            throw Core::Error::BadFunctionArguments(
+                                "Starting evolution from exactly a critical tidal "
+                                "forcing frequency is not currently supported."
+                            );
+                        ++destination;
+                    }
                 }
             }
 
