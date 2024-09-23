@@ -2,25 +2,26 @@
 
 """Run evolutions with prescribed parameters and IC for debugging."""
 
-import matplotlib
-matplotlib.use('TkAgg')
-
-#pylint: disable=wrong-import-position
-#pylint: disable=wrong-import-order
+import logging
 import sys
-sys.path.append('../PythonPackage')
-sys.path.append('../scripts')
 
-
+import matplotlib
 from matplotlib import pyplot
 from configargparse import ArgumentParser, DefaultsFormatter
 import asteval
 import numpy
 
+sys.path.append('../PythonPackage')
+sys.path.append('../scripts')
+
+#pylint: disable=wrong-import-position
+#pylint: disable=wrong-import-order
 from orbital_evolution.command_line_util import\
     add_binary_config,\
     add_evolution_config,\
     run_evolution
+
+matplotlib.use('TkAgg')
 
 #pylint: enable=wrong-import-position
 #pylint: enable=wrong-import-order
@@ -55,7 +56,7 @@ def parse_configuration():
         '--plot',
         nargs='+',
         action='append',
-        metavar=('X_EXPR', 'Y_EXPR'),
+        metavar=('FILENAME X_EXPR Y_EXPR [YEXPR ...]'),
         default=[],
         help='Add another plot to create. Each quantity can be a mathematical '
         'expression involving evolution quantities.'
@@ -63,9 +64,9 @@ def parse_configuration():
 
     parser.add_argument(
         '--plot-with-tangents',
-        nargs=4,
+        nargs=5,
         action='append',
-        metavar=('X_EXPR', 'Y_EXPR', 'DYDX_EXPR', 'NUM_TANGENTS'),
+        metavar=('FILENAME', 'X_EXPR', 'Y_EXPR', 'DYDX_EXPR', 'NUM_TANGENTS'),
         default=[],
         help='Add another plot that will also show tangent lines calculated '
         'assuming `DYDX_EXPR` evaluates to the slope at a given point. Tangent '
@@ -73,8 +74,15 @@ def parse_configuration():
         '`NUM_TANGENTS` evenly spaced values of `X_EXPR` covering the full '
         'range.'
     )
+    parser.add_argument(
+        '--logging-level',
+        choices=['debug', 'info', 'warning', 'error', 'critical'],
+        default='info',
+        help='The verbosity level of logging messages to use.'
+    )
 
     result = parser.parse_args()
+    logging.basicConfig(level=getattr(logging, result.logging_level.upper()))
     if result.create_config:
         print('Creating config file: ' + repr(result.create_config))
         parser.write_config_file(result,
@@ -155,18 +163,18 @@ def main(cmdline_args):
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
     for plot in cmdline_args.plot:
-        plot_data = [evaluator(expression) for expression in plot]
-        for plot_y, label in zip(plot_data[1:], plot[1:]):
+        plot_data = [evaluator(expression) for expression in plot[1:]]
+        for plot_y, label in zip(plot_data[1:], plot[2:]):
             pyplot.plot(plot_data[0], plot_y, label=label)
         pyplot.legend()
-        pyplot.show()
-        pyplot.cla()
+        pyplot.savefig(plot[0])
+        pyplot.clf()
 
 
     for plot in cmdline_args.plot_with_tangents:
-        plot_tangents(*[evaluator(expression) for expression in plot])
-        pyplot.show()
-        pyplot.cla()
+        plot_tangents(*[evaluator(expression) for expression in plot[1:]])
+        pyplot.savefig(plot[0])
+        pyplot.clf()
 
 if __name__ == '__main__':
     main(parse_configuration())

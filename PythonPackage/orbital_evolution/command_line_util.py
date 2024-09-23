@@ -7,6 +7,7 @@ import logging
 import numpy
 from astropy import constants
 
+from stellar_evolution.library_interface import MESAInterpolator
 from stellar_evolution.manager import StellarEvolutionManager
 from orbital_evolution.evolve_interface import library as\
     orbital_evolution_library
@@ -15,6 +16,7 @@ from orbital_evolution.star_interface import EvolvingStar
 from orbital_evolution.planet_interface import LockedPlanet
 
 _logger = logging.getLogger(__name__)
+
 
 def add_star_config(parser,
                     primary=True,
@@ -356,6 +358,14 @@ def add_evolution_config(parser):
         'name of the interpolator to use.'
     )
     parser.add_argument(
+        '--interp-lower-limits',
+        nargs='+',
+        metavar='QUANTIY:LIMIT',
+        default=[],
+        help='Define lower limits to impose on interpolated stellar evolution '
+        'quantities.'
+    )
+    parser.add_argument(
         '--max-evolution-runtime', '--timeout',
         type=float,
         default=0,
@@ -366,6 +376,11 @@ def add_evolution_config(parser):
 
 def set_up_library(cmdline_args):
     """Define eccentricity expansion and return stellar evol interpolator."""
+
+    print(f'Lower limits: {cmdline_args.interp_lower_limits!r}')
+    for limit_str in cmdline_args.interp_lower_limits:
+        quantity, limit = limit_str.split(':')
+        MESAInterpolator.set_quantity_lower_limit(quantity, float(limit))
 
     orbital_evolution_library.prepare_eccentricity_expansion(
         cmdline_args.eccentricity_expansion_fname.encode('ascii'),
@@ -470,17 +485,6 @@ def create_system(primary,
                     secondary_formation_age=(secondary_formation_age
                                              or
                                              disk_dissipation_age))
-    binary.configure(
-        age=(primary.core_formation_age() if isinstance(primary, EvolvingStar)
-             else 0.5 * disk_dissipation_age),
-        semimajor=float('nan'),
-        eccentricity=float('nan'),
-        spin_angmom=numpy.array([0.0]),
-        inclination=None,
-        periapsis=None,
-        evolution_mode='LOCKED_SURFACE_SPIN'
-    )
-
     if isinstance(secondary, EvolvingStar):
         initial_obliquity = numpy.array([0.0])
         initial_periapsis = numpy.array([0.0])
@@ -501,6 +505,17 @@ def create_system(primary,
                         locked_surface=False,
                         zero_outer_inclination=True,
                         zero_outer_periapsis=True)
+
+    binary.configure(
+        age=(primary.core_formation_age() if isinstance(primary, EvolvingStar)
+             else 0.5 * disk_dissipation_age),
+        semimajor=float('nan'),
+        eccentricity=float('nan'),
+        spin_angmom=numpy.array([0.0]),
+        inclination=None,
+        periapsis=None,
+        evolution_mode='LOCKED_SURFACE_SPIN'
+    )
 
     if isinstance(primary, EvolvingStar):
         primary.detect_stellar_wind_saturation()
@@ -588,12 +603,12 @@ def get_component(cmdline_args, interpolator, primary=True):
                              radius=radius,
                              phase_lag=phase_lag_config)
 
-    create_args = dict(
-        interpolator=interpolator,
-        convective_phase_lag=phase_lag_config,
-        mass=mass,
-        metallicity=cmdline_args.metallicity
-    )
+    create_args = {
+        'interpolator': interpolator,
+        'convective_phase_lag': phase_lag_config,
+        'mass': mass,
+        'metallicity': cmdline_args.metallicity
+    }
     for arg_name in ['wind_strength',
                      'wind_saturation_frequency',
                      'diff_rot_coupling_timescale']:
