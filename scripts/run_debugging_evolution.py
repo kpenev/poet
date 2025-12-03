@@ -21,7 +21,7 @@ from orbital_evolution.command_line_util import\
     add_evolution_config,\
     run_evolution
 
-matplotlib.use('TkAgg')
+from multiprocessing_util import setup_process
 
 #pylint: enable=wrong-import-position
 #pylint: enable=wrong-import-order
@@ -157,9 +157,21 @@ def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
 
 def main(cmdline_args):
     """Avoid polluting the global namespace."""
+    systemname='9881258'
+    setup_process(
+                    fname_datetime_format='%Y%m%d%H%M%S',
+                    system=systemname,
+                    std_out_err_fname='josh_output_10/{task}/{system}_{now}_{pid:d}.outerr',
+                    logging_fname='josh_output_10/{task}/{system}_{now}_{pid:d}.log',
+                    logging_verbosity='debug',
+                    logging_message_format='%(levelname)s %(asctime)s %(name)s: %(message)s | %(pathname)s.%(funcName)s:%(lineno)d'
+                  )
 
     evolution = run_evolution(cmdline_args, print_progress=True)
-    print(repr(evolution))
+    #print(repr(evolution))
+    for item in evolution.__dict__.items():
+        print(item[0])
+        print(item[1][-1])
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
     for plot in cmdline_args.plot:

@@ -575,8 +575,19 @@ class Binary:
                          self.primary.c_body,
                          self.secondary.c_body]
 
+        logging.getLogger(__name__).debug(
+            'get_evol_args: %s',
+            repr(get_evol_args)
+        )
+
         get_evol_args.extend([getattr(result, quantity, None)
                               for quantity in self.evolution_quantities])
+        
+        for quantity in self.evolution_quantities:
+            logging.getLogger(__name__).debug(
+                'quantity %s: %s', repr(quantity),
+                repr(getattr(result, quantity, None).shape)
+            )
 
         self._c_get_evolution_func(*get_evol_args)
         if required_ages_only:

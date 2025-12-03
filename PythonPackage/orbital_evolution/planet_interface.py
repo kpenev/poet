@@ -135,7 +135,7 @@ class LockedPlanet(DissipatingBody):
             spin_frequency_breaks=spin_frequency_breaks,
             tidal_frequency_powers=tidal_frequency_powers,
             spin_frequency_powers=spin_frequency_powers,
-            reference_phase_lag=reference_phase_lag,
+            reference_phase_lag=reference_phase_lags,
             inertial_mode_enhancement=inertial_mode_enhancement,
             inertial_mode_sharpness=inertial_mode_sharpness
         )

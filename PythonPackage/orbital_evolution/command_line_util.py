@@ -692,6 +692,8 @@ def run_evolution(cmdline_args,
                   **extra_evolve_args):
     """Run the evolution specified on the command line."""
 
+    MESAInterpolator.set_quantity_lower_limit('iconv', 1e-5)
+
     if interpolator is None:
         interpolator = set_up_library(cmdline_args)
 
