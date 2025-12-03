@@ -1,8 +1,13 @@
-#!/usr/bin/env python3
+#/#!/usr/bin/env python3
 
 """Run evolutions with prescribed parameters and IC for debugging."""
 
 import logging
+import matplotlib
+#matplotlib.use('TkAgg')
+
+#pylint: disable=wrong-import-position
+#pylint: disable=wrong-import-order
 import sys
 
 import matplotlib
@@ -20,6 +25,7 @@ from orbital_evolution.command_line_util import\
     add_binary_config,\
     add_evolution_config,\
     run_evolution
+#from stellar_evolution.library_interface import MESAInterpolator
 
 from multiprocessing_util import setup_process
 
