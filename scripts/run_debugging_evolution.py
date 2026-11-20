@@ -1,12 +1,17 @@
-#!/usr/bin/env python3
+#/#!/usr/bin/env python3
 
 """Run evolutions with prescribed parameters and IC for debugging."""
 
 import logging
+import matplotlib
+#matplotlib.use('TkAgg')
+
+#pylint: disable=wrong-import-position
+#pylint: disable=wrong-import-order
 import sys
+
 import matplotlib
 from matplotlib import pyplot
-matplotlib.use('TkAgg')
 from configargparse import ArgumentParser, DefaultsFormatter
 import asteval
 import numpy
@@ -20,6 +25,9 @@ from orbital_evolution.command_line_util import\
     add_binary_config,\
     add_evolution_config,\
     run_evolution
+#from stellar_evolution.library_interface import MESAInterpolator
+
+from multiprocessing_util import setup_process
 
 #pylint: enable=wrong-import-position
 #pylint: enable=wrong-import-order
@@ -130,7 +138,7 @@ def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
         y_0 = this_y - this_slope * (this_x - x_0)
         y_1 = this_y + this_slope * (x_1 - this_x)
 
-        plt([x_0, x_1], [y_0, y_1], '-')
+        pyplot.plot([x_0, x_1], [y_0, y_1], '-')
 
 
     plot_limits = pyplot.xlim(), pyplot.ylim()
@@ -150,14 +158,26 @@ def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
                 2 * tangent_x[-1] - tangent_x[-2],
                 tangent_y[-1],
                 tangent_slope[-1])
-    plt.xlim(plot_limits[0])
-    plt.ylim(plot_limits[1])
+    pyplot.xlim(plot_limits[0])
+    pyplot.ylim(plot_limits[1])
 
 def main(cmdline_args):
     """Avoid polluting the global namespace."""
+    systemname='9881258'
+    setup_process(
+                    fname_datetime_format='%Y%m%d%H%M%S',
+                    system=systemname,
+                    std_out_err_fname='josh_output_10/{task}/{system}_{now}_{pid:d}.outerr',
+                    logging_fname='josh_output_10/{task}/{system}_{now}_{pid:d}.log',
+                    logging_verbosity='debug',
+                    logging_message_format='%(levelname)s %(asctime)s %(name)s: %(message)s | %(pathname)s.%(funcName)s:%(lineno)d'
+                  )
 
     evolution = run_evolution(cmdline_args, print_progress=True)
-    print(repr(evolution))
+    #print(repr(evolution))
+    for item in evolution.__dict__.items():
+        print(item[0])
+        print(item[1][-1])
     evaluator = asteval.Interpreter()
     evaluator.symtable.update(vars(evolution))
     for plot in cmdline_args.plot:
@@ -166,14 +186,13 @@ def main(cmdline_args):
             pyplot.plot(plot_data[0], plot_y, label=label)
         pyplot.legend()
         pyplot.savefig(plot[0])
-        pyplot.show()
+        pyplot.clf()
 
 
     for plot in cmdline_args.plot_with_tangents:
         plot_tangents(*[evaluator(expression) for expression in plot[1:]])
         pyplot.savefig(plot[0])
         pyplot.clf()
-        pyplot.show()
 
 if __name__ == '__main__':
     main(parse_configuration())

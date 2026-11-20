@@ -1,0 +1,9 @@
+inlist_project:
+    extras_rpar(4) = -1.0d0 ! [Fe/H]
+    initial_mass = 300d0
+    star_history_name = '0.10M_VLM.data'
+    Zbase = 0.0017130020591 ! scale by 10**(feh - feh_orig)
+
+input_initial_xa.data: TBD
+
+input_XYZ: TBD
