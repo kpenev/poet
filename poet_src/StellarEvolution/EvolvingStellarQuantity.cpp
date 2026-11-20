@@ -391,8 +391,9 @@ namespace StellarEvolution {
     ) const
     {
         if(age < __min_age && __initially_zero) {
-            if(derivatives) *derivatives=new Core::ZeroDerivatives;
-            return 0.0;
+            const double value = std::max(0.0, __lower_limit);
+            if(derivatives) *derivatives = new Core::ZeroDerivatives(value);
+            return value;
         }
         if(age < __min_age || age > __max_age) {
 #ifndef NDEBUG

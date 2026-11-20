@@ -15,8 +15,12 @@ namespace Star {
             Evolve::Dissipation::QuantityEntry entry
     ) const
     {
+        if(__wind_strength == 0 || zone(0).moment_of_inertia() == 0)
+            return 0;
+        const double prefactor = __wind_strength * std::sqrt(radius() / mass());
+        const double spin = spin_frequency();
         double result = (
-            __wind_strength*std::sqrt(radius() / mass())
+            prefactor
             *
             (
                 __saturated
@@ -29,13 +33,15 @@ namespace Star {
             case Evolve::Dissipation::NO_DERIV :
                 return result;
             case Evolve::Dissipation::SPIN_FREQUENCY :
-                return freq_power * result / spin_frequency();
+                return prefactor * (__saturated ? std::pow(__saturation_freq, 2)
+                                                : 3.0 * spin * spin);
             case Evolve::Dissipation::RADIUS :
                 return result / (2.0 * radius());
             case Evolve::Dissipation::MOMENT_OF_INERTIA :
                 return -freq_power * result / zone(0).moment_of_inertia();
             case Evolve::Dissipation::SPIN_ANGMOM : 
-                return freq_power * result / zone(0).angular_momentum();
+                return angular_momentum_loss(Evolve::Dissipation::SPIN_FREQUENCY)
+                       / zone(0).moment_of_inertia();
             default :
                 return 0;
         }

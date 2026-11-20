@@ -15,6 +15,7 @@
 #include "../StellarEvolution/Interpolator.h"
 #include "EvolvingStellarCore.h"
 #include "EvolvingStellarEnvelope.h"
+#include <memory>
 
 namespace Star {
 
@@ -39,6 +40,10 @@ namespace Star {
         ///The core of the star (NULL if high mass).
         EvolvingStellarCore __core;
 
+        // When present, the main track describes the envelope and radiative
+        // shell, while this second track supplies the convective core.
+        std::unique_ptr<EvolvingStellarCore> __convective_core;
+
     public:
         InterpolatedEvolutionStar(
             ///Mass of the star
@@ -57,7 +62,8 @@ namespace Star {
             double diff_rot_coupling_timescale,
 
             ///A StellarEvolution interpolator.
-            const StellarEvolution::Interpolator &interpolator
+            const StellarEvolution::Interpolator &interpolator,
+            const StellarEvolution::Interpolator *core_interpolator = NULL
         ) : 
             SaturatingSkumanichWindBody(wind_strength,
                                         wind_saturation_frequency),
@@ -76,18 +82,29 @@ namespace Star {
                    interpolator(StellarEvolution::MRAD, mass, feh),
                    interpolator(StellarEvolution::RRAD, mass, feh),
                    interpolator(StellarEvolution::IRAD, mass, feh))
-            {}
+            {
+                if(core_interpolator) {
+                    __convective_core.reset(new EvolvingStellarCore(
+                        std::max(__envelope.min_interp_age(),
+                                 core_interpolator->core_formation_age()),
+                        (*core_interpolator)(StellarEvolution::MRAD, mass, feh),
+                        (*core_interpolator)(StellarEvolution::RRAD, mass, feh),
+                        (*core_interpolator)(StellarEvolution::IRAD, mass, feh)
+                    ));
+                }
+            }
 
         ///The number of zones the body consists of.
-        unsigned number_zones() const {return 2;}
+        unsigned number_zones() const {return __convective_core ? 3 : 2;}
 
         ///See Evolve::DissipatingBody::zone().
         Evolve::DissipatingZone &zone(unsigned zone_index)
         {
-            assert(zone_index<=1);
+            assert(zone_index < number_zones());
 
             if(zone_index == 0) return __envelope;
-            else return __core;
+            if(zone_index == 1) return __core;
+            return *__convective_core;
         }
 
         ///The envelope of the star - inmodifiable.
@@ -105,10 +122,11 @@ namespace Star {
         ///See Evolve::DissipatingBody::zone().
         const Evolve::DissipatingZone &zone(unsigned zone_index) const
         {
-            assert(zone_index<=1);
+            assert(zone_index < number_zones());
 
             if(zone_index==0) return __envelope;
-            else return __core;
+            if(zone_index==1) return __core;
+            return *__convective_core;
         }
 
         ///The lifetime of the star (where tracks end).
@@ -125,15 +143,13 @@ namespace Star {
         ///Handles things like interpolation discontinuities. 
         virtual void reached_critical_age(double age)
         {
-            __core.reached_critical_age(age);
-            __envelope.reached_critical_age(age);
+            Evolve::DissipatingBody::reached_critical_age(age);
         }
 
         ///\brief The next age when the evolution needs to be stopped for a
         ///change in one of the bodies.
         virtual double next_stop_age() const
-        {return std::min(__core.next_stop_age(),
-                         __envelope.next_stop_age());}
+        {return Evolve::DissipatingBody::next_stop_age();}
 
         ///\brief Prepare the stellar quantities for interpolation around the
         ///given age.
@@ -145,6 +161,8 @@ namespace Star {
         {
             __core.select_interpolation_region(age);
             __envelope.select_interpolation_region(age);
+            if(__convective_core)
+                __convective_core->select_interpolation_region(age);
         }
     };//End InterpolatedEvolutionStar class
 

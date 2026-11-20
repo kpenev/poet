@@ -42,17 +42,15 @@ namespace Evolve {
                 tidal_torque[Dissipation::RADIUS] = (
                     5.0 / radius() * tidal_torque[Dissipation::NO_DERIV]
                 );
+                const double inertia = current_zone.moment_of_inertia();
+                if(inertia == 0)
+                    tidal_torque[Dissipation::SPIN_ANGMOM].setZero();
+                else
+                    tidal_torque[Dissipation::SPIN_ANGMOM] =
+                        tidal_torque[Dissipation::SPIN_FREQUENCY] / inertia;
                 tidal_torque[Dissipation::MOMENT_OF_INERTIA] = (
                     -current_zone.spin_frequency()
-                    /
-                    current_zone.moment_of_inertia()
-                    *
-                    tidal_torque[Dissipation::SPIN_FREQUENCY]
-                );
-                tidal_torque[Dissipation::SPIN_ANGMOM] = (
-                    tidal_torque[Dissipation::SPIN_FREQUENCY]
-                    /
-                    current_zone.moment_of_inertia()
+                    * tidal_torque[Dissipation::SPIN_ANGMOM]
                 );
                 tidal_torque[Dissipation::SEMIMAJOR] = (
                     dangular_velocity_da
@@ -245,6 +243,8 @@ namespace Evolve {
         if(deriv == Dissipation::NO_DERIV)
             scaling = 1;
         else if(deriv == Dissipation::AGE) {
+            if(dm_dt == 0 || this_zone.outer_radius() == 0)
+                return Eigen::Vector3d::Zero();
             scaling = (
                 2.0 * this_zone.outer_radius(1) / this_zone.outer_radius(0)
                 +
@@ -311,6 +311,8 @@ namespace Evolve {
         if(deriv == Dissipation::NO_DERIV)
             scaling = 1;
         else if(deriv == Dissipation::AGE) {
+            if(dm_dt == 0 || zone_below.outer_radius() == 0)
+                return Eigen::Vector3d::Zero();
             scaling = (
                 2.0 * zone_below.outer_radius(1) / zone_below.outer_radius(0)
                 +

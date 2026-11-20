@@ -424,7 +424,7 @@ namespace Evolve {
             __spin_frequency = spin;
         } else {
             __angular_momentum = spin;
-            if(spin == 0 && moment_of_inertia() == 0) __spin_frequency = 0;
+            if(moment_of_inertia() == 0) __spin_frequency = 0;
             else __spin_frequency = spin / moment_of_inertia();
         }
     }
@@ -496,7 +496,7 @@ namespace Evolve {
         __torque_y = 0;
         __torque_z = 0;
 
-        if(!dissipative()) return;
+        if(!dissipative() || moment_of_inertia() == 0) return;
 
         for(
             int mp = -static_cast<int>(__expansion_order);

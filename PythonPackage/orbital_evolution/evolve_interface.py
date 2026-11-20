@@ -123,9 +123,9 @@ def initialize_library(library_fname=None):
         c_double,                                       #age
         c_double,                                       #semimajor
         c_double,                                       #eccentricity
-        numpy.ctypeslib.ndpointer(dtype=c_double,       #spin_angmom
-                                  ndim=1,
-                                  flags='C_CONTIGUOUS'),
+        ndpointer_or_null(dtype=c_double,               #spin_angmom
+                          ndim=1,
+                          flags='C_CONTIGUOUS'),
         ndpointer_or_null(dtype=c_double,               #inclination
                           ndim=1,
                           flags='C_CONTIGUOUS'),
