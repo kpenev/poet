@@ -10,7 +10,7 @@ under mutually raised tides.
 POET for massive stars
 ======================
 
-This branch adds a stellar zone boundary algorithm for massive stars.
+This branch updates a stellar zone boundary algorithm for massive stars.
 At each MESA model step the algorithm identifies the central convective
 core, the intervening radiative shell, and the outer convective envelope
 from the mesh's mixing types. It starts at the center and finds the first
