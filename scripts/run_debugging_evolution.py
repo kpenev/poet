@@ -4,9 +4,9 @@
 
 import logging
 import sys
-
 import matplotlib
 from matplotlib import pyplot
+matplotlib.use('TkAgg')
 from configargparse import ArgumentParser, DefaultsFormatter
 import asteval
 import numpy
@@ -20,8 +20,6 @@ from orbital_evolution.command_line_util import\
     add_binary_config,\
     add_evolution_config,\
     run_evolution
-
-matplotlib.use('TkAgg')
 
 #pylint: enable=wrong-import-position
 #pylint: enable=wrong-import-order
@@ -132,7 +130,7 @@ def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
         y_0 = this_y - this_slope * (this_x - x_0)
         y_1 = this_y + this_slope * (x_1 - this_x)
 
-        pyplot.plot([x_0, x_1], [y_0, y_1], '-')
+        plt([x_0, x_1], [y_0, y_1], '-')
 
 
     plot_limits = pyplot.xlim(), pyplot.ylim()
@@ -152,8 +150,8 @@ def plot_tangents(plot_x, plot_y, plot_dydx, num_tangents):
                 2 * tangent_x[-1] - tangent_x[-2],
                 tangent_y[-1],
                 tangent_slope[-1])
-    pyplot.xlim(plot_limits[0])
-    pyplot.ylim(plot_limits[1])
+    plt.xlim(plot_limits[0])
+    plt.ylim(plot_limits[1])
 
 def main(cmdline_args):
     """Avoid polluting the global namespace."""
@@ -168,13 +166,14 @@ def main(cmdline_args):
             pyplot.plot(plot_data[0], plot_y, label=label)
         pyplot.legend()
         pyplot.savefig(plot[0])
-        pyplot.clf()
+        pyplot.show()
 
 
     for plot in cmdline_args.plot_with_tangents:
         plot_tangents(*[evaluator(expression) for expression in plot[1:]])
         pyplot.savefig(plot[0])
         pyplot.clf()
+        pyplot.show()
 
 if __name__ == '__main__':
     main(parse_configuration())

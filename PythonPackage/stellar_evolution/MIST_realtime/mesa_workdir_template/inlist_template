@@ -22,7 +22,7 @@
 
       !OPACITY, NETWORK, RATE, etc.
 
-      !network 
+      !network
       change_net = .true.
       new_net_name = 'mesa_49.net'
 
@@ -41,14 +41,7 @@
 
       !CHANGE SOLAR ABUNDANCES
 
-      set_uniform_initial_composition = .true.
-      initial_h1 = {INITIAL_H1!r}
-      initial_h2 = {INITIAL_H2!r}
-      initial_he3 = {INITIAL_HE3!r}
-      initial_he4 = {INITIAL_HE4!r}
-      !for initial Z = {INITIAL_Z!r}
-
-      initial_zfracs = 6 ! AGSS09_zfracs
+{COMPOSITION_BLOCK}
 	          
 / ! end of star_job namelist
 
@@ -65,7 +58,7 @@
       terminal_interval = 1000
       write_header_frequency = 1
 	  photo_digits = 5
-      photostep = 0
+      photo_interval = 0
 
       star_history_dbl_format = '(1pes32.16e3, 1x)'
       star_history_int_format = '(i32, 1x)'
@@ -151,11 +144,11 @@
       am_gradmu_factor = 0.05
 
       use_other_wind = .true.
-      RGB_wind_scheme = 'Reimers'
-      AGB_wind_scheme = 'Blocker'
+      cool_wind_RGB_scheme = 'Reimers'
+      cool_wind_AGB_scheme = 'Blocker'
       RGB_to_AGB_wind_switch = 1d-4
-      Reimers_wind_eta = 0.1
-      Blocker_wind_eta = 0.2
+      Reimers_scaling_factor = 0.1
+      Blocker_scaling_factor = 0.2
       max_wind = 1d-3
 
       do_element_diffusion = .true.
@@ -164,8 +157,6 @@
 
       radiation_turbulence_coeff = 1.0
 	  
-      !to help with breathing pulses
-      include_dmu_dt_in_eps_grav = .true.
 
 !CORE MASS DEFINITION
 
@@ -187,6 +178,7 @@
       delta_lgTeff_hard_limit = {DELTA_LGTEFF_HARD_LIMIT!r}
       delta_lgL_limit = {DELTA_LGL_LIMIT!r}
       delta_lgL_hard_limit = {DELTA_LGL_HARD_LIMIT!r}
+
 	  
       !multiply mesh_delta_coeff in overshooting regions by this factor
       xtra_coef_os_above_nonburn = 0.5
