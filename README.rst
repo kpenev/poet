@@ -7,6 +7,21 @@ under mutually raised tides.
 
 `Documentation on GitHubPages <https://kpenev.github.io/poet/>`_
 
+Three-zone tidal dissipation
+============================
+
+This branch lets POET set tidal dissipation separately in the convective
+envelope (zone 0), radiative shell (zone 1), and convective core (zone 2).
+Rebuild the native POET libraries before using the Python interface. Use
+``convert_history_to_track`` to make paired ``radiative_shell`` and
+``convective_core`` tracks from the same MESA history and age range. Pass
+their interpolators to ``EvolvingStar`` as ``interpolator`` and
+``convective_core_interpolator``, then configure each zone with
+``set_dissipation``.
+
+See ``scripts/run_equal_mass_three_zone.py`` for an example that takes a
+MESA history and an eccentricity coefficient database.
+
 Potentially Interesting Articles
 ================================
 

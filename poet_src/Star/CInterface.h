@@ -29,6 +29,20 @@ extern "C" {
     ///Opaque struct to cast to/from Star::InterpolatedEvolutionStar.
     struct LIB_PUBLIC EvolvingStar;
 
+    LIB_PUBLIC EvolvingStar *create_three_zone_star(
+        double mass, double feh, double wind_strength,
+        double wind_saturation_frequency, double coupling_timescale,
+        const MESAInterpolator *shell_track, const MESAInterpolator *core_track
+    );
+
+    LIB_PUBLIC double star_zone_inertia(const EvolvingStar *star,
+                                        unsigned zone_index, double age);
+
+    LIB_PUBLIC unsigned star_zone_angular_momentum_history(
+        const EvolvingStar *star, unsigned zone_index,
+        unsigned capacity, double *result
+    );
+
     ///Create a star to participate in the orbital evolution calculation.
     LIB_PUBLIC EvolvingStar *create_star(
         ///Mass of the star

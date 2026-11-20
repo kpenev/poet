@@ -46,6 +46,52 @@ void destroy_star(EvolvingStar *star)
     delete reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
 }
 
+EvolvingStar *create_three_zone_star(double mass,
+                                     double feh,
+                                     double wind_strength,
+                                     double wind_saturation_frequency,
+                                     double coupling_timescale,
+                                     const MESAInterpolator *shell_track,
+                                     const MESAInterpolator *core_track)
+{
+    return reinterpret_cast<EvolvingStar*>(
+        new Star::InterpolatedEvolutionStar(
+            mass, feh, wind_strength, wind_saturation_frequency,
+            coupling_timescale,
+            *reinterpret_cast<const StellarEvolution::MESA::Interpolator*>(
+                shell_track
+            ),
+            reinterpret_cast<const StellarEvolution::MESA::Interpolator*>(
+                core_track
+            )
+        )
+    );
+}
+
+double star_zone_inertia(const EvolvingStar *star, unsigned zone_index,
+                         double age)
+{
+    const auto &zone = dynamic_cast<const Star::EvolvingStellarZone &>(
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(star)
+            ->zone(zone_index)
+    );
+    zone.select_interpolation_region(age);
+    return zone.moment_of_inertia(age);
+}
+
+unsigned star_zone_angular_momentum_history(const EvolvingStar *star,
+                                            unsigned zone_index,
+                                            unsigned capacity,
+                                            double *result)
+{
+    const auto &history =
+        reinterpret_cast<const Star::InterpolatedEvolutionStar*>(star)
+            ->zone(zone_index).get_evolution_real(Evolve::ANGULAR_MOMENTUM);
+    if(history.size() == capacity)
+        std::copy(history.begin(), history.end(), result);
+    return history.size();
+}
+
 void set_star_dissipation(EvolvingStar *star,
                           unsigned zone_index,
                           unsigned num_tidal_frequency_breaks,
@@ -62,9 +108,9 @@ void set_star_dissipation(EvolvingStar *star,
 {
     Star::InterpolatedEvolutionStar* real_star =
         reinterpret_cast<Star::InterpolatedEvolutionStar*>(star);
-    Evolve::BrokenPowerlawPhaseLagZone *zone;
-    if(zone_index == 0) zone = &(real_star->envelope());
-    else zone = &(real_star->core());
+    auto *zone = dynamic_cast<Evolve::BrokenPowerlawPhaseLagZone *>(
+        &real_star->zone(zone_index)
+    );
 
 #ifndef NDEBUG
     std::cerr << "Setting zone "

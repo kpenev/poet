@@ -41,6 +41,21 @@ def initialize_library(library_fname=None):
     ]
     result.create_star.restype = c_dissipating_body_p
 
+    if hasattr(result, 'create_three_zone_star'):
+        result.create_three_zone_star.argtypes = (
+            result.create_star.argtypes + [result.create_star.argtypes[-1]]
+        )
+        result.create_three_zone_star.restype = result.create_star.restype
+        result.star_zone_inertia.argtypes = [c_dissipating_body_p, c_uint,
+                                             c_double]
+        result.star_zone_inertia.restype = c_double
+        result.star_zone_angular_momentum_history.argtypes = [
+            c_dissipating_body_p, c_uint, c_uint,
+            numpy.ctypeslib.ndpointer(dtype=c_double, ndim=1,
+                                     flags='C_CONTIGUOUS')
+        ]
+        result.star_zone_angular_momentum_history.restype = c_uint
+
     result.destroy_star.argtypes = [result.create_star.restype]
     result.destroy_star.restype = None
 
@@ -260,7 +275,8 @@ class EvolvingStar(DissipatingBody):
                  wind_strength,
                  wind_saturation_frequency,
                  diff_rot_coupling_timescale,
-                 interpolator):
+                 interpolator,
+                 convective_core_interpolator=None):
         """
         Create a star with the given properties and evolution.
 
@@ -282,7 +298,12 @@ class EvolvingStar(DissipatingBody):
 
             - interpolator:
                 An instance of stellar_evolution.MESAInterpolator to base the
-                stellar evolution on.
+                stellar evolution on. In three-zone mode its ICONV is the
+                surface inertia and its IRAD, MRAD and RRAD describe the
+                radiative shell.
+            - convective_core_interpolator:
+                Optional companion interpolator built from the same age grid
+                with IRAD, MRAD and RRAD describing the convective core.
 
         Returns: None
         """
@@ -329,12 +350,43 @@ class EvolvingStar(DissipatingBody):
         self.wind_saturation_frequency = wind_saturation_frequency
         self.diff_rot_coupling_timescale = diff_rot_coupling_timescale
         self.interpolator = interpolator
-        self.c_body = library.create_star(mass,
-                                          metallicity,
-                                          wind_strength,
-                                          wind_saturation_frequency,
-                                          diff_rot_coupling_timescale,
-                                          interpolator.interpolator)
+        self.convective_core_interpolator = convective_core_interpolator
+        self.number_zones = 2 if convective_core_interpolator is None else 3
+        star_args = (mass, metallicity, wind_strength, wind_saturation_frequency,
+                     diff_rot_coupling_timescale, interpolator.interpolator)
+        if self.number_zones == 2:
+            self.c_body = library.create_star(*star_args)
+        else:
+            if not hasattr(library, 'create_three_zone_star'):
+                raise RuntimeError('Rebuild the POET libraries for three zones.')
+            if not (convective_core_interpolator.mass_range()[0] <= mass
+                    <= convective_core_interpolator.mass_range()[1]
+                    and convective_core_interpolator.feh_range()[0] <= metallicity
+                    <= convective_core_interpolator.feh_range()[1]):
+                raise ValueError('The core track must cover the stellar mass and [Fe/H].')
+            self.c_body = library.create_three_zone_star(
+                *star_args, convective_core_interpolator.interpolator
+            )
+
+    def _validate_zone_index(self, zone_index):
+        if not 0 <= zone_index < self.number_zones:
+            raise ValueError('Invalid stellar zone index: %s' % zone_index)
+
+    def zone_inertia(self, zone_index, age):
+        """Return the inertia at a shared stellar age for one indexed zone."""
+        self._validate_zone_index(zone_index)
+        return library.star_zone_inertia(self.c_body, zone_index, age)
+
+    def zone_angular_momentum_history(self, num_steps):
+        """Return angular momentum as (time, zone) in outside-in order."""
+        result = numpy.empty((self.number_zones, num_steps), dtype=c_double)
+        for zone_index, history in enumerate(result):
+            count = library.star_zone_angular_momentum_history(
+                self.c_body, zone_index, num_steps, history
+            )
+            if count != num_steps:
+                raise ValueError('Stellar zone history length differs from solver history.')
+        return result.T
 
     def delete(self):
         """Destroy the library star object created at construction."""
@@ -360,7 +412,7 @@ class EvolvingStar(DissipatingBody):
         Args:
             - zone_index:
                 Which zone to set the dissiaption for (0 - envelope, 1 -
-                core).
+                core for two zones; outer to inner for three zones).
             - tidal_frequency_breaks:
                 The locations of the breaks in tidal frequency in rad/day.
                 Entries should be sorted.
@@ -392,6 +444,10 @@ class EvolvingStar(DissipatingBody):
         Returns: None
         """
 
+        self._validate_zone_index(zone_index)
+        if self.number_zones == 3 and tidal_frequency_powers[0] <= 0:
+            raise ValueError('Three-zone dissipation requires a positive low-frequency '
+                             'tidal power so zones can pass through synchronization.')
         assert (
             (age_breaks is None and reference_phase_lags.size == 1)
             or
@@ -475,6 +531,7 @@ class EvolvingStar(DissipatingBody):
         infinitesimal negative forcing frequencies.
         """
 
+        self._validate_zone_index(zone_index)
         above_lock_value = c_double()
         below_lock_value = library.modified_phase_lag(
             self.c_body,
